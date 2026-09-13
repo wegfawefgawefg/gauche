@@ -81,6 +81,12 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
                                  fixture.generation});
             return true;
         }
+        if (fixture.kind == EntityKind::Switch && !fixture.fixture_open) {
+            fixture.fixture_open = true;
+            game.run.has_key = true;
+            emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
+            return true;
+        }
         if (fixture.kind == EntityKind::Door && game.run.has_key) {
             fixture.fixture_open = true;
             fixture.impassable = false;

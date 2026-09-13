@@ -218,6 +218,36 @@ bool offline_reward_rules() {
                  "reconnected player could not claim missed reward");
 }
 
+bool switch_route() {
+    Game game;
+    start_run(game, 7171);
+    finish_floor(game);
+    game.run.chosen.fill(true);
+    advance_run(game);
+    if (!check(game.run.floor == 2 && game.run.objective == ObjectiveKind::Switch,
+               "second floor did not use a switch route")) return false;
+    Entity* player = get_entity(game, game.players[0]);
+    Cell switch_cell{-1, -1};
+    Cell door_cell{-1, -1};
+    for (const Entity& entity : game.entities) {
+        if (entity.kind == EntityKind::Switch) switch_cell = entity.cell;
+        if (entity.kind == EntityKind::Door) door_cell = entity.cell;
+    }
+    if (!check(game.stage.in_bounds(switch_cell) && game.stage.in_bounds(door_cell),
+               "switch route lacks fixtures")) return false;
+    player->cell = switch_cell + Cell{1, 0};
+    if (!check(interact_with_fixture(game, 0, switch_cell) && game.run.has_key,
+               "switch did not unlock route")) return false;
+    player->cell = door_cell + Cell{-1, 0};
+    if (!check(interact_with_fixture(game, 0, door_cell),
+               "unlocked door did not open")) return false;
+    for (const Entity& entity : game.entities)
+        if (entity.kind == EntityKind::Door)
+            return check(entity.fixture_open && !entity.impassable,
+                         "open door still blocked path");
+    return false;
+}
+
 bool track_before_train() {
     Game game = small_game();
     Entity* player = get_entity(game, game.players[0]);
@@ -270,7 +300,7 @@ bool forest_progression() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
-        !offline_reward_rules() ||
+        !offline_reward_rules() || !switch_route() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

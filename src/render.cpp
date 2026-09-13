@@ -280,7 +280,8 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         const int world = std::clamp((game.run.floor - 1) / 4, 0, 2);
         std::snprintf(floor, sizeof(floor), "%s %d/4   %s", worlds[world],
                       (game.run.floor - 1) % 4 + 1,
-                      game.run.has_key ? "KEY FOUND" : "FIND KEY");
+                      game.run.has_key ? "DOOR OPEN" :
+                      (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
     }
     draw_interlude(renderer, graphics, game, local_owner);

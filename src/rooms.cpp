@@ -54,6 +54,15 @@ void stamp_room(Game& game, int column, int row, bool main_route) {
     }
 }
 
+void connect_branch(Game& game, int column, int row) {
+    stamp_room(game, column, row, false);
+    const int center = column * room_width + 6;
+    if (row == 0)
+        carve(game.stage, center - 1, 8, center + 1, 11, TileKind::Empty);
+    else
+        carve(game.stage, center - 1, 18, center + 1, 21, TileKind::Empty);
+}
+
 void ground_item(Game& game, Cell cell, ItemKind kind, int count = 1) {
     const Handle handle = spawn_entity(game, EntityKind::GroundItem, cell);
     if (Entity* entity = get_entity(game, handle)) {
@@ -90,28 +99,36 @@ void generate_world_floor(Game& game) {
     game.stage.height = 3 * room_height;
     game.stage.tiles.assign(static_cast<std::size_t>(game.stage.width * game.stage.height),
                             {TileKind::Wall, 100, 0});
-    const int branch = 2 + static_cast<int>(random_u32(game) %
+    const int branch = 1 + static_cast<int>(random_u32(game) %
                                                  static_cast<std::uint32_t>(columns - 3));
+    const int extra = branch == 1 ? columns - 2 : 1;
+    const int extra_row = random_u32(game) % 2 == 0 ? 0 : 2;
     for (int column = 0; column < columns; ++column) {
         stamp_room(game, column, 1, true);
         if (column < columns - 1)
             carve(game.stage, column * room_width + 10, 14,
                   (column + 1) * room_width + 2, 16, TileKind::Empty);
     }
-    stamp_room(game, branch, 0, false);
-    stamp_room(game, branch, 2, false);
+    connect_branch(game, branch, 0);
+    connect_branch(game, branch, 2);
+    connect_branch(game, extra, extra_row);
     const int branch_x = branch * room_width + 6;
-    carve(game.stage, branch_x - 1, 8, branch_x + 1, 11, TileKind::Empty);
-    carve(game.stage, branch_x - 1, 18, branch_x + 1, 21, TileKind::Empty);
+    const int extra_x = extra * room_width + 6;
+    const int extra_y = extra_row * room_height + 5;
     game.run.spawn = {6, 15};
     game.run.exit = {columns * room_width - 6, 15};
     game.run.has_key = false;
+    game.run.objective = (game.run.floor - 1) % 2 == 0 ?
+        ObjectiveKind::Key : ObjectiveKind::Switch;
     game.run.roof_light_count = 0;
     for (int column = 0; column < columns; ++column)
         game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
             {column * room_width + 6, 13};
     game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] = {branch_x, 5};
-    spawn_entity(game, EntityKind::Key, {branch_x, 5});
+    game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
+        {extra_x, extra_y};
+    spawn_entity(game, game.run.objective == ObjectiveKind::Key ?
+                 EntityKind::Key : EntityKind::Switch, {branch_x, 5});
     spawn_entity(game, EntityKind::Door, {(columns - 2) * room_width, 15});
     spawn_entity(game, EntityKind::Exit, game.run.exit);
 
@@ -169,6 +186,23 @@ void generate_world_floor(Game& game) {
     }
     ground_item(game, {branch_x + 3, 5}, ItemKind::Buckler);
     ground_item(game, {branch_x - 2, 25}, ItemKind::Bow);
+    const int world = (game.run.floor - 1) / 4;
+    const int local_floor = (game.run.floor - 1) % 4;
+    ground_item(game, {extra_x + 2, extra_y},
+                world == 0 ? ItemKind::Bandage :
+                (world == 1 ? ItemKind::Mine : ItemKind::Musket),
+                world == 0 ? 3 : 1);
+    if (local_floor >= 2) {
+        const EntityKind guardian = world == 0 ? EntityKind::Bear :
+                                    (world == 1 ? EntityKind::Ember : EntityKind::FrostBat);
+        spawn_entity(game, guardian, {branch_x + 2, 5});
+        if (local_floor == 2) {
+            spawn_entity(game, guardian, {branch_x + 2, 25});
+            spawn_entity(game, guardian, {branch_x - 2, 25});
+        }
+    }
+    if (local_floor == 3) spawn_entity(game, EntityKind::Spawner,
+                                        {extra_x - 2, extra_y});
     if (game.run.floor == 1) ground_item(game, {8, 15}, ItemKind::Stick);
     spawn_entity(game, EntityKind::Spawner, {branch_x + 3, 25});
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
@@ -184,7 +218,8 @@ bool floor_reachable(const Game& game) {
     Cell key{-1, -1};
     Cell door{-1, -1};
     for (const Entity& entity : game.entities) {
-        if (entity.kind == EntityKind::Key) key = entity.cell;
+        if (entity.kind == EntityKind::Key || entity.kind == EntityKind::Switch)
+            key = entity.cell;
         if (entity.kind == EntityKind::Door) door = entity.cell;
     }
     while (!pending.empty()) {

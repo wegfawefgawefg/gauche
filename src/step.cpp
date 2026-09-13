@@ -251,6 +251,7 @@ std::uint64_t game_hash(const Game& game) {
     mix(hash, game.run.seed);
     mix(hash, static_cast<std::uint64_t>(game.run.floor));
     mix(hash, static_cast<std::uint64_t>(game.run.has_key));
+    mix(hash, static_cast<std::uint64_t>(game.run.objective));
     mix(hash, static_cast<std::uint64_t>(game.run.death_policy));
     mix(hash, static_cast<std::uint64_t>(game.run.spawn.x));
     mix(hash, static_cast<std::uint64_t>(game.run.spawn.y));

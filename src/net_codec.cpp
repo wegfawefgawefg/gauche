@@ -121,7 +121,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::Trap)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::Switch)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;
@@ -159,7 +159,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(3);
+    writer.u32(4);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -173,6 +173,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     writer.i32(run.floor); writer.u64(run.seed);
     writer.u8(static_cast<std::uint8_t>(run.death_policy));
     writer.u8(static_cast<std::uint8_t>(run.has_key));
+    writer.u8(static_cast<std::uint8_t>(run.objective));
     write_cell(writer, run.spawn); write_cell(writer, run.exit);
     writer.i32(run.roof_light_count);
     for (Cell light : run.roof_lights) write_cell(writer, light);
@@ -206,7 +207,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 3) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 4) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -235,6 +236,9 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     if (death_policy > static_cast<std::uint8_t>(DeathPolicy::NextFloor)) reader.okay = false;
     run.death_policy = static_cast<DeathPolicy>(death_policy);
     run.has_key = reader.u8() != 0;
+    const std::uint8_t objective = reader.u8();
+    if (objective > static_cast<std::uint8_t>(ObjectiveKind::Switch)) reader.okay = false;
+    run.objective = static_cast<ObjectiveKind>(objective);
     run.spawn = read_cell(reader); run.exit = read_cell(reader);
     run.roof_light_count = reader.i32();
     if (run.roof_light_count < 0 || run.roof_light_count > 16) reader.okay = false;

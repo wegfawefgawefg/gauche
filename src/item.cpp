@@ -176,7 +176,8 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
-        entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit || damage <= 0) return;
+        entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
+        entity.kind == EntityKind::Switch || damage <= 0) return;
     Item* held = entity.inventory.held();
     if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
         entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {

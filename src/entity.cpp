@@ -124,6 +124,10 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             entity.health = entity.max_health = 1;
             entity.sprite = Sprite::BearTrap;
             break;
+        case EntityKind::Switch:
+            entity.health = entity.max_health = 1;
+            entity.sprite = Sprite::Switch;
+            break;
         case EntityKind::None:
             break;
         }

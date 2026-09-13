@@ -76,6 +76,7 @@ bool insert_item(Inventory& inventory, Item item);
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
+    Switch,
 };
 struct Entity {
     EntityKind kind = EntityKind::None;
@@ -131,6 +132,7 @@ struct Input {
 
 enum class RunPhase : std::uint8_t { Arena, Playing, Reward, Shop, Won };
 enum class DeathPolicy : std::uint8_t { NoRespawn, Entrance, NextFloor };
+enum class ObjectiveKind : std::uint8_t { Key, Switch };
 enum class RewardKind : std::uint8_t { Item, Artifact, Health, Speed };
 enum class ArtifactKind : std::uint8_t { None, AllPiercing, Reflector, Hearth, FleetFeet };
 constexpr bool has_artifact(const Entity& entity, ArtifactKind kind) {
@@ -147,6 +149,7 @@ struct Run {
     int floor = 0;
     std::array<int, 4> coins{};
     bool has_key = false;
+    ObjectiveKind objective = ObjectiveKind::Key;
     std::array<bool, 4> chosen{};
     std::array<bool, 4> shop_ready{};
     std::array<bool, 4> online{};

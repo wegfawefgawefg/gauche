@@ -40,6 +40,9 @@ Sprite item_sprite(ItemKind kind) {
     case ItemKind::SMG: return Sprite::SMG;
     case ItemKind::BearTrap: return Sprite::BearTrap;
     case ItemKind::Mine: return Sprite::Mine;
+    case ItemKind::Pickaxe: return Sprite::Pickaxe;
+    case ItemKind::RawMeat: return Sprite::RawMeat;
+    case ItemKind::CookedMeat: return Sprite::CookedMeat;
     default: return Sprite::Fist;
     }
 }
@@ -66,6 +69,9 @@ const char* item_name(ItemKind kind) {
     case ItemKind::SMG: return "SMG";
     case ItemKind::BearTrap: return "Bear Trap";
     case ItemKind::Mine: return "Mine";
+    case ItemKind::Pickaxe: return "Pickaxe";
+    case ItemKind::RawMeat: return "Raw Meat";
+    case ItemKind::CookedMeat: return "Cooked Meat";
     }
     return "Unknown";
 }
@@ -76,7 +82,8 @@ bool insert_item(Inventory& inventory, Item item) {
     const bool stackable = item.kind == ItemKind::Wall || item.kind == ItemKind::Medkit ||
         item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid ||
         item.kind == ItemKind::Bomb || item.kind == ItemKind::SleepMeds ||
-        item.kind == ItemKind::BearTrap || item.kind == ItemKind::Mine;
+        item.kind == ItemKind::BearTrap || item.kind == ItemKind::Mine ||
+        item.kind == ItemKind::RawMeat || item.kind == ItemKind::CookedMeat;
     const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
     if (stackable) {
         for (Item& slot : inventory.slots) {

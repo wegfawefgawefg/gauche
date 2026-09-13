@@ -23,6 +23,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "forest_ruin", "forest_wall", "lava_tile", "ice_tile",
     "bat", "wolf", "bear", "bunny", "ember", "frost_bat", "sleep_meds",
     "stick", "shotgun", "smg", "bear_trap", "mine", "switch",
+    "pickaxe", "raw_meat", "cooked_meat", "campfire",
 };
 
 constexpr std::array<std::string_view, 41> sound_names{

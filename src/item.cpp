@@ -68,9 +68,8 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         if (tile == nullptr) break;
         if (!walkable(tile->kind)) {
             if (item.kind == ItemKind::RocketLauncher) blast(game, cell, 2, damage, user.cell);
-            else if (item.kind == ItemKind::Musket || piercing)
-                damage_tile(game.stage, cell, piercing ? 50 : 25);
-            if (!piercing) break;
+            else if (item.kind == ItemKind::Musket) damage_tile(game.stage, cell, 25);
+            break;
         }
         const int target = entity_at(game, cell, true);
         if (target >= 0 && target != user_slot) {
@@ -148,6 +147,15 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
     if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
+    if (entity.health == 0 &&
+        (entity.kind == EntityKind::Chicken || entity.kind == EntityKind::Bunny) &&
+        random_u32(game) % 10 == 0) {
+        const Handle meat = spawn_entity(game, EntityKind::GroundItem, entity.cell);
+        if (Entity* drop = get_entity(game, meat)) {
+            drop->ground_item = make_item(ItemKind::RawMeat);
+            drop->sprite = Sprite::RawMeat;
+        }
+    }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;
@@ -177,7 +185,8 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
         entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
-        entity.kind == EntityKind::Switch || damage <= 0) return;
+        entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire ||
+        damage <= 0) return;
     Item* held = entity.inventory.held();
     if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
         entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
@@ -218,24 +227,31 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         break;
     case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
+    case ItemKind::RawMeat: case ItemKind::CookedMeat:
         if (user.health < user.max_health) {
             const int heal = item.kind == ItemKind::Medkit ? 100 :
-                             (item.kind == ItemKind::Bandage ? 10 : 1);
+                             (item.kind == ItemKind::Bandage ? 10 :
+                              item.kind == ItemKind::CookedMeat ? 18 :
+                              item.kind == ItemKind::RawMeat ? 4 : 1);
             user.health = std::min(user.max_health, user.health + heal);
             used = consumed = true;
             cooldown = item.kind == ItemKind::Medkit ? 300 :
-                       (item.kind == ItemKind::Bandage ? 120 : 12);
+                       (item.kind == ItemKind::Bandage ? 120 :
+                        item.kind == ItemKind::CookedMeat ? 90 : 12);
         }
         break;
-    case ItemKind::Fist: case ItemKind::Stick:
+    case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range == 1) {
             const int hit = entity_at(game, target, true);
             if (hit >= 0 && hit != user_slot) {
-                damage_entity(game, hit, item.kind == ItemKind::Stick ? 17 : 10, user.cell);
+                damage_entity(game, hit, item.kind == ItemKind::Pickaxe ? 22 :
+                              (item.kind == ItemKind::Stick ? 17 : 10), user.cell);
                 used = true;
             } else used = damage_tile(game.stage, target,
-                                      item.kind == ItemKind::Stick ? 17 : 10);
-            cooldown = item.kind == ItemKind::Stick ? 16 : 12;
+                                      item.kind == ItemKind::Pickaxe ? 50 :
+                                      (item.kind == ItemKind::Stick ? 17 : 10));
+            cooldown = item.kind == ItemKind::Pickaxe ? 24 :
+                       (item.kind == ItemKind::Stick ? 16 : 12);
         }
         break;
     case ItemKind::ConductorHat: {
@@ -307,8 +323,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         switch (used_kind) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
         case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
+        case ItemKind::RawMeat: case ItemKind::CookedMeat:
             emit_sound(game, SoundId::ClothRip, user.cell); break;
-        case ItemKind::Fist: case ItemKind::Stick:
+        case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
             emit_sound(game, SoundId::Punch1, user.cell); break;
         case ItemKind::ConductorHat:
             emit_sound(game, SoundId::DistantTrainSound, user.cell); break;

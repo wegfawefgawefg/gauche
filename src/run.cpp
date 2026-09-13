@@ -10,10 +10,11 @@ namespace {
 
 Reward random_reward(Game& game, int category) {
     if (category == 0) {
-        constexpr std::array<ItemKind, 10> items{
+        constexpr std::array<ItemKind, 11> items{
             ItemKind::Pistol, ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Medkit, ItemKind::RocketLauncher,
-            ItemKind::SleepMeds, ItemKind::Shotgun, ItemKind::SMG};
+            ItemKind::SleepMeds, ItemKind::Shotgun, ItemKind::SMG,
+            ItemKind::Pickaxe};
         const ItemKind kind = items[random_u32(game) % items.size()];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::Bomb ? 3 :
@@ -42,6 +43,7 @@ int price(ItemKind kind) {
     case ItemKind::SMG: return 75;
     case ItemKind::BearTrap: return 18;
     case ItemKind::Mine: return 28;
+    case ItemKind::Pickaxe: return 25;
     default: return 25;
     }
 }
@@ -86,6 +88,17 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             game.run.has_key = true;
             emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
             return true;
+        }
+        if (fixture.kind == EntityKind::Campfire) {
+            Inventory cooked = player->inventory;
+            for (Item& ingredient : cooked.slots) {
+                if (ingredient.kind != ItemKind::RawMeat || ingredient.count <= 0) continue;
+                if (--ingredient.count == 0) ingredient = {};
+                if (!insert_item(cooked, make_item(ItemKind::CookedMeat))) return false;
+                player->inventory = cooked;
+                emit_sound(game, SoundId::Confirm, fixture.cell);
+                return true;
+            }
         }
         if (fixture.kind == EntityKind::Door && game.run.has_key) {
             fixture.fixture_open = true;

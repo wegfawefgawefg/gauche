@@ -128,6 +128,10 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             entity.health = entity.max_health = 1;
             entity.sprite = Sprite::Switch;
             break;
+        case EntityKind::Campfire:
+            entity.health = entity.max_health = 1;
+            entity.sprite = Sprite::Campfire;
+            break;
         case EntityKind::None:
             break;
         }

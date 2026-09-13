@@ -93,17 +93,20 @@ bool artifact_rules() {
     Entity* player = get_entity(game, game.players[0]);
     player->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::AllPiercing);
     player->inventory.slots[0] = make_item(ItemKind::Pistol);
-    *game.stage.at({3, 2}) = {TileKind::Wall, 100, 0};
-    const Handle first = spawn_entity(game, EntityKind::Zombie, {4, 2});
-    const Handle second = spawn_entity(game, EntityKind::Zombie, {5, 2});
+    *game.stage.at({5, 2}) = {TileKind::Wall, 100, 0};
+    const Handle first = spawn_entity(game, EntityKind::Zombie, {3, 2});
+    const Handle second = spawn_entity(game, EntityKind::Zombie, {4, 2});
+    const Handle behind_wall = spawn_entity(game, EntityKind::Zombie, {6, 2});
     if (!check(use_held_item(game, game.players[0].slot, {6, 2}),
                "piercing shot failed")) return false;
     if (!check(get_entity(game, first)->health == 24 &&
                get_entity(game, second)->health == 24 &&
-               game.stage.at({3, 2})->hp == 50,
-               "all piercing failed through wall and actors")) return false;
+               get_entity(game, behind_wall)->health == 40 &&
+               game.stage.at({5, 2})->hp == 100,
+               "all piercing did not stop at solid terrain")) return false;
     remove_entity(game, first);
     remove_entity(game, second);
+    remove_entity(game, behind_wall);
     player->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
     player->health = 70;
     const Handle friend_handle = spawn_entity(game, EntityKind::Player, {2, 3});
@@ -248,6 +251,42 @@ bool switch_route() {
     return false;
 }
 
+bool forest_tools() {
+    Game game = small_game();
+    Entity* player = get_entity(game, game.players[0]);
+    player->inventory.slots[0] = make_item(ItemKind::Pickaxe);
+    *game.stage.at({3, 2}) = {TileKind::Wall, 100, 0};
+    if (!check(use_held_item(game, game.players[0].slot, {3, 2}) &&
+               game.stage.at({3, 2})->hp == 50,
+               "pickaxe did not crack a wall")) return false;
+    player->inventory.slots[0].cooldown = 0;
+    use_held_item(game, game.players[0].slot, {3, 2});
+    if (!check(game.stage.at({3, 2})->kind == TileKind::Ruin,
+               "pickaxe did not open a shortcut")) return false;
+
+    const Handle chicken = spawn_entity(game, EntityKind::Chicken, {3, 2});
+    for (std::uint64_t seed = 1; seed < 100; ++seed) {
+        Game probe;
+        probe.rng = seed;
+        if (random_u32(probe) % 10 == 0) { game.rng = seed; break; }
+    }
+    damage_entity(game, chicken.slot, 100, player->cell);
+    bool meat_dropped = false;
+    for (const Entity& entity : game.entities)
+        meat_dropped |= entity.kind == EntityKind::GroundItem &&
+                        entity.ground_item.kind == ItemKind::RawMeat;
+    if (!check(meat_dropped, "animal did not roll a meat drop")) return false;
+    player->inventory.slots[0] = make_item(ItemKind::RawMeat);
+    spawn_entity(game, EntityKind::Campfire, {2, 3});
+    if (!check(interact_with_fixture(game, 0, {2, 3}) &&
+               player->inventory.slots[0].kind == ItemKind::CookedMeat,
+               "campfire did not cook carried meat")) return false;
+    player->health = 75;
+    return check(use_held_item(game, game.players[0].slot, player->cell) &&
+                 player->health == 93,
+                 "cooked meat did not heal its owner");
+}
+
 bool track_before_train() {
     Game game = small_game();
     Entity* player = get_entity(game, game.players[0]);
@@ -300,7 +339,7 @@ bool forest_progression() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
-        !offline_reward_rules() || !switch_route() ||
+        !offline_reward_rules() || !switch_route() || !forest_tools() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

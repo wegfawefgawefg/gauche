@@ -329,6 +329,7 @@ std::uint64_t game_hash(const Game& game) {
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
         mix(hash, static_cast<std::uint64_t>(ground.count));
+        mix(hash, static_cast<std::uint64_t>(ground.cooldown));
         mix(hash, static_cast<std::uint64_t>(ground.loaded));
         mix(hash, static_cast<std::uint64_t>(ground.spare));
         mix(hash, static_cast<std::uint64_t>(ground.durability));

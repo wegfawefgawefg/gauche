@@ -48,7 +48,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage);
 enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
     Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
-    Stick, Shotgun, SMG, BearTrap, Mine,
+    Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
 };
 
 struct Item {
@@ -76,7 +76,7 @@ bool insert_item(Inventory& inventory, Item item);
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
-    Switch,
+    Switch, Campfire,
 };
 struct Entity {
     EntityKind kind = EntityKind::None;

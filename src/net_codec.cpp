@@ -85,7 +85,7 @@ void write_item(PacketWriter& writer, const Item& item) {
 Item read_item(PacketReader& reader) {
     Item item;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(ItemKind::Mine)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(ItemKind::CookedMeat)) reader.okay = false;
     item.kind = static_cast<ItemKind>(kind);
     item.count = reader.i32(); item.cooldown = reader.i32(); item.loaded = reader.i32();
     item.spare = reader.i32(); item.durability = reader.i32();
@@ -121,7 +121,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::Switch)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::Campfire)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;
@@ -159,7 +159,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(4);
+    writer.u32(5);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -207,7 +207,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 4) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 5) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -260,7 +260,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             reward.item = static_cast<ItemKind>(reader.u8());
             reward.artifact = static_cast<ArtifactKind>(reader.u8());
             reward.amount = reader.i32();
-            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Mine ||
+            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::CookedMeat ||
                 reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
                 reader.okay = false;
         }
@@ -270,7 +270,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
                 reward.item = static_cast<ItemKind>(reader.u8());
                 reward.artifact = static_cast<ArtifactKind>(reader.u8());
                 reward.amount = reader.i32();
-                if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Mine ||
+                if (reward.kind > RewardKind::Speed || reward.item > ItemKind::CookedMeat ||
                     reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
                     reader.okay = false;
             }
@@ -278,7 +278,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     }
     for (ItemKind& item : run.shop_stock) {
         item = static_cast<ItemKind>(reader.u8());
-        if (item > ItemKind::Mine) reader.okay = false;
+        if (item > ItemKind::CookedMeat) reader.okay = false;
     }
     for (Entity& entity : result.entities) entity = read_entity(reader);
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }

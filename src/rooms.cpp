@@ -155,10 +155,10 @@ void generate_world_floor(Game& game) {
         }
     }
 
-    constexpr std::array<ItemKind, 11> loot{
+    constexpr std::array<ItemKind, 12> loot{
         ItemKind::Bandage, ItemKind::Bandaid, ItemKind::Buckler, ItemKind::Pistol,
         ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo, ItemKind::SleepMeds,
-        ItemKind::Stick, ItemKind::BearTrap, ItemKind::Mine};
+        ItemKind::Stick, ItemKind::BearTrap, ItemKind::Mine, ItemKind::Pickaxe};
     for (int column = 1; column < columns - 1; ++column) {
         const int x = column * room_width + 5;
         const int world = (game.run.floor - 1) / 4;
@@ -188,6 +188,9 @@ void generate_world_floor(Game& game) {
     ground_item(game, {branch_x - 2, 25}, ItemKind::Bow);
     const int world = (game.run.floor - 1) / 4;
     const int local_floor = (game.run.floor - 1) % 4;
+    if (world == 0) spawn_entity(game, EntityKind::Campfire, {4, 13});
+    if (world == 0 && local_floor == 1)
+        ground_item(game, {branch_x - 3, 25}, ItemKind::Pickaxe);
     ground_item(game, {extra_x + 2, extra_y},
                 world == 0 ? ItemKind::Bandage :
                 (world == 1 ? ItemKind::Mine : ItemKind::Musket),

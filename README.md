@@ -8,6 +8,8 @@ then reach an exit. Keep Gauche's fast tile-step movement; barricades,
 pickaxes, bombs, and the existing rail-laying train can change a route.
 Gunplay and lighting shape combat. Use direct C++ game code with the SDL3/Gubsy
 host and asset patterns of `splonks-cpp`. Co-op includes reconnects and a
-configurable death rule.
+configurable death rule. Floors lead to a pick-one-of-three reward, with
+occasional shops and run-long artifacts; themed four-floor worlds start with
+forest caves and can later branch into fire and ice.
 
 No game code has been ported yet. See [the port plan](docs/PORT_PLAN.md).

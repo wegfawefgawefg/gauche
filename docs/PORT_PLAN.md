@@ -8,11 +8,12 @@ and visual baseline: compact pixel art, dark presentation, inventory, tile
 damage, chickens, zombies, rail/train behavior, particles, sound, and HUD.
 The actual target is a fast, rectilinear, top-down co-op dungeon run: a party
 spawns into a dense authored/procedural map, fights and improvises through
-rooms, gates, traps, and spawners, and reaches an exit. Roguelike variation,
-powerful terrain-changing weapons, and lighting are core direction; the Rust
-TestArena is not the final game loop. Add online co-op and stereo directional
-sound. Use modern C++20 and SDL3/Gubsy at the host boundary without reproducing
-Rust ownership workarounds.
+rooms, gates, traps, and spawners, and reaches an exit. Cleared floors lead to
+three-way reward choices, occasional shops, and themed four-floor worlds.
+Roguelike variation, powerful terrain-changing weapons, and lighting are core
+direction; the Rust TestArena is not the final game loop. Add online co-op and
+stereo directional sound. Use modern C++20 and SDL3/Gubsy at the host boundary
+without reproducing Rust ownership workarounds.
 
 The C++ source should read like Adventures with Chickens: plain value/state
 types, free functions, a visible loop in `main`, direct mode switches, and
@@ -43,6 +44,9 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
   room or prefab generator, spawners, keycards/switches, firearms/projectiles,
   or world lighting. `Win` is a placeholder. These are target-game additions,
   not behavior to infer from unused source fields.
+- Rust inventory has ten quick slots. It has no between-floor rewards, shops,
+  artifacts, or implemented sleep/stun/freeze/burn rules; an unused
+  `can_be_stunned` entity field is not a status system.
 - Gauche water is a generated, impassable tile with two intended PNG variants.
   Its two flip passes currently cancel, leaving each cell on its randomized
   initial sprite. It has no fluid amount, flow, buoyancy, or water simulation.
@@ -80,6 +84,15 @@ tiles, but it needs deliberate density: chokepoints, guarded objectives,
 spawners, supplies, hazards, and recognizable set pieces. Some routes use keys
 or keycards, switches, or local fights. Exit activation and party transition
 need explicit co-op rules rather than inheriting the Rust single-player mode.
+
+Treat a run as a sequence of themed worlds, provisionally four floors each.
+Floors one and two establish that world's familiar rooms and enemies; floor
+three introduces a special layout or encounter; floor four is a harder
+capstone. Keep that cadence flexible enough for authored exceptions. Each
+floor still has its own reachable spawn-to-exit progression graph. Clearing a
+floor that continues the run opens a safe interlude: each eligible player
+chooses one of three rewards, then the party can visit an occasional shop
+before entering the next floor.
 
 Generate the **progression graph** before painting terrain: choose a spawn,
 exit, critical route, optional branches, and any lock/key or switch dependency.
@@ -125,6 +138,61 @@ positioning, and route choices should carry more pressure than chronic ammo
 starvation. Firing, reloads, pickups, and any item effects that change gameplay
 must be deterministic and included in snapshots and hashes.
 
+### Rewards, inventory, and statuses
+
+Offer a mixed three-choice draft after each cleared floor: a carried item or
+weapon, a passive artifact, or a lasting power-up effect can appear in any
+slot. Curate offers so they remain useful to the player's current loadout and
+world; a consumable or gun offer should be strong enough to compete with a
+lasting artifact. Each player chooses independently in co-op. Save the
+generated offers and choices in host session state; a disconnected player's
+pending choice waits for their return without blocking the rest of the party's
+transition.
+The death policy determines whether a dead player is eligible for a reward.
+
+Reduce the quick-use inventory from Rust's ten slots to **six initially**, then
+playtest whether five feels better. Guns, consumables, and placeables compete
+for those active slots. Passive artifacts and the universal ammo reserve do
+not occupy quick slots. When a reward or shop purchase would overfill the pack,
+let the player deliberately replace or drop an item in the safe interlude;
+never silently discard the chosen reward. Preserve the Rust ten-slot behavior
+only while validating source parity, then make this explicit target-game change.
+
+Keep the character sheet small: health and movement step interval are
+meaningful; a broad strength/defense/agility stat ladder is unnecessary.
+Speed bonuses shorten the integer number of ticks between tile steps, with a
+floor that preserves readable movement. Most artifacts should change a
+specific rule instead: for example, an aura that helps friends within a
+grid-distance radius, an effect on reload, or a response to taking damage.
+Aura membership and stacking order must be deterministic. Give sleep, stun,
+frozen, and burning distinct, readable effects and integer-tick durations;
+specify wake-up, movement/action limits, and damage timing before adding each
+one. Sleep meds can use that same status machinery. Avoid building a general
+effect scripting framework for the first few artifacts and statuses.
+
+Shops are optional interludes, not a stop after every floor. Seed their
+appearance and stock when a world is built, announce an upcoming shop on the
+run map, and offer a reliable way to turn found currency into needed supplies
+or a build choice. This gives players something to plan around without
+replacing the free reward after a clear. The host resolves purchases and saves
+stock, currency, and any resulting loadout change in the run state.
+
+### Themed worlds and first content set
+
+Start with a forest world that mixes leafy outdoor rooms and grassy caves
+with shafts of light from the roof. Give it authored room pieces, forest dens
+as optional set pieces (especially plausible on floors two or four), and
+encounters featuring bats, wolves, and bears. Seed its item pool with a bow
+and visible arrow projectiles, a musket, and bear traps alongside other Gauche
+tools. The bow can draw from the universal ammo reserve rather than adding a
+second ammo type.
+
+Fire and ice worlds are later themes, each with its own terrain, hazards,
+enemy mix, room shapes, lighting, and status interactions. A world should
+change the decisions in a run, not just recolor the same floor. The third-
+floor special and fourth-floor harder pattern should help make each world
+recognizable while leaving room for rare variants.
+
 Lighting is part of the target game's readability and tension. Add a Gauche
 2D light pass with dark ambient, tile/wall occlusion, and sources such as
 players, exits, muzzle flashes, rockets, fires, and active machinery. Borrow
@@ -135,9 +203,10 @@ in deterministic gameplay state so rollback peers agree.
 
 The host supplies the full initial generated level—terrain, fixtures,
 objectives, enemies, loot, and RNG state—to joining peers. Thereafter locks,
-switches, spawners, projectiles, blasts, pickups, and terrain changes belong
-in the gameplay step, snapshots, and confirmed hashes. Light blooms,
-particles, shake, and audio remain local presentation.
+switches, spawners, projectiles, blasts, pickups, terrain changes, statuses,
+artifacts, reward choices, and shop purchases belong in the gameplay step,
+snapshots, and confirmed hashes. Light blooms, particles, shake, and audio
+remain local presentation.
 
 ## Intended shape
 
@@ -145,18 +214,19 @@ particles, shake, and audio remain local presentation.
 | --- | --- |
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Gauche's top-down game and co-op needs. |
 | `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A flat tile array supports the initial 64x64 map and later prefab rooms. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
-| `rooms`, `objectives`, `fixtures` | Assemble authored and random room layouts around a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, traps, and loot as gameplay objects, reusing the entity and tile rules. |
+| `rooms`, `objectives`, `fixtures` | Assemble themed four-floor worlds from authored and random rooms, each with a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, dens, traps, and loot as gameplay objects, reusing the entity and tile rules. |
+| `run`, `rewards`, `shop`, `status` | Track world/floor cadence, per-player three-choice drafts, occasional announced shops, passive artifacts, and small explicit status timers. Keep six quick-use slots separate from artifacts and the ammo reserve. Let the host generate offers and stock; serialize every gameplay-relevant choice and effect. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, fixtures, projectiles, terrain, objectives, cleanup, then transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
 | `graphics`, `render`, `render_ui`, `lighting` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers, then an occluded top-down light pass. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
 | `particles` / presentation | Keep Gauche's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |
-| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets without importing the Splonks theme. Expose the host's co-op death policy in game/lobby settings. |
+| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets plus a small run-route, reward, and shop UI without importing the Splonks theme. Expose the host's co-op death policy in game/lobby settings. |
 | `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, snapshot resync, and reconnect to a retained player slot. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Initial snapshots include generated terrain, fixtures, objectives, and actors. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
 
 ## What to take from Splonks, and what to leave there
 
 | Reuse or adapt | Omit from Gauche |
 | --- | --- |
-| Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. Adapt the useful idea of authored room pieces in generated stages to Gauche's spawn-to-exit maps. | Splonks-specific biomes, room templates, quests, shops, progression, and content databases. The Rust TestArena is only a baseline. |
+| Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. Adapt the useful idea of authored room pieces in generated stages to Gauche's spawn-to-exit maps. | Splonks's biome, quest, shop, and progression content and large data systems. Write Gauche's smaller themed worlds, rewards, and shops for its own run structure. The Rust TestArena is only a baseline. |
 | Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's much smaller state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
 | SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
 | Gauche's grid occupancy/collision, tile damage, intended water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions and top-down projectiles. Build a focused 2D light pass. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and full lighting pipeline. |
@@ -372,8 +442,9 @@ actually changes.
    shortcut from the conductor hat. Add a focused wall-occluded light pass so
    darkness and bright cues work in the same encounter. Validate that the
    ordinary route works, the exceptional shortcut is intentional, and
-   terrain/fixture state remains consistent after combat. This gate is a
-   complete solo spawn-to-exit run.
+   terrain/fixture state remains consistent after combat. Add a second small
+   floor and the first three-choice reward interlude so the gate includes a
+   complete solo clear-and-continue loop.
 7. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send a
    full initial level snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick
@@ -383,15 +454,24 @@ actually changes.
    across replay. Validate two processes through party spawn, gate/switch use,
    simultaneous pickup, firing/reload and ammo resupply, spawner combat,
    explosion, rail-laid terrain cut, exit transition, each death policy,
-   disconnect and rejoin to the same slot (including after a level change),
-   with added latency, jitter, packet loss, and a deliberate desync.
-8. **Expand maps and content.** Assemble prefab rooms from a solvable
-   progression graph, mixing fixed landmarks with random rooms, encounters,
-   gates, many guns, sleep meds, traps, and loot. Test many seeds for
-   reachability, useful route variety, and runs that remain viable without
-   rare wall-breaking gear. Tune combat pace, generous ammo supply, and
-   lighting around the complete run.
-9. **Stabilize and publish.** Compare captures and gameplay scenarios, run
+   per-player reward selection, disconnect and rejoin to the same slot
+   (including after a level change), with added latency, jitter, packet loss,
+   and a deliberate desync.
+8. **Build the forest world.** Assemble its four floors from a solvable
+   progression graph, mixing grassy caves, roof-light shafts, outdoor rooms,
+   dens, fixed landmarks, and random rooms. Add bats, wolves, bears, bow,
+   musket, bear traps, many guns, sleep meds, and other loot. Establish the
+   familiar/special/harder floor cadence, six-slot quick pack, passive
+   artifacts, a speed modifier tied to step interval, distinct statuses,
+   mixed three-choice rewards, and an occasional announced between-floor
+   shop. Test seeds for reachability, route variety, useful reward choices,
+   and viable runs without rare wall-breaking gear; verify multiplayer reward
+   and purchase replay, reconnect, and snapshot restore.
+9. **Extend worlds and tune.** Add fire and ice themes with distinct room
+   shapes, hazards, enemies, lighting, and status interactions. Tune combat
+   pace, generous ammo supply, shop frequency, artifact auras, and four-floor
+   world pacing around complete co-op runs.
+10. **Stabilize and publish.** Compare captures and gameplay scenarios, run
    focused deterministic checks for entity handles/grid and item rules, then
    a sanitizer build and normal desktop smoke. Document genuine differences.
    Rename the current GitHub Rust repository to `gauche-rs`, create/push the

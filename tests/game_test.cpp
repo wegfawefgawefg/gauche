@@ -73,8 +73,77 @@ bool buckler_rules() {
     const Handle pushed = spawn_entity(teammates, EntityKind::Zombie, {3, 2});
     spawn_entity(teammates, EntityKind::Player, {4, 2});
     use_held_item(teammates, teammates.players[0].slot, {3, 2});
-    return check(get_entity(teammates, pushed)->health == 40,
-                 "teammate incorrectly became a crush surface");
+    if (!check(get_entity(teammates, pushed)->health == 40,
+               "teammate incorrectly became a crush surface")) return false;
+
+    Game item_game = small_game();
+    get_entity(item_game, item_game.players[0])->inventory.slots[0] =
+        make_item(ItemKind::Buckler);
+    *item_game.stage.at({4, 2}) = {TileKind::Wall, 100, 0};
+    const Handle item = spawn_entity(item_game, EntityKind::GroundItem, {3, 2});
+    get_entity(item_game, item)->ground_item = make_item(ItemKind::Bandage);
+    use_held_item(item_game, item_game.players[0].slot, {3, 2});
+    return check(get_entity(item_game, item) == nullptr,
+                 "item shoved into a wall did not break");
+}
+
+bool artifact_rules() {
+    Game game = small_game();
+    Entity* player = get_entity(game, game.players[0]);
+    player->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::AllPiercing);
+    player->inventory.slots[0] = make_item(ItemKind::Pistol);
+    *game.stage.at({3, 2}) = {TileKind::Wall, 100, 0};
+    const Handle first = spawn_entity(game, EntityKind::Zombie, {4, 2});
+    const Handle second = spawn_entity(game, EntityKind::Zombie, {5, 2});
+    if (!check(use_held_item(game, game.players[0].slot, {6, 2}),
+               "piercing shot failed")) return false;
+    if (!check(get_entity(game, first)->health == 24 &&
+               get_entity(game, second)->health == 24 &&
+               game.stage.at({3, 2})->hp == 50,
+               "all piercing failed through wall and actors")) return false;
+    remove_entity(game, first);
+    remove_entity(game, second);
+    player->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
+    player->health = 70;
+    const Handle friend_handle = spawn_entity(game, EntityKind::Player, {2, 3});
+    get_entity(game, friend_handle)->health = 80;
+    game.players[1] = friend_handle;
+    for (int tick = 0; tick < 60; ++tick) step_game(game, {});
+    if (!check(player->health == 71 && get_entity(game, friend_handle)->health == 81,
+               "hearth did not heal nearby party members")) return false;
+    Game reflection = small_game();
+    Entity* defender = get_entity(reflection, reflection.players[0]);
+    defender->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::Reflector);
+    const Handle attacker = spawn_entity(reflection, EntityKind::Zombie, {3, 2});
+    for (std::uint64_t seed = 1; seed < 100; ++seed) {
+        Game probe;
+        probe.rng = seed;
+        if (random_u32(probe) % 4 == 0) { reflection.rng = seed; break; }
+    }
+    damage_entity(reflection, reflection.players[0].slot, 10, {3, 2});
+    return check(defender->health == 90 && get_entity(reflection, attacker)->health == 35,
+                 "reflector did not return a deterministic hit");
+}
+
+bool status_rules() {
+    Game game = small_game();
+    Entity* player = get_entity(game, game.players[0]);
+    player->inventory.slots[0] = make_item(ItemKind::SleepMeds, 2);
+    const Handle wolf = spawn_entity(game, EntityKind::Wolf, {4, 2});
+    if (!check(use_held_item(game, game.players[0].slot, {4, 2}),
+               "sleep meds failed to sedate target")) return false;
+    const Cell original = get_entity(game, wolf)->cell;
+    for (int tick = 0; tick < 60; ++tick) step_game(game, {});
+    if (!check(get_entity(game, wolf)->cell == original &&
+               get_entity(game, wolf)->sleep_ticks == 120,
+               "sleeping enemy moved or timer drifted")) return false;
+    damage_entity(game, wolf.slot, 1, player->cell);
+    if (!check(get_entity(game, wolf)->sleep_ticks == 0,
+               "damage did not wake sleeper")) return false;
+    player->burn_ticks = 60;
+    const int health = player->health;
+    for (int tick = 0; tick < 30; ++tick) step_game(game, {});
+    return check(player->health <= health - 4, "burn did not deal periodic damage");
 }
 
 bool track_before_train() {
@@ -128,6 +197,7 @@ bool forest_progression() {
 
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
+        !artifact_rules() || !status_rules() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

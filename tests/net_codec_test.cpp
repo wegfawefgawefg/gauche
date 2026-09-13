@@ -6,6 +6,13 @@ int main() {
     Game original;
     start_run(original, 22991);
     for (int tick = 0; tick < 120; ++tick) step_game(original, {});
+    if (Entity* player = get_entity(original, original.players[0])) {
+        player->burn_ticks = 17;
+        player->freeze_ticks = 23;
+        player->sleep_ticks = 31;
+        player->stun_ticks = 3;
+        player->artifacts = 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
+    }
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

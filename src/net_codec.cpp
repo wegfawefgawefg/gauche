@@ -85,7 +85,7 @@ void write_item(PacketWriter& writer, const Item& item) {
 Item read_item(PacketReader& reader) {
     Item item;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(ItemKind::Bomb)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(ItemKind::SleepMeds)) reader.okay = false;
     item.kind = static_cast<ItemKind>(kind);
     item.count = reader.i32(); item.cooldown = reader.i32(); item.loaded = reader.i32();
     item.spare = reader.i32(); item.durability = reader.i32();
@@ -104,6 +104,8 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.move_wait); writer.i32(entity.move_interval);
     writer.i32(entity.attack_wait); writer.i32(entity.attack_interval);
     writer.i32(entity.use_flash); writer.i32(entity.block_ticks);
+    writer.i32(entity.burn_ticks); writer.i32(entity.freeze_ticks);
+    writer.i32(entity.sleep_ticks); writer.i32(entity.stun_ticks);
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
     write_cell(writer, entity.train_origin);
@@ -131,6 +133,8 @@ Entity read_entity(PacketReader& reader) {
     entity.move_wait = reader.i32(); entity.move_interval = reader.i32();
     entity.attack_wait = reader.i32(); entity.attack_interval = reader.i32();
     entity.use_flash = reader.i32(); entity.block_ticks = reader.i32();
+    entity.burn_ticks = reader.i32(); entity.freeze_ticks = reader.i32();
+    entity.sleep_ticks = reader.i32(); entity.stun_ticks = reader.i32();
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
     entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
     entity.train_origin = read_cell(reader);
@@ -145,7 +149,9 @@ Entity read_entity(PacketReader& reader) {
     entity.ground_item = read_item(reader);
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
         entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||
-        entity.spawn_wait < 0 || entity.owner >= 4) reader.okay = false;
+        entity.spawn_wait < 0 || entity.owner >= 4 || entity.burn_ticks < 0 ||
+        entity.freeze_ticks < 0 || entity.sleep_ticks < 0 || entity.stun_ticks < 0)
+        reader.okay = false;
     return entity;
 }
 
@@ -153,7 +159,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(1);
+    writer.u32(2);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -190,7 +196,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 1) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 2) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -236,14 +242,14 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             reward.item = static_cast<ItemKind>(reader.u8());
             reward.artifact = static_cast<ArtifactKind>(reader.u8());
             reward.amount = reader.i32();
-            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Bomb ||
+            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::SleepMeds ||
                 reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
                 reader.okay = false;
         }
     }
     for (ItemKind& item : run.shop_stock) {
         item = static_cast<ItemKind>(reader.u8());
-        if (item > ItemKind::Bomb) reader.okay = false;
+        if (item > ItemKind::SleepMeds) reader.okay = false;
     }
     for (Entity& entity : result.entities) entity = read_entity(reader);
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }

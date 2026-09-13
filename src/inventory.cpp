@@ -32,6 +32,7 @@ Sprite item_sprite(ItemKind kind) {
     case ItemKind::RocketLauncher: return Sprite::RocketLauncher;
     case ItemKind::Ammo: return Sprite::Ammo;
     case ItemKind::Bomb: return Sprite::Bomb;
+    case ItemKind::SleepMeds: return Sprite::SleepMeds;
     default: return Sprite::Fist;
     }
 }
@@ -52,6 +53,7 @@ const char* item_name(ItemKind kind) {
     case ItemKind::RocketLauncher: return "Rocket Launcher";
     case ItemKind::Ammo: return "Ammo";
     case ItemKind::Bomb: return "Bomb";
+    case ItemKind::SleepMeds: return "Sleep Meds";
     }
     return "Unknown";
 }
@@ -60,7 +62,8 @@ bool insert_item(Inventory& inventory, Item item) {
     if (item.kind == ItemKind::None || item.count <= 0) return false;
     const Inventory original = inventory;
     const bool stackable = item.kind == ItemKind::Wall || item.kind == ItemKind::Medkit ||
-        item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid || item.kind == ItemKind::Bomb;
+        item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid ||
+        item.kind == ItemKind::Bomb || item.kind == ItemKind::SleepMeds;
     const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
     if (stackable) {
         for (Item& slot : inventory.slots) {

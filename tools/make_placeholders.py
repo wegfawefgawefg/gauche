@@ -166,3 +166,10 @@ creature("ember", "#c85c35", "#ffe3a5",
          (((3, 6), (5, 0), (8, 5)), ((8, 5), (12, 1), (13, 8))))
 creature("frost_bat", "#8bbbd3", "#e6f2f2",
          (((0, 5), (2, 2), (6, 7)), ((10, 7), (14, 2), (15, 5))))
+
+image, draw = canvas()
+draw.rectangle((3, 3, 12, 13), fill="#b6c5aa", outline=INK)
+draw.rectangle((4, 2, 11, 4), fill="#6e8e68", outline=INK)
+draw.ellipse((6, 7, 9, 10), fill="#5b7890")
+draw.point((7, 8), fill="#dce8da")
+save("sleep_meds", image)

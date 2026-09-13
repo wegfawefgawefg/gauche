@@ -46,6 +46,8 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
 bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     if (item.loaded <= 0) return false;
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
+    const bool piercing = has_artifact(user, ArtifactKind::AllPiercing) &&
+                          item.kind != ItemKind::RocketLauncher;
     const int range = item.kind == ItemKind::Pistol ? 9 : 14;
     const int damage = item.kind == ItemKind::Pistol ? 16 :
                        (item.kind == ItemKind::RocketLauncher ? 80 : 35);
@@ -56,14 +58,21 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         if (tile == nullptr) break;
         if (!walkable(tile->kind)) {
             if (item.kind == ItemKind::RocketLauncher) blast(game, cell, 2, damage, user.cell);
-            else if (item.kind == ItemKind::Musket) damage_tile(game.stage, cell, 25);
-            break;
+            else if (item.kind == ItemKind::Musket || piercing)
+                damage_tile(game.stage, cell, piercing ? 50 : 25);
+            if (!piercing) break;
         }
         const int target = entity_at(game, cell, true);
         if (target >= 0 && target != user_slot) {
             if (item.kind == ItemKind::RocketLauncher) blast(game, cell, 2, damage, user.cell);
-            else damage_entity(game, target, damage, user.cell);
-            break;
+            else {
+                const int prior_health = game.entities[static_cast<std::size_t>(target)].health;
+                damage_entity(game, target, damage, user.cell);
+                if (user.kind == EntityKind::Ember &&
+                    game.entities[static_cast<std::size_t>(target)].health < prior_health)
+                    game.entities[static_cast<std::size_t>(target)].burn_ticks = 120;
+            }
+            if (!piercing) break;
         }
         if (step == range - 1 && item.kind == ItemKind::RocketLauncher)
             blast(game, cell, 2, damage, user.cell);
@@ -77,7 +86,16 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
 
 bool shove(Game& game, int user_slot, Cell direction) {
     const Cell front = game.entities[static_cast<std::size_t>(user_slot)].cell + direction;
-    const int target_slot = entity_at(game, front, true);
+    int target_slot = entity_at(game, front, true);
+    if (target_slot < 0) {
+        for (int slot = 0; slot < max_entities; ++slot) {
+            const Entity& candidate = game.entities[static_cast<std::size_t>(slot)];
+            if (candidate.kind == EntityKind::GroundItem && candidate.cell == front) {
+                target_slot = slot;
+                break;
+            }
+        }
+    }
     if (target_slot < 0 || target_slot == user_slot) return false;
     Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
     if (target.kind == EntityKind::Train) return false;
@@ -88,17 +106,57 @@ bool shove(Game& game, int user_slot, Cell direction) {
     const bool hard_actor = blocker_slot >= 0 &&
         game.entities[static_cast<std::size_t>(blocker_slot)].hard_blocker;
     if (hard_tile || hard_actor) {
-        target.health = 0;
+        if (target.kind == EntityKind::GroundItem)
+            remove_entity(game, {target_slot, target.generation});
+        else crush_entity(game, target_slot, game.entities[static_cast<std::size_t>(user_slot)].cell);
         return true;
     }
     // Ordinary teammates and loose items do not turn a shove into a crush.
     if (blocker_slot >= 0) return false;
+    if (target.kind == EntityKind::GroundItem) {
+        for (const Entity& other : game.entities)
+            if (&other != &target && other.kind == EntityKind::GroundItem &&
+                other.cell == destination) return false;
+    }
     target.cell = destination;
     target.move_wait = target.move_interval;
     return true;
 }
 
 } // namespace
+
+namespace {
+
+void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
+    Entity& entity = game.entities[static_cast<std::size_t>(slot)];
+    if (entity.health <= 0 || damage <= 0) return;
+    entity.health = std::max(0, entity.health - damage);
+    entity.use_flash = 6;
+    entity.sleep_ticks = 0;
+    if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
+    if (entity.health == 0 && entity.kind == EntityKind::Player) {
+        entity.impassable = false;
+        entity.sprite = Sprite::PlayerDead;
+        entity.spawn_wait = 180;
+    }
+    if (entity.health == 0 && entity.kind != EntityKind::Player &&
+        entity.kind != EntityKind::Chicken && entity.kind != EntityKind::Bunny &&
+        entity.kind != EntityKind::Train) {
+        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
+            const Entity* player = get_entity(game, game.players[owner]);
+            if (player != nullptr && player->cell == attacker) {
+                game.run.coins[owner] += 5;
+                break;
+            }
+        }
+    }
+}
+
+} // namespace
+
+void crush_entity(Game& game, int slot, Cell attacker) {
+    apply_health_damage(game, slot, 1000000, attacker);
+}
 
 void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
@@ -113,22 +171,12 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
         if (held->durability <= 0) *held = {};
         return;
     }
-    entity.health = std::max(0, entity.health - damage);
-    entity.use_flash = 6;
-    if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
-    if (entity.health == 0 && entity.kind == EntityKind::Player) {
-        entity.impassable = false;
-        entity.sprite = Sprite::PlayerDead;
-        entity.spawn_wait = 180;
-    }
-    if (entity.health == 0 && entity.kind == EntityKind::Zombie) {
-        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-            const Entity* player = get_entity(game, game.players[owner]);
-            if (player != nullptr && player->cell == attacker) {
-                game.run.coins[owner] += 5;
-                break;
-            }
-        }
+    apply_health_damage(game, slot, damage, attacker);
+    if (entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
+        random_u32(game) % 4 == 0) {
+        const int reflected = entity_at(game, attacker, true);
+        if (reflected >= 0 && reflected != slot)
+            apply_health_damage(game, reflected, std::max(1, damage / 2), entity.cell);
     }
 }
 
@@ -197,6 +245,17 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             cooldown = 45;
         }
         break;
+    case ItemKind::SleepMeds:
+        if (range <= 3) {
+            const int victim = entity_at(game, target, true);
+            if (victim >= 0 && victim != user_slot) {
+                Entity& sleeper = game.entities[static_cast<std::size_t>(victim)];
+                sleeper.sleep_ticks = std::max(sleeper.sleep_ticks, 180);
+                used = consumed = true;
+                cooldown = 30;
+            }
+        }
+        break;
     case ItemKind::Ammo:
         for (Item& weapon : user.inventory.slots) {
             if (is_gun(weapon.kind)) {
@@ -220,6 +279,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         case ItemKind::ConductorHat:
             emit_sound(game, SoundId::DistantTrainSound, user.cell); break;
         case ItemKind::Buckler: emit_sound(game, SoundId::HitBlock1, user.cell); break;
+        case ItemKind::SleepMeds: emit_sound(game, SoundId::ClothRip, target); break;
         default: break;
         }
         if (consumed && --item.count <= 0) item = {};

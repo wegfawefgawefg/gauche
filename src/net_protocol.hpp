@@ -12,8 +12,8 @@ enum class WireKind : std::uint8_t {
 };
 
 constexpr std::uint32_t wire_magic = 0x47415543U;
-constexpr std::uint16_t wire_version = 1;
-constexpr std::uint64_t gameplay_version = 0x20260913A1ULL;
+constexpr std::uint16_t wire_version = 2;
+constexpr std::uint64_t gameplay_version = 0x20260913A2ULL;
 
 PacketWriter begin_packet(WireKind kind);
 bool read_packet_header(PacketReader& reader, WireKind& kind);

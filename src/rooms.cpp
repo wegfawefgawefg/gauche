@@ -137,9 +137,9 @@ void generate_world_floor(Game& game) {
         }
     }
 
-    constexpr std::array<ItemKind, 7> loot{
+    constexpr std::array<ItemKind, 8> loot{
         ItemKind::Bandage, ItemKind::Bandaid, ItemKind::Buckler, ItemKind::Pistol,
-        ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo};
+        ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo, ItemKind::SleepMeds};
     for (int column = 1; column < columns - 1; ++column) {
         const int x = column * room_width + 5;
         const int world = (game.run.floor - 1) / 4;

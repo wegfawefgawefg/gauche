@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 
@@ -50,7 +51,14 @@ void bite(Game& game, int slot, int damage, int range = 1) {
     enemy.facing = std::abs(delta.x) > std::abs(delta.y) ?
                    Cell{delta.x > 0 ? 1 : -1, 0} :
                    Cell{0, delta.y > 0 ? 1 : -1};
+    const int prior_health = target.health;
     damage_entity(game, target_slot, damage, enemy.cell);
+    if (target.health < prior_health && target.health > 0) {
+        if (enemy.kind == EntityKind::FrostBat)
+            target.freeze_ticks = std::max(target.freeze_ticks, 90);
+        if (enemy.kind == EntityKind::Bear)
+            target.stun_ticks = std::max(target.stun_ticks, 20);
+    }
     enemy.attack_wait = enemy.attack_interval;
     emit_sound(game, SoundId::ZombieScratch1, enemy.cell);
 }
@@ -79,6 +87,7 @@ void step_hunter(Game& game, int slot) {
 
 void step_ember(Game& game, int slot) {
     Entity& ember = game.entities[static_cast<std::size_t>(slot)];
+    if (ember.inventory.held()->loaded == 0) reload_held_item(game, slot);
     const int target_slot = nearest_player(game, ember.cell, 8);
     if (target_slot < 0) { wander(game, slot); return; }
     const Entity& target = game.entities[static_cast<std::size_t>(target_slot)];

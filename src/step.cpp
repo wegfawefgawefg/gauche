@@ -69,7 +69,8 @@ void step_rail_layer(Game& game, int slot) {
     const Cell origin{game.stage.width - 1, rail.cell.y};
     for (Entity& entity : game.entities) {
         if (entity.kind != EntityKind::None && entity.kind != EntityKind::RailLayer &&
-            entity.cell == origin) entity.health = 0;
+            entity.cell == origin)
+            crush_entity(game, static_cast<int>(&entity - game.entities.data()), origin);
     }
     const Handle train = spawn_entity(game, EntityKind::Train, origin);
     if (Entity* head = get_entity(game, train)) {
@@ -149,10 +150,20 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     if (game.run.phase == RunPhase::Won) return;
     for (Entity& entity : game.entities) {
         if (entity.kind == EntityKind::None) continue;
-        entity.move_wait = std::max(0, entity.move_wait - 1);
+        if (entity.freeze_ticks == 0 || game.tick % 2 == 0)
+            entity.move_wait = std::max(0, entity.move_wait - 1);
         entity.attack_wait = std::max(0, entity.attack_wait - 1);
         entity.block_ticks = std::max(0, entity.block_ticks - 1);
         entity.use_flash = std::max(0, entity.use_flash - 1);
+        if (entity.burn_ticks > 0) {
+            --entity.burn_ticks;
+            if (game.tick % 30 == 0)
+                damage_entity(game, static_cast<int>(&entity - game.entities.data()), 4,
+                              entity.cell + Cell{0, 1});
+        }
+        entity.freeze_ticks = std::max(0, entity.freeze_ticks - 1);
+        entity.sleep_ticks = std::max(0, entity.sleep_ticks - 1);
+        entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
         const Tile* ground = game.stage.at(entity.cell);
         if (ground != nullptr && ground->kind == TileKind::Lava &&
             entity.kind != EntityKind::Ember && game.tick % 30 == 0)
@@ -173,14 +184,30 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
         const Handle handle = game.players[owner];
         Entity* player = get_entity(game, handle);
-        if (player != nullptr && player->health > 0) step_player(game, handle.slot, inputs[owner]);
+        if (player != nullptr && player->health > 0 &&
+            player->sleep_ticks == 0 && player->stun_ticks == 0)
+            step_player(game, handle.slot, inputs[owner]);
+    }
+    if (game.tick % 60 == 0) {
+        for (Handle source_handle : game.players) {
+            const Entity* source = get_entity(game, source_handle);
+            if (source == nullptr || source->health <= 0 ||
+                !has_artifact(*source, ArtifactKind::Hearth)) continue;
+            for (Handle target_handle : game.players) {
+                Entity* target = get_entity(game, target_handle);
+                if (target != nullptr && target->health > 0 &&
+                    distance(source->cell, target->cell) <= 4)
+                    target->health = std::min(target->max_health, target->health + 1);
+            }
+        }
     }
     if (game.run.phase == RunPhase::Reward) return;
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& entity = game.entities[static_cast<std::size_t>(slot)];
         if (entity.birth_tick == game.tick ||
             (entity.health == 0 && entity.kind != EntityKind::RailLayer &&
-             entity.kind != EntityKind::GroundItem)) continue;
+             entity.kind != EntityKind::GroundItem) ||
+            entity.sleep_ticks > 0 || entity.stun_ticks > 0) continue;
         switch (entity.kind) {
         case EntityKind::Zombie: case EntityKind::Chicken: case EntityKind::Bat:
         case EntityKind::Wolf: case EntityKind::Bear: case EntityKind::Bunny:
@@ -258,6 +285,10 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.attack_wait));
         mix(hash, static_cast<std::uint64_t>(entity.attack_interval));
         mix(hash, static_cast<std::uint64_t>(entity.block_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.burn_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.freeze_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.sleep_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.stun_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.train_cars_left));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.x));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.y));

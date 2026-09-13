@@ -47,7 +47,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage);
 
 enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
-    Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb,
+    Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
 };
 
 struct Item {
@@ -91,6 +91,10 @@ struct Entity {
     int attack_interval = 0;
     int use_flash = 0;
     int block_ticks = 0;
+    int burn_ticks = 0;
+    int freeze_ticks = 0;
+    int sleep_ticks = 0;
+    int stun_ticks = 0;
     int script_tick = 0;
     std::uint32_t artifacts = 0;
     int train_cars_left = 0;
@@ -128,6 +132,9 @@ enum class RunPhase : std::uint8_t { Arena, Playing, Reward, Shop, Won };
 enum class DeathPolicy : std::uint8_t { NoRespawn, Entrance, NextFloor };
 enum class RewardKind : std::uint8_t { Item, Artifact, Health, Speed };
 enum class ArtifactKind : std::uint8_t { None, AllPiercing, Reflector, Hearth, FleetFeet };
+constexpr bool has_artifact(const Entity& entity, ArtifactKind kind) {
+    return (entity.artifacts & (1U << static_cast<unsigned int>(kind))) != 0;
+}
 struct Reward {
     RewardKind kind = RewardKind::Item;
     ItemKind item = ItemKind::None;
@@ -173,6 +180,7 @@ void remove_entity(Game& game, Handle handle);
 int entity_at(const Game& game, Cell cell, bool impassable_only = false);
 bool move_entity(Game& game, int slot, Cell destination);
 void damage_entity(Game& game, int slot, int damage, Cell attacker);
+void crush_entity(Game& game, int slot, Cell attacker);
 bool use_held_item(Game& game, int user_slot, Cell target);
 bool reload_held_item(Game& game, int user_slot);
 void start_test_arena(Game& game, std::uint64_t seed);

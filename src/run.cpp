@@ -10,12 +10,14 @@ namespace {
 
 Reward random_reward(Game& game, int category) {
     if (category == 0) {
-        constexpr std::array<ItemKind, 7> items{
+        constexpr std::array<ItemKind, 8> items{
             ItemKind::Pistol, ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
-            ItemKind::Bomb, ItemKind::Medkit, ItemKind::RocketLauncher};
+            ItemKind::Bomb, ItemKind::Medkit, ItemKind::RocketLauncher,
+            ItemKind::SleepMeds};
         const ItemKind kind = items[random_u32(game) % items.size()];
         return {RewardKind::Item, kind, ArtifactKind::None,
-                kind == ItemKind::Bomb ? 3 : (kind == ItemKind::Medkit ? 2 : 1)};
+                kind == ItemKind::Bomb ? 3 :
+                (kind == ItemKind::Medkit || kind == ItemKind::SleepMeds ? 2 : 1)};
     }
     if (category == 1) {
         constexpr std::array<ArtifactKind, 4> artifacts{
@@ -125,7 +127,11 @@ void choose_reward(Game& game, int owner, int choice) {
         if (!insert_item(player->inventory, make_item(reward.item, reward.amount))) return;
         break;
     case RewardKind::Artifact:
-        player->artifacts |= 1U << static_cast<unsigned int>(reward.artifact);
+        if (!has_artifact(*player, reward.artifact)) {
+            player->artifacts |= 1U << static_cast<unsigned int>(reward.artifact);
+            if (reward.artifact == ArtifactKind::FleetFeet)
+                player->move_interval = std::max(3, player->move_interval - 2);
+        }
         break;
     case RewardKind::Health:
         player->max_health += reward.amount;

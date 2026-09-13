@@ -245,6 +245,7 @@ int main(int argc, char** argv) {
                 play_song(audio, 1);
             }
         }
+        gubsy_update_device_state(host);
         if (menu_smoke) {
             menu_input.select = frames == 1 || frames == 3;
             menu_input.down = frames == 2;
@@ -297,7 +298,7 @@ int main(int argc, char** argv) {
                 std::array<Input, 4> inputs{};
                 if (!smoke && menu.playing && !menu.visible)
                     inputs[static_cast<std::size_t>(owner)] =
-                    read_local_input(active, gubsy_get_frame(host), owner);
+                    read_local_input(host, active, gubsy_get_frame(host), owner);
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);
                 const Entity* listener = get_entity(active,

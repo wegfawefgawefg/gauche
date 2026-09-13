@@ -1,4 +1,5 @@
 #include "menu_shell.hpp"
+#include "input.hpp"
 
 #include <gubsy/lobby/config.hpp>
 
@@ -164,6 +165,7 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     menu.network = &network;
     menu.death_policy = policy;
     menu.identity_path = identity_path;
+    register_game_bindings(runtime);
     GubsyMainMenuCommands main_commands;
     main_commands.start_game = gubsy_register_menu_command(runtime, start_game, &menu);
     main_commands.quit = gubsy_register_menu_command(runtime, quit_game, &menu);

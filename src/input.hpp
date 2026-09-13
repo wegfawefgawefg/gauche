@@ -3,4 +3,6 @@
 #include "game.hpp"
 #include <gubsy/runtime.hpp>
 
-Input read_local_input(const Game& game, const GubsyFrame& frame, int owner);
+void register_game_bindings(GubsyRuntime& runtime);
+Input read_local_input(GubsyRuntime& runtime, const Game& game,
+                       const GubsyFrame& frame, int owner);

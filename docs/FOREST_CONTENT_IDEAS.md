@@ -21,6 +21,13 @@ sidestep, conditional backstab, or first-hit evasion over hidden passive dodge
 and crit rolls. A specific crit weapon can still have a documented chance,
 using the saved gameplay RNG.
 
+The buckler's base use is a facing block or one-tile shove. If the shove drives
+an actor into a solid wall, that actor is crushed instantly, including a
+player or teammate. An item shoved into a wall breaks. This is a strong
+spatial weapon: facing, telegraph, and recovery time balance it, rather than a
+small damage roll. The exact result when a moving actor hits a teammate or
+loose item is the one collision rule still to settle.
+
 Let enemies outscale the party through combinations and situations: more
 aggressive mixes, dens, tight rooms, and new tells. Merely multiplying wolf HP
 each floor would make the many weapon effects matter less.
@@ -91,7 +98,7 @@ or separately to several carried weapons. There is no shared ammo reserve.
 | Hatchet | Slow cleave that also cuts roots and wooden barricades |
 | Spear | Hits one tile farther, but awkward when surrounded |
 | Pickaxe | Cracks stone shortcuts and armored shells; slower melee |
-| Buckler | Active facing block or push; a real hotbar choice |
+| Buckler | Active facing block or shove; wall collision squishes the pushed actor |
 | Bow | Quiet aimed shot, own arrow count, longer nock time |
 | Sling | Cheap fast projectile, weak against armor, can wake or lure enemies |
 | Crossbow | Strong line shot with a slow reload |
@@ -128,7 +135,7 @@ and swapping the item should carry its modifier with it.
 | Piercing | Shot continues through one target or ignores a plated trait |
 | Ricochet | First wall hit redirects a projectile once |
 | Rooting | Hit briefly prevents movement, not attacks |
-| Rebounding | Shield block pushes the attacker back one tile |
+| Rebounding | Shield block automatically shoves the attacker back one tile |
 | Quickdraw | First shot after switching weapons fires sooner |
 | Miserly | Every few hits return one round to that weapon's spare count |
 | Long haft | One extra melee tile, with a slower swing |
@@ -165,6 +172,9 @@ common artifacts can recur if their behavior remains legible. Candidates:
 | Hunter's Knot | Shots against sleeping enemies pierce the first target |
 | Iron Oath | While holding a shield, adjacent allies take less ordinary damage |
 | Ashen Pouch | First bomb in each floor ignites the blast area |
+| All Piercing | Every direct weapon attack passes through actors in its line or arc, until ordinary solid terrain stops it |
+| Mirror Carapace | A visible chance to reflect a direct hit back at its source; reflected hits cannot reflect again |
+| Iron Domino | Buckler shove pushes two tiles, making wall crushes easier but riskier near friends |
 
 Three-choice rewards need not always have one of each category. Mix an
 immediate rescue with a long-term build choice and a weapon upgrade. Example
@@ -182,6 +192,9 @@ gain one quick slot (cap it), improve a held weapon's magazine, or cleanse a
 status and gain temporary protection. A heal-now pick should be appealing when
 the party barely survived, even though an artifact lasts longer. Reject an
 offer whose required item or condition the player cannot reasonably use.
+All Piercing and Mirror Carapace are rare rule-breakers; their effects should
+be obvious when they trigger, and their chances and collision order must live
+in deterministic gameplay state.
 
 ## Enemies, hazards, and floor pacing
 

@@ -129,6 +129,14 @@ without changing actor movement into continuous physics. Pickaxes, bombs, and
 barricades should act on the same tile/passability rules as doors and walls.
 Strong tools should change routes and create memorable consequences.
 
+Make the buckler an active facing block with a short shove. A forced actor that
+hits a solid wall is crushed instantly, whether enemy or player; a pushed item
+breaks against the wall. This is a deliberate positioning rule, so telegraph
+push direction and give the action a recovery cost rather than softening the
+wall impact into ordinary damage. Specify collisions with a teammate or loose
+item separately before implementation; they can be part of the same lethal
+rule, but the exact survivor/breakage outcome is still open.
+
 The conductor hat already demonstrates that in Rust: using it spawns a rail
 layer, which travels across the row and replaces each in-bounds tile with rail
 regardless of normal tile collision or breakability. Only after the track is
@@ -177,6 +185,12 @@ Speed bonuses shorten the integer number of ticks between tile steps, with a
 floor that preserves readable movement. Most artifacts should change a
 specific rule instead: for example, an aura that helps friends within a
 grid-distance radius, an effect on reload, or a response to taking damage.
+Rare artifacts can break a whole rule instead of merely adding a percentage:
+"All Piercing" can let every direct attack pass through actors along its line
+or arc, while a mirror artifact can sometimes reflect a direct hit. Keep
+solid-wall interaction separate from actor piercing so terrain tools remain
+distinct. Reflection rolls use saved gameplay RNG and cannot reflect a
+reflection forever; show the proc clearly in graphics and sound.
 Aura membership and stacking order must be deterministic. Give sleep, stun,
 frozen, and burning distinct, readable effects and integer-tick durations;
 specify wake-up, movement/action limits, and damage timing before adding each
@@ -470,15 +484,16 @@ actually changes.
    UI while preserving the game's visual identity. Omit the unused shader.
 6. **Build one real run.** Make an authored level with a party spawn,
    exit, one key/door or switch dependency, guarded room, enemy spawner, loot,
-   first firearm/projectile with magazine and ammo pickups, explosive or trap,
-   a tile-blocking barricade or tile-opening tool, and the existing rail-laying
-   shortcut from the conductor hat. Add a focused wall-occluded light pass so
-   darkness and bright cues work in the same encounter. Validate that the
-   ordinary route works, the exceptional shortcut is intentional, and
-   terrain/fixture state remains consistent after combat. Add a second small
-   floor and the first three-choice reward interlude so the gate includes a
-   complete solo clear-and-continue loop. Test at least two different stage
-   dimensions rather than baking the Rust TestArena size into gameplay.
+   first firearm/projectile with magazine and ammo pickups, buckler block/shove
+   and wall crush, explosive or trap, a tile-blocking barricade or tile-opening
+   tool, and the existing rail-laying shortcut from the conductor hat. Add a
+   focused wall-occluded light pass so darkness and bright cues work in the
+   same encounter. Validate that the ordinary route works, the shortcut is
+   intentional, and terrain/fixture state remains consistent after combat.
+   Add a second small floor and the first three-choice reward interlude so the
+   gate includes a complete solo clear-and-continue loop. Test at least two
+   different stage dimensions rather than baking the Rust TestArena size into
+   gameplay.
 7. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send a
    full initial level snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick
@@ -487,10 +502,10 @@ actually changes.
    needed. Keep audio/cosmetic events out of the hash and deduplicate them
    across replay. Validate two processes through party spawn, gate/switch use,
    simultaneous pickup, firing/reload and ammo resupply, spawner combat,
-   explosion, rail-laid terrain cut, exit transition, each death policy,
-   per-player reward selection, disconnect and rejoin to the same slot
-   (including after a level change), with added latency, jitter, packet loss,
-   and a deliberate desync.
+   buckler wall crush (including a player), explosion, rail-laid terrain cut,
+   exit transition, each death policy, per-player reward selection, disconnect
+   and rejoin to the same slot (including after a level change), with added
+   latency, jitter, packet loss, and a deliberate desync.
 8. **Build the forest world.** Assemble its four floors from a solvable
    progression graph, mixing grassy caves, roof-light shafts, outdoor rooms,
    dens, fixed landmarks, and random rooms. Add bats, wolves, bears, bow,

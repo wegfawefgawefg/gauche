@@ -15,8 +15,9 @@ types, free functions, a visible loop in `main`, direct mode switches, and
 focused files. Use `splonks-cpp` as the implementation reference for the
 Gubsy-owned window/render target, input bindings, asset lifetime, audio,
 fixed-step simulation, menu/settings shell, and useful lobby/transport hooks.
-Copy the useful mechanisms, not its Spelunky-specific gameplay, lockstep/
-rollback model, theme, or large debug infrastructure. Gauche's in-game HUD
+Adapt its rollback mechanisms to Gauche's smaller state, leaving its
+Spelunky-specific gameplay, network content protocol, theme, and large debug
+infrastructure. Gauche's in-game HUD
 remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 
 ## Source baseline and current limits
@@ -55,20 +56,20 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 | Part | C++ ownership and source reference |
 | --- | --- |
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, simplified to Gauche's smaller game and co-op needs. |
-| `state`, `stage`, `entity`, `inventory`, `item`, `particle` | Plain Gauche data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A contiguous 64x64 tile array is simpler than Rust's nested vectors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. |
-| `inputs`, `step` | Gubsy actions and live mouse coordinates feed one explicit input snapshot per tick. At 60 Hz, process player movement and items, AI, tiles, particles, cleanup, then state transitions. Keep simulation RNG seeded and separate from cosmetic randomness. |
+| `state`, `stage`, `entity`, `inventory`, `item`, `particle` | Plain Gauche data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A contiguous 64x64 tile array is simpler than Rust's nested vectors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Store gameplay grid positions and timers as integers; use fixed point only for fractional values that affect rules. |
+| `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, tiles, cleanup, then state transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
 | `graphics`, `render`, `render_ui` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
 | `audio`, menus | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets without importing the Splonks theme. |
-| `network` | Add a small co-op layer around Gauche's 60 Hz world: one host runs AI, tile changes, items, trains, and random choices; clients send player input and receive authoritative state/events. Use Gubsy host/join UI and suitable transport hooks, but keep Gauche's synchronization code separate from the game rules. |
+| `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, and snapshot resync. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
 
 ## What to take from Splonks, and what to leave there
 
 | Reuse or adapt | Omit from Gauche |
 | --- | --- |
 | Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. | Splonks stage/biome generation, room templates, quests, shops, progression and content databases. Gauche has one generated TestArena. |
-| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt transport/session hooks if they fit Gauche's host-authoritative model. | Splonks' game-specific lobby policies, lockstep prediction/rollback, replay/desync machinery, mod hosting, theme, and broad debug UI. |
+| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's much smaller state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
 | SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
-| Gauche's grid occupancy/collision, tile damage, water sprite flip, and small particle update rules. | Splonks rigid/platformer physics, gravity, fixed-point world math, contact solver, fluid/water/lava simulation, and dynamic lighting. |
+| Gauche's grid occupancy/collision, tile damage, water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and dynamic lighting. |
 | Gauche's 53 OGG files with music, effects and cooldowns; adapt Splonks' small stereo-pan calculation for positioned world sounds. | Splonks' full audio emitter graph, reverb, low-pass filters, and other acoustic processing unless a specific Gauche sound later needs them. |
 
 The omission boundary is about game behavior, not a ban on ordinary velocity
@@ -77,15 +78,25 @@ still need their original small particle motions. Gauche's distance fade and
 dark palette also remain, but do not require Splonks' lighting or post-process
 systems. The Rust shader is loaded but never used and its file is missing.
 
-For co-op, host authority is the starting design because Gauche's scattered
-random calls and render-time cosmetic randomness make deterministic peer
-lockstep an unnecessary prerequisite. The host sends an initial world snapshot
-and later tick-stamped state changes; each player sends actions for their own
-avatar. Clients play audio locally from positioned game events. The grid and
-small entity set simplify this relative to Splonks, but joining, ownership,
-item contention, deaths, disconnects, and latency still need explicit rules.
-The initial game mode is shared-world cooperative survival; preserve the
-single-player path as one local player in the same world model.
+For co-op, the host arbitrates input frames and session events. Each peer
+simulates the same deterministic gameplay tick; clients immediately predict
+local and missing remote input, then restore a recent snapshot and replay when
+the host's confirmed inputs differ. Compare hashes only for confirmed frames,
+and request a host snapshot if a real desync or a late input exceeds the
+rollback window. Tune input delay and rollback history for measured latency;
+rollback cannot hide unlimited round-trip time.
+
+This requires one explicit gameplay RNG state saved in snapshots, stable
+entity/tile iteration order, integer/fixed-point rule math, and no dependence
+on wall-clock time or graphics state during gameplay steps. The Rust Perlin
+arena can be generated once by the host and sent as the initial tile map, so
+cross-platform floating-point noise does not have to match. Blood, clouds,
+shake, audio and other presentation effects use separate local randomness and
+stable tick/event IDs to avoid replaying a sound twice after rollback. The
+grid and small entity set simplify this relative to Splonks, but joining,
+ownership, item contention, deaths, disconnects, and latency still need
+explicit rules. The initial mode is shared-world co-op; single-player is one
+local player in the same world model.
 
 The roughly 7,000 lines of Rust are a behavior map, not a file-for-file
 translation template. In particular, `step.rs` temporarily swaps an inventory
@@ -103,33 +114,40 @@ actually changes.
    reference and record the limitation.
 2. **Bootstrap the host.** Add CMake/C++20, SDL3 and Gubsy at a pinned revision,
    a simple run path, and the owned window/render-target loop. Port PNG/OGG
-   files, make small sprite/sound lookup tables, render the Gauche title, and make a
-   finite headless smoke/capture command. This gate is a clean build and a
-   captured title frame.
+   files, make small sprite/sound lookup tables, render the Gauche title, and
+   make a finite headless smoke/capture command. This gate is a clean build
+   and a captured title frame.
 3. **Port the world and player.** Implement state, versioned entities, tile
-   grid, seeded TestArena generation, fixed ticks, camera/coordinate conversion,
-   player movement, wall collision, and game-over restart. Track player identity
-   separately from avatar handles, even while only one player is present. This
-   gate is a repeatable generated arena with movement and correct click targets
-   after resize/fullscreen.
+   grid, seeded TestArena generation, deterministic fixed ticks, camera and
+   coordinate conversion, player movement, wall collision, and game-over
+   restart. Track player identity
+   separately from avatar handles, even while only one player is present. Use
+   integer tile coordinates and tick counters, and fixed point for remaining
+   fractional gameplay values. Keep `StepGameplay` independent of rendering
+   and audio, with an explicit RNG and input frame. This gate is a repeatable
+   arena whose gameplay hash matches after replaying the same inputs, plus
+   correct click targets after resize/fullscreen.
 4. **Port interactions and AI.** Bring over inventory selection/stacking,
    item use and pickup/drop, health/damage, destructible tiles, zombie and
    chicken behavior, rail layers and trains. Validate each against the Rust
    rules; make entity removal safe and grid membership consistent.
 5. **Match presentation and sound.** Recreate Gauche's world draw order,
-   distance fade, particles/weather, shakes, camera, cursor, range indicators, inventory,
+   distance fade, particles/weather, shakes, camera, cursor, range indicators,
+   inventory,
    item details, health bars, sound cues and music. Add stereo panning for
    positioned events while keeping Gauche's existing distance falloff and
    centered UI/music. Reuse Gubsy menus/settings as host UI while preserving
    the game's visual identity. Resolve the shader gap only if its effect is
    visible in the reference.
-6. **Add co-op.** Wire Gubsy host/join to a Gauche session. Run one authoritative
-   simulation on the host; send per-player inputs and an initial snapshot plus
-   tick-stamped entity, tile, inventory and event updates. Rebuild client grids
-   from authoritative data, and play positional audio from synced events.
-   Validate two processes through start, movement, simultaneous item pickup,
-   enemy combat, death/restart, join, and disconnect. Add interpolation or
-   local input prediction only where the measured feel needs it.
+6. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send an
+   initial world snapshot and tick-stamped per-player input; have the host
+   publish canonical inputs. Predict locally, retain a bounded pre-tick
+   snapshot history, roll back and replay on input corrections, exchange
+   confirmed-frame gameplay hashes, and resync from a host snapshot when
+   needed. Keep audio/cosmetic events out of the hash and deduplicate them
+   across replay. Validate two processes through start, movement, simultaneous
+   item pickup, enemy combat, death/restart, join, and disconnect, including
+   added latency, jitter, packet loss, and a deliberate desync.
 7. **Stabilize and publish.** Compare captures and gameplay scenarios, run
    focused deterministic checks for entity handles/grid and item rules, then
    a sanitizer build and normal desktop smoke. Document genuine differences.

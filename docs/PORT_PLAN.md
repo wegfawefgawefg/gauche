@@ -12,7 +12,7 @@ at the host boundary without reproducing Rust ownership workarounds.
 The C++ source should read like Adventures with Chickens: plain value/state
 types, free functions, a visible loop in `main`, direct mode switches, and
 focused files. Use `splonks-cpp` as the implementation reference for the
-Gubsy-owned window/render target, input bindings, asset databases, audio,
+Gubsy-owned window/render target, input bindings, asset lifetime, audio,
 fixed-step simulation, and menu/settings shell. Copy the useful mechanisms,
 not its Spelunky-specific gameplay, multiplayer, networking, theme, or large
 debug infrastructure. Gauche's in-game HUD remains Gauche's HUD; Gubsy owns
@@ -33,6 +33,11 @@ the surrounding menus and settings.
   pickup/drop, destructible tiles, spatial queries, rail laying and trains,
   five particle kinds, camera zoom/follow, distance fade, health bars, and
   layered UI.
+- Gauche water is a generated, impassable tile that alternates between two
+  PNGs. It has no fluid amount, flow, buoyancy, or water simulation. Actors
+  move between grid cells after tile/occupancy checks; their stored velocity
+  field is unused. Particle velocities and accelerations are local visual
+  effects, not world physics.
 - `Settings`, `VideoSettings`, and `Win` are present as mostly unreachable
   modes. The source references `src/shaders/grayscale.fs`, but that file is
   absent. Treat these as gaps in the source, not established game behavior.
@@ -47,8 +52,24 @@ the surrounding menus and settings.
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, simplified to a single-player game. |
 | `state`, `stage`, `entity`, `inventory`, `item`, `particle` | Plain Gauche data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A contiguous 64x64 tile array is simpler than Rust's nested vectors. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed one explicit input snapshot per tick. At 60 Hz, process player movement and items, AI, tiles, particles, cleanup, then state transitions. Keep simulation RNG seeded and separate from cosmetic randomness. |
-| `graphics`, `render`, `render_ui` | Use `splonks-cpp` AFrame metadata/SDL texture loading for Gauche PNGs, the Gubsy render target, and Gauche-specific world and HUD drawing. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
-| `audio`, menus | Use the `splonks-cpp` YAML audio asset pattern and SDL3 audio stack for Gauche OGGs. Use plain Gubsy menu/settings/input widgets without importing the Splonks theme or multiplayer flows. |
+| `graphics`, `render`, `render_ui` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
+| `audio`, menus | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Use plain Gubsy menu/settings/input widgets without importing the Splonks theme or multiplayer flows. |
+
+## What to take from Splonks, and what to leave there
+
+| Reuse or adapt | Omit from Gauche |
+| --- | --- |
+| Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. | Splonks stage/biome generation, room templates, quests, shops, progression and content databases. Gauche has one generated TestArena. |
+| Gubsy input binding and generic title, pause, settings, and controller UI. | Lobby, online/network lockstep, replay/rollback, mod hosting, Splonks theme, and its broad debug UI. |
+| SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
+| Gauche's grid occupancy/collision, tile damage, water sprite flip, and small particle update rules. | Splonks rigid/platformer physics, gravity, fixed-point world math, contact solver, fluid/water/lava simulation, and dynamic lighting. |
+| Gauche's 53 OGG files with simple music, sound effects, volume falloff and cooldowns. | Splonks positional audio instance graph, reverb, low-pass filters, and other acoustic processing. |
+
+The omission boundary is about game behavior, not a ban on ordinary velocity
+or animation calculations. Gauche's blood, debris, footprints, and clouds
+still need their original small particle motions. Gauche's distance fade and
+dark palette also remain, but do not require Splonks' lighting or post-process
+systems. The Rust shader is loaded but never used and its file is missing.
 
 The roughly 7,000 lines of Rust are a behavior map, not a file-for-file
 translation template. In particular, `step.rs` temporarily swaps an inventory
@@ -66,7 +87,7 @@ actually changes.
    reference and record the limitation.
 2. **Bootstrap the host.** Add CMake/C++20, SDL3 and Gubsy at a pinned revision,
    a simple run path, and the owned window/render-target loop. Port PNG/OGG
-   files, create AFrame/audio annotations, render the Gauche title, and make a
+   files, make small sprite/sound lookup tables, render the Gauche title, and make a
    finite headless smoke/capture command. This gate is a clean build and a
    captured title frame.
 3. **Port the world and player.** Implement state, versioned entities, tile
@@ -99,9 +120,9 @@ actually changes.
   game rule to reach it.
 - Preserve the old control semantics first (movement, use direction, mouse,
   inventory, pickup/drop, zoom). Gubsy remapping can expose those same actions.
-- The first pass should use the original authored PNG/OGG assets. Asset metadata
-  can describe each PNG as a single frame; a new atlas or art pass is optional
-  only after visual parity.
+- The first pass should use the original authored PNG/OGG assets. Load each
+  PNG directly by its `Sprite` name. Keep asset metadata in code unless a
+  concrete Gauche asset later needs richer data.
 - Pin the Gubsy dependency rather than relying on whichever of the two local
   Gubsy checkouts happens to be on disk. They currently differ.
 - Remote GitHub changes are a later handoff. The local Rust checkout is named

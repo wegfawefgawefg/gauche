@@ -13,6 +13,9 @@ int main() {
         player->stun_ticks = 3;
         player->artifacts = 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
     }
+    original.run.pending_count[0] = 1;
+    original.run.pending_offers[0][0][0] =
+        {RewardKind::Health, ItemKind::None, ArtifactKind::None, 20};
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

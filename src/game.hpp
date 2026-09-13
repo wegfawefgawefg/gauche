@@ -149,7 +149,10 @@ struct Run {
     bool has_key = false;
     std::array<bool, 4> chosen{};
     std::array<bool, 4> shop_ready{};
+    std::array<bool, 4> online{};
     std::array<std::array<Reward, 3>, 4> offers{};
+    std::array<int, 4> pending_count{};
+    std::array<std::array<std::array<Reward, 3>, 12>, 4> pending_offers{};
     std::array<ItemKind, 3> shop_stock{};
     std::uint64_t seed = 1;
     DeathPolicy death_policy = DeathPolicy::NextFloor;
@@ -192,6 +195,7 @@ bool floor_reachable(const Game& game);
 bool interact_with_fixture(Game& game, int owner, Cell target);
 void finish_floor(Game& game);
 void choose_reward(Game& game, int owner, int choice);
+void choose_pending_reward(Game& game, int owner, int choice);
 void buy_shop_item(Game& game, int owner, int choice);
 int shop_price(ItemKind kind);
 void advance_run(Game& game);

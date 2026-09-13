@@ -11,7 +11,9 @@ constexpr std::array<Cell, 4> neighbors{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
 int nearest_player(const Game& game, Cell from, int radius) {
     int nearest = -1;
     int best = radius + 1;
-    for (Handle handle : game.players) {
+    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
+        if (!game.run.online[owner]) continue;
+        const Handle handle = game.players[owner];
         const Entity* player = get_entity(game, handle);
         if (player == nullptr || player->health <= 0) continue;
         const int length = distance(from, player->cell);

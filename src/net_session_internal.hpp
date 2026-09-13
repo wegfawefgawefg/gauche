@@ -13,3 +13,4 @@ void queue_snapshot(NetSession& session, int owner);
 void send_snapshot_chunks(NetSession& session, int owner);
 void receive_snapshot_chunk(NetSession& session, PacketReader& reader);
 void send_history_since(NetSession& session, int owner, std::uint64_t after_tick);
+void publish_host_state(NetSession& session);

@@ -1,5 +1,6 @@
 #include "../src/game.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
 
@@ -177,6 +178,46 @@ bool equipment_rules() {
                  "placed bear trap did not catch a moving actor");
 }
 
+bool offline_reward_rules() {
+    Game game;
+    start_run(game, 4888);
+    game.run.online[1] = true;
+    game.players[1] = spawn_entity(game, EntityKind::Player, game.run.spawn + Cell{1, 0});
+    get_entity(game, game.players[1])->owner = 1;
+    finish_floor(game);
+    int safe_choice = -1;
+    for (int index = 0; index < 3; ++index) {
+        const Reward reward = game.run.offers[1][static_cast<std::size_t>(index)];
+        if (reward.kind == RewardKind::Health || reward.kind == RewardKind::Speed)
+            safe_choice = index;
+    }
+    if (!check(safe_choice >= 0, "reward offer lacks a non-item choice")) return false;
+    for (int index = 0; index < 3; ++index) {
+        const Reward reward = game.run.offers[0][static_cast<std::size_t>(index)];
+        if (reward.kind == RewardKind::Health || reward.kind == RewardKind::Speed) {
+            choose_reward(game, 0, index);
+            break;
+        }
+    }
+    if (!check(game.run.phase == RunPhase::Reward,
+               "online teammate did not hold reward screen")) return false;
+    game.run.online[1] = false;
+    advance_run(game);
+    if (!check(game.run.floor == 2 && game.run.pending_count[1] == 1 &&
+               game.run.phase == RunPhase::Playing,
+               "offline teammate blocked floor or lost reward")) return false;
+    game.run.online[1] = true;
+    const Reward pending = game.run.pending_offers[1][0][static_cast<std::size_t>(safe_choice)];
+    Entity* player = get_entity(game, game.players[1]);
+    const int before = pending.kind == RewardKind::Health ? player->max_health : player->move_interval;
+    choose_pending_reward(game, 1, safe_choice);
+    return check(game.run.pending_count[1] == 0 &&
+                 (pending.kind == RewardKind::Health ?
+                  player->max_health == before + pending.amount :
+                  player->move_interval == std::max(3, before - pending.amount)),
+                 "reconnected player could not claim missed reward");
+}
+
 bool track_before_train() {
     Game game = small_game();
     Entity* player = get_entity(game, game.players[0]);
@@ -229,6 +270,7 @@ bool forest_progression() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
+        !offline_reward_rules() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

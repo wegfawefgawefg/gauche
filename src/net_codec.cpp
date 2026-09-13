@@ -159,7 +159,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(2);
+    writer.u32(3);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -182,11 +182,21 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.i32(run.coins[owner]);
         writer.u8(static_cast<std::uint8_t>(run.chosen[owner]));
         writer.u8(static_cast<std::uint8_t>(run.shop_ready[owner]));
+        writer.u8(static_cast<std::uint8_t>(run.online[owner]));
+        writer.i32(run.pending_count[owner]);
         for (const Reward& reward : run.offers[owner]) {
             writer.u8(static_cast<std::uint8_t>(reward.kind));
             writer.u8(static_cast<std::uint8_t>(reward.item));
             writer.u8(static_cast<std::uint8_t>(reward.artifact));
             writer.i32(reward.amount);
+        }
+        for (const auto& offer : run.pending_offers[owner]) {
+            for (const Reward& reward : offer) {
+                writer.u8(static_cast<std::uint8_t>(reward.kind));
+                writer.u8(static_cast<std::uint8_t>(reward.item));
+                writer.u8(static_cast<std::uint8_t>(reward.artifact));
+                writer.i32(reward.amount);
+            }
         }
     }
     for (ItemKind item : run.shop_stock) writer.u8(static_cast<std::uint8_t>(item));
@@ -196,7 +206,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 2) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 3) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -237,6 +247,10 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         run.coins[owner] = reader.i32();
         run.chosen[owner] = reader.u8() != 0;
         run.shop_ready[owner] = reader.u8() != 0;
+        run.online[owner] = reader.u8() != 0;
+        run.pending_count[owner] = reader.i32();
+        if (run.pending_count[owner] < 0 || run.pending_count[owner] > 12)
+            reader.okay = false;
         for (Reward& reward : run.offers[owner]) {
             reward.kind = static_cast<RewardKind>(reader.u8());
             reward.item = static_cast<ItemKind>(reader.u8());
@@ -245,6 +259,17 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Mine ||
                 reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
                 reader.okay = false;
+        }
+        for (auto& offer : run.pending_offers[owner]) {
+            for (Reward& reward : offer) {
+                reward.kind = static_cast<RewardKind>(reader.u8());
+                reward.item = static_cast<ItemKind>(reader.u8());
+                reward.artifact = static_cast<ArtifactKind>(reader.u8());
+                reward.amount = reader.i32();
+                if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Mine ||
+                    reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
+                    reader.okay = false;
+            }
         }
     }
     for (ItemKind& item : run.shop_stock) {

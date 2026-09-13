@@ -124,6 +124,7 @@ void generate_world_floor(Game& game) {
         game.players[owner] = handle;
         Entity* player = get_entity(game, handle);
         player->owner = static_cast<int>(owner);
+        player->impassable = game.run.online[owner];
         if (game.run.floor == 1 && previous[owner].kind == EntityKind::None) {
             player->inventory = {};
             insert_item(player->inventory, make_item(ItemKind::Fist));

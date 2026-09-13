@@ -63,6 +63,7 @@ void start_run(Game& game, std::uint64_t seed) {
     game.run.seed = game.rng;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
+    game.run.online[0] = true;
     generate_world_floor(game);
 }
 
@@ -88,8 +89,9 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             return true;
         }
         if (fixture.kind == EntityKind::Exit && game.run.phase == RunPhase::Playing) {
-            for (Handle handle : game.players) {
-                const Entity* member = get_entity(game, handle);
+            for (std::size_t member_owner = 0; member_owner < 4; ++member_owner) {
+                if (!game.run.online[member_owner]) continue;
+                const Entity* member = get_entity(game, game.players[member_owner]);
                 if (member != nullptr && member->health > 0 &&
                     distance(member->cell, fixture.cell) > 1) return false;
             }
@@ -119,34 +121,55 @@ void finish_floor(Game& game) {
     }
 }
 
+namespace {
+
+bool grant_reward(Entity& player, Reward reward) {
+    switch (reward.kind) {
+    case RewardKind::Item:
+        if (!insert_item(player.inventory, make_item(reward.item, reward.amount))) return false;
+        break;
+    case RewardKind::Artifact:
+        if (!has_artifact(player, reward.artifact)) {
+            player.artifacts |= 1U << static_cast<unsigned int>(reward.artifact);
+            if (reward.artifact == ArtifactKind::FleetFeet)
+                player.move_interval = std::max(3, player.move_interval - 2);
+        }
+        break;
+    case RewardKind::Health:
+        player.max_health += reward.amount;
+        player.health = std::min(player.max_health, player.health + reward.amount);
+        break;
+    case RewardKind::Speed:
+        player.move_interval = std::max(3, player.move_interval - reward.amount);
+        break;
+    }
+    return true;
+}
+
+} // namespace
+
 void choose_reward(Game& game, int owner, int choice) {
     if (game.run.phase != RunPhase::Reward || owner < 0 || owner >= 4 ||
         choice < 0 || choice >= 3 || game.run.chosen[static_cast<std::size_t>(owner)]) return;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr) return;
-    const Reward reward = game.run.offers[static_cast<std::size_t>(owner)]
-                                             [static_cast<std::size_t>(choice)];
-    switch (reward.kind) {
-    case RewardKind::Item:
-        if (!insert_item(player->inventory, make_item(reward.item, reward.amount))) return;
-        break;
-    case RewardKind::Artifact:
-        if (!has_artifact(*player, reward.artifact)) {
-            player->artifacts |= 1U << static_cast<unsigned int>(reward.artifact);
-            if (reward.artifact == ArtifactKind::FleetFeet)
-                player->move_interval = std::max(3, player->move_interval - 2);
-        }
-        break;
-    case RewardKind::Health:
-        player->max_health += reward.amount;
-        player->health = std::min(player->max_health, player->health + reward.amount);
-        break;
-    case RewardKind::Speed:
-        player->move_interval = std::max(3, player->move_interval - reward.amount);
-        break;
-    }
+    if (player == nullptr || !grant_reward(*player,
+        game.run.offers[static_cast<std::size_t>(owner)][static_cast<std::size_t>(choice)])) return;
     game.run.chosen[static_cast<std::size_t>(owner)] = true;
     advance_run(game);
+}
+
+void choose_pending_reward(Game& game, int owner, int choice) {
+    if (owner < 0 || owner >= 4 || choice < 0 || choice >= 3 ||
+        game.run.pending_count[static_cast<std::size_t>(owner)] == 0) return;
+    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (player == nullptr || player->health <= 0 || !grant_reward(*player,
+        game.run.pending_offers[static_cast<std::size_t>(owner)][0]
+                               [static_cast<std::size_t>(choice)])) return;
+    const std::size_t index = static_cast<std::size_t>(owner);
+    for (int pending = 1; pending < game.run.pending_count[index]; ++pending)
+        game.run.pending_offers[index][static_cast<std::size_t>(pending - 1)] =
+            game.run.pending_offers[index][static_cast<std::size_t>(pending)];
+    game.run.pending_offers[index][static_cast<std::size_t>(--game.run.pending_count[index])] = {};
 }
 
 void buy_shop_item(Game& game, int owner, int choice) {
@@ -163,7 +186,15 @@ void buy_shop_item(Game& game, int owner, int choice) {
 
 void advance_run(Game& game) {
     if (game.run.phase == RunPhase::Reward) {
-        for (bool chosen : game.run.chosen) if (!chosen) return;
+        for (std::size_t owner = 0; owner < 4; ++owner)
+            if (game.run.online[owner] && !game.run.chosen[owner]) return;
+        for (std::size_t owner = 0; owner < 4; ++owner) {
+            if (game.run.online[owner] || game.run.chosen[owner] ||
+                game.run.pending_count[owner] >= 12) continue;
+            game.run.pending_offers[owner]
+                [static_cast<std::size_t>(game.run.pending_count[owner]++)] = game.run.offers[owner];
+            game.run.chosen[owner] = true;
+        }
         if (game.run.floor % 2 == 0) {
             game.run.phase = RunPhase::Shop;
             game.run.shop_ready.fill(false);
@@ -177,7 +208,8 @@ void advance_run(Game& game) {
     } else if (game.run.phase == RunPhase::Shop) {
         for (std::size_t owner = 0; owner < 4; ++owner) {
             const Entity* player = get_entity(game, game.players[owner]);
-            if (player != nullptr && player->health > 0 && !game.run.shop_ready[owner]) return;
+            if (game.run.online[owner] && player != nullptr && player->health > 0 &&
+                !game.run.shop_ready[owner]) return;
         }
         ready_next_floor(game);
     }

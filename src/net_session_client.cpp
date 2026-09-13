@@ -85,7 +85,8 @@ void client_receive(NetSession& session, const Datagram&,
 }
 
 void client_step(NetSession& session, Input local_input) {
-    if (session.local_owner < 0 || session.rollback.needs_snapshot) return;
+    if (session.local_owner < 0 || session.rollback.needs_snapshot ||
+        session.rollback.game.game_over) return;
     const std::uint64_t tick = session.rollback.game.tick + 1;
     std::array<Input, 4> inputs{};
     inputs[static_cast<std::size_t>(session.local_owner)] = local_input;

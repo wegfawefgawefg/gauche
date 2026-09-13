@@ -164,8 +164,10 @@ const char* artifact_name(ArtifactKind kind) {
 
 void draw_interlude(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Game& game, int local_owner) {
+    const bool pending = game.run.phase == RunPhase::Playing &&
+                         game.run.pending_count[static_cast<std::size_t>(local_owner)] > 0;
     if (game.run.phase != RunPhase::Reward && game.run.phase != RunPhase::Shop &&
-        game.run.phase != RunPhase::Won) return;
+        game.run.phase != RunPhase::Won && !pending) return;
     SDL_SetRenderDrawColor(renderer, 8, 12, 13, 228);
     const SDL_FRect overlay{0.0F, 0.0F, 640.0F, 360.0F};
     SDL_RenderFillRect(renderer, &overlay);
@@ -174,8 +176,9 @@ void draw_interlude(SDL_Renderer* renderer, const GameGraphics& graphics,
         return;
     }
     SDL_RenderDebugText(renderer, 35.0F, 32.0F,
-                        game.run.phase == RunPhase::Reward ?
-                            "CHOOSE ONE REWARD" : "TRAVELING SHOP");
+                        pending ? "CHOOSE MISSED REWARD" :
+                        (game.run.phase == RunPhase::Reward ?
+                            "CHOOSE ONE REWARD" : "TRAVELING SHOP"));
     for (int index = 0; index < 3; ++index) {
         const float x = 35.0F + static_cast<float>(index) * 196.0F;
         SDL_FRect card{x, 70.0F, 178.0F, 165.0F};
@@ -184,9 +187,12 @@ void draw_interlude(SDL_Renderer* renderer, const GameGraphics& graphics,
         char key[8];
         std::snprintf(key, sizeof(key), "%d", index + 1);
         SDL_RenderDebugText(renderer, x + 10.0F, 81.0F, key);
-        if (game.run.phase == RunPhase::Reward) {
-            const Reward reward = game.run.offers[static_cast<std::size_t>(local_owner)]
-                                                   [static_cast<std::size_t>(index)];
+        if (game.run.phase == RunPhase::Reward || pending) {
+            const Reward reward = pending ?
+                game.run.pending_offers[static_cast<std::size_t>(local_owner)][0]
+                                       [static_cast<std::size_t>(index)] :
+                game.run.offers[static_cast<std::size_t>(local_owner)]
+                               [static_cast<std::size_t>(index)];
             const char* name = "";
             switch (reward.kind) {
             case RewardKind::Item:
@@ -212,7 +218,7 @@ void draw_interlude(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
         }
     }
-    if (game.run.phase == RunPhase::Reward) {
+    if (game.run.phase == RunPhase::Reward || pending) {
         SDL_RenderDebugText(renderer, 35.0F, 265.0F, "1-3 CHOOSE    Q DROP HELD ITEM IF PACK FULL");
     } else {
         char coins[32];

@@ -88,6 +88,7 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
     peer.connected = true;
     peer.last_heard_pump = session.pump_tick;
     peer.pending_inputs.clear();
+    bool changed = false;
     if (new_player) {
         Game& game = session.rollback.game;
         const Handle player = spawn_entity(game, EntityKind::Player, join_cell(game, owner));
@@ -98,14 +99,23 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
             insert_item(entity->inventory, make_item(ItemKind::Fist));
             insert_item(entity->inventory, make_item(ItemKind::Bandage, 3));
         }
+        game.run.online[static_cast<std::size_t>(owner)] = true;
         if (game.run.phase == RunPhase::Reward) game.run.chosen[static_cast<std::size_t>(owner)] = true;
-        const Game joined = game;
-        begin_rollback(session.rollback, joined);
+        if (game.run.phase == RunPhase::Shop) game.run.shop_ready[static_cast<std::size_t>(owner)] = true;
+        changed = true;
+    } else if (!session.rollback.game.run.online[static_cast<std::size_t>(owner)]) {
+        Game& game = session.rollback.game;
+        game.run.online[static_cast<std::size_t>(owner)] = true;
+        if (Entity* entity = get_entity(game, game.players[static_cast<std::size_t>(owner)])) {
+            if (entity_at(game, entity->cell, true) >= 0)
+                entity->cell = join_cell(game, owner);
+            entity->impassable = entity->health > 0;
+        }
+        changed = true;
     }
     welcome(session, datagram.from, identity, owner);
-    if (new_player) {
-        for (int other = 1; other < 4; ++other) queue_snapshot(session, other);
-    } else if (peer.snapshot.id == 0) queue_snapshot(session, owner);
+    if (changed) publish_host_state(session);
+    else if (peer.snapshot.id == 0) queue_snapshot(session, owner);
     else send_snapshot_chunks(session, owner);
 }
 
@@ -160,6 +170,16 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
 }
 
 } // namespace
+
+void publish_host_state(NetSession& session) {
+    const Game changed = session.rollback.game;
+    begin_rollback(session.rollback, changed);
+    for (int owner = 1; owner < 4; ++owner) {
+        NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+        peer.pending_inputs.clear();
+        if (peer.connected) queue_snapshot(session, owner);
+    }
+}
 
 void host_receive(NetSession& session, const Datagram& datagram,
                   PacketReader& reader, WireKind kind) {

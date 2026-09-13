@@ -210,6 +210,7 @@ void start_test_arena(Game& game, std::uint64_t seed) {
     game = {};
     game.rng = seed == 0 ? 1 : seed;
     game.run.phase = RunPhase::Arena;
+    game.run.online[0] = true;
     game.stage.width = 64;
     game.stage.height = 64;
     game.stage.tiles.resize(64U * 64U);

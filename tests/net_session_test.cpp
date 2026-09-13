@@ -44,7 +44,12 @@ int main() {
         return 1;
     }
     client.socket.close();
+    const Handle original_slot = host.rollback.game.players[1];
     for (int iteration = 0; iteration < 370; ++iteration) pump_network(host);
+    if (host.rollback.game.run.online[1]) {
+        std::fputs("disconnected player still blocked the run\n", stderr);
+        return 1;
+    }
     NetSession rejoined;
     if (!join_game(rejoined, "127.0.0.1", host.socket.bound_port(), 0x12345678, error)) {
         std::fprintf(stderr, "reconnect socket failed: %s\n", error.c_str());
@@ -58,7 +63,8 @@ int main() {
     int players = 0;
     for (const Entity& entity : host.rollback.game.entities)
         if (entity.kind == EntityKind::Player) ++players;
-    if (!rejoined.ready || rejoined.local_owner != 1 || players != 2) {
+    if (!rejoined.ready || rejoined.local_owner != 1 || players != 2 ||
+        !host.rollback.game.run.online[1] || host.rollback.game.players[1] != original_slot) {
         std::fprintf(stderr, "reconnect duplicated or lost player: %s\n", rejoined.status.c_str());
         return 1;
     }

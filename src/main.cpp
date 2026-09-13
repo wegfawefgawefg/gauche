@@ -189,6 +189,7 @@ int main(int argc, char** argv) {
         if (network.role == NetRole::Client && network.ready &&
             !network.rollback.needs_snapshot) {
             for (int catchup = 0; catchup < 8 &&
+                 !network.rollback.game.game_over &&
                  network.rollback.game.tick + 2 < network.host_tick; ++catchup)
                 step_network_game(network, {});
         }

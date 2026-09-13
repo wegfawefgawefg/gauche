@@ -185,8 +185,15 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         const Handle handle = game.players[owner];
         Entity* player = get_entity(game, handle);
         if (player != nullptr && player->health > 0 &&
-            player->sleep_ticks == 0 && player->stun_ticks == 0)
+            game.run.online[owner] && player->sleep_ticks == 0 &&
+            player->stun_ticks == 0) {
+            if (game.run.pending_count[owner] > 0 &&
+                inputs[owner].select >= 0 && inputs[owner].select < 3) {
+                choose_pending_reward(game, static_cast<int>(owner), inputs[owner].select);
+                continue;
+            }
             step_player(game, handle.slot, inputs[owner]);
+        }
     }
     if (game.tick % 60 == 0) {
         for (Handle source_handle : game.players) {
@@ -255,11 +262,21 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(game.run.coins[owner]));
         mix(hash, static_cast<std::uint64_t>(game.run.chosen[owner]));
         mix(hash, static_cast<std::uint64_t>(game.run.shop_ready[owner]));
+        mix(hash, static_cast<std::uint64_t>(game.run.online[owner]));
+        mix(hash, static_cast<std::uint64_t>(game.run.pending_count[owner]));
         for (const Reward& reward : game.run.offers[owner]) {
             mix(hash, static_cast<std::uint64_t>(reward.kind));
             mix(hash, static_cast<std::uint64_t>(reward.item));
             mix(hash, static_cast<std::uint64_t>(reward.artifact));
             mix(hash, static_cast<std::uint64_t>(reward.amount));
+        }
+        for (const auto& offer : game.run.pending_offers[owner]) {
+            for (const Reward& reward : offer) {
+                mix(hash, static_cast<std::uint64_t>(reward.kind));
+                mix(hash, static_cast<std::uint64_t>(reward.item));
+                mix(hash, static_cast<std::uint64_t>(reward.artifact));
+                mix(hash, static_cast<std::uint64_t>(reward.amount));
+            }
         }
     }
     for (ItemKind item : game.run.shop_stock) mix(hash, static_cast<std::uint64_t>(item));

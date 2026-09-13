@@ -63,6 +63,14 @@ void pump_network(NetSession& session) {
             if (session.pump_tick - peer.last_heard_pump > 360) {
                 peer.connected = false;
                 peer.pending_inputs.clear();
+                Game& game = session.rollback.game;
+                if (game.run.online[static_cast<std::size_t>(owner)]) {
+                    game.run.online[static_cast<std::size_t>(owner)] = false;
+                    if (Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]))
+                        player->impassable = false;
+                    advance_run(game);
+                    publish_host_state(session);
+                }
                 continue;
             }
             if (peer.snapshot.id != 0 &&

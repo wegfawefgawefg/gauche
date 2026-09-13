@@ -21,12 +21,13 @@ sidestep, conditional backstab, or first-hit evasion over hidden passive dodge
 and crit rolls. A specific crit weapon can still have a documented chance,
 using the saved gameplay RNG.
 
-The buckler's base use is a facing block or one-tile shove. If the shove drives
-an actor into a solid wall, that actor is crushed instantly, including a
-player or teammate. An item shoved into a wall breaks. This is a strong
-spatial weapon: facing, telegraph, and recovery time balance it, rather than a
-small damage roll. The exact result when a moving actor hits a teammate or
-loose item is the one collision rule still to settle.
+The buckler's base use is a facing block or one-tile shove. A shoved actor
+crushes instantly if the destination is a hard, impassable blocker: solid wall,
+fixture, or an enemy that cannot be moved. A player or teammate shoved into a
+wall can die this way; the blocker survives. An ordinary teammate or loose
+item is not itself a crush surface. A movable item shoved into a wall breaks.
+This is a strong spatial weapon: facing, telegraph, and recovery time
+balance it, rather than a small damage roll.
 
 Let enemies outscale the party through combinations and situations: more
 aggressive mixes, dens, tight rooms, and new tells. Merely multiplying wolf HP
@@ -98,7 +99,7 @@ or separately to several carried weapons. There is no shared ammo reserve.
 | Hatchet | Slow cleave that also cuts roots and wooden barricades |
 | Spear | Hits one tile farther, but awkward when surrounded |
 | Pickaxe | Cracks stone shortcuts and armored shells; slower melee |
-| Buckler | Active facing block or shove; wall collision squishes the pushed actor |
+| Buckler | Active facing block or shove; a hard-blocker collision squishes the pushed actor |
 | Bow | Quiet aimed shot, own arrow count, longer nock time |
 | Sling | Cheap fast projectile, weak against armor, can wake or lure enemies |
 | Crossbow | Strong line shot with a slow reload |

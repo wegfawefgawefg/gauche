@@ -129,13 +129,14 @@ without changing actor movement into continuous physics. Pickaxes, bombs, and
 barricades should act on the same tile/passability rules as doors and walls.
 Strong tools should change routes and create memorable consequences.
 
-Make the buckler an active facing block with a short shove. A forced actor that
-hits a solid wall is crushed instantly, whether enemy or player; a pushed item
-breaks against the wall. This is a deliberate positioning rule, so telegraph
-push direction and give the action a recovery cost rather than softening the
-wall impact into ordinary damage. Specify collisions with a teammate or loose
-item separately before implementation; they can be part of the same lethal
-rule, but the exact survivor/breakage outcome is still open.
+Make the buckler an active facing block with a short shove. A shoved actor
+that would enter a hard, impassable blocker—a wall, solid fixture, or an enemy
+that cannot be moved—is crushed instantly, whether the shoved actor is enemy
+or player. The blocker survives. A normal teammate or loose item is not a
+crush surface merely because it occupies a tile; handle ordinary occupancy
+with the normal push/collision rule. An item shoved into a wall breaks.
+Telegraph push direction and give the action a recovery cost rather than
+softening a real crush into ordinary damage.
 
 The conductor hat already demonstrates that in Rust: using it spawns a rail
 layer, which travels across the row and replaces each in-bounds tile with rail
@@ -485,11 +486,12 @@ actually changes.
 6. **Build one real run.** Make an authored level with a party spawn,
    exit, one key/door or switch dependency, guarded room, enemy spawner, loot,
    first firearm/projectile with magazine and ammo pickups, buckler block/shove
-   and wall crush, explosive or trap, a tile-blocking barricade or tile-opening
-   tool, and the existing rail-laying shortcut from the conductor hat. Add a
-   focused wall-occluded light pass so darkness and bright cues work in the
-   same encounter. Validate that the ordinary route works, the shortcut is
-   intentional, and terrain/fixture state remains consistent after combat.
+   and hard-blocker crush, explosive or trap, a tile-blocking barricade or
+   tile-opening tool, and the existing rail-laying shortcut from the
+   conductor hat. Add a focused wall-occluded light pass so darkness and
+   bright cues work in the same encounter. Validate that the ordinary route
+   stays open, the rail shortcut is intentional, and terrain/fixture state
+   remains consistent after combat.
    Add a second small floor and the first three-choice reward interlude so the
    gate includes a complete solo clear-and-continue loop. Test at least two
    different stage dimensions rather than baking the Rust TestArena size into
@@ -502,10 +504,10 @@ actually changes.
    needed. Keep audio/cosmetic events out of the hash and deduplicate them
    across replay. Validate two processes through party spawn, gate/switch use,
    simultaneous pickup, firing/reload and ammo resupply, spawner combat,
-   buckler wall crush (including a player), explosion, rail-laid terrain cut,
-   exit transition, each death policy, per-player reward selection, disconnect
-   and rejoin to the same slot (including after a level change), with added
-   latency, jitter, packet loss, and a deliberate desync.
+   buckler hard-blocker crush (including a player), explosion, rail-laid
+   terrain cut, exit transition, each death policy, per-player reward
+   selection, disconnect and rejoin to the same slot after a level change,
+   with added latency, jitter, packet loss, and a deliberate desync.
 8. **Build the forest world.** Assemble its four floors from a solvable
    progression graph, mixing grassy caves, roof-light shafts, outdoor rooms,
    dens, fixed landmarks, and random rooms. Add bats, wolves, bears, bow,

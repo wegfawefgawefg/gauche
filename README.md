@@ -4,19 +4,19 @@ Gauche is a C++20, tile-step co-op dungeon run built from the original [Rust pro
 
 ## Build and run
 
-The project uses SDL3 and the pinned Gubsy host. CMake fetches dependencies when they are not available locally.
+The project uses SDL3 and the pinned Gubsy host. CMake fetches dependencies when they are not available locally. From the repository root, build and launch with:
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --target gauche -j8
-./build/gauche
+./scripts/run.sh
 ```
+
+Set `GAUCHE_PRESET=dev` for a debug build. `./scripts/build.sh` builds without launching. Both scripts work from any current directory; `run.sh` passes game arguments through unchanged.
 
 The title menu opens a lobby for solo play, direct hosting, joining, death policy, and Gubsy's display and control settings. One player can join from each machine, up to four total. The default direct host port in the menu is 35355. A CLI host can use a chosen port:
 
 ```sh
-./build/gauche --host 39000 --death next-floor
-./build/gauche --join HOST_IP:39000
+./scripts/run.sh --host 39000 --death next-floor
+./scripts/run.sh --join HOST_IP:39000
 ```
 
 `--death` accepts `no-respawn`, `entrance`, or `next-floor`. A player who disconnects keeps their slot and loadout, can return with the same local identity, and does not block the party's exit or reward choices. Direct hosting requires the UDP port to be reachable; there is no relay or room-code service yet.
@@ -32,8 +32,8 @@ Game state uses integer tile positions, a saved RNG, explicit snapshots and hash
 Run the checks with:
 
 ```sh
-cmake --build build --target gauche_tests gauche_rollback_tests gauche_codec_tests gauche_socket_tests gauche_session_tests gauche_loss_tests -j8
-ctest --test-dir build --output-on-failure
+cmake --build build-release --target gauche_tests gauche_rollback_tests gauche_codec_tests gauche_socket_tests gauche_session_tests gauche_loss_tests -j8
+ctest --test-dir build-release --output-on-failure
 ```
 
 The detailed source comparison and design decisions are in [the port plan](docs/PORT_PLAN.md). The [forest content sketch](docs/FOREST_CONTENT_IDEAS.md) is an idea pool, not a promise that every listed item is implemented.

@@ -366,6 +366,28 @@ bool forest_progression() {
     return true;
 }
 
+bool den_room_rules() {
+    bool found_den = false;
+    for (std::uint64_t seed = 1; seed <= 64; ++seed) {
+        Game game;
+        start_run(game, seed);
+        game.run.floor = 2;
+        generate_world_floor(game);
+        for (const Entity& entity : game.entities)
+            found_den |= entity.kind == EntityKind::Den;
+        if (!check(floor_reachable(game), "wolf den blocked the forest exit")) return false;
+    }
+    if (!check(found_den, "forest side-room pool never placed a den")) return false;
+    Game game = small_game();
+    const Handle den = spawn_entity(game, EntityKind::Den, {4, 2});
+    get_entity(game, den)->spawn_wait = 0;
+    step_game(game, {});
+    bool spawned_wolf = false;
+    for (const Entity& entity : game.entities)
+        spawned_wolf |= entity.kind == EntityKind::Wolf;
+    return check(spawned_wolf, "living wolf den did not release a wolf");
+}
+
 } // namespace
 
 int main() {
@@ -373,7 +395,7 @@ int main() {
         !artifact_rules() || !status_rules() || !equipment_rules() ||
         !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
         !switch_route() || !forest_tools() ||
-        !track_before_train() || !forest_progression())
+        !track_before_train() || !forest_progression() || !den_room_rules())
         return 1;
     std::puts("game rules passed");
     return 0;

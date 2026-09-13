@@ -244,6 +244,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         case EntityKind::Zombie: case EntityKind::Chicken: case EntityKind::Bat:
         case EntityKind::Wolf: case EntityKind::Bear: case EntityKind::Bunny:
         case EntityKind::Ember: case EntityKind::FrostBat: case EntityKind::Spawner:
+        case EntityKind::Den:
             step_enemy(game, slot); break;
         case EntityKind::RailLayer: step_rail_layer(game, slot); break;
         case EntityKind::Train: step_train(game, slot); break;

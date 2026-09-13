@@ -132,6 +132,13 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             entity.health = entity.max_health = 1;
             entity.sprite = Sprite::Campfire;
             break;
+        case EntityKind::Den:
+            entity.health = entity.max_health = 85;
+            entity.impassable = true;
+            entity.hard_blocker = true;
+            entity.spawn_wait = 150;
+            entity.sprite = Sprite::Den;
+            break;
         case EntityKind::None:
             break;
         }

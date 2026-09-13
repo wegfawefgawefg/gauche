@@ -127,6 +127,26 @@ void step_spawner(Game& game, int slot) {
     spawner.spawn_wait = 120;
 }
 
+void step_den(Game& game, int slot) {
+    Entity& den = game.entities[static_cast<std::size_t>(slot)];
+    if (den.spawn_wait > 0) { --den.spawn_wait; return; }
+    int wolves = 0;
+    for (const Entity& entity : game.entities)
+        if (entity.kind == EntityKind::Wolf && distance(entity.cell, den.cell) <= 8) ++wolves;
+    if (wolves < 3) {
+        for (Cell direction : neighbors) {
+            const Cell cell = den.cell + direction;
+            const Tile* tile = game.stage.at(cell);
+            if (tile != nullptr && walkable(tile->kind) && entity_at(game, cell, true) < 0) {
+                spawn_entity(game, EntityKind::Wolf, cell);
+                emit_sound(game, SoundId::ZombieGrowl1, cell);
+                break;
+            }
+        }
+    }
+    den.spawn_wait = 150;
+}
+
 } // namespace
 
 void step_enemy(Game& game, int slot) {
@@ -137,6 +157,7 @@ void step_enemy(Game& game, int slot) {
     case EntityKind::FrostBat: step_hunter(game, slot); break;
     case EntityKind::Ember: step_ember(game, slot); break;
     case EntityKind::Spawner: step_spawner(game, slot); break;
+    case EntityKind::Den: step_den(game, slot); break;
     default: break;
     }
 }

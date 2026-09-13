@@ -239,3 +239,11 @@ draw.polygon(((4, 9), (7, 2), (9, 7), (11, 2), (13, 10),
               (9, 12)), fill="#eb9235", outline=RED)
 draw.polygon(((7, 10), (8, 5), (10, 10)), fill="#f9d06b")
 save("campfire", image)
+
+image, draw = canvas()
+draw.rectangle((1, 7, 14, 14), fill="#624c35", outline=INK)
+draw.ellipse((3, 3, 12, 13), fill="#4c5941", outline="#9aaa73")
+draw.ellipse((5, 6, 10, 12), fill=INK, outline="#936443")
+draw.line((2, 8, 5, 4), fill=WOOD, width=2)
+draw.line((10, 4, 13, 8), fill=WOOD, width=2)
+save("den", image)

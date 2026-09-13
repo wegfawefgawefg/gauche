@@ -25,7 +25,7 @@ Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick 
 
 ## Current game
 
-Each four-floor world changes terrain, encounters, and hazards. Forest has bats, wolves, bears, and passive animals; fire adds ember gunners and lava; ice adds frost bats and slower ice movement. Reward artifacts can pierce actors, reflect hits, heal nearby friends, or shorten step intervals. Every gun owns its own loaded and spare ammo. Generic ammo fills each carried gun separately. Bucklers block from the facing direction until they break and can shove actors or loose items into hard obstacles. The conductor hat lays the full track before its train follows it, including through walls.
+Each four-floor world changes terrain, encounters, and hazards. Forest has bats, wolves, bears, passive animals, and occasional wolf dens in side rooms; fire adds ember gunners and lava; ice adds frost bats and slower ice movement. Reward artifacts can pierce actors, reflect hits, heal nearby friends, or shorten step intervals. Every gun owns its own loaded and spare ammo. Generic ammo fills each carried gun separately. Bucklers block from the facing direction until they break and can shove actors or loose items into hard obstacles. The conductor hat lays the full track before its train follows it, including through walls.
 
 Game state uses integer tile positions, a saved RNG, explicit snapshots and hashes, host-canonical input frames, rollback, and snapshot recovery. Directional sound and small impact particles stay local. The core loop runs at 60 ticks per second. Source files follow [AGENTS.md](AGENTS.md) and stay under 500 lines.
 

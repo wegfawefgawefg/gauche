@@ -204,8 +204,15 @@ void generate_world_floor(Game& game) {
             spawn_entity(game, guardian, {branch_x - 2, 25});
         }
     }
-    if (local_floor == 3) spawn_entity(game, EntityKind::Spawner,
-                                        {extra_x - 2, extra_y});
+    const bool den_room = world == 0 && (local_floor == 1 || local_floor == 3) &&
+                          random_u32(game) % 2 == 0;
+    if (den_room) {
+        spawn_entity(game, EntityKind::Den, {extra_x - 2, extra_y});
+        spawn_entity(game, EntityKind::Wolf, {extra_x + 2, extra_y - 2});
+        spawn_entity(game, EntityKind::Wolf, {extra_x + 2, extra_y + 2});
+        ground_item(game, {extra_x, extra_y + 2}, ItemKind::Bow);
+    } else if (local_floor == 3)
+        spawn_entity(game, EntityKind::Spawner, {extra_x - 2, extra_y});
     if (game.run.floor == 1) ground_item(game, {8, 15}, ItemKind::Stick);
     spawn_entity(game, EntityKind::Spawner, {branch_x + 3, 25});
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);

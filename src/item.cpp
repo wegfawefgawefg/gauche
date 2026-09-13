@@ -107,7 +107,7 @@ bool shove(Game& game, int user_slot, Cell direction) {
     }
     if (target_slot < 0 || target_slot == user_slot) return false;
     Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
-    if (target.kind == EntityKind::Train) return false;
+    if (target.hard_blocker) return false;
     const Cell destination = front + direction;
     const Tile* tile = game.stage.at(destination);
     const int blocker_slot = entity_at(game, destination, true);
@@ -186,6 +186,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
         entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
         entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire ||
+        entity.kind == EntityKind::Crusher ||
         damage <= 0) return;
     Item* held = entity.inventory.held();
     if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&

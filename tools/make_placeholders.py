@@ -247,3 +247,10 @@ draw.ellipse((5, 6, 10, 12), fill=INK, outline="#936443")
 draw.line((2, 8, 5, 4), fill=WOOD, width=2)
 draw.line((10, 4, 13, 8), fill=WOOD, width=2)
 save("den", image)
+
+image, draw = canvas()
+draw.rectangle((1, 1, 14, 14), fill="#5f6670", outline=INK)
+draw.rectangle((3, 3, 12, 12), fill="#9a9b94", outline=LIGHT)
+for x in (4, 7, 10):
+    draw.polygon(((x, 5), (x + 2, 5), (x + 1, 11)), fill="#5b3431")
+save("crusher", image)

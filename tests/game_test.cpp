@@ -84,8 +84,15 @@ bool buckler_rules() {
     const Handle item = spawn_entity(item_game, EntityKind::GroundItem, {3, 2});
     get_entity(item_game, item)->ground_item = make_item(ItemKind::Bandage);
     use_held_item(item_game, item_game.players[0].slot, {3, 2});
-    return check(get_entity(item_game, item) == nullptr,
-                 "item shoved into a wall did not break");
+    if (!check(get_entity(item_game, item) == nullptr,
+               "item shoved into a wall did not break")) return false;
+
+    Game hard = small_game();
+    get_entity(hard, hard.players[0])->inventory.slots[0] = make_item(ItemKind::Buckler);
+    const Handle den = spawn_entity(hard, EntityKind::Den, {3, 2});
+    use_held_item(hard, hard.players[0].slot, {3, 2});
+    return check(get_entity(hard, den)->cell == Cell{3, 2},
+                 "buckler shoved a hard fixture");
 }
 
 bool artifact_rules() {
@@ -388,6 +395,52 @@ bool den_room_rules() {
     return check(spawned_wolf, "living wolf den did not release a wolf");
 }
 
+bool crusher_room_rules() {
+    Game room;
+    start_run(room, 71);
+    room.run.floor = 3;
+    generate_world_floor(room);
+    bool found_crusher = false;
+    for (const Entity& entity : room.entities) {
+        if (entity.kind != EntityKind::Crusher) continue;
+        found_crusher = true;
+        if (!check(walkable(room.stage.at(entity.cell)->kind),
+                   "crusher started inside a wall")) return false;
+    }
+    if (!check(found_crusher && floor_reachable(room),
+               "forest trick room blocked the route")) return false;
+
+    Game crush = small_game();
+    Entity* victim = get_entity(crush, crush.players[0]);
+    victim->cell = {4, 2};
+    const Handle crusher = spawn_entity(crush, EntityKind::Crusher, {3, 2});
+    get_entity(crush, crusher)->script_tick = 1;
+    get_entity(crush, crusher)->move_wait = 1;
+    *crush.stage.at({5, 2}) = {TileKind::Wall, 100, 0};
+    step_game(crush, {});
+    if (!check(victim->health == 0, "crusher did not kill against a wall")) return false;
+
+    Game push = small_game();
+    Entity* pushed = get_entity(push, push.players[0]);
+    pushed->cell = {4, 2};
+    const Handle moving = spawn_entity(push, EntityKind::Crusher, {3, 2});
+    get_entity(push, moving)->script_tick = 1;
+    get_entity(push, moving)->move_wait = 1;
+    step_game(push, {});
+    if (!check(pushed->health == 100 && pushed->cell == Cell{5, 2},
+               "crusher killed despite a free push cell")) return false;
+
+    Game train = small_game();
+    get_entity(train, train.players[0])->cell = {6, 2};
+    const Handle obstacle = spawn_entity(train, EntityKind::Crusher, {2, 2});
+    const Handle engine = spawn_entity(train, EntityKind::Train, {3, 2});
+    *train.stage.at({2, 2}) = {TileKind::Rail, 0, 0};
+    step_game(train, {});
+    return check(get_entity(train, obstacle) == nullptr &&
+                 get_entity(train, engine)->cell == Cell{2, 2},
+                 "train did not mow through a crusher");
+}
+
 } // namespace
 
 int main() {
@@ -395,7 +448,8 @@ int main() {
         !artifact_rules() || !status_rules() || !equipment_rules() ||
         !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
         !switch_route() || !forest_tools() ||
-        !track_before_train() || !forest_progression() || !den_room_rules())
+        !track_before_train() || !forest_progression() || !den_room_rules() ||
+        !crusher_room_rules())
         return 1;
     std::puts("game rules passed");
     return 0;

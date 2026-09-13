@@ -102,6 +102,8 @@ void step_train(Game& game, int slot) {
         if (other.kind != EntityKind::None && other.cell == next) {
             if (other.kind == EntityKind::GroundItem)
                 remove_entity(game, {other_slot, other.generation});
+            else if (other.kind == EntityKind::Crusher)
+                crush_entity(game, other_slot, train.cell);
             else damage_entity(game, other_slot, 1000, train.cell);
         }
     }

@@ -22,7 +22,7 @@ enum class Sprite : std::size_t {
     ForestFloorA, ForestFloorB, ForestFloorC, ForestGrass, ForestRuin, ForestWall,
     LavaTile, IceTile, Bat, Wolf, Bear, Bunny, Ember, FrostBat, SleepMeds,
     Stick, Shotgun, SMG, BearTrap, Mine, Switch, Pickaxe, RawMeat, CookedMeat,
-    Campfire, Den,
+    Campfire, Den, Crusher,
     Count,
 };
 

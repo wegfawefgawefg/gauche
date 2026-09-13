@@ -121,7 +121,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::Den)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::Crusher)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;

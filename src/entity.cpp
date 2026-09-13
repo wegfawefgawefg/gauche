@@ -139,6 +139,15 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             entity.spawn_wait = 150;
             entity.sprite = Sprite::Den;
             break;
+        case EntityKind::Crusher:
+            entity.health = entity.max_health = 1000000;
+            entity.impassable = true;
+            entity.hard_blocker = true;
+            entity.move_interval = 12;
+            entity.move_wait = 12;
+            entity.facing = {1, 0};
+            entity.sprite = Sprite::Crusher;
+            break;
         case EntityKind::None:
             break;
         }

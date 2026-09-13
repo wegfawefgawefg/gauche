@@ -88,8 +88,10 @@ systems. The Rust shader is loaded but never used and its file is missing.
 The Rust prototype has one hostile enemy type, the zombie. Chickens are neutral
 wanderers with chick, hen, and rooster stat/sprite variants; rail layers and
 trains are scripted entities. Rust's `init_as_*` spawn templates fill one
-`Entity` struct, not a separate archetype or callback registry. `EntityType`
-selects behavior; the optional `Sprite` field is independent and can change.
+`Entity` struct. They are procedural archetypes/specs: they serve the same
+spawn-default purpose as Splonks' `EntSpec`, without being a data table.
+`EntityType` selects behavior; the optional `Sprite` field is independent and
+can change.
 All three chicken variants stay `Chicken`, with different sprites and stats;
 train heads, cars, and cabooses stay `Train`. Current gameplay never tests an
 entity's `Sprite`: it uses type, mood, alignment, stats, timers, and item data.
@@ -119,10 +121,12 @@ step code, and do not make unrelated simultaneous behaviors fight over one
 slot. Independent capabilities need their own state or counters. Serialize and
 hash the actual stored values for rollback.
 
-Port the current rules with a plain entity pool and focused per-type step
-functions: `StepZombie` and `StepChicken` each compose `Wander`, zombies add
-their attack rule, and rail layers/trains run their scripts. Move the
-zombie-only sprite reset out of Rust's `wander` helper into `StepZombie`.
+Port the current rules with a plain entity pool, an `InitEntityAs` switch on
+`EntityType` that calls the appropriate initializer, and a `StepEntity` switch
+that calls focused per-type steps. `StepZombie` and `StepChicken` each compose
+`Wander`; zombies add their attack rule, while rail layers and trains run their
+scripts. Move the zombie-only sprite reset out of Rust's `wander` helper into
+`StepZombie`.
 Keep common cooldown, damage, inventory, and removal work in shared helpers;
 player actions run in the input phase and item entities need no special AI
 tick. `MaybeGrowl` remains an optional common presentation pass: setting a
@@ -132,17 +136,14 @@ iteration for deterministic multiplayer. Gameplay-affecting random choices
 use saved gameplay RNG; growl timing and shake use cosmetic RNG outside hashes.
 
 Design this port for a larger, compositional Gauche, even though the source
-prototype is small. Splonks' compiled-in `EntSpec` table is useful for more
-than mods: it centralizes defaults and callbacks for many entity types, and
-lets related types share step logic while varying data. Keep that organizational
-option. Start with direct initializers and a type switch while the roster is
-small; if the switch and defaults become unwieldy, use a compact static table
-of type defaults and dispatch functions. Per-type steps should compose reusable
-behaviors, while truly cross-cutting capabilities can run in shared passes.
-Omit the giant Splonks physics/animation/flag matrix and runtime mod loading.
-Never store raw function pointers in synchronized state; recover any static
-dispatch from `EntityType` after snapshot restore. New gameplay state and AI
-transitions must be included in rollback snapshots and hashes.
+prototype is small. Keep authored specs/initializers and per-type logic in
+focused files; central enum switches only choose those functions. Shared
+functions implement reusable behaviors, and cross-cutting capabilities can run
+in common passes. A data-only table may centralize repetitive defaults later.
+Entity function pointers, a callback registry, Splonks' physics/animation/flag
+matrix, and runtime mod loading are unnecessary. `EntityType` plus stored
+gameplay fields are enough to restore dispatch after rollback. New gameplay
+state and AI transitions must be included in snapshots and hashes.
 
 For co-op, the host arbitrates input frames and session events. Each peer
 simulates the same deterministic gameplay tick; clients immediately predict

@@ -17,6 +17,10 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "fist", "medkit", "bandage", "bandaid", "conductor_hat",
     "train_head", "train_car_a", "train_car_b", "caboose", "rail", "rail_crossing",
     "train_blinkensign", "train_car_block_pole",
+    "buckler", "pistol", "musket", "bow", "rocket_launcher", "ammo", "bomb",
+    "key", "door", "exit", "spawner",
+    "forest_floor_a", "forest_floor_b", "forest_floor_c", "forest_grass",
+    "forest_ruin", "forest_wall",
 };
 
 constexpr std::array<std::string_view, 41> sound_names{
@@ -46,11 +50,14 @@ bool require_file(const std::filesystem::path& path, std::string& error) {
 
 } // namespace
 
-Graphics::~Graphics() {
-    for (SDL_Texture* texture : textures) {
+void unload_graphics(GameGraphics& graphics) {
+    for (SDL_Texture*& texture : graphics.textures) {
         SDL_DestroyTexture(texture);
+        texture = nullptr;
     }
 }
+
+GameGraphics::~GameGraphics() { unload_graphics(*this); }
 
 std::filesystem::path asset_root() {
     const std::filesystem::path beside_executable =
@@ -80,7 +87,7 @@ bool validate_assets(const std::filesystem::path& root, std::string& error) {
     return true;
 }
 
-bool load_graphics(Graphics& graphics, SDL_Renderer* renderer,
+bool load_graphics(GameGraphics& graphics, SDL_Renderer* renderer,
                    const std::filesystem::path& root, std::string& error) {
     for (std::size_t index = 0; index < sprite_names.size(); ++index) {
         const auto path = named_asset(root, "graphics", sprite_names[index], ".png");
@@ -95,6 +102,6 @@ bool load_graphics(Graphics& graphics, SDL_Renderer* renderer,
     return true;
 }
 
-SDL_Texture* texture_for(const Graphics& graphics, Sprite sprite) {
+SDL_Texture* texture_for(const GameGraphics& graphics, Sprite sprite) {
     return graphics.textures[static_cast<std::size_t>(sprite)];
 }

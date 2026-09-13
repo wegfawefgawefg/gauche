@@ -17,19 +17,23 @@ enum class Sprite : std::size_t {
     Fist, Medkit, Bandage, Bandaid, ConductorHat,
     TrainHead, TrainCarA, TrainCarB, Caboose, Rail, RailCrossing,
     TrainBlinkensign, TrainCarBlockPole,
+    Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb,
+    Key, Door, Exit, Spawner,
+    ForestFloorA, ForestFloorB, ForestFloorC, ForestGrass, ForestRuin, ForestWall,
     Count,
 };
 
-struct Graphics {
+struct GameGraphics {
     std::array<SDL_Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
-    Graphics() = default;
-    Graphics(const Graphics&) = delete;
-    Graphics& operator=(const Graphics&) = delete;
-    ~Graphics();
+    GameGraphics() = default;
+    GameGraphics(const GameGraphics&) = delete;
+    GameGraphics& operator=(const GameGraphics&) = delete;
+    ~GameGraphics();
 };
 
+void unload_graphics(GameGraphics& graphics);
 std::filesystem::path asset_root();
 bool validate_assets(const std::filesystem::path& root, std::string& error);
-bool load_graphics(Graphics& graphics, SDL_Renderer* renderer,
+bool load_graphics(GameGraphics& graphics, SDL_Renderer* renderer,
                    const std::filesystem::path& root, std::string& error);
-SDL_Texture* texture_for(const Graphics& graphics, Sprite sprite);
+SDL_Texture* texture_for(const GameGraphics& graphics, Sprite sprite);

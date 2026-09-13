@@ -64,6 +64,27 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             break;
         case EntityKind::GroundItem:
             break;
+        case EntityKind::Key:
+            entity.health = entity.max_health = 1;
+            entity.sprite = Sprite::Key;
+            break;
+        case EntityKind::Door:
+            entity.health = entity.max_health = 1;
+            entity.impassable = true;
+            entity.hard_blocker = true;
+            entity.sprite = Sprite::Door;
+            break;
+        case EntityKind::Exit:
+            entity.health = entity.max_health = 1;
+            entity.sprite = Sprite::Exit;
+            break;
+        case EntityKind::Spawner:
+            entity.health = entity.max_health = 50;
+            entity.impassable = true;
+            entity.hard_blocker = true;
+            entity.spawn_wait = 120;
+            entity.sprite = Sprite::Spawner;
+            break;
         case EntityKind::None:
             break;
         }
@@ -144,6 +165,7 @@ Cell open_cell(Game& game, Cell center, int radius) {
 void start_test_arena(Game& game, std::uint64_t seed) {
     game = {};
     game.rng = seed == 0 ? 1 : seed;
+    game.run.phase = RunPhase::Arena;
     game.stage.width = 64;
     game.stage.height = 64;
     game.stage.tiles.resize(64U * 64U);

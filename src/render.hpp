@@ -2,4 +2,4 @@
 
 #include "game.hpp"
 
-void render_game(SDL_Renderer* renderer, const Graphics& graphics, const Game& game);
+void render_game(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game);

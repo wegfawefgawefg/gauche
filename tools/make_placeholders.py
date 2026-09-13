@@ -1,0 +1,127 @@
+"""Small editable 16px placeholders for C++-only Gauche content."""
+
+from pathlib import Path
+
+from PIL import Image, ImageDraw
+
+
+OUT = Path(__file__).resolve().parents[1] / "assets" / "graphics"
+INK = "#171d23"
+IRON = "#93a5a6"
+LIGHT = "#d5ded2"
+GOLD = "#e7b744"
+WOOD = "#895832"
+RED = "#cf6447"
+GREEN = "#83ca73"
+
+
+def canvas():
+    image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    return image, ImageDraw.Draw(image)
+
+
+def save(name, image):
+    image.save(OUT / f"{name}.png")
+
+
+image, draw = canvas()
+draw.ellipse((2, 2, 13, 13), fill=IRON, outline=INK)
+draw.ellipse((4, 4, 11, 11), fill="#637b80", outline=LIGHT)
+draw.rectangle((7, 6, 8, 9), fill=GOLD)
+save("buckler", image)
+
+image, draw = canvas()
+draw.rectangle((2, 5, 13, 8), fill=IRON, outline=INK)
+draw.rectangle((4, 8, 7, 13), fill=WOOD, outline=INK)
+draw.rectangle((11, 5, 13, 6), fill=LIGHT)
+save("pistol", image)
+
+image, draw = canvas()
+draw.rectangle((1, 6, 14, 7), fill=IRON, outline=INK)
+draw.line((3, 9, 12, 9), fill=WOOD, width=3)
+draw.line((3, 9, 1, 11), fill=WOOD, width=2)
+save("musket", image)
+
+image, draw = canvas()
+draw.arc((2, 1, 13, 14), 85, 275, fill=WOOD, width=2)
+draw.line((7, 2, 7, 13), fill=LIGHT)
+draw.line((3, 8, 12, 8), fill=IRON)
+draw.polygon(((12, 6), (15, 8), (12, 10)), fill=GOLD)
+save("bow", image)
+
+image, draw = canvas()
+draw.polygon(((13, 4), (15, 8), (13, 12)), fill=RED)
+draw.rectangle((3, 5, 12, 11), fill="#7f9b77", outline=INK)
+draw.rectangle((1, 7, 3, 9), fill=WOOD)
+draw.line((5, 7, 10, 7), fill=LIGHT)
+save("rocket_launcher", image)
+
+image, draw = canvas()
+draw.rectangle((2, 4, 13, 13), fill=WOOD, outline=INK)
+for x in (4, 7, 10):
+    draw.rectangle((x, 5, x + 1, 10), fill=GOLD)
+save("ammo", image)
+
+image, draw = canvas()
+draw.ellipse((3, 5, 13, 15), fill=INK, outline=IRON)
+draw.line((8, 5, 10, 2), fill=WOOD, width=2)
+draw.line((10, 2, 12, 1), fill=GOLD, width=2)
+save("bomb", image)
+
+image, draw = canvas()
+draw.ellipse((2, 2, 8, 8), outline=GOLD, width=2)
+draw.line((7, 7, 13, 13), fill=GOLD, width=2)
+draw.rectangle((11, 11, 13, 14), fill=GOLD)
+save("key", image)
+
+image, draw = canvas()
+draw.rectangle((1, 0, 14, 15), fill=INK, outline=IRON)
+draw.rectangle((3, 2, 12, 14), fill="#56656a", outline=LIGHT)
+draw.line((5, 3, 5, 13), fill=INK)
+draw.line((10, 3, 10, 13), fill=INK)
+draw.rectangle((7, 8, 9, 10), fill=GOLD)
+save("door", image)
+
+image, draw = canvas()
+draw.rectangle((1, 1, 14, 15), fill=INK, outline=GREEN)
+draw.rectangle((3, 3, 12, 14), fill="#284840", outline="#c0e9a8")
+draw.polygon(((5, 8), (9, 8), (9, 5), (13, 10), (9, 14), (9, 11), (5, 11)), fill=GREEN)
+save("exit", image)
+
+image, draw = canvas()
+draw.ellipse((1, 4, 14, 14), fill="#663a35", outline=RED)
+draw.ellipse((4, 5, 11, 12), fill=INK, outline="#b66c58")
+draw.ellipse((5, 8, 6, 9), fill=RED)
+draw.ellipse((9, 8, 10, 9), fill=RED)
+save("spawner", image)
+
+
+def terrain(name, seed, base, flecks):
+    import random
+
+    rng = random.Random(seed)
+    image = Image.new("RGBA", (16, 16), base)
+    draw = ImageDraw.Draw(image)
+    for _ in range(28):
+        x = rng.randrange(16)
+        y = rng.randrange(16)
+        draw.point((x, y), fill=rng.choice(flecks))
+    save(name, image)
+
+
+terrain("forest_floor_a", 1, "#253027", ["#314434", "#394938", "#1d2922"])
+terrain("forest_floor_b", 2, "#263128", ["#334937", "#405341", "#1a261e"])
+terrain("forest_floor_c", 3, "#253028", ["#334b36", "#4a5942", "#1b2921"])
+terrain("forest_grass", 4, "#2b3b2d", ["#477047", "#5a7850", "#203022"])
+terrain("forest_ruin", 5, "#3a403b", ["#545c51", "#66705d", "#2a352c"])
+
+image, draw = canvas()
+draw.rectangle((0, 0, 15, 15), fill="#344039")
+draw.rectangle((0, 0, 15, 2), fill="#697b5d")
+draw.line((0, 8, 15, 8), fill="#242e28")
+draw.line((6, 3, 6, 8), fill="#222d27")
+draw.line((11, 9, 11, 15), fill="#232d27")
+draw.line((1, 1, 1, 5), fill="#59764c")
+draw.line((12, 2, 12, 6), fill="#54764a")
+draw.point((13, 7), fill="#7e9569")
+save("forest_wall", image)

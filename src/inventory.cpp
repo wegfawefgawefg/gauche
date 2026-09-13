@@ -25,6 +25,13 @@ Sprite item_sprite(ItemKind kind) {
     case ItemKind::Bandage: return Sprite::Bandage;
     case ItemKind::Bandaid: return Sprite::Bandaid;
     case ItemKind::ConductorHat: return Sprite::ConductorHat;
+    case ItemKind::Buckler: return Sprite::Buckler;
+    case ItemKind::Pistol: return Sprite::Pistol;
+    case ItemKind::Musket: return Sprite::Musket;
+    case ItemKind::Bow: return Sprite::Bow;
+    case ItemKind::RocketLauncher: return Sprite::RocketLauncher;
+    case ItemKind::Ammo: return Sprite::Ammo;
+    case ItemKind::Bomb: return Sprite::Bomb;
     default: return Sprite::Fist;
     }
 }
@@ -51,6 +58,7 @@ const char* item_name(ItemKind kind) {
 
 bool insert_item(Inventory& inventory, Item item) {
     if (item.kind == ItemKind::None || item.count <= 0) return false;
+    const Inventory original = inventory;
     const bool stackable = item.kind == ItemKind::Wall || item.kind == ItemKind::Medkit ||
         item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid || item.kind == ItemKind::Bomb;
     const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
@@ -69,5 +77,6 @@ bool insert_item(Inventory& inventory, Item item) {
             return true;
         }
     }
+    inventory = original;
     return false;
 }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cmath>
 
 namespace {
 
@@ -13,11 +14,24 @@ SDL_FRect tile_rect(Cell cell, Cell camera) {
             tile_pixels, tile_pixels};
 }
 
-void sprite(SDL_Renderer* renderer, const Graphics& graphics, Sprite id, SDL_FRect rect) {
+void sprite(SDL_Renderer* renderer, const GameGraphics& graphics, Sprite id, SDL_FRect rect) {
     SDL_RenderTexture(renderer, texture_for(graphics, id), nullptr, &rect);
 }
 
-Sprite tile_sprite(const Tile& tile, std::uint64_t tick) {
+Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, bool forest) {
+    if (forest) {
+        switch (tile.kind) {
+        case TileKind::Empty: {
+            const unsigned int variant = static_cast<unsigned int>(cell.x * 17 + cell.y * 31) % 3U;
+            return variant == 0 ? Sprite::ForestFloorA :
+                   (variant == 1 ? Sprite::ForestFloorB : Sprite::ForestFloorC);
+        }
+        case TileKind::Grass: return Sprite::ForestGrass;
+        case TileKind::Wall: return Sprite::ForestWall;
+        case TileKind::Ruin: return Sprite::ForestRuin;
+        default: break;
+        }
+    }
     switch (tile.kind) {
     case TileKind::Grass: return Sprite::Grass;
     case TileKind::Wall: return Sprite::Wall;
@@ -29,14 +43,16 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick) {
     }
 }
 
-void draw_world(SDL_Renderer* renderer, const Graphics& graphics, const Game& game, Cell camera) {
+void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game, Cell camera) {
     for (int y = camera.y - 6; y <= camera.y + 6; ++y) {
         for (int x = camera.x - 11; x <= camera.x + 11; ++x) {
             const Cell cell{x, y};
             const Tile* tile = game.stage.at(cell);
-            if (tile == nullptr || tile->kind == TileKind::Empty) continue;
+            if (tile == nullptr ||
+                (tile->kind == TileKind::Empty && game.run.phase == RunPhase::Arena)) continue;
             SDL_FRect rect = tile_rect(cell, camera);
-            sprite(renderer, graphics, tile_sprite(*tile, game.tick), rect);
+            sprite(renderer, graphics, tile_sprite(*tile, game.tick, cell,
+                   game.run.phase != RunPhase::Arena), rect);
             if (tile->kind == TileKind::Wall && tile->hp < 100) {
                 SDL_SetRenderDrawColor(renderer, 30, 15, 15, 115);
                 SDL_RenderFillRect(renderer, &rect);
@@ -44,11 +60,12 @@ void draw_world(SDL_Renderer* renderer, const Graphics& graphics, const Game& ga
         }
     }
     for (const Entity& entity : game.entities) {
-        if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer) continue;
+        if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
+            (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera);
         if (rect.x < -tile_pixels || rect.x > 640.0F || rect.y < -tile_pixels || rect.y > 360.0F)
             continue;
-        if (entity.kind == EntityKind::GroundItem) {
+        if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key) {
             rect.x += 8.0F; rect.y += 8.0F; rect.w = rect.h = 16.0F;
         }
         sprite(renderer, graphics, entity.sprite, rect);
@@ -74,7 +91,126 @@ void draw_world(SDL_Renderer* renderer, const Graphics& graphics, const Game& ga
     }
 }
 
-void draw_hud(SDL_Renderer* renderer, const Graphics& graphics, const Entity& player) {
+bool clear_light_path(const Stage& stage, Cell from, Cell to) {
+    int x = from.x;
+    int y = from.y;
+    const int dx = std::abs(to.x - from.x);
+    const int dy = std::abs(to.y - from.y);
+    const int sx = from.x < to.x ? 1 : -1;
+    const int sy = from.y < to.y ? 1 : -1;
+    int error = dx - dy;
+    while (x != to.x || y != to.y) {
+        const int twice = error * 2;
+        if (twice > -dy) { error -= dy; x += sx; }
+        if (twice < dx) { error += dx; y += sy; }
+        if (x == to.x && y == to.y) break;
+        const Tile* tile = stage.at({x, y});
+        if (tile != nullptr && tile->kind == TileKind::Wall) return false;
+    }
+    return true;
+}
+
+float light_from(const Stage& stage, Cell source, Cell cell, float radius) {
+    const float dx = static_cast<float>(source.x - cell.x);
+    const float dy = static_cast<float>(source.y - cell.y);
+    const float distance_to_light = std::sqrt(dx * dx + dy * dy);
+    if (distance_to_light >= radius || !clear_light_path(stage, source, cell)) return 0.0F;
+    return 1.0F - distance_to_light / radius;
+}
+
+void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera) {
+    if (game.run.phase == RunPhase::Arena) return;
+    const Entity* player = get_entity(game, game.players[0]);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    for (int y = camera.y - 6; y <= camera.y + 6; ++y) {
+        for (int x = camera.x - 11; x <= camera.x + 11; ++x) {
+            const Cell cell{x, y};
+            if (!game.stage.in_bounds(cell)) continue;
+            float light = 0.16F;
+            if (player != nullptr) light = std::max(light,
+                light_from(game.stage, player->cell, cell, 7.0F));
+            for (int index = 0; index < game.run.roof_light_count; ++index)
+                light = std::max(light, light_from(game.stage,
+                    game.run.roof_lights[static_cast<std::size_t>(index)], cell, 5.0F));
+            light = std::max(light, light_from(game.stage, game.run.exit, cell, 4.0F));
+            const auto darkness = static_cast<std::uint8_t>((1.0F - light) * 195.0F);
+            SDL_SetRenderDrawColor(renderer, 3, 6, 8, darkness);
+            SDL_FRect rect = tile_rect(cell, camera);
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+const char* artifact_name(ArtifactKind kind) {
+    switch (kind) {
+    case ArtifactKind::AllPiercing: return "All Piercing";
+    case ArtifactKind::Reflector: return "Reflector";
+    case ArtifactKind::Hearth: return "Hearth";
+    case ArtifactKind::FleetFeet: return "Fleet Feet";
+    default: return "Artifact";
+    }
+}
+
+void draw_interlude(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game) {
+    if (game.run.phase != RunPhase::Reward && game.run.phase != RunPhase::Shop &&
+        game.run.phase != RunPhase::Won) return;
+    SDL_SetRenderDrawColor(renderer, 8, 12, 13, 228);
+    const SDL_FRect overlay{0.0F, 0.0F, 640.0F, 360.0F};
+    SDL_RenderFillRect(renderer, &overlay);
+    if (game.run.phase == RunPhase::Won) {
+        SDL_RenderDebugText(renderer, 256.0F, 140.0F, "RUN CLEARED");
+        return;
+    }
+    SDL_RenderDebugText(renderer, 35.0F, 32.0F,
+                        game.run.phase == RunPhase::Reward ?
+                            "CHOOSE ONE REWARD" : "TRAVELING SHOP");
+    for (int index = 0; index < 3; ++index) {
+        const float x = 35.0F + static_cast<float>(index) * 196.0F;
+        SDL_FRect card{x, 70.0F, 178.0F, 165.0F};
+        SDL_SetRenderDrawColor(renderer, 177, 159, 106, 255);
+        SDL_RenderRect(renderer, &card);
+        char key[8];
+        std::snprintf(key, sizeof(key), "%d", index + 1);
+        SDL_RenderDebugText(renderer, x + 10.0F, 81.0F, key);
+        if (game.run.phase == RunPhase::Reward) {
+            const Reward reward = game.run.offers[0][static_cast<std::size_t>(index)];
+            const char* name = "";
+            switch (reward.kind) {
+            case RewardKind::Item:
+                name = item_name(reward.item);
+                sprite(renderer, graphics, item_sprite(reward.item),
+                       {x + 69.0F, 111.0F, 40.0F, 40.0F});
+                break;
+            case RewardKind::Artifact: name = artifact_name(reward.artifact); break;
+            case RewardKind::Health: name = "+20 Max HP"; break;
+            case RewardKind::Speed: name = "Faster Steps"; break;
+            }
+            SDL_RenderDebugText(renderer, x + 10.0F, 165.0F, name);
+        } else {
+            const ItemKind kind = game.run.shop_stock[static_cast<std::size_t>(index)];
+            if (kind != ItemKind::None)
+                sprite(renderer, graphics, item_sprite(kind),
+                       {x + 69.0F, 111.0F, 40.0F, 40.0F});
+            SDL_RenderDebugText(renderer, x + 10.0F, 165.0F, item_name(kind));
+            if (kind != ItemKind::None) {
+                char cost[24];
+                std::snprintf(cost, sizeof(cost), "%d coins", shop_price(kind));
+                SDL_RenderDebugText(renderer, x + 10.0F, 189.0F, cost);
+            }
+        }
+    }
+    if (game.run.phase == RunPhase::Reward) {
+        SDL_RenderDebugText(renderer, 35.0F, 265.0F, "1-3 CHOOSE    Q DROP HELD ITEM IF PACK FULL");
+    } else {
+        char coins[32];
+        std::snprintf(coins, sizeof(coins), "COINS %d", game.run.coins[0]);
+        SDL_RenderDebugText(renderer, 35.0F, 265.0F, coins);
+        SDL_RenderDebugText(renderer, 35.0F, 289.0F, "ENTER TO CONTINUE");
+    }
+}
+
+void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity& player) {
     SDL_FRect panel{0.0F, 290.0F, 640.0F, 70.0F};
     SDL_SetRenderDrawColor(renderer, 12, 15, 17, 245);
     SDL_RenderFillRect(renderer, &panel);
@@ -112,11 +248,19 @@ void draw_hud(SDL_Renderer* renderer, const Graphics& graphics, const Entity& pl
 
 } // namespace
 
-void render_game(SDL_Renderer* renderer, const Graphics& graphics, const Game& game) {
+void render_game(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game) {
     const Entity* player = get_entity(game, game.players[0]);
     const Cell camera = player == nullptr ? Cell{32, 32} : player->cell;
     draw_world(renderer, graphics, game, camera);
+    draw_lighting(renderer, game, camera);
     if (player != nullptr) draw_hud(renderer, graphics, *player);
+    if (game.run.phase != RunPhase::Arena) {
+        char floor[64];
+        std::snprintf(floor, sizeof(floor), "FOREST %d/4   %s", game.run.floor,
+                      game.run.has_key ? "KEY FOUND" : "FIND KEY");
+        SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
+    }
+    draw_interlude(renderer, graphics, game);
     if (game.game_over) {
         SDL_SetRenderDrawColor(renderer, 8, 8, 9, 190);
         SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

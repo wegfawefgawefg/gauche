@@ -100,7 +100,8 @@ bool shove(Game& game, int user_slot, Cell direction) {
 void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
-        entity.kind == EntityKind::RailLayer || damage <= 0) return;
+        entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
+        entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit || damage <= 0) return;
     Item* held = entity.inventory.held();
     if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
         entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
@@ -110,6 +111,20 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     }
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;
+    if (entity.health == 0 && entity.kind == EntityKind::Player) {
+        entity.impassable = false;
+        entity.sprite = Sprite::PlayerDead;
+        entity.spawn_wait = 180;
+    }
+    if (entity.health == 0 && entity.kind == EntityKind::Zombie) {
+        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
+            const Entity* player = get_entity(game, game.players[owner]);
+            if (player != nullptr && player->cell == attacker) {
+                game.run.coins[owner] += 5;
+                break;
+            }
+        }
+    }
 }
 
 bool use_held_item(Game& game, int user_slot, Cell target) {

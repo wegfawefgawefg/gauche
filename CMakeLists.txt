@@ -31,7 +31,7 @@ endif()
 
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
-    src/inventory.cpp src/item.cpp src/step.cpp src/input.cpp src/render.cpp)
+    src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp src/render.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3 SDL3_image::SDL3_image)
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
@@ -60,7 +60,7 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(gauche_tests
         tests/game_test.cpp src/stage.cpp src/entity.cpp src/inventory.cpp
-        src/item.cpp src/step.cpp)
+        src/item.cpp src/step.cpp src/run.cpp)
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME game_rules COMMAND gauche_tests)

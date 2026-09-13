@@ -63,7 +63,10 @@ Sprite item_sprite(ItemKind kind);
 const char* item_name(ItemKind kind);
 bool insert_item(Inventory& inventory, Item item);
 
-enum class EntityKind : std::uint8_t { None, Player, Zombie, Chicken, RailLayer, Train, GroundItem };
+enum class EntityKind : std::uint8_t {
+    None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
+    Key, Door, Exit, Spawner,
+};
 struct Entity {
     EntityKind kind = EntityKind::None;
     std::uint32_t generation = 0;
@@ -80,11 +83,14 @@ struct Entity {
     int use_flash = 0;
     int block_ticks = 0;
     int script_tick = 0;
+    std::uint32_t artifacts = 0;
     int train_cars_left = 0;
+    int spawn_wait = 0;
     Cell train_origin{};
     std::uint64_t birth_tick = 0;
     bool impassable = false;
     bool hard_blocker = false;
+    bool fixture_open = false;
     Inventory inventory{};
     Item ground_item{};
 };
@@ -103,7 +109,35 @@ struct Input {
     bool pickup = false;
     bool drop = false;
     bool reload = false;
+    bool interact = false;
+    bool confirm = false;
     int select = -1;
+};
+
+enum class RunPhase : std::uint8_t { Arena, Playing, Reward, Shop, Won };
+enum class DeathPolicy : std::uint8_t { NoRespawn, Entrance, NextFloor };
+enum class RewardKind : std::uint8_t { Item, Artifact, Health, Speed };
+enum class ArtifactKind : std::uint8_t { None, AllPiercing, Reflector, Hearth, FleetFeet };
+struct Reward {
+    RewardKind kind = RewardKind::Item;
+    ItemKind item = ItemKind::None;
+    ArtifactKind artifact = ArtifactKind::None;
+    int amount = 0;
+};
+struct Run {
+    RunPhase phase = RunPhase::Arena;
+    int floor = 0;
+    std::array<int, 4> coins{};
+    bool has_key = false;
+    std::array<bool, 4> chosen{};
+    std::array<std::array<Reward, 3>, 4> offers{};
+    std::array<ItemKind, 3> shop_stock{};
+    std::uint64_t seed = 1;
+    DeathPolicy death_policy = DeathPolicy::NextFloor;
+    Cell spawn{};
+    Cell exit{};
+    std::array<Cell, 16> roof_lights{};
+    int roof_light_count = 0;
 };
 
 struct Game {
@@ -114,6 +148,7 @@ struct Game {
     std::uint64_t tick = 0;
     bool started = false;
     bool game_over = false;
+    Run run{};
 };
 
 std::uint32_t random_u32(Game& game);
@@ -127,5 +162,14 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker);
 bool use_held_item(Game& game, int user_slot, Cell target);
 bool reload_held_item(Game& game, int user_slot);
 void start_test_arena(Game& game, std::uint64_t seed);
+void start_run(Game& game, std::uint64_t seed);
+void generate_forest_floor(Game& game);
+bool floor_reachable(const Game& game);
+bool interact_with_fixture(Game& game, int owner, Cell target);
+void finish_floor(Game& game);
+void choose_reward(Game& game, int owner, int choice);
+void buy_shop_item(Game& game, int owner, int choice);
+int shop_price(ItemKind kind);
+void advance_run(Game& game);
 void step_game(Game& game, const std::array<Input, 4>& inputs);
 std::uint64_t game_hash(const Game& game);

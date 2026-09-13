@@ -92,10 +92,32 @@ bool track_before_train() {
            check(train, "train did not follow completed track");
 }
 
+bool forest_progression() {
+    for (std::uint64_t seed = 1; seed <= 64; ++seed) {
+        Game game;
+        start_run(game, seed);
+        if (!check(floor_reachable(game), "generated forest floor is locked")) return false;
+        for (int floor = 1; floor <= 4; ++floor) {
+            if (!check(game.run.floor == floor, "floor number drifted")) return false;
+            if (!check(floor_reachable(game), "later forest floor is locked")) return false;
+            finish_floor(game);
+            choose_reward(game, 0, 1);
+            if (game.run.phase == RunPhase::Reward) {
+                Entity* player = get_entity(game, game.players[0]);
+                player->inventory.slots[0] = {};
+                choose_reward(game, 0, 1);
+            }
+            if (game.run.phase == RunPhase::Shop) advance_run(game);
+        }
+    }
+    return true;
+}
+
 } // namespace
 
 int main() {
-    if (!deterministic_replay() || !handle_reuse() || !buckler_rules() || !track_before_train())
+    if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
+        !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");
     return 0;

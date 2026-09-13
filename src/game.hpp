@@ -203,6 +203,5 @@ void buy_shop_item(Game& game, int owner, int choice);
 int shop_price(ItemKind kind);
 void advance_run(Game& game);
 void step_game(Game& game, const std::array<Input, 4>& inputs);
-void step_enemy(Game& game, int slot);
 void step_traps(Game& game);
 std::uint64_t game_hash(const Game& game);

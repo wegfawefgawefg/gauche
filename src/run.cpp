@@ -10,10 +10,10 @@ namespace {
 
 Reward random_reward(Game& game, int category) {
     if (category == 0) {
-        constexpr std::array<ItemKind, 8> items{
+        constexpr std::array<ItemKind, 10> items{
             ItemKind::Pistol, ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Medkit, ItemKind::RocketLauncher,
-            ItemKind::SleepMeds};
+            ItemKind::SleepMeds, ItemKind::Shotgun, ItemKind::SMG};
         const ItemKind kind = items[random_u32(game) % items.size()];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::Bomb ? 3 :
@@ -38,6 +38,10 @@ int price(ItemKind kind) {
     case ItemKind::Pistol: return 45;
     case ItemKind::Musket: return 50;
     case ItemKind::RocketLauncher: return 90;
+    case ItemKind::Shotgun: return 70;
+    case ItemKind::SMG: return 75;
+    case ItemKind::BearTrap: return 18;
+    case ItemKind::Mine: return 28;
     default: return 25;
     }
 }
@@ -163,8 +167,10 @@ void advance_run(Game& game) {
         if (game.run.floor % 2 == 0) {
             game.run.phase = RunPhase::Shop;
             game.run.shop_ready.fill(false);
-            game.run.shop_stock = {ItemKind::Bandage, ItemKind::Buckler,
-                                   game.run.floor > 2 ? ItemKind::RocketLauncher : ItemKind::Pistol};
+            game.run.shop_stock = {ItemKind::Bandage,
+                                   game.run.floor > 4 ? ItemKind::Mine : ItemKind::Buckler,
+                                   game.run.floor > 8 ? ItemKind::RocketLauncher :
+                                   (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
             return;
         }
         ready_next_floor(game);

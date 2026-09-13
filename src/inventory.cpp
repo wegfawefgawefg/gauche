@@ -13,6 +13,8 @@ Item make_item(ItemKind kind, int count) {
     case ItemKind::Musket: item.loaded = 1; item.spare = 12; break;
     case ItemKind::Bow: item.loaded = 1; item.spare = 20; break;
     case ItemKind::RocketLauncher: item.loaded = 1; item.spare = 4; break;
+    case ItemKind::Shotgun: item.loaded = 6; item.spare = 30; break;
+    case ItemKind::SMG: item.loaded = 30; item.spare = 120; break;
     default: break;
     }
     return item;
@@ -33,6 +35,11 @@ Sprite item_sprite(ItemKind kind) {
     case ItemKind::Ammo: return Sprite::Ammo;
     case ItemKind::Bomb: return Sprite::Bomb;
     case ItemKind::SleepMeds: return Sprite::SleepMeds;
+    case ItemKind::Stick: return Sprite::Stick;
+    case ItemKind::Shotgun: return Sprite::Shotgun;
+    case ItemKind::SMG: return Sprite::SMG;
+    case ItemKind::BearTrap: return Sprite::BearTrap;
+    case ItemKind::Mine: return Sprite::Mine;
     default: return Sprite::Fist;
     }
 }
@@ -54,6 +61,11 @@ const char* item_name(ItemKind kind) {
     case ItemKind::Ammo: return "Ammo";
     case ItemKind::Bomb: return "Bomb";
     case ItemKind::SleepMeds: return "Sleep Meds";
+    case ItemKind::Stick: return "Stick";
+    case ItemKind::Shotgun: return "Shotgun";
+    case ItemKind::SMG: return "SMG";
+    case ItemKind::BearTrap: return "Bear Trap";
+    case ItemKind::Mine: return "Mine";
     }
     return "Unknown";
 }
@@ -63,7 +75,8 @@ bool insert_item(Inventory& inventory, Item item) {
     const Inventory original = inventory;
     const bool stackable = item.kind == ItemKind::Wall || item.kind == ItemKind::Medkit ||
         item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid ||
-        item.kind == ItemKind::Bomb || item.kind == ItemKind::SleepMeds;
+        item.kind == ItemKind::Bomb || item.kind == ItemKind::SleepMeds ||
+        item.kind == ItemKind::BearTrap || item.kind == ItemKind::Mine;
     const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
     if (stackable) {
         for (Item& slot : inventory.slots) {

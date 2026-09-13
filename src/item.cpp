@@ -7,12 +7,15 @@ namespace {
 
 bool is_gun(ItemKind kind) {
     return kind == ItemKind::Pistol || kind == ItemKind::Musket ||
-           kind == ItemKind::Bow || kind == ItemKind::RocketLauncher;
+           kind == ItemKind::Bow || kind == ItemKind::RocketLauncher ||
+           kind == ItemKind::Shotgun || kind == ItemKind::SMG;
 }
 
 int magazine_size(ItemKind kind) {
     switch (kind) {
     case ItemKind::Pistol: return 12;
+    case ItemKind::Shotgun: return 6;
+    case ItemKind::SMG: return 30;
     case ItemKind::Musket: case ItemKind::Bow: case ItemKind::RocketLauncher: return 1;
     default: return 0;
     }
@@ -48,9 +51,16 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
     const bool piercing = has_artifact(user, ArtifactKind::AllPiercing) &&
                           item.kind != ItemKind::RocketLauncher;
-    const int range = item.kind == ItemKind::Pistol ? 9 : 14;
-    const int damage = item.kind == ItemKind::Pistol ? 16 :
-                       (item.kind == ItemKind::RocketLauncher ? 80 : 35);
+    int range = 14;
+    int damage = 35;
+    int cooldown = 40;
+    switch (item.kind) {
+    case ItemKind::Pistol: range = 9; damage = 16; cooldown = 12; break;
+    case ItemKind::Shotgun: range = 5; damage = 48; cooldown = 32; break;
+    case ItemKind::SMG: range = 8; damage = 9; cooldown = 4; break;
+    case ItemKind::RocketLauncher: damage = 80; cooldown = 48; break;
+    default: break;
+    }
     Cell cell = user.cell;
     for (int step = 0; step < range; ++step) {
         cell = cell + direction;
@@ -78,7 +88,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
             blast(game, cell, 2, damage, user.cell);
     }
     --item.loaded;
-    item.cooldown = item.kind == ItemKind::Pistol ? 12 : 40;
+    item.cooldown = cooldown;
     emit_sound(game, item.kind == ItemKind::RocketLauncher ? SoundId::Explosion1 :
                SoundId::SmallLaser, user.cell);
     return true;
@@ -125,6 +135,10 @@ bool shove(Game& game, int user_slot, Cell direction) {
 
 } // namespace
 
+void blast_area(Game& game, Cell center, int radius, int damage, Cell attacker) {
+    blast(game, center, radius, damage, attacker);
+}
+
 namespace {
 
 void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
@@ -141,7 +155,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     }
     if (entity.health == 0 && entity.kind != EntityKind::Player &&
         entity.kind != EntityKind::Chicken && entity.kind != EntityKind::Bunny &&
-        entity.kind != EntityKind::Train) {
+        entity.kind != EntityKind::Train && entity.kind != EntityKind::Trap) {
         for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
             const Entity* player = get_entity(game, game.players[owner]);
             if (player != nullptr && player->cell == attacker) {
@@ -212,14 +226,15 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
                        (item.kind == ItemKind::Bandage ? 120 : 12);
         }
         break;
-    case ItemKind::Fist:
+    case ItemKind::Fist: case ItemKind::Stick:
         if (range == 1) {
             const int hit = entity_at(game, target, true);
             if (hit >= 0 && hit != user_slot) {
-                damage_entity(game, hit, 10, user.cell);
+                damage_entity(game, hit, item.kind == ItemKind::Stick ? 17 : 10, user.cell);
                 used = true;
-            } else used = damage_tile(game.stage, target, 10);
-            cooldown = 12;
+            } else used = damage_tile(game.stage, target,
+                                      item.kind == ItemKind::Stick ? 17 : 10);
+            cooldown = item.kind == ItemKind::Stick ? 16 : 12;
         }
         break;
     case ItemKind::ConductorHat: {
@@ -235,7 +250,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         cooldown = 30;
         break;
     case ItemKind::Pistol: case ItemKind::Musket: case ItemKind::Bow:
-    case ItemKind::RocketLauncher:
+    case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
         used = fire_weapon(game, user_slot, direction, item);
         return used;
     case ItemKind::Bomb:
@@ -256,10 +271,27 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             }
         }
         break;
+    case ItemKind::BearTrap: case ItemKind::Mine:
+        if (range == 1) {
+            const Tile* tile = game.stage.at(target);
+            if (tile != nullptr && walkable(tile->kind) &&
+                entity_at(game, target) < 0) {
+                const Handle trap = spawn_entity(game, EntityKind::Trap, target);
+                if (Entity* placed = get_entity(game, trap)) {
+                    placed->owner = user.owner;
+                    placed->ground_item = make_item(item.kind);
+                    placed->sprite = item_sprite(item.kind);
+                    used = consumed = true;
+                    cooldown = 20;
+                }
+            }
+        }
+        break;
     case ItemKind::Ammo:
         for (Item& weapon : user.inventory.slots) {
             if (is_gun(weapon.kind)) {
-                weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 : 12;
+                weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 :
+                                std::max(12, magazine_size(weapon.kind) * 3);
                 used = true;
             }
         }
@@ -275,11 +307,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
         case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
             emit_sound(game, SoundId::ClothRip, user.cell); break;
-        case ItemKind::Fist: emit_sound(game, SoundId::Punch1, user.cell); break;
+        case ItemKind::Fist: case ItemKind::Stick:
+            emit_sound(game, SoundId::Punch1, user.cell); break;
         case ItemKind::ConductorHat:
             emit_sound(game, SoundId::DistantTrainSound, user.cell); break;
         case ItemKind::Buckler: emit_sound(game, SoundId::HitBlock1, user.cell); break;
         case ItemKind::SleepMeds: emit_sound(game, SoundId::ClothRip, target); break;
+        case ItemKind::BearTrap: case ItemKind::Mine:
+            emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
         }
         if (consumed && --item.count <= 0) item = {};

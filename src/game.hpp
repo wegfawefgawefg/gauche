@@ -48,6 +48,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage);
 enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
     Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
+    Stick, Shotgun, SMG, BearTrap, Mine,
 };
 
 struct Item {
@@ -74,7 +75,7 @@ bool insert_item(Inventory& inventory, Item item);
 
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
-    Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat,
+    Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
 };
 struct Entity {
     EntityKind kind = EntityKind::None;
@@ -181,6 +182,7 @@ int entity_at(const Game& game, Cell cell, bool impassable_only = false);
 bool move_entity(Game& game, int slot, Cell destination);
 void damage_entity(Game& game, int slot, int damage, Cell attacker);
 void crush_entity(Game& game, int slot, Cell attacker);
+void blast_area(Game& game, Cell center, int radius, int damage, Cell attacker);
 bool use_held_item(Game& game, int user_slot, Cell target);
 bool reload_held_item(Game& game, int user_slot);
 void start_test_arena(Game& game, std::uint64_t seed);
@@ -195,4 +197,5 @@ int shop_price(ItemKind kind);
 void advance_run(Game& game);
 void step_game(Game& game, const std::array<Input, 4>& inputs);
 void step_enemy(Game& game, int slot);
+void step_traps(Game& game);
 std::uint64_t game_hash(const Game& game);

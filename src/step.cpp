@@ -218,6 +218,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         default: break;
         }
     }
+    step_traps(game);
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& entity = game.entities[static_cast<std::size_t>(slot)];
         if (entity.kind != EntityKind::None && entity.kind != EntityKind::Player &&

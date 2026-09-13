@@ -31,7 +31,7 @@ endif()
 
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
-    src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/run.cpp src/rooms.cpp src/input.cpp
+    src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp src/input.cpp
     src/render.cpp src/audio.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp)
@@ -67,19 +67,19 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(gauche_tests
         tests/game_test.cpp src/stage.cpp src/entity.cpp src/inventory.cpp
-        src/item.cpp src/step.cpp src/enemy_step.cpp src/run.cpp src/rooms.cpp)
+        src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME game_rules COMMAND gauche_tests)
     add_executable(gauche_rollback_tests
         tests/rollback_test.cpp src/rollback.cpp src/stage.cpp src/entity.cpp
-        src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/run.cpp src/rooms.cpp)
+        src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
     add_executable(gauche_codec_tests
         tests/net_codec_test.cpp src/net_codec.cpp src/stage.cpp src/entity.cpp
-        src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/run.cpp src/rooms.cpp)
+        src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
     target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
@@ -93,7 +93,7 @@ if(BUILD_TESTING)
         tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
-        src/entity.cpp src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/run.cpp src/rooms.cpp)
+        src/entity.cpp src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
     target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)

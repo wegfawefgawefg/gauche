@@ -137,9 +137,10 @@ void generate_world_floor(Game& game) {
         }
     }
 
-    constexpr std::array<ItemKind, 8> loot{
+    constexpr std::array<ItemKind, 11> loot{
         ItemKind::Bandage, ItemKind::Bandaid, ItemKind::Buckler, ItemKind::Pistol,
-        ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo, ItemKind::SleepMeds};
+        ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo, ItemKind::SleepMeds,
+        ItemKind::Stick, ItemKind::BearTrap, ItemKind::Mine};
     for (int column = 1; column < columns - 1; ++column) {
         const int x = column * room_width + 5;
         const int world = (game.run.floor - 1) / 4;
@@ -167,6 +168,7 @@ void generate_world_floor(Game& game) {
     }
     ground_item(game, {branch_x + 3, 5}, ItemKind::Buckler);
     ground_item(game, {branch_x - 2, 25}, ItemKind::Bow);
+    if (game.run.floor == 1) ground_item(game, {8, 15}, ItemKind::Stick);
     spawn_entity(game, EntityKind::Spawner, {branch_x + 3, 25});
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

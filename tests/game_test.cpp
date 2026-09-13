@@ -146,6 +146,37 @@ bool status_rules() {
     return check(player->health <= health - 4, "burn did not deal periodic damage");
 }
 
+bool equipment_rules() {
+    Game game = small_game();
+    Entity* player = get_entity(game, game.players[0]);
+    player->inventory.slots[0] = make_item(ItemKind::Shotgun);
+    player->inventory.slots[1] = make_item(ItemKind::SMG);
+    player->inventory.slots[2] = make_item(ItemKind::Ammo);
+    player->inventory.selected = 0;
+    if (!check(use_held_item(game, game.players[0].slot, {3, 2}),
+               "shotgun failed to fire")) return false;
+    if (!check(player->inventory.slots[0].loaded == 5 &&
+               player->inventory.slots[1].loaded == 30,
+               "weapons shared a magazine")) return false;
+    player->inventory.selected = 2;
+    use_held_item(game, game.players[0].slot, player->cell);
+    if (!check(player->inventory.slots[0].spare == 48 &&
+               player->inventory.slots[1].spare == 210,
+               "ammo did not refill each gun independently")) return false;
+
+    Game trap_game = small_game();
+    Entity* trapper = get_entity(trap_game, trap_game.players[0]);
+    trapper->inventory.slots[0] = make_item(ItemKind::BearTrap);
+    if (!check(use_held_item(trap_game, trap_game.players[0].slot, {3, 2}),
+               "bear trap placement failed")) return false;
+    const Handle wolf = spawn_entity(trap_game, EntityKind::Wolf, {4, 2});
+    move_entity(trap_game, wolf.slot, {3, 2});
+    step_game(trap_game, {});
+    return check(get_entity(trap_game, wolf)->health == 27 &&
+                 get_entity(trap_game, wolf)->stun_ticks > 0,
+                 "placed bear trap did not catch a moving actor");
+}
+
 bool track_before_train() {
     Game game = small_game();
     Entity* player = get_entity(game, game.players[0]);
@@ -197,7 +228,7 @@ bool forest_progression() {
 
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
-        !artifact_rules() || !status_rules() ||
+        !artifact_rules() || !status_rules() || !equipment_rules() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

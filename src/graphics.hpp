@@ -21,6 +21,7 @@ enum class Sprite : std::size_t {
     Key, Door, Exit, Spawner,
     ForestFloorA, ForestFloorB, ForestFloorC, ForestGrass, ForestRuin, ForestWall,
     LavaTile, IceTile, Bat, Wolf, Bear, Bunny, Ember, FrostBat, SleepMeds,
+    Stick, Shotgun, SMG, BearTrap, Mine,
     Count,
 };
 

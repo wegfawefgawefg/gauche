@@ -1,0 +1,105 @@
+#include "net_session_internal.hpp"
+
+#include <algorithm>
+
+namespace {
+
+void receive_welcome(NetSession& session, PacketReader& reader) {
+    const std::uint64_t identity = reader.u64();
+    const std::uint8_t owner = reader.u8();
+    const std::uint64_t tick = reader.u64();
+    const std::uint8_t death_policy = reader.u8();
+    if (!reader.finished() || identity != session.local_identity) return;
+    if (owner == 255) {
+        session.status = "Host is full or uses different game content";
+        return;
+    }
+    if (owner == 0 || owner >= 4 || death_policy >
+        static_cast<std::uint8_t>(DeathPolicy::NextFloor)) return;
+    session.local_owner = owner;
+    session.host_tick = std::max(session.host_tick, tick);
+    session.status = "Receiving world snapshot";
+}
+
+void receive_canonical(NetSession& session, PacketReader& reader) {
+    const std::uint8_t count = reader.u8();
+    if (count == 0 || count > 8) return;
+    std::vector<CanonicalFrame> frames;
+    frames.reserve(count);
+    for (int index = 0; index < count; ++index) frames.push_back(read_frame(reader));
+    if (!reader.finished()) return;
+    for (const CanonicalFrame& frame : frames) {
+        session.host_tick = std::max(session.host_tick, frame.tick);
+        if (session.ready) confirm_frame(session.rollback, frame);
+    }
+}
+
+void receive_correction(NetSession& session, PacketReader& reader) {
+    const std::uint32_t id = reader.u32();
+    const std::uint16_t index = reader.u16();
+    const std::uint16_t chunks = reader.u16();
+    const std::uint8_t count = reader.u8();
+    if (id == 0 || id <= session.last_correction_id || chunks == 0 || chunks > 8 ||
+        index >= chunks || count == 0 || count > 8) return;
+    std::vector<CanonicalFrame> frames;
+    frames.reserve(count);
+    for (int offset = 0; offset < count; ++offset) frames.push_back(read_frame(reader));
+    if (!reader.finished()) return;
+    CorrectionReceive& transfer = session.receiving_correction;
+    if (transfer.id != id) {
+        transfer = {};
+        transfer.id = id;
+        transfer.chunks.resize(chunks);
+    }
+    if (transfer.chunks.size() != chunks) return;
+    if (transfer.chunks[index].empty()) {
+        transfer.chunks[index] = std::move(frames);
+        ++transfer.received;
+    }
+    if (transfer.received != chunks || !session.ready) return;
+    std::vector<CanonicalFrame> corrected;
+    for (const auto& part : transfer.chunks)
+        corrected.insert(corrected.end(), part.begin(), part.end());
+    for (std::size_t offset = 1; offset < corrected.size(); ++offset) {
+        if (corrected[offset].tick != corrected[offset - 1].tick + 1) {
+            session.rollback.needs_snapshot = true;
+            return;
+        }
+    }
+    apply_correction_batch(session.rollback, corrected);
+    session.last_correction_id = id;
+    transfer = {};
+}
+
+} // namespace
+
+void client_receive(NetSession& session, const Datagram&,
+                    PacketReader& reader, WireKind kind) {
+    switch (kind) {
+    case WireKind::Welcome: receive_welcome(session, reader); break;
+    case WireKind::Canonical: receive_canonical(session, reader); break;
+    case WireKind::Correction: receive_correction(session, reader); break;
+    case WireKind::SnapshotChunk: receive_snapshot_chunk(session, reader); break;
+    default: break;
+    }
+}
+
+void client_step(NetSession& session, Input local_input) {
+    if (session.local_owner < 0 || session.rollback.needs_snapshot) return;
+    const std::uint64_t tick = session.rollback.game.tick + 1;
+    std::array<Input, 4> inputs{};
+    inputs[static_cast<std::size_t>(session.local_owner)] = local_input;
+    predict_frame(session.rollback, inputs);
+    session.sent_inputs[tick] = local_input;
+    while (session.sent_inputs.size() > 16) session.sent_inputs.erase(session.sent_inputs.begin());
+    PacketWriter packet = begin_packet(WireKind::Input);
+    packet.u64(session.local_identity);
+    const std::size_t count = std::min<std::size_t>(8, session.sent_inputs.size());
+    packet.u8(static_cast<std::uint8_t>(count));
+    auto it = session.sent_inputs.rbegin();
+    for (std::size_t index = 0; index < count; ++index, ++it) {
+        packet.u64(it->first);
+        packet.input(it->second);
+    }
+    send_wire(session, session.host_endpoint, packet);
+}

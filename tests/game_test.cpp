@@ -107,7 +107,10 @@ bool forest_progression() {
                 player->inventory.slots[0] = {};
                 choose_reward(game, 0, 1);
             }
-            if (game.run.phase == RunPhase::Shop) advance_run(game);
+            if (game.run.phase == RunPhase::Shop) {
+                game.run.shop_ready[0] = true;
+                advance_run(game);
+            }
         }
     }
     return true;

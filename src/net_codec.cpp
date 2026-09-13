@@ -33,7 +33,7 @@ std::uint8_t PacketReader::u8() {
 std::uint16_t PacketReader::u16() {
     std::uint16_t value = 0;
     for (int bit = 0; bit < 16; bit += 8)
-        value |= static_cast<std::uint16_t>(u8()) << bit;
+        value = static_cast<std::uint16_t>(value | (static_cast<unsigned int>(u8()) << bit));
     return value;
 }
 std::uint32_t PacketReader::u32() {
@@ -175,6 +175,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u32(game.players[owner].generation);
         writer.i32(run.coins[owner]);
         writer.u8(static_cast<std::uint8_t>(run.chosen[owner]));
+        writer.u8(static_cast<std::uint8_t>(run.shop_ready[owner]));
         for (const Reward& reward : run.offers[owner]) {
             writer.u8(static_cast<std::uint8_t>(reward.kind));
             writer.u8(static_cast<std::uint8_t>(reward.item));
@@ -229,6 +230,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             reader.okay = false;
         run.coins[owner] = reader.i32();
         run.chosen[owner] = reader.u8() != 0;
+        run.shop_ready[owner] = reader.u8() != 0;
         for (Reward& reward : run.offers[owner]) {
             reward.kind = static_cast<RewardKind>(reader.u8());
             reward.item = static_cast<ItemKind>(reader.u8());

@@ -148,10 +148,7 @@ void apply_host_snapshot(RollbackSession& session, const Game& snapshot) {
     session.game = snapshot;
     session.game.sound_count = 0;
     session.frames.clear();
-    for (auto it = session.pending.begin(); it != session.pending.end();) {
-        if (it->first <= snapshot.tick) it = session.pending.erase(it);
-        else ++it;
-    }
+    session.pending.clear();
     session.confirmed_through = snapshot.tick;
     session.needs_snapshot = false;
 }

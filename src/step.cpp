@@ -191,9 +191,12 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         return;
     }
     if (game.run.phase == RunPhase::Shop) {
-        if (inputs[0].select >= 0 && inputs[0].select < 3)
-            buy_shop_item(game, 0, inputs[0].select);
-        if (inputs[0].confirm) advance_run(game);
+        for (std::size_t owner = 0; owner < 4; ++owner) {
+            if (inputs[owner].select >= 0 && inputs[owner].select < 3)
+                buy_shop_item(game, static_cast<int>(owner), inputs[owner].select);
+            if (inputs[owner].confirm) game.run.shop_ready[owner] = true;
+        }
+        advance_run(game);
         return;
     }
     if (game.run.phase == RunPhase::Won) return;
@@ -270,6 +273,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, game.players[owner].generation);
         mix(hash, static_cast<std::uint64_t>(game.run.coins[owner]));
         mix(hash, static_cast<std::uint64_t>(game.run.chosen[owner]));
+        mix(hash, static_cast<std::uint64_t>(game.run.shop_ready[owner]));
         for (const Reward& reward : game.run.offers[owner]) {
             mix(hash, static_cast<std::uint64_t>(reward.kind));
             mix(hash, static_cast<std::uint64_t>(reward.item));

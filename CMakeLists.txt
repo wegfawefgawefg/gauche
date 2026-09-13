@@ -32,7 +32,9 @@ endif()
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
     src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp
-    src/render.cpp src/audio.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp)
+    src/render.cpp src/audio.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
+    src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
+    src/net_session_host.cpp src/net_session_client.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer)
 if(WIN32)
@@ -87,4 +89,15 @@ if(BUILD_TESTING)
     endif()
     target_compile_options(gauche_socket_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME udp_loopback COMMAND gauche_socket_tests)
+    add_executable(gauche_session_tests
+        tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp
+        src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
+        src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
+        src/entity.cpp src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp)
+    target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    if(WIN32)
+        target_link_libraries(gauche_session_tests PRIVATE ws2_32)
+    endif()
+    add_test(NAME direct_session COMMAND gauche_session_tests)
 endif()

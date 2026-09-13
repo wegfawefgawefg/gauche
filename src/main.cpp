@@ -6,10 +6,14 @@
 #include "game.hpp"
 #include "input.hpp"
 #include "render.hpp"
+#include "net_session.hpp"
 
 #include <algorithm>
+#include <charconv>
 #include <cstdio>
 #include <filesystem>
+#include <optional>
+#include <string>
 #include <string_view>
 
 namespace {
@@ -37,6 +41,27 @@ const char* capture_arg(int argc, char** argv) {
     for (int index = 1; index + 1 < argc; ++index)
         if (std::string_view{argv[index]} == "--capture") return argv[index + 1];
     return nullptr;
+}
+
+std::string_view value_arg(int argc, char** argv, std::string_view name) {
+    for (int index = 1; index + 1 < argc; ++index)
+        if (std::string_view{argv[index]} == name) return argv[index + 1];
+    return {};
+}
+
+std::optional<int> number_arg(std::string_view text) {
+    if (text.empty()) return std::nullopt;
+    int value = 0;
+    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
+    if (error != std::errc{} || end != text.data() + text.size()) return std::nullopt;
+    return value;
+}
+
+DeathPolicy requested_death_policy(int argc, char** argv) {
+    const std::string_view choice = value_arg(argc, argv, "--death");
+    if (choice == "no-respawn") return DeathPolicy::NoRespawn;
+    if (choice == "entrance") return DeathPolicy::Entrance;
+    return DeathPolicy::NextFloor;
 }
 
 GubsyAppConfig app_config() {
@@ -86,15 +111,56 @@ int main(int argc, char** argv) {
     }
 
     Game game;
-    if (has_arg(argc, argv, "--smoke-game")) start_test_arena(game, 12345);
-    if (has_arg(argc, argv, "--smoke-run")) start_run(game, 12345);
-    play_song(audio, game.started ? 1 : 0);
-    if (game.started) {
-        const Entity* listener = get_entity(game, game.players[0]);
-        play_game_sounds(audio, game, listener == nullptr ? Cell{} : listener->cell);
+    NetSession network;
+    const std::string_view host_port = value_arg(argc, argv, "--host");
+    const std::string_view join_address = value_arg(argc, argv, "--join");
+    if (!host_port.empty() && !join_address.empty()) {
+        std::fprintf(stderr, "Choose either --host PORT or --join HOST:PORT\n");
+        shutdown_audio(audio); unload_graphics(graphics); cleanup_gubsy_runtime(host);
+        return 1;
+    }
+    std::string network_error;
+    if (!host_port.empty()) {
+        const auto port = number_arg(host_port);
+        if (!port || *port <= 0 || *port > 65535 ||
+            !host_game(network, static_cast<std::uint16_t>(*port), SDL_GetTicks() + 1,
+                       requested_death_policy(argc, argv), network_error)) {
+            std::fprintf(stderr, "Host failed: %s\n", network_error.c_str());
+            shutdown_audio(audio); unload_graphics(graphics); cleanup_gubsy_runtime(host);
+            return 1;
+        }
+    } else if (!join_address.empty()) {
+        const std::size_t colon = join_address.rfind(':');
+        const auto port = colon == std::string_view::npos ? std::nullopt :
+            number_arg(join_address.substr(colon + 1));
+        const std::string hostname = colon == std::string_view::npos ? "" :
+            std::string{join_address.substr(0, colon)};
+        const auto identity_path =
+            (std::filesystem::path{GAUCHE_SOURCE_DIR} / "data" / "player_id").string();
+        if (hostname.empty() || !port || *port <= 0 || *port > 65535 ||
+            !join_game(network, hostname, static_cast<std::uint16_t>(*port),
+                       load_or_create_identity(identity_path), network_error)) {
+            std::fprintf(stderr, "Join failed: %s\n", network_error.c_str());
+            shutdown_audio(audio); unload_graphics(graphics); cleanup_gubsy_runtime(host);
+            return 1;
+        }
+    } else {
+        if (has_arg(argc, argv, "--smoke-game")) start_test_arena(game, 12345);
+        if (has_arg(argc, argv, "--smoke-run")) start_run(game, 12345);
+    }
+    const bool networked = network.role != NetRole::Solo;
+    Game& opening_game = networked ? network.rollback.game : game;
+    play_song(audio, opening_game.started ? 1 : 0);
+    if (opening_game.started) {
+        const Entity* listener = get_entity(opening_game, opening_game.players[0]);
+        play_game_sounds(audio, opening_game, listener == nullptr ? Cell{} : listener->cell);
     }
     const char* capture = capture_arg(argc, argv);
     bool captured = false;
+    const int capture_frame = number_arg(value_arg(argc, argv, "--capture-at")).value_or(0);
+    const auto requested_frames = number_arg(value_arg(argc, argv, "--frames"));
+    const int frame_limit = requested_frames && *requested_frames > 0 ? *requested_frames :
+                            (smoke ? 3 : 0);
 
     bool running = true;
     int frames = 0;
@@ -102,6 +168,7 @@ int main(int argc, char** argv) {
     double accumulated = 0.0;
     std::uint64_t steps = 0;
     while (running) {
+        const std::uint64_t frame_begin = SDL_GetTicksNS();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             gubsy_process_sdl_event(host, event);
@@ -112,10 +179,18 @@ int main(int argc, char** argv) {
                 running = false;
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
-                (!game.started || game.game_over)) {
+                !networked && (!game.started || game.game_over)) {
                 start_run(game, SDL_GetTicks() + 1);
+                audio.played_events.fill(0);
                 play_song(audio, 1);
             }
+        }
+        if (networked) pump_network(network);
+        if (network.role == NetRole::Client && network.ready &&
+            !network.rollback.needs_snapshot) {
+            for (int catchup = 0; catchup < 8 &&
+                 network.rollback.game.tick + 2 < network.host_tick; ++catchup)
+                step_network_game(network, {});
         }
 
         const std::uint64_t now = SDL_GetTicks();
@@ -124,12 +199,18 @@ int main(int argc, char** argv) {
         accumulated += smoke ? step_seconds : std::min(elapsed, 0.25);
         while (accumulated >= step_seconds) {
             ++steps;
-            if (game.started && !game.game_over) {
+            Game& active = networked ? network.rollback.game : game;
+            const int owner = networked ? network.local_owner : 0;
+            const bool ready = !networked || network.ready;
+            if (ready && active.started && !active.game_over) {
                 std::array<Input, 4> inputs{};
-                if (!smoke) inputs[0] = read_local_input(game, gubsy_get_frame(host));
-                step_game(game, inputs);
-                const Entity* listener = get_entity(game, game.players[0]);
-                play_game_sounds(audio, game, listener == nullptr ? Cell{} : listener->cell);
+                if (!smoke) inputs[static_cast<std::size_t>(owner)] =
+                    read_local_input(active, gubsy_get_frame(host), owner);
+                if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
+                else step_game(game, inputs);
+                const Entity* listener = get_entity(active,
+                    active.players[static_cast<std::size_t>(owner)]);
+                play_game_sounds(audio, active, listener == nullptr ? Cell{} : listener->cell);
             }
             accumulated -= step_seconds;
         }
@@ -149,15 +230,20 @@ int main(int argc, char** argv) {
         SDL_SetRenderDrawColor(frame.renderer, 11, 14, 12, 255);
         SDL_RenderClear(frame.renderer);
         SDL_SetRenderDrawColor(frame.renderer, 175, 206, 164, 255);
-        if (game.started) {
-            render_game(frame.renderer, graphics, game);
+        const Game& active = networked ? network.rollback.game : game;
+        if (networked && network.ready && audio.current_song != 1) play_song(audio, 1);
+        if (active.started && (!networked || network.ready)) {
+            render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0);
+            if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
+                                                network.status.c_str());
         } else {
             SDL_FRect title_rect{24.0F, 24.0F, 64.0F, 64.0F};
             SDL_RenderTexture(frame.renderer, texture_for(graphics, Sprite::Player), nullptr, &title_rect);
             SDL_RenderDebugText(frame.renderer, 104.0F, 40.0F, "GAUCHE");
-            SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F, "PRESS ENTER TO START");
+            SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F,
+                                networked ? network.status.c_str() : "PRESS ENTER TO START");
         }
-        if (capture != nullptr && !captured) {
+        if (capture != nullptr && !captured && frames >= capture_frame) {
             SDL_Surface* surface = SDL_RenderReadPixels(frame.renderer, nullptr);
             if (surface == nullptr || !SDL_SaveBMP(surface, capture)) {
                 std::fprintf(stderr, "Capture failed: %s\n", SDL_GetError());
@@ -175,15 +261,30 @@ int main(int argc, char** argv) {
         }
         gubsy_present_frame(host);
         ++frames;
-        if (smoke && frames >= 3) {
+        if (!smoke) {
+            int cap = gubsy_configured_frame_cap_fps(host);
+            if (cap <= 0) cap = 60;
+            const std::uint64_t target_ns = std::uint64_t{1'000'000'000} /
+                static_cast<std::uint64_t>(cap);
+            const std::uint64_t frame_elapsed = SDL_GetTicksNS() - frame_begin;
+            if (frame_elapsed < target_ns) SDL_DelayPrecise(target_ns - frame_elapsed);
+        }
+        if (frame_limit > 0 && frames >= frame_limit) {
             running = false;
         }
     }
 
-    if (smoke) {
+    if (frame_limit > 0) {
+        const Game& active = networked ? network.rollback.game : game;
         std::printf("host smoke: %d frames, %llu steps, hash %016llx\n", frames,
                     static_cast<unsigned long long>(steps),
-                    static_cast<unsigned long long>(game_hash(game)));
+                    static_cast<unsigned long long>(game_hash(active)));
+        if (networked)
+            std::printf("network: owner %d, ready %d, tick %llu, host tick %llu, status %s\n",
+                        network.local_owner, network.ready ? 1 : 0,
+                        static_cast<unsigned long long>(active.tick),
+                        static_cast<unsigned long long>(network.host_tick),
+                        network.status.c_str());
     }
     shutdown_audio(audio);
     unload_graphics(graphics);

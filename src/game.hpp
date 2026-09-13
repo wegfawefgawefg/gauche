@@ -140,6 +140,7 @@ struct Run {
     std::array<int, 4> coins{};
     bool has_key = false;
     std::array<bool, 4> chosen{};
+    std::array<bool, 4> shop_ready{};
     std::array<std::array<Reward, 3>, 4> offers{};
     std::array<ItemKind, 3> shop_stock{};
     std::uint64_t seed = 1;

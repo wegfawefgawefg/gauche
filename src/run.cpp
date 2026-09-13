@@ -263,7 +263,8 @@ void finish_floor(Game& game) {
     emit_sound(game, SoundId::LevelWin, game.run.exit, false);
     game.run.chosen.fill(false);
     for (std::size_t owner = 0; owner < 4; ++owner) {
-        if (get_entity(game, game.players[owner]) == nullptr) {
+        const Entity* player = get_entity(game, game.players[owner]);
+        if (player == nullptr || player->health <= 0) {
             game.run.chosen[owner] = true;
             continue;
         }
@@ -319,12 +320,19 @@ void advance_run(Game& game) {
         for (bool chosen : game.run.chosen) if (!chosen) return;
         if (game.run.floor % 2 == 0) {
             game.run.phase = RunPhase::Shop;
+            game.run.shop_ready.fill(false);
             game.run.shop_stock = {ItemKind::Bandage, ItemKind::Buckler,
                                    game.run.floor > 2 ? ItemKind::RocketLauncher : ItemKind::Pistol};
             return;
         }
         ready_next_floor(game);
-    } else if (game.run.phase == RunPhase::Shop) ready_next_floor(game);
+    } else if (game.run.phase == RunPhase::Shop) {
+        for (std::size_t owner = 0; owner < 4; ++owner) {
+            const Entity* player = get_entity(game, game.players[owner]);
+            if (player != nullptr && player->health > 0 && !game.run.shop_ready[owner]) return;
+        }
+        ready_next_floor(game);
+    }
 }
 
 int shop_price(ItemKind kind) { return price(kind); }

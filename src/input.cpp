@@ -11,7 +11,7 @@ bool down(const bool* keys, SDL_Scancode key) {
 
 } // namespace
 
-Input read_local_input(const Game& game, const GubsyFrame& frame) {
+Input read_local_input(const Game& game, const GubsyFrame& frame, int owner) {
     Input input;
     const bool* keys = SDL_GetKeyboardState(nullptr);
     input.move.x = down(keys, SDL_SCANCODE_A) ? -1 : (down(keys, SDL_SCANCODE_D) ? 1 : 0);
@@ -47,7 +47,8 @@ Input read_local_input(const Game& game, const GubsyFrame& frame) {
                                static_cast<float>(frame.render_height) * scale) * 0.5F;
             const float render_x = (mouse_x - left) / scale;
             const float render_y = (mouse_y - top) / scale;
-            const Entity* player = get_entity(game, game.players[0]);
+            const Entity* player = owner >= 0 && owner < 4 ?
+                get_entity(game, game.players[static_cast<std::size_t>(owner)]) : nullptr;
             if (player != nullptr && render_x >= 0.0F && render_y >= 0.0F &&
                 render_x < static_cast<float>(frame.render_width) &&
                 render_y < static_cast<float>(frame.render_height)) {

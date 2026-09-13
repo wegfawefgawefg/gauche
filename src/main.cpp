@@ -81,7 +81,7 @@ GubsyAppConfig app_config() {
     config.enable_mods = false;
     config.project_root = GAUCHE_SOURCE_DIR;
     config.data_root = (user_data_root() / "gubsy").string();
-    config.engine_assets_root = GAUCHE_GUBSY_ASSETS_DIR;
+    config.engine_assets_root = (asset_root() / "gubsy-engine").string();
     config.window_title = "Gauche";
     config.window_width = 960;
     config.window_height = 540;
@@ -141,6 +141,8 @@ int main(int argc, char** argv) {
     }
 
     Game game;
+    Game title_scene;
+    start_run(title_scene, 380161);
     NetSession network;
     const std::string identity_path = (user_data_root() / "player_id").string();
     const std::string_view host_port = value_arg(argc, argv, "--host");
@@ -227,6 +229,17 @@ int main(int argc, char** argv) {
                 menu_input.right |= event.key.key == SDLK_RIGHT || event.key.key == SDLK_D;
                 menu_input.select |= event.key.key == SDLK_RETURN ||
                                      event.key.key == SDLK_SPACE;
+            }
+            if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
+                const auto button = event.gbutton.button;
+                menu_input.up |= button == SDL_GAMEPAD_BUTTON_DPAD_UP;
+                menu_input.down |= button == SDL_GAMEPAD_BUTTON_DPAD_DOWN;
+                menu_input.left |= button == SDL_GAMEPAD_BUTTON_DPAD_LEFT;
+                menu_input.right |= button == SDL_GAMEPAD_BUTTON_DPAD_RIGHT;
+                menu_input.select |= button == SDL_GAMEPAD_BUTTON_SOUTH;
+                menu_input.back |= button == SDL_GAMEPAD_BUTTON_EAST;
+                if (button == SDL_GAMEPAD_BUTTON_START && menu.playing && !menu.visible)
+                    open_game_menu(menu);
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
                 !menu.visible && network.role == NetRole::Solo &&
@@ -339,6 +352,8 @@ int main(int argc, char** argv) {
             draw_cosmetics(frame.renderer, cosmetics, player == nullptr ? Cell{32, 32} : player->cell);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
+        } else if (menu.visible) {
+            render_title_backdrop(frame.renderer, graphics, title_scene);
         } else if (!menu.visible) {
             SDL_FRect title_rect{24.0F, 24.0F, 64.0F, 64.0F};
             SDL_RenderTexture(frame.renderer, texture_for(graphics, Sprite::Player), nullptr, &title_rect);
@@ -396,7 +411,8 @@ int main(int argc, char** argv) {
     if (menu_smoke_failed) std::fprintf(stderr, "Gubsy game settings did not change death policy\n");
     lobby_smoke_failed |= lobby_smoke &&
         (network.role != NetRole::Host || !menu.playing ||
-         network.rollback.game.run.death_policy != requested_death_policy(argc, argv));
+         network.rollback.game.run.death_policy != requested_death_policy(argc, argv) ||
+         gubsy_get_lobby_state(host).max_players != 4);
     if (lobby_smoke_failed) std::fprintf(stderr, "Gubsy direct lobby did not start the hosted run\n");
     shutdown_audio(audio);
     unload_graphics(graphics);

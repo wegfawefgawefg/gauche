@@ -12,7 +12,7 @@ cmake --build build --target gauche -j8
 ./build/gauche
 ```
 
-Press Enter for a solo run. To play over direct UDP, start one host and have up to three friends join its reachable address:
+The title menu opens a lobby for solo play, direct hosting, joining, death policy, and Gubsy's display and control settings. One player can join from each machine, up to four total. The default direct host port in the menu is 35355. A CLI host can use a chosen port:
 
 ```sh
 ./build/gauche --host 39000 --death next-floor
@@ -21,13 +21,13 @@ Press Enter for a solo run. To play over direct UDP, start one host and have up 
 
 `--death` accepts `no-respawn`, `entrance`, or `next-floor`. A player who disconnects keeps their slot and loadout, can return with the same local identity, and does not block the party's exit or reward choices. Direct hosting requires the UDP port to be reachable; there is no relay or room-code service yet.
 
-Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick slots with 1–6, pick up with E, interact with F, drop with Q, and reload with R. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear.
+Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick slots with 1–6, pick up with E, interact with F, drop with Q, and reload with R. Gameplay keys and controller buttons are editable in Gubsy's Controls screen. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear. Escape opens the in-game menu.
 
 ## Current game
 
 Each four-floor world changes terrain, encounters, and hazards. Forest has bats, wolves, bears, and passive animals; fire adds ember gunners and lava; ice adds frost bats and slower ice movement. Reward artifacts can pierce actors, reflect hits, heal nearby friends, or shorten step intervals. Every gun owns its own loaded and spare ammo. Generic ammo fills each carried gun separately. Bucklers block from the facing direction until they break and can shove actors or loose items into hard obstacles. The conductor hat lays the full track before its train follows it, including through walls.
 
-Game state uses integer tile positions, a saved RNG, explicit snapshots and hashes, host-canonical input frames, rollback, and snapshot recovery. Sound and visuals stay local. The core loop runs at 60 ticks per second. Source files follow [AGENTS.md](AGENTS.md) and stay under 500 lines.
+Game state uses integer tile positions, a saved RNG, explicit snapshots and hashes, host-canonical input frames, rollback, and snapshot recovery. Directional sound and small impact particles stay local. The core loop runs at 60 ticks per second. Source files follow [AGENTS.md](AGENTS.md) and stay under 500 lines.
 
 Run the checks with:
 

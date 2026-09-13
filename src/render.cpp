@@ -86,7 +86,11 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             SDL_FRect held_rect{rect.x + 8.0F + static_cast<float>(entity.facing.x) * forward,
                                 rect.y + 8.0F + static_cast<float>(entity.facing.y) * forward,
                                 16.0F, 16.0F};
-            sprite(renderer, graphics, item_sprite(held->kind), held_rect);
+            const double angle = std::atan2(static_cast<double>(entity.facing.y),
+                                            static_cast<double>(entity.facing.x)) *
+                                 180.0 / 3.141592653589793;
+            SDL_RenderTextureRotated(renderer, texture_for(graphics, item_sprite(held->kind)),
+                                     nullptr, &held_rect, angle, nullptr, SDL_FLIP_NONE);
             if (held->kind == ItemKind::Buckler) {
                 SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
                 SDL_RenderRect(renderer, &held_rect);
@@ -310,4 +314,16 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_RenderDebugText(renderer, 230.0F, 187.0F,
                             can_restart ? "PRESS ENTER TO RESTART" : "WAIT FOR HOST");
     }
+}
+
+void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
+                           const Game& scene) {
+    const Cell camera = scene.run.spawn + Cell{2, 0};
+    draw_world(renderer, graphics, scene, camera);
+    draw_lighting(renderer, scene, camera, 0);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
+    const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};
+    SDL_RenderFillRect(renderer, &shade);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }

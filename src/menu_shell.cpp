@@ -119,6 +119,13 @@ void build_policy_rows(void* data, const GubsyLobbyState&,
     out.push_back(std::move(row));
 }
 
+void ensure_lobby_defaults(void* data, GubsyLobbyState& lobby) {
+    auto& menu = *static_cast<MenuShell*>(data);
+    if (menu.lobby_configured) return;
+    lobby.max_players = 4;
+    menu.lobby_configured = true;
+}
+
 bool set_policy(void* data, GubsyLobbyState&, const char* key, int, int option) {
     if (key == nullptr || std::strcmp(key, "death_policy") != 0 ||
         option < 0 || option >= static_cast<int>(policies.size())) return false;
@@ -131,7 +138,32 @@ nlohmann::json serialize_policy(void* data, const GubsyLobbyState&) {
     return {{"death_policy", policies[static_cast<std::size_t>(policy_index(policy))].id}};
 }
 
-bool validate_policy(void*, const GubsyLobbyState&, std::string&) { return true; }
+bool validate_policy(void*, const GubsyLobbyState& lobby, std::string& message) {
+    if (lobby.max_players <= 4) return true;
+    message = "Gauche supports at most four players";
+    return false;
+}
+
+void sync_direct_members(MenuShell& menu) {
+    const NetSession& network = *menu.network;
+    if (network.role == NetRole::Solo ||
+        !gubsy_get_lobby_state(*menu.runtime).online) return;
+    std::vector<MatchmakingMember> members;
+    for (int owner = 0; owner < 4; ++owner) {
+        if (owner == network.local_owner) continue;
+        const bool connected = network.role == NetRole::Host ?
+            network.peers[static_cast<std::size_t>(owner)].connected :
+            network.ready && network.rollback.game.run.online[static_cast<std::size_t>(owner)];
+        if (!connected) continue;
+        MatchmakingMember member;
+        member.member_id = "gauche-player-" + std::to_string(owner + 1);
+        member.display_name = owner == 0 ? "Host" : "Player " + std::to_string(owner + 1);
+        member.client_label = "Direct UDP";
+        member.is_host = owner == 0;
+        members.push_back(std::move(member));
+    }
+    gubsy_set_lobby_direct_members(*menu.runtime, members, false);
+}
 
 bool validate_remote_policy(void*, const GubsyLobbyState&,
                             const SessionContract& remote, std::string& message) {
@@ -186,6 +218,7 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     gubsy_set_lobby_commands(runtime, lobby_commands);
     GubsyLobbyConfigProvider provider;
     provider.user_data = &menu;
+    provider.ensure_defaults = ensure_lobby_defaults;
     provider.build_rows = build_policy_rows;
     provider.set_option = set_policy;
     provider.serialize = serialize_policy;
@@ -206,6 +239,7 @@ void open_game_menu(MenuShell& menu) {
 
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height) {
+    sync_direct_members(menu);
     if (menu.network->role == NetRole::Client && menu.network->ready && menu.visible) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*menu.runtime);
         if (lobby.direct_join_pending)

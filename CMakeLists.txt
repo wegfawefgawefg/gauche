@@ -41,8 +41,7 @@ if(WIN32)
     target_link_libraries(gauche PRIVATE ws2_32)
 endif()
 target_compile_definitions(gauche PRIVATE
-    GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
-    GAUCHE_GUBSY_ASSETS_DIR="${GAUCHE_GUBSY_DIR}/src/assets")
+    GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 if(MSVC)
     target_compile_options(gauche PRIVATE /W4 /permissive-)
@@ -61,7 +60,9 @@ endif()
 
 add_custom_command(TARGET gauche POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:gauche>/assets")
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:gauche>/assets"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${GAUCHE_GUBSY_DIR}/src/assets" "$<TARGET_FILE_DIR:gauche>/assets/gubsy-engine")
 
 include(CTest)
 if(BUILD_TESTING)

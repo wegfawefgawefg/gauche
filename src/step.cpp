@@ -35,6 +35,12 @@ void drop_item(Game& game, Entity& player) {
     }
 }
 
+Cell facing_from_aim(Cell aim, Cell fallback) {
+    if (aim.x == 0 && aim.y == 0) return fallback;
+    if (std::abs(aim.x) >= std::abs(aim.y)) return {aim.x > 0 ? 1 : -1, 0};
+    return {0, aim.y > 0 ? 1 : -1};
+}
+
 void step_player(Game& game, int slot, const Input& input) {
     Entity& player = game.entities[static_cast<std::size_t>(slot)];
     if (input.select >= 0 && input.select < quick_slots) player.inventory.selected = input.select;
@@ -43,8 +49,7 @@ void step_player(Game& game, int slot, const Input& input) {
         if (movement.x != 0) movement.y = 0;
         move_entity(game, slot, player.cell + movement);
     }
-    if (input.aim.x != 0 || input.aim.y != 0)
-        player.facing = input.aim;
+    player.facing = facing_from_aim(input.aim, player.facing);
     if (input.pickup) pickup_item(game, player);
     if (input.interact) {
         if (!interact_with_fixture(game, player.owner, player.cell))

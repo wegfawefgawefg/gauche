@@ -239,6 +239,20 @@ bool entrance_respawn_rules() {
                  "entrance respawn overlapped a hard blocker");
 }
 
+bool held_item_direction() {
+    Game game = small_game();
+    game.run.online[0] = true;
+    Entity* player = get_entity(game, game.players[0]);
+    player->owner = 0;
+    player->inventory.held()->cooldown = 20;
+    std::array<Input, 4> inputs{};
+    inputs[0].aim = {12, 3};
+    inputs[0].use = true;
+    step_game(game, inputs);
+    return check(player->facing == Cell{1, 0},
+                 "held item direction escaped its tile when use was cooling down");
+}
+
 bool switch_route() {
     Game game;
     start_run(game, 7171);
@@ -357,7 +371,7 @@ bool forest_progression() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
-        !offline_reward_rules() || !entrance_respawn_rules() ||
+        !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
         !switch_route() || !forest_tools() ||
         !track_before_train() || !forest_progression())
         return 1;

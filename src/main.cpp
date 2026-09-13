@@ -8,7 +8,7 @@
 #include "render.hpp"
 #include "net_session.hpp"
 #include "menu_shell.hpp"
-#include "particles.hpp"
+#include "particles/system.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -371,11 +371,7 @@ int main(int argc, char** argv) {
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
-                        network.role != NetRole::Client, zoom);
-            const Entity* player = get_entity(active,
-                active.players[static_cast<std::size_t>(networked ? network.local_owner : 0)]);
-            draw_cosmetics(frame.renderer, cosmetics,
-                           player == nullptr ? Cell{32, 32} : player->cell, zoom);
+                        network.role != NetRole::Client, zoom, &cosmetics);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else if (menu.visible) {

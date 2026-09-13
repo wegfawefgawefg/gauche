@@ -61,16 +61,23 @@ bool move_entity(Game& game, int slot, Cell destination) {
     if (slot < 0 || slot >= max_entities) return false;
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     const Tile* tile = game.stage.at(destination);
-    if (entity.kind == EntityKind::None || tile == nullptr || !walkable(tile->kind)) return false;
+    if (entity.kind == EntityKind::None) return false;
     const int occupant = entity_at(game, destination, true);
-    if (occupant >= 0 && occupant != slot) return false;
+    if (tile == nullptr || !walkable(tile->kind) || (occupant >= 0 && occupant != slot)) {
+        // A blocked step still takes its beat, as it did in the Rust arena.
+        entity.move_wait = entity.move_interval;
+        if (entity.kind == EntityKind::Player)
+            emit_sound(game, SoundId::HitBlock1, entity.cell);
+        return false;
+    }
     entity.facing = destination - entity.cell;
     entity.cell = destination;
     entity.move_wait = entity.move_interval;
     if (tile->kind == TileKind::Ice) entity.move_wait += 5;
     if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken)
-        emit_sound(game, (game.tick & 1U) == 0 ? SoundId::Step1 : SoundId::Step2,
+        emit_sound(game, ((destination.x + destination.y + slot) & 1) == 0 ?
+                   SoundId::Step1 : SoundId::Step2,
                    destination);
     return true;
 }

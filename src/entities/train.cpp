@@ -24,7 +24,7 @@ void step_rail(Game& game, int slot) {
         return;
     }
 
-    // The layer finishes the whole track before the first train enters it.
+    // TRACK FIRST: The layer finishes every rail before an engine can enter it.
     const Cell origin{game.stage.width - 1, rail.cell.y};
     for (Entity& entity : game.entities)
         if (entity.kind != EntityKind::None && entity.kind != EntityKind::RailLayer &&

@@ -56,7 +56,7 @@ void step_player(Game& game, int slot, const Input& input) {
     Entity& player = game.entities[static_cast<std::size_t>(slot)];
     if (input.select >= 0 && input.select < quick_slots) player.inventory.selected = input.select;
 
-    // Movement remains tile based; aiming can turn the held item during recovery.
+    // MOVEMENT: Aiming can turn the held item while a tile step recovers.
     if (player.move_wait == 0 && (input.move.x != 0 || input.move.y != 0)) {
         Cell movement = input.move;
         if (movement.x != 0) movement.y = 0;
@@ -64,7 +64,7 @@ void step_player(Game& game, int slot, const Input& input) {
     }
     player.facing = facing_from_aim(input.aim, player.facing);
 
-    // Interactions belong to the player, not the shared entity timer pass.
+    // INTERACTIONS: The player owns pickup, fixture use, and the held item.
     if (input.pickup) pickup_item(game, player);
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);

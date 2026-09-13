@@ -32,7 +32,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.block_ticks = std::max(0, entity.block_ticks - 1);
     entity.use_flash = std::max(0, entity.use_flash - 1);
 
-    // Hazard damage runs before actions, including a fatal hit at this tick.
+    // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
     if (entity.burn_ticks > 0) {
         --entity.burn_ticks;
         if (game.tick % 30 == 0)
@@ -46,7 +46,7 @@ void step_entity_timers(Game& game, int slot) {
         entity.kind != EntityKind::Ember && game.tick % 30 == 0)
         damage_entity(game, slot, 5, entity.cell + Cell{0, 1});
 
-    // A blocked entrance delays respawn instead of overlapping a hard fixture.
+    // RESPAWN: A blocked entrance delays return instead of overlapping a fixture.
     if (entity.kind == EntityKind::Player && entity.health == 0 &&
         game.run.death_policy == DeathPolicy::Entrance &&
         game.run.phase == RunPhase::Playing) {

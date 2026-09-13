@@ -29,10 +29,12 @@ Each four-floor world changes terrain, encounters, and hazards. Forest has bats,
 
 Game state uses integer tile positions, a saved RNG, explicit snapshots and hashes, host-canonical input frames, rollback, and snapshot recovery. Directional sound and small impact particles stay local. The core loop runs at 60 ticks per second. Source files follow [AGENTS.md](AGENTS.md) and stay under 500 lines.
 
+Presentation now keeps local sprite footprints, blood spray and puddles, zombie corpses, debris, drifting clouds, campfire smoke, train trails, shockwaves, tile shake, and per-actor lean and hit shake. Zombies can scratch nearby chickens as in the Rust arena. Entity setup and behavior live under `src/entities/`; cosmetic systems live under `src/particles/` and are excluded from rollback state.
+
 Run the checks with:
 
 ```sh
-cmake --build build-release --target gauche_tests gauche_rollback_tests gauche_codec_tests gauche_socket_tests gauche_session_tests gauche_loss_tests -j8
+cmake --build build-release --parallel 8
 ctest --test-dir build-release --output-on-failure
 ```
 

@@ -1,0 +1,94 @@
+#include "system.hpp"
+
+#include <algorithm>
+#include <cmath>
+
+namespace {
+
+constexpr float pi = 3.14159265358979323846F;
+
+float screen_x(float x, Cell camera, float pixels, ParticleLayer layer) {
+    const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
+    return 320.0F + (x - static_cast<float>(camera.x) * parallax) * pixels;
+}
+
+float screen_y(float y, Cell camera, float pixels, ParticleLayer layer) {
+    const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
+    return 160.0F + (y - static_cast<float>(camera.y) * parallax) * pixels;
+}
+
+void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
+                 const SpriteParticle& particle, Cell camera, float pixels) {
+    const float age = static_cast<float>(particle.span - particle.life);
+    const float progress = particle.span > 0 ? age / static_cast<float>(particle.span) : 0.0F;
+    const float curve = particle.motion == ParticleMotion::Arc ?
+        std::sin(progress * pi) * particle.arc : 0.0F;
+    const float x = screen_x(particle.x, camera, pixels, particle.layer);
+    const float y = screen_y(particle.y - curve, camera, pixels, particle.layer);
+    const SDL_FRect rect{x - particle.width * pixels * 0.5F,
+                         y - particle.height * pixels * 0.5F,
+                         particle.width * pixels, particle.height * pixels};
+    if (rect.x > 640.0F || rect.y > 360.0F ||
+        rect.x + rect.w < 0.0F || rect.y + rect.h < 0.0F) return;
+    const Sprite id = particle.motion == ParticleMotion::Animated &&
+                      (static_cast<int>(age) / 12) % 2 != 0 ?
+                      particle.next_sprite : particle.sprite;
+    SDL_Texture* texture = texture_for(graphics, id);
+    const float fade = std::min(1.0F, static_cast<float>(particle.life) /
+                                       std::max(1.0F, static_cast<float>(particle.span) * 0.25F));
+    SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(
+        std::clamp(particle.alpha * fade, 0.0F, 1.0F) * 255.0F));
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, particle.angle,
+                             nullptr, SDL_FLIP_NONE);
+    SDL_SetTextureAlphaMod(texture, 255);
+}
+
+void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
+                 Cell camera, float pixels) {
+    if (ribbon.count < 2) return;
+    const auto alpha = static_cast<std::uint8_t>(
+        220 * ribbon.life / std::max(1, ribbon.span));
+    SDL_SetRenderDrawColor(renderer, ribbon.red, ribbon.green, ribbon.blue, alpha);
+    for (int index = 1; index < ribbon.count; ++index) {
+        const SDL_FPoint first = ribbon.points[static_cast<std::size_t>(index - 1)];
+        const SDL_FPoint second = ribbon.points[static_cast<std::size_t>(index)];
+        SDL_RenderLine(renderer,
+            screen_x(first.x, camera, pixels, ribbon.layer),
+            screen_y(first.y, camera, pixels, ribbon.layer),
+            screen_x(second.x, camera, pixels, ribbon.layer),
+            screen_y(second.y, camera, pixels, ribbon.layer));
+    }
+}
+
+void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
+               Cell camera, float pixels) {
+    const auto alpha = static_cast<std::uint8_t>(
+        205 * ring.life / std::max(1, ring.span));
+    SDL_SetRenderDrawColor(renderer, ring.red, ring.green, ring.blue, alpha);
+    const float cx = screen_x(ring.x, camera, pixels, ring.layer);
+    const float cy = screen_y(ring.y, camera, pixels, ring.layer);
+    for (int index = 0; index < 24; ++index) {
+        const float first = 2.0F * pi * static_cast<float>(index) / 24.0F;
+        const float second = 2.0F * pi * static_cast<float>(index + 1) / 24.0F;
+        SDL_RenderLine(renderer,
+            cx + std::cos(first) * ring.radius * pixels,
+            cy + std::sin(first) * ring.radius * pixels,
+            cx + std::cos(second) * ring.radius * pixels,
+            cy + std::sin(second) * ring.radius * pixels);
+    }
+}
+
+} // namespace
+
+void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
+                    const Cosmetics& cosmetics, ParticleLayer layer, Cell camera, float zoom) {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    const float pixels = 16.0F * zoom;
+    for (const SpriteParticle& particle : cosmetics.sprites)
+        if (particle.layer == layer) draw_sprite(renderer, graphics, particle, camera, pixels);
+    for (const RibbonParticle& ribbon : cosmetics.ribbons)
+        if (ribbon.layer == layer) draw_ribbon(renderer, ribbon, camera, pixels);
+    for (const RingParticle& ring : cosmetics.rings)
+        if (ring.layer == layer) draw_ring(renderer, ring, camera, pixels);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}

@@ -36,7 +36,11 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/player.cpp
     src/entities/zombie.cpp
     src/entities/chicken.cpp
-    src/entities/wildlife.cpp
+    src/entities/bat.cpp
+    src/entities/wolf.cpp
+    src/entities/bear.cpp
+    src/entities/bunny.cpp
+    src/entities/ember.cpp
     src/entities/spawner.cpp
     src/entities/train.cpp
     src/entities/fixtures.cpp
@@ -47,7 +51,7 @@ set(GAUCHE_ENTITY_SOURCES
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
     src/inventory.cpp src/item.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/rooms.cpp src/input.cpp
-    src/render.cpp src/audio.cpp src/particles.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
+    src/render.cpp src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
@@ -127,6 +131,14 @@ if(BUILD_TESTING)
         target_link_libraries(gauche_loss_tests PRIVATE ws2_32)
     endif()
     add_test(NAME lossy_session COMMAND gauche_loss_tests)
+    add_executable(gauche_presentation_tests
+        tests/presentation_test.cpp src/particles/system.cpp
+        src/particles/templates.cpp src/particles/presentation.cpp
+        src/stage.cpp ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp
+        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
+    target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME presentation_rules COMMAND gauche_presentation_tests)
     add_test(NAME menu_shell COMMAND gauche --smoke-menu --frames 8)
     set_tests_properties(menu_shell PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")

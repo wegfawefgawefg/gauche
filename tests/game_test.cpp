@@ -441,6 +441,41 @@ bool crusher_room_rules() {
                  "train did not mow through a crusher");
 }
 
+bool zombie_chicken_rules() {
+    Game game = small_game();
+    const Handle zombie = spawn_entity(game, EntityKind::Zombie, {4, 2});
+    const Handle chicken = spawn_entity(game, EntityKind::Chicken, {4, 3});
+    Entity* bird = get_entity(game, chicken);
+    bird->health = bird->max_health = 30;
+    bird->move_wait = 100;
+    get_entity(game, zombie)->move_wait = 100;
+    step_game(game, {});
+    if (!check(bird->health == 25 &&
+               get_entity(game, zombie)->sprite == Sprite::ZombieScratch1,
+               "zombie did not scratch nearby chicken")) return false;
+    step_game(game, {});
+    return check(get_entity(game, zombie)->sprite == Sprite::ZombieScratch1,
+                 "zombie scratch pose did not linger until movement");
+}
+
+bool footstep_rules() {
+    Game game = small_game();
+    Entity* player = get_entity(game, game.players[0]);
+    if (!check(move_entity(game, game.players[0].slot, {3, 2}) && game.sound_count == 1,
+               "first footstep was silent")) return false;
+    const SoundId first = game.sounds[0].sound;
+    game.sound_count = 0;
+    player->move_wait = 0;
+    if (!check(move_entity(game, game.players[0].slot, {2, 2}) && game.sound_count == 1 &&
+               game.sounds[0].sound != first, "feet did not alternate")) return false;
+    game.sound_count = 0;
+    *game.stage.at({1, 2}) = {TileKind::Wall, 100, 0};
+    return check(!move_entity(game, game.players[0].slot, {1, 2}) &&
+                 player->move_wait == player->move_interval &&
+                 game.sound_count == 1 && game.sounds[0].sound == SoundId::HitBlock1,
+                 "blocked step did not take its beat and thump");
+}
+
 } // namespace
 
 int main() {
@@ -449,7 +484,7 @@ int main() {
         !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
         !switch_route() || !forest_tools() ||
         !track_before_train() || !forest_progression() || !den_room_rules() ||
-        !crusher_room_rules())
+        !crusher_room_rules() || !zombie_chicken_rules() || !footstep_rules())
         return 1;
     std::puts("game rules passed");
     return 0;

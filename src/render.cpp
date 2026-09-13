@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "particles/system.hpp"
 
 #include <algorithm>
 #include <array>
@@ -47,8 +48,8 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     }
 }
 
-void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
-                const Game& game, Cell camera, float zoom) {
+void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
+                const Game& game, Cell camera, float zoom, const Cosmetics* cosmetics) {
     const float pixels = tile_pixels(zoom);
     const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
     const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
@@ -61,6 +62,21 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr ||
                 (tile->kind == TileKind::Empty && game.run.phase == RunPhase::Arena)) continue;
             SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (cosmetics != nullptr) {
+                float strength = 0.0F;
+                for (const TileShake& shake : cosmetics->tile_shakes)
+                    if (shake.cell == cell) strength = std::max(strength, shake.strength);
+                if (strength > 0.0F) {
+                    const std::uint32_t jitter = static_cast<std::uint32_t>(
+                        game.tick * std::uint64_t{747796405} +
+                        static_cast<std::uint64_t>(x) * std::uint64_t{2891336453} +
+                        static_cast<std::uint64_t>(y) * std::uint64_t{1181783497});
+                    rect.x += (static_cast<float>(jitter & 255U) / 127.5F - 1.0F) *
+                              strength * pixels;
+                    rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
+                              strength * pixels;
+                }
+            }
             const int world = game.run.phase == RunPhase::Arena ? -1 :
                               (game.run.floor - 1) / 4;
             const Sprite id = tile_sprite(*tile, game.tick, cell, world);
@@ -77,7 +93,14 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
         }
     }
-    for (const Entity& entity : game.entities) {
+}
+
+void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
+                   const Game& game, Cell camera, Cell focus, float zoom,
+                   const Cosmetics* cosmetics) {
+    const float pixels = tile_pixels(zoom);
+    for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
+        const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
@@ -87,7 +110,27 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
             rect.w = rect.h = pixels * 0.5F;
         }
-        sprite(renderer, graphics, entity.sprite, rect);
+        const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
+        if (pose != nullptr && pose->seen && pose->generation == entity.generation &&
+            pose->shake > 0.0F) {
+            const std::uint32_t jitter = static_cast<std::uint32_t>(
+                game.tick * 1103515245ULL + slot * 12345ULL);
+            rect.x += (static_cast<float>(jitter & 255U) / 127.5F - 1.0F) *
+                      pose->shake * pixels;
+            rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
+                      pose->shake * pixels;
+        }
+        const float dx = static_cast<float>(entity.cell.x - focus.x);
+        const float dy = static_cast<float>(entity.cell.y - focus.y);
+        const float view_alpha = entity.kind == EntityKind::Player ? 1.0F :
+            std::clamp(1.0F - std::sqrt(dx * dx + dy * dy) / 12.0F, 0.0F, 1.0F);
+        SDL_Texture* texture = texture_for(graphics, entity.sprite);
+        SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(view_alpha * 255.0F));
+        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
+            pose != nullptr && pose->seen ? pose->angle : 0.0,
+            nullptr, pose != nullptr && pose->horizontal_flip ?
+                     SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+        SDL_SetTextureAlphaMod(texture, 255);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
             const float forward = entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
@@ -106,7 +149,8 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderRect(renderer, &held_rect);
             }
         }
-        if (entity.health > 0 && entity.health < entity.max_health && entity.max_health < 1000000) {
+        if (entity.kind != EntityKind::Player && entity.health > 0 &&
+            entity.health < entity.max_health && entity.max_health < 1000000) {
             SDL_FRect bar{rect.x + 2.0F, rect.y - 4.0F,
                           28.0F * static_cast<float>(entity.health) /
                           static_cast<float>(entity.max_health), 2.0F};
@@ -302,11 +346,19 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
-                 const Game& game, int local_owner, bool can_restart, float zoom) {
+                 const Game& game, int local_owner, bool can_restart, float zoom,
+                 const Cosmetics* cosmetics) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     const Cell camera = player == nullptr ? Cell{32, 32} : player->cell;
-    draw_world(renderer, graphics, game, camera, zoom);
+    draw_tiles(renderer, graphics, game, camera, zoom, cosmetics);
+    if (cosmetics != nullptr)
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground, camera, zoom);
+    draw_entities(renderer, graphics, game, camera, camera, zoom, cosmetics);
+    if (cosmetics != nullptr)
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground, camera, zoom);
     draw_lighting(renderer, game, camera, local_owner, zoom);
+    if (cosmetics != nullptr)
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
     if (player != nullptr) draw_hud(renderer, graphics, *player);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
@@ -338,7 +390,8 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
 void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
                            const Game& scene) {
     const Cell camera = scene.run.spawn + Cell{2, 0};
-    draw_world(renderer, graphics, scene, camera, 2.0F);
+    draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr);
+    draw_entities(renderer, graphics, scene, camera, camera, 2.0F, nullptr);
     draw_lighting(renderer, scene, camera, 0, 2.0F);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);

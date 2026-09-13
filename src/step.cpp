@@ -100,14 +100,14 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.sound_count = 0;
     if (step_interlude(game, inputs)) return;
 
-    // Timers precede action so a cooldown reaching zero can act this tick.
+    // TIMERS: A cooldown reaching zero can act on this tick.
     for (int slot = 0; slot < max_entities; ++slot)
         step_entity_timers(game, slot);
     step_players(game, inputs);
     step_hearth_aura(game);
     if (game.run.phase == RunPhase::Reward) return;
 
-    // Newborn actors wait until the next tick; cleanup follows all attacks.
+    // ACTORS: Newborns wait a tick; cleanup follows every attack and hazard.
     step_nonplayers(game);
     step_traps(game);
     sweep_dead(game);

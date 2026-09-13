@@ -109,6 +109,13 @@ rules; do not invent pursuit AI while claiming literal parity.
 zombies and chickens are initialized in that mood and do not transition out.
 The C++ type steps can call the shared movement helper directly; no global
 `Wander` call or unused mood state machine is needed for the existing rules.
+Adventures with Chickens uses a named `AlienMode` for aliens that change
+behavior, while its chickens have no mode. Follow that scale: add a small
+type-specific enum such as `ZombieMode` only when Gauche has real zombie mode
+transitions. A shared mode enum is useful only when the same states have the
+same meaning for several actor types. Store named enum values, not unexplained
+integer codes; explicit integer values can still be used for stable network
+serialization when needed.
 
 Keep that small model in C++: a plain entity pool, focused initialization
 functions, and a `StepEntity` type switch that calls bespoke `StepZombie`,
@@ -124,9 +131,9 @@ of Rust's `wander` helper into `StepZombie`. This is a C++ cleanup, not the
 current Rust dispatch. Preserve the Rust loop's meaningful order for each type:
 player actions before entity updates, cooldown/AI/death sequencing, and cleanup
 after the pass. Use a stable pool-slot iteration order for deterministic
-multiplayer. Random spawn variants,
-wander choices, and any gameplay-affecting event must draw from the saved
-gameplay RNG. Use cosmetic RNG for growl timing and presentation-only shake.
+multiplayer. Random spawn variants, wander choices, and any gameplay-affecting
+event must draw from the saved gameplay RNG. Use cosmetic RNG for growl timing
+and presentation-only shake.
 Keep those effects out of the hashed state, and deduplicate sound events during
 rollback.
 

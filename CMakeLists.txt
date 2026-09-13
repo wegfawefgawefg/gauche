@@ -29,8 +29,10 @@ else()
     set(GAUCHE_GUBSY_DIR "${gubsy_SOURCE_DIR}")
 endif()
 
-add_executable(gauche src/main.cpp)
-target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3)
+add_executable(gauche
+    src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
+    src/inventory.cpp src/item.cpp src/step.cpp src/input.cpp src/render.cpp)
+target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3 SDL3_image::SDL3_image)
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     GAUCHE_GUBSY_ASSETS_DIR="${GAUCHE_GUBSY_DIR}/src/assets")
@@ -48,4 +50,18 @@ else()
     if(GAUCHE_WARN_AS_ERROR)
         target_compile_options(gauche PRIVATE -Werror)
     endif()
+endif()
+
+add_custom_command(TARGET gauche POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:gauche>/assets")
+
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(gauche_tests
+        tests/game_test.cpp src/stage.cpp src/entity.cpp src/inventory.cpp
+        src/item.cpp src/step.cpp)
+    target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME game_rules COMMAND gauche_tests)
 endif()

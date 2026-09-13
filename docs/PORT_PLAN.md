@@ -111,15 +111,11 @@ rules; do not invent pursuit AI while claiming literal parity.
 zombies and chickens are initialized in that mood and do not transition out.
 The C++ type steps can call the shared movement helper directly; no global
 `Wander` call or unused mood state machine is needed for the existing rules.
-Keep the shared `Entity` struct as content grows. One common AI-state field can
-hold modes with shared meaning, such as idle or pursuing. A type-specific step
-can also interpret a generic small phase/counter slot using names local to
-that behavior; it does not need a separate field for every entity type.
-Splonks itself has shared `EntAiState` and generic counters, with some actors
-using counters as private phases. Avoid unexplained numeric literals in the
-step code, and do not make unrelated simultaneous behaviors fight over one
-slot. Independent capabilities need their own state or counters. Serialize and
-hash the actual stored values for rollback.
+Do not add a general AI-mode framework in anticipation of future content.
+When a specific entity needs phases, its step can interpret a small state or
+counter in the shared `Entity` using named values local to that code. Give
+independent concurrent behaviors separate state so they do not fight over one
+slot. Serialize and hash gameplay-relevant values for rollback.
 
 Port the current rules with a plain entity pool, an `InitEntityAs` switch on
 `EntityType` that calls the appropriate initializer, and a `StepEntity` switch
@@ -136,14 +132,14 @@ iteration for deterministic multiplayer. Gameplay-affecting random choices
 use saved gameplay RNG; growl timing and shake use cosmetic RNG outside hashes.
 
 Design this port for a larger, compositional Gauche, even though the source
-prototype is small. Keep authored specs/initializers and per-type logic in
-focused files; central enum switches only choose those functions. Shared
-functions implement reusable behaviors, and cross-cutting capabilities can run
-in common passes. A data-only table may centralize repetitive defaults later.
-Entity function pointers, a callback registry, Splonks' physics/animation/flag
-matrix, and runtime mod loading are unnecessary. `EntityType` plus stored
-gameplay fields are enough to restore dispatch after rollback. New gameplay
-state and AI transitions must be included in snapshots and hashes.
+prototype is small. Put each entity's authored initialization and bespoke step
+in focused code; central enum switches only dispatch to those functions.
+Share a helper when two steps use the same rule, and retain simple
+data-driven common passes such as optional growling. Do not add a spec table,
+function-pointer dispatch, generic behavior registry, Splonks'
+physics/animation/flag matrix, or runtime mod loading. `EntityType` plus
+stored gameplay fields are enough to restore dispatch after rollback. New
+gameplay state and AI transitions must be included in snapshots and hashes.
 
 For co-op, the host arbitrates input frames and session events. Each peer
 simulates the same deterministic gameplay tick; clients immediately predict

@@ -12,4 +12,5 @@ configurable death rule. Floors lead to a pick-one-of-three reward, with
 occasional shops and run-long artifacts; themed four-floor worlds start with
 forest caves and can later branch into fire and ice.
 
-No game code has been ported yet. See [the port plan](docs/PORT_PLAN.md).
+No game code has been ported yet. See [the port plan](docs/PORT_PLAN.md) and
+[forest content sketch](docs/FOREST_CONTENT_IDEAS.md).

@@ -20,7 +20,7 @@ types, free functions, a visible loop in `main`, direct mode switches, and
 focused files. Use `splonks-cpp` as the implementation reference for the
 Gubsy-owned window/render target, input bindings, asset lifetime, audio,
 fixed-step simulation, menu/settings shell, and useful lobby/transport hooks.
-Adapt its rollback mechanisms to Gauche's smaller state, leaving its
+Adapt its rollback mechanisms to Gauche's simpler state, leaving its
 Spelunky-specific gameplay, network content protocol, theme, and large debug
 infrastructure. Gauche's in-game HUD
 remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
@@ -79,11 +79,13 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 ## Run loop and world design
 
 A run starts the player and any joined friends near a clear spawn, then asks
-them to reach an exit through hostile rooms. A map can remain around 64x64
-tiles, but it needs deliberate density: chokepoints, guarded objectives,
-spawners, supplies, hazards, and recognizable set pieces. Some routes use keys
-or keycards, switches, or local fights. Exit activation and party transition
-need explicit co-op rules rather than inheriting the Rust single-player mode.
+them to reach an exit through hostile rooms. Rust's 64×64 TestArena is a source
+reference, not a target floor size. Let the room graph and pacing determine a
+floor's width and height; larger maps are welcome when they stay dense with
+chokepoints, guarded objectives, spawners, supplies, hazards, and recognizable
+set pieces. Some routes use keys or keycards, switches, or local fights. Exit
+activation and party transition need explicit co-op rules rather than
+inheriting the Rust single-player mode.
 
 Treat a run as a sequence of themed worlds, provisionally four floors each.
 Floors one and two establish that world's familiar rooms and enemies; floor
@@ -103,6 +105,13 @@ is reachable before its gate and that an ordinary route to the exit exists.
 Rare terrain-breaking tools may create shortcuts; the generator must not rely
 on finding one to make a run solvable. Keep the first format simple and
 compiled-in if possible; this is authored game content, not a mod loader.
+
+Place forest room stamps on an expandable tile canvas. Choose them by required
+door sockets and room role, then populate each from its tagged local loot/enemy
+pools under a floor-wide supply and threat budget. Room stamps may vary in
+size; trim and pad the final bounds after the graph is embedded.
+See [the forest content sketch](FOREST_CONTENT_IDEAS.md) for candidate rooms,
+items, artifacts, hazards, and rewards.
 
 Use the tile grid for terrain and simple movement/collision queries. Put
 interactive fixtures such as doors, switches, spawners, traps, and exits in the
@@ -212,12 +221,26 @@ artifacts, reward choices, and shop purchases belong in the gameplay step,
 snapshots, and confirmed hashes. Light blooms, particles, shake, and audio
 remain local presentation.
 
+Lockstep's normal per-tick network traffic is player inputs, not a copy of the
+map. A larger floor does enlarge initial join/rejoin and desync-resync
+snapshots. It can also raise local generation, AI/path-query, hash, rollback
+history, and memory costs, especially if every saved frame copies every tile.
+For scale, 256×256 tiles at four bytes each are 256 KiB; 120 full rollback
+copies would use about 30 MiB for tiles alone. That is manageable on a desktop
+but grows with area and does not include entities or other state.
+
+Use a compact flat tile array with dynamic dimensions, render only visible
+tiles, and keep spatial queries local. Measure realistic larger floors before
+adding incremental hashing or changed-tile rollback storage; those are
+options if full-state work becomes expensive. Preserve the same deterministic
+activation/iteration rules on all peers even when players split up.
+
 ## Intended shape
 
 | Part | C++ ownership and source reference |
 | --- | --- |
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Gauche's top-down game and co-op needs. |
-| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A flat tile array supports the initial 64x64 map and later prefab rooms. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
+| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A compact flat tile array with explicit dynamic width/height supports source TestArena and larger generated floors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
 | `rooms`, `objectives`, `fixtures` | Assemble themed four-floor worlds from authored and random rooms, each with a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, dens, traps, and loot as gameplay objects, reusing the entity and tile rules. |
 | `run`, `rewards`, `shop`, `status` | Track world/floor cadence, per-player three-choice drafts, occasional announced shops, passive artifacts, and small explicit status timers. Keep six quick-use slots separate from artifacts; each weapon instance stores its own ammo. Let the host generate offers and stock; serialize every gameplay-relevant choice and effect. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, fixtures, projectiles, terrain, objectives, cleanup, then transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
@@ -231,7 +254,7 @@ remain local presentation.
 | Reuse or adapt | Omit from Gauche |
 | --- | --- |
 | Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. Adapt the useful idea of authored room pieces in generated stages to Gauche's spawn-to-exit maps. | Splonks's biome, quest, shop, and progression content and large data systems. Write Gauche's smaller themed worlds, rewards, and shops for its own run structure. The Rust TestArena is only a baseline. |
-| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's much smaller state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
+| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's simpler gameplay state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
 | SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
 | Gauche's grid occupancy/collision, tile damage, intended water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions and top-down projectiles. Build a focused 2D light pass. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and full lighting pipeline. |
 | Gauche's 53 OGG files with music, effects and cooldowns; adapt Splonks' small stereo-pan calculation for positioned world sounds. | Splonks' full audio emitter graph, reverb, low-pass filters, and other acoustic processing unless a specific Gauche sound later needs them. |
@@ -254,6 +277,12 @@ path and report the exact missing file on failure. Eager loading is reasonable
 for the current 4 MB set; stream the two music tracks if the chosen SDL mixer
 supports it. Preserve the unlisted authored files in the repo, but do not load
 them until content refers to them.
+
+For new content, use quick Python-generated pixel placeholders when that
+helps test a mechanic. Existing tiles and most actors/items are 16×16 pixels;
+smaller particles and occasional larger details are exceptions. Preserve the
+readable silhouette and palette, then polish art after the item or room proves
+useful in play. The source-port gate still uses its original PNGs.
 
 Resolve assets from a packaged/executable-relative root rather than assuming
 the shell's working directory is the repo root. Arrange CMake's development
@@ -439,7 +468,7 @@ actually changes.
    Add stereo panning for positioned events while keeping Gauche's existing
    distance falloff and centered UI/music. Reuse Gubsy menus/settings as host
    UI while preserving the game's visual identity. Omit the unused shader.
-6. **Build one real run.** Make an authored 64x64 level with a party spawn,
+6. **Build one real run.** Make an authored level with a party spawn,
    exit, one key/door or switch dependency, guarded room, enemy spawner, loot,
    first firearm/projectile with magazine and ammo pickups, explosive or trap,
    a tile-blocking barricade or tile-opening tool, and the existing rail-laying
@@ -448,7 +477,8 @@ actually changes.
    ordinary route works, the exceptional shortcut is intentional, and
    terrain/fixture state remains consistent after combat. Add a second small
    floor and the first three-choice reward interlude so the gate includes a
-   complete solo clear-and-continue loop.
+   complete solo clear-and-continue loop. Test at least two different stage
+   dimensions rather than baking the Rust TestArena size into gameplay.
 7. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send a
    full initial level snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick
@@ -470,7 +500,7 @@ actually changes.
    mixed three-choice rewards, and an occasional announced between-floor
    shop. Test seeds for reachability, route variety, useful reward choices,
    and viable runs without rare wall-breaking gear; verify multiplayer reward
-   and purchase replay, reconnect, and snapshot restore.
+   and purchase replay, reconnect, and snapshot restore on larger maps.
 9. **Extend worlds and tune.** Add fire and ice themes with distinct room
    shapes, hazards, enemies, lighting, and status interactions. Tune combat
    pace, generous ammo supply, shop frequency, artifact auras, and four-floor
@@ -493,7 +523,9 @@ actually changes.
   inventory, pickup/drop, zoom). Gubsy remapping can expose those same actions.
 - The first pass should use the original authored PNG/OGG assets. Load each
   PNG directly by its `Sprite` name. Keep asset metadata in code unless a
-  concrete Gauche asset later needs richer data.
+  concrete Gauche asset later needs richer data. New-content placeholder
+  sprites may be generated with a small Python script at the source's usual
+  16×16 scale.
 - Pin the Gubsy dependency rather than relying on whichever of the two local
   Gubsy checkouts happens to be on disk. They currently differ.
 - Remote GitHub changes are a later handoff. The local Rust checkout is named

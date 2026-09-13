@@ -83,6 +83,36 @@ still need their original small particle motions. Gauche's distance fade and
 dark palette also remain, but do not require Splonks' lighting or post-process
 systems. The Rust shader is loaded but never used and its file is missing.
 
+## Entity stepping and enemy scope
+
+Gauche has one hostile enemy type, the zombie. Chickens are neutral wanderers
+with chick, hen, and rooster stat/sprite variants; rail layers and trains are
+scripted entities. Rust uses one `Entity` type with small `init_as_*` functions
+and runs the same ordered list of helpers over every active entity. The helpers
+then check type or mood. Zombies and chickens share wandering and occasional
+growls; zombies additionally scratch an adjacent entity with different
+alignment. The current attack rule can therefore hit a chicken as well as a
+player. `Noticing`, `ChasingTarget`, and `LosingTarget` exist as mood names but
+have no corresponding enemy logic to port. Preserve the actual simple rules;
+do not invent pursuit AI while claiming literal parity.
+
+Keep that small model in C++: a plain entity pool, a few focused initialization
+functions, common cooldown/damage/removal helpers, and an explicit type switch
+to call `step_zombie`, `step_chicken`, `step_rail_layer`, and `step_train` where
+needed. Item entities need only their existing item behavior. Preserve the
+Rust loop's meaningful order, including player actions before entity updates,
+cooldown/AI/death sequencing, and cleanup after the pass; use a stable pool-slot
+iteration order for deterministic multiplayer. Random spawn variants, wander
+choices, and any gameplay-affecting event must draw from the saved gameplay
+RNG. Use cosmetic RNG for growl timing and presentation-only shake, keep those
+effects out of the hashed state, and deduplicate sound events during rollback.
+
+Splonks' `EntSpec` registry, per-entity callback dispatch, large AI/state
+catalog, AFrame animation hooks, and common/custom physics passes solve a much
+larger platformer problem. They are not a template for Gauche's enemy step.
+If later content truly needs richer AI, add focused rules then, with their
+gameplay fields included in snapshots and hashes.
+
 For co-op, the host arbitrates input frames and session events. Each peer
 simulates the same deterministic gameplay tick; clients immediately predict
 local and missing remote input, then restore a recent snapshot and replay when

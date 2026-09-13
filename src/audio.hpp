@@ -18,6 +18,9 @@ struct GameAudio {
     std::size_t next_track = 0;
     std::size_t next_event = 0;
     int current_song = -1;
+    float master_level = 1.0F;
+    float music_level = 1.0F;
+    float sound_level = 1.0F;
     bool initialized = false;
     GameAudio() = default;
     GameAudio(const GameAudio&) = delete;
@@ -29,3 +32,4 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
 void shutdown_audio(GameAudio& audio);
 void play_song(GameAudio& audio, int song);
 void play_game_sounds(GameAudio& audio, const Game& game, Cell listener);
+void sync_audio_settings(GameAudio& audio, const std::filesystem::path& path);

@@ -21,7 +21,7 @@ The title menu opens a lobby for solo play, direct hosting, joining, death polic
 
 `--death` accepts `no-respawn`, `entrance`, or `next-floor`. A player who disconnects keeps their slot and loadout, can return with the same local identity, and does not block the party's exit or reward choices. Direct hosting requires the UDP port to be reachable; there is no relay or room-code service yet.
 
-Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick slots with 1–6, pick up with E, interact with F, drop with Q, and reload with R. Gameplay keys and controller buttons are editable in Gubsy's Controls screen. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear. Escape opens the in-game menu.
+Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick slots with 1–6, pick up with E, interact with F, drop with Q, and reload with R. Gameplay keys and controller buttons are editable in Gubsy's Controls screen, and its audio levels control Gauche's music and directional effects. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear. Escape opens the in-game menu.
 
 ## Current game
 

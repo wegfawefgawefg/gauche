@@ -545,6 +545,7 @@ actually changes.
   16×16 scale.
 - Pin the Gubsy dependency rather than relying on whichever of the two local
   Gubsy checkouts happens to be on disk. They currently differ.
-- Remote GitHub changes are a later handoff. The local Rust checkout is named
-  `gauche-rs`; its `origin` still names the existing GitHub `gauche` until that
-  remote migration happens. This new local `gauche` has no remote yet.
+- The Rust history remains in `gauche-rs`; the new C++ history is published as
+  `gauche`. Both local checkouts track their matching GitHub repository. The
+  `port-finish` and `direct-netcode-finish` tags mark the playable port and
+  direct rollback milestones.

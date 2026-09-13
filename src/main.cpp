@@ -139,6 +139,9 @@ int main(int argc, char** argv) {
         cleanup_gubsy_runtime(host);
         return 1;
     }
+    const auto audio_settings_path = user_data_root() / "gubsy" /
+                                     "settings_profiles" / "audio.lisp";
+    sync_audio_settings(audio, audio_settings_path);
 
     Game game;
     Game title_scene;
@@ -288,6 +291,7 @@ int main(int argc, char** argv) {
         const GubsyFrame menu_frame = gubsy_get_frame(host);
         update_menu_shell(menu, menu_input, 1.0F / 60.0F,
                           menu_frame.render_width, menu_frame.render_height);
+        if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
         const bool networked = network.role != NetRole::Solo;
         if (network.role == NetRole::Client && network.ready &&

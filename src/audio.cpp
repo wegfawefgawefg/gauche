@@ -4,7 +4,11 @@
 
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <cmath>
+#include <fstream>
+#include <iterator>
+#include <string>
 #include <string_view>
 
 namespace {
@@ -26,6 +30,17 @@ bool load_audio_asset(GameAudio& audio, MIX_Audio*& destination,
     if (destination != nullptr) return true;
     error = "Unable to load " + path.string() + ": " + SDL_GetError();
     return false;
+}
+
+float audio_level(std::string_view settings, std::string_view name) {
+    const std::string key = "(" + std::string{name} + " ";
+    const std::size_t at = settings.find(key);
+    if (at == std::string_view::npos) return 1.0F;
+    const char* begin = settings.data() + at + key.size();
+    float value = 1.0F;
+    const auto [end, error] = std::from_chars(begin, settings.data() + settings.size(), value);
+    if (error != std::errc{} || end == begin || !std::isfinite(value)) return 1.0F;
+    return std::clamp(value, 0.0F, 1.0F);
 }
 
 } // namespace
@@ -102,7 +117,8 @@ void play_song(GameAudio& audio, int song) {
     if (!audio.initialized || song < 0 || song >= 2 || song == audio.current_song) return;
     MIX_StopTrack(audio.music_track, 0);
     MIX_SetTrackAudio(audio.music_track, audio.songs[static_cast<std::size_t>(song)]);
-    MIX_SetTrackGain(audio.music_track, 0.55F);
+    MIX_SetTrackGain(audio.music_track,
+                     0.55F * audio.master_level * audio.music_level);
     const SDL_PropertiesID properties = SDL_CreateProperties();
     if (properties != 0) SDL_SetNumberProperty(properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
     MIX_PlayTrack(audio.music_track, properties);
@@ -121,7 +137,7 @@ void play_game_sounds(GameAudio& audio, const Game& game, Cell listener) {
             audio.played_events.end()) continue;
         audio.played_events[audio.next_event++ % audio.played_events.size()] = key;
 
-        float volume = 0.9F;
+        float volume = 0.9F * audio.master_level * audio.sound_level;
         MIX_StereoGains stereo{1.0F, 1.0F};
         if (event.positional) {
             const float dx = static_cast<float>(event.cell.x - listener.x);
@@ -151,4 +167,20 @@ void play_game_sounds(GameAudio& audio, const Game& game, Cell listener) {
         MIX_SetTrackStereo(track, &stereo);
         MIX_PlayTrack(track, 0);
     }
+}
+
+void sync_audio_settings(GameAudio& audio, const std::filesystem::path& path) {
+    std::ifstream file(path);
+    const std::string contents = file ?
+        std::string{std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}} : "";
+    const float master = audio_level(contents, "master");
+    const float music = audio_level(contents, "music");
+    const float sound = audio_level(contents, "sfx");
+    if (master == audio.master_level && music == audio.music_level &&
+        sound == audio.sound_level) return;
+    audio.master_level = master;
+    audio.music_level = music;
+    audio.sound_level = sound;
+    if (audio.music_track != nullptr)
+        MIX_SetTrackGain(audio.music_track, 0.55F * master * music);
 }

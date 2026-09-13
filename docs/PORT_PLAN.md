@@ -128,15 +128,18 @@ track-first shortcut rather than treating wall cutting as a new train rule.
 When adding new blocking fixtures, make their interaction with rail laying
 explicit so they do not accidentally negate that behavior.
 
-Add a broad set of distinct firearms, plus supplies such as sleep meds. Start
-with one universal ammo type. Each gun instance tracks rounds in its magazine;
-its gun definition supplies magazine size and firing/reload behavior. A shared
-reserve can reload any gun. Make ammo pickups' targeting explicit: ordinary
-ammo adds to the shared reserve, a focused pickup can refill the held gun, and
-a full resupply can refill all carried guns. Keep ammo generous; encounters,
-positioning, and route choices should carry more pressure than chronic ammo
-starvation. Firing, reloads, pickups, and any item effects that change gameplay
-must be deterministic and included in snapshots and hashes.
+Add a broad set of distinct firearms, plus supplies such as sleep meds. Each
+weapon instance owns its own loaded and spare ammo counts; its weapon kind
+defines magazine size, firing, and reload behavior. Reloading moves rounds
+from that weapon's spare count into its magazine. A rocket launcher's rockets
+never become a pistol's bullets. Avoid an inventory full of ammo categories:
+one generic ammo pickup can add spare rounds to the held weapon, while a
+larger pickup can add spare rounds to each carried weapon separately, using
+appropriate amounts for each. Neither pickup creates a shared ammo reserve.
+Keep ammo generous; encounters, positioning, and route choices should carry
+more pressure than chronic ammo starvation. Firing, reloads, pickups, and any
+item effects that change gameplay must be deterministic and included in
+snapshots and hashes.
 
 ### Rewards, inventory, and statuses
 
@@ -147,16 +150,17 @@ world; a consumable or gun offer should be strong enough to compete with a
 lasting artifact. Each player chooses independently in co-op. Save the
 generated offers and choices in host session state; a disconnected player's
 pending choice waits for their return without blocking the rest of the party's
-transition.
-The death policy determines whether a dead player is eligible for a reward.
+transition. The death policy determines whether a dead player is eligible for
+a reward.
 
 Reduce the quick-use inventory from Rust's ten slots to **six initially**, then
 playtest whether five feels better. Guns, consumables, and placeables compete
-for those active slots. Passive artifacts and the universal ammo reserve do
-not occupy quick slots. When a reward or shop purchase would overfill the pack,
-let the player deliberately replace or drop an item in the safe interlude;
-never silently discard the chosen reward. Preserve the Rust ten-slot behavior
-only while validating source parity, then make this explicit target-game change.
+for those active slots. Passive artifacts and each carried weapon's own ammo
+counts do not occupy extra quick slots. When a reward or shop purchase would
+overfill the pack, let the player deliberately replace or drop an item in the
+safe interlude; never silently discard the chosen reward. Preserve the Rust
+ten-slot behavior only while validating source parity, then make this explicit
+target-game change.
 
 Keep the character sheet small: health and movement step interval are
 meaningful; a broad strength/defense/agility stat ladder is unnecessary.
@@ -184,8 +188,8 @@ with shafts of light from the roof. Give it authored room pieces, forest dens
 as optional set pieces (especially plausible on floors two or four), and
 encounters featuring bats, wolves, and bears. Seed its item pool with a bow
 and visible arrow projectiles, a musket, and bear traps alongside other Gauche
-tools. The bow can draw from the universal ammo reserve rather than adding a
-second ammo type.
+tools. The bow owns its own arrow count and nocking behavior; it does not draw
+from a pistol or launcher.
 
 Fire and ice worlds are later themes, each with its own terrain, hazards,
 enemy mix, room shapes, lighting, and status interactions. A world should
@@ -215,7 +219,7 @@ remain local presentation.
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Gauche's top-down game and co-op needs. |
 | `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A flat tile array supports the initial 64x64 map and later prefab rooms. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
 | `rooms`, `objectives`, `fixtures` | Assemble themed four-floor worlds from authored and random rooms, each with a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, dens, traps, and loot as gameplay objects, reusing the entity and tile rules. |
-| `run`, `rewards`, `shop`, `status` | Track world/floor cadence, per-player three-choice drafts, occasional announced shops, passive artifacts, and small explicit status timers. Keep six quick-use slots separate from artifacts and the ammo reserve. Let the host generate offers and stock; serialize every gameplay-relevant choice and effect. |
+| `run`, `rewards`, `shop`, `status` | Track world/floor cadence, per-player three-choice drafts, occasional announced shops, passive artifacts, and small explicit status timers. Keep six quick-use slots separate from artifacts; each weapon instance stores its own ammo. Let the host generate offers and stock; serialize every gameplay-relevant choice and effect. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, fixtures, projectiles, terrain, objectives, cleanup, then transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
 | `graphics`, `render`, `render_ui`, `lighting` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers, then an occluded top-down light pass. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
 | `particles` / presentation | Keep Gauche's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |

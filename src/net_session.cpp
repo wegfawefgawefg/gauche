@@ -76,6 +76,10 @@ void pump_network(NetSession& session) {
             if (peer.snapshot.id != 0 &&
                 session.pump_tick - peer.snapshot.last_sent_pump >= 30)
                 send_snapshot_chunks(session, owner);
+            if (session.pump_tick % 30 == 0) {
+                PacketWriter heartbeat = begin_packet(WireKind::Heartbeat);
+                send_wire(session, peer.endpoint, heartbeat);
+            }
         }
     } else {
         if (session.ready && session.pump_tick - session.last_host_packet > 360) {
@@ -87,6 +91,11 @@ void pump_network(NetSession& session) {
             hello.u64(session.local_identity);
             hello.u64(gameplay_version);
             send_wire(session, session.host_endpoint, hello);
+        }
+        if (session.ready && session.pump_tick % 30 == 0) {
+            PacketWriter heartbeat = begin_packet(WireKind::Heartbeat);
+            heartbeat.u64(session.local_identity);
+            send_wire(session, session.host_endpoint, heartbeat);
         }
         if (session.ready && session.rollback.needs_snapshot &&
             session.pump_tick % 30 == 1) {

@@ -1,6 +1,7 @@
 #include "net_session_internal.hpp"
 
 #include <algorithm>
+#include <utility>
 
 namespace {
 
@@ -181,6 +182,31 @@ void publish_host_state(NetSession& session) {
     }
 }
 
+void restart_host_run(NetSession& session, std::uint64_t seed) {
+    if (session.role != NetRole::Host) return;
+    const DeathPolicy policy = session.rollback.game.run.death_policy;
+    Game fresh;
+    start_run(fresh, seed);
+    fresh.tick = session.rollback.game.tick;
+    fresh.run.death_policy = policy;
+    for (int owner = 1; owner < 4; ++owner) {
+        const NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+        if (peer.identity == 0) continue;
+        const Handle handle = spawn_entity(fresh, EntityKind::Player, join_cell(fresh, owner));
+        fresh.players[static_cast<std::size_t>(owner)] = handle;
+        if (Entity* player = get_entity(fresh, handle)) {
+            player->owner = owner;
+            player->inventory = {};
+            insert_item(player->inventory, make_item(ItemKind::Fist));
+            insert_item(player->inventory, make_item(ItemKind::Bandage, 3));
+            player->impassable = peer.connected;
+        }
+        fresh.run.online[static_cast<std::size_t>(owner)] = peer.connected;
+    }
+    session.rollback.game = std::move(fresh);
+    publish_host_state(session);
+}
+
 void host_receive(NetSession& session, const Datagram& datagram,
                   PacketReader& reader, WireKind kind) {
     switch (kind) {
@@ -195,6 +221,17 @@ void host_receive(NetSession& session, const Datagram& datagram,
         break;
     }
     case WireKind::SnapshotAck: receive_snapshot_ack(session, datagram, reader); break;
+    case WireKind::Heartbeat: {
+        const std::uint64_t identity = reader.u64();
+        if (!reader.finished()) break;
+        const int owner = peer_for(session, identity);
+        if (owner >= 0) {
+            NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+            if (peer.connected && peer.endpoint == datagram.from)
+                peer.last_heard_pump = session.pump_tick;
+        }
+        break;
+    }
     default: break;
     }
 }

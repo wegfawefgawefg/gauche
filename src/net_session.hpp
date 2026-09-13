@@ -70,4 +70,5 @@ bool join_game(NetSession& session, const std::string& host, std::uint16_t port,
                std::uint64_t identity, std::string& error);
 void pump_network(NetSession& session);
 void step_network_game(NetSession& session, Input local_input);
+void restart_host_run(NetSession& session, std::uint64_t seed);
 std::uint64_t load_or_create_identity(const std::string& path);

@@ -179,8 +179,17 @@ int main(int argc, char** argv) {
                 running = false;
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
-                !networked && (!game.started || game.game_over)) {
+                !networked && (!game.started || game.game_over ||
+                               game.run.phase == RunPhase::Won)) {
                 start_run(game, SDL_GetTicks() + 1);
+                audio.played_events.fill(0);
+                play_song(audio, 1);
+            }
+            if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
+                network.role == NetRole::Host &&
+                (network.rollback.game.game_over ||
+                 network.rollback.game.run.phase == RunPhase::Won)) {
+                restart_host_run(network, SDL_GetTicks() + 1);
                 audio.played_events.fill(0);
                 play_song(audio, 1);
             }
@@ -234,7 +243,8 @@ int main(int argc, char** argv) {
         const Game& active = networked ? network.rollback.game : game;
         if (networked && network.ready && audio.current_song != 1) play_song(audio, 1);
         if (active.started && (!networked || network.ready)) {
-            render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0);
+            render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
+                        network.role != NetRole::Client);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else {

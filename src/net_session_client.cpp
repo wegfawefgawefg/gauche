@@ -18,7 +18,7 @@ void receive_welcome(NetSession& session, PacketReader& reader) {
         static_cast<std::uint8_t>(DeathPolicy::NextFloor)) return;
     session.local_owner = owner;
     session.host_tick = std::max(session.host_tick, tick);
-    session.status = "Receiving world snapshot";
+    if (!session.ready) session.status = "Receiving world snapshot";
 }
 
 void receive_canonical(NetSession& session, PacketReader& reader) {
@@ -80,6 +80,7 @@ void client_receive(NetSession& session, const Datagram&,
     case WireKind::Canonical: receive_canonical(session, reader); break;
     case WireKind::Correction: receive_correction(session, reader); break;
     case WireKind::SnapshotChunk: receive_snapshot_chunk(session, reader); break;
+    case WireKind::Heartbeat: break;
     default: break;
     }
 }

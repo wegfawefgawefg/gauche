@@ -100,4 +100,15 @@ if(BUILD_TESTING)
         target_link_libraries(gauche_session_tests PRIVATE ws2_32)
     endif()
     add_test(NAME direct_session COMMAND gauche_session_tests)
+    add_executable(gauche_loss_tests
+        tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp
+        src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
+        src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
+        src/entity.cpp src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp)
+    target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    if(WIN32)
+        target_link_libraries(gauche_loss_tests PRIVATE ws2_32)
+    endif()
+    add_test(NAME lossy_session COMMAND gauche_loss_tests)
 endif()

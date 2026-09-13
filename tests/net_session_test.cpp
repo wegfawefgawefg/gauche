@@ -1,6 +1,40 @@
 #include "../src/net_session.hpp"
 
+#include <array>
 #include <cstdio>
+
+namespace {
+
+bool four_players() {
+    NetSession host;
+    std::array<NetSession, 3> clients{};
+    std::string error;
+    if (!host_game(host, 0, 1717, DeathPolicy::Entrance, error)) return false;
+    for (int index = 0; index < 3; ++index) {
+        if (!join_game(clients[static_cast<std::size_t>(index)], "127.0.0.1",
+                       host.socket.bound_port(), static_cast<std::uint64_t>(300 + index),
+                       error)) return false;
+        for (int iteration = 0; iteration < 30; ++iteration) {
+            for (NetSession& client : clients)
+                if (client.role == NetRole::Client) pump_network(client);
+            pump_network(host);
+            for (NetSession& client : clients)
+                if (client.role == NetRole::Client) pump_network(client);
+        }
+    }
+    int players = 0;
+    for (const Entity& entity : host.rollback.game.entities)
+        if (entity.kind == EntityKind::Player) ++players;
+    if (players != 4) return false;
+    for (int index = 0; index < 3; ++index) {
+        const NetSession& client = clients[static_cast<std::size_t>(index)];
+        if (!client.ready || client.local_owner != index + 1 ||
+            game_hash(client.rollback.game) != game_hash(host.rollback.game)) return false;
+    }
+    return true;
+}
+
+} // namespace
 
 int main() {
     NetSession host;
@@ -43,6 +77,29 @@ int main() {
                      client.status.c_str());
         return 1;
     }
+    for (int idle = 0; idle < 450; ++idle) {
+        pump_network(host);
+        pump_network(client);
+    }
+    if (!client.ready || !host.peers[1].connected) {
+        std::fputs("idle session lost its heartbeat\n", stderr);
+        return 1;
+    }
+    const std::uint64_t previous_tick = host.rollback.game.tick;
+    restart_host_run(host, 71234);
+    for (int iteration = 0; iteration < 30 &&
+         client.rollback.game.run.seed != 71234; ++iteration) {
+        pump_network(client);
+        pump_network(host);
+        pump_network(client);
+    }
+    if (host.rollback.game.tick != previous_tick ||
+        client.rollback.game.run.seed != 71234 ||
+        client.rollback.game.run.floor != 1 ||
+        game_hash(host.rollback.game) != game_hash(client.rollback.game)) {
+        std::fputs("host restart did not synchronize a fresh run\n", stderr);
+        return 1;
+    }
     client.socket.close();
     const Handle original_slot = host.rollback.game.players[1];
     for (int iteration = 0; iteration < 370; ++iteration) pump_network(host);
@@ -66,6 +123,10 @@ int main() {
     if (!rejoined.ready || rejoined.local_owner != 1 || players != 2 ||
         !host.rollback.game.run.online[1] || host.rollback.game.players[1] != original_slot) {
         std::fprintf(stderr, "reconnect duplicated or lost player: %s\n", rejoined.status.c_str());
+        return 1;
+    }
+    if (!four_players()) {
+        std::fputs("four-player topology failed\n", stderr);
         return 1;
     }
     std::puts("direct session passed");

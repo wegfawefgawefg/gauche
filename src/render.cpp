@@ -268,7 +268,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
-                 const Game& game, int local_owner) {
+                 const Game& game, int local_owner, bool can_restart) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     const Cell camera = player == nullptr ? Cell{32, 32} : player->cell;
     draw_world(renderer, graphics, game, camera);
@@ -284,11 +284,15 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
     }
     draw_interlude(renderer, graphics, game, local_owner);
+    if (game.run.phase == RunPhase::Won)
+        SDL_RenderDebugText(renderer, 230.0F, 190.0F,
+                            can_restart ? "PRESS ENTER TO RESTART" : "WAIT FOR HOST");
     if (game.game_over) {
         SDL_SetRenderDrawColor(renderer, 8, 8, 9, 190);
         SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};
         SDL_RenderFillRect(renderer, &shade);
         SDL_RenderDebugText(renderer, 260.0F, 166.0F, "GAME OVER");
-        SDL_RenderDebugText(renderer, 230.0F, 187.0F, "PRESS ENTER TO RESTART");
+        SDL_RenderDebugText(renderer, 230.0F, 187.0F,
+                            can_restart ? "PRESS ENTER TO RESTART" : "WAIT FOR HOST");
     }
 }

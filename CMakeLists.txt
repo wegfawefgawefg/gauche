@@ -32,7 +32,7 @@ endif()
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
     src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp
-    src/render.cpp src/audio.cpp)
+    src/render.cpp src/audio.cpp src/rollback.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer)
 target_compile_definitions(gauche PRIVATE
@@ -66,4 +66,10 @@ if(BUILD_TESTING)
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME game_rules COMMAND gauche_tests)
+    add_executable(gauche_rollback_tests
+        tests/rollback_test.cpp src/rollback.cpp src/stage.cpp src/entity.cpp
+        src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp)
+    target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
 endif()

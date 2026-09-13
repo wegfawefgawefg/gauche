@@ -121,6 +121,7 @@ struct Input {
     bool interact = false;
     bool confirm = false;
     int select = -1;
+    friend bool operator==(const Input&, const Input&) = default;
 };
 
 enum class RunPhase : std::uint8_t { Arena, Playing, Reward, Shop, Won };

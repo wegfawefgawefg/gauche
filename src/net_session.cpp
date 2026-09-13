@@ -113,6 +113,27 @@ void step_network_game(NetSession& session, Input local_input) {
     if (session.role == NetRole::Client) client_step(session, local_input);
 }
 
+void leave_network_game(NetSession& session) {
+    session.socket.close();
+    session.role = NetRole::Solo;
+    session.rollback = {};
+    session.peers = {};
+    session.host_endpoint = {};
+    session.local_identity = 0;
+    session.local_owner = 0;
+    session.host_tick = 0;
+    session.pump_tick = 0;
+    session.last_host_packet = 0;
+    session.next_transfer_id = 1;
+    session.last_correction_id = 0;
+    session.last_snapshot_id = 0;
+    session.receiving_snapshot = {};
+    session.receiving_correction = {};
+    session.sent_inputs.clear();
+    session.ready = false;
+    session.status.clear();
+}
+
 std::uint64_t load_or_create_identity(const std::string& path) {
     std::uint64_t identity = 0;
     {

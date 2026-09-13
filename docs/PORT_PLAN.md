@@ -44,6 +44,10 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
   player, but it applies one volume to both channels. It has no left/right
   panning or persistent positional sound instances. It also has one
   `player_vid` and no network/session state.
+- Rust Gauche stores particles in `State`, but gameplay only spawns and steps
+  them; no collision, damage, inventory, or AI rule reads particle data. Clouds
+  also spawn relative to the local camera. They are presentation, not
+  synchronized world state.
 - `Settings`, `VideoSettings`, and `Win` are present as mostly unreachable
   modes. The source references `src/shaders/grayscale.fs`, but that file is
   absent. Treat these as gaps in the source, not established game behavior.
@@ -56,9 +60,10 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 | Part | C++ ownership and source reference |
 | --- | --- |
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, simplified to Gauche's smaller game and co-op needs. |
-| `state`, `stage`, `entity`, `inventory`, `item`, `particle` | Plain Gauche data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A contiguous 64x64 tile array is simpler than Rust's nested vectors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Store gameplay grid positions and timers as integers; use fixed point only for fractional values that affect rules. |
+| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A contiguous 64x64 tile array is simpler than Rust's nested vectors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Store gameplay grid positions and timers as integers; use fixed point only for fractional values that affect rules. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, tiles, cleanup, then state transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
 | `graphics`, `render`, `render_ui` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
+| `particles` / presentation | Keep Gauche's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |
 | `audio`, menus | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets without importing the Splonks theme. |
 | `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, and snapshot resync. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
 
@@ -97,6 +102,15 @@ grid and small entity set simplify this relative to Splonks, but joining,
 ownership, item contention, deaths, disconnects, and latency still need
 explicit rules. The initial mode is shared-world co-op; single-player is one
 local player in the same world model.
+
+Lockstep lets a deterministic gameplay feature use the existing input stream
+without a new per-entity replication protocol. It still requires peers to run
+the same content/version, any new input actions to be encoded, and new
+gameplay fields to be covered by save/restore, state hashes, and snapshot
+resync. Particles do not meet that threshold: omit them from network packets,
+gameplay hashes, and simulation snapshots. Preserve local presentation across
+rollback and deduplicate emitted cosmetic events; camera-relative clouds can
+remain entirely local. Do not let particle RNG advance the gameplay RNG.
 
 The roughly 7,000 lines of Rust are a behavior map, not a file-for-file
 translation template. In particular, `step.rs` temporarily swaps an inventory

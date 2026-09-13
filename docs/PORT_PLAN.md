@@ -49,6 +49,14 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
   them; no collision, damage, inventory, or AI rule reads particle data. Clouds
   also spawn relative to the local camera. They are presentation, not
   synchronized world state.
+- Asset IDs are consistent with the files: all 40 `Sprite` enum members, 41
+  `SoundEffect` members, and 2 `Song` members resolve to existing PNG/OGG files.
+  The directory also has one unlisted `no_sprite.png` and ten unlisted sound
+  files (UI/climbing). The authored asset set is about 4 MB.
+- The Rust loaders derive lowercase snake-case filenames from enums and eagerly
+  load every declared PNG/OGG from paths relative to the process working
+  directory. Both music tracks load, but no active call starts one. Graphics
+  initialization also requests an absent, unused `grayscale.fs` shader.
 - `Settings`, `VideoSettings`, and `Win` are present as mostly unreachable
   modes. The source references `src/shaders/grayscale.fs`, but that file is
   absent. Treat these as gaps in the source, not established game behavior.
@@ -82,7 +90,30 @@ The omission boundary is about game behavior, not a ban on ordinary velocity
 or animation calculations. Gauche's blood, debris, footprints, and clouds
 still need their original small particle motions. Gauche's distance fade and
 dark palette also remain, but do not require Splonks' lighting or post-process
-systems. The Rust shader is loaded but never used and its file is missing.
+systems. Rust requests the missing shader at startup but never uses it for
+drawing.
+
+## Asset loading and ownership
+
+Keep Gauche's individual PNGs and OGGs, `Sprite`/`SoundEffect`/`Song` IDs, and
+simple direct lookup. The current enum-to-filename convention is already
+coherent; no atlas, annotations, YAML database, or asset converter is needed.
+Use a small explicit ID/path table or a checked enum-name mapping, with SDL3
+texture/audio handles owned by `Graphics` and `Audio`. Validate every declared
+path and report the exact missing file on failure. Eager loading is reasonable
+for the current 4 MB set; stream the two music tracks if the chosen SDL mixer
+supports it. Preserve the unlisted authored files in the repo, but do not load
+them until content refers to them.
+
+Resolve assets from a packaged/executable-relative root rather than assuming
+the shell's working directory is the repo root. Arrange CMake's development
+run path and release bundle so the same table works in both. Borrow Splonks'
+SDL texture/audio creation, error handling, and deterministic cleanup; keep
+Gauche's own asset naming and omit AFrame/annotation parsing. Remove the unused
+shader request. Decide explicitly where title and playing music should start:
+the Rust files exist but the current game never calls `play_song`. Add a small
+asset-ID-to-file check at the bootstrap gate, plus a normal renderer/audio load
+smoke check.
 
 ## Tiles and animation
 
@@ -217,9 +248,10 @@ actually changes.
    reference and record the limitation.
 2. **Bootstrap the host.** Add CMake/C++20, SDL3 and Gubsy at a pinned revision,
    a simple run path, and the owned window/render-target loop. Port PNG/OGG
-   files, make small sprite/sound lookup tables, render the Gauche title, and
-   make a finite headless smoke/capture command. This gate is a clean build
-   and a captured title frame.
+   files, make small sprite/sound lookup tables, validate all declared paths,
+   and package an executable-relative asset root. Render the Gauche title and
+   make a finite headless smoke/capture command. This gate is a clean build,
+   successful asset loads, and a captured title frame.
 3. **Port the world and player.** Implement state, versioned entities, tile
    grid, seeded TestArena generation, deterministic fixed ticks, camera and
    coordinate conversion, player movement, wall collision, and game-over
@@ -237,11 +269,11 @@ actually changes.
 5. **Match presentation and sound.** Recreate Gauche's world draw order,
    distance fade, particles/weather, shakes, camera, cursor, range indicators,
    inventory,
-   item details, health bars, sound cues and music. Add stereo panning for
-   positioned events while keeping Gauche's existing distance falloff and
+   item details, health bars, and sound cues. Decide how to start/stop the two
+   authored music tracks, which Rust loads but never plays. Add stereo panning
+   for positioned events while keeping Gauche's existing distance falloff and
    centered UI/music. Reuse Gubsy menus/settings as host UI while preserving
-   the game's visual identity. Resolve the shader gap only if its effect is
-   visible in the reference.
+   the game's visual identity. Omit the unused missing shader.
 6. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send an
    initial world snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick

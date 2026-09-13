@@ -27,6 +27,7 @@ Cell cardinal_toward(Cell from, Cell to, Cell fallback) {
 }
 
 void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
+    emit_sound(game, SoundId::Explosion, center);
     for (int y = center.y - radius; y <= center.y + radius; ++y) {
         for (int x = center.x - radius; x <= center.x + radius; ++x) {
             const Cell cell{x, y};
@@ -69,6 +70,8 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     }
     --item.loaded;
     item.cooldown = item.kind == ItemKind::Pistol ? 12 : 40;
+    emit_sound(game, item.kind == ItemKind::RocketLauncher ? SoundId::Explosion1 :
+               SoundId::SmallLaser, user.cell);
     return true;
 }
 
@@ -106,11 +109,13 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
     if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
         entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
         held->durability -= std::max(1, damage);
+        emit_sound(game, SoundId::SturdyBlockBouncedOn, entity.cell);
         if (held->durability <= 0) *held = {};
         return;
     }
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;
+    if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;
@@ -132,6 +137,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     Item& item = *user.inventory.held();
     if (item.kind == ItemKind::None || item.count <= 0 || item.cooldown > 0) return false;
     const Cell direction = cardinal_toward(user.cell, target, user.facing);
+    const ItemKind used_kind = item.kind;
     user.facing = direction;
     const int range = distance(user.cell, target);
     bool used = false;
@@ -206,6 +212,16 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     if (used) {
         item.cooldown = cooldown;
         user.use_flash = 8;
+        switch (used_kind) {
+        case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
+        case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
+            emit_sound(game, SoundId::ClothRip, user.cell); break;
+        case ItemKind::Fist: emit_sound(game, SoundId::Punch1, user.cell); break;
+        case ItemKind::ConductorHat:
+            emit_sound(game, SoundId::DistantTrainSound, user.cell); break;
+        case ItemKind::Buckler: emit_sound(game, SoundId::HitBlock1, user.cell); break;
+        default: break;
+        }
         if (consumed && --item.count <= 0) item = {};
     }
     return used;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics.hpp"
+#include "sound.hpp"
 
 #include <array>
 #include <cstdint>
@@ -10,6 +11,14 @@ struct Cell {
     int x = 0;
     int y = 0;
     friend bool operator==(Cell, Cell) = default;
+};
+
+struct SoundEvent {
+    SoundId sound = SoundId::Confirm;
+    Cell cell{};
+    std::uint64_t tick = 0;
+    std::uint8_t sequence = 0;
+    bool positional = true;
 };
 
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
@@ -149,9 +158,12 @@ struct Game {
     bool started = false;
     bool game_over = false;
     Run run{};
+    std::array<SoundEvent, 128> sounds{};
+    int sound_count = 0;
 };
 
 std::uint32_t random_u32(Game& game);
+void emit_sound(Game& game, SoundId sound, Cell cell, bool positional = true);
 Handle spawn_entity(Game& game, EntityKind kind, Cell cell);
 Entity* get_entity(Game& game, Handle handle);
 const Entity* get_entity(const Game& game, Handle handle);

@@ -192,6 +192,7 @@ void generate_forest_floor(Game& game) {
     ground_item(game, {branch_x + 3, 5}, ItemKind::Buckler);
     ground_item(game, {branch_x - 2, 25}, ItemKind::Bow);
     spawn_entity(game, EntityKind::Spawner, {branch_x + 3, 25});
+    emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }
 
 bool floor_reachable(const Game& game) {
@@ -232,6 +233,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
         if (fixture.cell != target) continue;
         if (fixture.kind == EntityKind::Key && player->cell == target) {
             game.run.has_key = true;
+            emit_sound(game, SoundId::Confirm, fixture.cell, false);
             remove_entity(game, {static_cast<int>(&fixture - game.entities.data()),
                                  fixture.generation});
             return true;
@@ -240,6 +242,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             fixture.fixture_open = true;
             fixture.impassable = false;
             fixture.hard_blocker = false;
+            emit_sound(game, SoundId::BlockLand, fixture.cell);
             return true;
         }
         if (fixture.kind == EntityKind::Exit && game.run.phase == RunPhase::Playing) {
@@ -257,6 +260,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
 
 void finish_floor(Game& game) {
     game.run.phase = RunPhase::Reward;
+    emit_sound(game, SoundId::LevelWin, game.run.exit, false);
     game.run.chosen.fill(false);
     for (std::size_t owner = 0; owner < 4; ++owner) {
         if (get_entity(game, game.players[owner]) == nullptr) {

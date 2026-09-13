@@ -134,6 +134,10 @@ bool move_entity(Game& game, int slot, Cell destination) {
     entity.facing = destination - entity.cell;
     entity.cell = destination;
     entity.move_wait = entity.move_interval;
+    if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+        entity.kind == EntityKind::Chicken)
+        emit_sound(game, (game.tick & 1U) == 0 ? SoundId::Step1 : SoundId::Step2,
+                   destination);
     return true;
 }
 

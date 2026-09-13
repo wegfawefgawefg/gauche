@@ -15,6 +15,7 @@ void pickup_item(Game& game, Entity& player) {
         if (!insert_item(result, ground.ground_item)) return;
         player.inventory = result;
         remove_entity(game, {slot, ground.generation});
+        emit_sound(game, SoundId::Confirm, player.cell, false);
         return;
     }
 }
@@ -30,6 +31,7 @@ void drop_item(Game& game, Entity& player) {
         entity->ground_item = item;
         entity->sprite = item_sprite(item.kind);
         item = {};
+        emit_sound(game, SoundId::Drop, player.cell);
     }
 }
 
@@ -76,6 +78,7 @@ void step_zombie(Game& game, int slot) {
             if (target.cell != target_cell ||
                 (target.kind != EntityKind::Player && target.kind != EntityKind::Chicken)) continue;
             damage_entity(game, target_slot, 5, zombie.cell);
+            emit_sound(game, SoundId::ZombieScratch1, zombie.cell);
             zombie.facing = direction;
             zombie.attack_wait = zombie.attack_interval;
             zombie.sprite = Sprite::ZombieScratch1;
@@ -90,6 +93,7 @@ void step_rail_layer(Game& game, int slot) {
     if (game.stage.in_bounds(next)) {
         *game.stage.at(next) = {TileKind::Rail, 0, 0};
         rail.cell = next;
+        if (game.tick % 4 == 0) emit_sound(game, SoundId::RailPlace, next);
         return;
     }
     const Cell origin{game.stage.width - 1, rail.cell.y};
@@ -124,6 +128,7 @@ void step_train(Game& game, int slot) {
         }
     }
     train.cell = next;
+    if (game.tick % 8 == 0) emit_sound(game, SoundId::TrainPassing, train.cell);
     if (train.train_cars_left > 0) {
         const Handle car = spawn_entity(game, EntityKind::Train, train.train_origin);
         if (Entity* entity = get_entity(game, car)) {
@@ -164,9 +169,17 @@ void mix(std::uint64_t& hash, std::uint64_t value) {
 
 } // namespace
 
+void emit_sound(Game& game, SoundId sound, Cell cell, bool positional) {
+    if (game.sound_count >= static_cast<int>(game.sounds.size())) return;
+    const auto sequence = static_cast<std::uint8_t>(game.sound_count);
+    game.sounds[static_cast<std::size_t>(game.sound_count++)] =
+        {sound, cell, game.tick, sequence, positional};
+}
+
 void step_game(Game& game, const std::array<Input, 4>& inputs) {
     if (!game.started || game.game_over) return;
     ++game.tick;
+    game.sound_count = 0;
     if (game.run.phase == RunPhase::Reward) {
         for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
             Entity* player = get_entity(game, game.players[owner]);

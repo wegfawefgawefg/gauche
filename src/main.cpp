@@ -2,6 +2,7 @@
 #include <gubsy/runtime.hpp>
 
 #include "graphics.hpp"
+#include "audio.hpp"
 #include "game.hpp"
 #include "input.hpp"
 #include "render.hpp"
@@ -76,9 +77,22 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    GameAudio audio;
+    if (!init_audio(audio, root, asset_error)) {
+        std::fprintf(stderr, "%s\n", asset_error.c_str());
+        unload_graphics(graphics);
+        cleanup_gubsy_runtime(host);
+        return 1;
+    }
+
     Game game;
     if (has_arg(argc, argv, "--smoke-game")) start_test_arena(game, 12345);
     if (has_arg(argc, argv, "--smoke-run")) start_run(game, 12345);
+    play_song(audio, game.started ? 1 : 0);
+    if (game.started) {
+        const Entity* listener = get_entity(game, game.players[0]);
+        play_game_sounds(audio, game, listener == nullptr ? Cell{} : listener->cell);
+    }
     const char* capture = capture_arg(argc, argv);
     bool captured = false;
 
@@ -98,7 +112,10 @@ int main(int argc, char** argv) {
                 running = false;
             }
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
-                (!game.started || game.game_over)) start_run(game, SDL_GetTicks() + 1);
+                (!game.started || game.game_over)) {
+                start_run(game, SDL_GetTicks() + 1);
+                play_song(audio, 1);
+            }
         }
 
         const std::uint64_t now = SDL_GetTicks();
@@ -111,6 +128,8 @@ int main(int argc, char** argv) {
                 std::array<Input, 4> inputs{};
                 if (!smoke) inputs[0] = read_local_input(game, gubsy_get_frame(host));
                 step_game(game, inputs);
+                const Entity* listener = get_entity(game, game.players[0]);
+                play_game_sounds(audio, game, listener == nullptr ? Cell{} : listener->cell);
             }
             accumulated -= step_seconds;
         }
@@ -118,6 +137,7 @@ int main(int argc, char** argv) {
         const GubsyFrame frame = gubsy_get_frame(host);
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
+            shutdown_audio(audio);
             unload_graphics(graphics);
             cleanup_gubsy_runtime(host);
             return 1;
@@ -148,6 +168,7 @@ int main(int argc, char** argv) {
         SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
         if (!gubsy_draw_frame_to_window(host)) {
             std::fprintf(stderr, "Gubsy present failed: %s\n", SDL_GetError());
+            shutdown_audio(audio);
             unload_graphics(graphics);
             cleanup_gubsy_runtime(host);
             return 1;
@@ -164,6 +185,7 @@ int main(int argc, char** argv) {
                     static_cast<unsigned long long>(steps),
                     static_cast<unsigned long long>(game_hash(game)));
     }
+    shutdown_audio(audio);
     unload_graphics(graphics);
     cleanup_gubsy_runtime(host);
     return 0;

@@ -31,8 +31,10 @@ endif()
 
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
-    src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp src/render.cpp)
-target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3 SDL3_image::SDL3_image)
+    src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp
+    src/render.cpp src/audio.cpp)
+target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
+    SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer)
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     GAUCHE_GUBSY_ASSETS_DIR="${GAUCHE_GUBSY_DIR}/src/assets")

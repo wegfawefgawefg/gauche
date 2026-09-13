@@ -21,7 +21,8 @@ const Tile* Stage::at(Cell cell) const {
 
 bool walkable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass ||
-           kind == TileKind::Ruin || kind == TileKind::Rail;
+           kind == TileKind::Ruin || kind == TileKind::Rail ||
+           kind == TileKind::Lava || kind == TileKind::Ice;
 }
 
 bool buildable(TileKind kind) {

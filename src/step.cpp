@@ -5,8 +5,6 @@
 
 namespace {
 
-constexpr std::array<Cell, 4> neighbors{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
-
 void pickup_item(Game& game, Entity& player) {
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& ground = game.entities[static_cast<std::size_t>(slot)];
@@ -56,34 +54,6 @@ void step_player(Game& game, int slot, const Input& input) {
         const Cell target = player.cell + input.aim;
         if (!interact_with_fixture(game, player.owner, target))
             use_held_item(game, slot, target);
-    }
-}
-
-void wander(Game& game, int slot) {
-    Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.move_wait > 0) return;
-    const std::uint32_t choice = random_u32(game) % 5;
-    if (choice < 4) move_entity(game, slot, entity.cell + neighbors[choice]);
-}
-
-void step_zombie(Game& game, int slot) {
-    Entity& zombie = game.entities[static_cast<std::size_t>(slot)];
-    wander(game, slot);
-    zombie.sprite = Sprite::Zombie;
-    if (zombie.attack_wait > 0) return;
-    for (Cell direction : neighbors) {
-        const Cell target_cell = zombie.cell + direction;
-        for (int target_slot = 0; target_slot < max_entities; ++target_slot) {
-            const Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
-            if (target.cell != target_cell ||
-                (target.kind != EntityKind::Player && target.kind != EntityKind::Chicken)) continue;
-            damage_entity(game, target_slot, 5, zombie.cell);
-            emit_sound(game, SoundId::ZombieScratch1, zombie.cell);
-            zombie.facing = direction;
-            zombie.attack_wait = zombie.attack_interval;
-            zombie.sprite = Sprite::ZombieScratch1;
-            return;
-        }
     }
 }
 
@@ -139,29 +109,6 @@ void step_train(Game& game, int slot) {
     }
 }
 
-void step_spawner(Game& game, int slot) {
-    Entity& spawner = game.entities[static_cast<std::size_t>(slot)];
-    if (spawner.spawn_wait > 0) {
-        --spawner.spawn_wait;
-        return;
-    }
-    int nearby = 0;
-    for (const Entity& entity : game.entities)
-        if (entity.kind == EntityKind::Zombie && distance(entity.cell, spawner.cell) < 8)
-            ++nearby;
-    if (nearby < 4) {
-        for (Cell direction : neighbors) {
-            const Cell cell = spawner.cell + direction;
-            const Tile* tile = game.stage.at(cell);
-            if (tile != nullptr && walkable(tile->kind) && entity_at(game, cell, true) < 0) {
-                spawn_entity(game, EntityKind::Zombie, cell);
-                break;
-            }
-        }
-    }
-    spawner.spawn_wait = 120;
-}
-
 void mix(std::uint64_t& hash, std::uint64_t value) {
     hash ^= value;
     hash *= 1099511628211ULL;
@@ -206,6 +153,11 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         entity.attack_wait = std::max(0, entity.attack_wait - 1);
         entity.block_ticks = std::max(0, entity.block_ticks - 1);
         entity.use_flash = std::max(0, entity.use_flash - 1);
+        const Tile* ground = game.stage.at(entity.cell);
+        if (ground != nullptr && ground->kind == TileKind::Lava &&
+            entity.kind != EntityKind::Ember && game.tick % 30 == 0)
+            damage_entity(game, static_cast<int>(&entity - game.entities.data()), 5,
+                          entity.cell + Cell{0, 1});
         if (entity.kind == EntityKind::Player && entity.health == 0 &&
             game.run.death_policy == DeathPolicy::Entrance && game.run.phase == RunPhase::Playing) {
             entity.spawn_wait = std::max(0, entity.spawn_wait - 1);
@@ -230,11 +182,12 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
             (entity.health == 0 && entity.kind != EntityKind::RailLayer &&
              entity.kind != EntityKind::GroundItem)) continue;
         switch (entity.kind) {
-        case EntityKind::Zombie: step_zombie(game, slot); break;
-        case EntityKind::Chicken: wander(game, slot); break;
+        case EntityKind::Zombie: case EntityKind::Chicken: case EntityKind::Bat:
+        case EntityKind::Wolf: case EntityKind::Bear: case EntityKind::Bunny:
+        case EntityKind::Ember: case EntityKind::FrostBat: case EntityKind::Spawner:
+            step_enemy(game, slot); break;
         case EntityKind::RailLayer: step_rail_layer(game, slot); break;
         case EntityKind::Train: step_train(game, slot); break;
-        case EntityKind::Spawner: step_spawner(game, slot); break;
         default: break;
         }
     }

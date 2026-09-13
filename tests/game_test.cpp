@@ -97,9 +97,15 @@ bool forest_progression() {
         Game game;
         start_run(game, seed);
         if (!check(floor_reachable(game), "generated forest floor is locked")) return false;
-        for (int floor = 1; floor <= 4; ++floor) {
+        for (int floor = 1; floor <= 12; ++floor) {
             if (!check(game.run.floor == floor, "floor number drifted")) return false;
-            if (!check(floor_reachable(game), "later forest floor is locked")) return false;
+            if (!check(floor_reachable(game), "generated floor is locked")) return false;
+            if (floor > 4) {
+                const TileKind expected = floor <= 8 ? TileKind::Lava : TileKind::Ice;
+                bool themed = false;
+                for (const Tile& tile : game.stage.tiles) themed |= tile.kind == expected;
+                if (!check(themed, "world lacks its terrain")) return false;
+            }
             finish_floor(game);
             choose_reward(game, 0, 1);
             if (game.run.phase == RunPhase::Reward) {
@@ -112,6 +118,8 @@ bool forest_progression() {
                 advance_run(game);
             }
         }
+        if (!check(game.run.phase == RunPhase::Won, "twelve-floor run did not clear"))
+            return false;
     }
     return true;
 }

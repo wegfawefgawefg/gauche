@@ -85,6 +85,41 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
             entity.spawn_wait = 120;
             entity.sprite = Sprite::Spawner;
             break;
+        case EntityKind::Bat: case EntityKind::FrostBat:
+            entity.sprite = kind == EntityKind::Bat ? Sprite::Bat : Sprite::FrostBat;
+            entity.health = entity.max_health = 18;
+            entity.move_interval = 15;
+            entity.attack_interval = 45;
+            entity.impassable = true;
+            break;
+        case EntityKind::Wolf:
+            entity.sprite = Sprite::Wolf;
+            entity.health = entity.max_health = 45;
+            entity.move_interval = 10;
+            entity.attack_interval = 38;
+            entity.impassable = true;
+            break;
+        case EntityKind::Bear:
+            entity.sprite = Sprite::Bear;
+            entity.health = entity.max_health = 140;
+            entity.move_interval = 25;
+            entity.attack_interval = 55;
+            entity.impassable = true;
+            break;
+        case EntityKind::Bunny:
+            entity.sprite = Sprite::Bunny;
+            entity.health = entity.max_health = 5;
+            entity.move_interval = 14;
+            entity.impassable = true;
+            break;
+        case EntityKind::Ember:
+            entity.sprite = Sprite::Ember;
+            entity.health = entity.max_health = 65;
+            entity.move_interval = 20;
+            entity.attack_interval = 55;
+            entity.impassable = true;
+            insert_item(entity.inventory, make_item(ItemKind::Pistol));
+            break;
         case EntityKind::None:
             break;
         }
@@ -134,6 +169,7 @@ bool move_entity(Game& game, int slot, Cell destination) {
     entity.facing = destination - entity.cell;
     entity.cell = destination;
     entity.move_wait = entity.move_interval;
+    if (tile->kind == TileKind::Ice) entity.move_wait += 5;
     if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken)
         emit_sound(game, (game.tick & 1U) == 0 ? SoundId::Step1 : SoundId::Step2,

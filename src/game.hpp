@@ -25,7 +25,7 @@ constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
 constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 
-enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail };
+enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice };
 struct Tile {
     TileKind kind = TileKind::Empty;
     std::uint8_t hp = 0;
@@ -74,7 +74,7 @@ bool insert_item(Inventory& inventory, Item item);
 
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
-    Key, Door, Exit, Spawner,
+    Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat,
 };
 struct Entity {
     EntityKind kind = EntityKind::None;
@@ -177,7 +177,7 @@ bool use_held_item(Game& game, int user_slot, Cell target);
 bool reload_held_item(Game& game, int user_slot);
 void start_test_arena(Game& game, std::uint64_t seed);
 void start_run(Game& game, std::uint64_t seed);
-void generate_forest_floor(Game& game);
+void generate_world_floor(Game& game);
 bool floor_reachable(const Game& game);
 bool interact_with_fixture(Game& game, int owner, Cell target);
 void finish_floor(Game& game);
@@ -186,4 +186,5 @@ void buy_shop_item(Game& game, int owner, int choice);
 int shop_price(ItemKind kind);
 void advance_run(Game& game);
 void step_game(Game& game, const std::array<Input, 4>& inputs);
+void step_enemy(Game& game, int slot);
 std::uint64_t game_hash(const Game& game);

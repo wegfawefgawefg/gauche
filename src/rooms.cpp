@@ -23,21 +23,34 @@ void carve(Stage& stage, int left, int top, int right, int bottom, TileKind kind
 void stamp_room(Game& game, int column, int row, bool main_route) {
     const int x = column * room_width;
     const int y = row * room_height;
+    const int world = (game.run.floor - 1) / 4;
+    const int local_floor = (game.run.floor - 1) % 4;
     carve(game.stage, x + 1, y + 1, x + 10, y + 8, TileKind::Empty);
-    const int variant = static_cast<int>(random_u32(game) % 3);
+    const int variant = static_cast<int>(random_u32(game) % 5);
+    const TileKind growth = world == 0 ? TileKind::Grass :
+                            (world == 1 ? TileKind::Lava : TileKind::Ice);
     if (variant == 0) {
-        carve(game.stage, x + 2, y + 2, x + 3, y + 3, TileKind::Grass);
-        carve(game.stage, x + 8, y + 6, x + 9, y + 7, TileKind::Grass);
+        carve(game.stage, x + 2, y + 2, x + 3, y + 3, growth);
+        carve(game.stage, x + 8, y + 6, x + 9, y + 7, growth);
     } else if (variant == 1) {
         carve(game.stage, x + 2, y + 6, x + 3, y + 7, TileKind::Ruin);
         carve(game.stage, x + 8, y + 2, x + 9, y + 3, TileKind::Ruin);
+    } else if (variant == 2) {
+        carve(game.stage, x + 2, y + 2, x + 2, y + 7, growth);
+        carve(game.stage, x + 9, y + 2, x + 9, y + 7, growth);
+    } else if (variant == 3) {
+        carve(game.stage, x + 3, y + 3, x + 8, y + 3, growth);
+        carve(game.stage, x + 3, y + 6, x + 8, y + 6, growth);
     } else {
-        carve(game.stage, x + 2, y + 2, x + 2, y + 3, TileKind::Grass);
-        carve(game.stage, x + 9, y + 6, x + 9, y + 7, TileKind::Grass);
+        carve(game.stage, x + 4, y + 3, x + 7, y + 6, growth);
     }
-    if (!main_route && variant == 2) {
+    if (!main_route && (variant == 2 || local_floor == 2)) {
         *game.stage.at({x + 3, y + 5}) = {TileKind::Wall, 100, 0};
         *game.stage.at({x + 8, y + 4}) = {TileKind::Wall, 100, 0};
+    }
+    if (main_route && local_floor == 3 && column > 0 && column < 5) {
+        *game.stage.at({x + 5, y + 3}) = {TileKind::Wall, 100, 0};
+        *game.stage.at({x + 6, y + 6}) = {TileKind::Wall, 100, 0};
     }
 }
 
@@ -51,7 +64,7 @@ void ground_item(Game& game, Cell cell, ItemKind kind, int count = 1) {
 
 } // namespace
 
-void generate_forest_floor(Game& game) {
+void generate_world_floor(Game& game) {
     std::array<Entity, 4> previous{};
     std::array<bool, 4> joined{};
     for (std::size_t owner = 0; owner < 4; ++owner) {
@@ -120,6 +133,7 @@ void generate_forest_floor(Game& game) {
             player->max_health = previous[owner].max_health;
             player->health = previous[owner].health > 0 ? previous[owner].health : player->max_health;
             player->move_interval = previous[owner].move_interval;
+            player->artifacts = previous[owner].artifacts;
         }
     }
 
@@ -128,14 +142,26 @@ void generate_forest_floor(Game& game) {
         ItemKind::Bow, ItemKind::Bomb, ItemKind::Ammo};
     for (int column = 1; column < columns - 1; ++column) {
         const int x = column * room_width + 5;
-        const int enemy_count = 1 + static_cast<int>(random_u32(game) % 3);
+        const int world = (game.run.floor - 1) / 4;
+        const int local_floor = (game.run.floor - 1) % 4;
+        const int enemy_count = 1 + local_floor / 2 +
+                                static_cast<int>(random_u32(game) % 2);
         for (int index = 0; index < enemy_count; ++index) {
             const Cell cell{x + index, 12 + index * 2};
-            if (entity_at(game, cell, true) < 0)
-                spawn_entity(game, EntityKind::Zombie, cell);
+            if (entity_at(game, cell, true) >= 0) continue;
+            const int roll = static_cast<int>(random_u32(game) % 4);
+            const EntityKind kind = world == 0 ?
+                (roll == 0 ? EntityKind::Zombie :
+                 roll == 1 ? EntityKind::Bat : EntityKind::Wolf) :
+                (world == 1 ? (roll == 0 ? EntityKind::Bat : EntityKind::Ember) :
+                 (roll == 0 ? EntityKind::Wolf : EntityKind::FrostBat));
+            spawn_entity(game, kind, cell);
         }
-        if (random_u32(game) % 3 == 0)
-            spawn_entity(game, EntityKind::Chicken, {x + 3, 17});
+        if (world == 0 && random_u32(game) % 3 == 0)
+            spawn_entity(game, random_u32(game) % 2 == 0 ? EntityKind::Bunny :
+                         EntityKind::Chicken, {x + 3, 17});
+        if (local_floor == 3 && column == columns - 3)
+            spawn_entity(game, EntityKind::Bear, {x + 2, 17});
         if (random_u32(game) % 2 == 0)
             ground_item(game, {x, 17}, loot[random_u32(game) % loot.size()], 1);
     }
@@ -173,4 +199,3 @@ bool floor_reachable(const Game& game) {
     }
     return false;
 }
-

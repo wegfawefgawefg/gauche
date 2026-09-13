@@ -18,8 +18,8 @@ void sprite(SDL_Renderer* renderer, const GameGraphics& graphics, Sprite id, SDL
     SDL_RenderTexture(renderer, texture_for(graphics, id), nullptr, &rect);
 }
 
-Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, bool forest) {
-    if (forest) {
+Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
+    if (world >= 0) {
         switch (tile.kind) {
         case TileKind::Empty: {
             const unsigned int variant = static_cast<unsigned int>(cell.x * 17 + cell.y * 31) % 3U;
@@ -29,6 +29,8 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, bool forest)
         case TileKind::Grass: return Sprite::ForestGrass;
         case TileKind::Wall: return Sprite::ForestWall;
         case TileKind::Ruin: return Sprite::ForestRuin;
+        case TileKind::Lava: return Sprite::LavaTile;
+        case TileKind::Ice: return Sprite::IceTile;
         default: break;
         }
     }
@@ -51,8 +53,16 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (tile == nullptr ||
                 (tile->kind == TileKind::Empty && game.run.phase == RunPhase::Arena)) continue;
             SDL_FRect rect = tile_rect(cell, camera);
-            sprite(renderer, graphics, tile_sprite(*tile, game.tick, cell,
-                   game.run.phase != RunPhase::Arena), rect);
+            const int world = game.run.phase == RunPhase::Arena ? -1 :
+                              (game.run.floor - 1) / 4;
+            const Sprite id = tile_sprite(*tile, game.tick, cell, world);
+            SDL_Texture* texture = texture_for(graphics, id);
+            if (world == 1 && tile->kind != TileKind::Lava)
+                SDL_SetTextureColorMod(texture, 225, 133, 105);
+            if (world == 2 && tile->kind != TileKind::Ice)
+                SDL_SetTextureColorMod(texture, 149, 201, 229);
+            SDL_RenderTexture(renderer, texture, nullptr, &rect);
+            SDL_SetTextureColorMod(texture, 255, 255, 255);
             if (tile->kind == TileKind::Wall && tile->hp < 100) {
                 SDL_SetRenderDrawColor(renderer, 30, 15, 15, 115);
                 SDL_RenderFillRect(renderer, &rect);
@@ -260,7 +270,10 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player != nullptr) draw_hud(renderer, graphics, *player);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
-        std::snprintf(floor, sizeof(floor), "FOREST %d/4   %s", game.run.floor,
+        constexpr const char* worlds[]{"FOREST", "FIRE", "ICE"};
+        const int world = std::clamp((game.run.floor - 1) / 4, 0, 2);
+        std::snprintf(floor, sizeof(floor), "%s %d/4   %s", worlds[world],
+                      (game.run.floor - 1) % 4 + 1,
                       game.run.has_key ? "KEY FOUND" : "FIND KEY");
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
     }

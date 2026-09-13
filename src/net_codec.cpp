@@ -119,7 +119,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::Spawner)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::FrostBat)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;
@@ -206,7 +206,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     result.stage.tiles.resize(tile_count);
     for (Tile& tile : result.stage.tiles) {
         const std::uint8_t kind = reader.u8();
-        if (kind > static_cast<std::uint8_t>(TileKind::Rail)) reader.okay = false;
+        if (kind > static_cast<std::uint8_t>(TileKind::Ice)) reader.okay = false;
         tile.kind = static_cast<TileKind>(kind);
         tile.hp = reader.u8(); tile.water_phase = reader.u8();
     }

@@ -125,3 +125,44 @@ draw.line((1, 1, 1, 5), fill="#59764c")
 draw.line((12, 2, 12, 6), fill="#54764a")
 draw.point((13, 7), fill="#7e9569")
 save("forest_wall", image)
+
+image, draw = canvas()
+draw.rectangle((0, 0, 15, 15), fill="#512421")
+draw.polygon(((1, 2), (7, 0), (11, 4), (15, 3), (15, 11),
+              (9, 15), (4, 12), (0, 14)), fill="#ca4d2d")
+draw.line((0, 7, 7, 5, 15, 8), fill="#f6b44e", width=2)
+draw.point((10, 11), fill="#ffe488")
+save("lava_tile", image)
+
+image, draw = canvas()
+draw.rectangle((0, 0, 15, 15), fill="#416a88")
+draw.polygon(((0, 0), (15, 0), (9, 8), (15, 15), (0, 15), (5, 9)),
+             fill="#83bbce")
+draw.line((1, 3, 14, 12), fill="#d4edf0")
+draw.line((10, 1, 4, 14), fill="#b4e1e8")
+save("ice_tile", image)
+
+
+def creature(name, body, face, ears=()):
+    image, draw = canvas()
+    for ear in ears:
+        draw.polygon(ear, fill=body, outline=INK)
+    draw.ellipse((2, 4, 13, 14), fill=body, outline=INK)
+    draw.rectangle((5, 8, 6, 9), fill=face)
+    draw.rectangle((10, 8, 11, 9), fill=face)
+    draw.point((8, 12), fill=face)
+    save(name, image)
+
+
+creature("bat", "#6d5b76", "#e8b65f",
+         (((0, 5), (2, 2), (6, 7)), ((10, 7), (14, 2), (15, 5))))
+creature("wolf", "#87918b", "#e9daac",
+         (((2, 2), (6, 5), (3, 7)), ((13, 2), (10, 5), (13, 7))))
+creature("bear", "#80543a", "#e7ca8d",
+         (((2, 2), (5, 2), (5, 7)), ((11, 2), (14, 2), (11, 7))))
+creature("bunny", "#b7b7a1", "#5b5960",
+         (((4, 0), (6, 0), (6, 8)), ((10, 0), (12, 0), (10, 8))))
+creature("ember", "#c85c35", "#ffe3a5",
+         (((3, 6), (5, 0), (8, 5)), ((8, 5), (12, 1), (13, 8))))
+creature("frost_bat", "#8bbbd3", "#e6f2f2",
+         (((0, 5), (2, 2), (6, 7)), ((10, 7), (14, 2), (15, 5))))

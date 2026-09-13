@@ -46,7 +46,7 @@ void ready_next_floor(Game& game) {
         game.run.phase = RunPhase::Won;
         return;
     }
-    generate_forest_floor(game);
+    generate_world_floor(game);
 }
 
 } // namespace
@@ -57,7 +57,7 @@ void start_run(Game& game, std::uint64_t seed) {
     game.run.seed = game.rng;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    generate_forest_floor(game);
+    generate_world_floor(game);
 }
 
 bool interact_with_fixture(Game& game, int owner, Cell target) {

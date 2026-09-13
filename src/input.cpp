@@ -102,7 +102,7 @@ void register_game_bindings(GubsyRuntime& runtime) {
 }
 
 Input read_local_input(GubsyRuntime& runtime, const Game& game,
-                       const GubsyFrame& frame, int owner) {
+                       const GubsyFrame& frame, int owner, float zoom) {
     Input input;
     input.move.x = direction(down(runtime, Action::MoveLeft),
                              down(runtime, Action::MoveRight));
@@ -153,8 +153,8 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
         render_y >= static_cast<float>(frame.render_height)) return input;
     const float logical_x = render_x * 640.0F / static_cast<float>(frame.render_width);
     const float logical_y = render_y * 360.0F / static_cast<float>(frame.render_height);
-    input.aim.x = static_cast<int>(std::floor((logical_x - 320.0F) / 32.0F));
-    input.aim.y = static_cast<int>(std::floor((logical_y - 160.0F) / 32.0F));
+    input.aim.x = static_cast<int>(std::floor((logical_x - 320.0F) / (16.0F * zoom)));
+    input.aim.y = static_cast<int>(std::floor((logical_y - 160.0F) / (16.0F * zoom)));
     input.use = true;
     return input;
 }

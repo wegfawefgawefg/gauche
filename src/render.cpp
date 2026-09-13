@@ -7,12 +7,13 @@
 
 namespace {
 
-constexpr float tile_pixels = 32.0F;
+float tile_pixels(float zoom) { return 16.0F * zoom; }
 
-SDL_FRect tile_rect(Cell cell, Cell camera) {
-    return {320.0F + static_cast<float>(cell.x - camera.x) * tile_pixels,
-            160.0F + static_cast<float>(cell.y - camera.y) * tile_pixels,
-            tile_pixels, tile_pixels};
+SDL_FRect tile_rect(Cell cell, Cell camera, float zoom) {
+    const float pixels = tile_pixels(zoom);
+    return {320.0F + static_cast<float>(cell.x - camera.x) * pixels,
+            160.0F + static_cast<float>(cell.y - camera.y) * pixels,
+            pixels, pixels};
 }
 
 void sprite(SDL_Renderer* renderer, const GameGraphics& graphics, Sprite id, SDL_FRect rect) {
@@ -46,14 +47,20 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     }
 }
 
-void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game, Cell camera) {
-    for (int y = camera.y - 6; y <= camera.y + 6; ++y) {
-        for (int x = camera.x - 11; x <= camera.x + 11; ++x) {
+void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics,
+                const Game& game, Cell camera, float zoom) {
+    const float pixels = tile_pixels(zoom);
+    const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
+    const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
+    for (int y = std::max(0, camera.y - rows);
+         y <= std::min(game.stage.height - 1, camera.y + rows); ++y) {
+        for (int x = std::max(0, camera.x - columns);
+             x <= std::min(game.stage.width - 1, camera.x + columns); ++x) {
             const Cell cell{x, y};
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr ||
                 (tile->kind == TileKind::Empty && game.run.phase == RunPhase::Arena)) continue;
-            SDL_FRect rect = tile_rect(cell, camera);
+            SDL_FRect rect = tile_rect(cell, camera, zoom);
             const int world = game.run.phase == RunPhase::Arena ? -1 :
                               (game.run.floor - 1) / 4;
             const Sprite id = tile_sprite(*tile, game.tick, cell, world);
@@ -73,19 +80,22 @@ void draw_world(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
-        SDL_FRect rect = tile_rect(entity.cell, camera);
-        if (rect.x < -tile_pixels || rect.x > 640.0F || rect.y < -tile_pixels || rect.y > 360.0F)
+        SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
+        if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F)
             continue;
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key) {
-            rect.x += 8.0F; rect.y += 8.0F; rect.w = rect.h = 16.0F;
+            rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
+            rect.w = rect.h = pixels * 0.5F;
         }
         sprite(renderer, graphics, entity.sprite, rect);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
-            const float forward = entity.use_flash > 0 ? 16.0F : 9.0F;
-            SDL_FRect held_rect{rect.x + 8.0F + static_cast<float>(entity.facing.x) * forward,
-                                rect.y + 8.0F + static_cast<float>(entity.facing.y) * forward,
-                                16.0F, 16.0F};
+            const float forward = entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
+            SDL_FRect held_rect{rect.x + pixels * 0.25F +
+                                static_cast<float>(entity.facing.x) * forward,
+                                rect.y + pixels * 0.25F +
+                                static_cast<float>(entity.facing.y) * forward,
+                                pixels * 0.5F, pixels * 0.5F};
             const double angle = std::atan2(static_cast<double>(entity.facing.y),
                                             static_cast<double>(entity.facing.x)) *
                                  180.0 / 3.141592653589793;
@@ -133,7 +143,8 @@ float light_from(const Stage& stage, Cell source, Cell cell, float radius) {
     return 1.0F - distance_to_light / radius;
 }
 
-void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera, int local_owner) {
+void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera,
+                   int local_owner, float zoom) {
     if (game.run.phase == RunPhase::Arena) return;
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     std::array<Cell, 24> fires{};
@@ -144,8 +155,13 @@ void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera, int lo
             fires[static_cast<std::size_t>(fire_count++)] = entity.cell;
     }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    for (int y = camera.y - 6; y <= camera.y + 6; ++y) {
-        for (int x = camera.x - 11; x <= camera.x + 11; ++x) {
+    const float pixels = tile_pixels(zoom);
+    const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
+    const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
+    for (int y = std::max(0, camera.y - rows);
+         y <= std::min(game.stage.height - 1, camera.y + rows); ++y) {
+        for (int x = std::max(0, camera.x - columns);
+             x <= std::min(game.stage.width - 1, camera.x + columns); ++x) {
             const Cell cell{x, y};
             if (!game.stage.in_bounds(cell)) continue;
             float light = 0.34F;
@@ -163,7 +179,7 @@ void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera, int lo
                 light = std::max(light, 0.78F);
             const auto darkness = static_cast<std::uint8_t>((1.0F - light) * 160.0F);
             SDL_SetRenderDrawColor(renderer, 3, 6, 8, darkness);
-            SDL_FRect rect = tile_rect(cell, camera);
+            SDL_FRect rect = tile_rect(cell, camera, zoom);
             SDL_RenderFillRect(renderer, &rect);
         }
     }
@@ -286,11 +302,11 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
-                 const Game& game, int local_owner, bool can_restart) {
+                 const Game& game, int local_owner, bool can_restart, float zoom) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     const Cell camera = player == nullptr ? Cell{32, 32} : player->cell;
-    draw_world(renderer, graphics, game, camera);
-    draw_lighting(renderer, game, camera, local_owner);
+    draw_world(renderer, graphics, game, camera, zoom);
+    draw_lighting(renderer, game, camera, local_owner, zoom);
     if (player != nullptr) draw_hud(renderer, graphics, *player);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
@@ -302,6 +318,9 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                       (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
     }
+    char zoom_label[24];
+    std::snprintf(zoom_label, sizeof(zoom_label), "ZOOM %.2fX", static_cast<double>(zoom));
+    SDL_RenderDebugText(renderer, 537.0F, 12.0F, zoom_label);
     draw_interlude(renderer, graphics, game, local_owner);
     if (game.run.phase == RunPhase::Won)
         SDL_RenderDebugText(renderer, 230.0F, 190.0F,
@@ -319,8 +338,8 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
 void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
                            const Game& scene) {
     const Cell camera = scene.run.spawn + Cell{2, 0};
-    draw_world(renderer, graphics, scene, camera);
-    draw_lighting(renderer, scene, camera, 0);
+    draw_world(renderer, graphics, scene, camera, 2.0F);
+    draw_lighting(renderer, scene, camera, 0, 2.0F);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

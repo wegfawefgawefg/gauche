@@ -99,12 +99,14 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus) {
     }
 }
 
-void draw_cosmetics(SDL_Renderer* renderer, const Cosmetics& cosmetics, Cell camera) {
+void draw_cosmetics(SDL_Renderer* renderer, const Cosmetics& cosmetics,
+                    Cell camera, float zoom) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+    const float pixels = 16.0F * zoom;
     for (const Particle& particle : cosmetics.particles) {
         if (particle.life <= 0) continue;
-        const float x = 320.0F + (particle.x - static_cast<float>(camera.x)) * 32.0F;
-        const float y = 160.0F + (particle.y - static_cast<float>(camera.y)) * 32.0F;
+        const float x = 320.0F + (particle.x - static_cast<float>(camera.x)) * pixels;
+        const float y = 160.0F + (particle.y - static_cast<float>(camera.y)) * pixels;
         if (x < 0.0F || x >= 640.0F || y < 0.0F || y >= 285.0F) continue;
         const float size = particle.span > 15 ? 3.0F : 2.0F;
         const auto alpha = static_cast<std::uint8_t>(

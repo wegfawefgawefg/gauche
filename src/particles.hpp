@@ -29,4 +29,5 @@ struct Cosmetics {
 };
 
 void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus);
-void draw_cosmetics(SDL_Renderer* renderer, const Cosmetics& cosmetics, Cell camera);
+void draw_cosmetics(SDL_Renderer* renderer, const Cosmetics& cosmetics,
+                    Cell camera, float zoom);

@@ -25,56 +25,9 @@ Spelunky-specific gameplay, network content protocol, theme, and large debug
 infrastructure. Gauche's in-game HUD
 remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 
-## Source baseline and current limits
+## Source baseline
 
-- Rust source: `../gauche-rs` at `5d7e74b`. It is clean and
-  `cargo check --locked` passes, with warnings. The existing screenshot is
-  `../gauche-rs/screenshots/image.png`.
-- Architectural references: `../adventures-with-chickens-remastered-internal`
-  at `05dd563` and `../Splonks/splonks-cpp` at `02efeacf`. The latter has a
-  substantial dirty working tree, so take a deliberate snapshot of any code
-  copied from it rather than silently depending on those edits.
-- The Rust loop is 60 Hz and renders 16-pixel tiles into a rescaled render
-  texture. Starting a run builds a 64x64 noise-based TestArena and spawns a
-  player, 32 zombies, and 32 chickens. Other systems include item use and
-  pickup/drop, destructible tiles, spatial queries, rail laying and trains,
-  five particle kinds, camera zoom/follow, distance fade, health bars, and
-  layered UI.
-- The Rust prototype has no actual spawn/exit objective, locked progression,
-  room or prefab generator, spawners, keycards/switches, firearms/projectiles,
-  or world lighting. `Win` is a placeholder. These are target-game additions,
-  not behavior to infer from unused source fields.
-- Rust inventory has ten quick slots. It has no between-floor rewards, shops,
-  artifacts, or implemented sleep/stun/freeze/burn rules; an unused
-  `can_be_stunned` entity field is not a status system.
-- Gauche water is a generated, impassable tile with two intended PNG variants.
-  Its two flip passes currently cancel, leaving each cell on its randomized
-  initial sprite. It has no fluid amount, flow, buoyancy, or water simulation.
-  Actors move between grid cells after tile/occupancy checks; their stored
-  velocity field is unused. Particle velocities and accelerations are local
-  visual effects, not world physics.
-- Rust Gauche already attenuates some world sounds by distance from its sole
-  player, but it applies one volume to both channels. It has no left/right
-  panning or persistent positional sound instances. It also has one
-  `player_vid` and no network/session state.
-- Rust Gauche stores particles in `State`, but gameplay only spawns and steps
-  them; no collision, damage, inventory, or AI rule reads particle data. Clouds
-  also spawn relative to the local camera. They are presentation, not
-  synchronized world state.
-- Asset IDs are consistent with the files: all 40 `Sprite` enum members, 41
-  `SoundEffect` members, and 2 `Song` members resolve to existing PNG/OGG files.
-  The directory also has one unlisted `no_sprite.png` and ten unlisted sound
-  files (UI/climbing). The authored asset set is about 4 MB.
-- The Rust loaders derive lowercase snake-case filenames from enums and eagerly
-  load every declared PNG/OGG from paths relative to the process working
-  directory. Both music tracks load, but no active call starts one. Graphics
-  initialization also requests an absent, unused `grayscale.fs` shader.
-- `Settings`, `VideoSettings`, and `Win` are present as mostly unreachable
-  modes. The source references `src/shaders/grayscale.fs`, but that file is
-  absent. Treat these as gaps in the source, not established game behavior.
-- `../gauche-rs/docs/review-notes.md` identifies stale entity handles,
-  double-deactivation of free-list slots, and mouse/world conversion based on
-  stale window dimensions. Resolve these while preserving gameplay behavior.
+The [Rust source audit](SOURCE_AUDIT.md) records the prototype behavior and gaps used for this port.
 
 ## Run loop and world design
 
@@ -529,23 +482,6 @@ actually changes.
    new GitHub `gauche`, update the local origins and links, and make C++ the
    primary README/download target after a playable co-op run is reviewable.
 
-## Boundaries and decisions for implementation
+## Implementation decisions
 
-- Keep the old Rust commit/history intact. Do not transplant Rust history into
-  the new C++ repository; link it as the source reference.
-- Do not port dead placeholders merely to match enum names. Replace the old
-  settings stubs with Gubsy settings; the new exit objective supplies a real
-  win/transition rule in the first run slice.
-- Preserve the old control semantics first (movement, use direction, mouse,
-  inventory, pickup/drop, zoom). Gubsy remapping can expose those same actions.
-- The first pass should use the original authored PNG/OGG assets. Load each
-  PNG directly by its `Sprite` name. Keep asset metadata in code unless a
-  concrete Gauche asset later needs richer data. New-content placeholder
-  sprites may be generated with a small Python script at the source's usual
-  16×16 scale.
-- Pin the Gubsy dependency rather than relying on whichever of the two local
-  Gubsy checkouts happens to be on disk. They currently differ.
-- The Rust history remains in `gauche-rs`; the new C++ history is published as
-  `gauche`. Both local checkouts track their matching GitHub repository. The
-  `port-finish` and `direct-netcode-finish` tags mark the playable port and
-  direct rollback milestones.
+See [implementation decisions](IMPLEMENTATION_DECISIONS.md) for the source-history, asset, and remote boundaries.

@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <charconv>
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <optional>
@@ -59,6 +60,15 @@ std::optional<int> number_arg(std::string_view text) {
     int value = 0;
     const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
     if (error != std::errc{} || end != text.data() + text.size()) return std::nullopt;
+    return value;
+}
+
+std::optional<float> decimal_arg(std::string_view text) {
+    if (text.empty()) return std::nullopt;
+    float value = 0.0F;
+    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
+    if (error != std::errc{} || end != text.data() + text.size() ||
+        !std::isfinite(value)) return std::nullopt;
     return value;
 }
 
@@ -209,6 +219,8 @@ int main(int argc, char** argv) {
 
     bool running = true;
     bool lobby_smoke_failed = false;
+    float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
+                            0.5F, 8.0F);
     int frames = 0;
     std::uint64_t last_ticks = SDL_GetTicks();
     double accumulated = 0.0;
@@ -246,6 +258,8 @@ int main(int argc, char** argv) {
                 if (button == SDL_GAMEPAD_BUTTON_START && menu.playing && !menu.visible)
                     open_game_menu(menu);
             }
+            if (event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
+                zoom = std::clamp(zoom + event.wheel.y * 0.25F, 0.5F, 8.0F);
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
                 !menu.visible && network.role == NetRole::Solo &&
                 (!game.started || game.game_over ||
@@ -324,7 +338,7 @@ int main(int argc, char** argv) {
                 std::array<Input, 4> inputs{};
                 if (!smoke && menu.playing && !menu.visible)
                     inputs[static_cast<std::size_t>(owner)] =
-                    read_local_input(host, active, gubsy_get_frame(host), owner);
+                    read_local_input(host, active, gubsy_get_frame(host), owner, zoom);
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);
                 const Entity* listener = get_entity(active,
@@ -357,10 +371,11 @@ int main(int argc, char** argv) {
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
-                        network.role != NetRole::Client);
+                        network.role != NetRole::Client, zoom);
             const Entity* player = get_entity(active,
                 active.players[static_cast<std::size_t>(networked ? network.local_owner : 0)]);
-            draw_cosmetics(frame.renderer, cosmetics, player == nullptr ? Cell{32, 32} : player->cell);
+            draw_cosmetics(frame.renderer, cosmetics,
+                           player == nullptr ? Cell{32, 32} : player->cell, zoom);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else if (menu.visible) {

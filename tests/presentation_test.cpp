@@ -1,6 +1,7 @@
 #include "../src/entities/behavior.hpp"
 #include "../src/particles/system.hpp"
 #include "../src/particles/templates.hpp"
+#include "../src/view.hpp"
 
 #include <cstdio>
 
@@ -20,6 +21,10 @@ bool check(bool okay, const char* message) {
 } // namespace
 
 int main() {
+    const SDL_FRect centered = tile_rect({20, 12}, {20, 12}, 2.0F);
+    if (!check(centered.x == 320.0F && centered.y == 180.0F &&
+               centered.w == 16.0F && centered.h == 16.0F,
+               "2x camera no longer matches Rust's half-size viewport")) return 1;
     Game game;
     game.stage.width = game.stage.height = 8;
     game.stage.tiles.resize(64);

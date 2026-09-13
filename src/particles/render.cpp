@@ -1,4 +1,5 @@
 #include "system.hpp"
+#include "../view.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -9,12 +10,12 @@ constexpr float pi = 3.14159265358979323846F;
 
 float screen_x(float x, Cell camera, float pixels, ParticleLayer layer) {
     const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
-    return 320.0F + (x - static_cast<float>(camera.x) * parallax) * pixels;
+    return view_center_x + (x - static_cast<float>(camera.x) * parallax) * pixels;
 }
 
 float screen_y(float y, Cell camera, float pixels, ParticleLayer layer) {
     const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
-    return 160.0F + (y - static_cast<float>(camera.y) * parallax) * pixels;
+    return view_center_y + (y - static_cast<float>(camera.y) * parallax) * pixels;
 }
 
 void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
@@ -83,7 +84,7 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, Cell camera, float zoom) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    const float pixels = 16.0F * zoom;
+    const float pixels = tile_pixels(zoom);
     for (const SpriteParticle& particle : cosmetics.sprites)
         if (particle.layer == layer) draw_sprite(renderer, graphics, particle, camera, pixels);
     for (const RibbonParticle& ribbon : cosmetics.ribbons)

@@ -94,8 +94,8 @@ GubsyAppConfig app_config() {
     config.data_root = (user_data_root() / "gubsy").string();
     config.engine_assets_root = (asset_root() / "gubsy-engine").string();
     config.window_title = "Gauche";
-    config.window_width = 960;
-    config.window_height = 540;
+    config.window_width = 1280;
+    config.window_height = 720;
     config.render_width = 640;
     config.render_height = 360;
     config.resizable_window = true;
@@ -260,6 +260,11 @@ int main(int argc, char** argv) {
             }
             if (event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
                 zoom = std::clamp(zoom + event.wheel.y * 0.25F, 0.5F, 8.0F);
+            if (event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&
+                !event.key.repeat && (event.key.key == SDLK_MINUS ||
+                                      event.key.key == SDLK_EQUALS))
+                zoom = std::clamp(zoom + (event.key.key == SDLK_EQUALS ? 0.25F : -0.25F),
+                                  0.5F, 8.0F);
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
                 !menu.visible && network.role == NetRole::Solo &&
                 (!game.started || game.game_over ||
@@ -351,6 +356,8 @@ int main(int argc, char** argv) {
         }
 
         const GubsyFrame frame = gubsy_get_frame(host);
+        if (menu.playing && !menu.visible) SDL_HideCursor();
+        else SDL_ShowCursor();
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
             shutdown_audio(audio);
@@ -371,7 +378,8 @@ int main(int argc, char** argv) {
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
-                        network.role != NetRole::Client, zoom, &cosmetics);
+                        network.role != NetRole::Client, zoom, &cosmetics,
+                        read_pointer(frame, active, networked ? network.local_owner : 0, zoom));
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else if (menu.visible) {

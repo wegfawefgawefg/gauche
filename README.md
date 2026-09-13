@@ -21,7 +21,7 @@ The title menu opens a lobby for solo play, direct hosting, joining, death polic
 
 `--death` accepts `no-respawn`, `entrance`, or `next-floor`. A player who disconnects keeps their slot and loadout, can return with the same local identity, and does not block the party's exit or reward choices. Direct hosting requires the UDP port to be reachable; there is no relay or room-code service yet.
 
-Move with WASD, aim/use with the arrow keys or left mouse, switch the six quick slots with 1–6, pick up with E, interact with F, drop with Q, reload with R, and zoom with the mouse wheel. Gameplay keys and controller buttons are editable in Gubsy's Controls screen, and its audio levels control Gauche's music and directional effects. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear. Escape opens the in-game menu.
+Move with WASD; aim and use with the arrow keys or left mouse button, or use the held item with Space. Select one of six quick slots with 1–6 or the keypad, pick up with E, interact with F, drop with Q, and reload with R. The mouse wheel or `-`/`=` changes zoom. Gameplay keys and controller buttons are editable in Gubsy's Controls screen, and its audio levels control Gauche's music and directional effects. Stand near the exit together, clear its key or switch gate, then choose one of three rewards. Enter continues from a shop. The host can press Enter to start a new run after a loss or clear. Escape opens the in-game menu.
 
 ## Current game
 
@@ -29,7 +29,7 @@ Each four-floor world changes terrain, encounters, and hazards. Forest has bats,
 
 Game state uses integer tile positions, a saved RNG, explicit snapshots and hashes, host-canonical input frames, rollback, and snapshot recovery. Directional sound and small impact particles stay local. The core loop runs at 60 ticks per second. Source files follow [AGENTS.md](AGENTS.md) and stay under 500 lines.
 
-Presentation now keeps local sprite footprints, blood spray and puddles, zombie corpses, debris, drifting clouds, campfire smoke, train trails, shockwaves, tile shake, and per-actor lean and hit shake. Zombies can scratch nearby chickens as in the Rust arena. Entity setup and behavior live under `src/entities/`; cosmetic systems live under `src/particles/` and are excluded from rollback state.
+Presentation now keeps local sprite footprints, blood spray and puddles, zombie corpses, debris, drifting clouds, campfire smoke, train trails, shockwaves, tile shake, and per-actor lean and hit shake. Zombies can scratch nearby chickens as in the Rust arena. The in-game UI has a selected inventory row, offset health bar, selected and ground-item details, mouse cursor and target preview, and outlined Manhattan item ranges. The default 2× zoom shows the same map area as Rust's 1280×720 view on the half-size render target. Entity behavior lives under `src/entities/`, floor layout and content under `src/world/`, UI under `src/ui/`, and cosmetics under `src/particles/`.
 
 Run the checks with:
 

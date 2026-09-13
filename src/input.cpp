@@ -1,4 +1,5 @@
 #include "input.hpp"
+#include "view.hpp"
 
 #include <gubsy/input/types.hpp>
 
@@ -39,7 +40,6 @@ void default_binds(BindsProfile& profile) {
     bind(profile, GubsyButton::KB_Q, Action::Drop);
     bind(profile, GubsyButton::KB_R, Action::Reload);
     bind(profile, GubsyButton::KB_F, Action::Interact);
-    bind(profile, GubsyButton::KB_E, Action::Interact);
     bind(profile, GubsyButton::KB_ENTER, Action::Confirm);
 
     bind(profile, GubsyButton::GP_DPAD_UP, Action::AimUp);
@@ -57,8 +57,13 @@ void default_binds(BindsProfile& profile) {
 
     constexpr GubsyButton numbers[]{GubsyButton::KB_1, GubsyButton::KB_2,
         GubsyButton::KB_3, GubsyButton::KB_4, GubsyButton::KB_5, GubsyButton::KB_6};
+    constexpr GubsyButton keypad[]{GubsyButton::KB_KP_1, GubsyButton::KB_KP_2,
+        GubsyButton::KB_KP_3, GubsyButton::KB_KP_4, GubsyButton::KB_KP_5,
+        GubsyButton::KB_KP_6};
     for (int index = 0; index < quick_slots; ++index)
         bind(profile, numbers[index], static_cast<Action>(action_id(Action::Slot1) + index));
+    for (int index = 0; index < quick_slots; ++index)
+        bind(profile, keypad[index], static_cast<Action>(action_id(Action::Slot1) + index));
 }
 
 int direction(bool negative, bool positive) {
@@ -121,21 +126,34 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
     input.pickup = down(runtime, Action::Pickup);
     input.drop = down(runtime, Action::Drop);
     input.reload = down(runtime, Action::Reload);
-    input.interact = down(runtime, Action::Interact);
+    input.interact = down(runtime, Action::Interact) && !input.pickup;
     input.confirm = down(runtime, Action::Confirm);
     for (int index = 0; index < quick_slots; ++index)
         if (gubsy_lobby_player_action_down(runtime, 0, action_id(Action::Slot1) + index))
             input.select = index;
 
+    const PointerState pointer = read_pointer(frame, game, owner, zoom);
+    if (pointer.inside && pointer.left) {
+        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+        input.aim = pointer.cell - player->cell;
+        input.use = true;
+    }
+    return input;
+}
+
+PointerState read_pointer(const GubsyFrame& frame, const Game& game,
+                          int owner, float zoom) {
+    PointerState pointer;
+    if (frame.window == nullptr || owner < 0 || owner >= 4) return pointer;
     float mouse_x = 0.0F;
     float mouse_y = 0.0F;
     const SDL_MouseButtonFlags buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
-    if ((buttons & SDL_BUTTON_LMASK) == 0) return input;
+    pointer.left = (buttons & SDL_BUTTON_LMASK) != 0;
     int window_w = 0;
     int window_h = 0;
     SDL_GetWindowSize(frame.window, &window_w, &window_h);
     if (window_w <= 0 || window_h <= 0 || frame.render_width <= 0 || frame.render_height <= 0)
-        return input;
+        return pointer;
     const float scale = std::min(static_cast<float>(window_w) /
                                      static_cast<float>(frame.render_width),
                                  static_cast<float>(window_h) /
@@ -150,11 +168,13 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
         get_entity(game, game.players[static_cast<std::size_t>(owner)]) : nullptr;
     if (player == nullptr || render_x < 0.0F || render_y < 0.0F ||
         render_x >= static_cast<float>(frame.render_width) ||
-        render_y >= static_cast<float>(frame.render_height)) return input;
-    const float logical_x = render_x * 640.0F / static_cast<float>(frame.render_width);
-    const float logical_y = render_y * 360.0F / static_cast<float>(frame.render_height);
-    input.aim.x = static_cast<int>(std::floor((logical_x - 320.0F) / (16.0F * zoom)));
-    input.aim.y = static_cast<int>(std::floor((logical_y - 160.0F) / (16.0F * zoom)));
-    input.use = true;
-    return input;
+        render_y >= static_cast<float>(frame.render_height)) return pointer;
+    pointer.x = render_x * view_width / static_cast<float>(frame.render_width);
+    pointer.y = render_y * view_height / static_cast<float>(frame.render_height);
+    pointer.cell.x = player->cell.x + static_cast<int>(std::floor(
+        (pointer.x - view_center_x) / tile_pixels(zoom)));
+    pointer.cell.y = player->cell.y + static_cast<int>(std::floor(
+        (pointer.y - view_center_y) / tile_pixels(zoom)));
+    pointer.inside = true;
+    return pointer;
 }

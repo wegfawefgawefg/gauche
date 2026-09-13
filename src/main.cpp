@@ -8,6 +8,7 @@
 #include "render.hpp"
 #include "net_session.hpp"
 #include "menu_shell.hpp"
+#include "particles.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -180,6 +181,7 @@ int main(int argc, char** argv) {
     init_menu_shell(menu, host, game, network, requested_death_policy(argc, argv),
                     identity_path);
     menu.playing = network.role == NetRole::Host || game.started;
+    Cosmetics cosmetics;
     const bool menu_smoke = has_arg(argc, argv, "--smoke-menu");
     const bool lobby_smoke = has_arg(argc, argv, "--smoke-lobby");
     if (!menu.playing && network.role == NetRole::Solo &&
@@ -304,6 +306,8 @@ int main(int argc, char** argv) {
                 const Entity* listener = get_entity(active,
                     active.players[static_cast<std::size_t>(owner)]);
                 play_game_sounds(audio, active, listener == nullptr ? Cell{} : listener->cell);
+                update_cosmetics(cosmetics, active,
+                                 listener == nullptr ? Cell{} : listener->cell);
             }
             accumulated -= step_seconds;
         }
@@ -330,6 +334,9 @@ int main(int argc, char** argv) {
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
                         network.role != NetRole::Client);
+            const Entity* player = get_entity(active,
+                active.players[static_cast<std::size_t>(networked ? network.local_owner : 0)]);
+            draw_cosmetics(frame.renderer, cosmetics, player == nullptr ? Cell{32, 32} : player->cell);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else if (!menu.visible) {

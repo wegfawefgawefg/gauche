@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
+#include <optional>
 
 namespace {
 
@@ -110,6 +112,21 @@ void step_train(Game& game, int slot) {
     }
 }
 
+std::optional<Cell> free_entrance_cell(const Game& game) {
+    for (int radius = 0; radius <= 8; ++radius) {
+        for (int dy = -radius; dy <= radius; ++dy) {
+            const int dx = radius - std::abs(dy);
+            for (int side = -1; side <= 1; side += 2) {
+                const Cell cell = game.run.spawn + Cell{dx * side, dy};
+                const Tile* tile = game.stage.at(cell);
+                if (tile != nullptr && walkable(tile->kind) &&
+                    entity_at(game, cell, true) < 0) return cell;
+            }
+        }
+    }
+    return std::nullopt;
+}
+
 void mix(std::uint64_t& hash, std::uint64_t value) {
     hash ^= value;
     hash *= 1099511628211ULL;
@@ -173,10 +190,13 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
             game.run.death_policy == DeathPolicy::Entrance && game.run.phase == RunPhase::Playing) {
             entity.spawn_wait = std::max(0, entity.spawn_wait - 1);
             if (entity.spawn_wait == 0) {
-                entity.cell = game.run.spawn;
-                entity.health = entity.max_health;
-                entity.impassable = true;
-                entity.sprite = Sprite::Player;
+                if (const auto cell = free_entrance_cell(game)) {
+                    entity.cell = *cell;
+                    entity.health = entity.max_health;
+                    entity.impassable = entity.owner < 0 || entity.owner >= 4 ||
+                        game.run.online[static_cast<std::size_t>(entity.owner)];
+                    entity.sprite = Sprite::Player;
+                } else entity.spawn_wait = 1;
             }
         }
         for (Item& item : entity.inventory.slots) item.cooldown = std::max(0, item.cooldown - 1);

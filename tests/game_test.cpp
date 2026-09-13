@@ -221,6 +221,24 @@ bool offline_reward_rules() {
                  "reconnected player could not claim missed reward");
 }
 
+bool entrance_respawn_rules() {
+    Game game = small_game();
+    game.run.phase = RunPhase::Playing;
+    game.run.death_policy = DeathPolicy::Entrance;
+    game.run.spawn = {2, 2};
+    game.run.online[0] = true;
+    get_entity(game, game.players[0])->owner = 0;
+    damage_entity(game, game.players[0].slot, 1000, {3, 2});
+    Entity* player = get_entity(game, game.players[0]);
+    player->spawn_wait = 1;
+    const Handle blocker = spawn_entity(game, EntityKind::Spawner, game.run.spawn);
+    step_game(game, {});
+    return check(player->health == player->max_health && player->impassable &&
+                 player->cell != get_entity(game, blocker)->cell &&
+                 walkable(game.stage.at(player->cell)->kind),
+                 "entrance respawn overlapped a hard blocker");
+}
+
 bool switch_route() {
     Game game;
     start_run(game, 7171);
@@ -339,7 +357,8 @@ bool forest_progression() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
-        !offline_reward_rules() || !switch_route() || !forest_tools() ||
+        !offline_reward_rules() || !entrance_respawn_rules() ||
+        !switch_route() || !forest_tools() ||
         !track_before_train() || !forest_progression())
         return 1;
     std::puts("game rules passed");

@@ -32,7 +32,7 @@ endif()
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
     src/inventory.cpp src/item.cpp src/step.cpp src/enemy_step.cpp src/trap.cpp src/run.cpp src/rooms.cpp src/input.cpp
-    src/render.cpp src/audio.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
+    src/render.cpp src/audio.cpp src/particles.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3

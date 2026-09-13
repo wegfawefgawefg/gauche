@@ -1,6 +1,7 @@
 #include "render.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstdio>
 #include <cmath>
 
@@ -131,19 +132,32 @@ float light_from(const Stage& stage, Cell source, Cell cell, float radius) {
 void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera, int local_owner) {
     if (game.run.phase == RunPhase::Arena) return;
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
+    std::array<Cell, 24> fires{};
+    int fire_count = 0;
+    for (const Entity& entity : game.entities) {
+        if ((entity.kind == EntityKind::Campfire || entity.kind == EntityKind::Ember) &&
+            fire_count < static_cast<int>(fires.size()))
+            fires[static_cast<std::size_t>(fire_count++)] = entity.cell;
+    }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     for (int y = camera.y - 6; y <= camera.y + 6; ++y) {
         for (int x = camera.x - 11; x <= camera.x + 11; ++x) {
             const Cell cell{x, y};
             if (!game.stage.in_bounds(cell)) continue;
-            float light = 0.16F;
+            float light = 0.34F;
             if (player != nullptr) light = std::max(light,
                 light_from(game.stage, player->cell, cell, 7.0F));
             for (int index = 0; index < game.run.roof_light_count; ++index)
                 light = std::max(light, light_from(game.stage,
                     game.run.roof_lights[static_cast<std::size_t>(index)], cell, 5.0F));
             light = std::max(light, light_from(game.stage, game.run.exit, cell, 4.0F));
-            const auto darkness = static_cast<std::uint8_t>((1.0F - light) * 195.0F);
+            for (int index = 0; index < fire_count; ++index)
+                light = std::max(light, light_from(game.stage,
+                    fires[static_cast<std::size_t>(index)], cell, 5.5F));
+            if (const Tile* tile = game.stage.at(cell);
+                tile != nullptr && tile->kind == TileKind::Lava)
+                light = std::max(light, 0.78F);
+            const auto darkness = static_cast<std::uint8_t>((1.0F - light) * 160.0F);
             SDL_SetRenderDrawColor(renderer, 3, 6, 8, darkness);
             SDL_FRect rect = tile_rect(cell, camera);
             SDL_RenderFillRect(renderer, &rect);

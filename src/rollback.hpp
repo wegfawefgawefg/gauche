@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <deque>
 #include <map>
+#include <vector>
 
 struct CanonicalFrame {
     std::uint64_t tick = 0;
@@ -35,4 +36,9 @@ struct RollbackSession {
 void begin_rollback(RollbackSession& session, const Game& initial);
 void predict_frame(RollbackSession& session, const std::array<Input, 4>& inputs);
 void confirm_frame(RollbackSession& session, const CanonicalFrame& canonical);
+void confirm_host_current(RollbackSession& session);
+std::vector<CanonicalFrame> revise_host_input(RollbackSession& session,
+                                             std::uint64_t tick, int owner, Input input);
+void apply_correction_batch(RollbackSession& session,
+                            const std::vector<CanonicalFrame>& canonical);
 void apply_host_snapshot(RollbackSession& session, const Game& snapshot);

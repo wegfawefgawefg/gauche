@@ -1,0 +1,257 @@
+#include "net_codec.hpp"
+
+#include <algorithm>
+#include <limits>
+
+void PacketWriter::u8(std::uint8_t value) { bytes.push_back(value); }
+void PacketWriter::u16(std::uint16_t value) {
+    for (int bit = 0; bit < 16; bit += 8) u8(static_cast<std::uint8_t>(value >> bit));
+}
+void PacketWriter::u32(std::uint32_t value) {
+    for (int bit = 0; bit < 32; bit += 8) u8(static_cast<std::uint8_t>(value >> bit));
+}
+void PacketWriter::u64(std::uint64_t value) {
+    for (int bit = 0; bit < 64; bit += 8) u8(static_cast<std::uint8_t>(value >> bit));
+}
+void PacketWriter::i32(int value) { u32(static_cast<std::uint32_t>(value)); }
+void PacketWriter::input(const Input& value) {
+    i32(value.move.x); i32(value.move.y);
+    i32(value.aim.x); i32(value.aim.y);
+    u8(static_cast<std::uint8_t>(value.use));
+    u8(static_cast<std::uint8_t>(value.pickup));
+    u8(static_cast<std::uint8_t>(value.drop));
+    u8(static_cast<std::uint8_t>(value.reload));
+    u8(static_cast<std::uint8_t>(value.interact));
+    u8(static_cast<std::uint8_t>(value.confirm));
+    i32(value.select);
+}
+
+std::uint8_t PacketReader::u8() {
+    if (position >= bytes.size()) { okay = false; return 0; }
+    return bytes[position++];
+}
+std::uint16_t PacketReader::u16() {
+    std::uint16_t value = 0;
+    for (int bit = 0; bit < 16; bit += 8)
+        value |= static_cast<std::uint16_t>(u8()) << bit;
+    return value;
+}
+std::uint32_t PacketReader::u32() {
+    std::uint32_t value = 0;
+    for (int bit = 0; bit < 32; bit += 8)
+        value |= static_cast<std::uint32_t>(u8()) << bit;
+    return value;
+}
+std::uint64_t PacketReader::u64() {
+    std::uint64_t value = 0;
+    for (int bit = 0; bit < 64; bit += 8)
+        value |= static_cast<std::uint64_t>(u8()) << bit;
+    return value;
+}
+int PacketReader::i32() {
+    return static_cast<int>(static_cast<std::int32_t>(u32()));
+}
+Input PacketReader::input() {
+    Input value;
+    value.move = {i32(), i32()};
+    value.aim = {i32(), i32()};
+    value.use = u8() != 0;
+    value.pickup = u8() != 0;
+    value.drop = u8() != 0;
+    value.reload = u8() != 0;
+    value.interact = u8() != 0;
+    value.confirm = u8() != 0;
+    value.select = i32();
+    if (value.move.x < -1 || value.move.x > 1 || value.move.y < -1 ||
+        value.move.y > 1 || value.aim.x < -512 || value.aim.x > 512 ||
+        value.aim.y < -512 || value.aim.y > 512 ||
+        value.select < -1 || value.select >= quick_slots) okay = false;
+    return value;
+}
+bool PacketReader::finished() const { return okay && position == bytes.size(); }
+
+namespace {
+
+void write_cell(PacketWriter& writer, Cell cell) {
+    writer.i32(cell.x); writer.i32(cell.y);
+}
+Cell read_cell(PacketReader& reader) { return {reader.i32(), reader.i32()}; }
+
+void write_item(PacketWriter& writer, const Item& item) {
+    writer.u8(static_cast<std::uint8_t>(item.kind));
+    writer.i32(item.count); writer.i32(item.cooldown); writer.i32(item.loaded);
+    writer.i32(item.spare); writer.i32(item.durability);
+}
+Item read_item(PacketReader& reader) {
+    Item item;
+    const std::uint8_t kind = reader.u8();
+    if (kind > static_cast<std::uint8_t>(ItemKind::Bomb)) reader.okay = false;
+    item.kind = static_cast<ItemKind>(kind);
+    item.count = reader.i32(); item.cooldown = reader.i32(); item.loaded = reader.i32();
+    item.spare = reader.i32(); item.durability = reader.i32();
+    if (item.count < 0 || item.cooldown < 0 || item.loaded < 0 || item.spare < 0 ||
+        item.durability < 0) reader.okay = false;
+    return item;
+}
+
+void write_entity(PacketWriter& writer, const Entity& entity) {
+    writer.u8(static_cast<std::uint8_t>(entity.kind));
+    writer.u32(entity.generation);
+    if (entity.kind == EntityKind::None) return;
+    write_cell(writer, entity.cell); write_cell(writer, entity.facing);
+    writer.u8(static_cast<std::uint8_t>(entity.sprite));
+    writer.i32(entity.owner); writer.i32(entity.health); writer.i32(entity.max_health);
+    writer.i32(entity.move_wait); writer.i32(entity.move_interval);
+    writer.i32(entity.attack_wait); writer.i32(entity.attack_interval);
+    writer.i32(entity.use_flash); writer.i32(entity.block_ticks);
+    writer.i32(entity.script_tick); writer.u32(entity.artifacts);
+    writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
+    write_cell(writer, entity.train_origin);
+    writer.u64(entity.birth_tick);
+    writer.u8(static_cast<std::uint8_t>(entity.impassable));
+    writer.u8(static_cast<std::uint8_t>(entity.hard_blocker));
+    writer.u8(static_cast<std::uint8_t>(entity.fixture_open));
+    writer.i32(entity.inventory.selected);
+    for (const Item& item : entity.inventory.slots) write_item(writer, item);
+    write_item(writer, entity.ground_item);
+}
+
+Entity read_entity(PacketReader& reader) {
+    Entity entity;
+    const std::uint8_t kind = reader.u8();
+    if (kind > static_cast<std::uint8_t>(EntityKind::Spawner)) reader.okay = false;
+    entity.kind = static_cast<EntityKind>(kind);
+    entity.generation = reader.u32();
+    if (entity.kind == EntityKind::None) return entity;
+    entity.cell = read_cell(reader); entity.facing = read_cell(reader);
+    const std::uint8_t sprite = reader.u8();
+    if (sprite >= static_cast<std::uint8_t>(Sprite::Count)) reader.okay = false;
+    entity.sprite = static_cast<Sprite>(sprite);
+    entity.owner = reader.i32(); entity.health = reader.i32(); entity.max_health = reader.i32();
+    entity.move_wait = reader.i32(); entity.move_interval = reader.i32();
+    entity.attack_wait = reader.i32(); entity.attack_interval = reader.i32();
+    entity.use_flash = reader.i32(); entity.block_ticks = reader.i32();
+    entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
+    entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
+    entity.train_origin = read_cell(reader);
+    entity.birth_tick = reader.u64();
+    entity.impassable = reader.u8() != 0;
+    entity.hard_blocker = reader.u8() != 0;
+    entity.fixture_open = reader.u8() != 0;
+    entity.inventory.selected = reader.i32();
+    if (entity.inventory.selected < 0 || entity.inventory.selected >= quick_slots)
+        reader.okay = false;
+    for (Item& item : entity.inventory.slots) item = read_item(reader);
+    entity.ground_item = read_item(reader);
+    if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
+        entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||
+        entity.spawn_wait < 0 || entity.owner >= 4) reader.okay = false;
+    return entity;
+}
+
+} // namespace
+
+std::vector<std::uint8_t> encode_game(const Game& game) {
+    PacketWriter writer;
+    writer.u32(1);
+    writer.u64(game.rng); writer.u64(game.tick);
+    writer.u8(static_cast<std::uint8_t>(game.started));
+    writer.u8(static_cast<std::uint8_t>(game.game_over));
+    writer.i32(game.stage.width); writer.i32(game.stage.height);
+    for (const Tile& tile : game.stage.tiles) {
+        writer.u8(static_cast<std::uint8_t>(tile.kind));
+        writer.u8(tile.hp); writer.u8(tile.water_phase);
+    }
+    const Run& run = game.run;
+    writer.u8(static_cast<std::uint8_t>(run.phase));
+    writer.i32(run.floor); writer.u64(run.seed);
+    writer.u8(static_cast<std::uint8_t>(run.death_policy));
+    writer.u8(static_cast<std::uint8_t>(run.has_key));
+    write_cell(writer, run.spawn); write_cell(writer, run.exit);
+    writer.i32(run.roof_light_count);
+    for (Cell light : run.roof_lights) write_cell(writer, light);
+    for (std::size_t owner = 0; owner < 4; ++owner) {
+        writer.i32(game.players[owner].slot);
+        writer.u32(game.players[owner].generation);
+        writer.i32(run.coins[owner]);
+        writer.u8(static_cast<std::uint8_t>(run.chosen[owner]));
+        for (const Reward& reward : run.offers[owner]) {
+            writer.u8(static_cast<std::uint8_t>(reward.kind));
+            writer.u8(static_cast<std::uint8_t>(reward.item));
+            writer.u8(static_cast<std::uint8_t>(reward.artifact));
+            writer.i32(reward.amount);
+        }
+    }
+    for (ItemKind item : run.shop_stock) writer.u8(static_cast<std::uint8_t>(item));
+    for (const Entity& entity : game.entities) write_entity(writer, entity);
+    return writer.bytes;
+}
+
+bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
+    PacketReader reader{bytes};
+    if (reader.u32() != 1) { error = "Snapshot version mismatch"; return false; }
+    Game result;
+    result.rng = reader.u64(); result.tick = reader.u64();
+    result.started = reader.u8() != 0;
+    result.game_over = reader.u8() != 0;
+    result.stage.width = reader.i32(); result.stage.height = reader.i32();
+    if (result.stage.width < 0 || result.stage.height < 0 ||
+        result.stage.width > 512 || result.stage.height > 512 ||
+        static_cast<std::int64_t>(result.stage.width) * result.stage.height > 262144) {
+        error = "Invalid snapshot dimensions";
+        return false;
+    }
+    const auto tile_count = static_cast<std::size_t>(result.stage.width * result.stage.height);
+    result.stage.tiles.resize(tile_count);
+    for (Tile& tile : result.stage.tiles) {
+        const std::uint8_t kind = reader.u8();
+        if (kind > static_cast<std::uint8_t>(TileKind::Rail)) reader.okay = false;
+        tile.kind = static_cast<TileKind>(kind);
+        tile.hp = reader.u8(); tile.water_phase = reader.u8();
+    }
+    Run& run = result.run;
+    const std::uint8_t phase = reader.u8();
+    if (phase > static_cast<std::uint8_t>(RunPhase::Won)) reader.okay = false;
+    run.phase = static_cast<RunPhase>(phase);
+    run.floor = reader.i32(); run.seed = reader.u64();
+    const std::uint8_t death_policy = reader.u8();
+    if (death_policy > static_cast<std::uint8_t>(DeathPolicy::NextFloor)) reader.okay = false;
+    run.death_policy = static_cast<DeathPolicy>(death_policy);
+    run.has_key = reader.u8() != 0;
+    run.spawn = read_cell(reader); run.exit = read_cell(reader);
+    run.roof_light_count = reader.i32();
+    if (run.roof_light_count < 0 || run.roof_light_count > 16) reader.okay = false;
+    for (Cell& light : run.roof_lights) light = read_cell(reader);
+    for (std::size_t owner = 0; owner < 4; ++owner) {
+        result.players[owner].slot = reader.i32();
+        result.players[owner].generation = reader.u32();
+        if (result.players[owner].slot < -1 || result.players[owner].slot >= max_entities)
+            reader.okay = false;
+        run.coins[owner] = reader.i32();
+        run.chosen[owner] = reader.u8() != 0;
+        for (Reward& reward : run.offers[owner]) {
+            reward.kind = static_cast<RewardKind>(reader.u8());
+            reward.item = static_cast<ItemKind>(reader.u8());
+            reward.artifact = static_cast<ArtifactKind>(reader.u8());
+            reward.amount = reader.i32();
+            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::Bomb ||
+                reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0)
+                reader.okay = false;
+        }
+    }
+    for (ItemKind& item : run.shop_stock) {
+        item = static_cast<ItemKind>(reader.u8());
+        if (item > ItemKind::Bomb) reader.okay = false;
+    }
+    for (Entity& entity : result.entities) entity = read_entity(reader);
+    if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }
+    for (Handle handle : result.players) {
+        if (handle.slot >= 0 && get_entity(result, handle) == nullptr) {
+            error = "Snapshot player handle is stale";
+            return false;
+        }
+    }
+    result.sound_count = 0;
+    game = std::move(result);
+    return true;
+}

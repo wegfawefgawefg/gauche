@@ -70,10 +70,48 @@ bool bounded_history() {
     return check(client.needs_snapshot, "late input beyond history did not request snapshot");
 }
 
+bool host_late_input_batches() {
+    Game baseline = two_player_game();
+    RollbackSession host;
+    RollbackSession client;
+    begin_rollback(host, baseline);
+    begin_rollback(client, baseline);
+    std::vector<std::array<Input, 4>> actual;
+    for (int tick = 1; tick <= 40; ++tick) {
+        std::array<Input, 4> inputs{};
+        inputs[0].move = tick % 12 < 6 ? Cell{1, 0} : Cell{-1, 0};
+        inputs[1].move = tick % 10 < 5 ? Cell{-1, 0} : Cell{1, 0};
+        actual.push_back(inputs);
+        step_game(baseline, inputs);
+        inputs[1] = {};
+        predict_frame(host, inputs);
+        confirm_host_current(host);
+        predict_frame(client, inputs);
+        confirm_frame(client, {host.game.tick, inputs, game_hash(host.game)});
+        if (tick > 3) {
+            const int late = tick - 4;
+            auto corrected = revise_host_input(host, static_cast<std::uint64_t>(late + 1), 1,
+                                               actual[static_cast<std::size_t>(late)][1]);
+            apply_correction_batch(client, corrected);
+            if (!check(!client.needs_snapshot, "correction batch caused false desync"))
+                return false;
+        }
+    }
+    for (int late = 37; late < 40; ++late) {
+        auto corrected = revise_host_input(host, static_cast<std::uint64_t>(late + 1), 1,
+                                           actual[static_cast<std::size_t>(late)][1]);
+        apply_correction_batch(client, corrected);
+    }
+    return check(game_hash(host.game) == game_hash(baseline),
+                 "host late input did not take effect") &&
+           check(game_hash(client.game) == game_hash(baseline),
+                 "client did not follow corrected host");
+}
+
 } // namespace
 
 int main() {
-    if (!correction_and_resync() || !bounded_history()) return 1;
+    if (!correction_and_resync() || !bounded_history() || !host_late_input_batches()) return 1;
     std::puts("rollback rules passed");
     return 0;
 }

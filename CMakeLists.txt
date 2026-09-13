@@ -32,9 +32,12 @@ endif()
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp src/entity.cpp
     src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp src/input.cpp
-    src/render.cpp src/audio.cpp src/rollback.cpp)
+    src/render.cpp src/audio.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer)
+if(WIN32)
+    target_link_libraries(gauche PRIVATE ws2_32)
+endif()
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     GAUCHE_GUBSY_ASSETS_DIR="${GAUCHE_GUBSY_DIR}/src/assets")
@@ -72,4 +75,16 @@ if(BUILD_TESTING)
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
+    add_executable(gauche_codec_tests
+        tests/net_codec_test.cpp src/net_codec.cpp src/stage.cpp src/entity.cpp
+        src/inventory.cpp src/item.cpp src/step.cpp src/run.cpp)
+    target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
+    add_executable(gauche_socket_tests tests/net_socket_test.cpp src/net_socket.cpp)
+    if(WIN32)
+        target_link_libraries(gauche_socket_tests PRIVATE ws2_32)
+    endif()
+    target_compile_options(gauche_socket_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME udp_loopback COMMAND gauche_socket_tests)
 endif()

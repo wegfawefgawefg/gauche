@@ -83,6 +83,67 @@ void confirm_frame(RollbackSession& session, const CanonicalFrame& canonical) {
     check_confirmed(session);
 }
 
+void confirm_host_current(RollbackSession& session) {
+    if (session.frames.empty()) return;
+    RollbackFrame& frame = session.frames.back();
+    frame.host_hash = frame.hash_after;
+    frame.confirmed = true;
+    check_confirmed(session);
+}
+
+std::vector<CanonicalFrame> revise_host_input(RollbackSession& session,
+                                             std::uint64_t tick, int owner, Input input) {
+    if (owner < 0 || owner >= 4) return {};
+    const auto found = std::find_if(session.frames.begin(), session.frames.end(),
+        [tick](const RollbackFrame& frame) { return frame.tick == tick; });
+    if (found == session.frames.end() || found->inputs[static_cast<std::size_t>(owner)] == input)
+        return {};
+    const std::size_t index = static_cast<std::size_t>(found - session.frames.begin());
+    found->inputs[static_cast<std::size_t>(owner)] = input;
+    replay_from(session, index);
+    std::vector<CanonicalFrame> corrected;
+    corrected.reserve(session.frames.size() - index);
+    for (std::size_t current = index; current < session.frames.size(); ++current) {
+        RollbackFrame& frame = session.frames[current];
+        frame.host_hash = frame.hash_after;
+        frame.confirmed = true;
+        corrected.push_back({frame.tick, frame.inputs, frame.hash_after});
+    }
+    return corrected;
+}
+
+void apply_correction_batch(RollbackSession& session,
+                            const std::vector<CanonicalFrame>& canonical) {
+    if (canonical.empty() || session.needs_snapshot) return;
+    const std::uint64_t first = canonical.front().tick;
+    const auto found = std::find_if(session.frames.begin(), session.frames.end(),
+        [first](const RollbackFrame& frame) { return frame.tick == first; });
+    if (found == session.frames.end()) {
+        session.needs_snapshot = true;
+        return;
+    }
+    const std::size_t index = static_cast<std::size_t>(found - session.frames.begin());
+    if (index + canonical.size() > session.frames.size()) {
+        session.needs_snapshot = true;
+        return;
+    }
+    for (std::size_t offset = 0; offset < canonical.size(); ++offset) {
+        RollbackFrame& frame = session.frames[index + offset];
+        if (frame.tick != canonical[offset].tick) {
+            session.needs_snapshot = true;
+            return;
+        }
+        frame.inputs = canonical[offset].inputs;
+        frame.host_hash = canonical[offset].hash;
+        frame.confirmed = true;
+    }
+    for (std::size_t current = index + canonical.size(); current < session.frames.size(); ++current)
+        session.frames[current].confirmed = false;
+    session.confirmed_through = std::min(session.confirmed_through, first - 1);
+    replay_from(session, index);
+    check_confirmed(session);
+}
+
 void apply_host_snapshot(RollbackSession& session, const Game& snapshot) {
     session.game = snapshot;
     session.game.sound_count = 0;

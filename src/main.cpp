@@ -28,7 +28,8 @@ bool wants_smoke(int argc, char** argv) {
             std::string_view{argv[index]} == "--smoke-game" ||
             std::string_view{argv[index]} == "--smoke-run" ||
             std::string_view{argv[index]} == "--smoke-menu" ||
-            std::string_view{argv[index]} == "--smoke-lobby") {
+            std::string_view{argv[index]} == "--smoke-lobby" ||
+            std::string_view{argv[index]} == "--smoke-leave") {
             return true;
         }
     }
@@ -189,8 +190,9 @@ int main(int argc, char** argv) {
     Cosmetics cosmetics;
     const bool menu_smoke = has_arg(argc, argv, "--smoke-menu");
     const bool lobby_smoke = has_arg(argc, argv, "--smoke-lobby");
+    const bool leave_smoke = has_arg(argc, argv, "--smoke-leave");
     if (!menu.playing && network.role == NetRole::Solo &&
-        (!smoke || menu_smoke || lobby_smoke))
+        (!smoke || menu_smoke || lobby_smoke || leave_smoke))
         show_title_menu(menu);
     Game& opening_game = network.role != NetRole::Solo ? network.rollback.game : game;
     play_song(audio, opening_game.started ? 1 : 0);
@@ -269,7 +271,7 @@ int main(int argc, char** argv) {
             menu_input.down = frames == 2;
             menu_input.right = frames == 4;
         }
-        if (lobby_smoke) {
+        if (lobby_smoke || leave_smoke) {
             menu_input.select = frames == 1;
             std::string message;
             if (frames == 2) {
@@ -284,6 +286,11 @@ int main(int argc, char** argv) {
                 std::fprintf(stderr, "Gubsy hosted start failed: %s\n", message.c_str());
                 lobby_smoke_failed = true;
             }
+        }
+        if (leave_smoke) {
+            if (frames == 4) open_game_menu(menu);
+            menu_input.down = frames == 5 || frames == 7 || frames == 9;
+            menu_input.select |= frames == 11;
         }
         if (network.role != NetRole::Solo) pump_network(network);
         if (!join_address.empty() && network.role == NetRole::Client && network.ready)
@@ -418,8 +425,12 @@ int main(int argc, char** argv) {
          network.rollback.game.run.death_policy != requested_death_policy(argc, argv) ||
          gubsy_get_lobby_state(host).max_players != 4);
     if (lobby_smoke_failed) std::fprintf(stderr, "Gubsy direct lobby did not start the hosted run\n");
+    const bool leave_smoke_failed = leave_smoke &&
+        (network.role != NetRole::Solo || menu.playing || !menu.visible ||
+         gubsy_get_lobby_state(host).online);
+    if (leave_smoke_failed) std::fprintf(stderr, "Gubsy menu did not leave the hosted run\n");
     shutdown_audio(audio);
     unload_graphics(graphics);
     cleanup_gubsy_runtime(host);
-    return menu_smoke_failed || lobby_smoke_failed ? 1 : 0;
+    return menu_smoke_failed || lobby_smoke_failed || leave_smoke_failed ? 1 : 0;
 }

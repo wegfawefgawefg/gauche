@@ -69,6 +69,10 @@ void restart_game(void* data, std::int32_t) {
 
 void back_to_title(void* data, std::int32_t) {
     auto& menu = *static_cast<MenuShell*>(data);
+    if (gubsy_get_lobby_state(*menu.runtime).online) {
+        std::string message;
+        (void)gubsy_leave_lobby_room(*menu.runtime, message);
+    }
     leave_network_game(*menu.network);
     *menu.solo_game = {};
     menu.playing = false;
@@ -207,6 +211,7 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     game_commands.restart_run = gubsy_register_menu_command(runtime, restart_game, &menu);
     game_commands.quit_to_main_menu =
         gubsy_register_menu_command(runtime, back_to_title, &menu);
+    menu.game_commands = game_commands;
     gubsy_set_in_game_menu_commands(runtime, game_commands);
     GubsyLobbyCommands lobby_commands;
     lobby_commands.host = host_direct;
@@ -234,6 +239,9 @@ void show_title_menu(MenuShell& menu) {
 
 void open_game_menu(MenuShell& menu) {
     if (menu.visible || !menu.playing) return;
+    GubsyInGameMenuCommands commands = menu.game_commands;
+    if (menu.network->role == NetRole::Client) commands.restart_run = kMenuIdInvalid;
+    gubsy_set_in_game_menu_commands(*menu.runtime, commands);
     menu.visible = gubsy_open_in_game_menu(*menu.runtime);
 }
 

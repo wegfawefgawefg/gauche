@@ -17,6 +17,7 @@ struct MenuShell {
     bool playing = false;
     bool quit_requested = false;
     bool lobby_configured = false;
+    GubsyInGameMenuCommands game_commands{};
 };
 
 void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,

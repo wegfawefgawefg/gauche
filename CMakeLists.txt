@@ -118,4 +118,7 @@ if(BUILD_TESTING)
     add_test(NAME direct_lobby COMMAND gauche --smoke-lobby --death entrance --frames 8)
     set_tests_properties(direct_lobby PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
+    add_test(NAME menu_leave COMMAND gauche --smoke-leave --frames 14)
+    set_tests_properties(menu_leave PROPERTIES ENVIRONMENT
+        "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
 endif()

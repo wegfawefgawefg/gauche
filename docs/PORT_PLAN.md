@@ -104,6 +104,12 @@ well as a player. `Noticing`, `ChasingTarget`, and `LosingTarget` exist as mood
 names but have no corresponding enemy logic to port. Preserve the actual simple
 rules; do not invent pursuit AI while claiming literal parity.
 
+`Wander` functions as a reusable mood-gated behavior: setting an entity to
+`Mood::Wander` made it participate in the generic pass. In the current game,
+zombies and chickens are initialized in that mood and do not transition out.
+The C++ type steps can call the shared movement helper directly; no global
+`Wander` call or unused mood state machine is needed for the existing rules.
+
 Keep that small model in C++: a plain entity pool, focused initialization
 functions, and a `StepEntity` type switch that calls bespoke `StepZombie`,
 `StepChicken`, `StepRailLayer`, or `StepTrain`. Each type function explicitly
@@ -111,11 +117,14 @@ composes the shared operations it needs: zombies and chickens call `Wander`,
 zombies also call their attack rule, and rail layers/trains run their scripts.
 Keep common cooldown, damage, inventory, and removal work in small shared
 helpers; player actions run in the input phase and item entities need no special
-AI tick. Move the zombie-only sprite reset out of Rust's `wander` helper into
-`StepZombie`. This is a C++ cleanup, not the current Rust dispatch. Preserve
-the Rust loop's meaningful order for each type: player actions before entity
-updates, cooldown/AI/death sequencing, and cleanup after the pass. Use a stable
-pool-slot iteration order for deterministic multiplayer. Random spawn variants,
+AI tick. Keep `MaybeGrowl` as an optional common presentation pass: a non-player
+entity with a growl sound set by its initializer can make that sound and shake,
+without registering special AI behavior. Move the zombie-only sprite reset out
+of Rust's `wander` helper into `StepZombie`. This is a C++ cleanup, not the
+current Rust dispatch. Preserve the Rust loop's meaningful order for each type:
+player actions before entity updates, cooldown/AI/death sequencing, and cleanup
+after the pass. Use a stable pool-slot iteration order for deterministic
+multiplayer. Random spawn variants,
 wander choices, and any gameplay-affecting event must draw from the saved
 gameplay RNG. Use cosmetic RNG for growl timing and presentation-only shake.
 Keep those effects out of the hashed state, and deduplicate sound events during

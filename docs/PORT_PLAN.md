@@ -97,16 +97,33 @@ entity/fixture layer with explicit state and spatial membership. Keys and
 weapons use inventory/item rules. This preserves bespoke entity steps while
 allowing room prefabs to compose the same small pieces in different layouts.
 
-Combat should be fast and readable on rectilinear terrain. Weapons, rockets,
-explosives, and placeable traps can use small top-down hit, projectile, blast,
-and tile-change helpers; no Splonks platformer physics is required. Smooth
-sub-tile motion may need fixed-point positions and collision even while the
-map remains tile aligned. Port the Rust tile-step movement first, then test it
-in the first firearm encounter; if it makes aiming and dodging feel too stiff,
-adapt player/projectile motion without changing the orthogonal map. Extremely
-strong tools should change routes and create memorable consequences. The
-source train currently dies when its next tile is not rail; a train that cuts an
-otherwise unbreakable wall is a new terrain-changing rule, not source parity.
+Combat should be fast and readable on rectilinear terrain. **Keep Gauche's
+tile-step actor movement**: its quick cadence and hard cell occupancy are part
+of the game, and make blocking or opening a tile tactically meaningful. Weapons,
+rockets, explosives, and placeable traps can use small top-down hit, projectile,
+blast, and tile-change helpers; no Splonks platformer physics is required.
+Projectiles may use fixed-point sub-tile positions, and visuals may interpolate,
+without changing actor movement into continuous physics. Pickaxes, bombs, and
+barricades should act on the same tile/passability rules as doors and walls.
+Strong tools should change routes and create memorable consequences.
+
+The conductor hat already demonstrates that in Rust: using it spawns a rail
+layer, which travels across the row and replaces each in-bounds tile with rail
+regardless of normal tile collision or breakability. Only after the track is
+laid does it spawn the train, which follows that track. Preserve the existing
+track-first shortcut rather than treating wall cutting as a new train rule.
+When adding new blocking fixtures, make their interaction with rail laying
+explicit so they do not accidentally negate that behavior.
+
+Add a broad set of distinct firearms, plus supplies such as sleep meds. Start
+with one universal ammo type. Each gun instance tracks rounds in its magazine;
+its gun definition supplies magazine size and firing/reload behavior. A shared
+reserve can reload any gun. Make ammo pickups' targeting explicit: ordinary
+ammo adds to the shared reserve, a focused pickup can refill the held gun, and
+a full resupply can refill all carried guns. Keep ammo generous; encounters,
+positioning, and route choices should carry more pressure than chronic ammo
+starvation. Firing, reloads, pickups, and any item effects that change gameplay
+must be deterministic and included in snapshots and hashes.
 
 Lighting is part of the target game's readability and tension. Add a Gauche
 2D light pass with dark ambient, tile/wall occlusion, and sources such as
@@ -127,13 +144,13 @@ particles, shake, and audio remain local presentation.
 | Part | C++ ownership and source reference |
 | --- | --- |
 | `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Gauche's top-down game and co-op needs. |
-| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A flat tile array supports the initial 64x64 map and later prefab rooms. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Store gameplay grid positions and timers as integers; use fixed point for fractional values that affect rules. |
+| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A flat tile array supports the initial 64x64 map and later prefab rooms. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
 | `rooms`, `objectives`, `fixtures` | Assemble authored and random room layouts around a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, traps, and loot as gameplay objects, reusing the entity and tile rules. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, fixtures, projectiles, terrain, objectives, cleanup, then transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
 | `graphics`, `render`, `render_ui`, `lighting` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers, then an occluded top-down light pass. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
 | `particles` / presentation | Keep Gauche's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |
-| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets without importing the Splonks theme. |
-| `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, and snapshot resync. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Initial snapshots include generated terrain, fixtures, objectives, and actors. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
+| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets without importing the Splonks theme. Expose the host's co-op death policy in game/lobby settings. |
+| `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, snapshot resync, and reconnect to a retained player slot. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Initial snapshots include generated terrain, fixtures, objectives, and actors. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
 
 ## What to take from Splonks, and what to leave there
 
@@ -282,6 +299,22 @@ simplify this relative to Splonks, but joining, ownership, item contention,
 deaths, disconnects, and latency still need explicit rules. Start with
 shared-world co-op; single-player uses one local player in the same world model.
 
+Treat a disconnect as a lost connection, not a death or a new character. Keep
+the player's stable ID and slot for the run, retain their avatar and inventory,
+and apply neutral/no input while absent. A returning peer reclaims that slot
+through its session identity and receives a current host snapshot plus the
+input/catch-up state needed to resume; it must not create a duplicate avatar.
+If the unattended avatar dies, the ordinary death policy applies. Carry this
+identity through level transitions so a late return can still rejoin.
+
+Make death policy a host-configured run setting, shared in the session
+handshake and deterministic state. Splonks already offers the useful three
+choices: no respawn (permadeath for that run), respawn at entrance, and return
+on the next level. Implement the corresponding Gauche rules explicitly,
+including what happens when the party reaches an exit with a dead member.
+Reconnecting never overrides the selected death rule. Pick the default after
+the first co-op playtest rather than burying it in the network layer.
+
 Lockstep lets a deterministic gameplay feature use the existing input stream
 without a new per-entity replication protocol. It still requires peers to run
 the same content/version, any new input actions to be encoded, and new
@@ -334,11 +367,13 @@ actually changes.
    UI while preserving the game's visual identity. Omit the unused shader.
 6. **Build one real run.** Make an authored 64x64 level with a party spawn,
    exit, one key/door or switch dependency, guarded room, enemy spawner, loot,
-   first firearm/projectile, explosive or trap, and one train shortcut that
-   cuts terrain. Add a focused wall-occluded light pass so darkness and bright
-   cues work in the same encounter. Validate that the ordinary route works,
-   the exceptional shortcut is intentional, and terrain/fixture state remains
-   consistent after combat. This gate is a complete solo spawn-to-exit run.
+   first firearm/projectile with magazine and ammo pickups, explosive or trap,
+   a tile-blocking barricade or tile-opening tool, and the existing rail-laying
+   shortcut from the conductor hat. Add a focused wall-occluded light pass so
+   darkness and bright cues work in the same encounter. Validate that the
+   ordinary route works, the exceptional shortcut is intentional, and
+   terrain/fixture state remains consistent after combat. This gate is a
+   complete solo spawn-to-exit run.
 7. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send a
    full initial level snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick
@@ -346,14 +381,16 @@ actually changes.
    confirmed-frame gameplay hashes, and resync from a host snapshot when
    needed. Keep audio/cosmetic events out of the hash and deduplicate them
    across replay. Validate two processes through party spawn, gate/switch use,
-   simultaneous pickup, spawner combat, explosion, train terrain cut, exit
-   transition, death, join, and disconnect, including added latency, jitter,
-   packet loss, and a deliberate desync.
+   simultaneous pickup, firing/reload and ammo resupply, spawner combat,
+   explosion, rail-laid terrain cut, exit transition, each death policy,
+   disconnect and rejoin to the same slot (including after a level change),
+   with added latency, jitter, packet loss, and a deliberate desync.
 8. **Expand maps and content.** Assemble prefab rooms from a solvable
    progression graph, mixing fixed landmarks with random rooms, encounters,
-   gates, weapons, traps, and loot. Test many seeds for reachability, useful
-   route variety, and runs that remain viable without rare wall-breaking gear.
-   Tune combat pace, resource pressure, and lighting around the complete run.
+   gates, many guns, sleep meds, traps, and loot. Test many seeds for
+   reachability, useful route variety, and runs that remain viable without
+   rare wall-breaking gear. Tune combat pace, generous ammo supply, and
+   lighting around the complete run.
 9. **Stabilize and publish.** Compare captures and gameplay scenarios, run
    focused deterministic checks for entity handles/grid and item rules, then
    a sanitizer build and normal desktop smoke. Document genuine differences.

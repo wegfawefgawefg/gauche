@@ -35,11 +35,12 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
   pickup/drop, destructible tiles, spatial queries, rail laying and trains,
   five particle kinds, camera zoom/follow, distance fade, health bars, and
   layered UI.
-- Gauche water is a generated, impassable tile that alternates between two
-  PNGs. It has no fluid amount, flow, buoyancy, or water simulation. Actors
-  move between grid cells after tile/occupancy checks; their stored velocity
-  field is unused. Particle velocities and accelerations are local visual
-  effects, not world physics.
+- Gauche water is a generated, impassable tile with two intended PNG variants.
+  Its two flip passes currently cancel, leaving each cell on its randomized
+  initial sprite. It has no fluid amount, flow, buoyancy, or water simulation.
+  Actors move between grid cells after tile/occupancy checks; their stored
+  velocity field is unused. Particle velocities and accelerations are local
+  visual effects, not world physics.
 - Rust Gauche already attenuates some world sounds by distance from its sole
   player, but it applies one volume to both channels. It has no left/right
   panning or persistent positional sound instances. It also has one
@@ -74,7 +75,7 @@ remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
 | Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. | Splonks stage/biome generation, room templates, quests, shops, progression and content databases. Gauche has one generated TestArena. |
 | Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's much smaller state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
 | SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
-| Gauche's grid occupancy/collision, tile damage, water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and dynamic lighting. |
+| Gauche's grid occupancy/collision, tile damage, intended water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and dynamic lighting. |
 | Gauche's 53 OGG files with music, effects and cooldowns; adapt Splonks' small stereo-pan calculation for positioned world sounds. | Splonks' full audio emitter graph, reverb, low-pass filters, and other acoustic processing unless a specific Gauche sound later needs them. |
 
 The omission boundary is about game behavior, not a ban on ordinary velocity
@@ -82,6 +83,36 @@ or animation calculations. Gauche's blood, debris, footprints, and clouds
 still need their original small particle motions. Gauche's distance fade and
 dark palette also remain, but do not require Splonks' lighting or post-process
 systems. The Rust shader is loaded but never used and its file is missing.
+
+## Tiles and animation
+
+Rust uses the same `TileData` shape for every cell: kind, HP/max HP,
+breakability, variant, flip speed, rotation, and shake. The stage is a nested
+`Vec<Vec<TileData>>` indexed by x then y. Only water has two tile sprites
+(`Water3` and `Water4`); grass, wall, ruin, and rail each have one, and empty
+space has none. `Water1` and `Water2` exist in the sprite enum but are not used
+by the tile lookup. Water gets a random starting variant and flip speed of 60
+ticks at generation. The comment says two seconds, but at 60 Hz that is one.
+
+Animation is explicitly coded, not driven by an asset annotation. Both
+`flip_tile` and `flip_stage_tiles` run over every tile in one gameplay step and
+toggle water on the same eligible ticks, so they cancel and the current game
+shows only the starting variant. Correct the duplicate-pass bug in the C++
+port and intentionally animate `Water3`/`Water4` once per second, retaining a
+per-cell starting phase. Record this as a small visual fix against the Rust
+reference. Do not advance or hash a per-cell animation counter: choose the
+water sprite from presentation tick and phase at draw time.
+
+Use one flat row-major tile array with an explicit width, height, and index
+helper. Gameplay cells need tile kind and, for placed walls, current HP;
+derive wall max HP/breakability and rail's 90-degree orientation from kind for
+the current rules. Keep tile shake and water phase in presentation state,
+outside rollback hashes. Lookup sprites with a direct type switch or small
+fixed array instead of allocating a `Vec<Sprite>` for every rendered tile.
+Change tile gameplay state only on placement, damage, and rail events; step
+only active local shake effects. Draw only tiles in the visible camera
+rectangle. Preserve the current walkability, buildability, wall-to-ruin, and
+train-rail rules.
 
 ## Entity stepping and content architecture
 

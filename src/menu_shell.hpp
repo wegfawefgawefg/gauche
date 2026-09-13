@@ -2,6 +2,7 @@
 
 #include "game.hpp"
 #include "net_session.hpp"
+#include "menu/front_page.hpp"
 
 #include <gubsy/runtime.hpp>
 
@@ -17,6 +18,8 @@ struct MenuShell {
     bool playing = false;
     bool quit_requested = false;
     bool lobby_configured = false;
+    bool front_visible = false;
+    FrontPage front{};
     GubsyInGameMenuCommands game_commands{};
 };
 
@@ -28,3 +31,6 @@ void open_game_menu(MenuShell& menu);
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height);
 void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int height);
+void process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
+                              const GubsyFrame& frame);
+void shutdown_menu_shell(MenuShell& menu);

@@ -28,6 +28,7 @@ struct SpriteParticle {
     float height = 1.0F;
     float angle = 0.0F;
     float spin = 0.0F;
+    int depth_height = 0;
     float alpha = 1.0F;
     int life = 0;
     int span = 0;
@@ -91,6 +92,7 @@ struct Cosmetics {
 };
 
 void step_particles(Cosmetics& cosmetics);
-void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus);
+void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus,
+                      float zoom = 2.0F);
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, Cell camera, float zoom);

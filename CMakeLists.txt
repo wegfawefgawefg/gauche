@@ -29,6 +29,26 @@ else()
     set(GAUCHE_GUBSY_DIR "${gubsy_SOURCE_DIR}")
 endif()
 
+set(GAUCHE_GVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../gview"
+    CACHE PATH "Pinned local GView checkout")
+set(GVIEW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GVIEW_BUILD_AUTHORING OFF CACHE BOOL "" FORCE)
+set(GVIEW_WITH_IMGUI OFF CACHE BOOL "" FORCE)
+set(GVIEW_WITH_SDL3_RENDERER ON CACHE BOOL "" FORCE)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../glayout/CMakeLists.txt")
+    set(GVIEW_GLAYOUT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../glayout"
+        CACHE PATH "Pinned local GLayout checkout")
+endif()
+set(GVIEW_SDL3_TARGET SDL3::SDL3 CACHE STRING "" FORCE)
+if(EXISTS "${GAUCHE_GVIEW_DIR}/CMakeLists.txt")
+    add_subdirectory("${GAUCHE_GVIEW_DIR}" gview)
+else()
+    FetchContent_Declare(gview
+        GIT_REPOSITORY https://github.com/wegfawefgawefg/gview.git
+        GIT_TAG 992224876f590f5ae6722dda99d5b53a84c8c739)
+    FetchContent_MakeAvailable(gview)
+endif()
+
 set(GAUCHE_ENTITY_SOURCES
     src/entity.cpp
     src/world/arena.cpp
@@ -54,9 +74,9 @@ add_executable(gauche
     src/render.cpp src/ui/hud.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/interlude.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
-    src/net_session_host.cpp src/net_session_client.cpp)
+    src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
-    SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer)
+    SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
 if(WIN32)
     target_link_libraries(gauche PRIVATE ws2_32)
 endif()

@@ -49,8 +49,8 @@ const char* item_effect(ItemKind kind) {
 }
 
 void description(SDL_Renderer* renderer, float x, float y, std::string_view words) {
-    for (int line = 0; line < 3 && !words.empty(); ++line) {
-        std::size_t length = std::min<std::size_t>(16, words.size());
+    for (int line = 0; line < 2 && !words.empty(); ++line) {
+        std::size_t length = std::min<std::size_t>(13, words.size());
         if (length < words.size()) {
             const std::size_t gap = words.rfind(' ', length);
             if (gap != std::string_view::npos && gap > 0) length = gap;
@@ -73,20 +73,22 @@ bool weapon(ItemKind kind) {
 
 void item_panel(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Item& item, float x, float y, const char* label) {
-    panel(renderer, x, y, 140.0F, 130.0F);
-    SDL_FRect banner{x - 5.0F, y - 5.0F, 145.0F, 18.0F};
+    panel(renderer, x, y, 120.0F, 76.0F);
+    SDL_FRect banner{x - 4.0F, y - 4.0F, 124.0F, 14.0F};
     SDL_SetRenderDrawColor(renderer, 113, 40, 38, 240);
     SDL_RenderFillRect(renderer, &banner);
-    ui_text(renderer, x + 3.0F, y, label);
-    SDL_FRect icon{x + 7.0F, y + 22.0F, 25.0F, 25.0F};
+    ui_text(renderer, x + 3.0F, y - 1.0F, label);
+    SDL_FRect icon{x + 5.0F, y + 12.0F, 17.0F, 17.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)), nullptr, &icon);
-    ui_text(renderer, x + 38.0F, y + 22.0F, item_name(item.kind));
-    description(renderer, x + 7.0F, y + 52.0F, item_effect(item.kind));
+    char name[14];
+    std::snprintf(name, sizeof(name), "%.11s", item_name(item.kind));
+    ui_text(renderer, x + 25.0F, y + 17.0F, name);
+    description(renderer, x + 5.0F, y + 32.0F, item_effect(item.kind));
     char line[64];
     const ItemRange range = item_range(item.kind);
     if (range.maximum > 0) {
         std::snprintf(line, sizeof(line), "RANGE %d-%d", range.minimum, range.maximum);
-        ui_text(renderer, x + 7.0F, y + 86.0F, line);
+        ui_text(renderer, x + 5.0F, y + 53.0F, line);
     }
     if (weapon(item.kind))
         std::snprintf(line, sizeof(line), "AMMO %d / %d", item.loaded, item.spare);
@@ -94,11 +96,7 @@ void item_panel(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "SHIELD %d", item.durability);
     else
         std::snprintf(line, sizeof(line), "COUNT %d", item.count);
-    ui_text(renderer, x + 7.0F, y + 101.0F, line);
-    if (item.cooldown > 0) {
-        std::snprintf(line, sizeof(line), "WAIT %.1fs", item.cooldown / 60.0);
-        ui_text(renderer, x + 7.0F, y + 115.0F, line);
-    }
+    ui_text(renderer, x + 5.0F, y + 65.0F, line);
 }
 
 } // namespace
@@ -108,49 +106,54 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     // The inventory stays clear of the player, with the selected row protruding.
     for (int index = 0; index < quick_slots; ++index) {
         const bool selected = index == player.inventory.selected;
-        const float x = selected ? 34.0F : 21.0F;
-        const float y = 56.0F + static_cast<float>(index) * 29.0F;
-        panel(renderer, x, y, 128.0F, 24.0F, selected);
+        const float x = selected ? 25.0F : 17.0F;
+        const float y = 58.0F + static_cast<float>(index) * 20.0F;
+        panel(renderer, x, y, 104.0F, 18.0F, selected);
         char number[2]{static_cast<char>('1' + index), '\0'};
-        ui_text(renderer, 9.0F, y + 7.0F, number);
+        ui_text(renderer, 4.0F, y + 5.0F, number);
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind != ItemKind::None) {
-            SDL_FRect icon{x + 5.0F, y + 3.0F, 18.0F, 18.0F};
+            SDL_FRect icon{x + 3.0F, y + 1.0F, 15.0F, 15.0F};
             SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)),
                               nullptr, &icon);
-            ui_text(renderer, x + 28.0F, y + 7.0F, item_name(item.kind));
+            char name[10];
+            std::snprintf(name, sizeof(name), item.count > 1 ? "%.6s" : "%.9s",
+                          item_name(item.kind));
+            ui_text(renderer, x + 21.0F, y + 4.0F, name);
             if (item.count > 1) {
                 char count[16];
                 std::snprintf(count, sizeof(count), "x%d", item.count);
-                ui_text(renderer, x + 103.0F, y + 7.0F, count);
+                const float count_x = x + 101.0F -
+                    static_cast<float>(std::char_traits<char>::length(count)) * 8.0F;
+                ui_text(renderer, count_x, y + 4.0F, count);
             }
         }
         if (selected) {
-            SDL_FRect arrow{x - 17.0F, y + 5.0F, 13.0F, 13.0F};
+            SDL_FRect arrow{x - 14.0F, y + 3.0F, 11.0F, 11.0F};
             SDL_RenderTexture(renderer, texture_for(graphics, Sprite::SelectedArrow),
                               nullptr, &arrow);
         }
     }
 
     // Rust's offset red bar is compacted to the half-size render target.
-    panel(renderer, 24.0F, 323.0F, 172.0F, 22.0F);
+    panel(renderer, 14.0F, 334.0F, 128.0F, 17.0F);
     const float fraction = player.max_health > 0 ?
         std::clamp(static_cast<float>(player.health) /
                    static_cast<float>(player.max_health), 0.0F, 1.0F) : 0.0F;
-    SDL_FRect fill{28.0F, 319.0F, 164.0F * fraction, 18.0F};
+    SDL_FRect fill{17.0F, 330.0F, 122.0F * fraction, 14.0F};
     SDL_SetRenderDrawColor(renderer, 183, 42, 39, 230);
     SDL_RenderFillRect(renderer, &fill);
     char health[48];
     std::snprintf(health, sizeof(health), "HP %d / %d", player.health, player.max_health);
-    ui_text(renderer, 33.0F, 326.0F, health);
+    ui_text(renderer, 20.0F, 335.0F, health);
 
     const Item& held = *player.inventory.held();
     if (held.kind != ItemKind::None)
-        item_panel(renderer, graphics, held, 490.0F, 226.0F, "SELECTED");
+        item_panel(renderer, graphics, held, 510.0F, 274.0F, "SELECTED");
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::GroundItem && entity.cell == player.cell &&
             entity.ground_item.kind != ItemKind::None) {
-            item_panel(renderer, graphics, entity.ground_item, 335.0F, 226.0F, "E PICK UP");
+            item_panel(renderer, graphics, entity.ground_item, 375.0F, 274.0F, "E PICK UP");
             break;
         }
     }

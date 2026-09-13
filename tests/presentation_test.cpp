@@ -3,6 +3,7 @@
 #include "../src/particles/templates.hpp"
 #include "../src/view.hpp"
 
+#include <array>
 #include <cstdio>
 
 namespace {
@@ -98,6 +99,26 @@ int main() {
     for (const SpriteParticle& particle : cosmetics.sprites)
         animated |= particle.motion == ParticleMotion::Animated;
     if (!check(animated, "campfire lost animated smoke")) return 1;
+
+    // The three cloud variants drift at Rust's slow rate on the weather plane.
+    Cosmetics sky;
+    std::array<bool, 3> cloud_variants{};
+    for (std::uint64_t seed = 0; seed < 10000; ++seed) {
+        const std::size_t before = sky.sprites.size();
+        spawn_weather_cloud(sky, {20, 12}, seed, 2.0F);
+        if (sky.sprites.size() == before) continue;
+        const SpriteParticle& cloud = sky.sprites.back();
+        const int variant = static_cast<int>(cloud.sprite) - static_cast<int>(Sprite::Cloud1);
+        if (!check(cloud.layer == ParticleLayer::Weather && cloud.depth_height == 50 &&
+                   cloud.vx >= 0.005F && cloud.vx <= 0.015F &&
+                   cloud.width >= 4.0F && cloud.width <= 16.0F &&
+                   cloud.span > 1000 && variant >= 0 && variant < 3,
+                   "cloud lost its slow parallax recipe")) return 1;
+        cloud_variants[static_cast<std::size_t>(variant)] = true;
+        if (cloud_variants[0] && cloud_variants[1] && cloud_variants[2]) break;
+    }
+    if (!check(cloud_variants[0] && cloud_variants[1] && cloud_variants[2],
+               "weather never selected all three cloud sprites")) return 1;
     std::puts("presentation rules passed");
     return 0;
 }

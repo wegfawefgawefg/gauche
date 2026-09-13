@@ -256,10 +256,19 @@ bool held_item_direction() {
     inputs[0].aim = {12, 3};
     inputs[0].use = true;
     step_game(game, inputs);
-    return check(player->facing == Cell{1, 0},
-                 "held item direction escaped its tile when use was cooling down");
+    if (!check(player->facing == Cell{1, 0},
+               "held item direction escaped its tile when use was cooling down")) return false;
+    Game trigger = small_game();
+    trigger.run.online[0] = true;
+    Entity* actor = get_entity(trigger, trigger.players[0]);
+    actor->owner = 0;
+    actor->facing = {0, -1};
+    std::array<Input, 4> press{};
+    press[0].use = true;
+    step_game(trigger, press);
+    return check(trigger.stage.at({2, 1})->kind == TileKind::Wall,
+                 "trigger with a neutral aim stick did not use facing");
 }
-
 bool switch_route() {
     Game game;
     start_run(game, 7171);

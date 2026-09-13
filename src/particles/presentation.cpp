@@ -117,7 +117,7 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
 
 } // namespace
 
-void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus) {
+void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float zoom) {
     if (game.tick < cosmetics.last_tick || game.run.floor != cosmetics.last_floor ||
         (game.run.phase == RunPhase::Arena && cosmetics.last_phase != RunPhase::Arena))
         cosmetics = {};
@@ -136,5 +136,5 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus) {
                 spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
         }
     if (game.run.phase == RunPhase::Arena || game.run.floor <= 4)
-        spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U);
+        spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
 }

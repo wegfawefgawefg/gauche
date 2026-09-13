@@ -71,7 +71,7 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.drop) drop_player_item(game, player);
     if (input.reload) reload_held_item(game, slot);
     if (input.use) {
-        const Cell target = player.cell + input.aim;
+        const Cell target = player.cell + (input.aim == Cell{} ? player.facing : input.aim);
         if (!interact_with_fixture(game, player.owner, target))
             use_held_item(game, slot, target);
     }

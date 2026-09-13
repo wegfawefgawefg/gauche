@@ -10,5 +10,6 @@ void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
                  float angle, std::uint64_t seed);
 void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
                         std::uint64_t seed);
-void spawn_weather_cloud(Cosmetics& cosmetics, Cell focus, std::uint64_t seed);
+void spawn_weather_cloud(Cosmetics& cosmetics, Cell focus, std::uint64_t seed,
+                         float zoom = 2.0F);
 void spawn_campfire_smoke(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);

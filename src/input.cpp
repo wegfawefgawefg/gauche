@@ -13,6 +13,7 @@ enum class Action : int {
     AimUp, AimDown, AimLeft, AimRight,
     Use, Pickup, Drop, Reload, Interact, Confirm,
     Slot1, Slot2, Slot3, Slot4, Slot5, Slot6,
+    PreviousSlot, NextSlot,
 };
 
 constexpr int action_id(Action action) { return static_cast<int>(action); }
@@ -42,18 +43,24 @@ void default_binds(BindsProfile& profile) {
     bind(profile, GubsyButton::KB_F, Action::Interact);
     bind(profile, GubsyButton::KB_ENTER, Action::Confirm);
 
-    bind(profile, GubsyButton::GP_DPAD_UP, Action::AimUp);
-    bind(profile, GubsyButton::GP_DPAD_DOWN, Action::AimDown);
-    bind(profile, GubsyButton::GP_DPAD_LEFT, Action::AimLeft);
-    bind(profile, GubsyButton::GP_DPAD_RIGHT, Action::AimRight);
-    bind(profile, GubsyButton::GP_RIGHT_SHOULDER, Action::Use);
+    bind(profile, GubsyButton::GP_DPAD_UP, Action::MoveUp);
+    bind(profile, GubsyButton::GP_DPAD_DOWN, Action::MoveDown);
+    bind(profile, GubsyButton::GP_DPAD_LEFT, Action::MoveLeft);
+    bind(profile, GubsyButton::GP_DPAD_RIGHT, Action::MoveRight);
     bind(profile, GubsyButton::GP_X, Action::Pickup);
     bind(profile, GubsyButton::GP_Y, Action::Drop);
     bind(profile, GubsyButton::GP_B, Action::Reload);
     bind(profile, GubsyButton::GP_A, Action::Interact);
     bind(profile, GubsyButton::GP_A, Action::Confirm);
+    bind(profile, GubsyButton::GP_LEFT_SHOULDER, Action::PreviousSlot);
+    bind(profile, GubsyButton::GP_RIGHT_SHOULDER, Action::NextSlot);
     (void)ginput::add_axis_2d_bind(profile,
         ginput::Axis2DBind{static_cast<int>(Gubsy2DAnalog::GP_LEFT_STICK), 0});
+    (void)ginput::add_axis_2d_bind(profile,
+        ginput::Axis2DBind{static_cast<int>(Gubsy2DAnalog::GP_RIGHT_STICK), 1});
+    (void)ginput::add_axis_1d_bind(profile,
+        ginput::Axis1DBind{static_cast<int>(Gubsy1DAnalog::GP_RIGHT_TRIGGER), 0,
+                           1.0F, 0.1F});
 
     constexpr GubsyButton numbers[]{GubsyButton::KB_1, GubsyButton::KB_2,
         GubsyButton::KB_3, GubsyButton::KB_4, GubsyButton::KB_5, GubsyButton::KB_6};
@@ -68,6 +75,34 @@ void default_binds(BindsProfile& profile) {
 
 int direction(bool negative, bool positive) {
     return negative ? -1 : (positive ? 1 : 0);
+}
+
+bool has_bind(const BindsProfile& profile, GubsyButton button, Action action) {
+    for (const ginput::ButtonBind& binding :
+         ginput::button_binds_for_action(profile, action_id(action)))
+        if (binding.device_button == static_cast<int>(button)) return true;
+    return false;
+}
+
+void migrate_old_controller_defaults(BindsProfile& profile) {
+    constexpr GubsyButton dpad[]{GubsyButton::GP_DPAD_UP, GubsyButton::GP_DPAD_DOWN,
+        GubsyButton::GP_DPAD_LEFT, GubsyButton::GP_DPAD_RIGHT};
+    constexpr Action aim[]{Action::AimUp, Action::AimDown, Action::AimLeft, Action::AimRight};
+    constexpr Action move[]{Action::MoveUp, Action::MoveDown,
+        Action::MoveLeft, Action::MoveRight};
+    for (int index = 0; index < 4; ++index) {
+        (void)ginput::remove_button_bind(profile,
+            {static_cast<int>(dpad[index]), action_id(aim[index])});
+        bind(profile, dpad[index], move[index]);
+    }
+    (void)ginput::remove_button_bind(profile,
+        {static_cast<int>(GubsyButton::GP_RIGHT_SHOULDER), action_id(Action::Use)});
+    bind(profile, GubsyButton::GP_LEFT_SHOULDER, Action::PreviousSlot);
+    bind(profile, GubsyButton::GP_RIGHT_SHOULDER, Action::NextSlot);
+    (void)ginput::add_axis_2d_bind(profile,
+        {static_cast<int>(Gubsy2DAnalog::GP_RIGHT_STICK), 1});
+    (void)ginput::add_axis_1d_bind(profile,
+        {static_cast<int>(Gubsy1DAnalog::GP_RIGHT_TRIGGER), 0, 1.0F, 0.1F});
 }
 
 } // namespace
@@ -91,14 +126,26 @@ void register_game_bindings(GubsyRuntime& runtime) {
     for (int index = 0; index < quick_slots; ++index)
         schema.add_action(action_id(Action::Slot1) + index,
                           "Slot " + std::to_string(index + 1), "Items");
+    schema.add_action(action_id(Action::PreviousSlot), "Previous Slot", "Items");
+    schema.add_action(action_id(Action::NextSlot), "Next Slot", "Items");
     schema.add_axis_2d(0, "Analog Move", "Movement");
+    schema.add_axis_2d(1, "Analog Aim", "Combat");
+    schema.add_axis_1d(0, "Use Trigger", "Combat");
     gubsy_register_binds_schema(runtime, schema);
 
     const BindsProfile* existing = nullptr;
     for (const BindsProfile& profile : gubsy_get_binds_profiles(runtime))
         if (profile.name == "DefaultBinds" || profile.name == "Default") existing = &profile;
     if (existing != nullptr &&
-        !ginput::button_binds_for_action(*existing, action_id(Action::MoveUp)).empty()) return;
+        !ginput::button_binds_for_action(*existing, action_id(Action::MoveUp)).empty()) {
+        if (has_bind(*existing, GubsyButton::GP_DPAD_UP, Action::AimUp) &&
+            has_bind(*existing, GubsyButton::GP_RIGHT_SHOULDER, Action::Use)) {
+            BindsProfile migrated = *existing;
+            migrate_old_controller_defaults(migrated);
+            (void)gubsy_replace_binds_profile(runtime, migrated);
+        }
+        return;
+    }
     BindsProfile profile;
     profile.id = existing == nullptr ? 1 : existing->id;
     profile.name = existing == nullptr ? "DefaultBinds" : existing->name;
@@ -107,7 +154,8 @@ void register_game_bindings(GubsyRuntime& runtime) {
 }
 
 Input read_local_input(GubsyRuntime& runtime, const Game& game,
-                       const GubsyFrame& frame, int owner, float zoom) {
+                       const GubsyFrame& frame, int owner, float zoom,
+                       InputReaderState& reader) {
     Input input;
     input.move.x = direction(down(runtime, Action::MoveLeft),
                              down(runtime, Action::MoveRight));
@@ -122,7 +170,12 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
                             down(runtime, Action::AimRight));
     input.aim.y = direction(down(runtime, Action::AimUp),
                             down(runtime, Action::AimDown));
-    input.use = input.aim != Cell{} || down(runtime, Action::Use);
+    input.use = input.aim != Cell{} || down(runtime, Action::Use) ||
+                gubsy_lobby_player_axis_1d_down(runtime, 0, 0, 0.35F);
+    const ginput::Vec2 aim_stick = gubsy_lobby_player_axis_2d(runtime, 0, 1);
+    const Cell analog_aim{aim_stick.x < -0.35F ? -1 : (aim_stick.x > 0.35F ? 1 : 0),
+                          aim_stick.y < -0.35F ? -1 : (aim_stick.y > 0.35F ? 1 : 0)};
+    if (analog_aim != Cell{}) input.aim = analog_aim;
     input.pickup = down(runtime, Action::Pickup);
     input.drop = down(runtime, Action::Drop);
     input.reload = down(runtime, Action::Reload);
@@ -131,6 +184,19 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
     for (int index = 0; index < quick_slots; ++index)
         if (gubsy_lobby_player_action_down(runtime, 0, action_id(Action::Slot1) + index))
             input.select = index;
+    const bool previous = down(runtime, Action::PreviousSlot);
+    const bool next = down(runtime, Action::NextSlot);
+    if (input.select < 0 && owner >= 0 && owner < 4) {
+        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+        if (player != nullptr) {
+            if (next && !reader.next_slot_down)
+                input.select = (player->inventory.selected + 1) % quick_slots;
+            else if (previous && !reader.previous_slot_down)
+                input.select = (player->inventory.selected + quick_slots - 1) % quick_slots;
+        }
+    }
+    reader.previous_slot_down = previous;
+    reader.next_slot_down = next;
 
     const PointerState pointer = read_pointer(frame, game, owner, zoom);
     if (pointer.inside && pointer.left) {

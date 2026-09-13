@@ -221,6 +221,7 @@ int main(int argc, char** argv) {
     bool lobby_smoke_failed = false;
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
                             0.5F, 8.0F);
+    InputReaderState input_reader{};
     int frames = 0;
     std::uint64_t last_ticks = SDL_GetTicks();
     double accumulated = 0.0;
@@ -231,6 +232,7 @@ int main(int argc, char** argv) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             gubsy_process_sdl_event(host, event);
+            process_menu_shell_event(menu, event, gubsy_get_frame(host));
             if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
                 running = false;
             }
@@ -343,14 +345,15 @@ int main(int argc, char** argv) {
                 std::array<Input, 4> inputs{};
                 if (!smoke && menu.playing && !menu.visible)
                     inputs[static_cast<std::size_t>(owner)] =
-                    read_local_input(host, active, gubsy_get_frame(host), owner, zoom);
+                    read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
+                                     input_reader);
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);
                 const Entity* listener = get_entity(active,
                     active.players[static_cast<std::size_t>(owner)]);
                 play_game_sounds(audio, active, listener == nullptr ? Cell{} : listener->cell);
                 update_cosmetics(cosmetics, active,
-                                 listener == nullptr ? Cell{} : listener->cell);
+                                 listener == nullptr ? Cell{} : listener->cell, zoom);
             }
             accumulated -= step_seconds;
         }
@@ -362,6 +365,7 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
             shutdown_audio(audio);
             unload_graphics(graphics);
+            shutdown_menu_shell(menu);
             cleanup_gubsy_runtime(host);
             return 1;
         }
@@ -406,6 +410,7 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "Gubsy present failed: %s\n", SDL_GetError());
             shutdown_audio(audio);
             unload_graphics(graphics);
+            shutdown_menu_shell(menu);
             cleanup_gubsy_runtime(host);
             return 1;
         }
@@ -450,6 +455,7 @@ int main(int argc, char** argv) {
     if (leave_smoke_failed) std::fprintf(stderr, "Gubsy menu did not leave the hosted run\n");
     shutdown_audio(audio);
     unload_graphics(graphics);
+    shutdown_menu_shell(menu);
     cleanup_gubsy_runtime(host);
     return menu_smoke_failed || lobby_smoke_failed || leave_smoke_failed ? 1 : 0;
 }

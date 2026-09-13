@@ -8,14 +8,12 @@ namespace {
 
 constexpr float pi = 3.14159265358979323846F;
 
-float screen_x(float x, Cell camera, float pixels, ParticleLayer layer) {
-    const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
-    return view_center_x + (x - static_cast<float>(camera.x) * parallax) * pixels;
+float screen_x(float x, Cell camera, float pixels, float parallax) {
+    return view_center_x + (x - static_cast<float>(camera.x)) * parallax * pixels;
 }
 
-float screen_y(float y, Cell camera, float pixels, ParticleLayer layer) {
-    const float parallax = layer == ParticleLayer::Weather ? 0.5F : 1.0F;
-    return view_center_y + (y - static_cast<float>(camera.y) * parallax) * pixels;
+float screen_y(float y, Cell camera, float pixels, float parallax) {
+    return view_center_y + (y - static_cast<float>(camera.y)) * parallax * pixels;
 }
 
 void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
@@ -24,8 +22,9 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float progress = particle.span > 0 ? age / static_cast<float>(particle.span) : 0.0F;
     const float curve = particle.motion == ParticleMotion::Arc ?
         std::sin(progress * pi) * particle.arc : 0.0F;
-    const float x = screen_x(particle.x, camera, pixels, particle.layer);
-    const float y = screen_y(particle.y - curve, camera, pixels, particle.layer);
+    const float parallax = 1.0F + static_cast<float>(particle.depth_height) * 0.005F;
+    const float x = screen_x(particle.x, camera, pixels, parallax);
+    const float y = screen_y(particle.y - curve, camera, pixels, parallax);
     const SDL_FRect rect{x - particle.width * pixels * 0.5F,
                          y - particle.height * pixels * 0.5F,
                          particle.width * pixels, particle.height * pixels};
@@ -35,8 +34,10 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
                       (static_cast<int>(age) / 12) % 2 != 0 ?
                       particle.next_sprite : particle.sprite;
     SDL_Texture* texture = texture_for(graphics, id);
-    const float fade = std::min(1.0F, static_cast<float>(particle.life) /
-                                       std::max(1.0F, static_cast<float>(particle.span) * 0.25F));
+    const float fade = particle.layer == ParticleLayer::Weather ?
+        static_cast<float>(particle.life) / static_cast<float>(particle.span) :
+        std::min(1.0F, static_cast<float>(particle.life) /
+                       std::max(1.0F, static_cast<float>(particle.span) * 0.25F));
     SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(
         std::clamp(particle.alpha * fade, 0.0F, 1.0F) * 255.0F));
     SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, particle.angle,
@@ -54,10 +55,10 @@ void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
         const SDL_FPoint first = ribbon.points[static_cast<std::size_t>(index - 1)];
         const SDL_FPoint second = ribbon.points[static_cast<std::size_t>(index)];
         SDL_RenderLine(renderer,
-            screen_x(first.x, camera, pixels, ribbon.layer),
-            screen_y(first.y, camera, pixels, ribbon.layer),
-            screen_x(second.x, camera, pixels, ribbon.layer),
-            screen_y(second.y, camera, pixels, ribbon.layer));
+            screen_x(first.x, camera, pixels, 1.0F),
+            screen_y(first.y, camera, pixels, 1.0F),
+            screen_x(second.x, camera, pixels, 1.0F),
+            screen_y(second.y, camera, pixels, 1.0F));
     }
 }
 
@@ -66,8 +67,8 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
     const auto alpha = static_cast<std::uint8_t>(
         205 * ring.life / std::max(1, ring.span));
     SDL_SetRenderDrawColor(renderer, ring.red, ring.green, ring.blue, alpha);
-    const float cx = screen_x(ring.x, camera, pixels, ring.layer);
-    const float cy = screen_y(ring.y, camera, pixels, ring.layer);
+    const float cx = screen_x(ring.x, camera, pixels, 1.0F);
+    const float cy = screen_y(ring.y, camera, pixels, 1.0F);
     for (int index = 0; index < 24; ++index) {
         const float first = 2.0F * pi * static_cast<float>(index) / 24.0F;
         const float second = 2.0F * pi * static_cast<float>(index + 1) / 24.0F;

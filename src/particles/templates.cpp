@@ -1,4 +1,5 @@
 #include "templates.hpp"
+#include "../view.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -175,20 +176,26 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     }
 }
 
-void spawn_weather_cloud(Cosmetics& cosmetics, Cell focus, std::uint64_t seed) {
+void spawn_weather_cloud(Cosmetics& cosmetics, Cell focus, std::uint64_t seed,
+                         float zoom) {
     const std::uint32_t roll = bits(seed);
     if (roll % 80U != 0) return;
     SpriteParticle cloud;
-    cloud.sprite = (roll & 1U) == 0 ? Sprite::Cloud1 : Sprite::Cloud2;
-    cloud.next_sprite = Sprite::Cloud3;
+    const std::uint32_t details = bits(seed + 17U);
+    cloud.sprite = details % 3U == 0 ? Sprite::Cloud1 :
+                   (details % 3U == 1 ? Sprite::Cloud2 : Sprite::Cloud3);
     cloud.layer = ParticleLayer::Weather;
     cloud.motion = ParticleMotion::Drift;
-    cloud.x = static_cast<float>(focus.x) * 0.5F - 13.0F;
-    cloud.y = static_cast<float>(focus.y) * 0.5F - 10.0F + unit(roll >> 8) * 20.0F;
-    cloud.vx = 0.028F;
-    cloud.width = cloud.height = 5.0F + unit(roll >> 16) * 8.0F;
-    cloud.alpha = 0.06F + unit(bits(seed + 7)) * 0.06F;
-    cloud.life = cloud.span = 2800;
+    cloud.depth_height = 50;
+    const float width = view_width / tile_pixels(zoom);
+    const float height = view_height / tile_pixels(zoom);
+    cloud.x = static_cast<float>(focus.x) - width * 0.5F - 16.0F;
+    cloud.y = static_cast<float>(focus.y) - height * 0.5F +
+              unit(roll >> 8) * height;
+    cloud.vx = 0.005F + unit(bits(seed + 13U)) * 0.010F;
+    cloud.width = cloud.height = 4.0F + unit(roll >> 16) * 12.0F;
+    cloud.alpha = 0.05F + unit(bits(seed + 7U)) * 0.05F;
+    cloud.life = cloud.span = static_cast<int>((width + 16.0F) / cloud.vx);
     add(cosmetics, cloud);
 }
 

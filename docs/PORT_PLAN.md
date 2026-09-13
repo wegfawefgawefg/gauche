@@ -104,17 +104,22 @@ well as a player. `Noticing`, `ChasingTarget`, and `LosingTarget` exist as mood
 names but have no corresponding enemy logic to port. Preserve the actual simple
 rules; do not invent pursuit AI while claiming literal parity.
 
-Keep that small model in C++: a plain entity pool, a few focused initialization
-functions, common cooldown/damage/removal helpers, and explicit type switches
-at the proper points in the update to compose `step_zombie`, `step_chicken`,
-`step_rail_layer`, and `step_train` from those helpers. This is a C++ cleanup,
-not the current Rust dispatch. Item entities need no special AI tick. Preserve
-the Rust loop's meaningful order, including player actions before entity updates,
-cooldown/AI/death sequencing, and cleanup after the pass; use a stable pool-slot
-iteration order for deterministic multiplayer. Random spawn variants, wander
-choices, and any gameplay-affecting event must draw from the saved gameplay
-RNG. Use cosmetic RNG for growl timing and presentation-only shake, keep those
-effects out of the hashed state, and deduplicate sound events during rollback.
+Keep that small model in C++: a plain entity pool, focused initialization
+functions, and a `StepEntity` type switch that calls bespoke `StepZombie`,
+`StepChicken`, `StepRailLayer`, or `StepTrain`. Each type function explicitly
+composes the shared operations it needs: zombies and chickens call `Wander`,
+zombies also call their attack rule, and rail layers/trains run their scripts.
+Keep common cooldown, damage, inventory, and removal work in small shared
+helpers; player actions run in the input phase and item entities need no special
+AI tick. Move the zombie-only sprite reset out of Rust's `wander` helper into
+`StepZombie`. This is a C++ cleanup, not the current Rust dispatch. Preserve
+the Rust loop's meaningful order for each type: player actions before entity
+updates, cooldown/AI/death sequencing, and cleanup after the pass. Use a stable
+pool-slot iteration order for deterministic multiplayer. Random spawn variants,
+wander choices, and any gameplay-affecting event must draw from the saved
+gameplay RNG. Use cosmetic RNG for growl timing and presentation-only shake.
+Keep those effects out of the hashed state, and deduplicate sound events during
+rollback.
 
 Splonks' `EntSpec` registry, per-entity callback dispatch, large AI/state
 catalog, AFrame animation hooks, and common/custom physics passes solve a much

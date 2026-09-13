@@ -83,12 +83,12 @@ still need their original small particle motions. Gauche's distance fade and
 dark palette also remain, but do not require Splonks' lighting or post-process
 systems. The Rust shader is loaded but never used and its file is missing.
 
-## Entity stepping and enemy scope
+## Entity stepping and content architecture
 
-Gauche has one hostile enemy type, the zombie. Chickens are neutral wanderers
-with chick, hen, and rooster stat/sprite variants; rail layers and trains are
-scripted entities. Rust's `init_as_*` functions are spawn templates that fill
-one `Entity` struct, not a separate archetype or callback registry. `EntityType`
+The Rust prototype has one hostile enemy type, the zombie. Chickens are neutral
+wanderers with chick, hen, and rooster stat/sprite variants; rail layers and
+trains are scripted entities. Rust's `init_as_*` spawn templates fill one
+`Entity` struct, not a separate archetype or callback registry. `EntityType`
 selects behavior; the optional `Sprite` field is independent and can change.
 All three chicken variants stay `Chicken`, with different sprites and stats;
 train heads, cars, and cabooses stay `Train`. Current gameplay never tests an
@@ -109,42 +109,40 @@ rules; do not invent pursuit AI while claiming literal parity.
 zombies and chickens are initialized in that mood and do not transition out.
 The C++ type steps can call the shared movement helper directly; no global
 `Wander` call or unused mood state machine is needed for the existing rules.
-Adventures with Chickens uses a named `AlienMode` for aliens that change
-behavior, while its chickens have no mode. Follow that scale: add a small
-type-specific enum such as `ZombieMode` only when Gauche has real zombie mode
-transitions. A shared mode enum is useful only when the same states have the
-same meaning for several actor types. Store named enum values, not unexplained
-integer codes; explicit integer values can still be used for stable network
-serialization when needed.
+Keep the shared `Entity` struct as content grows. One common AI-state field can
+hold modes with shared meaning, such as idle or pursuing. A type-specific step
+can also interpret a generic small phase/counter slot using names local to
+that behavior; it does not need a separate field for every entity type.
+Splonks itself has shared `EntAiState` and generic counters, with some actors
+using counters as private phases. Avoid unexplained numeric literals in the
+step code, and do not make unrelated simultaneous behaviors fight over one
+slot. Independent capabilities need their own state or counters. Serialize and
+hash the actual stored values for rollback.
 
-Keep that small model in C++: a plain entity pool, focused initialization
-functions, and a `StepEntity` type switch that calls bespoke `StepZombie`,
-`StepChicken`, `StepRailLayer`, or `StepTrain`. Each type function explicitly
-composes the shared operations it needs: zombies and chickens call `Wander`,
-zombies also call their attack rule, and rail layers/trains run their scripts.
-Keep common cooldown, damage, inventory, and removal work in small shared
-helpers; player actions run in the input phase and item entities need no special
-AI tick. Keep `MaybeGrowl` as an optional common presentation pass: a non-player
-entity with a growl sound set by its initializer can make that sound and shake,
-without registering special AI behavior. Move the zombie-only sprite reset out
-of Rust's `wander` helper into `StepZombie`. This is a C++ cleanup, not the
-current Rust dispatch. Preserve the Rust loop's meaningful order for each type:
-player actions before entity updates, cooldown/AI/death sequencing, and cleanup
-after the pass. Use a stable pool-slot iteration order for deterministic
-multiplayer. Random spawn variants, wander choices, and any gameplay-affecting
-event must draw from the saved gameplay RNG. Use cosmetic RNG for growl timing
-and presentation-only shake.
-Keep those effects out of the hashed state, and deduplicate sound events during
-rollback.
+Port the current rules with a plain entity pool and focused per-type step
+functions: `StepZombie` and `StepChicken` each compose `Wander`, zombies add
+their attack rule, and rail layers/trains run their scripts. Move the
+zombie-only sprite reset out of Rust's `wander` helper into `StepZombie`.
+Keep common cooldown, damage, inventory, and removal work in shared helpers;
+player actions run in the input phase and item entities need no special AI
+tick. `MaybeGrowl` remains an optional common presentation pass: setting a
+non-player entity's growl sound opts it in without bespoke AI wiring. Preserve
+the meaningful Rust update order for each type and use stable pool-slot
+iteration for deterministic multiplayer. Gameplay-affecting random choices
+use saved gameplay RNG; growl timing and shake use cosmetic RNG outside hashes.
 
-Splonks' `EntSpec` registry, per-entity callback dispatch, large AI/state
-catalog, AFrame animation hooks, and common/custom physics passes solve a much
-larger platformer problem and support its extensible content. Gauche is not
-porting mod support, so keep its direct initializer functions and type-based
-dispatch; do not build an entity-spec table or callback registry. If later
-content truly needs richer AI, add focused rules then, with their gameplay
-fields included in snapshots and hashes. Network rollback alone does not
-require a spec system.
+Design this port for a larger, compositional Gauche, even though the source
+prototype is small. Splonks' compiled-in `EntSpec` table is useful for more
+than mods: it centralizes defaults and callbacks for many entity types, and
+lets related types share step logic while varying data. Keep that organizational
+option. Start with direct initializers and a type switch while the roster is
+small; if the switch and defaults become unwieldy, use a compact static table
+of type defaults and dispatch functions. Per-type steps should compose reusable
+behaviors, while truly cross-cutting capabilities can run in shared passes.
+Omit the giant Splonks physics/animation/flag matrix and runtime mod loading.
+Never store raw function pointers in synchronized state; recover any static
+dispatch from `EntityType` after snapshot restore. New gameplay state and AI
+transitions must be included in rollback snapshots and hashes.
 
 For co-op, the host arbitrates input frames and session events. Each peer
 simulates the same deterministic gameplay tick; clients immediately predict

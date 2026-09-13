@@ -91,15 +91,18 @@ scripted entities. Rust's `init_as_*` functions are spawn templates that fill
 one `Entity` struct, not a separate archetype or callback registry. `EntityType`
 selects behavior; the optional `Sprite` field is independent and can change.
 All three chicken variants stay `Chicken`, with different sprites and stats;
-train heads, cars, and cabooses stay `Train`. Gameplay should use the type and
-stored stats, not infer identity from the current render sprite. Rust runs the
-same ordered list of helpers over every active entity. The helpers then check
-type or mood. Zombies and chickens share wandering and occasional
-growls; zombies additionally scratch an adjacent entity with different
-alignment. The current attack rule can therefore hit a chicken as well as a
-player. `Noticing`, `ChasingTarget`, and `LosingTarget` exist as mood names but
-have no corresponding enemy logic to port. Preserve the actual simple rules;
-do not invent pursuit AI while claiming literal parity.
+train heads, cars, and cabooses stay `Train`. Current gameplay never tests an
+entity's `Sprite`: it uses type, mood, alignment, stats, timers, and item data.
+Sprite assignments in gameplay code only change what gets drawn. Keep that
+separation in C++.
+
+Rust runs the same ordered list of helpers over every active entity. The
+helpers then check type or mood. Zombies and chickens share wandering and
+occasional growls; zombies additionally scratch an adjacent entity with
+different alignment. The current attack rule can therefore hit a chicken as
+well as a player. `Noticing`, `ChasingTarget`, and `LosingTarget` exist as mood
+names but have no corresponding enemy logic to port. Preserve the actual simple
+rules; do not invent pursuit AI while claiming literal parity.
 
 Keep that small model in C++: a plain entity pool, a few focused initialization
 functions, common cooldown/damage/removal helpers, and explicit type switches
@@ -115,12 +118,12 @@ effects out of the hashed state, and deduplicate sound events during rollback.
 
 Splonks' `EntSpec` registry, per-entity callback dispatch, large AI/state
 catalog, AFrame animation hooks, and common/custom physics passes solve a much
-larger platformer problem. They are not a template for Gauche's enemy step.
-Borrow the idea of centralized spawn defaults only if the initializer functions
-become repetitive. A full callback/spec system would become useful if Gauche
-grows many distinct actors with different interactions; network rollback alone
-does not require it. If later content truly needs richer AI, add focused rules
-then, with their gameplay fields included in snapshots and hashes.
+larger platformer problem and support its extensible content. Gauche is not
+porting mod support, so keep its direct initializer functions and type-based
+dispatch; do not build an entity-spec table or callback registry. If later
+content truly needs richer AI, add focused rules then, with their gameplay
+fields included in snapshots and hashes. Network rollback alone does not
+require a spec system.
 
 For co-op, the host arbitrates input frames and session events. Each peer
 simulates the same deterministic gameplay tick; clients immediately predict

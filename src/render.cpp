@@ -4,6 +4,7 @@
 #include "lighting/render.hpp"
 #include "ui/presentation.hpp"
 #include "props/render.hpp"
+#include "ui/scale.hpp"
 #include "view.hpp"
 
 #include <algorithm>
@@ -203,6 +204,24 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
 }
 
+void draw_run_status(SDL_Renderer* renderer, const Game& game, float zoom) {
+    const HudScale scale{renderer};
+    SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
+    if (game.run.phase != RunPhase::Arena) {
+        char floor[64];
+        constexpr const char* worlds[]{"FOREST", "FIRE", "ICE"};
+        const int world = std::clamp((game.run.floor - 1) / 4, 0, 2);
+        std::snprintf(floor, sizeof(floor), "%s %d/4   %s", worlds[world],
+                      (game.run.floor - 1) % 4 + 1,
+                      game.run.has_key ? "DOOR OPEN" :
+                      (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
+        SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
+    }
+    char zoom_label[24];
+    std::snprintf(zoom_label, sizeof(zoom_label), "ZOOM %.2fX", static_cast<double>(zoom));
+    SDL_RenderDebugText(renderer, 640.0F / ui_scale - 103.0F, 12.0F, zoom_label);
+}
+
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
@@ -235,20 +254,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
-    SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
-    if (game.run.phase != RunPhase::Arena) {
-        char floor[64];
-        constexpr const char* worlds[]{"FOREST", "FIRE", "ICE"};
-        const int world = std::clamp((game.run.floor - 1) / 4, 0, 2);
-        std::snprintf(floor, sizeof(floor), "%s %d/4   %s", worlds[world],
-                      (game.run.floor - 1) % 4 + 1,
-                      game.run.has_key ? "DOOR OPEN" :
-                      (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
-        SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
-    }
-    char zoom_label[24];
-    std::snprintf(zoom_label, sizeof(zoom_label), "ZOOM %.2fX", static_cast<double>(zoom));
-    SDL_RenderDebugText(renderer, 537.0F, 12.0F, zoom_label);
+    draw_run_status(renderer, game, zoom);
     draw_pointer(renderer, graphics, pointer);
 }
 

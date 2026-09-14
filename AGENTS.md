@@ -12,6 +12,9 @@
 - Label important code paragraphs by domain or phase. Comments explain a
   non-obvious "what if" case tersely; do not narrate obvious lines or leave
   commented-out code behind.
+- Enemy behavior may reuse shared `counter_a`, `label_a`, timer, and similar
+  fields in the entity struct, as in Splonks. Document each enemy's slot meanings
+  beside its init/step functions; prefer those slots over per-enemy struct fields.
 - Keep random gameplay choices in saved deterministic state. Local graphics,
   particles, and sound never affect gameplay hashes.
 - Use the source PNG/OGG files for the port. New sprites may be rough generated

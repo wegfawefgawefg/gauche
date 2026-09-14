@@ -32,6 +32,7 @@ enum class Sprite : std::size_t {
 };
 
 struct GameGraphics {
+    mutable SDL_Texture* interaction_canvas = nullptr;
     std::array<SDL_Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
     GameGraphics() = default;
     GameGraphics(const GameGraphics&) = delete;

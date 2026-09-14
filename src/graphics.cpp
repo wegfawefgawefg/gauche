@@ -50,6 +50,8 @@ bool require_file(const std::filesystem::path& path, std::string& error) {
 } // namespace
 
 void unload_graphics(GameGraphics& graphics) {
+    SDL_DestroyTexture(graphics.interaction_canvas);
+    graphics.interaction_canvas = nullptr;
     for (SDL_Texture*& texture : graphics.textures) {
         SDL_DestroyTexture(texture);
         texture = nullptr;

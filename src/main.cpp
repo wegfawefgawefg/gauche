@@ -11,7 +11,6 @@
 #include "menu/actions.hpp"
 #include "particles/system.hpp"
 #include "ui/interaction.hpp"
-
 #include <algorithm>
 #include <charconv>
 #include <cmath>
@@ -257,6 +256,7 @@ int main(int argc, char** argv) {
         while (SDL_PollEvent(&event)) {
             const bool editing_menu_text = menu.front_visible && menu.front.text_input_active;
             const bool capturing_bind = menu.front_visible && menu.front.capturing_bind;
+            observe_input_device(event);
             gubsy_process_sdl_event(host, event);
             if (process_menu_shell_event(menu, event, gubsy_get_frame(host))) continue;
             const Game& event_game = network.role == NetRole::Solo ? game : network.rollback.game;
@@ -384,9 +384,9 @@ int main(int argc, char** argv) {
             open_end_menu(menu, ended.run.phase == RunPhase::Won);
 
         const GubsyFrame frame = gubsy_get_frame(host);
-        if (menu.playing && !menu.visible && !interaction.inventory_open &&
+        if (!pointer_device_active() || (menu.playing && !menu.visible && !interaction.inventory_open &&
             !has_reward_offer(ended, networked ? network.local_owner : 0) &&
-            ended.run.phase != RunPhase::Shop) SDL_HideCursor();
+            ended.run.phase != RunPhase::Shop)) SDL_HideCursor();
         else SDL_ShowCursor();
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");

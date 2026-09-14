@@ -171,22 +171,28 @@ pass; room-role pools and supply budgets belong to the generator milestone.
 
 ## UI and pointer
 
-- [ ] Start each session with selected and ground item detail cards collapsed.
+- [x] Start each session with selected and ground item detail cards collapsed.
   Preserve the current control that expands them; inventory and comparison
   should still open full cards when requested.
-- [ ] Reduce the overall visual footprint of UI by roughly 25–30%: quick
+- [x] Reduce the overall visual footprint of UI by roughly 25–30%: quick
   slots, HP, floor/zoom labels, item cards, reward/shop/inventory text and
   icons, main menu/lobby/settings, and related shadows/offsets. Check actual
   1080p captures for room to see the world and for legibility. Retain generous
   mouse/controller targets even if their artwork shrinks; update pointer hit
   rectangles with the layout.
-- [ ] Track the most recently used pointing device locally. Any meaningful
+- [x] Track the most recently used pointing device locally. Any meaningful
   gamepad button, stick, trigger, or D-pad input hides both the OS cursor and
   Gauche's drawn pointer, including in menus and inventory. Mouse movement or
   click brings the pointer back. Prevent stick noise and synthetic mouse motion
   from making it flicker; this state must not enter lockstep input or hashes.
 - [ ] Exercise the compact default, expanded detail toggle, inventory/reward
   comparison, and controller-to-mouse switching in menu and gameplay captures.
+
+UI implementation: 0.72 scale for HUD and all modal/menu geometry. Inventory and
+rewards render to a larger intermediate canvas so the smaller text keeps its strokes;
+click regions use the inverse modal transform. Static 1080p HUD/inventory/reward
+and a one-frame lobby capture inspected. Controller cursor switching is implemented;
+physical controller feel and click feedback await user playtesting.
 
 ## Level generation and unique floors
 
@@ -219,6 +225,11 @@ pass; room-role pools and supply budgets belong to the generator milestone.
   and co-op entry/reconnect behavior deliberately.
 
 ## Biome content farm
+
+Enemy implementation follows bespoke init/step functions and shared entity
+storage. Reusable `counter_a`, `label_a`, timers, and related slots are explicitly
+approved (Splonks style); document their meanings per enemy instead of growing
+the shared struct with a separate state field for every species.
 
 The minimum target is **20 genuinely distinct enemies, 20 loose-debris types,
 and 50 biome-specific items per biome**. Across four biomes this is at least

@@ -1,6 +1,7 @@
 #include "front_page.hpp"
 #include "pages.hpp"
 #include "../graphics.hpp"
+#include "../input.hpp"
 
 #include <SDL3_image/SDL_image.h>
 #include <gubsy/input/binds_profile.hpp>
@@ -198,6 +199,7 @@ bool front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame&
 std::string update_front_page(FrontPage& page, const MenuInputState& input,
                               int width, int height, int death_policy) {
     if (!page.painter) return {};
+    if (!pointer_device_active()) page.input.pointer = {-1000, -1000, true, false, false, 0};
     const std::string view_key = projection(page, death_policy);
     if (!page.compiled || page.dirty || width != page.width || height != page.height ||
         view_key != page.projection) {

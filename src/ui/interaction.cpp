@@ -1,5 +1,6 @@
 #include "interaction.hpp"
 #include "../input.hpp"
+#include "scale.hpp"
 
 #include <algorithm>
 
@@ -110,13 +111,13 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
     }
     if (event.type != SDL_EVENT_MOUSE_BUTTON_DOWN ||
         event.button.button != SDL_BUTTON_LEFT || frame.window == nullptr) return false;
-    const int x = logical_x(event, frame);
-    const int y = logical_y(event, frame);
+    const int x = static_cast<int>((static_cast<float>(logical_x(event, frame)) - modal_left) / ui_scale);
+    const int y = static_cast<int>((static_cast<float>(logical_y(event, frame)) - modal_top) / ui_scale);
     if (ui.inventory_open) {
         if (x >= 20 && x <= 180 && y >= 60 && y < 300)
             ui.mouse_slot = std::clamp((y - 60) / 39, 0, quick_slots - 1);
-        else if (y >= 315 && x >= 25 && x < 215) ui.request_drop = true;
-        else if (y >= 315 && x >= 420) ui.request_back = true;
+        else if (y >= 315 && y <= 355 && x >= 25 && x < 215) ui.request_drop = true;
+        else if (y >= 315 && y <= 355 && x >= 420 && x < 640) ui.request_back = true;
         return true;
     }
     if ((offering(game, owner) || game.run.phase == RunPhase::Shop) &&
@@ -124,7 +125,7 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
         ui.mouse_choice = std::clamp((x - 20) / 202, 0, 2);
         return true;
     }
-    if (game.run.phase == RunPhase::Shop && y >= 315 && x >= 430) {
+    if (game.run.phase == RunPhase::Shop && y >= 315 && y <= 355 && x >= 430 && x < 640) {
         ui.mouse_choice = 3;
         return true;
     }

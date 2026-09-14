@@ -3,11 +3,13 @@
 #include "../src/input.hpp"
 #include "../src/particles/templates.hpp"
 #include "../src/props/interaction.hpp"
+#include "../src/ui/interaction.hpp"
 
 #include <SDL3_image/SDL_image.h>
 
 #include <cstdio>
 #include <string>
+#include <string_view>
 
 namespace {
 
@@ -64,8 +66,8 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png\n");
+    if (argc < 2 || argc > 3) {
+        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -84,9 +86,28 @@ int main(int argc, char** argv) {
     Game game;
     Cosmetics cosmetics;
     arrange_terrain(game, cosmetics);
+    const std::string_view mode = argc == 3 ? argv[2] : "terrain";
+    InteractionUi interaction;
+    Entity& player = *get_entity(game, game.players[0]);
+    player.inventory = {};
+    insert_item(player.inventory, make_item(ItemKind::Fist));
+    insert_item(player.inventory, make_item(ItemKind::Buckler));
+    insert_item(player.inventory, make_item(ItemKind::Pickaxe, 1, ItemAttribute::Big));
+    player.inventory.slots[1].durability = 17;
+    if (mode == "inventory") {
+        interaction.inventory_open = true;
+        interaction.slide = 1;
+        interaction.slot_focus = 2;
+    } else if (mode == "reward") {
+        game.run.phase = RunPhase::Reward;
+        game.run.offers[0] = {Reward{RewardKind::Item, ItemKind::Pickaxe, ArtifactKind::None, 1},
+            Reward{RewardKind::Health, ItemKind::None, ArtifactKind::None, 15},
+            Reward{RewardKind::Item, ItemKind::Bow, ArtifactKind::None, 1}};
+    }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, false, true);
+    render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, mode == "hud", true);
+    draw_interaction(renderer, graphics, game, 0, interaction);
     SDL_RenderPresent(renderer);
     const bool saved = IMG_SavePNG(surface, argv[1]);
     unload_graphics(graphics);

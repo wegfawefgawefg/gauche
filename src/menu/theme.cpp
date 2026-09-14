@@ -148,7 +148,7 @@ gview::BoxStyle text_box(gview::Color text) {
 
 constexpr char stone_surface[] = "ui-stone-large-panel";
 constexpr gview::SliceMargins stone_slice{41.5F, 41.5F, 41.5F, 41.5F};
-constexpr float stone_scale = 0.67F;
+constexpr float stone_scale = 0.48F;
 
 constexpr gview::Color normal_stone{205, 205, 200, 255};
 constexpr gview::Color hovered_stone{255, 230, 170, 255};

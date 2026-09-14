@@ -275,7 +275,8 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
 PointerState read_pointer(const GubsyFrame& frame, const Game& game,
                           int owner, float zoom, ViewCamera camera) {
     PointerState pointer;
-    if (frame.window == nullptr || owner < 0 || owner >= 4) return pointer;
+    if (!pointer_device_active() || frame.window == nullptr || owner < 0 || owner >= 4)
+        return pointer;
     float mouse_x = 0.0F;
     float mouse_y = 0.0F;
     const SDL_MouseButtonFlags buttons = SDL_GetMouseState(&mouse_x, &mouse_y);

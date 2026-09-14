@@ -33,7 +33,7 @@ ViewBuilder::ViewBuilder(std::string id, int width, int height) {
     height_ = height;
     scale_ = std::clamp(
         std::min(static_cast<float>(width) / 1280.0f, static_cast<float>(height) / 720.0f), 0.75f,
-        1.5f);
+        1.5f) * 0.72F;
     view_.id = std::move(id);
     view_.label = view_.id;
     view_.layout.id = view_.id + "_layout";

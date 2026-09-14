@@ -2,6 +2,7 @@
 #include "item_details.hpp"
 #include "item_meter.hpp"
 #include "text.hpp"
+#include "scale.hpp"
 #include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
 
@@ -235,7 +236,6 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                        const Game& game, int owner, const InteractionUi& ui) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
     if (player == nullptr) return;
-    shade(renderer);
     inventory_rows(renderer, graphics, *player, ui);
     const Item& focused = player->inventory.slots[static_cast<std::size_t>(ui.slot_focus)];
     const float shift = (1.0F - ui.slide) * 220.0F;
@@ -285,7 +285,6 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, int owner, const InteractionUi& ui) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
     if (player == nullptr) return;
-    shade(renderer);
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool pending = game.run.phase == RunPhase::Playing;
     text(renderer, 25.0F, 26.0F, shop ? "TRAVELING SHOP" :
@@ -334,7 +333,29 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
 void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, int owner, const InteractionUi& ui) {
     if (owner < 0 || owner >= 4) return;
+    const bool offered = has_reward_offer(game, owner) || game.run.phase == RunPhase::Shop;
+    if (!ui.inventory_open && !offered) return;
+    shade(renderer);
+    if (graphics.interaction_canvas == nullptr) {
+        graphics.interaction_canvas = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET, 1920, 1080);
+        if (graphics.interaction_canvas == nullptr) return;
+        SDL_SetTextureBlendMode(graphics.interaction_canvas, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureScaleMode(graphics.interaction_canvas, SDL_SCALEMODE_NEAREST);
+    }
+    // MODAL: Reuse the full comparison layout, centered at the same scale as the edge HUD.
+    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    float scale_x = 1, scale_y = 1;
+    SDL_GetRenderScale(renderer, &scale_x, &scale_y);
+    SDL_SetRenderTarget(renderer, graphics.interaction_canvas);
+    // TEXT: Render glyphs above native pixel size before shrinking the composed panel.
+    SDL_SetRenderScale(renderer, 3, 3);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
     if (ui.inventory_open) inventory_overlay(renderer, graphics, game, owner, ui);
-    else if (has_reward_offer(game, owner) || game.run.phase == RunPhase::Shop)
-        offer_overlay(renderer, graphics, game, owner, ui);
+    else offer_overlay(renderer, graphics, game, owner, ui);
+    SDL_SetRenderTarget(renderer, target);
+    SDL_SetRenderScale(renderer, scale_x, scale_y);
+    const SDL_FRect rect{modal_left, modal_top, 640 * ui_scale, 360 * ui_scale};
+    SDL_RenderTexture(renderer, graphics.interaction_canvas, nullptr, &rect);
 }

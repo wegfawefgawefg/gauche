@@ -23,7 +23,7 @@ bool floor_reachable(const Game& game) {
         auto [cell, has_key] = pending.front();
         pending.pop_front();
         const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr || !walkable(tile->kind)) continue;
+        if (tile == nullptr || !walkable(*tile)) continue;
         has_key |= cell == key;
         if (cell == door && !has_key) continue;
         const int index = (cell.y * game.stage.width + cell.x) * 2 + (has_key ? 1 : 0);

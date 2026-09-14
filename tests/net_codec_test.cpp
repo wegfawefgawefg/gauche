@@ -27,6 +27,8 @@ int main() {
             fire.fire_dim_ticks = 47;
         }
     original.stage.tiles[0] = {TileKind::Wall, 37, 0, 125, BreakRule::DigRequired, 3};
+    original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};
+    original.stage.tiles[2].prop = {PropKind::Puffball, 0, 9, true};
     original.run.pending_count[0] = 1;
     original.run.pending_offers[0][0][0] =
         {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,

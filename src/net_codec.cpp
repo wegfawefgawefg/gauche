@@ -203,7 +203,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(10);
+    writer.u32(11);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -214,6 +214,9 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u16(tile.max_hp);
         writer.u8(static_cast<std::uint8_t>(tile.break_rule));
         writer.u8(tile.required_dig_power);
+        writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
+        writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
+        writer.u8(static_cast<std::uint8_t>(tile.prop.broken));
     }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
@@ -259,7 +262,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 10) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 11) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -281,6 +284,11 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.max_hp = reader.u16();
         tile.break_rule = static_cast<BreakRule>(reader.u8());
         tile.required_dig_power = reader.u8();
+        tile.prop.kind = static_cast<PropKind>(reader.u8());
+        tile.prop.hp = reader.u8(); tile.prop.variant = reader.u8();
+        tile.prop.broken = reader.u8() != 0;
+        if (tile.prop.kind >= PropKind::Count ||
+            (tile.prop.broken && tile.prop.hp != 0)) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
     }

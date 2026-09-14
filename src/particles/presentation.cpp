@@ -59,12 +59,21 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     if (entity.kind == EntityKind::None) {
         // DEATH: The sweep removes an enemy in the same tick as its death sound.
         if (pose.seen && pose.health > 0 && bleeds(pose.kind))
+        {
             spawn_death(cosmetics, pose.cell, pose.kind,
                         hit_angle(game, pose.cell, pose.angle), seed);
+            scatter_material(cosmetics.debris, pose.cell,
+                pose.kind == EntityKind::Chicken ? DebrisKind::Feather : DebrisKind::BoneChip,
+                3, seed);
+        }
         pose = {};
         return;
     }
     if (same && entity.cell != pose.cell) {
+        if (entity.kind != EntityKind::GroundItem && entity.kind != EntityKind::RailLayer)
+            push_debris(cosmetics.debris, entity.cell,
+                entity.kind == EntityKind::Train ? 2.2F : 1.1F,
+                entity.kind == EntityKind::Train ? .18F : .035F, entity.cell - pose.cell);
         ++pose.steps;
         if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie)
             spawn_footprint(cosmetics, entity.cell, entity.kind,
@@ -73,6 +82,10 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     }
     if (same && (entity.attack_wait > pose.attack_wait ||
                  entity.use_flash > pose.use_flash)) {
+        const ItemKind held = entity.inventory.held()->kind;
+        if (entity.use_flash > pose.use_flash && (held == ItemKind::Pistol ||
+            held == ItemKind::Musket || held == ItemKind::Shotgun || held == ItemKind::SMG))
+            scatter_material(cosmetics.debris, entity.cell, DebrisKind::BrassCase, 1, seed);
         pose.angle = attack_angle(entity.facing);
         if (entity.kind == EntityKind::Zombie && entity.attack_wait > pose.attack_wait)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
@@ -114,6 +127,7 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     switch (sound.sound) {
     case SoundId::Explosion: case SoundId::Explosion1:
     case SoundId::Explosion2: case SoundId::Explosion3:
+        push_debris(cosmetics.debris, sound.cell, 4.0F, .24F);
         cosmetics.flashes.push_back({{sound.cell, 8, 1.45F,
                                       {1.0F, 0.51F, 0.20F}}, 18, 18});
         break;
@@ -156,6 +170,9 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         cosmetics.camera.y += (static_cast<float>(focus.y) - cosmetics.camera.y) * follow;
     }
     step_particles(cosmetics);
+    const bool fresh_debris = !cosmetics.debris.ready;
+    prepare_debris(cosmetics.debris, game.stage);
+    step_debris(cosmetics.debris, game.stage, game.tick, game.run.floor <= 4);
     for (int slot = 0; slot < max_entities; ++slot)
         observe_entity(cosmetics, game, slot);
     for (int index = 0; index < game.sound_count; ++index)
@@ -170,6 +187,11 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         const ImpactEvent& impact = game.impacts[static_cast<std::size_t>(index)];
         if (distance(impact.cell, focus) <= 18)
             spawn_terrain_impact(cosmetics, impact, key);
+        if (impact.prop != PropKind::None && !fresh_debris)
+            scatter_prop_debris(cosmetics.debris, impact.cell, impact.prop, key);
+        else if (impact.prop == PropKind::None && impact.damage > 0)
+            scatter_material(cosmetics.debris, impact.cell, DebrisKind::StoneChip,
+                             impact.broken ? 6 : 2, key);
     }
     if (game.tick % 6 == 0)
         for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {

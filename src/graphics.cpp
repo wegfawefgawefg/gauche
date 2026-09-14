@@ -26,6 +26,11 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "stick", "shotgun", "smg", "bear_trap", "mine", "switch",
     "pickaxe", "raw_meat", "cooked_meat", "campfire", "den", "crusher", "dog",
     "bear_trap_open", "campfire_ash", "flame_a", "flame_b",
+    "leaves", "twigs", "fern", "tall_grass", "puffball", "rotten_log", "crate", "nest", "clay_pot",
+    "debris_oak_leaf", "debris_birch_leaf", "debris_pine_needle", "debris_twig", "debris_bark",
+    "debris_wood_chip", "debris_root", "debris_fern_leaf", "debris_grass_blade", "debris_mushroom_cap",
+    "debris_mushroom_stem", "debris_spore", "debris_acorn", "debris_seed_husk", "debris_feather",
+    "debris_bone_chip", "debris_pottery", "debris_cloth", "debris_brass_case", "debris_stone_chip",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

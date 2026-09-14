@@ -13,7 +13,7 @@ inline Cell nearby_ground_item_cell(const Game& game, Cell origin) {
                 if (dx == 0 && sign == 1) continue;
                 const Cell candidate{origin.x + sign * dx, origin.y + dy};
                 const Tile* tile = game.stage.at(candidate);
-                if (tile == nullptr || !walkable(tile->kind) ||
+                if (tile == nullptr || !walkable(*tile) ||
                     tile->kind == TileKind::Lava) continue;
                 bool occupied = false;
                 for (const Entity& entity : game.entities)

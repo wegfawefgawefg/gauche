@@ -24,6 +24,10 @@ enum class Sprite : std::size_t {
     Stick, Shotgun, SMG, BearTrap, Mine, Switch, Pickaxe, RawMeat, CookedMeat,
     Campfire, Den, Crusher, Dog, BearTrapOpen,
     CampfireAsh, FlameA, FlameB,
+    Leaves, Twigs, Fern, TallGrass, Puffball, RottenLog, Crate, Nest, ClayPot,
+    DebrisOakLeaf, DebrisBirchLeaf, DebrisPineNeedle, DebrisTwig, DebrisBark, DebrisWoodChip, DebrisRoot,
+    DebrisFernLeaf, DebrisGrassBlade, DebrisMushroomCap, DebrisMushroomStem, DebrisSpore, DebrisAcorn, DebrisSeedHusk,
+    DebrisFeather, DebrisBoneChip, DebrisPottery, DebrisCloth, DebrisBrassCase, DebrisStoneChip,
     Count,
 };
 

@@ -2,6 +2,7 @@
 
 #include "graphics.hpp"
 #include "sound.hpp"
+#include "props/catalog.hpp"
 
 #include <array>
 #include <cstdint>
@@ -26,6 +27,7 @@ struct ImpactEvent {
     Sprite material = Sprite::Wall;
     int damage = 0;
     bool broken = false;
+    PropKind prop = PropKind::None;
 };
 
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
@@ -42,6 +44,7 @@ struct Tile {
     std::uint16_t max_hp = 100;
     BreakRule break_rule = BreakRule::DigRequired;
     std::uint8_t required_dig_power = 1;
+    Prop prop{};
 };
 
 struct Stage {
@@ -55,6 +58,7 @@ struct Stage {
 };
 
 bool walkable(TileKind kind);
+bool walkable(const Tile& tile);
 bool buildable(TileKind kind);
 bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power = 0,
                  TileImpact impact = TileImpact::Strike);

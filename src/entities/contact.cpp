@@ -1,4 +1,5 @@
 #include "../game.hpp"
+#include "../props/interaction.hpp"
 
 #include <algorithm>
 
@@ -6,6 +7,7 @@ void enter_actor_cell(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.health <= 0 || actor.move_interval == 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Ember || actor.kind == EntityKind::Train) return;
+    step_on_prop(game, slot);
 
     // TRAMPLE: Only a successful step or shove calls this; standing still spends no fire life.
     for (Entity& fire : game.entities) {

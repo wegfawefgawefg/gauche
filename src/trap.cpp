@@ -27,7 +27,7 @@ void step_crusher(Game& game, int slot) {
     const Cell next = crusher.cell + crusher.facing;
     const Tile* tile = game.stage.at(next);
     const int victim = entity_at(game, next, true);
-    if (tile == nullptr || !walkable(tile->kind) ||
+    if (tile == nullptr || !walkable(*tile) ||
         (victim >= 0 && game.entities[static_cast<std::size_t>(victim)].hard_blocker)) {
         crusher.facing = {-crusher.facing.x, -crusher.facing.y};
         crusher.move_wait = crusher.move_interval;
@@ -36,7 +36,7 @@ void step_crusher(Game& game, int slot) {
     }
     const Cell pushed = next + crusher.facing;
     const Tile* behind = game.stage.at(pushed);
-    const bool blocked = behind == nullptr || !walkable(behind->kind) ||
+    const bool blocked = behind == nullptr || !walkable(*behind) ||
                          entity_at(game, pushed, true) >= 0;
     if (victim >= 0) {
         if (blocked) crush_entity(game, victim, crusher.cell);

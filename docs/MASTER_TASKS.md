@@ -119,13 +119,13 @@ gameplay feedback remain with the user; the master goal remains in progress.
 
 ## Reactive forest props
 
-- [ ] Add a light **prop** layer for small world objects over the floor. Props
+- [x] Add a light **prop** layer for small world objects over the floor. Props
   are not entities: use compact per-instance state such as cell, kind, HP, and
   broken state, rather than one of the 512 full actor slots. A prop can be
   passable or blocking, with an explicit response to hit, step, or both. Keep
   ordinary visual scatter separate from props that change collision, drop
   loot, or have persistent state.
-- [ ] Start with a few distinct interactions: dry leaves crunch and scatter
+- [x] Start with a few distinct interactions: dry leaves crunch and scatter
   when stepped on; twigs snap underfoot; ferns or tall grass bend/trample and
   can be cut; mushrooms burst into spores when struck or stepped on; a rotten
   log or crate blocks a tile until attacked. A rare nest or supply crate may
@@ -142,25 +142,32 @@ gameplay feedback remain with the user; the master goal remains in progress.
 
 ## Loose debris
 
-- [ ] Add a small floor-bound **loose debris** collection, distinct from the
+- [x] Add a small floor-bound **loose debris** collection, distinct from the
   existing short-lived particles and from props/entities. A piece has a
   material/sprite, sub-tile position, small velocity, and settled state. It
   can rest on the floor for the level rather than disappearing on a timer.
-- [ ] Breaking a prop releases material-specific pieces: leaves, twigs, wood
+- [x] Breaking a prop releases material-specific pieces: leaves, twigs, wood
   chips, mushroom bits, or similar scraps. Apply local impulses from actor
   steps, blasts, trains, and gentle outdoor wind. Pieces slide or tumble a
   short distance, slow with friction, avoid passing through solid walls, and
   settle again. Draw them above floor tiles but beneath actors, using the same
   lighting as the ground.
-- [ ] Let debris collect naturally without unlimited sprite growth. Cap loose
+- [x] Let debris collect naturally without unlimited sprite growth. Cap loose
   pieces per room or cell and merge older settled pieces into small litter
   piles; a later step can scatter a pile again. Leave clear space around
   objectives, loot, attack previews, and important actor silhouettes.
-- [ ] Keep motion and pile presentation local while scraps have no collision,
+- [x] Keep motion and pile presentation local while scraps have no collision,
   damage, loot, or AI effect. Deduplicate break events across rollback, clear
   the collection on floor change, and reconstruct a basic settled scatter from
   saved broken-prop state on reconnect. If a future scrap becomes an actual
   pickup or obstacle, synchronize that specific gameplay object.
+
+Current implementation: nine forest prop kinds, twenty forest scrap silhouettes,
+local spatial buckets, step/blast/train/wind impulses, axis-wise terrain collision,
+4096-piece budget, per-cell cap and settled piles that scatter on contact. Broken
+props and partial HP round-trip in snapshots; reconnect reconstructs settled litter.
+Static 1080p prop/debris capture inspected. Placement is still the interim room-edge
+pass; room-role pools and supply budgets belong to the generator milestone.
 
 ## UI and pointer
 

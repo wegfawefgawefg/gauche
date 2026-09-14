@@ -57,7 +57,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
                 has_artifact(player, ArtifactKind::AllPiercing);
-            const bool impact = !walkable(tile->kind) ||
+            const bool impact = !walkable(*tile) ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||
                 step == pattern.maximum;
@@ -81,7 +81,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Tile* tile = game.stage.at(cell);
                 if (tile == nullptr) break;
                 mark(renderer, cell, camera, zoom, pattern.effect);
-                if (!walkable(tile->kind) || entity_at(game, cell, true) >= 0) break;
+                if (!walkable(*tile) || entity_at(game, cell, true) >= 0) break;
             }
     } else {
         const Cell aim = pointer.left && pointer.inside ?

@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../props/interaction.hpp"
 
 void init_rail(Entity& entity) {
     entity.facing = {-1, 0};
@@ -18,6 +19,7 @@ void step_rail(Game& game, int slot) {
     Entity& rail = game.entities[static_cast<std::size_t>(slot)];
     const Cell next = rail.cell + rail.facing;
     if (game.stage.in_bounds(next)) {
+        hit_prop(game, next, 255, rail.cell);
         damage_tile(game.stage, next, 0, 0, TileImpact::Train);
         rail.cell = next;
         if (game.tick % 4 == 0) emit_sound(game, SoundId::RailPlace, next);

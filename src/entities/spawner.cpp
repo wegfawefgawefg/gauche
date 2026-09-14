@@ -10,7 +10,7 @@ bool release_into_neighbor(Game& game, Cell origin, EntityKind kind) {
     for (Cell direction : neighbors) {
         const Cell cell = origin + direction;
         const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr || !walkable(tile->kind) || entity_at(game, cell, true) >= 0)
+        if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, true) >= 0)
             continue;
         spawn_entity(game, kind, cell);
         return true;

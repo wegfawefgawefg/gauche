@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "item_pattern.hpp"
 #include "world/ground_items.hpp"
+#include "props/interaction.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -37,6 +38,7 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
         for (int x = center.x - radius; x <= center.x + radius; ++x) {
             const Cell cell{x, y};
             if (distance(cell, center) > radius) continue;
+            hit_prop(game, cell, damage, attacker);
             hit_terrain(game, cell, attacker, damage, 2, TileImpact::Blast);
             for (int slot = 0; slot < max_entities; ++slot) {
                 Entity& target = game.entities[static_cast<std::size_t>(slot)];
@@ -63,7 +65,14 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         cell = cell + direction;
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr) break;
-        if (!walkable(tile->kind)) {
+        const bool blocked_prop = prop_blocks(tile->prop);
+        hit_prop(game, cell, damage, user.cell);
+        if (blocked_prop) {
+            if (item.kind == ItemKind::RocketLauncher)
+                blast(game, cell, pattern.blast_radius, damage, user.cell);
+            if (!piercing) break;
+        }
+        if (!walkable(*tile)) {
             if (item.kind == ItemKind::RocketLauncher)
                 blast(game, cell, pattern.blast_radius, damage, user.cell);
             else hit_terrain(game, cell, user.cell, damage, item.dig_power);
@@ -110,7 +119,7 @@ bool shove(Game& game, int user_slot, Cell direction) {
     const Cell destination = front + direction;
     const Tile* tile = game.stage.at(destination);
     const int blocker_slot = entity_at(game, destination, true);
-    const bool hard_tile = tile == nullptr || !walkable(tile->kind);
+    const bool hard_tile = tile == nullptr || !walkable(*tile);
     const bool hard_actor = blocker_slot >= 0 &&
         game.entities[static_cast<std::size_t>(blocker_slot)].hard_blocker;
     if (hard_tile || hard_actor) {
@@ -143,7 +152,8 @@ bool strike_melee(Game& game, int user_slot, Cell direction,
                                             direction.y * reach + sideways.y * lane};
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
-            const bool blocked = !walkable(tile->kind);
+            const bool blocked = !walkable(*tile);
+            struck |= hit_prop(game, cell, pattern.damage, origin);
             const int hit = entity_at(game, cell, true);
             if (hit >= 0 && hit != user_slot) {
                 damage_entity(game, hit, pattern.damage, origin);
@@ -247,7 +257,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Wall:
         if (range >= 1 && range <= 2) {
             Tile* tile = game.stage.at(target);
-            if (tile != nullptr && buildable(tile->kind) && entity_at(game, target, true) < 0) {
+            if (tile != nullptr && buildable(tile->kind) && !prop_blocks(tile->prop) &&
+                entity_at(game, target, true) < 0) {
                 *tile = {TileKind::Wall, 100, 0, 100, BreakRule::Damageable, 0};
                 used = true;
                 cooldown = 6;
@@ -314,7 +325,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         if (range == 1) {
             const Tile* tile = game.stage.at(target);
-            if (tile != nullptr && walkable(tile->kind) &&
+            if (tile != nullptr && walkable(*tile) &&
                 entity_at(game, target) < 0) {
                 const Handle trap = spawn_entity(game, EntityKind::Trap, target);
                 if (Entity* placed = get_entity(game, trap)) {

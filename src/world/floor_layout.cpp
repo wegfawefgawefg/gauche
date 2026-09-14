@@ -1,4 +1,5 @@
 #include "floor_internal.hpp"
+#include "../props/interaction.hpp"
 
 #include <array>
 #include <utility>
@@ -93,6 +94,7 @@ void generate_world_floor(Game& game) {
     }
 
     populate_floor(game, columns, {branch_x, 5}, {extra_x, extra_y});
+    scatter_forest_props(game);
     // BOUNDARY: Normal tools cannot tunnel off the generated floor.
     for (int y = 0; y < game.stage.height; ++y)
         for (int x = 0; x < game.stage.width; ++x)

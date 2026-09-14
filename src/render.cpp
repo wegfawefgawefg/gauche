@@ -3,6 +3,7 @@
 #include "lighting/field.hpp"
 #include "lighting/render.hpp"
 #include "ui/presentation.hpp"
+#include "props/render.hpp"
 #include "view.hpp"
 
 #include <algorithm>
@@ -218,6 +219,9 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                    cosmetics != nullptr ? std::span<const LightFlash>{cosmetics->flashes} :
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
+    draw_props(renderer, graphics, game.stage, camera, zoom, lighting);
+    if (cosmetics != nullptr)
+        draw_debris(renderer, graphics, cosmetics->debris, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting);
@@ -254,6 +258,7 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     LightingCache lighting;
     build_lighting(lighting, scene, camera, 2.0F);
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
+    draw_props(renderer, graphics, scene.stage, camera, 2.0F, lighting);
     draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);

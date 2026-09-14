@@ -2,6 +2,7 @@
 #include "../src/render.hpp"
 #include "../src/input.hpp"
 #include "../src/particles/templates.hpp"
+#include "../src/props/interaction.hpp"
 
 #include <SDL3_image/SDL_image.h>
 
@@ -39,6 +40,15 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
     const Handle player = spawn_entity(game, EntityKind::Player, {12, 10});
     game.players[0] = player;
     get_entity(game, player)->scorch_ticks = 240;
+    constexpr PropKind props[]{PropKind::Leaves, PropKind::Twigs, PropKind::Fern,
+        PropKind::TallGrass, PropKind::Puffball, PropKind::RottenLog, PropKind::Crate,
+        PropKind::Nest, PropKind::ClayPot};
+    for (int i = 0; i < 9; ++i)
+        place_prop(game.stage, {9 + i, 9}, props[i]);
+    prepare_debris(cosmetics.debris, game.stage);
+    for (int i = 0; i < 9; ++i)
+        scatter_prop_debris(cosmetics.debris, {9 + i, 12}, props[i],
+                           static_cast<std::uint64_t>(i + 1), true);
     for (int i = 0; i < 5; ++i)
         spawn_footprint(cosmetics, {8 + i, 11}, EntityKind::Player, i % 2 == 0,
                         static_cast<std::uint64_t>(i + 10));

@@ -63,7 +63,7 @@ bool move_entity(Game& game, int slot, Cell destination) {
     const Tile* tile = game.stage.at(destination);
     if (entity.kind == EntityKind::None) return false;
     const int occupant = entity_at(game, destination, true);
-    if (tile == nullptr || !walkable(tile->kind) || (occupant >= 0 && occupant != slot)) {
+    if (tile == nullptr || !walkable(*tile) || (occupant >= 0 && occupant != slot)) {
         // A blocked step still takes its beat, as it did in the Rust arena.
         entity.move_wait = entity.move_interval;
         if (entity.kind == EntityKind::Player)

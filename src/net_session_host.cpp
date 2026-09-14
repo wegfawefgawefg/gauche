@@ -28,7 +28,7 @@ Cell join_cell(const Game& game, int owner) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 const Cell candidate = center + Cell{dx, dy};
                 const Tile* tile = game.stage.at(candidate);
-                if (tile != nullptr && walkable(tile->kind) &&
+                if (tile != nullptr && walkable(*tile) &&
                     entity_at(game, candidate, true) < 0) return candidate;
             }
         }

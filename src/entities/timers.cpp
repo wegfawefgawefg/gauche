@@ -13,7 +13,7 @@ std::optional<Cell> free_entrance_cell(const Game& game) {
             for (int side = -1; side <= 1; side += 2) {
                 const Cell cell = game.run.spawn + Cell{dx * side, dy};
                 const Tile* tile = game.stage.at(cell);
-                if (tile != nullptr && walkable(tile->kind) &&
+                if (tile != nullptr && walkable(*tile) &&
                     entity_at(game, cell, true) < 0) return cell;
             }
         }

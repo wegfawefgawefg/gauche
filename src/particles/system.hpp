@@ -3,6 +3,7 @@
 #include "../game.hpp"
 #include "../view.hpp"
 #include "../lighting/field.hpp"
+#include "../debris/system.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -82,6 +83,7 @@ struct EntityPose {
 };
 
 struct Cosmetics {
+    LooseDebris debris;
     std::vector<SpriteParticle> sprites;
     std::vector<RibbonParticle> ribbons;
     std::vector<RingParticle> rings;

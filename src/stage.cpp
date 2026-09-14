@@ -35,12 +35,18 @@ bool buildable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass;
 }
 
+bool walkable(const Tile& tile) {
+    return walkable(tile.kind) && !prop_blocks(tile.prop);
+}
+
 bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact impact) {
     Tile* tile = stage.at(cell);
     if (tile == nullptr) return false;
     // RAIL: The conductor lays track through all in-bounds material before the train arrives.
     if (impact == TileImpact::Train) {
+        const Prop broken_prop = tile->prop;
         *tile = {TileKind::Rail, 0, 0};
+        tile->prop = broken_prop;
         return true;
     }
     if (tile->kind != TileKind::Wall || tile->hp == 0 || damage <= 0 ||

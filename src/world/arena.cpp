@@ -18,7 +18,7 @@ Cell open_cell(Game& game, Cell center, int radius) {
         const int y = center.y + static_cast<int>(random_u32(game) % static_cast<std::uint32_t>(span)) - radius;
         const Cell cell{x, y};
         const Tile* tile = game.stage.at(cell);
-        if (tile != nullptr && walkable(tile->kind) && entity_at(game, cell, true) < 0) return cell;
+        if (tile != nullptr && walkable(*tile) && entity_at(game, cell, true) < 0) return cell;
     }
     return center;
 }

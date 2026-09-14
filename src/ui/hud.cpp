@@ -1,5 +1,6 @@
 #include "presentation.hpp"
 #include "status.hpp"
+#include "artifacts.hpp"
 #include "item_details.hpp"
 #include "item_meter.hpp"
 #include "text.hpp"
@@ -85,6 +86,8 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
                               nullptr, &arrow);
         }
     }
+
+    draw_owned_artifacts(renderer, graphics, player, 18, 191, false);
 
     // Rust's offset red bar is compacted to the half-size render target.
     panel(renderer, 14.0F, height - 26.0F, 128.0F, 17.0F);

@@ -479,9 +479,9 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 
 - [x] Make forest canopies greener and more opaque while keeping the large
   dithered viewing mask and anchored parallax. Avoid dark smoke-like foliage.
-- [ ] Clarify pick-three selection: the angled red banner must consistently mark
+- [x] Clarify pick-three selection: the angled red banner must consistently mark
   the focused choice, with stronger focus animation and a clear choose prompt.
-- [ ] Expose owned artifacts and their effects in the HUD/inventory.
+- [x] Expose owned artifacts and their effects in the HUD/inventory.
 - [x] Let adult chickens survive about four ordinary punches; investigate mothers
   getting stuck despite an open route, including repeated blocked direction choices.
 - [x] Make mimics substantially tougher and frightening when revealed. Preserve

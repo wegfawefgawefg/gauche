@@ -286,3 +286,16 @@ Anchored parallax and the broad dithered center cutout are unchanged. Campfire
 flames start 0.18 tiles lower so their base overlaps the wood's upper portion;
 actors still render above the campfire flame layer. Strict builds plus static
 canopy-only and campfire/world captures checked.
+
+
+## Reward focus and owned artifacts
+
+Item cards previously always drew a red banner while health/artifact rewards did
+not, making reward type look like selection. All reward types now share the same
+banner: red belongs only to the focused option, accompanied by a short upward
+lift and its configured Take/Buy prompt. Mouse hover previews a choice before
+clicking; compare and pack actions remain available. Owned artifacts appear as
+named HUD badges and a two-column inventory strip with concise actual effects.
+A shared artifact catalog keeps reward and owned descriptions consistent, including
+Reflector's 25% half-hit return and Hearth's 1 HP/s, four-tile aura. Static reward
+focus and four-artifact inventory captures plus strict builds checked.

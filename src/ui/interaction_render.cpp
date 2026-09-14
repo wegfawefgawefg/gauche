@@ -4,6 +4,8 @@
 #include "item_meter.hpp"
 #include "text.hpp"
 #include "scale.hpp"
+#include "artifacts.hpp"
+#include "../artifacts/catalog.hpp"
 #include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
 
@@ -56,14 +58,7 @@ Sprite reward_icon(const Reward& reward) {
     case RewardKind::Item: return item_sprite(reward.item);
     case RewardKind::Health: return Sprite::Medkit;
     case RewardKind::Speed: return Sprite::PlayerFootprint;
-    case RewardKind::Artifact:
-        switch (reward.artifact) {
-        case ArtifactKind::AllPiercing: return Sprite::Musket;
-        case ArtifactKind::Reflector: return Sprite::Buckler;
-        case ArtifactKind::Hearth: return Sprite::Campfire;
-        case ArtifactKind::FleetFeet: return Sprite::PlayerFootprint;
-        case ArtifactKind::None: break;
-        }
+    case RewardKind::Artifact: return artifact_icon(reward.artifact);
     }
     return Sprite::Fist;
 }
@@ -73,14 +68,7 @@ const char* reward_name(const Reward& reward) {
     case RewardKind::Item: return item_name(reward.item);
     case RewardKind::Health: return "Heartier";
     case RewardKind::Speed: return "Faster Steps";
-    case RewardKind::Artifact:
-        switch (reward.artifact) {
-        case ArtifactKind::AllPiercing: return "All Piercing";
-        case ArtifactKind::Reflector: return "Reflector";
-        case ArtifactKind::Hearth: return "Hearth";
-        case ArtifactKind::FleetFeet: return "Fleet Feet";
-        case ArtifactKind::None: break;
-        }
+    case RewardKind::Artifact: return artifact_name(reward.artifact);
     }
     return "Unknown";
 }
@@ -90,18 +78,7 @@ const char* reward_description(const Reward& reward) {
     case RewardKind::Item: return item_description(reward.item);
     case RewardKind::Health: return "Increase maximum health and heal by the same amount.";
     case RewardKind::Speed: return "Take each tile step sooner. Movement remains rectilinear.";
-    case RewardKind::Artifact:
-        switch (reward.artifact) {
-        case ArtifactKind::AllPiercing:
-            return "Shots pass through actors and keep traveling until a wall.";
-        case ArtifactKind::Reflector:
-            return "Some incoming damage bounces back at the attacker.";
-        case ArtifactKind::Hearth:
-            return "A small healing aura restores nearby friends over time.";
-        case ArtifactKind::FleetFeet:
-            return "Move between tiles faster for the rest of this run.";
-        case ArtifactKind::None: break;
-        }
+    case RewardKind::Artifact: return artifact_description(reward.artifact);
     }
     return "";
 }
@@ -129,11 +106,11 @@ void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
                             width + 4.0F, 218.0F, true);
         draw_item_details(renderer, graphics, player,
                           reward_item(reward),
-                          x, y, width, 214.0F, label);
+                          x, y, width, 214.0F, label, selected);
         return;
     }
     frame(renderer, x, y, width, 214.0F, selected);
-    text(renderer, x + 8.0F, y + 13.0F, label, 206, 158, 92);
+    draw_item_banner(renderer, x, y, width, label, selected);
     SDL_FRect icon{x + 10.0F, y + 39.0F, 26.0F, 26.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, reward_icon(reward)), nullptr, &icon);
     text(renderer, x + 43.0F, y + 46.0F, reward_name(reward));
@@ -238,6 +215,7 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
     if (player == nullptr) return;
     inventory_rows(renderer, graphics, *player, ui);
+    draw_owned_artifacts(renderer, graphics, *player, 204, 16, true);
     const Item& focused = player->inventory.slots[static_cast<std::size_t>(ui.slot_focus)];
     const float shift = (1.0F - ui.slide) * 220.0F;
     const bool shop_offer = game.run.phase == RunPhase::Shop && ui.offer_focus < 3 &&
@@ -302,23 +280,27 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     for (int index = 0; index < 3; ++index) {
         const float x = 22.0F + static_cast<float>(index) * 202.0F;
+        const bool selected = index == ui.offer_focus;
+        const float progress = std::min(1.0F, static_cast<float>(SDL_GetTicks() - ui.offer_changed_at) / 110);
+        const float y = 82 - (selected ? 6 * (1-(1-progress)*(1-progress)) : 0);
+        if (selected) draw_action_hint(renderer, x+12, 53, Action::Confirm, shop ? "BUY THIS" : "TAKE THIS");
         const std::string label = std::to_string(index + 1) +
             (index == ui.offer_focus ? "  SELECTED" : "  CHOOSE");
         if (shop) {
             const ItemKind kind = game.run.shop_stock[static_cast<std::size_t>(index)];
             if (kind == ItemKind::None) {
-                frame(renderer, x, 82.0F, 187.0F, 214.0F, index == ui.offer_focus);
+                frame(renderer, x, y, 187.0F, 214.0F, index == ui.offer_focus);
                 text(renderer, x + 62.0F, 185.0F, "SOLD");
             } else {
                 reward_card(renderer, graphics, *player,
                             {RewardKind::Item, kind, ArtifactKind::None, 1},
-                            x, 82.0F, 187.0F, index == ui.offer_focus, label.c_str());
+                            x, y, 187.0F, index == ui.offer_focus, label.c_str());
                 char price[40];
                 std::snprintf(price, sizeof(price), "%d COINS", shop_price(kind));
                 text(renderer, x + 12.0F, 286.0F, price, 224, 183, 112);
             }
         } else reward_card(renderer, graphics, *player, reward_offer(game, owner, index),
-                           x, 82.0F, 187.0F, index == ui.offer_focus, label.c_str());
+                           x, y, 187.0F, index == ui.offer_focus, label.c_str());
     }
     draw_action_hint(renderer, 25, 319, Action::Confirm, "CHOOSE");
     draw_action_hint(renderer, 215, 319, Action::Compare, "COMPARE");

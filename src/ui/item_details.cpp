@@ -82,16 +82,13 @@ const char* item_description(ItemKind kind) {
 
 void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                        const Entity& player, const Item& item, float x, float y,
-                       float width, float height, const char* label) {
+                       float width, float height, const char* label, bool highlight) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     plate(renderer, x + 6.0F, y + 7.0F, width, height,
           {0.01F, 0.01F, 0.01F, 0.72F});
     plate(renderer, x, y, width, height,
           {0.075F, 0.085F, 0.09F, 0.96F});
-    plate(renderer, x - 6.0F, y - 8.0F, width + 8.0F, 18.0F,
-          {0.49F, 0.15F, 0.14F, 0.98F});
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-    text(renderer, x + 3.0F, y - 5.0F, label);
+    draw_item_banner(renderer, x, y, width, label, highlight);
     if (item.kind == ItemKind::None) return;
     SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
@@ -175,4 +172,13 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
          item_state_text(item, true), 200, 207, 189);
     text(renderer, x + width - 54.0F, y + 23.0F,
          item_cooldown_text(item), 217, 183, 128);
+}
+
+void draw_item_banner(SDL_Renderer* renderer, float x, float y, float width,
+                      const char* label, bool highlight) {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    plate(renderer, x-6, y-8, width+8, 18, highlight ?
+        SDL_FColor{.56F, .16F, .14F, .98F} : SDL_FColor{.14F, .17F, .15F, .98F});
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    text(renderer, x+3, y-5, label);
 }

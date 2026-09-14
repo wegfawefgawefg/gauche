@@ -48,7 +48,8 @@ int logical_x(const SDL_Event& event, const GubsyFrame& frame) {
     const float scale = std::min(static_cast<float>(window_width) / 640.0F,
                                  static_cast<float>(window_height) / 360.0F);
     const float left = (static_cast<float>(window_width) - 640.0F * scale) * 0.5F;
-    return static_cast<int>((event.button.x - left) / scale);
+    const float x = event.type == SDL_EVENT_MOUSE_MOTION ? event.motion.x : event.button.x;
+    return static_cast<int>((x - left) / scale);
 }
 
 int logical_y(const SDL_Event& event, const GubsyFrame& frame) {
@@ -59,7 +60,8 @@ int logical_y(const SDL_Event& event, const GubsyFrame& frame) {
     const float scale = std::min(static_cast<float>(window_width) / 640.0F,
                                  static_cast<float>(window_height) / 360.0F);
     const float top = (static_cast<float>(window_height) - 360.0F * scale) * 0.5F;
-    return static_cast<int>((event.button.y - top) / scale);
+    const float y = event.type == SDL_EVENT_MOUSE_MOTION ? event.motion.y : event.button.y;
+    return static_cast<int>((y - top) / scale);
 }
 
 } // namespace
@@ -105,6 +107,14 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
                 ui.offer_focus = (ui.offer_focus + 1) % count; return true;
             }
         }
+    }
+    if (event.type == SDL_EVENT_MOUSE_MOTION && !ui.inventory_open && frame.window &&
+        (offering(game, owner) || game.run.phase == RunPhase::Shop)) {
+        const float x = (static_cast<float>(logical_x(event, frame)) - modal_left) / ui_scale;
+        const float y = (static_cast<float>(logical_y(event, frame)) - modal_top) / ui_scale;
+        if (x >= 20 && x < 620 && y >= 65 && y <= 306)
+            ui.offer_focus = std::clamp(static_cast<int>((x - 20) / 202), 0, 2);
+        return true;
     }
     if (event.type != SDL_EVENT_MOUSE_BUTTON_DOWN ||
         event.button.button != SDL_BUTTON_LEFT || frame.window == nullptr) return false;
@@ -181,6 +191,10 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
         }
     }
     ui.move_latch = nav;
+    if (ui.offer_focus != ui.previous_offer_focus) {
+        ui.previous_offer_focus = ui.offer_focus;
+        ui.offer_changed_at = SDL_GetTicks();
+    }
     ui.slide += ((ui.inventory_open ? 1.0F : 0.0F) - ui.slide) * 0.25F;
     if (!ui.inventory_open && !offered && !shop) {
         ui.mouse_choice = -1;

@@ -1,4 +1,5 @@
 #include "bow.hpp"
+#include "action.hpp"
 #include "../item_pattern.hpp"
 #include "../projectiles/projectile.hpp"
 
@@ -6,19 +7,13 @@
 
 // PLAYER SLOTS: counter_a = draw ticks, counter_b = wait for release after cancel,
 // label_b = drawing inventory slot + 1; point_b = last held aim.
-void cancel_bow(Entity& user) {
-    user.counter_a = 0;
-    user.label_b = 0;
-    user.counter_b = 1;
-}
-
 bool step_bow(Game& game, int slot, const Input& input) {
     Entity& user = game.entities[static_cast<std::size_t>(slot)];
     Item& bow = *user.inventory.held();
     const bool held = bow.kind == ItemKind::Bow;
     if (!held || input.cancel_use || input.drop || input.interact ||
         (user.label_b != 0 && user.label_b != user.inventory.selected + 1)) {
-        cancel_bow(user);
+        cancel_item_action(user);
         if (!input.use) user.counter_b = 0;
         return held;
     }

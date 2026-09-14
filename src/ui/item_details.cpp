@@ -1,4 +1,5 @@
 #include "item_details.hpp"
+#include "../items/action.hpp"
 #include "../items/catalog.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
@@ -109,7 +110,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
             static_cast<int>((width - 20.0F) / 6.0F), 4,
             item_description(item.kind));
     const ItemPattern pattern = item_pattern(item);
-    if (pattern.damage > 0)
+    if (pattern.damage > 0 && item.dig_power > 0)
+        std::snprintf(line, sizeof(line), "DAMAGE %d  DIG %d", pattern.damage, item.dig_power);
+    else if (pattern.damage > 0)
         std::snprintf(line, sizeof(line), "DAMAGE %d", pattern.damage);
     else if (pattern.heal > 0)
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
@@ -139,7 +142,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
     text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
-    if (item.dig_power > 0)
+    if (item_windup(item) > 0)
+        std::snprintf(line, sizeof(line), "WINDUP %.2fs  RANGE %d-%d",
+            static_cast<double>(item_windup(item)) / 60.0, pattern.minimum, pattern.maximum);
+    else if (item.dig_power > 0)
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);

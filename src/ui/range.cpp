@@ -48,15 +48,16 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, ViewCamera camera,
                          float zoom, const PointerState& pointer) {
     const Item& held = *player.inventory.held();
+    const Cell facing = player.label_b < 0 ? player.point_b : player.facing;
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (pattern.ray) {
-        const Cell sideways{-player.facing.y, player.facing.x};
+        const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
         Cell cell = player.cell + Cell{sideways.x * lane, sideways.y * lane};
         for (int step = 1; step <= pattern.maximum; ++step) {
-            cell = cell + player.facing;
+            cell = cell + facing;
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
@@ -76,12 +77,12 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else if (pattern.minimum == 0 && pattern.maximum == 0) {
         mark(renderer, player.cell, camera, zoom, pattern.effect);
     } else if (item_is_melee(held.kind)) {
-        const Cell sideways{-player.facing.y, player.facing.x};
+        const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
             for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
                 const Cell cell = player.cell +
-                    Cell{player.facing.x * reach + sideways.x * lane,
-                         player.facing.y * reach + sideways.y * lane};
+                    Cell{facing.x * reach + sideways.x * lane,
+                         facing.y * reach + sideways.y * lane};
                 const Tile* tile = game.stage.at(cell);
                 if (tile == nullptr) break;
                 mark(renderer, cell, camera, zoom, pattern.effect);
@@ -89,14 +90,14 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
     } else {
         const Cell aim = pointer.left && pointer.inside ?
-            pointer.cell - player.cell : player.facing;
+            pointer.cell - player.cell : facing;
         const Cell target = held.kind == ItemKind::Bomb ?
-            bomb_landing(game, player.cell, player.facing, pattern.maximum) :
+            bomb_landing(game, player.cell, facing, pattern.maximum) :
             aimed_item_target(player, aim, pattern);
         if (pattern.blast_radius > 0) {
             for (int reach = 1; reach < distance(player.cell, target); ++reach)
                 mark(renderer, player.cell +
-                     Cell{player.facing.x * reach, player.facing.y * reach},
+                     Cell{facing.x * reach, facing.y * reach},
                      camera, zoom, pattern.effect, true);
             blast_marks(renderer, target, pattern.blast_radius,
                         camera, zoom, pattern.effect);

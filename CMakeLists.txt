@@ -50,7 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
-    src/projectiles/projectile.cpp src/items/bow.cpp
+    src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
     src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp src/items/stacking.cpp
     src/entities/attacks.cpp src/entities/defense.cpp

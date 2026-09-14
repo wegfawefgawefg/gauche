@@ -73,3 +73,15 @@ input cancel bit handles inventory/menu/stun/death; missing network inputs retai
 a bow draw instead of inventing release. Wire version increased. Strict builds
 and static projectile/inspection captures checked, without playtesting. General
 bullet tracers, rocket travel and persistent spells remain to implement.
+
+## Melee action timing
+
+Melee starts with a committed facing/spec and a short windup: fist 3 ticks,
+knife 2, spear 5, stick/rake 6, hatchet 8, pickaxe 10, maul 14. Heavy/Agile
+modify preparation alongside cooldown. Swing/exertion plays when preparation
+starts; actor impact plays on contact. A completed whiff still spends the swing
+and its use count. Opening UI, changing the committed slot, dropping, stun,
+sleep or death cancels preparation; fixture interactions such as cooking take
+priority. Shared player action slots and serialized item storage preserve the
+committed attack across rollback. Details expose windup; held art pulls back
+along its committed direction. Strict build checked; user owns timing playtests.

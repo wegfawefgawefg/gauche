@@ -227,14 +227,16 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
-            const float forward = entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
+            const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
+            const Cell held_facing = winding ? entity.point_b : entity.facing;
+            const float forward = winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
             SDL_FRect held_rect{rect.x + pixels * 0.25F +
-                                static_cast<float>(entity.facing.x) * forward,
+                                static_cast<float>(held_facing.x) * forward,
                                 rect.y + pixels * 0.25F +
-                                static_cast<float>(entity.facing.y) * forward,
+                                static_cast<float>(held_facing.y) * forward,
                                 pixels * 0.5F, pixels * 0.5F};
-            const double angle = std::atan2(static_cast<double>(entity.facing.y),
-                                            static_cast<double>(entity.facing.x)) *
+            const double angle = std::atan2(static_cast<double>(held_facing.y),
+                                            static_cast<double>(held_facing.x)) *
                                  180.0 / 3.141592653589793;
             const Sprite held_sprite = held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&
                 entity.counter_a > 0 ? Sprite::BowDrawn : item_sprite(*held);

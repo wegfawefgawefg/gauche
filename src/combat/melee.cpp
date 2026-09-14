@@ -36,6 +36,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 Entity& target = game.entities[static_cast<std::size_t>(hit)];
                 hit_once[static_cast<std::size_t>(hit)] = true;
                 const bool blocked_hit = blocks_facing(target, origin);
+                emit_sound(game, SoundId::Punch1, cell);
                 damage_entity(game, hit, contact_damage(item, target, origin, pattern.damage), origin);
                 if (item.kind == ItemKind::WoodenMaul && !blocked_hit && target.health > 0)
                     shove_actor(game, hit, direction, origin);

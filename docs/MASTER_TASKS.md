@@ -467,7 +467,7 @@ the available art reference; new source scripts keep a small explicit palette.
   persistent projectiles (arrows, grenades, spells). Travel/hit timing must match
   damage timing; arrows splinter into local debris on impact. Retain explicit
   ammo use, charge cancellation and safe behavior on switching/death/reconnect.
-- [ ] Add brief item-specific melee windups and swing/exertion sounds: fists
+- [x] Add brief item-specific melee windups and swing/exertion sounds: fists
   very quick, sticks/heavier tools longer. Ordinary guns fire immediately;
   launchers/throws may have a deliberate preparation beat where appropriate.
   Store pending attacks deterministically, commit aim/pattern for resolution,

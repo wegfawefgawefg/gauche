@@ -152,7 +152,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range >= 1 && range <= item_pattern(item).maximum) {
             const ItemPattern pattern = item_pattern(item);
-            used = strike_melee(game, user_slot, direction, item);
+            strike_melee(game, user_slot, direction, item);
+            used = true;
             cooldown = pattern.cooldown;
         }
         break;
@@ -237,16 +238,16 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     if (used) {
         item.cooldown = cooldown;
         user.use_flash = 8;
-        if (const RegionalItem* spec = regional_item(used_kind))
-            emit_sound(game, spec->sound, user.cell);
+        if (const RegionalItem* spec = regional_item(used_kind)) {
+            if (!item_is_melee(used_kind)) emit_sound(game, spec->sound, user.cell);
+        }
         else switch (used_kind) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
         case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
             emit_sound(game, SoundId::ClothRip, user.cell); break;
         case ItemKind::RawMeat: case ItemKind::CookedMeat:
             emit_sound(game, SoundId::MeatMunch, user.cell); break;
-        case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
-            emit_sound(game, SoundId::Punch1, user.cell); break;
+
         case ItemKind::ConductorHat:
             emit_sound(game, SoundId::DistantTrainSound, user.cell); break;
         case ItemKind::Buckler: emit_sound(game, SoundId::HitBlock1, user.cell); break;

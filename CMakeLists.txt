@@ -54,6 +54,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/quarry_tools.cpp src/items/ice_brick.cpp src/projectiles/ice_brick.cpp
     src/entities/lens_warden.cpp src/entities/lens_watch.cpp src/world/lens_watch.cpp
     src/items/alarms.cpp src/props/alarm_clock.cpp
+    src/items/fishing_line.cpp src/projectiles/fishing.cpp
     src/items/muffling.cpp
     src/entities/echo_hound.cpp src/entities/echo_hearing.cpp
     src/entities/mirror_knight.cpp

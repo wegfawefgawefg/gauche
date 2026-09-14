@@ -91,7 +91,7 @@ same effective item definition as attacks, including rare attributes.
 | 16 | Storm lantern | Aim to shutter its directional light; secondary toggles shutter fully closed. No damage; 120s fuel, conserved while shut. | Uncommon; 20 |
 | 17 | Heat siphon | Transfer up to 5s of burn/fuel from an adjacent source into a carried charge, then discharge a short flame cone. Six charge capacity. | Rare; 34 |
 | 18 | Air bladder | Implemented: shove adjacent actors one cell outward, or aim at loose shallow-water loot to attach a float. Travels straight up to 16 cells, stopping at shore or obstruction. Three uses; Big widens pulse, Durable doubles uses. | Common; 10 |
-| 19 | Fishing line | Hook loose items across water within 6 and drag them back; unlike a harpoon, cannot pull actors. 20 uses. | Common; 8 |
+| 19 | Fishing line | Implemented: visible hook to 6, reels the actual loose item to your feet at four ticks/cell. Stay still; cover, actors or displaced cargo cut the line. 20 casts. Long reaches 10; Durable gives 40. No damage or actor pulling. | Common; 8 |
 | 20 | Pressure valve | Attach to an adjacent vent to redirect its next bursts toward the aimed direction; recoverable while cool. | Uncommon; 18 |
 | 21 | Sealant | Patch a leaking tank or temporarily plug a water/steam outlet for 10s. Three portions; pressure remains a hazard on reopening. | Common; 9 |
 | 22 | Steam kettle | Fill in shallow water; heat beside fire, then release a short scalding cone for 12 damage and wetting. One carried water charge. | Uncommon; 22 |
@@ -191,8 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Seven regional debris types are implemented: ice chips, snow clumps, mirror
-chips, crystal splinters, felt scraps, clock gears and wool tufts. Tufts come
+Eight regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters, felt scraps, clock gears, wool tufts and rope fibers.
+Fibers scatter from snapped fishing line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers
 and smashed lens cases, with light-piece friction and local wind response.

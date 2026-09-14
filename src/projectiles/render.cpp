@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "fishing.hpp"
 #include "../lighting/render.hpp"
 #include "../item_pattern.hpp"
 
@@ -40,7 +41,8 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
-    const bool hook = shot.label_a == static_cast<int>(ProjectileKind::Hook);
+    const bool fishing = shot.label_a == static_cast<int>(ProjectileKind::FishingHook);
+    const bool hook = fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
@@ -71,12 +73,15 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (hook) {
         if (const Entity* owner = get_entity(game, shot.entity_a)) {
             const SDL_FRect hand = tile_rect(owner->cell, camera, zoom);
-            SDL_SetRenderDrawColorFloat(renderer, light.red * .57F, light.green * .47F, light.blue * .31F, 1);
+            SDL_SetRenderDrawColorFloat(renderer, light.red * (fishing ? .70F : .57F),
+                light.green * (fishing ? .72F : .47F), light.blue * (fishing ? .67F : .31F), 1);
             SDL_RenderLine(renderer, hand.x + hand.w * .5F, hand.y + hand.h * .5F,
                 rect.x + rect.w * .5F, rect.y + rect.h * .5F);
         }
     }
-    SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
+    // CARGO: The actual item is already drawn at this cell; keep the hook off its icon.
+    if (!fishing || shot.label_b != FishingCargo)
+        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (rocket) {
         SDL_SetRenderDrawColor(renderer, 255, 181, 76, 255);

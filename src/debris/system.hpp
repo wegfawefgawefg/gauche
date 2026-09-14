@@ -10,7 +10,7 @@
 enum class DebrisKind : std::uint8_t {
     OakLeaf, BirchLeaf, PineNeedle, Twig, Bark, WoodChip, Root, FernLeaf, GrassBlade,
     MushroomCap, MushroomStem, Spore, Acorn, SeedHusk, Feather, BoneChip,
-    Pottery, Cloth, BrassCase, StoneChip, Straw, IceChip, SnowClump, MirrorChip, CrystalSplinter, Felt, ClockGear, WoolTuft, Count
+    Pottery, Cloth, BrassCase, StoneChip, Straw, IceChip, SnowClump, MirrorChip, CrystalSplinter, Felt, ClockGear, WoolTuft, RopeFiber, Count
 };
 
 struct LoosePiece {

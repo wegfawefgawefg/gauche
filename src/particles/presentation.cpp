@@ -148,6 +148,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::FishingSnap: case SoundId::FishingEmpty:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::RopeFiber, 3, seed, false);
+        break;
     case SoundId::PilgrimDeath: case SoundId::WoolBurn:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoolTuft, 4, seed, false);
         break;

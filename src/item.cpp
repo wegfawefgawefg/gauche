@@ -3,6 +3,7 @@
 #include "items/muffling.hpp"
 #include "props/cloth.hpp"
 #include "props/alarm_clock.hpp"
+#include "projectiles/fishing.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/eel_battery.hpp"
@@ -91,6 +92,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::FishingLine:
+        used = launch_fishing_hook(game, user_slot, item, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::AlarmClock:
         used = place_alarm_clock(game, user.cell + direction, item);
         cooldown = item_pattern(item).cooldown;
@@ -348,7 +353,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
+            if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
+            else if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
             else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
             else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
             else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);

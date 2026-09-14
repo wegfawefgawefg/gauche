@@ -106,11 +106,11 @@ same effective item definition as attacks, including rare attributes.
 | 31 | Echo pebble | Throw to 7; repeats the last nearby non-explosion use-noise three times from its landing. No duplicate gameplay attack. Stack 3. | Uncommon; 16 |
 | 32 | Tuning fork | Short 0.5s windup sends a straight vibration through contiguous brittle crystal to 8; breaks weak crystal, 8 actor damage. 24 uses. | Uncommon; 22 |
 | 33 | Alarm clock | Wind and place a 3s delayed repeated ring; wakes/investigates for 5s, then becomes recoverable. No stun. | Common; 10 |
-| 34 | Wool wrap | Self: clears chill and resists new chill for 8s; catches fire readily and burns away its protection. Three wraps. | Common; 8 |
-| 35 | Hot broth | Self: 12 HP over 4s and removes chill. Three servings; interrupted regeneration does not refund consumed food. | Common; 9 |
+| 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
+| 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
 | 36 | Smoked fish | Self: 14 immediate HP, or drop as strong seal/eel bait. Stack 6. | Common; 6 |
 | 37 | Salted kelp | Eat to clear nausea, at a cost of 3 HP; placed kelp is bait for reservoir wildlife. Stack 5. | Common; 4 |
-| 38 | Ice poultice | Self: stops burning and grants 10 HP over 5s, but chills for 3s. Stack 4. | Common; 7 |
+| 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
 | 39 | Flask of brine | Throw a small puddle that melts fragile ice and resists refreezing for 8s. Causes 4 damage on an open wound; stack 3. | Common; 9 |
 | 40 | Snow shelter | Place a two-cell breakable windbreak, only if both cells are free; blocks wind/snow attacks, not overhead shots. Two uses. | Uncommon; 18 |
 | 41 | Crampons | Activate for 5s of traction: no ice slide, slower ordinary steps, still vulnerable to deliberate shoves. Six activations. | Uncommon; 17 |

@@ -18,6 +18,10 @@ int main() {
         player->burn_ticks = 17;
         player->scorch_ticks = 239;
         player->freeze_ticks = 23;
+        player->vitals.chill_guard = 351;
+        player->vitals.recovery = RecoveryKind::Poultice;
+        player->vitals.healing_left = 9;
+        player->vitals.healing_wait = 27;
         player->sleep_ticks = 31;
         player->stun_ticks = 3;
         player->artifacts = 1U << static_cast<unsigned int>(ArtifactKind::Hearth);

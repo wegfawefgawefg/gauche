@@ -27,8 +27,12 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
     std::snprintf(burning, sizeof(burning), "%d HP/S NOW | %d DMG LEFT", per_second, weak + strong);
     char healing[64], speed[64];
     const int healing_ticks = player.vitals.healing_left == 0 ? 0 :
-        (player.vitals.healing_left - 1) * 20 + player.vitals.healing_wait;
-    std::snprintf(healing, sizeof(healing), "3 HP/S | UP TO %d HP LEFT", player.vitals.healing_left);
+        (player.vitals.healing_left - 1) * recovery_interval(player.vitals) + player.vitals.healing_wait;
+    std::snprintf(healing, sizeof(healing), "%d HP/S | %d LEFT%s",
+        60 / recovery_interval(player.vitals), player.vitals.healing_left,
+        player.vitals.recovery == RecoveryKind::Broth ? " | HIT ENDS" : "");
+    const Sprite recovery_icon = player.vitals.recovery == RecoveryKind::Broth ? Sprite::HotBroth :
+        player.vitals.recovery == RecoveryKind::Poultice ? Sprite::IcePoultice : Sprite::HerbBag;
     std::snprintf(speed, sizeof(speed), "STEP %d TICKS | BURN AFTER", movement_beat(player, player.move_interval));
     const std::array rows{
         StatusRow{"BURNING", std::max(player.scorch_ticks, player.burn_ticks),
@@ -45,7 +49,9 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
                   "NO SHOVE/SLIP | SLOW STEPS", Sprite::StickyBoots},
         StatusRow{"CHILLED", player.freeze_ticks, {121, 191, 230, 255},
                   "STEP RECOVERY HALF SPEED", Sprite::StatusChill},
-        StatusRow{"REGENERATING", healing_ticks, {159, 200, 118, 255}, healing, Sprite::HerbBag},
+        StatusRow{"REGENERATING", healing_ticks, {159, 200, 118, 255}, healing, recovery_icon},
+        StatusRow{"INSULATED", player.vitals.chill_guard, {188, 210, 211, 255},
+                  "RESISTS CHILL | FLAMMABLE", Sprite::WoolWrap},
         StatusRow{"WAKEFUL", player.vitals.sleep_guard, {190, 159, 113, 255},
                   "RESISTS SLEEP", Sprite::BitterRoot},
         StatusRow{"BRACED", player.vitals.stun_guard, {210, 192, 137, 255},

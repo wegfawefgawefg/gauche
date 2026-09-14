@@ -68,7 +68,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/root_relics.cpp src/projectiles/root_drill.cpp src/projectiles/swap.cpp
     src/items/displacement.cpp src/projectiles/hook.cpp src/debris/air.cpp
     src/items/ground_tools.cpp src/entities/bird_feeding.cpp
-    src/status/effects.cpp src/items/remedies.cpp
+    src/status/recovery.cpp src/items/cold_remedies.cpp src/status/effects.cpp src/items/remedies.cpp
     src/items/woodland_tools.cpp src/props/growth.cpp
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp

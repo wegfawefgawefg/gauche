@@ -9,7 +9,7 @@
 bool apply_chill(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0 ||
         actor.burn_ticks > 0 || actor.scorch_ticks > 0 || actor.kind == EntityKind::Ember ||
-        actor.kind == EntityKind::FrostBat) return false;
+        actor.kind == EntityKind::FrostBat || actor.vitals.chill_guard > 0) return false;
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, ticks);
     actor.freeze_ticks = std::clamp(std::max(actor.freeze_ticks, ticks), 0, 600);
     return true;
@@ -66,6 +66,14 @@ void step_vital_effects(Game& game, int slot) {
     if (effects.grip > 0 && --effects.grip == 0) emit_sound(game, SoundId::BootsRelease, actor.cell);
     if (effects.sleep_guard > 0) --effects.sleep_guard;
     if (effects.stun_guard > 0) --effects.stun_guard;
+    // WOOL: A small ignition consumes the wrap and sustains the ordinary weak burn.
+    if (effects.chill_guard > 0) {
+        if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) {
+            effects.chill_guard = 0;
+            actor.scorch_ticks = std::max(actor.scorch_ticks, 300);
+            emit_sound(game, SoundId::WoolBurn, actor.cell);
+        } else --effects.chill_guard;
+    }
 
     // ROT: Refresh duration without resetting the damage beat; water clears both.
     if (effects.nausea > 0) {
@@ -79,15 +87,7 @@ void step_vital_effects(Game& game, int slot) {
         if (effects.nausea == 0) effects.nausea_wait = 0;
     }
 
-    // HERBS: Spend one point every third of a second, even if already fully healed.
-    if (effects.healing_left > 0) {
-        if (effects.healing_wait > 0) --effects.healing_wait;
-        if (effects.healing_wait == 0) {
-            actor.health = std::min(actor.max_health, actor.health + 1);
-            --effects.healing_left;
-            effects.healing_wait = effects.healing_left > 0 ? 20 : 0;
-        }
-    }
+    step_recovery(actor);
 
     // CHILI: The sprint ends in a short weak burn; standing water quenches it.
     if (effects.haste > 0 && --effects.haste == 0) {

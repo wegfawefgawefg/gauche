@@ -167,6 +167,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "DMG %d | CHILL 1s", pattern.damage);
     else if (item.kind == ItemKind::GritPouch)
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
+    if (item.kind == ItemKind::WoolWrap)
+        std::snprintf(line, sizeof(line), "CHILL GUARD 8s | FLAMMABLE");
+    if (item.kind == ItemKind::HotBroth || item.kind == ItemKind::IcePoultice) {
+        const double rate = item.kind == ItemKind::HotBroth ? 3.0 : 2.0;
+        std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal, pattern.heal / rate);
+    }
     if (item.kind == ItemKind::HerbBag)
         std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal,
             static_cast<double>(pattern.heal) / 3);

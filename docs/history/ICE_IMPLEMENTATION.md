@@ -296,3 +296,38 @@ clipping checks. No live playtest or new tests ran. No snapshot layout change
 was needed: phases, timers, cells and handles already serialize and hash.
 Snapshot layout remains 30; gameplay compatibility advances to E3. Ice totals
 are four catalog enemies and five catalog items, with remaining requirements open.
+
+## Cold remedies (2026-09-14)
+
+Wool Wrap clears chill and prevents new chill for eight seconds. Applying it
+while already wrapped or burning is rejected without spending a wrap. Ignition
+removes its protection and sustains the normal weak burn for at least five
+seconds; this can coexist with an existing stronger burn. It does not block
+fire damage. Three wraps fit a stack, at a base shop price of eight.
+
+Hot Broth clears chill and restores twelve HP over four seconds. Any actual
+health damage interrupts its remaining healing, with a wet spill sound;
+blocked attacks do not interrupt it. Ice Poultice extinguishes both burns and
+restores ten HP over five seconds, but causes three seconds of chill. Wearing
+wool prevents that chill. Broth stacks to three at price nine; poultices stack
+to four at price seven. Restorative variants increase the total healing by
+50%, keeping the healing rate and extending its duration, with 25% longer use
+cooldowns. Base use cooldown is 45 ticks.
+
+Herbs, broth and poultices share a saved recovery kind, pending health and
+healing beat. A pending recovery cannot be replaced by another; full-health
+use requires a symptom that the remedy actually cures. Healing portions at
+full health are spent rather than banked. Existing herbs continue healing
+through damage as before. Cards show total healing and duration; status rows
+show remaining time, rate, remaining HP, interruption and insulation rules.
+
+Shelters stock broth and wool; bathhouses stock poultices. All three enter the
+ice reward and shop pools. Three quiet 16px icons and five offline synthesized
+cloth, ignition, sip, spill and compress sounds accompany their effects.
+
+Strict game/render builds and the existing snapshot codec check pass, including
+nonzero chill protection and a poultice healing beat longer than herbs allow.
+Static comparison and status renders were inspected; sprites and decoded audio
+passed size, finite-sample and headroom checks. No live playtest or new test
+suite ran. Snapshot layout is 31; gameplay compatibility is E4. Ice now has
+four catalog enemies and eight catalog items; remaining requirements stay open.

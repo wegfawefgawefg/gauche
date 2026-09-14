@@ -1,0 +1,26 @@
+"""Offline cloth, a wet sip/spill, and a cold compress; no generic healing beep."""
+import numpy as np
+from synth import clock, noise, band, save
+
+t = clock(.47)
+cloth = band(noise(len(t), 2841), 240, 2300)
+envelope = np.exp(-((t-.10)/.065)**2) + .65*np.exp(-((t-.32)/.09)**2)
+save('wool_bind', cloth*envelope, .22)
+t = clock(.65)
+crackle = band(noise(len(t), 2843), 1100, 7200)
+envelope = (1-np.exp(-40*t))*np.exp(-6*t)
+save('wool_burn', crackle*envelope*(.3+.7*np.sin(2*np.pi*19*t)**8), .32)
+t = clock(.58)
+wet = band(noise(len(t), 2847), 280, 1800)
+sip = .6*wet + .15*np.sin(2*np.pi*(170*t+100*t*t))
+sip *= np.exp(-((t-.23)/.16)**2)
+gulp = .25*np.sin(2*np.pi*(120*t-45*t*t))*np.exp(-((t-.47)/.045)**2)
+save('broth_sip', sip+gulp, .28)
+t = clock(.32)
+splash = band(noise(len(t), 2851), 450, 3800)*np.exp(-t*17)
+splash += .18*np.sin(2*np.pi*(420*t-320*t*t))*np.exp(-t*28)
+save('broth_spill', splash, .25)
+t = clock(.39)
+press = band(noise(len(t), 2857), 170, 1500)*np.exp(-((t-.14)/.09)**2)
+press += .2*band(noise(len(t), 2859), 3100, 6400)*np.exp(-t*22)
+save('poultice_press', press, .24)

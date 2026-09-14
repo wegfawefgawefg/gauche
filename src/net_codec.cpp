@@ -160,6 +160,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u8(entity.fire_tramples);
     writer.i32(entity.sleep_ticks); writer.i32(entity.stun_ticks);
     writer.u16(entity.vitals.healing_left); writer.u16(entity.vitals.healing_wait);
+    writer.u8(static_cast<std::uint8_t>(entity.vitals.recovery)); writer.u16(entity.vitals.chill_guard);
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
@@ -206,12 +207,14 @@ Entity read_entity(PacketReader& reader) {
     entity.fire_tramples = reader.u8();
     entity.sleep_ticks = reader.i32(); entity.stun_ticks = reader.i32();
     entity.vitals.healing_left = reader.u16(); entity.vitals.healing_wait = reader.u16();
+    entity.vitals.recovery = static_cast<RecoveryKind>(reader.u8()); entity.vitals.chill_guard = reader.u16();
     entity.vitals.sleep_guard = reader.u16(); entity.vitals.stun_guard = reader.u16();
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
     entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();
     if (entity.vitals.nausea > 600 || entity.vitals.nausea_wait > 60) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());
-    if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > 20 ||
+    if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
+        entity.vitals.recovery > RecoveryKind::Poultice || entity.vitals.chill_guard > 480 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
         entity.vitals.haste > 240 || entity.vitals.rooted > 600 || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
@@ -251,7 +254,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(30);
+    writer.u32(31);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -322,7 +325,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 30) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 31) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

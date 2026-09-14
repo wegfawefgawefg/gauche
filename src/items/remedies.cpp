@@ -43,8 +43,7 @@ bool use_remedy(Game& game, int slot) {
     switch (item.kind) {
     case ItemKind::HerbBag:
         if (user.health >= user.max_health || effects.healing_left > 0) return false;
-        effects.healing_left = static_cast<std::uint16_t>(item_pattern(item).heal);
-        effects.healing_wait = 20;
+        begin_recovery(user, RecoveryKind::Herbs, item_pattern(item).heal);
         break;
     case ItemKind::Splint:
         if (user.stun_ticks == 0 && effects.stun_guard > 0) return false;

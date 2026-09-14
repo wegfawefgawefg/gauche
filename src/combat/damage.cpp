@@ -17,6 +17,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    if (interrupt_recovery(entity)) emit_sound(game, SoundId::BrothSpill, entity.cell);
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;

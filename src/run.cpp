@@ -37,7 +37,8 @@ ItemAttribute rare_attribute(Game& game, ItemKind kind) {
 
 Reward random_reward(Game& game, int category) {
     if (category == 0 && ice_floor(game.run.floor) && random_u32(game) % 4 == 0) {
-        const ItemKind kind = random_u32(game) % 2 == 0 ? ItemKind::GritPouch : ItemKind::IceNeedle;
+        constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder};
+        const ItemKind kind = cold_tools[random_u32(game) % std::size(cold_tools)];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::IceNeedle ? 3 : 1, rare_attribute(game, kind)};
     }
@@ -267,8 +268,10 @@ void advance_run(Game& game) {
                                    game.run.floor > 4 ? ItemKind::Mine : ItemKind::Buckler,
                                    game.run.floor > 8 ? ItemKind::RocketLauncher :
                                    (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
-            if (ice_floor(game.run.floor)) game.run.shop_stock[1] =
-                random_u32(game) % 2 == 0 ? ItemKind::GritPouch : ItemKind::IceNeedle;
+            if (ice_floor(game.run.floor)) {
+                constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder};
+                game.run.shop_stock[1] = cold_tools[random_u32(game) % std::size(cold_tools)];
+            }
             if (game.run.floor <= 4) {
                 constexpr ItemKind tools[]{ItemKind::Hatchet, ItemKind::WoodenMaul,
                     ItemKind::HuntingSpear, ItemKind::FlintKnife, ItemKind::Torch, ItemKind::Lighter,

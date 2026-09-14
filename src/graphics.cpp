@@ -52,7 +52,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "cold_shallow_a", "cold_shallow_b", "cold_water_a", "cold_water_b",
     "rime_skater", "rime_skater_push", "rime_skater_glide", "grit_pouch",
     "frost_bat_inhale", "frost_bat_flying", "frost_puff", "ice_needle",
-    "ice_hole", "bell_diver", "diver_bubbles", "diver_bell", "diver_rise", "diver_swing", "diver_sink",
+    "ice_hole", "bell_diver", "diver_bubbles", "diver_bell", "diver_rise", "diver_swing", "diver_sink", "air_bladder", "item_float",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

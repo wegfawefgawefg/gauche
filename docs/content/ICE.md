@@ -37,7 +37,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | # | Enemy | Behavior, tell and counterplay | Habitat; drops |
 | --- | --- | --- | --- |
 | 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; 20% grit pouch, 10% skate blade. |
-| 2 | Bell diver | Implemented: 72 HP; swims between visible air holes, rings its brass helmet for 0.6s, emerges for 0.4s, then winds up an 18-damage swing for 0.5s. Blocking a hole redirects it; never attacks submerged. | Reservoir/fishing huts; 25% 2–5 gold implemented. Air bladder drop waits for that item. |
+| 2 | Bell diver | Implemented: 72 HP; swims between visible air holes, rings its brass helmet for 0.6s, emerges for 0.4s, then winds up an 18-damage swing for 0.5s. Blocking a hole redirects it; never attacks submerged. | Reservoir/fishing huts; 20% air bladder, 25% 2–5 gold implemented. |
 | 3 | Snow burrower | A moving mound exposes its route; bursts at its committed destination and remains exposed while digging back in. Cleared ground prevents reburrowing there. | Snow banks; 25% raw meat, 15% snow scoop. |
 | 4 | Ice mason | Carries one visible block, places temporary breakable cover between itself and a threat, then retreats to cut another from eligible ice. Interrupt its long cutting beat. | Quarry; 20% ice brick, 15% chisel. |
 | 5 | Mirror knight | A shield reflects frontal projectiles during a visible raised stance; attacks require lowering it. Flank, shove or strike during recovery. Reflection has the existing finite flight lifetime. | Observatory; 20% mirror shard, 20% gold. |
@@ -90,7 +90,7 @@ same effective item definition as attacks, including rare attributes.
 | 15 | Signal flare | Fires to 8 and burns where it lands for 15s; bright red light, hot contact and noise on launch. Stack 3. | Common; 10 |
 | 16 | Storm lantern | Aim to shutter its directional light; secondary toggles shutter fully closed. No damage; 120s fuel, conserved while shut. | Uncommon; 20 |
 | 17 | Heat siphon | Transfer up to 5s of burn/fuel from an adjacent source into a carried charge, then discharge a short flame cone. Six charge capacity. | Rare; 34 |
-| 18 | Air bladder | Inflate to shove adjacent actors one cell outward; when placed, floats a loose item across connected shallow water. Three uses. | Common; 10 |
+| 18 | Air bladder | Implemented: shove adjacent actors one cell outward, or aim at loose shallow-water loot to attach a float. Travels straight up to 16 cells, stopping at shore or obstruction. Three uses; Big widens pulse, Durable doubles uses. | Common; 10 |
 | 19 | Fishing line | Hook loose items across water within 6 and drag them back; unlike a harpoon, cannot pull actors. 20 uses. | Common; 8 |
 | 20 | Pressure valve | Attach to an adjacent vent to redirect its next bursts toward the aimed direction; recoverable while cool. | Uncommon; 18 |
 | 21 | Sealant | Patch a leaking tank or temporarily plug a water/steam outlet for 10s. Three portions; pressure remains a hazard on reopening. | Common; 9 |

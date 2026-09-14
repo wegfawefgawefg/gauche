@@ -157,6 +157,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                 target.durability, target.max_durability);
         }
     }
+    if (item.kind == ItemKind::AirBladder)
+        std::snprintf(line, sizeof(line), "SHOVE 1 | FLOAT UP TO 16");
     if (item.kind == ItemKind::IceNeedle)
         std::snprintf(line, sizeof(line), "DMG %d | CHILL 1s", pattern.damage);
     else if (item.kind == ItemKind::GritPouch)
@@ -221,6 +223,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.dig_power > 0)
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
+    else if (item.kind == ItemKind::AirBladder)
+        std::snprintf(line, sizeof(line), "PUSH REACH %d", pattern.blast_radius);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
     if (item.kind == ItemKind::PitchBomb)
         std::snprintf(line, sizeof(line), "FUSE 2s | FIRE 6s + RESIN");

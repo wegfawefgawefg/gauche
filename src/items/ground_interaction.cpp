@@ -1,4 +1,5 @@
 #include "ground_interaction.hpp"
+#include "../world/floating_items.hpp"
 #include "../world/ground_items.hpp"
 
 namespace {
@@ -50,7 +51,10 @@ bool pickup_or_drop(Game& game, Entity& player) {
     }
     Entity& ground = game.entities[static_cast<std::size_t>(slot)];
     if (transfer_item(player.inventory, ground.ground_item) > 0) {
-        if (ground.ground_item.count == 0) remove_entity(game, {slot, ground.generation});
+        if (ground.ground_item.count == 0) {
+            stop_item_float(game, ground);
+            remove_entity(game, {slot, ground.generation});
+        }
         emit_sound(game, SoundId::Confirm, player.cell);
         return true;
     }
@@ -68,6 +72,7 @@ bool pickup_or_drop(Game& game, Entity& player) {
         excess->ground_item = remainder;
         excess->sprite = item_sprite(remainder);
     }
+    stop_item_float(game, ground);
     ground.ground_item = outgoing;
     ground.sprite = item_sprite(outgoing);
     player.inventory = candidate;

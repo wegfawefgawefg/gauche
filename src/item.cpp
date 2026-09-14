@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
+#include "items/air_bladder.hpp"
 #include "items/woodland_tools.hpp"
 #include "items/remedies.hpp"
 #include "items/ground_tools.hpp"
@@ -80,6 +81,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::AirBladder:
+        used = use_air_bladder(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::GritPouch:
         used = scatter_grit(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -280,7 +285,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         default: break;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
+            if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
+            else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
             else if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);
             item = {};
             return true;

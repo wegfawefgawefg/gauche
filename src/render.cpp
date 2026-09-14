@@ -1,5 +1,6 @@
 #include "combat/parry.hpp"
 #include "render.hpp"
+#include "world/floating_render.hpp"
 #include "entities/bell_diver.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
@@ -176,6 +177,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
+        if (entity.kind == EntityKind::GroundItem)
+            draw_item_float(renderer, graphics, entity, camera, zoom, lighting);
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
             entity.kind == EntityKind::Coins) {
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;

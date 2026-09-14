@@ -274,8 +274,8 @@ behavior and balance playtesting remain the user's.
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
   Seven cold room roles support Skaters, Frost Bats and Bell Divers with real
-  air holes; Grit Pouches and Ice Needles add traction, recovery and heat melting.
-  Three of twenty enemies and two of fifty items; remaining content stays open.
+  air holes; Grit Pouches, Ice Needles and Air Bladders add traction, throws and
+  floating cargo. Three of twenty enemies and three of fifty items; more remain.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

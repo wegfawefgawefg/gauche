@@ -154,6 +154,12 @@ void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
 void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
                         std::uint64_t seed) {
     switch (sound.sound) {
+    case SoundId::AirInflate:
+        shockwave(cosmetics, sound.cell, 180, 193, 177);
+        break;
+    case SoundId::AirFloat: case SoundId::AirPaddle:
+        shockwave(cosmetics, sound.cell, 104, 145, 156);
+        break;
     case SoundId::DiverRise: case SoundId::DiverDive:
         shockwave(cosmetics, sound.cell, 95, 145, 159);
         break;

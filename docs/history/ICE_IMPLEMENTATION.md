@@ -138,3 +138,39 @@ samples below clipping. No live playtest or new test suite ran. Existing enum,
 phase and position serialization covers these additions; snapshot layout remains
 28 and gameplay compatibility advances to DF. Ice now has three catalog enemies
 and two catalog items; the rest of its requirements remain open.
+
+## Air Bladder and floating cargo (2026-09-14)
+
+Air Bladder now spends one of three uses on an outward push, or on a float when
+aimed at loose loot in adjacent shallow water. Price is 10, cooldown 45 ticks.
+The ordinary pulse reaches the four cardinal neighbors and shoves each eligible
+actor one cell, using the existing grip/block/crush rules. Big reaches two cells
+along each arm; targets are captured before moving and outer targets go first,
+preventing the same actor from being selected again after displacement. Durable
+provides six uses. Empty or fully blocked attempts spend nothing.
+
+A float uses the cargo's existing GroundItem entity. Its exact stack, modifier,
+condition and generation stay intact. GroundItem label_a, counter_a, timer_a,
+point_a and point_b hold the floating flag, remaining range, travel beat, expected
+cell and heading. One real cell per 12 ticks, up to sixteen cells, with one final
+dry-bank landing. Deep water, solid props, walls, actors and other loose items
+stop it. Drying puddles or external displacement end the trip. No body position
+interpolation, new item copy, separate physics world or hidden cargo inventory.
+
+The cargo remains available for ordinary pickup. Taking the full stack deflates
+the sling; partial pickup leaves the remainder floating. Swapping deflates before
+replacing the payload, so the newly dropped item does not unexpectedly sail off.
+The world shows a small inflated sling underneath the real item; local splash
+rings and quiet paddling accompany the trip. Debug pattern previews distinguish
+the outward pulse from the aimed float route. Cards show push reach, float range,
+uses and the actual Big cross pattern instead of a misleading zero cast range.
+
+Fishing huts now offer the local bladder. Bell Diver drops use one roll: 20%
+bladder, 25% 2–5 gold, otherwise empty. Ice rewards and shop tools include it along
+with grit and needles. Two generated sprites and five new offline sounds cover
+the bladder, cargo sling, inflation, attachment, deflation, paddling and exhaustion.
+Strict game/render builds and static cargo/card captures pass. All five OGGs
+decode without non-finite samples or clipping. No live playtest or new test suite
+ran. Existing shared fields already serialize/hash the float; snapshot layout
+stays 28, gameplay compatibility advances to E0. Ice totals are three enemies
+and three items; its remaining catalog and all broader master work stay open.

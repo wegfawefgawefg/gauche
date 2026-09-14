@@ -7,6 +7,8 @@
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
+#include "../items/air_bladder.hpp"
+#include "../world/floating_items.hpp"
 #include "../items/pocket_door.hpp"
 #include "../items/mixtures.hpp"
 #include "../surfaces/interaction.hpp"
@@ -62,7 +64,26 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::PocketDoor) {
+    if (held.kind == ItemKind::AirBladder) {
+        const int cargo = floating_cargo_in_front(game, player, facing);
+        if (cargo >= 0) {
+            Cell cell = game.entities[static_cast<std::size_t>(cargo)].cell;
+            mark(renderer, cell, camera, zoom, pattern.effect);
+            for (int step = 0; step < item_float_reach; ++step) {
+                cell = cell + facing;
+                if (!float_cell_free(game, cell, cargo)) break;
+                mark(renderer, cell, camera, zoom, pattern.effect, true);
+                if (!float_water(game.stage.at_or_border(cell))) break;
+            }
+        } else {
+            for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}})
+                for (int reach = 1; reach <= pattern.blast_radius; ++reach) {
+                    const Cell cell = player.cell + Cell{side.x * reach, side.y * reach};
+                    if (!clear_attack_sight(game, player.cell, cell)) break;
+                    mark(renderer, cell, camera, zoom, pattern.effect);
+                }
+        }
+    } else if (held.kind == ItemKind::PocketDoor) {
         if (const auto cell = pocket_door_landing(game, player.cell, facing, pattern.maximum))
             mark(renderer, *cell, camera, zoom, pattern.effect);
     } else if (held.kind == ItemKind::Scarecrow) {

@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../world/floating_items.hpp"
 #include "pocket_door.hpp"
 #include "rime_skater.hpp"
 #include "frost_bat.hpp"
@@ -54,6 +55,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::GroundItem: step_floating_item(game, slot); break;
     case EntityKind::BellDiver: step_bell_diver(game, slot); break;
     case EntityKind::RimeSkater: step_rime_skater(game, slot); break;
     case EntityKind::WaspNest: step_wasp_nest(game, slot); break;

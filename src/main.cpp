@@ -2,6 +2,8 @@
 #include <gubsy/runtime.hpp>
 
 #include "graphics.hpp"
+#include "app/options.hpp"
+#include "debug/panels.hpp"
 #include "audio.hpp"
 #include "game.hpp"
 #include "input.hpp"
@@ -23,91 +25,6 @@
 namespace {
 
 constexpr double step_seconds = 1.0 / 60.0;
-
-bool wants_smoke(int argc, char** argv) {
-    for (int index = 1; index < argc; ++index) {
-        if (std::string_view{argv[index]} == "--smoke" ||
-            std::string_view{argv[index]} == "--smoke-game" ||
-            std::string_view{argv[index]} == "--smoke-run" ||
-            std::string_view{argv[index]} == "--smoke-border" ||
-            std::string_view{argv[index]} == "--smoke-reward" ||
-            std::string_view{argv[index]} == "--smoke-inventory" ||
-            std::string_view{argv[index]} == "--smoke-menu" ||
-            std::string_view{argv[index]} == "--smoke-menu-page" ||
-            std::string_view{argv[index]} == "--smoke-menu-action" ||
-            std::string_view{argv[index]} == "--smoke-lobby" ||
-            std::string_view{argv[index]} == "--smoke-leave") {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool has_arg(int argc, char** argv, std::string_view name) {
-    for (int index = 1; index < argc; ++index)
-        if (std::string_view{argv[index]} == name) return true;
-    return false;
-}
-
-const char* capture_arg(int argc, char** argv) {
-    for (int index = 1; index + 1 < argc; ++index)
-        if (std::string_view{argv[index]} == "--capture") return argv[index + 1];
-    return nullptr;
-}
-
-std::string_view value_arg(int argc, char** argv, std::string_view name) {
-    for (int index = 1; index + 1 < argc; ++index)
-        if (std::string_view{argv[index]} == name) return argv[index + 1];
-    return {};
-}
-
-std::optional<int> number_arg(std::string_view text) {
-    if (text.empty()) return std::nullopt;
-    int value = 0;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
-    if (error != std::errc{} || end != text.data() + text.size()) return std::nullopt;
-    return value;
-}
-
-std::optional<float> decimal_arg(std::string_view text) {
-    if (text.empty()) return std::nullopt;
-    float value = 0.0F;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
-    if (error != std::errc{} || end != text.data() + text.size() ||
-        !std::isfinite(value)) return std::nullopt;
-    return value;
-}
-
-DeathPolicy requested_death_policy(int argc, char** argv) {
-    const std::string_view choice = value_arg(argc, argv, "--death");
-    if (choice == "no-respawn") return DeathPolicy::NoRespawn;
-    if (choice == "entrance") return DeathPolicy::Entrance;
-    return DeathPolicy::NextFloor;
-}
-
-std::filesystem::path user_data_root() {
-    char* path = SDL_GetPrefPath("gauche", "Gauche");
-    if (path == nullptr) return std::filesystem::path{GAUCHE_SOURCE_DIR} / "data";
-    const std::filesystem::path result{path};
-    SDL_free(path);
-    return result;
-}
-
-GubsyAppConfig app_config() {
-    GubsyAppConfig config;
-    config.enable_mods = false;
-    config.project_root = GAUCHE_SOURCE_DIR;
-    config.data_root = (user_data_root() / "gubsy").string();
-    config.engine_assets_root = (asset_root() / "gubsy-engine").string();
-    config.window_title = "Gauche";
-    config.window_width = 1280;
-    config.window_height = 720;
-    config.render_width = 640;
-    config.render_height = 360;
-    config.resizable_window = true;
-    config.apply_display_settings = true;
-    return config;
-}
 
 } // namespace
 
@@ -240,6 +157,7 @@ int main(int argc, char** argv) {
     const int frame_limit = requested_frames && *requested_frames > 0 ? *requested_frames :
                             (smoke ? 3 : 0);
 
+    init_debug_panels(gubsy_get_frame(host).window, gubsy_get_frame(host).renderer);
     bool running = true;
     bool lobby_smoke_failed = false;
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
@@ -258,6 +176,7 @@ int main(int argc, char** argv) {
             const bool capturing_bind = menu.front_visible && menu.front.capturing_bind;
             observe_input_device(event);
             gubsy_process_sdl_event(host, event);
+            if (debug_event(event)) continue;
             if (process_menu_shell_event(menu, event, gubsy_get_frame(host))) continue;
             const Game& event_game = network.role == NetRole::Solo ? game : network.rollback.game;
             if (menu.playing && !menu.visible &&
@@ -361,7 +280,7 @@ int main(int argc, char** argv) {
                 (network.role == NetRole::Client && network.ready && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
-                if (!smoke && menu.playing && !menu.visible) {
+                if (!smoke && menu.playing && !menu.visible && !debug_captures_input()) {
                     Input& local = inputs[static_cast<std::size_t>(owner)];
                     local = read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
                                              camera_for(cosmetics, active, owner), input_reader);
@@ -449,6 +368,7 @@ int main(int argc, char** argv) {
             cleanup_gubsy_runtime(host);
             return 1;
         }
+        draw_debug_panels(active, networked ? network.local_owner : 0);
         gubsy_present_frame(host);
         ++frames;
         if (!smoke) {
@@ -491,6 +411,7 @@ int main(int argc, char** argv) {
     const bool page_smoke_failed = !menu_page.empty() &&
         (!menu.front.compiled || !menu.front_visible || menu.quit_requested);
     if (page_smoke_failed) std::fprintf(stderr, "GView menu page did not render\n");
+    shutdown_debug_panels();
     shutdown_audio(audio);
     unload_graphics(graphics);
     shutdown_menu_shell(menu);

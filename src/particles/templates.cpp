@@ -252,10 +252,10 @@ void spawn_flame(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, bool on_ac
     SpriteParticle flame;
     flame.sprite = Sprite::FlameA;
     flame.next_sprite = Sprite::FlameB;
-    flame.layer = on_actor ? ParticleLayer::Foreground : ParticleLayer::Ground;
+    flame.layer = on_actor ? ParticleLayer::Foreground : ParticleLayer::Flames;
     flame.motion = ParticleMotion::Animated;
     flame.x = static_cast<float>(cell.x) + 0.5F + (unit(roll) - 0.5F) * 0.36F;
-    flame.y = static_cast<float>(cell.y) + (on_actor ? 0.82F : 0.52F);
+    flame.y = static_cast<float>(cell.y) + (on_actor ? 0.58F : 0.30F);
     flame.vx = (unit(roll >> 8) - 0.5F) * 0.007F;
     flame.vy = -0.012F;
     flame.width = on_actor ? 0.22F : 0.42F;

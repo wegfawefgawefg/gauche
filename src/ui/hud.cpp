@@ -1,4 +1,5 @@
 #include "presentation.hpp"
+#include "status.hpp"
 #include "item_details.hpp"
 #include "item_meter.hpp"
 #include "text.hpp"
@@ -98,6 +99,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(money, sizeof(money), "GOLD %d", game.run.coins[static_cast<std::size_t>(player.owner)]);
         small_ui_text(renderer, 20, height - 43, money, 218, 179, 97);
     }
+    draw_player_status(renderer, graphics, game, player, 17, height - 48);
     const Item& held = *player.inventory.held();
     if (quiet) return;
     if (held.kind != ItemKind::None) {

@@ -66,8 +66,6 @@ bool move_entity(Game& game, int slot, Cell destination) {
     if (tile == nullptr || !walkable(*tile) || (occupant >= 0 && occupant != slot)) {
         // A blocked step still takes its beat, as it did in the Rust arena.
         entity.move_wait = entity.move_interval;
-        if (entity.kind == EntityKind::Player)
-            emit_sound(game, SoundId::HitBlock1, entity.cell);
         return false;
     }
     entity.facing = destination - entity.cell;

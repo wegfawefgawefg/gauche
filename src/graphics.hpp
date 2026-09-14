@@ -31,6 +31,7 @@ enum class Sprite : std::size_t {
     EncounterGate, GraveVent, Coins,
     Boar, ThornSnail, ThornSnailClosed, LanternMoth, SporeToad, SporeToadSwollen, CrateMimic,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
+    StatusSleep, StatusStun, StatusChill,
     Count,
 };
 

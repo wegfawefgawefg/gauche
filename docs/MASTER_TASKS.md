@@ -404,20 +404,43 @@ the available art reference; new source scripts keep a small explicit palette.
 
 ## Playtest feedback: status, contact and debug visibility
 
-- [ ] Show named player status indicators with remaining timers. Distinguish
+- [x] Show named player status indicators with remaining timers. Distinguish
   sleep, stun, chill/freeze and burning; show burn rate and remaining damage,
   and explain what each status stops or slows. Keep them compact but legible.
-- [ ] Replace repeated blocked-walk beeps with a restrained first-contact bonk;
+- [x] Replace repeated blocked-walk beeps with a restrained first-contact bonk;
   suppress repeats while holding into the same obstruction. Distinguish wood
   and hard surfaces where appropriate; remove impact particles from mere bumps.
-- [ ] A blocked movement attempt still turns aim unless explicit aiming from
+- [x] A blocked movement attempt still turns aim unless explicit aiming from
   the right stick, keyboard aim or mouse overrides it.
-- [ ] Inspect campfire flame anchors/layers: wisps should rise from the burning
+- [x] Inspect campfire flame anchors/layers: wisps should rise from the burning
   top, not below the base. Preserve correct actors-over-ground-fixtures order.
-- [ ] Keep item inspection patterns. Default player/enemy world attack grids
+- [x] Keep item inspection patterns. Default player/enemy world attack grids
   off; expose independent categorized ImGui debug checkboxes for them.
-- [ ] Inspect and follow Splonks' F1 global ImGui visibility and F2 debug-window
+- [x] Inspect and follow Splonks' F1 global ImGui visibility and F2 debug-window
   selector behavior. Local debug state must not alter gameplay/network state.
+
+Feedback implementation: the puffball causes 75 ticks of sleep, now explicitly
+shown. Status badges show countdowns/effects; burning shows current rate and
+remaining damage. Blocked walking uses a latched wood/stone bonk with no debris;
+movement turns before explicit aim. Fire wisps render between fixtures and actors
+and originate higher. F1 hides/restores debug windows; F2 toggles the categorized
+selector while visible. Combat has independent player/enemy world-grid gates,
+both off by default; inventory patterns remain. Builds and static status/debug
+captures checked. Controller handling and contact feel await user playtesting.
+
+## Playtest feedback: stacks, uses and cooking
+
+- [ ] Make ammo packs stack and merge matching pickups into a carried partial
+  stack before taking another slot. Preserve independent ammo reserves per gun.
+- [ ] Stop showing `x1` on non-stackable equipment, including fists. Clearly
+  label stackability in item details; distinguish stack count/max, remaining
+  uses, durability and magazine/reserve. A ten-use lighter is one tool, not a
+  ten-object stack, and used tools must not merge or refill one another.
+- [ ] Inspect repeated campfire cooking on held use: cook one portion per beat,
+  add a recognizable sizzle, preserve raw-to-cooked counts and inventory capacity.
+  Keep discovery hidden for now per the user's later preference; an interaction
+  popup (meat -> cooked meat/pan icon) is an optional future direction, not a
+  requirement to add tutorial prompts everywhere.
 
 ## Suggested order
 

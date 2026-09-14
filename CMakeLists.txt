@@ -86,7 +86,7 @@ set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/prop
 set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
-    src/main.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
+    src/main.cpp src/app/options.cpp src/debug/panels.cpp src/ui/status.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp
     src/render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
@@ -105,7 +105,7 @@ if(WIN32)
 endif()
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(gauche PRIVATE "${GAUCHE_GUBSY_DIR}")
+target_include_directories(gauche PRIVATE "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
 
 if(MSVC)
     target_compile_options(gauche PRIVATE /W4 /permissive-)
@@ -137,7 +137,7 @@ add_executable(gauche_render_scene EXCLUDE_FROM_ALL
     tools/render_scene.cpp ${GAUCHE_CAPTURE_SOURCES})
 target_link_libraries(gauche_render_scene PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
-target_include_directories(gauche_render_scene PRIVATE "${GAUCHE_GUBSY_DIR}")
+target_include_directories(gauche_render_scene PRIVATE "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
 target_compile_definitions(gauche_render_scene PRIVATE GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 if(WIN32)
     target_link_libraries(gauche_render_scene PRIVATE ws2_32)

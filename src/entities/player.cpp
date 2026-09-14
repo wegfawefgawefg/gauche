@@ -55,12 +55,29 @@ void step_player(Game& game, int slot, const Input& input) {
     Entity& player = game.entities[static_cast<std::size_t>(slot)];
     if (input.select >= 0 && input.select < quick_slots) player.inventory.selected = input.select;
 
-    // MOVEMENT: Aiming can turn the held item while a tile step recovers.
-    if (player.move_wait == 0 && (input.move.x != 0 || input.move.y != 0)) {
+    // CONTACT: label_a/point_a latch a held blocked direction; timer_a limits rapid taps.
+    if (input.move.x == 0 && input.move.y == 0) player.label_a = 0;
+    else {
         Cell movement = input.move;
         if (movement.x != 0) movement.y = 0;
-        move_entity(game, slot, player.cell + movement);
+        player.facing = movement;
+        if (player.move_wait == 0) {
+            const Cell destination = player.cell + movement;
+            if (move_entity(game, slot, destination)) player.label_a = 0;
+            else {
+                if ((player.label_a == 0 || player.point_a != destination) && player.timer_a == 0) {
+                    const Tile* tile = game.stage.at(destination);
+                    const bool wood = tile != nullptr &&
+                        (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog);
+                    emit_sound(game, wood ? SoundId::BumpWood : SoundId::BumpStone, destination);
+                    player.timer_a = 15;
+                }
+                player.label_a = 1;
+                player.point_a = destination;
+            }
+        }
     }
+    // AIM: Explicit aim overrides movement, including an unsuccessful step.
     player.facing = facing_from_aim(input.aim, player.facing);
     collect_coins(game, player);
 

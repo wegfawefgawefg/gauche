@@ -1,6 +1,7 @@
 #include "../src/game.hpp"
 #include "floor_overview.hpp"
 #include "enemy_scene.hpp"
+#include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
 #include "../src/world/loot.hpp"
 #include "../src/render.hpp"
@@ -92,8 +93,19 @@ int main(int argc, char** argv) {
     Cosmetics cosmetics;
     arrange_terrain(game, cosmetics);
     const std::string_view mode = argc >= 3 ? argv[2] : "terrain";
+    SDL_Window* debug_window = nullptr;
+    if (mode == "debug") {
+        debug_window = SDL_CreateWindow("Static debug capture", 1920, 1080, SDL_WINDOW_HIDDEN);
+        init_debug_panels(debug_window, renderer);
+        debug_panels().visible = true;
+        debug_panels().combat = true;
+        debug_panels().status = true;
+    }
     InteractionUi interaction;
-    if (mode == "enemies") arrange_enemy_scene(game, cosmetics);
+    if (mode == "enemies") {
+        arrange_enemy_scene(game, cosmetics);
+        debug_panels().world_enemies = true;
+    }
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};
@@ -129,6 +141,13 @@ int main(int argc, char** argv) {
     }
     Entity& player = *get_entity(game, game.players[0]);
     player.owner = 0;
+    if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }
+    if (mode == "status" || mode == "debug") {
+        player.scorch_ticks = 210;
+        player.sleep_ticks = 75;
+        player.stun_ticks = 30;
+        player.freeze_ticks = 90;
+    }
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));
     insert_item(player.inventory, make_item(ItemKind::Buckler));
@@ -158,14 +177,21 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, mode == "hud", true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "hud" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
+    }
+    if (mode == "debug") {
+        SDL_SetRenderScale(renderer, 1, 1);
+        draw_debug_panels(game, 0);
+        draw_debug_panels(game, 0);
+        shutdown_debug_panels();
     }
     SDL_RenderPresent(renderer);
     const bool saved = IMG_SavePNG(surface, argv[1]);
     unload_graphics(graphics);
     SDL_DestroyRenderer(renderer);
     SDL_DestroySurface(surface);
+    SDL_DestroyWindow(debug_window);
     SDL_Quit();
     return saved ? 0 : 1;
 }

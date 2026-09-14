@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <vector>
 
-enum class ParticleLayer : std::uint8_t { Ground, Foreground, Weather };
+enum class ParticleLayer : std::uint8_t { Ground, Flames, Foreground, Weather };
 enum class ParticleMotion : std::uint8_t { Still, Drift, Accelerate, Arc, Animated };
 
 struct SpriteParticle {

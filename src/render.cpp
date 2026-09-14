@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "debug/panels.hpp"
 #include "entities/intent_render.hpp"
 #include "particles/system.hpp"
 #include "lighting/field.hpp"
@@ -127,10 +128,9 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
 
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, float zoom,
-                   const Cosmetics* cosmetics, const LightingCache& lighting) {
+                   const Cosmetics* cosmetics, const LightingCache& lighting, int layer) {
     const float pixels = tile_pixels(zoom);
     // LAYERS: Fixtures sit on the ground, pickups above them, then actors with held items.
-    for (int layer = 0; layer < 3; ++layer)
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
@@ -284,12 +284,16 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting);
-    draw_enemy_intents(renderer, game, camera, zoom, lighting);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting);
+    if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
+    if (cosmetics != nullptr)
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 1);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
                        camera, zoom, &lighting);
-    if (player != nullptr)
+    if (player != nullptr && debug_panels().world_items)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
@@ -308,7 +312,8 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     build_lighting(lighting, scene, camera, 2.0F);
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
     draw_props(renderer, graphics, scene.stage, camera, 2.0F, lighting);
-    draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
+    for (int layer = 0; layer < 3; ++layer)
+        draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting, layer);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

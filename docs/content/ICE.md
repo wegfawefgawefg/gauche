@@ -105,7 +105,7 @@ same effective item definition as attacks, including rare attributes.
 | 30 | Muffling felt | Implemented: wrap the next unwrapped melee weapon or gun in inventory slot order. Six quiet uses; impacts/explosions stay loud. Two applications, or four with Durable. Remaining quiet uses stay on dropped/traded weapons. | Uncommon; 14 |
 | 31 | Echo pebble | Throw to 7; repeats the last nearby non-explosion use-noise three times from its landing. No duplicate gameplay attack. Stack 3. | Uncommon; 16 |
 | 32 | Tuning fork | Short 0.5s windup sends a straight vibration through contiguous brittle crystal to 8; breaks weak crystal, 8 actor damage. 24 uses. | Uncommon; 22 |
-| 33 | Alarm clock | Wind and place a 3s delayed repeated ring; wakes/investigates for 5s, then becomes recoverable. No stun. | Common; 10 |
+| 33 | Alarm clock | Implemented: place, wait 3s, then five once-per-second radius-10 acoustic pulses. Recover after 5s, keeping damage. 8 HP, or 16 Durable; attacks can destroy it. No stun. | Common; 10 |
 | 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
 | 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
 | 36 | Smoked fish | Self: 14 immediate HP, or drop as strong seal/eel bait. Stack 6. | Common; 6 |
@@ -191,8 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Five regional debris types are implemented: ice chips, snow clumps, mirror
-chips, crystal splinters and felt scraps. Felt comes from torn/burned covers
+Six regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters, felt scraps and clock gears. Clock gears scatter from
+broken alarms. Felt comes from torn/burned covers
 and smashed lens cases, with light-piece friction and local wind response.
 All use the shared cosmetic pool; remaining catalog materials are still open.
 

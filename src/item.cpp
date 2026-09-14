@@ -2,6 +2,7 @@
 #include "items/optics.hpp"
 #include "items/muffling.hpp"
 #include "props/cloth.hpp"
+#include "props/alarm_clock.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/eel_battery.hpp"
@@ -90,6 +91,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::AlarmClock:
+        used = place_alarm_clock(game, user.cell + direction, item);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::MufflingFelt:
         used = apply_muffling(game, user_slot);
         cooldown = item_pattern(item).cooldown;

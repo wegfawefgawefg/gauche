@@ -53,6 +53,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/heat_capsule.cpp src/items/cold_flask.cpp src/items/air_bladder.cpp src/world/floating_items.cpp
     src/items/quarry_tools.cpp src/items/ice_brick.cpp src/projectiles/ice_brick.cpp
     src/entities/lens_warden.cpp src/entities/lens_watch.cpp src/world/lens_watch.cpp
+    src/items/alarms.cpp src/props/alarm_clock.cpp
     src/items/muffling.cpp
     src/entities/echo_hound.cpp src/entities/echo_hearing.cpp
     src/entities/mirror_knight.cpp

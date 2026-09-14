@@ -1,4 +1,5 @@
 #include "catalog.hpp"
+#include "alarms.hpp"
 #include "muffling.hpp"
 #include "optics.hpp"
 #include "eel_battery.hpp"
@@ -12,6 +13,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* alarm = alarm_item(kind)) return alarm;
     if (const RegionalItem* felt = muffling_item(kind)) return felt;
     if (const RegionalItem* optic = optics_item(kind)) return optic;
     if (const RegionalItem* snow = snow_tool_item(kind)) return snow;

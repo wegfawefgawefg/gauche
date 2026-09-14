@@ -32,7 +32,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SmgShot: case SoundId::BlunderShot: case SoundId::RocketLaunch:
     case SoundId::LensFire: case SoundId::WardenFire: case SoundId::SmallLaser:
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
-    case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
+    case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
     case SoundId::RockImpact: case SoundId::ArrowImpact: case SoundId::IceNeedleHit:
     case SoundId::BottleBreak: case SoundId::BombLand: case SoundId::IceBrickThrow:

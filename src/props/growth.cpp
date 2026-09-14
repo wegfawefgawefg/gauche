@@ -1,5 +1,6 @@
 #include "growth.hpp"
 #include "ice_cover.hpp"
+#include "alarm_clock.hpp"
 #include "../surfaces/interaction.hpp"
 
 namespace {
@@ -28,6 +29,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind == PropKind::AlarmClock) { step_alarm_clock(game, cell); continue; }
             if (prop.kind == PropKind::IceBlock) { age_ice_cover(game, cell); continue; }
             if (prop.kind != PropKind::Shoot || prop.broken) continue;
             if (prop.growth_ticks > 1) { --prop.growth_ticks; continue; }

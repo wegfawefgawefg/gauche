@@ -2,6 +2,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::AlarmClock: return {Sprite::AlarmClock, SoundId::ClockBreak, 8, false, false};
     case PropKind::LensCase: return {Sprite::LensCase, SoundId::LensCaseBreak, 16, true, false};
     case PropKind::BeamLamp: return {Sprite::BeamLamp, SoundId::LampBreak, 24, false, false, {5, 850, {179, 208, 233}}};
     case PropKind::MirrorShard: return {Sprite::MirrorShard, SoundId::OpticBreak, 8, false, false};
@@ -31,4 +32,9 @@ PropSpec prop_spec(PropKind kind) {
 
 bool prop_blocks(const Prop& prop) {
     return prop.kind != PropKind::None && !prop.broken && prop_spec(prop.kind).blocking;
+}
+
+int prop_max_health(const Prop& prop) {
+    const int base = prop_spec(prop.kind).health;
+    return prop.kind == PropKind::AlarmClock && prop.variant == 1 ? base * 2 : base;
 }

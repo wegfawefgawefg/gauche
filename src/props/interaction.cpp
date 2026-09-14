@@ -88,6 +88,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::AlarmClock) emit_sound(game, SoundId::OpticHit, cell);
     else if (prop.kind != PropKind::BirdSeed && prop.kind != PropKind::Thorns)
         emit_sound(game, (optical_prop(prop) || prop.kind == PropKind::BeamLamp) ? SoundId::OpticHit : prop.kind == PropKind::SnowCache ? SoundId::SnowScrape : prop.kind == PropKind::IceBlock ? SoundId::IceBlockHit : prop.kind == PropKind::StrawDecoy ? SoundId::DecoyHit : SoundId::WoodCrack, cell);
     return true;

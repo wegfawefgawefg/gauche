@@ -90,3 +90,29 @@ Strict builds pass without warnings. The existing codec round-trip includes a
 partly used wrapped weapon and passes. Static inventory/held comparisons and
 compact HUD captures were inspected; image format and decoded audio headroom
 pass. No live playtest or new suite was run. The master goal remains open.
+
+
+## Recoverable alarm clock
+
+The twentieth Ice item is a small brass clock. Place it in a free adjacent dry
+cell; it waits three seconds, then makes five acoustic pulses at one-second
+intervals. Each pulse travels up to ten cells through the existing hearing
+flood. Walls seal sound; listeners investigate and sleeping actors wake.
+The clock neither damages nor stuns. Its countdown ticks are only audio cues.
+
+After five seconds of ringing, it becomes a loose item nearby. Its 8 HP (16
+with Durable) carries back into item condition; recovery cannot repair it.
+Resin Glue can repair the carried clock. Attacks can destroy the placed clock,
+ending its distraction and scattering local brass casing and gear debris.
+A full entity pool leaves the stopped clock intact until recovery has room.
+
+Placed state uses compact Prop fields: variant records Durable, hp stores
+condition, growth_ticks counts down from 480. The snapshot layout is unchanged;
+the gameplay protocol is F0. Existing codec coverage includes a damaged Durable
+clock mid-ring. New winding, ticking, double-bell ringing, stopping and breaking
+sounds are generated offline. Three 16px poses distinguish its states.
+Echo-tunnel equipment, Ice rewards and shops can supply it.
+
+Validation: strict build, existing codec checks, offline audio headroom and
+static `alarms` / `alarm-items` captures. Gameplay and balance remain for the
+user's playtesting.

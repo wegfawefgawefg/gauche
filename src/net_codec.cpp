@@ -377,10 +377,11 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.prop.covered = covered != 0;
         if (covered > 1 || (tile.prop.covered && !coverable_prop(tile.prop))) reader.okay = false;
         if (tile.prop.kind >= PropKind::Count ||
-            tile.prop.hp > prop_spec(tile.prop.kind).health ||
+            tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
-            tile.prop.growth_ticks > (tile.prop.kind == PropKind::IceBlock ? 600 : 180) ||
-            (tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            tile.prop.growth_ticks > (tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
+            (tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+        if (tile.prop.kind == PropKind::AlarmClock && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
     }

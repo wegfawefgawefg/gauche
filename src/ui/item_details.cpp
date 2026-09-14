@@ -182,6 +182,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         else std::snprintf(line, sizeof(line), "WRAP #%d: %s", target + 1,
             item_name(order.slots[static_cast<std::size_t>(target)].kind));
     }
+    if (item.kind == ItemKind::AlarmClock)
+        std::snprintf(line, sizeof(line), "PLACED HP %d | DELAY 3s", item.durability);
     if (item.kind == ItemKind::BlackFelt)
         std::snprintf(line, sizeof(line), "BLOCKS LIGHT | BURNS / TEARS");
     if (item.kind == ItemKind::PrismBomb)
@@ -249,7 +251,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::BlackFelt) {
+    if (item.kind == ItemKind::AlarmClock) {
+        text(renderer, x + 10, y + 129, "RINGS 5s | RECOVER AFTER", 167, 197, 199);
+    } else if (item.kind == ItemKind::BlackFelt) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "TEAR OFF COVER AHEAD");
     } else if (item.kind == ItemKind::MirrorShard) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "TURN MIRROR AHEAD");

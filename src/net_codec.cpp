@@ -105,6 +105,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     writer.u8(static_cast<std::uint8_t>(item.opened));
     write_light(writer, item.light);
     writer.i32(item.dig_power);
+    writer.i32(item.flame_ticks);
 }
 Item read_item(PacketReader& reader) {
     Item item;
@@ -120,6 +121,8 @@ Item read_item(PacketReader& reader) {
     item.max_uses = reader.i32(); item.opened = reader.u8() != 0;
     item.light = read_light(reader);
     item.dig_power = reader.i32();
+    item.flame_ticks = reader.i32();
+    if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
     if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
         item.loaded < 0 || item.spare < 0 ||
@@ -221,7 +224,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(15);
+    writer.u32(16);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -282,7 +285,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 15) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 16) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

@@ -1,3 +1,4 @@
+#include "../items/fire_render.hpp"
 #include "interaction.hpp"
 #include "prompts.hpp"
 #include "item_details.hpp"
@@ -152,11 +153,17 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (item.kind == ItemKind::None) continue;
         SDL_FRect icon{x + 26.0F, y + 5.0F, 18.0F, 18.0F};
         SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
+        draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
         text(renderer, x + 49.0F, y + 5.0F,
-             item_display_name(item).substr(0, 17),
+             item_display_name(item).substr(0, item.flame_ticks > 0 ? 12 : 17),
              item.attribute == ItemAttribute::None ? 235 : 218,
              item.attribute == ItemAttribute::None ? 230 : 169,
              item.attribute == ItemAttribute::None ? 214 : 94);
+        if (item.flame_ticks > 0) {
+            char remaining[12];
+            std::snprintf(remaining, sizeof(remaining), "%ds", (item.flame_ticks+59)/60);
+            text(renderer, x+130, y+5, remaining, 235, 167, 80);
+        }
         text(renderer, x + 49.0F, y + 15.0F,
              item_state_text(item, true), 188, 205, 181);
         text(renderer, x + 102.0F, y + 15.0F,

@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../items/fire.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -26,8 +27,8 @@ void find_lamp(Game& game, Entity& moth) {
             !game.run.online[static_cast<std::size_t>(source.owner)]) continue;
         const Handle handle{slot, source.generation};
         consider(source.cell, source.light, handle);
-        consider(source.cell, source.inventory.held()->light, handle);
-        if (source.kind == EntityKind::GroundItem) consider(source.cell, source.ground_item.light, handle);
+        consider(source.cell, item_light(*source.inventory.held()), handle);
+        if (source.kind == EntityKind::GroundItem) consider(source.cell, item_light(source.ground_item), handle);
     }
     // CANOPY: Gaps compete as fixed environmental sources, not fake entities.
     for (int i = 0; i < game.run.roof_light_count; ++i) {

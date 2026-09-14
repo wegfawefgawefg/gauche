@@ -312,3 +312,19 @@ new soft bite/swallow sound. Campfires cook one portion at a time, prioritizing
 the held ingredient and committing only when the cooked portion fits. Existing
 meat cooking uses the same path. Strict game/render builds and a static inventory
 capture checked; the user retains playtesting. Gameplay compatibility advanced.
+
+
+## Temporary burning sticks
+
+A held stick can be lit at a live campfire for thirty seconds. Its flame timer
+travels with the item through drops, swaps, snapshots and hashes; stowing keeps
+the clock running. Burnout leaves the ordinary stick and its remaining uses.
+Wading or dropping it in water quenches the flame early. Contact ignites dry
+material and living susceptible actors (20 damage over five seconds, refreshed
+without stacking); blocked strikes and fire-native actors resist ignition.
+Torches now ignite struck actors through this same path. A dropped lit stick
+can ignite dry ground props or spilled fuel. Effective item emitters also feed
+moth attraction. Held, ground and UI flames share the wood-tip anchor, and HUD,
+inventory and details show remaining fire time alongside uses/cooldown. Snapshot
+format is 16; gameplay compatibility advanced. Strict game/render builds and
+static world, HUD and inventory captures checked; no playtest performed.

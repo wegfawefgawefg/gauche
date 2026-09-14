@@ -1,3 +1,4 @@
+#include "../items/fire_render.hpp"
 #include "presentation.hpp"
 #include "status.hpp"
 #include "artifacts.hpp"
@@ -60,13 +61,19 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_FRect icon{x + 3.0F, y + 3.0F, 12.0F, 12.0F};
             SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)),
                               nullptr, &icon);
+            draw_item_flame(renderer, graphics, item, icon, {1, 0}, game.tick);
             if (!quiet) {
-                const std::string label = item.attribute == ItemAttribute::None ?
+                const std::string label = item.flame_ticks > 0 ? "Lit Stick" : item.attribute == ItemAttribute::None ?
                     item_name(item.kind) :
                     std::string{item_attribute_name(item.attribute), 1} +
                     " " + item_name(item.kind);
                 small_ui_text(renderer, x + 19.0F, y + 1.0F,
                               label.substr(0, 13), 235, 230, 214);
+            }
+            if (item.flame_ticks > 0) {
+                char remaining[12];
+                std::snprintf(remaining, sizeof(remaining), "%ds", (item.flame_ticks+59)/60);
+                small_ui_text(renderer, x+83, y+1, remaining, 235, 167, 80);
             }
             const std::string state = item_state_text(item, true);
             small_ui_text(renderer, x + 19.0F, y + 9.0F,

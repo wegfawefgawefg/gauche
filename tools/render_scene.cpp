@@ -1,4 +1,5 @@
 #include "../src/game.hpp"
+#include "../src/items/fire.hpp"
 #include "floor_overview.hpp"
 #include "enemy_scene.hpp"
 #include "water_scene.hpp"
@@ -190,6 +191,17 @@ int main(int argc, char** argv) {
                               ItemKind::ThrowingRock, ItemKind::WoodenMaul, ItemKind::FlintKnife})
             insert_item(player.inventory, make_item(kind));
     }
+    if (mode == "lit-stick" || mode == "lit-stick-inventory") {
+        player.scorch_ticks = 0;
+        player.cell = {13, 10};
+        player.facing = {-1, 0};
+        player.inventory = {};
+        insert_item(player.inventory, make_item(ItemKind::Stick));
+        light_stick(game, *player.inventory.held(), player.cell);
+        Entity* dropped = get_entity(game, spawn_entity(game, EntityKind::GroundItem, {14, 10}));
+        dropped->ground_item = *player.inventory.held();
+        dropped->sprite = Sprite::Stick;
+    }
     if (mode == "food") {
         player.inventory = {};
         for (ItemKind kind : {ItemKind::Fist, ItemKind::Egg, ItemKind::FriedEgg, ItemKind::Rake})
@@ -200,10 +212,10 @@ int main(int argc, char** argv) {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
-        interaction.slot_focus = mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
+        interaction.slot_focus = mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
     } else if (mode == "reward" || mode == "reward-focus") {
         interaction.offer_focus = mode == "reward-focus" ? 1 : 0;
         game.run.phase = RunPhase::Reward;
@@ -222,7 +234,7 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "hud" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "lit-stick" || mode == "hud" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
     if (mode == "debug") {

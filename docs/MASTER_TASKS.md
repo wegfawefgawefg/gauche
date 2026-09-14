@@ -446,7 +446,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   greatly increase its available uses. Keep its current recognizable silhouette.
 - [x] Make chicken nests drop eggs rather than raw meat; integrate eggs as finds
   with sensible stack/use/cooking rules and fitting art/sound.
-- [ ] Support igniting a held stick into a temporary burning weapon, initially
+- [x] Support igniting a held stick into a temporary burning weapon, initially
   about 30 seconds; spread fire to susceptible actors/materials and communicate
   its remaining burn time. Keep item state deterministic through drop/swap.
 - [ ] Diagnose visible tile-center/vertex bias in lighting using canopy-on/off

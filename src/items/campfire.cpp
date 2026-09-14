@@ -1,4 +1,5 @@
 #include "campfire.hpp"
+#include "fire.hpp"
 
 namespace {
 
@@ -30,6 +31,10 @@ bool cook_portion(Game& game, Entity& player, Cell fire, int slot) {
 bool use_campfire(Game& game, Entity& player, const Entity& fire) {
     if (fire.fire_tramples >= 5) return false;
     if (player.timer_b > 0) return true;
+    if (light_stick(game, *player.inventory.held(), fire.cell)) {
+        player.timer_b = 45;
+        return true;
+    }
     const int selected = player.inventory.selected;
     if (cooked_item(player.inventory.held()->kind) != ItemKind::None)
         return cook_portion(game, player, fire.cell, selected);

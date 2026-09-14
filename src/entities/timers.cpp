@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/encounter.hpp"
@@ -78,7 +79,11 @@ void step_entity_timers(Game& game, int slot) {
             } else entity.spawn_wait = 1;
         }
     }
-    entity.ground_item.cooldown = std::max(0, entity.ground_item.cooldown - 1);
+    const bool wet = ground != nullptr && surface_wet(*ground);
+    // PAYLOAD: A melee windup copy is not another burning object in the world.
+    step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
     for (Item& item : entity.inventory.slots)
-        item.cooldown = std::max(0, item.cooldown - 1);
+        step_item_state(game, item, entity.cell, wet && wading_actor(entity));
+    if (entity.kind == EntityKind::GroundItem && entity.ground_item.flame_ticks > 0)
+        ignite_surface(game, entity.cell);
 }

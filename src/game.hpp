@@ -117,6 +117,7 @@ struct Item {
     bool opened = false;
     LightEmitter light{};
     int dig_power = 0;
+    int flame_ticks = 0;
 };
 
 constexpr int quick_slots = 6;

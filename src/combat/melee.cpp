@@ -1,6 +1,8 @@
 #include "../items/catalog.hpp"
 #include "../props/interaction.hpp"
 #include "shove.hpp"
+#include "../items/fire.hpp"
+#include "../surfaces/interaction.hpp"
 
 namespace {
 
@@ -33,6 +35,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog))
                 prop_damage *= 3;
+            if (item.flame_ticks > 0 || item.kind == ItemKind::Torch) ignite_surface(game, cell);
             struck |= hit_prop(game, cell, prop_damage, origin);
             const int hit = entity_at(game, cell, true);
             if (hit >= 0 && hit != user_slot && !hit_once[static_cast<std::size_t>(hit)]) {
@@ -41,6 +44,8 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 const bool blocked_hit = blocks_facing(target, origin);
                 emit_sound(game, SoundId::Punch1, cell);
                 damage_entity(game, hit, contact_damage(item, target, origin, pattern.damage), origin);
+                if (!blocked_hit && (item.flame_ticks > 0 || item.kind == ItemKind::Torch))
+                    ignite_struck_actor(game, hit);
                 if (item.kind == ItemKind::WoodenMaul && !blocked_hit && target.health > 0)
                     shove_actor(game, hit, direction, origin);
                 struck = true;

@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "items/fire_render.hpp"
 #include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
 #include "scenery/overhead.hpp"
@@ -238,6 +239,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         SDL_SetTextureAlphaMod(texture, 255);
         SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
+        if (entity.kind == EntityKind::GroundItem)
+            draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
@@ -259,6 +262,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,
                                      angle, nullptr, held_facing.x < 0 ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
             SDL_SetTextureColorModFloat(held_texture, 1.0F, 1.0F, 1.0F);
+            draw_item_flame(renderer, graphics, *held, held_rect, held_facing, game.tick);
             if (held->kind == ItemKind::Buckler) {
                 SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
                 SDL_RenderRect(renderer, &held_rect);

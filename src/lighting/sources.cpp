@@ -1,4 +1,5 @@
 #include "field.hpp"
+#include "../items/fire.hpp"
 
 #include <algorithm>
 
@@ -52,11 +53,11 @@ std::vector<LightSource> collect_light_sources(const Game& game,
         if (entity.scorch_ticks > 0 || entity.burn_ticks > 0)
             add(sources, cache, entity.cell, 3, 0.55F, {1.0F, 0.36F, 0.09F});
         if (entity.kind == EntityKind::GroundItem)
-            add_emitter(sources, cache, entity.cell, entity.ground_item.light);
+            add_emitter(sources, cache, entity.cell, item_light(entity.ground_item));
         if (entity.kind != EntityKind::GroundItem &&
             entity.inventory.selected >= 0 && entity.inventory.selected < quick_slots)
             add_emitter(sources, cache, entity.cell,
-                entity.inventory.slots[static_cast<std::size_t>(entity.inventory.selected)].light,
+                item_light(*entity.inventory.held()),
                 0.75F);
         if (entity.use_flash > 0)
             add(sources, cache, entity.cell, 4,

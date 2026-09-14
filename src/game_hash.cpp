@@ -145,6 +145,7 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(item.opened));
             mix_light(hash, item.light);
             mix(hash, static_cast<std::uint64_t>(item.dig_power));
+            mix(hash, static_cast<std::uint64_t>(item.flame_ticks));
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
@@ -162,6 +163,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(ground.opened));
         mix_light(hash, ground.light);
         mix(hash, static_cast<std::uint64_t>(ground.dig_power));
+        mix(hash, static_cast<std::uint64_t>(ground.flame_ticks));
     }
     return hash;
 }

@@ -11,7 +11,7 @@ namespace {
 
 bool compatible(const Item& a, const Item& b) {
     return item_stackable(a) && item_stackable(b) && a.kind == b.kind &&
-        a.attribute == b.attribute && a.opened == b.opened && a.dig_power == b.dig_power &&
+        a.flame_ticks == b.flame_ticks && a.attribute == b.attribute && a.opened == b.opened && a.dig_power == b.dig_power &&
         a.max_count == b.max_count && a.consume_on_use == b.consume_on_use &&
         a.light.radius == b.light.radius && a.light.strength == b.light.strength &&
         a.light.color.red == b.light.color.red && a.light.color.green == b.light.color.green &&

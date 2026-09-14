@@ -1,3 +1,4 @@
+#include "../items/fire_render.hpp"
 #include "item_details.hpp"
 #include "../items/action.hpp"
 #include "../items/catalog.hpp"
@@ -66,7 +67,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::Ammo: return "Supply each gun and bow separately, including the held weapon.";
     case ItemKind::Bomb: return "Throw forward. A 2.5s fuse starts on use, then it explodes. Get clear!";
     case ItemKind::SleepMeds: return "Put a nearby target to sleep for a short time.";
-    case ItemKind::Stick: return "A sturdy one-tile strike with more force than a fist.";
+    case ItemKind::Stick: return "Hit harder than a fist. Light at a campfire for 30s of fire strikes; water puts it out.";
     case ItemKind::Shotgun: return "Powerful close-range shot with a slow recovery.";
     case ItemKind::SMG: return "Rapid straight shots with a large magazine.";
     case ItemKind::BearTrap: return "Open the jaws first. Then place it; a victim takes 100 damage.";
@@ -92,7 +93,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::None) return;
     SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
-    text(renderer, x + 39.0F, y + 22.0F, item_name(item.kind));
+    draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
+    text(renderer, x + 39.0F, y + 22.0F, item.flame_ticks > 0 ? "Lit Stick" : item_name(item.kind));
     char line[80];
     if (item_stackable(item))
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
@@ -138,7 +140,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
+    if (item.flame_ticks > 0) {
+        std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
+        text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
+    } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
     if (item_windup(item) > 0)
         std::snprintf(line, sizeof(line), "WINDUP %.2fs  RANGE %d-%d",
             static_cast<double>(item_windup(item)) / 60.0, pattern.minimum, pattern.maximum);
@@ -166,8 +171,13 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
-    text(renderer, x + 28.0F, y + 3.0F, label, 178, 164, 151);
-    text(renderer, x + 28.0F, y + 14.0F, item_name(item.kind));
+    draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
+    if (item.flame_ticks > 0) {
+        char status[64];
+        std::snprintf(status, sizeof(status), "%s  FIRE %ds", label, (item.flame_ticks+59)/60);
+        text(renderer, x + 28.0F, y + 3.0F, status, 235, 167, 80);
+    } else text(renderer, x + 28.0F, y + 3.0F, label, 178, 164, 151);
+    text(renderer, x + 28.0F, y + 14.0F, item.flame_ticks > 0 ? "Lit Stick" : item_name(item.kind));
     text(renderer, x + width - 54.0F, y + 14.0F,
          item_state_text(item, true), 200, 207, 189);
     text(renderer, x + width - 54.0F, y + 23.0F,

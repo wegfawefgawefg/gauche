@@ -47,8 +47,9 @@ const char* item_attribute_effect(ItemAttribute attribute) {
 }
 
 std::string item_display_name(const Item& item) {
-    if (item.attribute == ItemAttribute::None) return item_name(item.kind);
-    return std::string{item_attribute_name(item.attribute)} + " " + item_name(item.kind);
+    const std::string name = item.flame_ticks > 0 ? "Lit Stick" : item_name(item.kind);
+    if (item.attribute == ItemAttribute::None) return name;
+    return std::string{item_attribute_name(item.attribute)} + " " + name;
 }
 
 bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {

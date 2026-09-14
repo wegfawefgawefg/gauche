@@ -8,6 +8,7 @@
 #include "render.hpp"
 #include "net_session.hpp"
 #include "menu_shell.hpp"
+#include "menu/actions.hpp"
 #include "particles/system.hpp"
 
 #include <algorithm>
@@ -29,6 +30,8 @@ bool wants_smoke(int argc, char** argv) {
             std::string_view{argv[index]} == "--smoke-game" ||
             std::string_view{argv[index]} == "--smoke-run" ||
             std::string_view{argv[index]} == "--smoke-menu" ||
+            std::string_view{argv[index]} == "--smoke-menu-page" ||
+            std::string_view{argv[index]} == "--smoke-menu-action" ||
             std::string_view{argv[index]} == "--smoke-lobby" ||
             std::string_view{argv[index]} == "--smoke-leave") {
             return true;
@@ -202,8 +205,28 @@ int main(int argc, char** argv) {
     const bool lobby_smoke = has_arg(argc, argv, "--smoke-lobby");
     const bool leave_smoke = has_arg(argc, argv, "--smoke-leave");
     if (!menu.playing && network.role == NetRole::Solo &&
-        (!smoke || menu_smoke || lobby_smoke || leave_smoke))
+        (!smoke || menu_smoke || lobby_smoke || leave_smoke ||
+         !value_arg(argc, argv, "--smoke-menu-page").empty()))
         show_title_menu(menu);
+    const std::string_view menu_page = value_arg(argc, argv, "--smoke-menu-page");
+    if (!menu_page.empty()) {
+        constexpr struct { std::string_view name; MenuScreen screen; } pages[]{
+            {"main", MenuScreen::Main}, {"lobby", MenuScreen::Lobby},
+            {"rules", MenuScreen::Rules}, {"host", MenuScreen::Host},
+            {"join", MenuScreen::Join}, {"players", MenuScreen::Players},
+            {"settings", MenuScreen::Settings}, {"display", MenuScreen::Display},
+            {"audio", MenuScreen::Audio}, {"controls", MenuScreen::Controls},
+            {"profile", MenuScreen::ProfileEditor}, {"bindings", MenuScreen::Bindings},
+            {"detail", MenuScreen::BindDetail},
+            {"input", MenuScreen::InputOptions}, {"pause", MenuScreen::Pause},
+        };
+        for (const auto& target : pages)
+            if (menu_page == target.name) show_menu_screen(menu.front, target.screen);
+        if (!gubsy_get_binds_profiles(host).empty()) {
+            menu.front.selected_profile = gubsy_get_binds_profiles(host).front().id;
+            menu.front.profile_name = gubsy_get_binds_profiles(host).front().name;
+        }
+    }
     Game& opening_game = network.role != NetRole::Solo ? network.rollback.game : game;
     play_song(audio, opening_game.started ? 1 : 0);
     if (opening_game.started) {
@@ -231,23 +254,29 @@ int main(int argc, char** argv) {
         MenuInputState menu_input{};
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+            const bool editing_menu_text = menu.front_visible && menu.front.text_input_active;
+            const bool capturing_bind = menu.front_visible && menu.front.capturing_bind;
             gubsy_process_sdl_event(host, event);
-            process_menu_shell_event(menu, event, gubsy_get_frame(host));
+            if (process_menu_shell_event(menu, event, gubsy_get_frame(host))) continue;
             if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
                 running = false;
             }
             if (event.type == SDL_EVENT_KEY_DOWN) {
                 if (event.key.key == SDLK_ESCAPE) {
-                    if (menu.visible) menu_input.back = true;
+                    if (menu.visible && !capturing_bind) menu_input.back = true;
                     else if (menu.playing) open_game_menu(menu);
                     else running = false;
                 }
-                menu_input.up |= event.key.key == SDLK_UP || event.key.key == SDLK_W;
-                menu_input.down |= event.key.key == SDLK_DOWN || event.key.key == SDLK_S;
-                menu_input.left |= event.key.key == SDLK_LEFT || event.key.key == SDLK_A;
-                menu_input.right |= event.key.key == SDLK_RIGHT || event.key.key == SDLK_D;
+                menu_input.up |= event.key.key == SDLK_UP ||
+                                 (!editing_menu_text && event.key.key == SDLK_W);
+                menu_input.down |= event.key.key == SDLK_DOWN ||
+                                   (!editing_menu_text && event.key.key == SDLK_S);
+                menu_input.left |= event.key.key == SDLK_LEFT ||
+                                   (!editing_menu_text && event.key.key == SDLK_A);
+                menu_input.right |= event.key.key == SDLK_RIGHT ||
+                                    (!editing_menu_text && event.key.key == SDLK_D);
                 menu_input.select |= event.key.key == SDLK_RETURN ||
-                                     event.key.key == SDLK_SPACE;
+                                     (!editing_menu_text && event.key.key == SDLK_SPACE);
             }
             if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
                 const auto button = event.gbutton.button;
@@ -287,10 +316,11 @@ int main(int argc, char** argv) {
             }
         }
         gubsy_update_device_state(host);
+        if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())
+            apply_menu_action(menu, value_arg(argc, argv, "--smoke-menu-action"));
         if (menu_smoke) {
-            menu_input.select = frames == 1 || frames == 3;
-            menu_input.down = frames == 2;
-            menu_input.right = frames == 4;
+            menu_input.select = frames == 1 || frames == 3 || frames == 5;
+            menu_input.down = frames == 2 || frames == 4;
         }
         if (lobby_smoke || leave_smoke) {
             menu_input.select = frames == 1;
@@ -453,9 +483,13 @@ int main(int argc, char** argv) {
         (network.role != NetRole::Solo || menu.playing || !menu.visible ||
          gubsy_get_lobby_state(host).online);
     if (leave_smoke_failed) std::fprintf(stderr, "Gubsy menu did not leave the hosted run\n");
+    const bool page_smoke_failed = !menu_page.empty() &&
+        (!menu.front.compiled || !menu.front_visible || menu.quit_requested);
+    if (page_smoke_failed) std::fprintf(stderr, "GView menu page did not render\n");
     shutdown_audio(audio);
     unload_graphics(graphics);
     shutdown_menu_shell(menu);
     cleanup_gubsy_runtime(host);
-    return menu_smoke_failed || lobby_smoke_failed || leave_smoke_failed ? 1 : 0;
+    return menu_smoke_failed || lobby_smoke_failed || leave_smoke_failed ||
+           page_smoke_failed ? 1 : 0;
 }

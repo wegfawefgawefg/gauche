@@ -2,6 +2,9 @@
 #include "view.hpp"
 
 #include <gubsy/input/types.hpp>
+#include <gubsy/input/profile_settings.hpp>
+#include <gubsy/lobby/state.hpp>
+#include "src/engine_state.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -75,6 +78,18 @@ void default_binds(BindsProfile& profile) {
 
 int direction(bool negative, bool positive) {
     return negative ? -1 : (positive ? 1 : 0);
+}
+
+// What if a player changes controller tuning? Apply it before reducing analog
+// movement to the game's eight tile directions.
+ginput::Vec2 tuned_stick(ginput::Vec2 stick, const InputSettingsProfile* tuning) {
+    if (tuning == nullptr) return stick;
+    const float threshold = std::max(0.05F, tuning->stick_deadzone);
+    stick.x = std::abs(stick.x) < threshold ? 0.0F : stick.x * tuning->controller_sensitivity;
+    stick.y = std::abs(stick.y) < threshold ? 0.0F : stick.y * tuning->controller_sensitivity;
+    if (tuning->controller_invert_x) stick.x = -stick.x;
+    if (tuning->controller_invert_y) stick.y = -stick.y;
+    return stick;
 }
 
 bool has_bind(const BindsProfile& profile, GubsyButton button, Action action) {
@@ -157,12 +172,15 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
                        const GubsyFrame& frame, int owner, float zoom,
                        InputReaderState& reader) {
     Input input;
+    const InputSettingsProfile* tuning = gubsy_lobby_input_settings_profile(
+        gubsy_runtime_engine(runtime), 0);
     input.move.x = direction(down(runtime, Action::MoveLeft),
                              down(runtime, Action::MoveRight));
     input.move.y = direction(down(runtime, Action::MoveUp),
                              down(runtime, Action::MoveDown));
     if (input.move == Cell{}) {
-        const ginput::Vec2 stick = gubsy_lobby_player_axis_2d(runtime, 0, 0);
+        const ginput::Vec2 stick = tuned_stick(
+            gubsy_lobby_player_axis_2d(runtime, 0, 0), tuning);
         input.move.x = stick.x < -0.35F ? -1 : (stick.x > 0.35F ? 1 : 0);
         input.move.y = stick.y < -0.35F ? -1 : (stick.y > 0.35F ? 1 : 0);
     }
@@ -171,8 +189,11 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
     input.aim.y = direction(down(runtime, Action::AimUp),
                             down(runtime, Action::AimDown));
     input.use = input.aim != Cell{} || down(runtime, Action::Use) ||
-                gubsy_lobby_player_axis_1d_down(runtime, 0, 0, 0.35F);
-    const ginput::Vec2 aim_stick = gubsy_lobby_player_axis_2d(runtime, 0, 1);
+                gubsy_lobby_player_axis_1d_down(runtime, 0, 0,
+                    tuning == nullptr ? 0.35F :
+                    std::max(0.01F, tuning->trigger_threshold));
+    const ginput::Vec2 aim_stick = tuned_stick(
+        gubsy_lobby_player_axis_2d(runtime, 0, 1), tuning);
     const Cell analog_aim{aim_stick.x < -0.35F ? -1 : (aim_stick.x > 0.35F ? 1 : 0),
                           aim_stick.y < -0.35F ? -1 : (aim_stick.y > 0.35F ? 1 : 0)};
     if (analog_aim != Cell{}) input.aim = analog_aim;

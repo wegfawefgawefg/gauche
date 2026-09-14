@@ -1,158 +1,169 @@
 #include "front_page.hpp"
+#include "pages.hpp"
 #include "../graphics.hpp"
 
 #include <SDL3_image/SDL_image.h>
+#include <gubsy/input/binds_profile.hpp>
+#include "src/engine_state.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstdio>
 #include <string_view>
-#include <utility>
 
 namespace {
 
-// These recipe values come from the feature/gview-menu-integration stone theme.
-gview::PartPresentation stone_part(gview::PresentationState state, gview::Color tint) {
-    gview::PartPresentation part;
-    part.part = gview::WidgetPart::Frame;
-    part.state = state;
-    part.asset = "stone-panel";
-    part.image_mode = gview::ImageMode::NineSlice;
-    part.slice_margins = {41.5F, 41.5F, 41.5F, 41.5F};
-    part.slice_scale = 0.67F;
-    part.slice_modes = {gview::SliceTileMode::Repeat, gview::SliceTileMode::Repeat,
-                        gview::SliceTileMode::Repeat, gview::SliceTileMode::Repeat,
-                        gview::SliceTileMode::Repeat};
-    part.tint = tint;
-    part.draw_box_underlay = false;
-    return part;
-}
-
-gview::Theme stone_theme() {
-    gview::Theme theme;
-    theme.id = "gauche-stone";
-    gview::WidgetSkin buttons;
-    buttons.control = gview::ControlKind::Button;
-    buttons.parts = {
-        stone_part(gview::PresentationState::Normal, {205, 205, 200, 255}),
-        stone_part(gview::PresentationState::Hovered, {255, 230, 170, 255}),
-        stone_part(gview::PresentationState::Focused, {255, 211, 112, 255}),
-        stone_part(gview::PresentationState::Pressed, {255, 170, 52, 255}),
-    };
-    theme.widgets.push_back(std::move(buttons));
-    return theme;
-}
-
-glayout::GraphNode row(std::string id, float height) {
-    glayout::GraphNode node;
-    node.id = std::move(id);
-    node.size.width = {glayout::LengthKind::Fill, 1.0F};
-    node.size.height = {glayout::LengthKind::Pixels, height};
-    node.padding = {16.0F, 0.0F, 16.0F, 0.0F};
-    return node;
-}
-
-gview::View build_view(int width, int height) {
-    const float scale = std::clamp(std::min(static_cast<float>(width) / 1280.0F,
-                                              static_cast<float>(height) / 720.0F),
-                                   0.75F, 1.5F);
-    gview::View view;
-    view.id = view.label = "gauche-front";
-    view.active_theme = "gauche-stone";
-    view.themes.push_back(stone_theme());
-    view.layout.id = "gauche-front-layout";
-    view.layout.width = width;
-    view.layout.height = height;
-    glayout::GraphNode& root = view.layout.root;
-    root.id = "root";
-    root.container = glayout::ContainerKind::Stack;
-    root.size.width = root.size.height = {glayout::LengthKind::Fill, 1.0F};
-
-    glayout::GraphNode card;
-    card.id = "front-card";
-    card.container = glayout::ContainerKind::Column;
-    card.size.width = {glayout::LengthKind::Pixels, 520.0F * scale};
-    card.size.height = {glayout::LengthKind::Pixels, 385.0F * scale};
-    card.align = glayout::Align::Center;
-    card.gap = 9.0F * scale;
-    card.padding = {18.0F * scale, 10.0F * scale, 18.0F * scale, 10.0F * scale};
-    gview::NodeSpec card_spec;
-    card_spec.layout_id = "front-card";
-    card_spec.style.normal.fill = {10, 12, 11, 185};
-    card_spec.style.normal.border = {96, 83, 57, 230};
-    card_spec.style.normal.border_width = 1.0F;
-    view.nodes.push_back(std::move(card_spec));
-
-    glayout::GraphNode title = row("front-title", 100.0F * scale);
-    title.padding = {};
-    card.children.push_back(std::move(title));
-    gview::NodeSpec title_spec;
-    title_spec.layout_id = "front-title";
-    title_spec.content = gview::ContentKind::Text;
-    title_spec.text = "GAUCHE";
-    title_spec.text_style.size = 68.0F * scale;
-    title_spec.text_style.horizontal = gview::TextAlign::Center;
-    title_spec.text_style.vertical = gview::TextAlign::Center;
-    title_spec.style.normal.text = {235, 225, 195, 255};
-    view.nodes.push_back(std::move(title_spec));
-
-    struct Entry { const char* id; const char* label; const char* action; };
-    constexpr Entry entries[]{
-        {"front-play", "Play", "play"},
-        {"front-quick", "Quick Run", "quick"},
-        {"front-settings", "Settings", "settings"},
-        {"front-quit", "Quit", "quit"},
-    };
-    for (const Entry& entry : entries) {
-        card.children.push_back(row(entry.id, 51.0F * scale));
-        gview::NodeSpec spec;
-        spec.layout_id = entry.id;
-        spec.content = gview::ContentKind::Text;
-        spec.control = gview::ControlKind::Button;
-        spec.text = entry.label;
-        spec.action = entry.action;
-        spec.focus_group = "front-actions";
-        spec.focusable = true;
-        spec.text_style.size = 26.0F * scale;
-        spec.text_style.horizontal = gview::TextAlign::Center;
-        spec.text_style.vertical = gview::TextAlign::Center;
-        spec.style.normal.text = {225, 225, 215, 255};
-        spec.style.hovered.text = {255, 244, 192, 255};
-        spec.style.focused.text = {255, 235, 157, 255};
-        spec.style.pressed.text = {255, 245, 190, 255};
-        view.nodes.push_back(std::move(spec));
-    }
-    root.children.push_back(std::move(card));
-    view.focus_groups.push_back({"front-actions", "front-play", "front-card", true, true});
-    return view;
-}
+struct TextureAsset { const char* id; const char* path; };
+constexpr std::array<TextureAsset, 24> textures{{
+    {"ui-action-green", "ui/menu/theme/action-green.png"},
+    {"ui-action-green-dark", "ui/menu/theme/action-green-dark.png"},
+    {"ui-bar-dark", "ui/menu/theme/bar-dark.png"},
+    {"ui-button-light", "ui/menu/theme/button-light.png"},
+    {"ui-group-inner", "ui/menu/theme/group-inner.png"},
+    {"ui-parchment-ornate", "ui/menu/theme/parchment-ornate.png"},
+    {"ui-slider-track", "ui/menu/theme/controls/slider-track.png"},
+    {"ui-slider-fill", "ui/menu/theme/controls/slider-fill.png"},
+    {"ui-slider-thumb", "ui/menu/theme/controls/slider-knob.png"},
+    {"ui-toggle-off", "ui/menu/theme/controls/toggle-off.png"},
+    {"ui-toggle-on", "ui/menu/theme/controls/toggle-on.png"},
+    {"ui-scrollbar-track", "ui/menu/theme/controls/scrollbar-track.png"},
+    {"ui-scrollbar-thumb", "ui/menu/theme/controls/scrollbar-thumb.png"},
+    {"ui-stone-large-panel", "ui/menu/themes/splonks-stone/large-main-panel.png"},
+    {"ui-stone-select-down", "ui/menu/themes/splonks-stone/select-down.png"},
+    {"ui-stone-select-down-active", "ui/menu/themes/splonks-stone/select-down-active.png"},
+    {"ui-stone-toggle-off", "ui/menu/themes/splonks-stone/toggle-off.png"},
+    {"ui-stone-toggle-on", "ui/menu/themes/splonks-stone/toggle-on.png"},
+    {"ui-stone-frame", "ui/menu/themes/splonks-stone/plain-stone.png"},
+    {"ui-stone-normal-row", "ui/menu/themes/splonks-stone/normal-row.png"},
+    {"ui-stone-selected-row", "ui/menu/themes/splonks-stone/selected-row.png"},
+    {"ui-stone-outer-screen", "ui/menu/themes/splonks-stone/outer-screen-frame.png"},
+    {"ui-stone-modal", "ui/menu/themes/splonks-stone/modal-frame.png"},
+    {"ui-stone-toast", "ui/menu/themes/splonks-stone/toast-frame.png"},
+}};
 
 void nav(gview::InputFrame& frame, bool down, gview::NavAction action) {
     if (down) frame.navigation.push_back(action);
 }
 
+InputSettingsProfile* selected_tuning(FrontPage& page) {
+    if (page.backend == nullptr) return nullptr;
+    EngineState& engine = gubsy_runtime_engine(*page.backend);
+    const auto found = std::find_if(engine.input_settings_profiles.begin(),
+        engine.input_settings_profiles.end(), [&](const InputSettingsProfile& tuning) {
+            return tuning.id == page.selected_profile;
+        });
+    return found == engine.input_settings_profiles.end() ? nullptr : &*found;
+}
+
+bool capture_button(FrontPage& page, const SDL_Event& event) {
+    if (!page.capturing_bind || page.backend == nullptr) return false;
+    if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
+        page.capturing_bind = false;
+        page.toast = "Binding capture cancelled";
+        page.dirty = true;
+        return true;
+    }
+    ginput::EncodedControl encoded = 0;
+    if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat)
+        encoded = ginput::encode_button({ginput::DeviceKind::Keyboard,
+            ginput::any_device_id, static_cast<int>(event.key.scancode)});
+    else if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN)
+        encoded = ginput::encode_button({ginput::DeviceKind::Gamepad,
+            ginput::any_device_id, static_cast<int>(event.gbutton.button)});
+    else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+        encoded = ginput::encode_button({ginput::DeviceKind::Mouse,
+            ginput::any_device_id, static_cast<int>(SDL_BUTTON_MASK(event.button.button))});
+    else return false;
+    const BindsProfile* source = gubsy_find_binds_profile(*page.backend, page.selected_profile);
+    if (source != nullptr) {
+        BindsProfile edited = *source;
+        (void)ginput::add_button_bind(edited,
+            {encoded, page.selected_bind_action});
+        page.toast = gubsy_replace_binds_profile(*page.backend, edited) ?
+            "Binding saved" : "Could not save binding";
+    }
+    page.capturing_bind = false;
+    page.dirty = true;
+    return true;
+}
+
+std::string projection(const FrontPage& page, int death_policy) {
+    std::string result = std::to_string(static_cast<int>(page.screen)) + ":" +
+        std::to_string(death_policy) + ":" + page.toast + ":" +
+        std::to_string(page.selected_profile) + ":" +
+        std::to_string(static_cast<int>(page.selected_bind_type)) + ":" +
+        std::to_string(page.selected_bind_action) + ":" +
+        std::to_string(page.capturing_bind) + ":" +
+        std::to_string(page.master_volume) + ":" +
+        std::to_string(page.music_volume) + ":" +
+        std::to_string(page.sfx_volume) + ":" +
+        std::to_string(page.fullscreen) + ":" + std::to_string(page.vsync);
+    result += ":" + std::to_string(page.window_mode) + ":" +
+        std::to_string(page.render_resolution) + ":" +
+        std::to_string(page.window_resolution) + ":" +
+        std::to_string(page.frame_cap) + ":" + std::to_string(page.show_fps);
+    if (page.backend != nullptr) {
+        const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
+        result += ":" + std::to_string(lobby.online) + ":" +
+            std::to_string(lobby.is_host) + ":" + lobby.status_message + ":" +
+            lobby.last_error + ":" + std::to_string(lobby.game_members.size()) + ":" +
+            std::to_string(gubsy_get_binds_profiles(*page.backend).size());
+    }
+    return result;
+}
+
 } // namespace
 
-bool init_front_page(FrontPage& page, SDL_Renderer* renderer) {
+bool init_front_page(FrontPage& page, GubsyRuntime& backend, SDL_Renderer* renderer) {
     if (page.painter) return true;
+    page.backend = &backend;
     const auto root = asset_root();
     page.painter = std::make_unique<gview::Sdl3Renderer>(
         renderer, (root / "fonts" / "PixelOperator.ttf").string());
     if (!page.painter->ready()) return false;
-    page.stone = IMG_LoadTexture(renderer, (root / "ui" / "menu" / "stone-panel.png").string().c_str());
-    if (page.stone == nullptr) return false;
-    page.painter->register_texture("stone-panel", page.stone);
+    for (const TextureAsset& entry : textures) {
+        const std::string path = (root / entry.path).string();
+        SDL_Texture* texture = IMG_LoadTexture(renderer, path.c_str());
+        if (texture == nullptr) {
+            std::fprintf(stderr, "Gauche menu texture failed: %s: %s\n",
+                         path.c_str(), SDL_GetError());
+            return false;
+        }
+        (void)SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+        page.painter->register_texture(entry.id, texture);
+        page.textures.emplace(entry.id, texture);
+    }
     return true;
 }
 
 void shutdown_front_page(FrontPage& page) {
-    if (page.painter) page.painter->unregister_texture("stone-panel");
-    SDL_DestroyTexture(page.stone);
-    page.stone = nullptr;
+    if (page.text_input_active) {
+        const GubsyFrame frame = gubsy_get_frame(*page.backend);
+        if (frame.window) (void)SDL_StopTextInput(frame.window);
+        page.text_input_active = false;
+    }
+    for (auto& [id, texture] : page.textures) {
+        if (page.painter) page.painter->unregister_texture(id);
+        SDL_DestroyTexture(texture);
+    }
+    page.textures.clear();
     page.painter.reset();
 }
 
-void front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame& frame) {
-    if (frame.window == nullptr || frame.render_width <= 0 || frame.render_height <= 0) return;
+void show_menu_screen(FrontPage& page, MenuScreen screen) {
+    page.screen = screen;
+    page.toast.clear();
+    page.dirty = true;
+}
+
+bool front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame& frame) {
+    if (capture_button(page, event)) return true;
+    if (event.type == SDL_EVENT_TEXT_INPUT) page.input.text += event.text.text;
+    if (event.type == SDL_EVENT_KEY_DOWN &&
+        (event.key.key == SDLK_BACKSPACE || event.key.key == SDLK_DELETE))
+        page.input.text.push_back('\b');
+    if (frame.window == nullptr || frame.render_width <= 0 || frame.render_height <= 0)
+        return false;
     float mouse_x = 0.0F;
     float mouse_y = 0.0F;
     if (event.type == SDL_EVENT_MOUSE_MOTION) {
@@ -165,7 +176,10 @@ void front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame&
             page.input.pointer.pressed |= event.type == SDL_EVENT_MOUSE_BUTTON_DOWN;
             page.input.pointer.released |= event.type == SDL_EVENT_MOUSE_BUTTON_UP;
         }
-    } else return;
+    } else if (event.type == SDL_EVENT_MOUSE_WHEEL) {
+        page.input.pointer.scroll_y += event.wheel.y;
+        return false;
+    } else return false;
     int window_width = 0;
     int window_height = 0;
     SDL_GetWindowSize(frame.window, &window_width, &window_height);
@@ -173,49 +187,108 @@ void front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame&
                                      static_cast<float>(frame.render_width),
                                  static_cast<float>(window_height) /
                                      static_cast<float>(frame.render_height));
-    if (scale <= 0.0F) return;
+    if (scale <= 0.0F) return false;
     page.input.pointer.x = (mouse_x - (static_cast<float>(window_width) -
                            static_cast<float>(frame.render_width) * scale) * 0.5F) / scale;
     page.input.pointer.y = (mouse_y - (static_cast<float>(window_height) -
                            static_cast<float>(frame.render_height) * scale) * 0.5F) / scale;
+    return false;
 }
 
-FrontAction update_front_page(FrontPage& page, const MenuInputState& input,
-                              int width, int height) {
-    if (!page.painter) return FrontAction::None;
-    if (!page.compiled || width != page.width || height != page.height) {
-        const gview::CompileResult result = gview::compile_view(build_view(width, height));
+std::string update_front_page(FrontPage& page, const MenuInputState& input,
+                              int width, int height, int death_policy) {
+    if (!page.painter) return {};
+    const std::string view_key = projection(page, death_policy);
+    if (!page.compiled || page.dirty || width != page.width || height != page.height ||
+        view_key != page.projection) {
+        gview::CompileResult result = gview::compile_view(
+            build_menu_page(page, width, height, death_policy));
         if (!result.ok) {
-            std::fprintf(stderr, "Gauche GView front page compile failed: %s\n",
+            std::fprintf(stderr, "Gauche GView menu compile failed: %s\n",
                          result.diagnostics.empty() ? "unknown" :
                          result.diagnostics.front().message.c_str());
-            return FrontAction::None;
+            return {};
         }
         if (page.compiled) page.runtime.reconcile(std::move(result.view));
         else page.runtime.reset(std::move(result.view));
         page.width = width;
         page.height = height;
+        page.projection = view_key;
         page.compiled = true;
+        page.dirty = false;
     }
-    nav(page.input, input.up, gview::NavAction::Up);
-    nav(page.input, input.down, gview::NavAction::Down);
-    nav(page.input, input.left, gview::NavAction::Left);
-    nav(page.input, input.right, gview::NavAction::Right);
-    nav(page.input, input.select, gview::NavAction::Confirm);
+    if (!page.capturing_bind) {
+        nav(page.input, input.up, gview::NavAction::Up);
+        nav(page.input, input.down, gview::NavAction::Down);
+        nav(page.input, input.left, gview::NavAction::Left);
+        nav(page.input, input.right, gview::NavAction::Right);
+        nav(page.input, input.select, gview::NavAction::Confirm);
+    }
     gview::Host host;
+    host.read = [&page](std::string_view key) -> gview::Value {
+        if (key == "join-host") return page.join_host;
+        if (key == "join-port") return page.join_port;
+        if (key == "host-port") return page.host_port;
+        if (key == "profile-name") return page.profile_name;
+        if (const InputSettingsProfile* tuning = selected_tuning(page)) {
+            if (key == "input:controller-sensitivity")
+                return static_cast<double>(tuning->controller_sensitivity);
+            if (key == "input:stick-deadzone") return static_cast<double>(tuning->stick_deadzone);
+            if (key == "input:trigger-threshold")
+                return static_cast<double>(tuning->trigger_threshold);
+            if (key == "input:controller-invert-x") return tuning->controller_invert_x;
+            if (key == "input:controller-invert-y") return tuning->controller_invert_y;
+        }
+        return {};
+    };
+    host.write = [&page](std::string_view key, const gview::Value& value) {
+        const std::string* text = std::get_if<std::string>(&value);
+        if (text != nullptr) {
+            if (key == "join-host") page.join_host = *text;
+            if (key == "join-port") page.join_port = *text;
+            if (key == "host-port") page.host_port = *text;
+            if (key == "profile-name") page.profile_name = *text;
+            return;
+        }
+        InputSettingsProfile* tuning = selected_tuning(page);
+        if (tuning == nullptr) return;
+        if (const double* number = std::get_if<double>(&value)) {
+            const float level = static_cast<float>(*number);
+            if (key == "input:controller-sensitivity") tuning->controller_sensitivity = level;
+            if (key == "input:stick-deadzone") tuning->stick_deadzone = level;
+            if (key == "input:trigger-threshold") tuning->trigger_threshold = level;
+        }
+        if (const bool* enabled = std::get_if<bool>(&value)) {
+            if (key == "input:controller-invert-x") tuning->controller_invert_x = *enabled;
+            if (key == "input:controller-invert-y") tuning->controller_invert_y = *enabled;
+        }
+        (void)save_input_settings_profile(*tuning);
+    };
     host.action = [&page](std::string_view action, gview::NodeIndex) {
-        if (action == "play") page.action = FrontAction::Play;
-        if (action == "quick") page.action = FrontAction::QuickRun;
-        if (action == "settings") page.action = FrontAction::Settings;
-        if (action == "quit") page.action = FrontAction::Quit;
+        page.action = action;
     };
     glayout::ResolveInput resolution{};
     resolution.viewport = {0.0F, 0.0F, static_cast<float>(width),
                            static_cast<float>(height)};
     page.runtime.frame(resolution, page.input, host);
+    const float pointer_x = page.input.pointer.x;
+    const float pointer_y = page.input.pointer.y;
     page.input = {};
-    const FrontAction action = page.action;
-    page.action = FrontAction::None;
+    page.input.pointer.x = pointer_x;
+    page.input.pointer.y = pointer_y;
+    const auto& state = page.runtime.state();
+    const bool editing = std::any_of(state.begin(), state.end(),
+        [](const gview::NodeState& node) { return node.editing; });
+    if (editing != page.text_input_active) {
+        const GubsyFrame frame = gubsy_get_frame(*page.backend);
+        if (frame.window != nullptr) {
+            if (editing) (void)SDL_StartTextInput(frame.window);
+            else (void)SDL_StopTextInput(frame.window);
+        }
+        page.text_input_active = editing;
+    }
+    std::string action = std::move(page.action);
+    page.action.clear();
     return action;
 }
 

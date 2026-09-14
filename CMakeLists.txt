@@ -74,7 +74,9 @@ add_executable(gauche
     src/render.cpp src/ui/hud.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/interlude.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
-    src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp)
+    src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
+    src/menu/pages.cpp src/menu/view_builder.cpp src/menu/theme.cpp
+    src/menu/actions.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
 if(WIN32)
@@ -82,6 +84,7 @@ if(WIN32)
 endif()
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(gauche PRIVATE "${GAUCHE_GUBSY_DIR}")
 
 if(MSVC)
     target_compile_options(gauche PRIVATE /W4 /permissive-)
@@ -169,4 +172,9 @@ if(BUILD_TESTING)
     add_test(NAME menu_leave COMMAND gauche --smoke-leave --frames 14)
     set_tests_properties(menu_leave PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
+    foreach(page lobby settings controls profile bindings detail input)
+        add_test(NAME menu_${page} COMMAND gauche --smoke-menu-page ${page} --frames 2)
+        set_tests_properties(menu_${page} PROPERTIES ENVIRONMENT
+            "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
+    endforeach()
 endif()

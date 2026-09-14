@@ -12,7 +12,7 @@ The project uses SDL3 and the pinned Gubsy host. CMake fetches dependencies when
 
 Set `GAUCHE_PRESET=dev` for a debug build. `./scripts/build.sh` builds without launching. Both scripts work from any current directory; `run.sh` passes game arguments through unchanged.
 
-The GView title page uses the stone controls from the Splonks C++ menu workspace. Play opens Gubsy's lobby for solo play or direct hosting and joining; Quick Run starts alone. Settings opens Gubsy's display, audio, and control configuration. One player can join from each machine, up to four total. The default direct host port in the lobby is 35355. A CLI host can use a chosen port:
+The complete menu flow uses GView and the stone controls from the Splonks C++ menu workspace. Play opens Gauche's GView lobby for player setup, death policy, direct hosting, joining, and starting a run; Quick Run starts alone. Display, audio, control profiles, button and analog mappings, and input tuning also use GView screens backed by Gubsy's settings and input systems. One player can join from each machine, up to four total. The default direct host port in the lobby is 35355. A CLI host can use a chosen port:
 
 ```sh
 ./scripts/run.sh --host 39000 --death next-floor

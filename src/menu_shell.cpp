@@ -1,5 +1,6 @@
 #include "menu_shell.hpp"
 #include "input.hpp"
+#include "menu/actions.hpp"
 
 #include <gubsy/lobby/config.hpp>
 
@@ -40,43 +41,12 @@ void start_game(void* data, std::int32_t) {
     }
     menu.playing = true;
     menu.visible = false;
+    menu.front_visible = false;
     gubsy_clear_menu_stack(*menu.runtime);
 }
 
 void quit_game(void* data, std::int32_t) {
     static_cast<MenuShell*>(data)->quit_requested = true;
-}
-
-void resume_game(void* data, std::int32_t) {
-    auto& menu = *static_cast<MenuShell*>(data);
-    gubsy_close_in_game_menu(*menu.runtime);
-    menu.visible = false;
-}
-
-void restart_game(void* data, std::int32_t) {
-    auto& menu = *static_cast<MenuShell*>(data);
-    if (menu.network->role == NetRole::Client) return;
-    if (menu.network->role == NetRole::Host)
-        restart_host_run(*menu.network, SDL_GetTicks() + 1);
-    else {
-        start_run(*menu.solo_game, SDL_GetTicks() + 1);
-        menu.solo_game->run.death_policy = menu.death_policy;
-    }
-    gubsy_close_in_game_menu(*menu.runtime);
-    menu.visible = false;
-    menu.playing = true;
-}
-
-void back_to_title(void* data, std::int32_t) {
-    auto& menu = *static_cast<MenuShell*>(data);
-    if (gubsy_get_lobby_state(*menu.runtime).online) {
-        std::string message;
-        (void)gubsy_leave_lobby_room(*menu.runtime, message);
-    }
-    leave_network_game(*menu.network);
-    *menu.solo_game = {};
-    menu.playing = false;
-    show_title_menu(menu);
 }
 
 GubsyLobbyHostResult host_direct(void* data, const GubsyLobbyState&,
@@ -206,13 +176,6 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     main_commands.start_game = gubsy_register_menu_command(runtime, start_game, &menu);
     main_commands.quit = gubsy_register_menu_command(runtime, quit_game, &menu);
     gubsy_set_main_menu_commands(runtime, main_commands);
-    GubsyInGameMenuCommands game_commands;
-    game_commands.resume = gubsy_register_menu_command(runtime, resume_game, &menu);
-    game_commands.restart_run = gubsy_register_menu_command(runtime, restart_game, &menu);
-    game_commands.quit_to_main_menu =
-        gubsy_register_menu_command(runtime, back_to_title, &menu);
-    menu.game_commands = game_commands;
-    gubsy_set_in_game_menu_commands(runtime, game_commands);
     GubsyLobbyCommands lobby_commands;
     lobby_commands.host = host_direct;
     lobby_commands.host_user_data = &menu;
@@ -231,51 +194,27 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     provider.validate_remote = validate_remote_policy;
     provider.apply_remote = apply_remote_policy;
     gubsy_set_lobby_config_provider(runtime, provider);
+    initialize_menu_settings(menu);
 }
 
 void show_title_menu(MenuShell& menu) {
     gubsy_clear_menu_stack(*menu.runtime);
+    show_menu_screen(menu.front, MenuScreen::Main);
     menu.front_visible = true;
     menu.visible = true;
 }
 
 void open_game_menu(MenuShell& menu) {
     if (menu.visible || !menu.playing) return;
-    GubsyInGameMenuCommands commands = menu.game_commands;
-    if (menu.network->role == NetRole::Client) commands.restart_run = kMenuIdInvalid;
-    gubsy_set_in_game_menu_commands(*menu.runtime, commands);
-    menu.visible = gubsy_open_in_game_menu(*menu.runtime);
+    menu.front.allow_restart = menu.network->role != NetRole::Client;
+    show_menu_screen(menu.front, MenuScreen::Pause);
+    menu.front_visible = true;
+    menu.visible = true;
 }
 
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height) {
     sync_direct_members(menu);
-    if (menu.front_visible) {
-        gubsy_update_runtime(*menu.runtime, dt);
-        if (!init_front_page(menu.front, gubsy_get_frame(*menu.runtime).renderer)) {
-            menu.front_visible = false;
-            menu.visible = gubsy_show_main_menu(*menu.runtime);
-            return;
-        }
-        switch (update_front_page(menu.front, input, width, height)) {
-        case FrontAction::Play:
-            menu.front_visible = false;
-            menu.visible = gubsy_show_lobby_menu(*menu.runtime);
-            break;
-        case FrontAction::QuickRun:
-            menu.front_visible = false;
-            start_game(&menu, 0);
-            break;
-        case FrontAction::Settings:
-            menu.front_visible = false;
-            menu.visible = gubsy_show_main_menu(*menu.runtime);
-            if (menu.visible) (void)gubsy_push_menu_screen(*menu.runtime, MenuScreenID::SETTINGS);
-            break;
-        case FrontAction::Quit: menu.quit_requested = true; break;
-        case FrontAction::None: break;
-        }
-        return;
-    }
     if (menu.network->role == NetRole::Client && menu.network->ready && menu.visible) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*menu.runtime);
         if (lobby.direct_join_pending)
@@ -289,21 +228,30 @@ void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
         gubsy_fail_lobby_direct_join(*menu.runtime, "Host did not answer");
         leave_network_game(*menu.network);
     }
-    if (menu.visible) {
-        gubsy_set_menu_input(*menu.runtime, input);
-        gubsy_update_menu(*menu.runtime, dt, width, height);
-    } else gubsy_update_runtime(*menu.runtime, dt);
+    if (menu.front_visible) {
+        gubsy_update_runtime(*menu.runtime, dt);
+        if (!init_front_page(menu.front, *menu.runtime,
+                             gubsy_get_frame(*menu.runtime).renderer)) {
+            menu.quit_requested = true;
+            return;
+        }
+        if (input.back && !menu.front.capturing_bind &&
+            !menu.front.text_input_active) apply_menu_action(menu, "back");
+        else apply_menu_action(menu, update_front_page(menu.front, input, width, height,
+                                  policy_index(menu.death_policy)));
+        return;
+    }
+    gubsy_update_runtime(*menu.runtime, dt);
 }
 
-void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int height) {
+void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int) {
     if (menu.front_visible) render_front_page(menu.front);
-    else if (menu.visible) gubsy_render_menu(*menu.runtime, renderer, width, height);
     gubsy_render_alerts(*menu.runtime, renderer, width);
 }
 
-void process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
+bool process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
                               const GubsyFrame& frame) {
-    if (menu.front_visible) front_page_event(menu.front, event, frame);
+    return menu.front_visible && front_page_event(menu.front, event, frame);
 }
 
 void shutdown_menu_shell(MenuShell& menu) {

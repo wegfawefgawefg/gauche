@@ -127,6 +127,19 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                 target.durability, target.max_durability);
         }
     }
+    if (item.kind == ItemKind::HerbBag)
+        std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal,
+            static_cast<double>(pattern.heal) / 3);
+    if (item.kind == ItemKind::BitterRoot) {
+        if (player.health <= 3) std::snprintf(line, sizeof(line), "NEEDS MORE THAN 3 HP");
+        else std::snprintf(line, sizeof(line), "HP %d -> %d | GUARD 10s", player.health, player.health - 3);
+    }
+    if (item.kind == ItemKind::Chili) {
+        Entity faster = player;
+        faster.vitals.haste = 240;
+        std::snprintf(line, sizeof(line), "STEP %d -> %d TICKS", movement_beat(player, player.move_interval),
+            movement_beat(faster, faster.move_interval));
+    }
     text(renderer, x + 10.0F, y + 96.0F, line);
     std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
                   static_cast<double>(item.cooldown) / 60.0,

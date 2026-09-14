@@ -4,7 +4,7 @@
 
 bool scavenger_food(ItemKind kind) {
     return kind == ItemKind::RawMeat || kind == ItemKind::CookedMeat ||
-        kind == ItemKind::Egg || kind == ItemKind::FriedEgg;
+        kind == ItemKind::Egg || kind == ItemKind::FriedEgg || kind == ItemKind::FungalBread;
 }
 
 Handle find_scavenge(const Game& game, int slot, bool food_only, int radius) {

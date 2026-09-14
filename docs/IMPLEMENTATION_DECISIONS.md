@@ -367,3 +367,33 @@ error relative to bilinear interpolation was 0.09864; subdivision bounds that
 error to 0.00617. Canopy-on/off world captures retain the patterned patches with
 a softer interior gradient. Strict game/render builds pass. No live performance
 or playtest claim; each drawn tile now submits 25 vertices and 32 triangles.
+
+
+## Forest remedies and temporary benefits
+
+Five new finds bring the regional item count to 27. Herb bags hold four uses;
+each heals 18 HP over six seconds without stacking active regeneration. Splints
+hold two uses, remove stun and prevent more for three seconds. Bitter root stacks
+to five, costs three HP without allowing suicide, wakes the user and prevents
+sleep for ten seconds. These two cures can be selected/used while disabled;
+other actions still wait until the following tick.
+
+Chili stacks to three and doubles movement recovery for four seconds, followed
+by six burn damage over 1.5 seconds unless water quenches it. Attack cooldowns
+are unchanged. The camera guide uses the actual accelerated movement beat;
+bodies and footprints still use their exact cells. Fungal bread stacks to four,
+heals 25 HP immediately and induces two seconds of sleep; bitter root prevents
+that sleep. Crows can steal and eat the bread, including its sleep consequence.
+Restorative attributes affect healing amounts. Failed uses consume nothing.
+
+New compact status fields store regeneration, sleep/stun resistance and chili
+time separately from AI counters. HUD timers explain each benefit; comparison
+cards show healing duration, root HP cost and chili movement before/after.
+Temporary effects clear on death and floor transition. Snapshot 20 and gameplay
+compatibility CC include all fields in serialization, validation and hashing.
+
+Room/reward/shop pools include the remedies; bats and worm heads now drop bitter
+root. Healing room budgets choose actual healing supplies; splints use equipment
+budgets. Five minimalist sprites and five distinct eating/binding sounds include
+offline Python sources. Strict game/render builds and static inventory/root/
+status captures pass. No live playtest or new gameplay test suite was run.

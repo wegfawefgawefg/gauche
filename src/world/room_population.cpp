@@ -150,7 +150,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
     case RoomRole::Workshop: {
-        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws};
+        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws, ItemKind::Splint};
         supply(game, room, tools[random_u32(game) % std::size(tools)], 1, budget.equipment);
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
@@ -161,7 +161,11 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
             ItemKind::SmokePot, ItemKind::HoneyPot};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
-        supply(game, room, ItemKind::Bandage, 2, budget.healing);
+        {
+            constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
+            const ItemKind remedy = healing[random_u32(game) % std::size(healing)];
+            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing);
+        }
         break;
     }
     case RoomRole::Brook:
@@ -170,7 +174,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         break;
     case RoomRole::Thicket: {
         constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar,
-            ItemKind::SeedBag, ItemKind::LanternSeed};
+            ItemKind::SeedBag, ItemKind::LanternSeed, ItemKind::BitterRoot, ItemKind::Chili};
         supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment);
         break;
     }
@@ -179,7 +183,11 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         break;
     case RoomRole::Orchard: case RoomRole::Clearing:
         supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::ThrowingRock : ItemKind::Rake, 1, budget.equipment);
-        supply(game, room, ItemKind::Bandage, 2, budget.healing);
+        {
+            constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
+            const ItemKind remedy = healing[random_u32(game) % std::size(healing)];
+            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing);
+        }
         break;
     default:
         if (random_u32(game) % 3 == 0) supply(game, room, ItemKind::Ammo, 1, budget.ammunition);

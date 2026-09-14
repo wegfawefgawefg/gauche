@@ -39,7 +39,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         break;
     case EntityKind::BurrowWorm:
         if (enemy.label_a == 0 && random_u32(game) % 5 == 0)
-            place_ground_item(game, enemy.cell, ItemKind::RawMeat);
+            place_ground_item(game, enemy.cell, ItemKind::BitterRoot);
         break;
     case EntityKind::WaspNest:
         if (random_u32(game) % 100 < 40) place_ground_item(game, enemy.cell, ItemKind::HoneyPot);
@@ -53,6 +53,9 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         break;
     case EntityKind::Chicken: case EntityKind::Bunny:
         if (random_u32(game) % 10 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
+        break;
+    case EntityKind::Bat:
+        if (random_u32(game) % 10 == 0) place_ground_item(game, enemy.cell, ItemKind::BitterRoot);
         break;
     case EntityKind::Mosquito:
         if (random_u32(game) % 10 == 0) place_ground_item(game, enemy.cell, ItemKind::WaterFlask);

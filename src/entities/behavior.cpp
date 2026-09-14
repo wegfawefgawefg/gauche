@@ -88,7 +88,7 @@ void bite(Game& game, int slot, int damage, int range) {
         if (enemy.kind == EntityKind::FrostBat)
             target.freeze_ticks = std::max(target.freeze_ticks, 90);
         if (enemy.kind == EntityKind::Bear)
-            target.stun_ticks = std::max(target.stun_ticks, 20);
+            apply_stun(target, 20);
     }
     enemy.attack_wait = enemy.attack_interval;
     emit_sound(game, SoundId::ZombieScratch1, enemy.cell);

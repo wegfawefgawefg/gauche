@@ -2,6 +2,9 @@
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "scavenging.hpp"
+#include "../item_pattern.hpp"
+
+#include <algorithm>
 
 namespace {
 
@@ -72,9 +75,13 @@ void step_carrion_crow(Game& game, int slot) {
         crow.label_a = 2;
         if (crow.cell != crow.point_a) { pursue(game, slot, crow.point_a); crow.timer_a = 180; }
         else if (crow.timer_a == 0) {
+            const Item& meal = *crow.inventory.held();
+            const bool sleepy = meal.kind == ItemKind::FungalBread;
+            crow.health = std::min(crow.max_health, crow.health + item_pattern(meal).heal);
+            if (sleepy) apply_sleep(crow, 120);
             *crow.inventory.held() = {};
             crow.label_a = 0; crow.timer_a = 90;
-            emit_sound(game, SoundId::MeatMunch, crow.cell);
+            emit_sound(game, sleepy ? SoundId::BreadMunch : SoundId::MeatMunch, crow.cell);
         }
         return;
     }

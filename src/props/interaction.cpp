@@ -46,7 +46,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
         for (Entity& actor : game.entities)
             if (actor.health > 0 && actor.move_interval > 0 && !actor.hard_blocker &&
                 distance(actor.cell, cell) <= 1)
-                actor.sleep_ticks = std::max(actor.sleep_ticks, 75);
+                apply_sleep(actor, 75);
     }
     if (prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::ClayPot) drop_contents(game, cell, prop.kind);

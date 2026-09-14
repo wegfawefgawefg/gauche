@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/status/effects.cpp src/items/remedies.cpp
     src/items/woodland_tools.cpp src/props/growth.cpp
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp

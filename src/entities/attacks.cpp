@@ -107,7 +107,7 @@ void resolve_enemy_attack(Game& game, int slot, int damage, SoundId sound, int s
             if (target_slot == slot || target.health <= 0 || target.cell != cell) continue;
             if (damage > 0) damage_entity(game, target_slot, damage, enemy.cell);
             if (sleep > 0 && target.health > 0 && target.impassable && !target.hard_blocker)
-                target.sleep_ticks = std::max(target.sleep_ticks, sleep);
+                apply_sleep(target, sleep);
         }
     }
 }

@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "surfaces/interaction.hpp"
 #include "items/action.hpp"
+#include "items/remedies.hpp"
 #include "entities/dispatch.hpp"
 #include "props/growth.hpp"
 
@@ -44,8 +45,11 @@ void step_players(Game& game, const std::array<Input, 4>& inputs) {
         const Handle handle = game.players[owner];
         Entity* player = get_entity(game, handle);
         if (player == nullptr) continue;
-        if (player->health <= 0 || !game.run.online[owner] ||
-            player->sleep_ticks > 0 || player->stun_ticks > 0) { cancel_item_action(*player); continue; }
+        if (player->health <= 0 || !game.run.online[owner]) { cancel_item_action(*player); continue; }
+        if (player->sleep_ticks > 0 || player->stun_ticks > 0) {
+            use_disabled_remedy(game, handle.slot, inputs[owner]);
+            continue;
+        }
         if (game.run.pending_count[owner] > 0) {
             cancel_item_action(*player);
             if (inputs[owner].drop) {

@@ -24,7 +24,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         SoundId::WoodCrack : entity.kind == EntityKind::RootTurret || entity.kind == EntityKind::BrambleGuard ?
         SoundId::WoodCrack : entity.kind == EntityKind::ThornSnail ?
         SoundId::ShellKnock : SoundId::AnimalCrush1, entity.cell);
-    if (entity.health == 0) drop_enemy_loot(game, entity);
+    if (entity.health == 0) { entity.vitals = {}; drop_enemy_loot(game, entity); }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;

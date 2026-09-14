@@ -25,15 +25,26 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
     const int strong = static_cast<int>((game.tick + static_cast<std::uint64_t>(player.burn_ticks)) / 30 - game.tick / 30) * 4;
     const int per_second = (player.scorch_ticks > 0 ? 4 : 0) + (player.burn_ticks > 0 ? 8 : 0);
     std::snprintf(burning, sizeof(burning), "%d HP/S NOW | %d DMG LEFT", per_second, weak + strong);
+    char healing[64], speed[64];
+    const int healing_ticks = player.vitals.healing_left == 0 ? 0 :
+        (player.vitals.healing_left - 1) * 20 + player.vitals.healing_wait;
+    std::snprintf(healing, sizeof(healing), "3 HP/S | UP TO %d HP LEFT", player.vitals.healing_left);
+    std::snprintf(speed, sizeof(speed), "STEP %d TICKS | BURN AFTER", movement_beat(player, player.move_interval));
     const std::array rows{
         StatusRow{"BURNING", std::max(player.scorch_ticks, player.burn_ticks),
                   {233, 150, 76, 255}, burning, Sprite::FlameA},
         StatusRow{"ASLEEP", player.sleep_ticks, {184, 164, 224, 255},
-                  "NO ACTIONS | DAMAGE WAKES", Sprite::StatusSleep},
+                  "NO ACTIONS | DAMAGE/ROOT WAKES", Sprite::StatusSleep},
         StatusRow{"STUNNED", player.stun_ticks, {231, 198, 91, 255},
-                  "NO MOVEMENT OR ACTIONS", Sprite::StatusStun},
+                  "NO ACTIONS | SPLINT CURES", Sprite::StatusStun},
         StatusRow{"CHILLED", player.freeze_ticks, {121, 191, 230, 255},
                   "STEP RECOVERY HALF SPEED", Sprite::StatusChill},
+        StatusRow{"REGENERATING", healing_ticks, {159, 200, 118, 255}, healing, Sprite::HerbBag},
+        StatusRow{"WAKEFUL", player.vitals.sleep_guard, {190, 159, 113, 255},
+                  "RESISTS SLEEP", Sprite::BitterRoot},
+        StatusRow{"BRACED", player.vitals.stun_guard, {210, 192, 137, 255},
+                  "RESISTS STUN", Sprite::Splint},
+        StatusRow{"CHILI RUSH", player.vitals.haste, {229, 126, 83, 255}, speed, Sprite::Chili},
     };
     for (const StatusRow& row : rows) {
         if (row.ticks <= 0) continue;

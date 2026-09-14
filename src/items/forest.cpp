@@ -1,6 +1,7 @@
 #include "catalog.hpp"
 #include "materials.hpp"
 #include "woodland_tools.hpp"
+#include "remedies.hpp"
 
 namespace {
 
@@ -33,6 +34,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* remedy = forest_remedy(kind)) return remedy;
     if (const RegionalItem* tool = woodland_tool(kind)) return tool;
     if (const RegionalItem* food = forest_food_item(kind)) return food;
     if (const RegionalItem* material = forest_material_item(kind)) return material;

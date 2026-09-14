@@ -32,7 +32,7 @@ void step_entity_timers(Game& game, int slot) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None) return;
     if (entity.freeze_ticks == 0 || game.tick % 2 == 0)
-        entity.move_wait = std::max(0, entity.move_wait - 1);
+        entity.move_wait = std::max(0, entity.move_wait - movement_recovery_rate(entity));
     entity.timer_a = std::max(0, entity.timer_a - 1);
     entity.timer_b = std::max(0, entity.timer_b - 1);
     entity.attack_wait = std::max(0, entity.attack_wait - 1);
@@ -40,6 +40,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.use_flash = std::max(0, entity.use_flash - 1);
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
+    step_vital_effects(game, slot);
     contact_surface(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
@@ -76,6 +77,8 @@ void step_entity_timers(Game& game, int slot) {
                     game.run.online[static_cast<std::size_t>(entity.owner)];
                 entity.sprite = Sprite::Player;
                 entity.scorch_ticks = entity.burn_ticks = 0;
+                entity.sleep_ticks = entity.stun_ticks = entity.freeze_ticks = 0;
+                entity.vitals = {};
             } else entity.spawn_wait = 1;
         }
     }

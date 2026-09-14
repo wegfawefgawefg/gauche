@@ -2,6 +2,7 @@
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/woodland_tools.hpp"
+#include "items/remedies.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
 #include "item_attribute.hpp"
@@ -65,6 +66,11 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HerbBag: case ItemKind::Splint: case ItemKind::BitterRoot:
+    case ItemKind::Chili: case ItemKind::FungalBread:
+        used = use_remedy(game, user_slot);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::ResinGlue: case ItemKind::SeedBag: case ItemKind::LanternSeed:
         used = use_woodland_tool(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -140,8 +146,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             const int victim = entity_at(game, target, true);
             if (victim >= 0 && victim != user_slot) {
                 Entity& sleeper = game.entities[static_cast<std::size_t>(victim)];
-                sleeper.sleep_ticks = std::max(sleeper.sleep_ticks, 180);
-                used = true;
+                used = apply_sleep(sleeper, 180);
                 cooldown = 30;
             }
         }

@@ -84,7 +84,7 @@ void step_traps(Game& game) {
             const int before = caught.health;
             damage_entity(game, victim, 100, cell);
             if (caught.health > 0 && caught.health < before)
-                caught.stun_ticks = std::max(caught.stun_ticks, 90);
+                apply_stun(caught, 90);
             emit_sound(game, SoundId::HitBlock1, cell);
         }
     }

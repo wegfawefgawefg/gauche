@@ -5,6 +5,7 @@
 #include "props/catalog.hpp"
 #include "surfaces/types.hpp"
 #include "lighting/emitter.hpp"
+#include "status/effects.hpp"
 
 #include <array>
 #include <cstdint>
@@ -86,6 +87,7 @@ enum class ItemKind : std::uint8_t {
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
+    HerbBag, Splint, BitterRoot, Chili, FungalBread,
     Count,
 };
 
@@ -175,6 +177,7 @@ struct Entity {
     int freeze_ticks = 0;
     int sleep_ticks = 0;
     int stun_ticks = 0;
+    VitalEffects vitals{};
     int script_tick = 0;
     std::uint32_t artifacts = 0;
     int train_cars_left = 0;

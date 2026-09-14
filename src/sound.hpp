@@ -27,6 +27,7 @@ enum class SoundId : std::size_t {
     GoblinHiss, GoblinChuckle, ScavengeTake, CrowCall, CrowRattle, CrowSnatch,
     WormWarning, WormBite, WormBurrow, WormSplit,
     ClawScratch, ResinRepair, SeedPlant, CoverGrow, LanternPlant,
+    HerbsChew, SplintBind, RootChew, ChiliBite, BreadMunch,
     Count,
 };
 
@@ -51,4 +52,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "goblin_hiss", "goblin_chuckle", "scavenge_take", "crow_call", "crow_rattle", "crow_snatch",
     "worm_warning", "worm_bite", "worm_burrow", "worm_split",
     "claw_scratch", "resin_repair", "seed_plant", "cover_grow", "lantern_plant",
+    "herbs_chew", "splint_bind", "root_chew", "chili_bite", "bread_munch",
 };

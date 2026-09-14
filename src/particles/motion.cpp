@@ -12,8 +12,7 @@ ViewCamera travel_center(EntityPose& pose, const Entity& entity) {
     // STRIDE PAIRS: Average two movement beats so right/up alternation describes
     // a diagonal camera path. A spring alone still traces a softened staircase.
     if (pose.cell != entity.cell)
-        pose.camera_stride = std::clamp(std::max(entity.move_interval, entity.move_wait) *
-            (entity.freeze_ticks > 0 ? 2 : 1), 1, samples / 2);
+        pose.camera_stride = std::clamp(movement_beat(entity, std::max(entity.move_interval, entity.move_wait)), 1, samples / 2);
     const int window = std::clamp(pose.camera_stride * 2, 2, samples);
     ViewCamera center{};
     for (int age = 0; age < window; ++age) {
@@ -46,7 +45,7 @@ void step_camera_guide(EntityPose& pose, const Entity& entity, bool same) {
         pose.camera_velocity = {};
         pose.camera_samples.fill(ViewCamera{entity.cell});
         pose.camera_sample_index = 0;
-        pose.camera_stride = std::max(1, entity.move_interval);
+        pose.camera_stride = std::max(1, movement_beat(entity, entity.move_interval));
         pose.camera_guide_ready = true;
         return;
     }

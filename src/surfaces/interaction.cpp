@@ -73,7 +73,7 @@ void contact_surface(Game& game, int slot) {
         }
     }
     if (tile->surface.sleep_ticks > 0 && game.tick % 30 == 0 && actor.kind != EntityKind::Ember)
-        actor.sleep_ticks = std::max(actor.sleep_ticks, 90);
+        apply_sleep(actor, 90);
 }
 
 int surface_step_delay(const Tile& tile) {

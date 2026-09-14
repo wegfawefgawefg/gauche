@@ -40,7 +40,8 @@ Reward random_reward(Game& game, int category) {
             ItemKind::Rake, ItemKind::FlintKnife, ItemKind::ThrowingRock, ItemKind::Torch,
             ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask,
             ItemKind::SmokePot, ItemKind::MushroomSpores, ItemKind::HoneyPot, ItemKind::DiggingClaws,
-            ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed};
+            ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
+            ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread};
         const ItemKind kind = finds[random_u32(game) % std::size(finds)];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::ThrowingRock ? 3 : 1, rare_attribute(game, kind)};
@@ -263,7 +264,8 @@ void advance_run(Game& game) {
                     ItemKind::HuntingSpear, ItemKind::FlintKnife, ItemKind::Torch, ItemKind::Lighter,
                     ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask, ItemKind::SmokePot,
                     ItemKind::HoneyPot, ItemKind::MushroomSpores, ItemKind::DiggingClaws,
-                    ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed};
+                    ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
+                    ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread};
                 game.run.shop_stock[1] = tools[random_u32(game) % std::size(tools)];
                 game.run.shop_stock[2] = random_u32(game) % 2 == 0 ?
                     ItemKind::Crossbow : ItemKind::Blunderbuss;

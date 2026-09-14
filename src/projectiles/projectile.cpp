@@ -8,13 +8,15 @@
 #include "../items/mixtures.hpp"
 #include "../items/materials.hpp"
 #include "../item_pattern.hpp"
+#include "../combat/parry.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
 
 // SLOTS: label_a = kind, label_b = blast radius/arrow piercing, counter_a = range left,
 // counter_b = damage, timer_a = fuse/life, timer_b = tile travel. point_a = source,
-// entity_a = owner, ground_item = immutable weapon spec, attack_interval = total range.
+// entity_a = current owner, ground_item = weapon spec, attack_interval = total range.
+// timer_c = hard lifetime for reflecting arrow/rocket legs; never refreshed on a parry.
 void init_projectile(Entity& entity) {
     entity.health = entity.max_health = 1;
     entity.sprite = Sprite::Arrow;
@@ -47,6 +49,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     shot->attack_interval = shot->counter_a;
     shot->timer_b = projectile_step_ticks(*shot);
     shot->timer_a = bomb ? bomb_fuse_ticks : shot->counter_a * shot->timer_b + 3;
+    if (!bomb && !flask) shot->timer_c = shot->timer_a * 4;
     shot->point_a = owner.cell;
     shot->entity_a = {owner_slot, owner.generation};
     shot->facing = direction;
@@ -132,6 +135,10 @@ void step_projectile(Game& game, int slot) {
         const int victim = entity_at(game, next, true);
         const bool owner = victim == shot.entity_a.slot && victim >= 0 &&
             game.entities[static_cast<std::size_t>(victim)].generation == shot.entity_a.generation;
+        if (!blocked && victim >= 0 && !owner && parry_ranged_hit(game, victim, shot.facing)) {
+            reflect_projectile(shot, game.entities[static_cast<std::size_t>(victim)], victim);
+            return;
+        }
         if (blocked || (victim >= 0 && !owner) || shot.counter_a <= 1) {
             detonate_projectile(game, slot, next);
             return;
@@ -165,6 +172,10 @@ void step_projectile(Game& game, int slot) {
         const Entity& victim = game.entities[static_cast<std::size_t>(victim_slot)];
         if (victim_slot == slot || victim.cell != next || !victim.impassable || victim.health <= 0 ||
             (victim_slot == shot.entity_a.slot && victim.generation == shot.entity_a.generation)) continue;
+        if (parry_ranged_hit(game, victim_slot, shot.facing)) {
+            reflect_projectile(shot, victim, victim_slot);
+            return;
+        }
         damage_entity(game, victim_slot, shot.counter_b, next - shot.facing);
         emit_sound(game, SoundId::ArrowImpact, next);
         if (shot.label_b == 0) { remove_entity(game, {slot, shot.generation}); return; }

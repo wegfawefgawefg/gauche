@@ -100,5 +100,8 @@ void step_bramble_guard(Game& game, int slot) {
         if (const auto cell = screen_cell(game, guard, *ally, threat)) pursue(game, slot, *cell);
     } else if (distance(guard.cell, guard.point_a) > 1) pursue(game, slot, guard.point_a);
     guard.facing = cardinal_toward(guard.cell, threat, guard.facing);
-    if (guard.inventory.held()->kind == ItemKind::Buckler) guard.block_ticks = 2;
+    if (guard.inventory.held()->kind == ItemKind::Buckler) {
+        guard.guard_slot = guard.inventory.selected;
+        guard.block_ticks = 2;
+    }
 }

@@ -1,3 +1,4 @@
+#include "combat/parry.hpp"
 #include "render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
@@ -272,7 +273,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const double angle = std::atan2(static_cast<double>(held_facing.y),
                                             static_cast<double>(held_facing.x)) *
                                  180.0 / 3.141592653589793;
-            const Sprite held_sprite = held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&
+            const Sprite held_sprite = parry_active(entity) ? Sprite::PanReady : held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&
                 entity.counter_a > 0 ? Sprite::BowDrawn : item_sprite(*held);
             SDL_Texture* held_texture = texture_for(graphics, held_sprite);
             SDL_SetTextureColorModFloat(held_texture, brightness.red,

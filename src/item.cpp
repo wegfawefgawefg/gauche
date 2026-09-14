@@ -16,6 +16,7 @@
 #include "items/firearms.hpp"
 #include "item_attribute.hpp"
 #include "combat/shove.hpp"
+#include "combat/parry.hpp"
 #include "entities/dispatch.hpp"
 #include "entities/behavior.hpp"
 #include "item_pattern.hpp"
@@ -159,7 +160,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = get_entity(game, rail) != nullptr;
         break;
     }
+    case ItemKind::ReflectingPan:
+        user.guard_slot = user.inventory.selected;
+        user.block_ticks = parry_ticks;
+        used = true;
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::ShieldLantern: case ItemKind::Buckler:
+        user.guard_slot = user.inventory.selected;
         user.block_ticks = 15;
         shove_in_front(game, user_slot, direction);
         used = true;

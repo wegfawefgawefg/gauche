@@ -16,6 +16,7 @@ inline void arrange_shields(Game& game, Cosmetics& cosmetics, Entity& player, bo
     player.inventory.slots[1].durability = 11;
     player.inventory.selected = 1;
     player.block_ticks = 12;
+    player.guard_slot = player.inventory.selected;
     if (!world) return;
     // Isolate the two real item lights so their footprint can be inspected.
     player.light = {};

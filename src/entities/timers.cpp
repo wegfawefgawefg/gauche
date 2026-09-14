@@ -38,7 +38,8 @@ void step_entity_timers(Game& game, int slot) {
     entity.timer_c = std::max(0, entity.timer_c - 1);
     if (entity.timer_c == 0) { entity.label_c = 0; entity.point_c = {}; }
     entity.attack_wait = std::max(0, entity.attack_wait - 1);
-    entity.block_ticks = std::max(0, entity.block_ticks - 1);
+    entity.block_ticks = entity.guard_slot == entity.inventory.selected ?
+        std::max(0, entity.block_ticks - 1) : 0;
     entity.use_flash = std::max(0, entity.use_flash - 1);
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 

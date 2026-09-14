@@ -1,5 +1,6 @@
 #include "recoverable.hpp"
 #include "../item_pattern.hpp"
+#include "../combat/parry.hpp"
 #include "../props/interaction.hpp"
 #include "../world/ground_items.hpp"
 
@@ -12,7 +13,7 @@ void forget_hits(Game& game, Handle shot) {
 }
 
 Item* reservation(Game& game, const Entity& shot, Handle handle) {
-    Entity* owner = get_entity(game, shot.entity_a);
+    Entity* owner = get_entity(game, shot.entity_b);
     if (owner != nullptr)
         for (Item& item : owner->inventory.slots)
             if (item.flight == handle) return &item;
@@ -39,7 +40,7 @@ void land(Game& game, int slot) {
 bool catch_boomerang(Game& game, int slot) {
     const Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     const Handle handle{slot, shot.generation};
-    const Entity* owner = get_entity(game, shot.entity_a);
+    const Entity* owner = get_entity(game, shot.entity_b);
     if (owner == nullptr || owner->health <= 0 || owner->cell != shot.cell) return false;
     Item* held = reservation(game, shot, handle);
     if (held == nullptr) { land(game, slot); return true; }
@@ -55,7 +56,7 @@ bool catch_boomerang(Game& game, int slot) {
 
 void turn_back(Game& game, int slot) {
     Entity& shot = game.entities[static_cast<std::size_t>(slot)];
-    const Entity* owner = get_entity(game, shot.entity_a);
+    const Entity* owner = get_entity(game, shot.entity_b);
     if (owner == nullptr || owner->health <= 0) { land(game, slot); return; }
     shot.label_b = 1;
     shot.counter_a = shot.attack_interval * 2 + 8;
@@ -74,7 +75,8 @@ bool first_contact(Game& game, Handle shot, Handle victim) {
 
 } // namespace
 
-// SLOTS: label_b outgoing/returning; counter_a range; counter_b damage; entity_a owner.
+// SLOTS: label_b outgoing/returning/parried (0/1/2); counter_a range, counter_b damage.
+// entity_a current attacker; entity_b original reservation owner; timer_c hard flight deadline.
 // Copied item owns the physical object; a returning weapon leaves a handle reservation.
 bool launch_recoverable(Game& game, int owner_slot, Item& item, Cell direction) {
     Entity& owner = game.entities[static_cast<std::size_t>(owner_slot)];
@@ -88,7 +90,7 @@ bool launch_recoverable(Game& game, int owner_slot, Item& item, Cell direction) 
     shot->counter_b = pattern.damage;
     shot->counter_c = pattern.piercing || has_artifact(owner, ArtifactKind::AllPiercing) ? 1 : 0;
     shot->point_a = owner.cell;
-    shot->entity_a = {owner_slot, owner.generation};
+    shot->entity_a = shot->entity_b = {owner_slot, owner.generation};
     shot->facing = direction;
     shot->ground_item = item;
     shot->ground_item.count = 1;
@@ -97,6 +99,7 @@ bool launch_recoverable(Game& game, int owner_slot, Item& item, Cell direction) 
     shot->sprite = item_sprite(item);
     shot->timer_b = boomerang ? 3 : 4;
     shot->timer_a = (pattern.maximum * 3 + 10) * shot->timer_b;
+    shot->timer_c = shot->timer_a;
     if (boomerang) item.flight = handle;
     return true;
 }
@@ -104,7 +107,7 @@ bool launch_recoverable(Game& game, int owner_slot, Item& item, Cell direction) 
 void step_recoverable(Game& game, int slot) {
     Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     const bool boomerang = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
-    const Entity* owner = get_entity(game, shot.entity_a);
+    const Entity* owner = get_entity(game, shot.entity_b);
     if (shot.timer_a == 0 || (boomerang && (owner == nullptr || owner->health <= 0))) {
         land(game, slot); return;
     }
@@ -133,8 +136,14 @@ void step_recoverable(Game& game, int slot) {
         if (index == slot || actor.health <= 0 || !actor.impassable || actor.cell != next ||
             (index == shot.entity_a.slot && actor.generation == shot.entity_a.generation)) continue;
         if (!first_contact(game, {slot, shot.generation}, {index, actor.generation})) continue;
+        if (parry_ranged_hit(game, index, shot.facing)) {
+            reflect_projectile(shot, actor, index);
+            if (boomerang) shot.label_b = 2;
+            forget_hits(game, {slot, shot.generation});
+            return;
+        }
         damage_entity(game, index, shot.counter_b, next - shot.facing);
-        if (!boomerang && shot.counter_c == 0) { land(game, slot); return; }
+        if ((boomerang && shot.label_b == 2) || (!boomerang && shot.counter_c == 0)) { land(game, slot); return; }
         emit_sound(game, boomerang ? SoundId::BoomerangHit : SoundId::RockImpact, next);
     }
     if (shot.counter_a == 0) {
@@ -149,8 +158,8 @@ void finish_recoverables(Game& game) {
         Entity& shot = game.entities[static_cast<std::size_t>(slot)];
         if (shot.kind != EntityKind::Projectile ||
             shot.label_a != static_cast<int>(ProjectileKind::Boomerang)) continue;
-        const Entity* owner = get_entity(game, shot.entity_a);
-        if (owner != nullptr && owner->health > 0) {
+        const Entity* owner = get_entity(game, shot.entity_b);
+        if (owner != nullptr && owner->health > 0 && shot.label_b != 2) {
             shot.cell = owner->cell;
             catch_boomerang(game, slot);
         } else land(game, slot);

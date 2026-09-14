@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/combat/parry.cpp src/combat/ranged.cpp
     src/items/shields.cpp
     src/items/mixtures.cpp src/surfaces/scent.cpp
     src/entities/hearing.cpp src/items/noisemakers.cpp

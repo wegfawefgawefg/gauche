@@ -9,8 +9,14 @@ constexpr RegionalItem lantern{"Shield Lantern",
     ItemAction::Material, 24, 1, false, 0, 0, 0, 0, 0,
     SoundId::LanternRaise, 24, {5, 1200, {255, 191, 99}}};
 
+constexpr RegionalItem pan{"Reflecting Pan",
+    "Return frontal bullets, arrows, rockets, rocks and boomerangs. No melee or blasts.",
+    Sprite::ReflectingPan, {1, 1, 0, 0, 36, PatternEffect::Utility},
+    ItemAction::Material, 32, 1, false, 0, 0, 0, 0, 0, SoundId::PanRaise, 24};
+
 } // namespace
 
 const RegionalItem* forest_shield(ItemKind kind) {
-    return kind == ItemKind::ShieldLantern ? &lantern : nullptr;
+    if (kind == ItemKind::ShieldLantern) return &lantern;
+    return kind == ItemKind::ReflectingPan ? &pan : nullptr;
 }

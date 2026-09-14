@@ -150,6 +150,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.move_wait); writer.i32(entity.move_interval);
     writer.i32(entity.attack_wait); writer.i32(entity.attack_interval);
     writer.i32(entity.use_flash); writer.i32(entity.block_ticks);
+    writer.i32(entity.guard_slot);
     writer.i32(entity.burn_ticks); writer.i32(entity.freeze_ticks);
     writer.i32(entity.scorch_ticks); writer.i32(entity.fire_dim_ticks);
     writer.u8(entity.fire_tramples);
@@ -194,6 +195,8 @@ Entity read_entity(PacketReader& reader) {
     entity.move_wait = reader.i32(); entity.move_interval = reader.i32();
     entity.attack_wait = reader.i32(); entity.attack_interval = reader.i32();
     entity.use_flash = reader.i32(); entity.block_ticks = reader.i32();
+    entity.guard_slot = reader.i32();
+    if (entity.guard_slot < -1 || entity.guard_slot >= quick_slots) reader.okay = false;
     entity.burn_ticks = reader.i32(); entity.freeze_ticks = reader.i32();
     entity.scorch_ticks = reader.i32(); entity.fire_dim_ticks = reader.i32();
     entity.fire_tramples = reader.u8();
@@ -244,7 +247,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(25);
+    writer.u32(26);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -312,7 +315,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 25) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 26) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

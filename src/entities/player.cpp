@@ -31,7 +31,11 @@ void init_player(Entity& entity) {
 
 void step_player(Game& game, int slot, const Input& input) {
     Entity& player = game.entities[static_cast<std::size_t>(slot)];
-    if (input.select >= 0 && input.select < quick_slots) player.inventory.selected = input.select;
+    if (input.select >= 0 && input.select < quick_slots) {
+        if (input.select != player.inventory.selected) player.block_ticks = 0;
+        player.inventory.selected = input.select;
+    }
+    if (input.cancel_use || input.pickup || input.drop || input.interact) player.block_ticks = 0;
 
     move_player(game, slot, input.move);
     // AIM: Explicit aim overrides movement, including an unsuccessful step.

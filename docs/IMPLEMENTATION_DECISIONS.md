@@ -371,3 +371,42 @@ Strict game/render builds pass. Static inventory comparison and isolated held/
 dropped-light captures were inspected. No playtest, networking run or additional
 behavior test suite was performed. The reflecting pan and five other forest
 catalog ideas remain unfinished; reaching a numeric quota will not drop them.
+
+## Reflecting pan and ranged returns
+
+The forty-seventh regional forest find is a 24-condition reflecting pan, priced
+at 32 gold and available in cache/reward/shop pools. Use raises a 10-tick frontal
+parry with a 36-tick cooldown; each successfully returned hit costs four condition.
+A pan with less than four remaining still returns that last hit before breaking.
+Durable doubles condition; resin repairs it. It does not shove, guard melee,
+catch a lobbed bomb/mixture, or stop blast/hazard damage. Sleep and stun disable
+its parry. An active sprite glints; three new offline cues distinguish raising,
+a resonant metal return, and breakage. Success emits a local pale ring.
+
+Bullets reverse their actual cardinal ray at contact, retaining damage, terrain
+power, piercing and Ember ignition. Each reflected segment gets normal weapon
+range, bounded by four original ranges of total ray travel. Segment tracers
+show the return without spawning another muzzle or casing at the pan. The latest
+parrier becomes the attacker, so the original shooter is a valid return target.
+Arrow/bolt, rocket and stone entities reverse at contact and continue traveling;
+rocket payloads still detonate normally later. Refreshing a flight leg cannot
+extend its original finite timer_c deadline. Unsupported utility flights and
+explosions continue through their own impact rules.
+
+Boomerangs retain entity_b as their original reservation owner, while entity_a
+tracks the current attacker. A parried boomerang takes a straight return leg and
+lands on its next actor/obstacle/range/lifetime end, clearing the original held
+reservation exactly once. It can hit its original thrower. Repeated parries clear
+per-leg contact history, not the original ownership; interludes land deflected
+boomerangs instead of restoring a second copy to the thrower.
+
+Guard windows now belong to the equipped slot. Switching, dropping or exchanging
+equipment cannot carry a raised guard onto another item. Bramble guards explicitly
+raise their buckler slot. The new slot is hashed/serialized; snapshot layout is
+26 and gameplay compatibility is D6. Existing projectile fields save the finite
+flight deadline and reservation/current-attacker handles.
+
+Strict game/render builds pass. Static worn/Durable comparison and four-direction
+pan/flight captures were inspected, including description fit. No live combat,
+networking playtest or new behavior test suite ran. Five forest catalog ideas
+remain: Wolf Whistle, Pocket Door, Straw Decoy, Scarecrow and Thunder Acorn.

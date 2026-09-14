@@ -36,6 +36,7 @@ void drop_player_item(Game& game, Entity& player) {
         ground->ground_item = held;
         ground->sprite = item_sprite(held);
         held = {};
+        player.block_ticks = 0;
         emit_sound(game, SoundId::Drop, player.cell);
     }
 }
@@ -70,6 +71,7 @@ bool pickup_or_drop(Game& game, Entity& player) {
     ground.ground_item = outgoing;
     ground.sprite = item_sprite(outgoing);
     player.inventory = candidate;
+    player.block_ticks = 0;
     emit_sound(game, SoundId::Drop, player.cell);
     return true;
 }

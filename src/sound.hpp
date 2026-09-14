@@ -36,7 +36,7 @@ enum class SoundId : std::size_t {
     StinkThrow, StinkBreak, FruitThrow, FruitSplat, FruitMunch, PitchThrow, PitchFuse, PitchLand, PitchBurst, ScentSniff, NauseaGag,
     HandBell, CrackerThrow, CrackerFuse, CrackerLand, CrackerBang,
     SnarePlace, SnareCatch, SnareRelease, SpringSet, SpringLaunch, SpringBreak, AcornSet, AcornBurst,
-    LanternRaise, LanternBlock, LanternBreak,
+    LanternRaise, LanternBlock, LanternBreak, PanRaise, PanReflect, PanBreak,
     Count,
 };
 
@@ -70,5 +70,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "stink_throw", "stink_break", "fruit_throw", "fruit_splat", "fruit_munch", "pitch_throw", "pitch_fuse", "pitch_land", "pitch_burst", "scent_sniff", "nausea_gag",
     "hand_bell", "cracker_throw", "cracker_fuse", "cracker_land", "cracker_bang",
     "snare_place", "snare_catch", "snare_release", "spring_set", "spring_launch", "spring_break", "acorn_set", "acorn_burst",
-    "lantern_raise", "lantern_block", "lantern_break",
+    "lantern_raise", "lantern_block", "lantern_break", "pan_raise", "pan_reflect", "pan_break",
 };

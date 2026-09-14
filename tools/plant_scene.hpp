@@ -23,7 +23,7 @@ inline void arrange_plant_scene(Game& game, Cosmetics& cosmetics) {
     root.label_a = 1; root.timer_a = 24; root.facing = {1, 0};
     root.sprite = Sprite::RootTurretCoiled;
     Entity& guard = *get_entity(game, spawn_entity(game, EntityKind::BrambleGuard, {12, 12}));
-    guard.entity_a = root_handle; guard.facing = {1, 0}; guard.block_ticks = 2;
+    guard.entity_a = root_handle; guard.facing = {1, 0}; guard.block_ticks = 2; guard.guard_slot = guard.inventory.selected;
     Entity& lashing = *get_entity(game, spawn_entity(game, EntityKind::RootTurret, {11, 15}));
     lashing.label_a = 2; lashing.timer_a = 89; lashing.facing = {1, 0};
     Entity& swinging = *get_entity(game, spawn_entity(game, EntityKind::BrambleGuard, {16, 14}));

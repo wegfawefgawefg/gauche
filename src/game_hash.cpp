@@ -103,6 +103,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.attack_wait));
         mix(hash, static_cast<std::uint64_t>(entity.attack_interval));
         mix(hash, static_cast<std::uint64_t>(entity.block_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.guard_slot));
         mix(hash, static_cast<std::uint64_t>(entity.burn_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.scorch_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.fire_dim_ticks));

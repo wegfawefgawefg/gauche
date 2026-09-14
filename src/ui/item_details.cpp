@@ -1,3 +1,4 @@
+#include "../combat/parry.hpp"
 #include "../items/fire_render.hpp"
 #include "item_details.hpp"
 #include "../items/action.hpp"
@@ -120,6 +121,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::ReflectingPan)
+        std::snprintf(line, sizeof(line), "PARRY %.2fs | COST %d CONDITION",
+            static_cast<double>(parry_ticks) / 60, parry_wear);
     if (item.kind == ItemKind::ShieldLantern)
         std::snprintf(line, sizeof(line), "FRONT GUARD 0.25s | LIGHT %d", item.light.radius);
     if (item.kind == ItemKind::StinkBomb)

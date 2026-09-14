@@ -89,12 +89,12 @@ gameplay feedback remain with the user; the master goal remains in progress.
   a visible canopy gap or cave opening; remove or move sources that make an
   apparently empty room glow. Check neighboring rooms and border tiles after
   changing fixture positions.
-- [ ] Shape forest sunlight into dappled, irregular patches rather than plain
+- [x] Shape forest sunlight into dappled, irregular patches rather than plain
   circular pools. Use small authored grayscale canopy silhouettes as masks at
   the game's pixel scale, with gentle, slow movement. The same projected light
   pattern must affect floor, walls, and actors standing within it; keep dark
   negative space between patches.
-- [ ] Add a few translucent shafts above the world where sunlight enters.
+- [x] Add a few translucent shafts above the world where sunlight enters.
   Their bright ends should meet the projected ground patches, and foliage or
   haze should make their shape readable without obscuring actors. Broad,
   slower cloud shadows can cross outdoor rooms separately. Existing drifting
@@ -102,9 +102,16 @@ gameplay feedback remain with the user; the master goal remains in progress.
 - [x] Remove the separate 12-tile distance fade from non-player entities.
   Lighting should determine whether an actor is visible. Preserve deliberate
   invisibility or fog effects only where a game rule asks for them.
-- [ ] Compare dark and lit rooms in the same capture: an unlit room stays dark,
+- [x] Compare dark and lit rooms in the same capture: an unlit room stays dark,
   a canopy opening or campfire has a clear local pool, shafts align with their
   ground patches, and actors/particles use the same light field as the tiles.
+
+Canopy implementation: an authored 16-pixel grayscale mask projects slow-moving
+leaf gaps into the shared light field, including walls and actors. Broad cloud
+shadows dim only that sunlight. Soft diagonal shafts land on the patches. The
+interim generator now retains fewer forest openings and removes them from later
+biomes. Static 1080p capture inspected; semantic opening placement remains part
+of the room-role generator work below.
 
 ## Forest ground art
 
@@ -230,6 +237,21 @@ Enemy implementation follows bespoke init/step functions and shared entity
 storage. Reusable `counter_a`, `label_a`, timers, and related slots are explicitly
 approved (Splonks style); document their meanings per enemy instead of growing
 the shared struct with a separate state field for every species.
+
+Also approved: reusable `entity_a`/`entity_b` generation-checked handles and
+`point_a`/`point_b` cells, with labels describing their roles. Use these creatively
+for patrol routes, territory/home positions, investigation points, remembered
+attackers, flock or worm links, and bodyguards interposing between a threat and
+their protected ally. Ducklings/chicks following a leader can scatter from a
+remembered attacker when attacked. Stale leader/target handles need an intentional
+fallback (rejoin a flock, choose another ally, retreat home, or resume wandering).
+
+Enemy idea to implement: **zombie stack**. Render several zombies perched on one
+another; killing one topples the surviving stack into individual zombies. A shared
+counter can hold the compressed stack population until it splits, avoiding a
+special member array on every entity. Define what happens in crowded cells so
+toppling preserves survivors without overlapping impassable actors or silently
+deleting zombies. This belongs in a fitting haunted/undead encounter pool.
 
 The minimum target is **20 genuinely distinct enemies, 20 loose-debris types,
 and 50 biome-specific items per biome**. Across four biomes this is at least

@@ -2,6 +2,7 @@
 #include "particles/system.hpp"
 #include "lighting/field.hpp"
 #include "lighting/render.hpp"
+#include "lighting/canopy.hpp"
 #include "ui/presentation.hpp"
 #include "props/render.hpp"
 #include "ui/scale.hpp"
@@ -252,6 +253,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
+    draw_canopy_shafts(renderer, game, camera, zoom);
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     draw_run_status(renderer, game, zoom);

@@ -67,7 +67,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward]\n");
+        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -88,6 +88,10 @@ int main(int argc, char** argv) {
     arrange_terrain(game, cosmetics);
     const std::string_view mode = argc == 3 ? argv[2] : "terrain";
     InteractionUi interaction;
+    if (mode == "canopy") {
+        game.run.roof_light_count = 1;
+        game.run.roof_lights[0] = {{17, 6}};
+    }
     Entity& player = *get_entity(game, game.players[0]);
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));

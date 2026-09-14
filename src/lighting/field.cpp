@@ -1,4 +1,5 @@
 #include "field.hpp"
+#include "canopy.hpp"
 
 #include <algorithm>
 #include <array>
@@ -106,6 +107,7 @@ void build_lighting(LightingCache& cache, const Game& game,
     // SOURCES: Cosmetic flashes share this local cache; rules never read it.
     for (LightSource source : collect_light_sources(game, cache, flashes))
         cast_source(cache, game.stage, source);
+    project_canopy(cache, game);
 }
 
 LightColor light_at_cell(const LightingCache& cache, Cell cell) {

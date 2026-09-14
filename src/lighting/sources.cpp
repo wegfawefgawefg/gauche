@@ -24,12 +24,7 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     std::vector<LightSource> sources;
     sources.reserve(48);
 
-    // FIXTURES: These positions live in the deterministic run snapshot.
-    for (int index = 0; index < std::min(game.run.roof_light_count,
-                                        static_cast<int>(game.run.roof_lights.size())); ++index) {
-        const StageLight& light = game.run.roof_lights[static_cast<std::size_t>(index)];
-        add_emitter(sources, cache, light.cell, light.light);
-    }
+    // FIXTURES: Sunlight projects through canopy stencils separately from colored point lights.
     for (int y = cache.origin.y; y < cache.origin.y + cache.height; ++y)
         for (int x = cache.origin.x; x < cache.origin.x + cache.width; ++x)
             if ((x + y) % 3 == 0 &&

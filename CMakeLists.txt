@@ -78,8 +78,8 @@ add_executable(gauche
     src/main.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
     src/render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
-    src/lighting/field.cpp src/lighting/sources.cpp
-    src/lighting/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
+    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
@@ -199,7 +199,7 @@ if(BUILD_TESTING)
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME presentation_rules COMMAND gauche_presentation_tests)
     add_executable(gauche_lighting_tests
-        tests/lighting_test.cpp src/lighting/field.cpp
+        tests/lighting_test.cpp src/lighting/field.cpp src/lighting/canopy.cpp
         src/lighting/sources.cpp src/stage.cpp)
     target_link_libraries(gauche_lighting_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_lighting_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)

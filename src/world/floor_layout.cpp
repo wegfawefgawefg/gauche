@@ -55,12 +55,16 @@ void generate_world_floor(Game& game) {
         ObjectiveKind::Key : ObjectiveKind::Switch;
     game.run.roof_lights = {};
     game.run.roof_light_count = 0;
-    for (int column = 0; column < columns; ++column)
-        game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
-            {{column * room_width + 6, 13}};
-    game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] = {{branch_x, 5}};
-    game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
-        {{extra_x, extra_y}};
+    // CANOPY: Only some forest clearings open to the sky; other rooms need actual emitters.
+    if (game.run.floor <= 4) {
+        for (int column = 1; column < columns; ++column)
+            if (column == 1 || random_u32(game) % 3 == 0)
+                game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
+                    {{column * room_width + 6, 13}};
+        if (random_u32(game) % 2 == 0)
+            game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
+                {{extra_x, extra_y}};
+    }
     // Objective: the key or switch must sit off the main route.
     spawn_entity(game, game.run.objective == ObjectiveKind::Key ?
                  EntityKind::Key : EntityKind::Switch, {branch_x, 5});

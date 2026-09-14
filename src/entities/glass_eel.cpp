@@ -7,7 +7,7 @@
 namespace {
 
 // SLOTS: label_a swim/charge/rest; timer_a phase; timer_b stranded sound cooldown.
-// point_a charge origin. No movement interpolation or unbounded whole-pool search.
+// point_a charge origin; counter_a feeding satiety. No unbounded whole-pool search.
 constexpr Cell sides[]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
 void rest(Entity& eel, int ticks) {
@@ -90,6 +90,54 @@ void seek_bank(Game& game, int slot, const Entity* target) {
     eel.move_wait = 18;
 }
 
+// BAIT: A connected swim route wins over a new shock, never a committed charge.
+bool follow_bait(Game& game, int slot) {
+    Entity& eel = game.entities[static_cast<std::size_t>(slot)];
+    if (eel.counter_a > 0) return false;
+    std::array<int,max_entities> food{};
+    int count = 0;
+    for (int i=0;i<max_entities;++i) {
+        const Entity& candidate = game.entities[static_cast<std::size_t>(i)];
+        if (candidate.kind == EntityKind::GroundItem && candidate.ground_item.kind == ItemKind::SmokedFish &&
+            candidate.ground_item.count > 0 && distance(candidate.cell,eel.cell) <= 6)
+            food[static_cast<std::size_t>(count++)] = i;
+    }
+    if (count == 0) return false;
+    WetWave route;
+    route.nodes[0] = {eel.cell,0,0}; route.count = 1;
+    for (int next=0;next<route.count;++next) {
+        const WetNode node = route.nodes[static_cast<std::size_t>(next)];
+        for (int i=0;i<count;++i) {
+            Entity& bait = game.entities[static_cast<std::size_t>(food[static_cast<std::size_t>(i)])];
+            if (bait.cell != node.cell) continue;
+            if (next == 0) {
+                if (--bait.ground_item.count == 0) remove_entity(game,{food[static_cast<std::size_t>(i)],bait.generation});
+                eel.health = std::min(eel.max_health,eel.health+4);
+                eel.counter_a = 300;
+                rest(eel,90);
+                emit_sound(game,SoundId::FishNibble,eel.cell);
+            } else if (eel.move_wait == 0) {
+                int first = next;
+                while (route.nodes[static_cast<std::size_t>(first)].parent != 0)
+                    first = route.nodes[static_cast<std::size_t>(first)].parent;
+                swim(game,slot,route.nodes[static_cast<std::size_t>(first)].cell);
+            }
+            return true;
+        }
+        if (node.steps >= 6) continue;
+        for (Cell side : sides) {
+            const Cell cell = node.cell+side;
+            if (!swim_space(game,cell)) continue;
+            bool seen = false;
+            for (int i=0;i<route.count;++i)
+                if (route.nodes[static_cast<std::size_t>(i)].cell == cell) { seen = true; break; }
+            if (!seen && route.count < static_cast<int>(route.nodes.size()))
+                route.nodes[static_cast<std::size_t>(route.count++)] = {cell,next,node.steps+1};
+        }
+    }
+    return false;
+}
+
 } // namespace
 
 void init_glass_eel(Entity& eel) {
@@ -106,6 +154,7 @@ void interrupt_glass_eel(Entity& eel) {
 
 void step_glass_eel(Game& game, int slot) {
     Entity& eel = game.entities[static_cast<std::size_t>(slot)];
+    eel.counter_a = std::max(0,eel.counter_a-1);
     if (!conductive_cell(game, eel.cell)) {
         interrupt_glass_eel(eel);
         eel.sprite = Sprite::EelStranded;
@@ -128,6 +177,7 @@ void step_glass_eel(Game& game, int slot) {
         }
         return;
     }
+    if (follow_bait(game,slot)) return;
     if (eel.freeze_ticks == 0 && player_in_water(game, wet_wave(game, eel.cell, eel_shock_reach))) {
         eel.label_a = EelCharge;
         eel.timer_a = 48;

@@ -46,7 +46,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 8 | Avalanche ram | Pawing marks a short lane; a headbutt shoves an actor and breaks fragile snow banks. A wall collision stuns the ram. Short attack range distinguishes it from the forest boar. | Cliff paths; 35% two raw meat, 10% wool wrap. |
 | 9 | Frost bat | Hangs still, exhales a narrow traveling frost puff, then relocates to another perch. Implemented: 24 HP, 0.5s inhale, six-cell traveling puff for 6 damage and 2s chill; flames dissolve it and shields block it. | Ice caves; 15% ice needle. |
 | 10 | Snow effigy | Inert unless watched from nearby; turns and takes a step only after observers look away. Its twig face lights before an adjacent strike. Fire exposes a frail frame. | Memorial court; 20% candle stub, 10% effigy mask. |
-| 11 | Fishing widow | Casts a visible hook, reels the first hooked actor toward her, then pauses to untangle line. Crossing behind cover severs the tether; hook can catch an ally of hers. | Fishing huts; 20% fishing line, 20% smoked fish. |
+| 11 | Fishing widow | Implemented: 64 HP, 0.6s fixed-lane tell, six-tile traveling hook for 14 damage. Pulls the first struck actor every ten ticks, then untangles for 1.5s. Sidestep, cover or interrupt her to cut the line; allies can be hooked. | Fishing huts; 20% fishing line, 20% smoked fish. |
 | 12 | Candle keeper | Relights a bounded set of nearby candles and protects the nearest one. Its flame strike dims its own lamp; stealing or wetting a candle redirects its attention. | Chapel; 30% candle stub, 15% wick spool. |
 | 13 | Shard colony | Three separate crystals connect with dangerous pulses only after all endpoints flash. Destroy or displace one node to break that connection. Nodes share a colony handle. | Crystal gallery; 25% crystal lens per colony, not per node. |
 | 14 | Whiteout drummer | Beats three audible cues before a short snow squall obscures targeting in a marked area. Cannot attack directly; interrupt or use its squall as cover. | Weather station; 20% muffling felt, 15% signal flare. |
@@ -108,7 +108,7 @@ same effective item definition as attacks, including rare attributes.
 | 33 | Alarm clock | Implemented: place, wait 3s, then five once-per-second radius-10 acoustic pulses. Recover after 5s, keeping damage. 8 HP, or 16 Durable; attacks can destroy it. No stun. | Common; 10 |
 | 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
 | 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
-| 36 | Smoked fish | Self: 14 immediate HP, or drop as strong seal/eel bait. Stack 6. | Common; 6 |
+| 36 | Smoked fish | Implemented: 14 immediate HP (21 Restorative), stack 6. Dropped fish lures eels within six connected water steps and land meat-eaters within nine tiles. Does not cancel a committed shock. Seal bait awaits seals. | Common; 6 |
 | 37 | Salted kelp | Eat to clear nausea, at a cost of 3 HP; placed kelp is bait for reservoir wildlife. Stack 5. | Common; 4 |
 | 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
 | 39 | Flask of brine | Throw a small puddle that melts fragile ice and resists refreezing for 8s. Causes 4 damage on an open wound; stack 3. | Common; 9 |
@@ -191,9 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Eight regional debris types are implemented: ice chips, snow clumps, mirror
-chips, crystal splinters, felt scraps, clock gears, wool tufts and rope fibers.
-Fibers scatter from snapped fishing line and exhausted spools. Tufts come
+Nine regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers and fish bones.
+Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers
 and smashed lens cases, with light-piece friction and local wind response.

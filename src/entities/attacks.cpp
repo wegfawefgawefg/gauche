@@ -6,6 +6,7 @@
 #include "mirror_knight.hpp"
 #include "echo_hound.hpp"
 #include "frozen_pilgrim.hpp"
+#include "fishing_widow.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -18,6 +19,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::FishingWidow:
+        if (enemy.label_a == WidowWindup && enemy.cell == enemy.point_a)
+            for (int i=1;i<=enemy.counter_a;++i)
+                add(enemy.cell + Cell{enemy.facing.x*i,enemy.facing.y*i});
+        break;
     case EntityKind::FrozenPilgrim:
         if (enemy.label_a == PilgrimStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
         break;

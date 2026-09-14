@@ -51,7 +51,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;
@@ -148,8 +148,11 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
-    case SoundId::FishingSnap: case SoundId::FishingEmpty:
+    case SoundId::WidowSnap: case SoundId::FishingSnap: case SoundId::FishingEmpty:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::RopeFiber, 3, seed, false);
+        break;
+    case SoundId::FishEat: case SoundId::FishNibble:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::FishBone, 2, seed);
         break;
     case SoundId::PilgrimDeath: case SoundId::WoolBurn:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoolTuft, 4, seed, false);

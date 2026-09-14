@@ -42,7 +42,8 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
     const bool fishing = shot.label_a == static_cast<int>(ProjectileKind::FishingHook);
-    const bool hook = fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
+    const bool widow = shot.label_a == static_cast<int>(ProjectileKind::WidowHook);
+    const bool hook = widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
@@ -80,7 +81,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     }
     // CARGO: The actual item is already drawn at this cell; keep the hook off its icon.
-    if (!fishing || shot.label_b != FishingCargo)
+    if ((!fishing || shot.label_b != FishingCargo) && (!widow || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (rocket) {

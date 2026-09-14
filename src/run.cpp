@@ -37,7 +37,7 @@ ItemAttribute rare_attribute(Game& game, ItemKind kind) {
 
 Reward random_reward(Game& game, int category) {
     if (category == 0 && ice_floor(game.run.floor) && random_u32(game) % 4 == 0) {
-        constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine};
+        constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish};
         const ItemKind kind = cold_tools[random_u32(game) % std::size(cold_tools)];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::IceNeedle ? 3 : 1, rare_attribute(game, kind)};
@@ -269,7 +269,7 @@ void advance_run(Game& game) {
                                    game.run.floor > 8 ? ItemKind::RocketLauncher :
                                    (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
             if (ice_floor(game.run.floor)) {
-                constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine};
+                constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish};
                 game.run.shop_stock[1] = cold_tools[random_u32(game) % std::size(cold_tools)];
             }
             if (game.run.floor <= 4) {

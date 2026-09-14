@@ -6,6 +6,7 @@
 #include "prism.hpp"
 #include "hook.hpp"
 #include "fishing.hpp"
+#include "widow_hook.hpp"
 #include "root_drill.hpp"
 #include "swap.hpp"
 #include "recoverable.hpp"
@@ -31,6 +32,7 @@ void init_projectile(Entity& entity) {
 }
 
 int projectile_step_ticks(const Entity& entity) {
+    if (entity.label_a == static_cast<int>(ProjectileKind::WidowHook)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::FishingHook)) return fishing_beat;
     if (entity.label_a == static_cast<int>(ProjectileKind::Snowball)) return 5;
     if (entity.label_a == static_cast<int>(ProjectileKind::FrostPuff)) return frost_puff_step_ticks;
@@ -113,6 +115,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::WidowHook)) { step_widow_hook(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::FishingHook)) { step_fishing_hook(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::PrismBomb)) { step_prism_bomb(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Snowball)) { step_snowball(game, slot); return; }

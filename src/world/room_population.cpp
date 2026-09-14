@@ -74,6 +74,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
+    if (ice_floor(game.run.floor) && (room.role == RoomRole::Bathhouse || room.role == RoomRole::Shelter)) {
+        enemy(game, room, EntityKind::SteamLeech, 2, budget);
+        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        return;
+    }
     if (game.run.floor > 4) {
         const EntityKind hazard = game.run.floor <= 8 ? EntityKind::Ember : EntityKind::FrostBat;
         enemy(game, room, hazard, 2, budget);
@@ -236,7 +241,7 @@ void room_light(Game& game, const RoomPlan& room) {
     // WARMTH: An actual campfire marks shelter; cold rooms have no invented skylight.
     if (ice_floor(game.run.floor)) {
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Shelter ||
-            room.role == RoomRole::FishingHut) {
+            room.role == RoomRole::Bathhouse || room.role == RoomRole::FishingHut) {
             if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Campfire, *cell);
         }
         return;

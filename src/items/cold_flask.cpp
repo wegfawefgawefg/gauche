@@ -38,8 +38,9 @@ void cold_flask_impact(Game& game, const Item& item, Cell center) {
     for (Cell cell : exposed) quench_cell(game, cell);
     for (Cell cell : exposed) {
         freeze_water(game, cell, 480);
-        if (warm_cell(game, cell)) continue;
+        const bool warm = warm_cell(game, cell);
         for (Entity& actor : game.entities)
-            if (actor.kind != EntityKind::None && actor.cell == cell) apply_chill(actor, 180);
+            if (actor.kind != EntityKind::None && actor.cell == cell &&
+                (!warm || actor.kind == EntityKind::SteamLeech)) apply_chill(actor, 180);
     }
 }

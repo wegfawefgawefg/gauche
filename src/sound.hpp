@@ -40,7 +40,7 @@ enum class SoundId : std::size_t {
     SnowStep1, SnowStep2, IceStep1, IceStep2,
     SkaterPush, SkaterBrake, SkaterHit, SkaterBreak, GritScatter, GritEmpty, IceSlip,
     FrostInhale, FrostExhale, FrostFlutter, FrostDeath, FrostPuffHit, IceMelt, IceNeedleThrow, IceNeedleHit,
-    DiverBubbles, DiverRing, DiverRise, DiverWindup, DiverStrike, DiverDive, DiverDeath, AirInflate, AirFloat, AirDeflate, AirPaddle, AirEmpty, ColdThrow, ColdBurst, ColdQuench, IceThaw, HeatCrack, HeatHiss,
+    DiverBubbles, DiverRing, DiverRise, DiverWindup, DiverStrike, DiverDive, DiverDeath, AirInflate, AirFloat, AirDeflate, AirPaddle, AirEmpty, ColdThrow, ColdBurst, ColdQuench, IceThaw, HeatCrack, HeatHiss, LeechLatch, LeechSip, LeechWarning, LeechBurst, LeechDetach, LeechDeath,
     Count,
 };
 
@@ -78,5 +78,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "snow_step1", "snow_step2", "ice_step1", "ice_step2",
     "skater_push", "skater_brake", "skater_hit", "skater_break", "grit_scatter", "grit_empty", "ice_slip",
     "frost_inhale", "frost_exhale", "frost_flutter", "frost_death", "frost_puff_hit", "ice_melt", "ice_needle_throw", "ice_needle_hit",
-    "diver_bubbles", "diver_ring", "diver_rise", "diver_windup", "diver_strike", "diver_dive", "diver_death", "air_inflate", "air_float", "air_deflate", "air_paddle", "air_empty", "cold_throw", "cold_burst", "cold_quench", "ice_thaw", "heat_crack", "heat_hiss",
+    "diver_bubbles", "diver_ring", "diver_rise", "diver_windup", "diver_strike", "diver_dive", "diver_death", "air_inflate", "air_float", "air_deflate", "air_paddle", "air_empty", "cold_throw", "cold_burst", "cold_quench", "ice_thaw", "heat_crack", "heat_hiss", "leech_latch", "leech_sip", "leech_warning", "leech_burst", "leech_detach", "leech_death",
 };

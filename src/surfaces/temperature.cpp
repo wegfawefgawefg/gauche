@@ -1,5 +1,6 @@
 #include "temperature.hpp"
 #include "interaction.hpp"
+#include "../entities/steam_leech.hpp"
 #include "../world/water.hpp"
 
 #include <algorithm>
@@ -11,8 +12,10 @@ bool hot_item(const Item& item) {
     return item.kind != ItemKind::None && (item.flame_ticks > 0 || item.kind == ItemKind::Torch);
 }
 
-bool hot_actor(const Entity& actor) {
-    if (actor.kind == EntityKind::None) return false;
+} // namespace
+
+bool entity_has_flame(const Entity& actor) {
+    if (actor.kind == EntityKind::None || actor.kind == EntityKind::SteamLeech) return false;
     if (actor.kind == EntityKind::GroundItem) return hot_item(actor.ground_item);
     if (actor.health <= 0) return false;
     if ((actor.kind == EntityKind::Campfire && actor.fire_tramples < 5) ||
@@ -21,13 +24,15 @@ bool hot_actor(const Entity& actor) {
     return held && hot_item(*held);
 }
 
+namespace {
+
 bool flame_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return false;
-    if (tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return true;
+    if (tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return !leech_drains_cell(game, cell);
     // SOURCES: A lamp's color is not heat. Only exposed flames melt cold projectiles.
     for (const Entity& actor : game.entities) {
-        if (actor.cell == cell && hot_actor(actor)) return true;
+        if (actor.cell == cell && entity_has_flame(actor)) return !leech_drains_cell(game, cell);
     }
     return false;
 }
@@ -36,12 +41,12 @@ bool flame_cell(const Game& game, Cell cell) {
 
 bool hot_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
-    return tile && (tile->surface.warmth_ticks > 0 || flame_cell(game, cell));
+    return tile && ((tile->surface.warmth_ticks > 0 && !leech_drains_cell(game, cell)) || flame_cell(game, cell));
 }
 
 bool warm_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
-    if (tile && tile->surface.warmth_ticks > 0) return true;
+    if (tile && tile->surface.warmth_ticks > 0 && !leech_drains_cell(game, cell)) return true;
     // REACH: A capsule already paints its area. Only actual flames warm adjacent cells.
     for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}})
         if (flame_cell(game, cell + offset)) return true;
@@ -53,6 +58,7 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
     if (tile == nullptr || !walkable(tile->kind) || ticks <= 0) return false;
     tile->surface.warmth_ticks = static_cast<std::uint16_t>(std::clamp(
         std::max(ticks, static_cast<int>(tile->surface.warmth_ticks)), 1, 240));
+    if (leech_drains_cell(game, cell)) return true;
     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
     ignite_surface(game, cell);
     for (Entity& actor : game.entities)
@@ -119,6 +125,10 @@ void quench_cell(Game& game, Cell cell) {
 
 void step_temperature(Game& game) {
     std::vector<Cell> flames;
+    const auto drains = leech_drain_cells(game);
+    const auto drained = [&drains](Cell cell) {
+        return std::find(drains.begin(), drains.end(), cell) != drains.end();
+    };
     // TERRAIN: No per-tile scan through every actor. Collect actual heat sources once.
     for (int y = 0; y < game.stage.height; ++y)
         for (int x = 0; x < game.stage.width; ++x) {
@@ -126,7 +136,7 @@ void step_temperature(Game& game) {
             Tile& tile = *game.stage.at(cell);
             if (tile.surface.warmth_ticks > 0) {
                 --tile.surface.warmth_ticks;
-                if (tile.surface.warmth_ticks > 0) {
+                if (tile.surface.warmth_ticks > 0 && !drained(cell)) {
                     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
                     ignite_surface(game, cell);
                 }
@@ -139,10 +149,10 @@ void step_temperature(Game& game) {
                     emit_sound(game, SoundId::IceThaw, cell);
                 } else --tile.freeze_ticks;
             }
-            if (tile.kind == TileKind::Lava || tile.surface.fire_ticks > 0) flames.push_back(cell);
+            if ((tile.kind == TileKind::Lava || tile.surface.fire_ticks > 0) && !drained(cell)) flames.push_back(cell);
         }
     for (const Entity& actor : game.entities)
-        if (hot_actor(actor)) flames.push_back(actor.cell);
+        if (entity_has_flame(actor) && !drained(actor.cell)) flames.push_back(actor.cell);
     for (Cell flame : flames) {
         bool thawed = false;
         for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}})

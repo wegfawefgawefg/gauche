@@ -44,6 +44,8 @@ void step_entity_timers(Game& game, int slot) {
     entity.use_flash = std::max(0, entity.use_flash - 1);
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
+    // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
+    if (entity.kind == EntityKind::SteamLeech) entity.scorch_ticks = entity.burn_ticks = 0;
     step_vital_effects(game, slot);
     contact_surface(game, slot);
 
@@ -66,7 +68,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
     const Tile* ground = game.stage.at(entity.cell);
     if (ground != nullptr && ground->kind == TileKind::Lava &&
-        entity.kind != EntityKind::Ember && game.tick % 30 == 0)
+        entity.kind != EntityKind::Ember && entity.kind != EntityKind::SteamLeech && game.tick % 30 == 0)
         damage_entity(game, slot, 5, entity.cell, false);
 
     // RESPAWN: A blocked entrance delays return instead of overlapping a fixture.

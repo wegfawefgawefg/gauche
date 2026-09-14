@@ -273,9 +273,9 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Seven cold room roles support Skaters, Frost Bats and Bell Divers with real
-  air holes; grit, needles, air bladders, cold flasks and heat capsules add
-  traction, throws, cargo and thermal reactions. Three of twenty enemies, five of fifty items.
+  Seven cold room roles now host four enemy types, including source-draining
+  Steam Leeches. Five regional items cover traction, throws, floating cargo and
+  thermal reactions. Four of twenty enemies, five of fifty items implemented.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

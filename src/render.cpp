@@ -2,6 +2,7 @@
 #include "render.hpp"
 #include "world/floating_render.hpp"
 #include "entities/bell_diver.hpp"
+#include "entities/leech_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -250,6 +251,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 angle += static_cast<double>(remaining * 270);
             }
             apply_flight_pose(entity, game.tick, body_rect, angle);
+            apply_leech_pose(entity, game.tick, body_rect, angle);
             if (entity.kind == EntityKind::Trap && entity.ground_item.kind == ItemKind::SpringTrap)
                 angle = std::atan2(static_cast<double>(entity.facing.y), static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
             const bool worm = entity.kind == EntityKind::BurrowWorm;
@@ -257,7 +259,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, !worm && pose != nullptr && pose->horizontal_flip ?
+                nullptr, !worm && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
         SDL_SetTextureAlphaMod(texture, 255);
@@ -273,6 +275,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);
+        if (entity.kind == EntityKind::SteamLeech)
+            draw_leech_tether(renderer, game, entity, camera, zoom, lighting);
         if (entity.vitals.rooted > 0 && entity.health > 0) {
             const bool netted = entity.vitals.root_kind == RootKind::Net;
             SDL_Texture* rope = texture_for(graphics, netted ? Sprite::NetCaught : Sprite::SnareTight);

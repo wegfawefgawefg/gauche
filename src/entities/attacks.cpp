@@ -1,5 +1,6 @@
 #include "attacks.hpp"
 #include "bell_diver.hpp"
+#include "steam_leech.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -12,6 +13,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::SteamLeech:
+        if (enemy.label_a == LeechSwell)
+            for (Cell side : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) add(enemy.cell + side);
+        break;
     case EntityKind::BellDiver:
         if (enemy.label_a == DiverSwing) add(enemy.point_b);
         break;

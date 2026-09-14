@@ -249,3 +249,50 @@ inspected. Generated audio decodes without non-finite samples or clipping. No
 live playtest or new test suite ran. Snapshot layout is 30 and gameplay
 compatibility E2. Ice now has three catalog enemies and five catalog items;
 remaining enemies, tools, debris, ambience and progression remain open.
+
+## Steam Leech (2026-09-14)
+
+Steam Leech has 38 HP and takes one real cell per 18-tick movement beat. It
+searches a nine-cell neighborhood for actual exposed flames or warm terrain,
+then follows a bounded route toward its chosen source. Campfires, embers,
+burning actors, held or dropped torches/lit sticks, warm capsules, burning
+surfaces and lava can attract it. Ordinary lamp color does not imply heat.
+It wanders or responds to hearing when no usable source is present.
+
+An adjacent leech shows its mouth during an 18-tick latch, feeds for 120 ticks,
+then visibly swells with a 36-tick pressure warning. Its scalding release deals
+12 damage in its own cell and the four cardinal neighbors, respecting cover
+and normal directional defense. Friends and props are affected too. It then
+rests for 90 ticks. Its own fire/lava immunity lets it approach hot sources;
+physical attacks, explosions and another leech's scald still damage it.
+
+While feeding/swelling, the source cell's emitted light falls to 25% and its
+radiant heating is suppressed. Flame contact remains dangerous and existing
+fuel/lifetime clocks keep running. Multiple attached leeches do not multiply
+the dimming. The source's real emitter is never overwritten, so it can change
+or vanish without a stale brightness value being restored later. Heat and
+lighting collect active drained cells once per pass, not once per map tile.
+
+The shared slots hold phase, phase/search timers, source handle, source kind,
+remembered terrain source and attachment origin. A shove invalidates that
+origin immediately. Moving/stowing/picking up/extinguishing a source also
+releases it when the current source is no longer adjacent or valid. Cold,
+sleep and stun put the leech into a resting phase; cold releases it before
+nearby warmth can erase the chill timer. Killing it ends the drain immediately.
+All of those checks use the existing generation-safe handles and saved slots.
+
+Bathhouse and shelter encounters now select leeches; late rounds can pair one
+with a frost bat. Bathhouses get an actual campfire, while other cold rooms
+retain their existing source placement. Leeches drop a Heat Capsule on a 20%
+roll; the proposed sealant drop waits for the actual item. Six generated
+sprites cover five body phases and a distinct pale steam puff. Six new offline
+sounds cover attachment, sipping, warning, burst, detachment and death. A thin
+suction tether and centered breathing pulse communicate the active attachment;
+body placement remains at the actual gameplay cell.
+
+Strict game/render builds pass, attached/released static lighting captures and
+body poses were inspected, and all source sprites/audio passed format and
+clipping checks. No live playtest or new tests ran. No snapshot layout change
+was needed: phases, timers, cells and handles already serialize and hash.
+Snapshot layout remains 30; gameplay compatibility advances to E3. Ice totals
+are four catalog enemies and five catalog items, with remaining requirements open.

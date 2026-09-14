@@ -73,7 +73,7 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     case ItemAttribute::Restorative:
         return kind == ItemKind::Medkit || kind == ItemKind::Bandage ||
                kind == ItemKind::Bandaid || kind == ItemKind::CookedMeat ||
-               (spec != nullptr && spec->action == ItemAction::Food);
+               (spec != nullptr && spec->action == ItemAction::Food && kind != ItemKind::SaltedKelp);
     }
     return false;
 }

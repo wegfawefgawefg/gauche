@@ -3,6 +3,7 @@
 #include "attacks.hpp"
 #include "scavenging.hpp"
 #include "../item_pattern.hpp"
+#include "../items/fish.hpp"
 
 #include <algorithm>
 
@@ -73,7 +74,8 @@ void retreat(Game& game, int slot, std::optional<Cell> threat) {
     emit_sound(game,SoundId::SealSettle,seal.cell);
 }
 
-void eat(Game& game, Entity& seal, std::optional<Cell> threat) {
+void eat(Game& game, int slot, std::optional<Cell> threat) {
+    Entity& seal = game.entities[static_cast<std::size_t>(slot)];
     if (seal.cell != seal.point_a || !seal_bank(game,seal.cell) ||
         (threat && distance(seal.cell,*threat) <= 2)) {
         seal.label_a = SealRetreat; seal.timer_b = 0;
@@ -82,11 +84,16 @@ void eat(Game& game, Entity& seal, std::optional<Cell> threat) {
     }
     if (seal.timer_a > 0) return;
     const Item meal = *seal.inventory.held();
-    seal.health = std::min(seal.max_health,seal.health+item_pattern(meal).heal);
     *seal.inventory.held() = {};
+    if (meal.kind == ItemKind::SaltedKelp) {
+        apply_kelp_meal(game, slot);
+        if (seal.health <= 0) return;
+    } else {
+        seal.health = std::min(seal.max_health,seal.health+item_pattern(meal).heal);
+        emit_sound(game,meal.kind == ItemKind::SmokedFish ? SoundId::FishNibble : SoundId::SealEat,seal.cell);
+    }
     seal.counter_a = 480; seal.label_a = SealForage;
     seal.sprite = Sprite::SealThief;
-    emit_sound(game,meal.kind == ItemKind::SmokedFish ? SoundId::FishNibble : SoundId::SealEat,seal.cell);
 }
 
 } // namespace
@@ -130,7 +137,7 @@ void step_seal_thief(Game& game, int slot) {
         return;
     }
     if (carrying(seal)) {
-        if (seal.label_a == SealEat) eat(game,seal,threat);
+        if (seal.label_a == SealEat) eat(game,slot,threat);
         else { seal.label_a = SealRetreat; retreat(game,slot,threat); }
     } else { seal.label_a = SealForage; seal.sprite = Sprite::SealThief; forage(game,slot); }
 }

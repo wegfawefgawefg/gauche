@@ -18,7 +18,7 @@ bool open(const Game& game, Cell cell) {
 } // namespace
 
 bool seal_food(ItemKind kind) {
-    return kind == ItemKind::SmokedFish || kind == ItemKind::RawMeat ||
+    return kind == ItemKind::SaltedKelp || kind == ItemKind::SmokedFish || kind == ItemKind::RawMeat ||
         kind == ItemKind::CookedMeat || kind == ItemKind::Egg || kind == ItemKind::FriedEgg;
 }
 

@@ -3,6 +3,7 @@
 #include "item_details.hpp"
 #include "../items/action.hpp"
 #include "../items/catalog.hpp"
+#include "../items/fish.hpp"
 #include "../items/muffling.hpp"
 #include "../items/woodland_tools.hpp"
 #include "../item_pattern.hpp"
@@ -123,6 +124,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::SaltedKelp) {
+        if (player.vitals.nausea > 0)
+            std::snprintf(line, sizeof(line), "CURE | HP %d -> %d", player.health,
+                std::max(0, player.health - kelp_health_cost));
+        else std::snprintf(line, sizeof(line), "NO NAUSEA | COST %d HP", kelp_health_cost);
+    }
     if (pattern.chain)
         std::snprintf(line, sizeof(line), "HITS %d / %d / %d / %d", pattern.damage,
             (pattern.damage * 3 + 3) / 4, (pattern.damage * 2 + 3) / 4, (pattern.damage + 3) / 4);

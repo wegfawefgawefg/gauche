@@ -154,6 +154,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     case SoundId::GlobeBreak:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::GlobeGlass, 5, seed, false);
         break;
+    case SoundId::KelpChew:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::KelpScrap, 3, seed);
+        break;
     case SoundId::FishEat: case SoundId::FishNibble:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::FishBone, 2, seed);
         break;

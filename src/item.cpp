@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/fish.hpp"
 #include "items/snow_globe.hpp"
 #include "items/optics.hpp"
 #include "items/muffling.hpp"
@@ -93,6 +94,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::SaltedKelp:
+        return eat_held_kelp(game, user_slot);
     case ItemKind::SnowGlobe:
         used = use_snow_globe(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

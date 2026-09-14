@@ -109,7 +109,7 @@ same effective item definition as attacks, including rare attributes.
 | 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
 | 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
 | 36 | Smoked fish | Implemented: 14 immediate HP (21 Restorative), stack 6. Dropped fish lures eels within six connected water steps and land meat-eaters within nine tiles. Does not cancel a committed shock. Seals prefer it within eight reachable steps. | Common; 6 |
-| 37 | Salted kelp | Eat to clear nausea, at a cost of 3 HP; placed kelp is bait for reservoir wildlife. Stack 5. | Common; 4 |
+| 37 | Salted kelp | Implemented: clears nausea for 3 HP (can kill). No use without nausea. Stack 5; eels and seals eat dropped kelp, paying the same cost. | Common; 4 |
 | 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
 | 39 | Flask of brine | Throw a small puddle that melts fragile ice and resists refreezing for 8s. Causes 4 damage on an open wound; stack 3. | Common; 9 |
 | 40 | Snow shelter | Place a two-cell breakable windbreak, only if both cells are free; blocks wind/snow attacks, not overhead shots. Two uses. | Uncommon; 18 |
@@ -191,9 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Thirteen regional debris types are implemented: ice chips, snow clumps, mirror
+Fourteen regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips, fishing floats, globe glass and copper curls. Globes leave glass;
+wicker strips, fishing floats, globe glass, copper curls and kelp scraps. Kelp chewing leaves wet scraps; globes leave glass;
 weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from

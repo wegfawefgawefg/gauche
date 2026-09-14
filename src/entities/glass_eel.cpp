@@ -1,4 +1,5 @@
 #include "glass_eel.hpp"
+#include "../items/fish.hpp"
 #include "dispatch.hpp"
 #include "../surfaces/conduction.hpp"
 
@@ -98,7 +99,8 @@ bool follow_bait(Game& game, int slot) {
     int count = 0;
     for (int i=0;i<max_entities;++i) {
         const Entity& candidate = game.entities[static_cast<std::size_t>(i)];
-        if (candidate.kind == EntityKind::GroundItem && candidate.ground_item.kind == ItemKind::SmokedFish &&
+        if (candidate.kind == EntityKind::GroundItem &&
+            (candidate.ground_item.kind == ItemKind::SmokedFish || candidate.ground_item.kind == ItemKind::SaltedKelp) &&
             candidate.ground_item.count > 0 && distance(candidate.cell,eel.cell) <= 6)
             food[static_cast<std::size_t>(count++)] = i;
     }
@@ -111,11 +113,17 @@ bool follow_bait(Game& game, int slot) {
             Entity& bait = game.entities[static_cast<std::size_t>(food[static_cast<std::size_t>(i)])];
             if (bait.cell != node.cell) continue;
             if (next == 0) {
+                const bool kelp = bait.ground_item.kind == ItemKind::SaltedKelp;
                 if (--bait.ground_item.count == 0) remove_entity(game,{food[static_cast<std::size_t>(i)],bait.generation});
-                eel.health = std::min(eel.max_health,eel.health+4);
+                if (kelp) {
+                    apply_kelp_meal(game, slot);
+                    if (eel.health <= 0) return true;
+                } else {
+                    eel.health = std::min(eel.max_health,eel.health+4);
+                    emit_sound(game,SoundId::FishNibble,eel.cell);
+                }
                 eel.counter_a = 300;
                 rest(eel,90);
-                emit_sound(game,SoundId::FishNibble,eel.cell);
             } else if (eel.move_wait == 0) {
                 int first = next;
                 while (route.nodes[static_cast<std::size_t>(first)].parent != 0)

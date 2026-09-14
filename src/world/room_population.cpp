@@ -198,7 +198,10 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
             if (room.role == RoomRole::IceQuarry) supply(game, room, round % 2 == 0 ? ItemKind::Chisel : ItemKind::IceBrick,
                 round % 2 == 0 ? 1 : 2, budget.equipment);
-            else supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
+            else {
+                supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
+                supply(game, room, ItemKind::SaltedKelp, 2, budget.healing);
+            }
         } else if (room.role == RoomRole::FishingHut) {
             supply(game, room, ItemKind::SmokedFish, 2, budget.healing);
             supply(game, room, round % 2 == 0 ? ItemKind::FishingLine : ItemKind::AirBladder, 1, budget.equipment);

@@ -92,6 +92,8 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(item.kind));
             mix(hash, static_cast<std::uint64_t>(item.attribute));
             mix(hash, static_cast<std::uint64_t>(item.count));
+            mix(hash, static_cast<std::uint64_t>(item.max_count));
+            mix(hash, static_cast<std::uint64_t>(item.consume_on_use));
             mix(hash, static_cast<std::uint64_t>(item.cooldown));
             mix(hash, static_cast<std::uint64_t>(item.loaded));
             mix(hash, static_cast<std::uint64_t>(item.spare));
@@ -105,6 +107,8 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(ground.kind));
         mix(hash, static_cast<std::uint64_t>(ground.attribute));
         mix(hash, static_cast<std::uint64_t>(ground.count));
+        mix(hash, static_cast<std::uint64_t>(ground.max_count));
+        mix(hash, static_cast<std::uint64_t>(ground.consume_on_use));
         mix(hash, static_cast<std::uint64_t>(ground.cooldown));
         mix(hash, static_cast<std::uint64_t>(ground.loaded));
         mix(hash, static_cast<std::uint64_t>(ground.spare));

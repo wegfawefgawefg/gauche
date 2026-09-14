@@ -48,7 +48,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind != ItemKind::None) {
             SDL_FRect icon{x + 3.0F, y + 3.0F, 12.0F, 12.0F};
-            SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)),
+            SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)),
                               nullptr, &icon);
             if (!quiet) {
                 const std::string label = item.attribute == ItemAttribute::None ?

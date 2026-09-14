@@ -239,14 +239,13 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     const int range = distance(user.cell, target);
     bool used = false;
     int cooldown = 0;
-    bool consumed = false;
     switch (item.kind) {
     case ItemKind::Wall:
         if (range >= 1 && range <= 2) {
             Tile* tile = game.stage.at(target);
             if (tile != nullptr && buildable(tile->kind) && entity_at(game, target, true) < 0) {
                 *tile = {TileKind::Wall, 100, 0};
-                used = consumed = true;
+                used = true;
                 cooldown = 6;
             }
         }
@@ -256,7 +255,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (user.health < user.max_health) {
             const ItemPattern pattern = item_pattern(item);
             user.health = std::min(user.max_health, user.health + pattern.heal);
-            used = consumed = true;
+            used = true;
             cooldown = pattern.cooldown;
         }
         break;
@@ -270,7 +269,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::ConductorHat: {
         const Handle rail = spawn_entity(game, EntityKind::RailLayer,
                                          {game.stage.width, user.cell.y});
-        used = consumed = get_entity(game, rail) != nullptr;
+        used = get_entity(game, rail) != nullptr;
         break;
     }
     case ItemKind::Buckler:
@@ -287,7 +286,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (range <= 3) {
             const ItemPattern pattern = item_pattern(item);
             blast(game, target, pattern.blast_radius, pattern.damage, user.cell);
-            used = consumed = true;
+            used = true;
             cooldown = pattern.cooldown;
         }
         break;
@@ -297,7 +296,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             if (victim >= 0 && victim != user_slot) {
                 Entity& sleeper = game.entities[static_cast<std::size_t>(victim)];
                 sleeper.sleep_ticks = std::max(sleeper.sleep_ticks, 180);
-                used = consumed = true;
+                used = true;
                 cooldown = 30;
             }
         }
@@ -320,7 +319,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
                     placed->ground_item.opened = item.kind == ItemKind::BearTrap;
                     placed->sprite = item.kind == ItemKind::BearTrap ?
                         Sprite::BearTrapOpen : item_sprite(item.kind);
-                    used = consumed = true;
+                    used = true;
                     cooldown = 20;
                     item.opened = false;
                 }
@@ -335,7 +334,6 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
                 used = true;
             }
         }
-        consumed = used;
         break;
     case ItemKind::None:
         break;
@@ -363,7 +361,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             item = {};
             return true;
         }
-        if (consumed && --item.count <= 0) item = {};
+        if (item.consume_on_use && --item.count <= 0) item = {};
     }
     return used;
 }

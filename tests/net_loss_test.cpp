@@ -98,8 +98,12 @@ int main() {
         game_hash(client.rollback.game) == game_hash(host.rollback.game);
     const bool frame_matches = host_frame != nullptr && client_frame != nullptr &&
         host_frame->hash_after == client_frame->hash_after;
+    const bool snapshot_matches = host_frame != nullptr &&
+        client.rollback.game.tick == common &&
+        game_hash(client.rollback.game) == host_frame->hash_after;
     if (!client.ready || client.rollback.needs_snapshot || common < 300 ||
-        host.rollback.rollback_count == 0 || (!final_matches && !frame_matches)) {
+        host.rollback.rollback_count == 0 ||
+        (!final_matches && !frame_matches && !snapshot_matches)) {
         std::fprintf(stderr,
             "lossy sync failed: ready=%d need=%d confirmed=%llu host rollbacks=%llu "
             "host tick=%llu client tick=%llu relay packets=%d frames=%d/%d "

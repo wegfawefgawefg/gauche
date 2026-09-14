@@ -12,6 +12,19 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     item.attribute = item_accepts_attribute(kind, attribute) ?
         attribute : ItemAttribute::None;
     item.count = count;
+    item.max_count = kind == ItemKind::None ? 0 :
+        kind == ItemKind::Wall ? 99 :
+        kind == ItemKind::Medkit || kind == ItemKind::Bandage ? 10 :
+        kind == ItemKind::Bandaid || kind == ItemKind::Bomb ||
+        kind == ItemKind::SleepMeds || kind == ItemKind::BearTrap ||
+        kind == ItemKind::Mine || kind == ItemKind::RawMeat ||
+        kind == ItemKind::CookedMeat ? 20 : 1;
+    item.consume_on_use = kind == ItemKind::Wall || kind == ItemKind::Medkit ||
+        kind == ItemKind::Bandage || kind == ItemKind::Bandaid ||
+        kind == ItemKind::ConductorHat || kind == ItemKind::Ammo ||
+        kind == ItemKind::Bomb || kind == ItemKind::SleepMeds ||
+        kind == ItemKind::BearTrap || kind == ItemKind::Mine ||
+        kind == ItemKind::RawMeat || kind == ItemKind::CookedMeat;
     switch (kind) {
     case ItemKind::Buckler: item.max_durability = 30; break;
     case ItemKind::Stick: item.max_uses = 18; break;
@@ -61,6 +74,11 @@ Sprite item_sprite(ItemKind kind) {
     }
 }
 
+Sprite item_sprite(const Item& item) {
+    return item.kind == ItemKind::BearTrap && item.opened ?
+        Sprite::BearTrapOpen : item_sprite(item.kind);
+}
+
 const char* item_name(ItemKind kind) {
     switch (kind) {
     case ItemKind::None: return "Empty";
@@ -91,19 +109,15 @@ const char* item_name(ItemKind kind) {
 }
 
 bool insert_item(Inventory& inventory, Item item) {
-    if (item.kind == ItemKind::None || item.count <= 0) return false;
+    if (item.kind == ItemKind::None || item.count <= 0 || item.max_count <= 0) return false;
     const Inventory original = inventory;
-    const bool stackable = item.kind == ItemKind::Wall || item.kind == ItemKind::Medkit ||
-        item.kind == ItemKind::Bandage || item.kind == ItemKind::Bandaid ||
-        item.kind == ItemKind::Bomb || item.kind == ItemKind::SleepMeds ||
-        item.kind == ItemKind::BearTrap || item.kind == ItemKind::Mine ||
-        item.kind == ItemKind::RawMeat || item.kind == ItemKind::CookedMeat;
-    const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
-    if (stackable) {
+    if (item.max_count > 1) {
         for (Item& slot : inventory.slots) {
             if (slot.kind != item.kind || slot.attribute != item.attribute ||
-                slot.opened != item.opened || slot.count >= maximum) continue;
-            const int transfer = std::min(maximum - slot.count, item.count);
+                slot.opened != item.opened || slot.max_count != item.max_count ||
+                slot.consume_on_use != item.consume_on_use ||
+                slot.count >= slot.max_count) continue;
+            const int transfer = std::min(slot.max_count - slot.count, item.count);
             slot.count += transfer;
             item.count -= transfer;
             if (item.count == 0) return true;
@@ -112,7 +126,9 @@ bool insert_item(Inventory& inventory, Item item) {
     for (Item& slot : inventory.slots) {
         if (slot.kind == ItemKind::None) {
             slot = item;
-            return true;
+            slot.count = std::min(item.count, item.max_count);
+            item.count -= slot.count;
+            if (item.count == 0) return true;
         }
     }
     inventory = original;

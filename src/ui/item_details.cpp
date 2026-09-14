@@ -90,9 +90,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     text(renderer, x + 3.0F, y - 5.0F, label);
     if (item.kind == ItemKind::None) return;
     SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
-    SDL_RenderTexture(renderer, texture_for(graphics,
-        item.kind == ItemKind::BearTrap && item.opened ?
-        Sprite::BearTrapOpen : item_sprite(item.kind)), nullptr, &icon);
+    SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     text(renderer, x + 39.0F, y + 22.0F, item_name(item.kind));
     char line[80];
     std::snprintf(line, sizeof(line), "x%d  %s", item.count,
@@ -127,7 +125,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.max_uses > 0)
         std::snprintf(line, sizeof(line), "USES %d / %d",
                       item.uses, item.max_uses);
-    else std::snprintf(line, sizeof(line), "STACK %d", item.count);
+    else if (item.max_count > 1)
+        std::snprintf(line, sizeof(line), "STACK %d / %d   %s",
+                      item.count, item.max_count,
+                      item.consume_on_use ? "CONSUMES" : "PERSISTS");
+    else std::snprintf(line, sizeof(line), "%s",
+                       item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
     std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
     text(renderer, x + 10.0F, y + 129.0F, line, 194, 192, 180);

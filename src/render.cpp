@@ -153,7 +153,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const double angle = std::atan2(static_cast<double>(entity.facing.y),
                                             static_cast<double>(entity.facing.x)) *
                                  180.0 / 3.141592653589793;
-            SDL_Texture* held_texture = texture_for(graphics, item_sprite(held->kind));
+            SDL_Texture* held_texture = texture_for(graphics, item_sprite(*held));
             SDL_SetTextureColorModFloat(held_texture, brightness.red,
                                         brightness.green, brightness.blue);
             SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,

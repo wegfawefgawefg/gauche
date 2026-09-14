@@ -28,7 +28,10 @@ std::string item_state_text(const Item& item, bool compact) {
         else
             std::snprintf(result, sizeof(result), "MAG %d/%d +%d",
                           item.loaded, item_meter_capacity(item), item.spare);
-    else if (item.count > 1)
+    else if (item.max_count > 1)
+        std::snprintf(result, sizeof(result), compact ? "x%d" : "STACK %d/%d",
+                      item.count, item.max_count);
+    else if (item.kind != ItemKind::None)
         std::snprintf(result, sizeof(result), "x%d", item.count);
     else return {};
     return result;
@@ -43,7 +46,7 @@ int item_meter_capacity(const Item& item) {
     case ItemKind::SMG: return 30;
     case ItemKind::Musket: case ItemKind::Bow:
     case ItemKind::RocketLauncher: return 1;
-    default: return item.count;
+    default: return item.max_count;
     }
 }
 

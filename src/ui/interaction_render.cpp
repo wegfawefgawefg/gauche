@@ -172,13 +172,14 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind == ItemKind::None) continue;
         SDL_FRect icon{x + 26.0F, y + 5.0F, 18.0F, 18.0F};
-        SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)), nullptr, &icon);
+        SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
         text(renderer, x + 49.0F, y + 5.0F,
              item_display_name(item).substr(0, 17),
              item.attribute == ItemAttribute::None ? 235 : 218,
              item.attribute == ItemAttribute::None ? 230 : 169,
              item.attribute == ItemAttribute::None ? 214 : 94);
-        text(renderer, x + 49.0F, y + 15.0F, item_state_text(item), 188, 205, 181);
+        text(renderer, x + 49.0F, y + 15.0F,
+             item_state_text(item, true), 188, 205, 181);
         text(renderer, x + 102.0F, y + 15.0F,
              item_cooldown_text(item), 218, 184, 133);
         draw_item_meter(renderer, x + 49.0F, y + 25.0F, 48.0F, 3.0F,
@@ -188,6 +189,46 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
                         item.cooldown, item_pattern(item).cooldown,
                         {218, 156, 79, 255});
     }
+}
+
+void compare_items(SDL_Renderer* renderer, const Item& left, const Item& right) {
+    const ItemPattern first = item_pattern(left);
+    const ItemPattern second = item_pattern(right);
+    const int shape = first.blast_radius != second.blast_radius ?
+        first.blast_radius - second.blast_radius :
+        first.half_width != second.half_width ?
+        first.half_width - second.half_width : first.maximum - second.maximum;
+    const char* shape_name = first.blast_radius != second.blast_radius ? "BLAST" :
+        first.half_width != second.half_width ? "WIDTH" : "REACH";
+    const bool healing = first.heal > 0 || second.heal > 0;
+    char line[128];
+    std::snprintf(line, sizeof(line), "LEFT - RIGHT  %s %+d  %s %+d  CD %+.2fs",
+                  healing ? "HEAL" : "DMG",
+                  healing ? first.heal - second.heal : first.damage - second.damage,
+                  shape_name, shape,
+                  static_cast<double>(first.cooldown - second.cooldown) / 60.0);
+    text(renderer, 208.0F, 300.0F, line, 136, 213, 147);
+    if (left.max_durability > 0 && right.max_durability > 0)
+        std::snprintf(line, sizeof(line), "COND %d/%d vs %d/%d   CURRENT %+d",
+                      left.durability, left.max_durability,
+                      right.durability, right.max_durability,
+                      left.durability - right.durability);
+    else if (left.max_uses > 0 && right.max_uses > 0)
+        std::snprintf(line, sizeof(line), "USES %d/%d vs %d/%d   LEFT %+d",
+                      left.uses, left.max_uses, right.uses, right.max_uses,
+                      left.uses - right.uses);
+    else if (item_is_gun(left.kind) && item_is_gun(right.kind))
+        std::snprintf(line, sizeof(line), "MAG %d/%d +%d vs %d/%d +%d",
+                      left.loaded, item_meter_capacity(left), left.spare,
+                      right.loaded, item_meter_capacity(right), right.spare);
+    else {
+        const std::string first_state = item_state_text(left);
+        const std::string second_state = item_state_text(right);
+        std::snprintf(line, sizeof(line), "LEFT %s  |  RIGHT %s",
+                      first_state.empty() ? "-" : first_state.c_str(),
+                      second_state.empty() ? "-" : second_state.c_str());
+    }
+    text(renderer, 208.0F, 310.0F, line, 188, 205, 181);
 }
 
 void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
@@ -221,25 +262,11 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         else reward_card(renderer, graphics, *player, offer,
                          204.0F + shift, 77.0F, 194.0F, false, "OFFER");
         draw_item_details(renderer, graphics, *player, focused,
-                          413.0F + shift, 77.0F, 199.0F, 214.0F, "YOUR SLOT");
+                          413.0F + shift, 77.0F, 199.0F, 214.0F,
+                          ui.slot_focus == player->inventory.selected ? "HELD" : "YOUR SLOT");
         if (offer.kind == RewardKind::Item && focused.kind != ItemKind::None) {
             const Item offered_item = ground != nullptr ? *ground : reward_item(offer);
-            const ItemPattern gain = item_pattern(offered_item);
-            const ItemPattern held = item_pattern(focused);
-            char delta[96];
-            std::snprintf(delta, sizeof(delta), "COMPARE  DMG %+d   REACH %+d   CD %+.2fs",
-                          gain.damage - held.damage,
-                          gain.maximum - held.maximum,
-                          static_cast<double>(gain.cooldown - held.cooldown) / 60.0);
-            text(renderer, 208.0F, 300.0F, delta, 136, 213, 147);
-            const std::string from = item_state_text(focused);
-            const std::string to = item_state_text(offered_item);
-            std::snprintf(delta, sizeof(delta), "STATE  %s | %s    %s -> %s",
-                          from.empty() ? "-" : from.c_str(),
-                          to.empty() ? "-" : to.c_str(),
-                          item_attribute_name(focused.attribute),
-                          item_attribute_name(offered_item.attribute));
-            text(renderer, 208.0F, 310.0F, delta, 188, 205, 181);
+            compare_items(renderer, offered_item, focused);
         }
     } else {
         draw_item_details(renderer, graphics, *player, focused,

@@ -49,6 +49,8 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     if (pattern.effect == PatternEffect::None) return;
     const int columns = std::max(5, static_cast<int>((width - 20.0F) / side));
     const int origin = pattern.maximum <= 3 ? columns / 2 : 1;
+    const int visible_reach = std::max(1, std::min(pattern.maximum,
+        columns - origin - 1 - pattern.blast_radius));
     constexpr int middle = rows / 2;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     for (int row = 0; row < rows; ++row)
@@ -65,10 +67,10 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     if (pattern.minimum == 0 && pattern.maximum == 0)
         colored_cell(renderer, origin, middle, columns, x, y, pattern.effect, false);
     else if (pattern.blast_radius > 0) {
-        for (int reach = 1; reach < pattern.maximum; ++reach)
+        for (int reach = 1; reach < visible_reach; ++reach)
             colored_cell(renderer, origin + reach, middle, columns,
                          x, y, pattern.effect, true);
-        blast_cells(renderer, origin + pattern.maximum, middle, columns,
+        blast_cells(renderer, origin + visible_reach, middle, columns,
                     pattern.blast_radius, x, y, pattern.effect);
     } else {
         for (int reach = 1; reach <= pattern.maximum; ++reach)
@@ -79,7 +81,9 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     SDL_FRect player{x + static_cast<float>(origin) * side,
                      y + static_cast<float>(middle) * side,
                      side, side};
-    SDL_SetRenderDrawColor(renderer, 212, 207, 169, 255);
+    const SDL_Color marker = pattern.minimum == 0 && pattern.maximum == 0 ?
+        effect_color(pattern.effect) : SDL_Color{212, 207, 169, 255};
+    SDL_SetRenderDrawColor(renderer, marker.r, marker.g, marker.b, 255);
     SDL_RenderFillRect(renderer, &player);
     SDL_SetRenderDrawColor(renderer, 18, 23, 20, 255);
     SDL_RenderDebugText(renderer, player.x, player.y, "P");

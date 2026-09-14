@@ -43,7 +43,7 @@ void drop_player_item(Game& game, Entity& player) {
     const Handle dropped = spawn_entity(game, EntityKind::GroundItem, player.cell);
     if (Entity* entity = get_entity(game, dropped)) {
         entity->ground_item = item;
-        entity->sprite = item_sprite(item.kind);
+        entity->sprite = item_sprite(item);
         item = {};
         emit_sound(game, SoundId::Drop, player.cell);
     }

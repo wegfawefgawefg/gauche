@@ -61,6 +61,8 @@ struct Item {
     ItemKind kind = ItemKind::None;
     ItemAttribute attribute = ItemAttribute::None;
     int count = 0;
+    int max_count = 0;
+    bool consume_on_use = false;
     int cooldown = 0;
     int loaded = 0;
     int spare = 0;
@@ -82,6 +84,7 @@ struct Inventory {
 Item make_item(ItemKind kind, int count = 1,
                ItemAttribute attribute = ItemAttribute::None);
 Sprite item_sprite(ItemKind kind);
+Sprite item_sprite(const Item& item);
 const char* item_name(ItemKind kind);
 bool insert_item(Inventory& inventory, Item item);
 

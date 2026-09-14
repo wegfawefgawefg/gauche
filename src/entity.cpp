@@ -86,7 +86,12 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     if (surface_wet(*tile) && wading_actor(entity))
         emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
             SoundId::WaterStep1 : SoundId::WaterStep2, entity.cell);
-    else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+    else if (wading_actor(entity) && (tile->kind == TileKind::Snow || tile->kind == TileKind::Ice)) {
+        const bool alternate = ((entity.cell.x + entity.cell.y + slot) & 1) != 0;
+        emit_sound(game, tile->kind == TileKind::Snow ?
+            (alternate ? SoundId::SnowStep2 : SoundId::SnowStep1) :
+            (alternate ? SoundId::IceStep2 : SoundId::IceStep1), entity.cell);
+    } else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)
         emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
                    SoundId::Step1 : SoundId::Step2,

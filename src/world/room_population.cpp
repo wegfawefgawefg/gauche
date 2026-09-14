@@ -1,6 +1,7 @@
 #include "route.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
+#include "ice_terrain.hpp"
 #include "../entities/dispatch.hpp"
 
 #include <algorithm>
@@ -137,6 +138,28 @@ void stash(Game& game, const RoomPlan& room, Supplies& budget) {
 }
 
 void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
+    // RESERVOIR: Shared supplies bridge the regional catalog as its items arrive.
+    if (ice_floor(game.run.floor)) {
+        if (room.role == RoomRole::Cache || room.role == RoomRole::Observatory ||
+            room.role == RoomRole::Secret || room.role == RoomRole::Shrine) stash(game, room, budget);
+        if (room.role == RoomRole::FishingHut) {
+            supply(game, room, ItemKind::CookedMeat, 2, budget.healing);
+            supply(game, room, ItemKind::RopeHook, 1, budget.equipment);
+        } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
+            supply(game, room, ItemKind::Bandage, 2, budget.healing);
+            supply(game, room, ItemKind::Torch, 1, budget.equipment);
+        } else if (room.role == RoomRole::IceQuarry) {
+            supply(game, room, ItemKind::Pickaxe, 1, budget.equipment);
+        } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {
+            constexpr ItemKind supplies[]{ItemKind::Shotgun, ItemKind::Musket,
+                ItemKind::Bomb, ItemKind::Buckler};
+            supply(game, room, supplies[random_u32(game) % std::size(supplies)], 1, budget.equipment);
+            supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
+        } else if (room.role == RoomRole::Observatory || room.role == RoomRole::Shrine) {
+            supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
+        }
+        return;
+    }
     if (room.role == RoomRole::Cache || room.role == RoomRole::Shrine ||
         room.role == RoomRole::Workshop || room.role == RoomRole::Secret) stash(game, room, budget);
     switch (room.role) {
@@ -197,6 +220,14 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
 }
 
 void room_light(Game& game, const RoomPlan& room) {
+    // WARMTH: An actual campfire marks shelter; cold rooms have no invented skylight.
+    if (ice_floor(game.run.floor)) {
+        if (room.role == RoomRole::Entrance || room.role == RoomRole::Shelter ||
+            room.role == RoomRole::FishingHut) {
+            if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Campfire, *cell);
+        }
+        return;
+    }
     if (game.run.floor > 4) return;
     if (room.role == RoomRole::Clearing || room.role == RoomRole::Orchard || room.role == RoomRole::Brook) {
         if (game.run.roof_light_count >= static_cast<int>(game.run.roof_lights.size())) return;

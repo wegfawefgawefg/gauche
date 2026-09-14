@@ -20,6 +20,7 @@
 #include "ui/scale.hpp"
 #include "view.hpp"
 #include "world/wall_render.hpp"
+#include "world/ice_render.hpp"
 #include "world/encounter.hpp"
 
 #include <algorithm>
@@ -33,6 +34,10 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
         return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
     if (tile.material == TileMaterial::Timber)
         return tile.kind == TileKind::Wall ? Sprite::ForestTimber : Sprite::TimberBroken;
+    if (world == 2) {
+        const Sprite native = ice_tile_sprite(tile, cell, tick);
+        if (native != Sprite::Count) return native;
+    }
     if (world >= 0) {
         switch (tile.kind) {
         case TileKind::Empty: {
@@ -49,6 +54,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
         }
     }
     switch (tile.kind) {
+    case TileKind::Snow: return Sprite::Snow;
     case TileKind::Grass: return Sprite::Grass;
     case TileKind::Wall: return Sprite::Wall;
     case TileKind::Ruin: return Sprite::Ruin;
@@ -128,8 +134,6 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint = world == 1 && tile.kind != TileKind::Lava ?
                 LightColor{225.0F / 255.0F, 133.0F / 255.0F, 105.0F / 255.0F} :
-                world == 2 && tile.kind != TileKind::Ice ?
-                LightColor{149.0F / 255.0F, 201.0F / 255.0F, 229.0F / 255.0F} :
                 LightColor{1.0F, 1.0F, 1.0F};
             if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
             else {
@@ -138,7 +142,8 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
             if (world >= 0 && tile.kind == TileKind::Wall)
-                draw_wall_contour(renderer, game.stage, cell, rect, lighting, tint);
+                draw_wall_contour(renderer, game.stage, cell, rect, lighting,
+                    world == 2 ? LightColor{.78F, .9F, 1.25F} : tint);
             draw_tile_damage(renderer, tile, cell, rect, lighting);
         }
     }

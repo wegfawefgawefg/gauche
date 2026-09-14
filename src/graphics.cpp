@@ -48,6 +48,8 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "bird_seed", "thorn_caltrops", "bird_seed_pile", "thorn_patch",
     "hunting_horn", "rope_hook", "hook_head",
     "root_drill", "drill_root", "swap_seed", "boomerang", "rope_snare", "snare_set", "snare_tight", "spring_trap", "spring_ready", "acorn_mine", "acorn_ready", "throwing_net", "net_flight", "net_caught", "sticky_boots", "rabbit_charm", "hand_bell", "firecracker", "firecracker_lit", "stink_bomb", "rotten_fruit", "pitch_bomb", "pitch_bomb_lit", "status_nausea", "shield_lantern", "reflecting_pan", "pan_ready", "scarecrow_bundle", "scarecrow", "debris_straw", "straw_decoy_bundle", "straw_decoy", "wolf_whistle", "wolf_called", "thunder_acorn", "thunder_acorn_lit", "pocket_door", "pocket_threshold", "pocket_threshold_open",
+    "ice_floor_a", "ice_floor_b", "ice_wall", "ice_ruin", "snow", "reservoir_ice",
+    "cold_shallow_a", "cold_shallow_b", "cold_water_a", "cold_water_b",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

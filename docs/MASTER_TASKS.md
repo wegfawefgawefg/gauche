@@ -1,10 +1,8 @@
 # Gauche master task list
 
 This is the **single live checklist** for agreed work after the playable C++
-port. Keep task status here. The [content brief](CONTENT_FARM_BRIEF.md) records
-the new scale and design constraints; the [forest idea pool](FOREST_CONTENT_IDEAS.md)
-contains candidate content. The [old item/UI/lighting checklist](NEXT_TASKS.md)
-is completed history. The new lighting contrast is the visual starting point;
+port. Keep task status here. The [content brief](CONTENT_FARM_BRIEF.md) records scale and constraints;
+the [forest ideas](FOREST_CONTENT_IDEAS.md) are candidates; [NEXT_TASKS.md](NEXT_TASKS.md) is completed history. The new lighting contrast is the visual starting point;
 preserve its dark, readable rooms.
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback;
@@ -253,27 +251,21 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
-Forest item slice: fifty-two regional items now have shared definitions,
-UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
-Rocks fly and land; boomerangs hit out/back and return; hatchet cleaves wood; spear pierces; crossbow reloads
-one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
-rake sweeps growth; flint knife doubles sleeping/rear damage. Thunder Acorn travels then chains; wet feet extend jumps.
-Pocket Door links passages through ordinary barriers; the original forest item list is implemented. Torch/lighter/oil/sap/water/spores/smoke/honey share fire, wetting, concealment and bait rules.
-Whistles redirect lone wolves; straw dummies draw attacks; scarecrows ward birds/rabbits; lanterns light/guard; pans return frontal shots. Oil slips; stink/rot lure scavengers; nausea washes off; delayed pitch burns then leaves resin. Natural sap sources remain. Nests yield stackable
-eggs, fried at campfires. Seeds grow cover/lamps; claws dig; resin repairs. Herbs regenerate, splints cure stun,
-root prevents sleep, chili speeds then burns, fungal bread heals then sleeps; snares/nets root, springs shove, mines chain. Boots resist shoves/slips; rabbit charms retreat.
+Forest item slice: fifty-two regional finds are implemented, including the
+original fifty-item list and two egg foods. Shared definitions supply icons,
+patterns, descriptions, sounds, room/reward/shop pools and rare attributes.
+Traveling weapons, digging/route tools, heat/liquids, bait/hearing, traps/roots,
+food/remedies, decoys/wards, lanterns/parries, conductive thunder and linked
+Pocket Doors have concrete interactions. See the [catalog](content/FOREST.md)
+and [implementation notes](IMPLEMENTATION_DECISIONS.md) for the actual rules.
+Natural sap sources and broader forest ecology/generation remain unfinished.
 
-Forest implementation slice: twenty adversaries exist: wolf, bear, bat, zombie,
-zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret,
-bramble guard, mosquito, owl, woodpecker, wasp nest, wasp, goblin, crow and burrow worm.
-Worm links split into exposed heads and dig tunnels. Wolves flank; bears defend territory; boars crush; snails deflect;
-moths seek lamps; toads puff sleep; mimics disguise; roots lash and guards interpose.
-Mosquitoes drain/retreat; owls swoop; woodpeckers drill. Finite nests react to smoke;
-wasps warn/sting and scatter when orphaned. Goblins carry off equipment; crows
-steal food, call nearby crows and return to a perch. Stolen instances drop intact.
-Forty-three new enemy cues and distinct silhouettes are integrated into room pools.
-Drops/bait/caltrops are integrated. Horns shove; hooks reel; drills bore; swap seeds exchange actors. Bells draw investigations; delayed firecrackers startle small creatures.
-Strict builds and static captures passed; behavior/balance playtesting is the user's.
+Forest enemy slice: all twenty catalog adversaries have bespoke behavior,
+recognizable sprites, tells, drops and room-pool integration. Shared handles
+support worm chains, guards, stolen items and finite wasp broods. Forty-three
+new enemy cues are integrated. See the [forest catalog](content/FOREST.md) and
+implementation notes for per-species rules. Strict builds/static captures pass;
+behavior and balance playtesting remain the user's.
 
 - [x] Design a full ice catalog to the same quotas and quality bar.
   See [Ice catalog](content/ICE.md): the drowned observatory, with twenty
@@ -281,6 +273,9 @@ Strict builds and static captures passed; behavior/balance playtesting is the us
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
+  Terrain foundation: seven cold room roles, native slate/snow/ice/water art,
+  dry routes, shared shelter supplies/containers and four new footing cues.
+  Regional enemies/items, material interactions and ambient catalog remain open.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

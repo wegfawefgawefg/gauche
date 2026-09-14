@@ -1,5 +1,6 @@
 #include "interaction.hpp"
 #include "../world/route.hpp"
+#include "../world/ice_terrain.hpp"
 
 #include <cstdlib>
 
@@ -7,6 +8,9 @@ namespace {
 
 PropKind room_prop(Game& game, RoomRole role) {
     const unsigned int roll = random_u32(game);
+    if (ice_floor(game.run.floor))
+        return role == RoomRole::Bathhouse || role == RoomRole::Shrine ?
+            PropKind::ClayPot : PropKind::Crate;
     switch (role) {
     case RoomRole::Thicket: return roll % 3 == 0 ? PropKind::Puffball : PropKind::TallGrass;
     case RoomRole::Brook: return roll % 2 == 0 ? PropKind::Fern : PropKind::Twigs;
@@ -44,14 +48,18 @@ bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking)
 } // namespace
 
 void scatter_room_props(Game& game, const FloorPlan& plan) {
-    if (game.run.floor > 4) return;
+    const bool cold = ice_floor(game.run.floor);
+    if (game.run.floor > 4 && !cold) return;
     for (const RoomPlan& room : plan.rooms) {
+        if (cold && room.role != RoomRole::FishingHut && room.role != RoomRole::Shelter &&
+            room.role != RoomRole::Bathhouse && room.role != RoomRole::Cache &&
+            room.role != RoomRole::Observatory && room.role != RoomRole::Shrine) continue;
         const int patches = room.role == RoomRole::Thicket ? 7 : 3;
         for (int patch = 0; patch < patches; ++patch) {
             const Cell anchor = room.center + Cell{
                 static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_width * 2)) - room.half_width,
                 static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_height * 2)) - room.half_height};
-            for (int piece = 0; piece < 5; ++piece) {
+            for (int piece = 0; piece < (cold ? 1 : 5); ++piece) {
                 const Cell cell = anchor + Cell{static_cast<int>(random_u32(game) % 5) - 2,
                                                 static_cast<int>(random_u32(game) % 5) - 2};
                 if (std::abs(cell.x - room.center.x) > room.half_width ||

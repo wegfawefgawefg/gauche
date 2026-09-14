@@ -470,3 +470,26 @@ fresh/half-used cards and linked/inactive thresholds were inspected; overflowing
 card text was shortened. Four OGG files decode to finite, non-silent samples.
 Passage uses teleport presentation, avoiding a false long footstep/debris push.
 No live playtest or broad new test suite ran.
+
+
+## Ice terrain foundation (2026-09-14)
+
+Existing floors 9–12 now choose reservoir, fishing hut, bathhouse, quarry,
+observatory, shelter and echo-tunnel roles alongside caches. Native slate,
+snow, ice and two-depth water sprites replace tinted forest ground. Snow is
+walkable/buildable; reservoir banks, pools and room shapes retain protected dry
+paths and the existing gated leaf boundary. Warm shelters use real campfires;
+there are no new invisible roof lights. Shared supplies and sparse crates/pots
+support the rooms while their regional catalog is implemented.
+
+Four offline-generated snow/ice footing sounds play on grounded steps. Terrain
+impacts use the cold wall sprite; the shared crack/contour lighting remains.
+TileKind::Snow is appended, handled by existing tile hash/snapshot serialization;
+layout stays 27, gameplay compatibility advances to DC. Forest RNG consumption,
+terrain selection and room pools stay unchanged. Run order remains forest/fire/ice
+until the full four-zone integration. Ice still uses the old five-tick step
+penalty; slipping, grit, thawing and the catalog enemies are subsequent work.
+
+Strict game/render builds pass. Static reservoir and generated ice-floor captures
+were inspected; the reservoir was adjusted to one basin and a broad southern
+bank. Four OGG files decode to finite non-silent samples. No live playtest ran.

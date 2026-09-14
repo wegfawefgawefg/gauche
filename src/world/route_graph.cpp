@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "ice_terrain.hpp"
 
 #include <algorithm>
 #include <array>
@@ -82,6 +83,8 @@ void describe_rooms(Game& game, FloorPlan& plan) {
     plan.height = (high.y - low.y + 1) * pitch + 2;
     constexpr RoomRole roles[]{RoomRole::Clearing, RoomRole::Thicket, RoomRole::Brook,
         RoomRole::Ruins, RoomRole::Den, RoomRole::Cache, RoomRole::Workshop, RoomRole::Orchard};
+    constexpr RoomRole cold_roles[]{RoomRole::Reservoir, RoomRole::FishingHut, RoomRole::Bathhouse,
+        RoomRole::IceQuarry, RoomRole::Observatory, RoomRole::Shelter, RoomRole::EchoTunnel, RoomRole::Cache};
     for (RoomPlan& room : plan.rooms) {
         room.center = {(room.grid.x - low.x) * pitch + pitch / 2 + 1,
                        (room.grid.y - low.y) * pitch + pitch / 2 + 1};
@@ -89,9 +92,15 @@ void describe_rooms(Game& game, FloorPlan& plan) {
         room.center.y += static_cast<int>(random_u32(game) % 3) - 1;
         room.half_width = 5 + static_cast<int>(random_u32(game) % 5);
         room.half_height = 4 + static_cast<int>(random_u32(game) % 6);
-        room.role = roles[random_u32(game) % std::size(roles)];
+        room.role = ice_floor(game.run.floor) ? cold_roles[random_u32(game) % std::size(cold_roles)] :
+            roles[random_u32(game) % std::size(roles)];
         room.shape = static_cast<RoomShape>(random_u32(game) % 8);
         room.mirrored = random_u32(game) % 2 != 0;
+        // ROLES: A reservoir needs broad banks; machinery uses galleries and courts.
+        if (room.role == RoomRole::Reservoir) room.shape = RoomShape::Clearing;
+        if (room.role == RoomRole::Bathhouse) room.shape = RoomShape::Courtyard;
+        if (room.role == RoomRole::EchoTunnel) room.shape = RoomShape::BentHall;
+        if (room.role == RoomRole::Observatory) room.shape = RoomShape::Pillars;
     }
     plan.rooms[0].role = RoomRole::Entrance;
     plan.rooms[0].shape = RoomShape::Clearing;
@@ -128,6 +137,7 @@ bool FloorPlan::protected_cell(Cell cell) const {
 
 const char* room_name(RoomRole role) {
     constexpr const char* names[]{"Trailhead", "Way out", "Clearing", "Thicket", "Brook",
-        "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache"};
+        "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache",
+        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel"};
     return names[static_cast<std::size_t>(role)];
 }

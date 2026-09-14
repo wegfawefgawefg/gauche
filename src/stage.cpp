@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "world/terrain_material.hpp"
+#include "world/ice_terrain.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -39,11 +40,11 @@ bool walkable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass ||
            kind == TileKind::Ruin || kind == TileKind::Rail ||
            kind == TileKind::Lava || kind == TileKind::Ice ||
-           kind == TileKind::ShallowWater || kind == TileKind::Spring;
+           kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::Snow;
 }
 
 bool buildable(TileKind kind) {
-    return kind == TileKind::Empty || kind == TileKind::Grass;
+    return kind == TileKind::Empty || kind == TileKind::Grass || kind == TileKind::Snow;
 }
 
 bool walkable(const Tile& tile) {
@@ -80,7 +81,8 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     const bool wood = wooden_terrain(*tile);
     const Sprite material = tile->material == TileMaterial::Tree ? Sprite::ForestTree :
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
-        game.run.phase == RunPhase::Arena ? Sprite::Wall : Sprite::ForestWall;
+        game.run.phase == RunPhase::Arena ? Sprite::Wall :
+        ice_floor(game.run.floor) ? Sprite::IceWall : Sprite::ForestWall;
     const bool hit = damage_tile(game.stage, cell, damage, dig_power, impact);
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =

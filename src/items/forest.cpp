@@ -9,7 +9,10 @@
 namespace {
 
 // DEFINITIONS: Data shared by initialization, comparison cards and combat dispatch.
-constexpr RegionalItem rock{"Throwing Rock", "Throw itself along a line. Recover it at the impact; 8 damage.",
+constexpr RegionalItem boomerang{"Boomerang", "Hits once each way. Returns to your reserved slot; a blocked return drops it.",
+    Sprite::Boomerang, {1, 6, 0, 16, 24, PatternEffect::Damage, true, 0, 0, true},
+    ItemAction::Throw, 24, 1, false, 0, 0, 0, 0, 0, SoundId::BoomerangThrow};
+constexpr RegionalItem rock{"Throwing Rock", "Flies along a line, hits for 8 damage and lands. Recover the same stone at the impact.",
     Sprite::ThrowingRock, {1, 6, 0, 8, 30, PatternEffect::Damage, true},
     ItemAction::Throw, 3, 6, true, 0, 0, 0, 60, 0, SoundId::RockThrow};
 constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Triple damage to timber, trees, crates and logs; cannot dig stone.",
@@ -45,6 +48,7 @@ const RegionalItem* regional_item(ItemKind kind) {
     if (const RegionalItem* food = forest_food_item(kind)) return food;
     if (const RegionalItem* material = forest_material_item(kind)) return material;
     switch (kind) {
+    case ItemKind::Boomerang: return &boomerang;
     case ItemKind::ThrowingRock: return &rock;
     case ItemKind::Hatchet: return &hatchet;
     case ItemKind::HuntingSpear: return &spear;

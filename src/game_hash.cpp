@@ -150,6 +150,8 @@ std::uint64_t game_hash(const Game& game) {
             mix_light(hash, item.light);
             mix(hash, static_cast<std::uint64_t>(item.dig_power));
             mix(hash, static_cast<std::uint64_t>(item.flame_ticks));
+            mix(hash, static_cast<std::uint64_t>(item.flight.slot));
+            mix(hash, item.flight.generation);
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
@@ -168,6 +170,14 @@ std::uint64_t game_hash(const Game& game) {
         mix_light(hash, ground.light);
         mix(hash, static_cast<std::uint64_t>(ground.dig_power));
         mix(hash, static_cast<std::uint64_t>(ground.flame_ticks));
+        mix(hash, static_cast<std::uint64_t>(ground.flight.slot));
+        mix(hash, ground.flight.generation);
     }
+    mix(hash, game.flight_contacts.size());
+    for (const FlightContact& hit : game.flight_contacts)
+        for (Handle handle : {hit.projectile, hit.victim}) {
+            mix(hash, static_cast<std::uint64_t>(handle.slot));
+            mix(hash, handle.generation);
+        }
     return hash;
 }

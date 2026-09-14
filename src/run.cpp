@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "projectiles/recoverable.hpp"
 #include "items/campfire.hpp"
 #include "items/catalog.hpp"
 #include "world/encounter.hpp"
@@ -41,7 +42,7 @@ Reward random_reward(Game& game, int category) {
             ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask,
             ItemKind::SmokePot, ItemKind::MushroomSpores, ItemKind::HoneyPot, ItemKind::DiggingClaws,
             ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
-            ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed};
+            ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::Boomerang};
         const ItemKind kind = finds[random_u32(game) % std::size(finds)];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::ThrowingRock ? 3 : 1, rare_attribute(game, kind)};
@@ -160,6 +161,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
 }
 
 void finish_floor(Game& game) {
+    finish_recoverables(game);
     game.run.phase = RunPhase::Reward;
     emit_sound(game, SoundId::LevelWin, game.run.exit, false);
     game.run.chosen.fill(false);
@@ -265,7 +267,7 @@ void advance_run(Game& game) {
                     ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask, ItemKind::SmokePot,
                     ItemKind::HoneyPot, ItemKind::MushroomSpores, ItemKind::DiggingClaws,
                     ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
-                    ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed};
+                    ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::Boomerang};
                 game.run.shop_stock[1] = tools[random_u32(game) % std::size(tools)];
                 game.run.shop_stock[2] = random_u32(game) % 2 == 0 ?
                     ItemKind::Crossbow : ItemKind::Blunderbuss;

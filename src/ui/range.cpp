@@ -53,7 +53,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const Item& held = *player.inventory.held();
     const Cell facing = player.label_b < 0 ? player.point_b : player.facing;
     const ItemPattern pattern = item_pattern(held);
-    if (pattern.effect == PatternEffect::None) return;
+    if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (pattern.cone) {
         const Cell side{-facing.y, facing.x};

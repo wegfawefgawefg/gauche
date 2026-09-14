@@ -16,6 +16,7 @@ std::string item_cooldown_text(const Item& item) {
 }
 
 std::string item_state_text(const Item& item, bool compact) {
+    if (item.flight.slot >= 0) return compact ? "OUT" : "IN FLIGHT";
     char result[32];
     if (item.kind == ItemKind::Bow)
         std::snprintf(result, sizeof(result), compact ? "%d" : "QUIVER %d ARROWS", item.loaded);

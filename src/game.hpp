@@ -89,7 +89,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang,
     Count,
 };
 
@@ -97,6 +97,14 @@ enum class ItemAttribute : std::uint8_t {
     None, Strong, Agile, Durable, Fragile, Heavy, Big,
     Long, Piercing, Restorative,
 };
+
+struct Handle {
+    int slot = -1;
+    std::uint32_t generation = 0;
+    friend bool operator==(Handle, Handle) = default;
+};
+
+struct FlightContact { Handle projectile{}, victim{}; };
 
 struct Item {
     ItemKind kind = ItemKind::None;
@@ -115,6 +123,7 @@ struct Item {
     LightEmitter light{};
     int dig_power = 0;
     int flame_ticks = 0;
+    Handle flight{};
 };
 
 constexpr int quick_slots = 6;
@@ -141,11 +150,6 @@ enum class EntityKind : std::uint8_t {
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
     WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm,
     Count,
-};
-struct Handle {
-    int slot = -1;
-    std::uint32_t generation = 0;
-    friend bool operator==(Handle, Handle) = default;
 };
 
 struct Entity {
@@ -252,6 +256,7 @@ struct Run {
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
+    std::vector<FlightContact> flight_contacts;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

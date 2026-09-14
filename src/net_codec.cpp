@@ -1,4 +1,5 @@
 #include "net_codec.hpp"
+#include "projectiles/projectile.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -106,6 +107,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     write_light(writer, item.light);
     writer.i32(item.dig_power);
     writer.i32(item.flame_ticks);
+    writer.i32(item.flight.slot); writer.u32(item.flight.generation);
 }
 Item read_item(PacketReader& reader) {
     Item item;
@@ -122,6 +124,9 @@ Item read_item(PacketReader& reader) {
     item.light = read_light(reader);
     item.dig_power = reader.i32();
     item.flame_ticks = reader.i32();
+    item.flight = {reader.i32(), reader.u32()};
+    if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
+        (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang)) reader.okay = false;
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
     if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
@@ -233,7 +238,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(20);
+    writer.u32(21);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -291,12 +296,17 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     }
     for (ItemKind item : run.shop_stock) writer.u8(static_cast<std::uint8_t>(item));
     for (const Entity& entity : game.entities) write_entity(writer, entity);
+    writer.u32(static_cast<std::uint32_t>(game.flight_contacts.size()));
+    for (const FlightContact& hit : game.flight_contacts)
+        for (Handle handle : {hit.projectile, hit.victim}) {
+            writer.i32(handle.slot); writer.u32(handle.generation);
+        }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 20) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 21) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -397,6 +407,32 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (item >= ItemKind::Count) reader.okay = false;
     }
     for (Entity& entity : result.entities) entity = read_entity(reader);
+    const std::uint32_t contacts = reader.u32();
+    if (!reader.okay || contacts > max_entities * max_entities ||
+        contacts > (bytes.size() - reader.position) / 16) {
+        error = "Invalid projectile contacts"; return false;
+    }
+    for (std::uint32_t index = 0; index < contacts; ++index) {
+        FlightContact hit{{reader.i32(), reader.u32()}, {reader.i32(), reader.u32()}};
+        const Entity* shot = get_entity(result, hit.projectile);
+        if (shot == nullptr || shot->kind != EntityKind::Projectile ||
+            (shot->label_a != static_cast<int>(ProjectileKind::Rock) &&
+             shot->label_a != static_cast<int>(ProjectileKind::Boomerang)) ||
+            hit.victim.slot < 0 || hit.victim.slot >= max_entities) reader.okay = false;
+        result.flight_contacts.push_back(hit);
+    }
+    // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
+    for (int slot = 0; slot < max_entities; ++slot) {
+        const Entity& actor = result.entities[static_cast<std::size_t>(slot)];
+        if (actor.kind == EntityKind::None) continue;
+        for (const Item& item : actor.inventory.slots) {
+            if (item.flight.slot < 0) continue;
+            const Entity* shot = get_entity(result, item.flight);
+            if (shot == nullptr || shot->kind != EntityKind::Projectile ||
+                shot->label_a != static_cast<int>(ProjectileKind::Boomerang) ||
+                shot->entity_a != Handle{slot, actor.generation}) reader.okay = false;
+        }
+    }
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }
     for (Handle handle : result.players) {
         if (handle.slot >= 0 && get_entity(result, handle) == nullptr) {

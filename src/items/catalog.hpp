@@ -21,6 +21,5 @@ struct RegionalItem {
 };
 
 const RegionalItem* regional_item(ItemKind kind);
-bool throw_rock(Game& game, int user_slot, Cell direction);
 bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item);
 const RegionalItem* forest_food_item(ItemKind kind);

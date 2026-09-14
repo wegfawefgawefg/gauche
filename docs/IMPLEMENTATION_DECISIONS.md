@@ -458,27 +458,29 @@ pass. No live playtest or new gameplay test suite was run.
 
 ## Root drills and swap seeds
 
-Root drills and swap seeds bring forest finds to 33. Drills have three uses,
-a 90-tick cooldown and a committed five-cell line. After a 12-tick start they
-advance or bite every six ticks, with a six-second maximum life. Each bite does
-24 actor damage or twice that to terrain with dig power 3. They pause to chew
-wall HP, pierce bodies and armor, and stop at unbreakable/too-hard terrain,
-closed doors, encounter gates and crusher machinery. Damage/reach modifiers
-remain in the projectile's copied item; changing the owner's held tool cannot
-change a shot already traveling. The debug preview uses the same stop rules.
+Detailed rules and validation are in [root relic implementation](history/ROOT_RELIC_IMPLEMENTATION.md).
 
-Swap seeds stack to three and consume one on launch. They travel five cells at
-four ticks per cell, then exchange current positions with the first movable
-actor hit. Both destinations must remain walkable and free of other blockers.
-The swap commits both cells before landing effects, so neither actor overlaps
-the other's old position during hazard resolution. Friends can be swapped.
-Failed impacts fizzle; a dead/stale owner cancels the seed. Players' pending
-weapon actions cancel and both bodies receive a movement beat of recovery.
-Local swap bursts suppress ordinary arrival footprints and reset the camera
-guide, including short swaps. Body rendering still uses authoritative cells.
+## Recoverable flights and returning weapons
 
-Three sprites and six new synthesized cues have offline Python sources. Rare
-room, reward and shop pools include both tools. Projectile fields already enter
-hashes and snapshots; gameplay compatibility is CF, snapshot layout still 20.
-Strict builds and static world/item-card captures pass. No live playtest or new
-gameplay test suite was run.
+Boomerangs bring forest finds to 34. They travel six cardinal cells at three
+ticks per cell, dealing 16 damage to each actor once per outward/return leg.
+A wall ends the outward leg; a blocked return lands the item. The return tracks
+the owner's current cell, so movement can bend its path. It has a bounded life
+and drops on owner death or a stale owner handle. A caught weapon has a 24-tick
+cooldown. Long/Strong/Heavy/Agile retain their ordinary reach/damage/timing effects.
+
+A generation handle reserves its inventory slot while the physical item flies.
+That slot cannot be used, dropped or swapped; cards say IN FLIGHT and the hand
+is empty. Catching restores the original instance. Landing clears the reservation
+and converts the projectile to a ground item without needing a spare entity slot.
+Finishing a floor recalls surviving owners' tools before reward simulation pauses,
+allowing inventory comparisons and drops there. A new floor clears old handles.
+
+Throwing rocks now travel at four ticks per cell instead of instant ray damage.
+One stone leaves its stack, hits and lands, retaining its attributes. All Piercing
+allows continued flight through bodies. Ordered projectile/victim handle pairs
+record distinct contacts and reset on the boomerang turn. They and item flight
+handles are hashed, snapshotted and validated; layout is 21, compatibility D0.
+One sprite and four offline-synthesized cues accompany cache/reward/shop integration.
+Strict game/render builds and static in-flight HUD, comparison card and world
+captures pass. No live playtest or new gameplay test suite was run.

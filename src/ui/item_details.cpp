@@ -100,6 +100,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item_stackable(item))
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
     else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
+    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), "IN FLIGHT");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
              item_attribute_name(item.attribute), 218, 169, 94);
@@ -141,7 +142,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
             movement_beat(faster, faster.move_interval));
     }
     text(renderer, x + 10.0F, y + 96.0F, line);
-    std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
+    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), "IN FLIGHT - SLOT RESERVED");
+    else std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);

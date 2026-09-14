@@ -15,7 +15,7 @@ int ground_slot(const Game& game, Cell cell) {
 } // namespace
 
 bool item_can_drop(const Item& item) {
-    return item.kind != ItemKind::None && item.kind != ItemKind::Fist && item.count > 0;
+    return item.kind != ItemKind::None && item.kind != ItemKind::Fist && item.count > 0 && item.flight.slot < 0;
 }
 
 GroundAction ground_action(const Game& game, const Entity& player) {

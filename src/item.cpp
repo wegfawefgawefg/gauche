@@ -7,6 +7,7 @@
 #include "items/displacement.hpp"
 #include "items/root_relics.hpp"
 #include "projectiles/hook.hpp"
+#include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
 #include "item_attribute.hpp"
@@ -62,7 +63,7 @@ void blast_area(Game& game, Cell center, int radius, int damage, Cell attacker) 
 bool use_held_item(Game& game, int user_slot, Cell target) {
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
     Item& item = *user.inventory.held();
-    if (item.kind == ItemKind::None || item.count <= 0 || item.cooldown > 0) return false;
+    if (item.kind == ItemKind::None || item.count <= 0 || item.cooldown > 0 || item.flight.slot >= 0) return false;
     const Cell direction = cardinal_toward(user.cell, target, user.facing);
     const ItemKind used_kind = item.kind;
     user.facing = direction;
@@ -150,8 +151,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = fire_weapon(game, user_slot, direction, item);
         return used;
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
-    case ItemKind::ThrowingRock:
-        used = throw_rock(game, user_slot, direction);
+    case ItemKind::Boomerang: case ItemKind::ThrowingRock:
+        used = launch_recoverable(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::Bomb:

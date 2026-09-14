@@ -250,7 +250,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
         const Item* held = entity.inventory.held();
-        if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
+        if (held->kind != ItemKind::None && held->flight.slot < 0 && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
             const Cell held_facing = winding ? entity.point_b : entity.facing;
             const float forward = winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;

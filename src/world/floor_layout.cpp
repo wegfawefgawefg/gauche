@@ -60,6 +60,8 @@ void generate_world_floor(Game& game) {
             insert_item(player->inventory, make_item(ItemKind::Bandage, 3));
         } else {
             player->inventory = previous[owner].inventory;
+            // EXIT: Returning weapons rejoin their reserved slots as the old floor is discarded.
+            for (Item& item : player->inventory.slots) item.flight = {};
             player->light = previous[owner].light;
             player->self_light = previous[owner].self_light;
             player->max_health = previous[owner].max_health;

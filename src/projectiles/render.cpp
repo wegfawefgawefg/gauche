@@ -7,6 +7,7 @@
 void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
+    const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
     const bool hook = shot.label_a == static_cast<int>(ProjectileKind::Hook);
@@ -30,7 +31,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_Texture* texture = texture_for(graphics, shot.sprite);
     const LightColor light = lit_sprite_color(lighting, shot.cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-    const double angle = swap ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
+    const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : swap ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
     const double wobble = drill ? ((game.tick / 3) % 2 == 0 ? -7.0 : 7.0) : 0;
     if (hook) {

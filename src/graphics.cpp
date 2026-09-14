@@ -47,7 +47,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "herb_bag", "splint", "bitter_root", "chili", "fungal_bread",
     "bird_seed", "thorn_caltrops", "bird_seed_pile", "thorn_patch",
     "hunting_horn", "rope_hook", "hook_head",
-    "root_drill", "drill_root", "swap_seed",
+    "root_drill", "drill_root", "swap_seed", "boomerang",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

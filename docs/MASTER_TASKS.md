@@ -253,9 +253,9 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
-Forest item slice: thirty-three regional items now have shared definitions,
+Forest item slice: thirty-four regional items now have shared definitions,
 UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
-Rock recovers at impact; hatchet cleaves wood; spear pierces; crossbow reloads
+Rocks fly and land; boomerangs hit out/back and return; hatchet cleaves wood; spear pierces; crossbow reloads
 one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
 rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
 items remains the forest target. Torch/lighter/oil/sap/water/spores/smoke/honey share fire, wetting, concealment and bait rules.

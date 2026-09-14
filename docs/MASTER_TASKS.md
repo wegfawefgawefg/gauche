@@ -310,12 +310,14 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
-Forest item slice: the first eight regional items now have shared definitions,
+Forest item slice: sixteen regional items now have shared definitions,
 UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
 Rock recovers at impact; hatchet cleaves wood; spear pierces; crossbow reloads
 one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
 rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
-items remains the forest target. Other regional drops still await their items.
+items remains the forest target. Torch, lighter, oil, sap, water, spores, smoke
+and honey now share burning/wetting/concealment/bait rules. Oil slipping, wasp
+bait and natural sap sources remain; toads now drop spores. Other drops await items.
 
 Forest implementation slice: ten roster adversaries now exist (wolf, bear, bat,
 zombie, zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic).

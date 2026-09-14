@@ -76,7 +76,9 @@ ItemPattern item_pattern(const Item& item) {
 
 Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern) {
     const Cell direction = user.facing;
-    const int reach = user.inventory.held()->kind == ItemKind::Bomb ? pattern.maximum :
+    const RegionalItem* spec = regional_item(user.inventory.held()->kind);
+    const int reach = (user.inventory.held()->kind == ItemKind::Bomb ||
+        (spec != nullptr && spec->action == ItemAction::Throw)) ? pattern.maximum :
         pattern.ray ? 1 :
         std::clamp(std::max(std::abs(aim.x), std::abs(aim.y)),
                    std::max(1, pattern.minimum), std::max(1, pattern.maximum));

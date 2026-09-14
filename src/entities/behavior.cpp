@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../surfaces/interaction.hpp"
 
 #include <algorithm>
 #include <array>
@@ -27,7 +28,7 @@ int nearest_player(const Game& game, Cell from, int radius) {
         const Entity* player = get_entity(game, handle);
         if (player == nullptr || player->health <= 0) continue;
         const int length = distance(from, player->cell);
-        if (length < best) { nearest = handle.slot; best = length; }
+        if (length < best && !smoke_hides(game.stage, from, player->cell)) { nearest = handle.slot; best = length; }
     }
     return nearest;
 }

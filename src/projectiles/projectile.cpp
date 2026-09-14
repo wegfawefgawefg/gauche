@@ -1,4 +1,5 @@
 #include "projectile.hpp"
+#include "../items/materials.hpp"
 #include "../item_pattern.hpp"
 #include "../props/interaction.hpp"
 
@@ -14,16 +15,17 @@ void init_projectile(Entity& entity) {
 }
 
 int projectile_step_ticks(const Entity& entity) {
-    return entity.label_a == static_cast<int>(ProjectileKind::Bomb) ? 8 : 3;
+    return entity.label_a != static_cast<int>(ProjectileKind::Arrow) ? 8 : 3;
 }
 
 bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach) {
     const Entity& owner = game.entities[static_cast<std::size_t>(owner_slot)];
     const bool bomb = item.kind == ItemKind::Bomb;
+    const bool flask = forest_material_item(item.kind) != nullptr;
     Entity* shot = get_entity(game, spawn_entity(game, EntityKind::Projectile, owner.cell));
     if (shot == nullptr) return false;
     const ItemPattern pattern = item_pattern(item);
-    shot->label_a = static_cast<int>(bomb ? ProjectileKind::Bomb : ProjectileKind::Arrow);
+    shot->label_a = static_cast<int>(bomb ? ProjectileKind::Bomb : flask ? ProjectileKind::Flask : ProjectileKind::Arrow);
     shot->label_b = bomb ? pattern.blast_radius :
         (pattern.piercing || has_artifact(owner, ArtifactKind::AllPiercing) ? 1 : 0);
     shot->counter_a = std::clamp(reach, 1, pattern.maximum);
@@ -36,12 +38,12 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     shot->facing = direction;
     shot->ground_item = item;
     shot->ground_item.count = 1;
-    shot->sprite = bomb ? Sprite::BombLit : Sprite::Arrow;
+    shot->sprite = bomb ? Sprite::BombLit : flask ? item_sprite(item) : Sprite::Arrow;
     if (bomb) {
         shot->light = {2, 180, {255, 156, 56}};
         emit_sound(game, SoundId::BombFuse, owner.cell);
     }
-    emit_sound(game, bomb ? SoundId::BombThrow : SoundId::BowRelease, owner.cell);
+    if (!flask) emit_sound(game, bomb ? SoundId::BombThrow : SoundId::BowRelease, owner.cell);
     return true;
 }
 
@@ -74,6 +76,14 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 void step_projectile(Game& game, int slot) {
     Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
+    const bool flask = shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    if (flask && (shot.timer_a == 0 || shot.counter_a == 0)) {
+        const Item item = shot.ground_item;
+        const Cell cell = shot.cell;
+        remove_entity(game, {slot, shot.generation});
+        material_impact(game, item, cell);
+        return;
+    }
     if (shot.timer_a == 0) {
         const Cell cell = shot.cell, attacker = shot.point_a;
         const int radius = shot.label_b, damage = shot.counter_b;
@@ -87,12 +97,12 @@ void step_projectile(Game& game, int slot) {
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
     const bool blocked = projectile_blocked(game, next);
-    if (blocked && bomb) {
+    if (blocked && (bomb || flask)) {
         shot.counter_a = 0;
-        emit_sound(game, SoundId::BombLand, shot.cell);
+        if (bomb) emit_sound(game, SoundId::BombLand, shot.cell);
         return;
     }
-    if (!bomb) {
+    if (!bomb && !flask) {
         hit_prop(game, next, shot.counter_b, shot.cell);
         if (blocked) {
             hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);
@@ -103,8 +113,8 @@ void step_projectile(Game& game, int slot) {
     shot.cell = next;
     --shot.counter_a;
     shot.timer_b = projectile_step_ticks(shot);
-    if (bomb) {
-        if (shot.counter_a == 0) emit_sound(game, SoundId::BombLand, shot.cell);
+    if (bomb || flask) {
+        if (bomb && shot.counter_a == 0) emit_sound(game, SoundId::BombLand, shot.cell);
         return;
     }
     for (int victim_slot = 0; victim_slot < max_entities; ++victim_slot) {

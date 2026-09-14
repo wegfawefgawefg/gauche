@@ -2,7 +2,7 @@
 
 #include "../item_pattern.hpp"
 
-enum class ItemAction { Melee, Gun, Throw };
+enum class ItemAction { Melee, Gun, Throw, Material };
 struct RegionalItem {
     const char* name;
     const char* description;

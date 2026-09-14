@@ -129,9 +129,19 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
     case RoomRole::Cache: {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
-            ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife};
+            ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
+            ItemKind::SmokePot, ItemKind::HoneyPot};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
         supply(game, room, ItemKind::Bandage, 2, budget.healing);
+        break;
+    }
+    case RoomRole::Brook:
+        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::WaterFlask : ItemKind::MushroomSpores,
+               2, budget.equipment);
+        break;
+    case RoomRole::Thicket: {
+        constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar};
+        supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment);
         break;
     }
     case RoomRole::Shrine:

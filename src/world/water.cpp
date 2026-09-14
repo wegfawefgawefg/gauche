@@ -17,15 +17,6 @@ bool wading_actor(const Entity& actor) {
     }
 }
 
-void cool_in_water(Game& game, int slot) {
-    Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-    if (!wading_actor(actor) || !shallow_water(game.stage.at_or_border(actor.cell).kind)) return;
-    if (actor.scorch_ticks > 0 || actor.burn_ticks > 0) {
-        actor.scorch_ticks = actor.burn_ticks = 0;
-        emit_sound(game, SoundId::WaterDouse, actor.cell);
-    }
-}
-
 void place_water_scenes(Game& game, const FloorPlan& plan) {
     if (game.run.floor > 4) return;
     for (const RoomPlan& room : plan.rooms) {

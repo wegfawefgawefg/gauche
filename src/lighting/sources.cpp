@@ -31,6 +31,17 @@ std::vector<LightSource> collect_light_sources(const Game& game,
                 game.stage.at_or_border({x, y}).kind == TileKind::Lava)
                 add(sources, cache, {x, y}, 4, 0.75F, {1.0F, 0.36F, 0.08F});
 
+    for (int y = cache.origin.y; y < cache.origin.y + cache.height; ++y)
+        for (int x = cache.origin.x; x < cache.origin.x + cache.width; ++x) {
+            if (game.stage.at_or_border({x, y}).surface.fire_ticks == 0) continue;
+            // CLUSTERS: Share neighboring emitters, but isolated flames always cast light.
+            bool covered = false;
+            if ((x + y) % 2 != 0)
+                for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}})
+                    covered |= game.stage.at_or_border(Cell{x, y} + side).surface.fire_ticks > 0;
+            if (!covered) add(sources, cache, {x, y}, 3, .65F, {1, .42F, .14F});
+        }
+
     // ACTORS: Each entity owns its emitter; a dead actor no longer illuminates.
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::None || !cache.contains(entity.cell)) continue;

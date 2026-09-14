@@ -2,6 +2,7 @@
 #include "../projectiles/projectile.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
+#include "../items/materials.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -76,7 +77,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     } else if (pattern.minimum == 0 && pattern.maximum == 0) {
         mark(renderer, player.cell, camera, zoom, pattern.effect);
-    } else if (item_is_melee(held.kind)) {
+    } else if (item_is_melee(held.kind) || pattern.half_width > 0) {
         const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
             for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
@@ -91,7 +92,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else {
         const Cell aim = pointer.left && pointer.inside ?
             pointer.cell - player.cell : facing;
-        const Cell target = held.kind == ItemKind::Bomb ?
+        const RegionalItem* spec = forest_material_item(held.kind);
+        const Cell target = held.kind == ItemKind::Bomb ||
+            (spec != nullptr && spec->action == ItemAction::Throw) ?
             bomb_landing(game, player.cell, facing, pattern.maximum) :
             aimed_item_target(player, aim, pattern);
         if (pattern.blast_radius > 0) {

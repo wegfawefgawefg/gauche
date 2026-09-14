@@ -107,3 +107,23 @@ briefly, then remain sated. A player directly beside them or an incoming hit
 interrupts feeding; committed attacks and an angry bear take priority. Satiety
 and feeding use documented shared slots, with deterministic resource consumption.
 Strict build checked; user owns attraction and encounter-balance playtesting.
+
+## Forest materials and utility items
+
+Torch, lighter, oil flask, sap jar, water flask, mushroom spores, smoke pot and
+honey pot bring the forest regional implementation count to sixteen. Each has
+an icon, description, shared pattern, use/stack rules, sound and room/shop/reward
+pool entries. Toads can drop spores; calm bears eat placed honey as well as meat.
+
+Thrown jars use visible deterministic flight and break at their landing cell.
+Oil/sap ignite from sparks, torch strikes or a burning grounded actor. Fire
+spreads one neighbor beat at a time, consumes growth, emits light/flames/smoke
+and gives actors a weak five-second burn. Sap/honey slow steps. Water clears
+fire/spores and cools lava; smoke interrupts creature sight without blocking
+attacks. Sleep clouds catch allies too. Surface state is in tile snapshots and
+hashes; wisps, jar scraps and sound remain local. Snapshot version is fifteen.
+
+Strict builds and static world/item-card captures checked, with joined puddle
+silhouettes and softer smoke after visual inspection. This is not a gameplay or
+network playtest. Oil slipping, honey/wasp interaction and natural sap-bearing
+scenes remain follow-up work in the forest catalog.

@@ -3,6 +3,7 @@
 #include "enemy_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
+#include "material_scene.hpp"
 #include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
@@ -110,6 +111,7 @@ int main(int argc, char** argv) {
         debug_panels().world_enemies = true;
     }
     if (mode == "water") arrange_water_scene(game, cosmetics);
+    if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
     if (mode == "projectiles" || mode == "bow") arrange_projectile_scene(game, cosmetics);
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
@@ -158,6 +160,12 @@ int main(int argc, char** argv) {
     insert_item(player.inventory, make_item(ItemKind::Buckler));
     insert_item(player.inventory, make_item(ItemKind::Pickaxe, 1, ItemAttribute::Big));
     player.inventory.slots[1].durability = 17;
+    if (mode == "materials" || mode == "material-items") {
+        player.inventory = {};
+        for (ItemKind kind : {ItemKind::Torch, ItemKind::OilFlask, ItemKind::WaterFlask,
+                             ItemKind::SapJar, ItemKind::SmokePot, ItemKind::MushroomSpores})
+            insert_item(player.inventory, make_item(kind));
+    }
     place_coins(game, player.cell + Cell{1, 1}, 12);
     game.run.coins[0] = 27;
     if (mode == "projectiles" || mode == "bow") {
@@ -179,7 +187,7 @@ int main(int argc, char** argv) {
                               ItemKind::ThrowingRock, ItemKind::WoodenMaul, ItemKind::FlintKnife})
             insert_item(player.inventory, make_item(kind));
     }
-    if (mode == "inventory" || mode == "items" || mode == "stacks" || mode == "bow") {
+    if (mode == "inventory" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
         interaction.slot_focus = mode == "stacks" || mode == "bow" ? 1 : 2;

@@ -8,6 +8,7 @@ namespace {
 
 LightEmitter initial_item_light(ItemKind kind) {
     switch (kind) {
+    case ItemKind::Torch: return {5, 900, {255, 167, 74}};
     case ItemKind::Medkit: return {3, 420, {71, 255, 92}};
     case ItemKind::ConductorHat: return {3, 460, {255, 184, 69}};
     case ItemKind::RocketLauncher: case ItemKind::Mine:

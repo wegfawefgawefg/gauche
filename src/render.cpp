@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
 #include "scenery/overhead.hpp"
 #include "projectiles/render.hpp"
@@ -302,6 +303,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                    cosmetics != nullptr ? std::span<const LightFlash>{cosmetics->flashes} :
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
+    draw_surfaces(renderer, game, camera, zoom, lighting, false);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_debris(renderer, graphics, cosmetics->debris, camera, zoom, lighting);
@@ -319,6 +321,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                        camera, zoom, &lighting, &game.stage);
     if (player != nullptr && debug_panels().world_items)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
+    draw_surfaces(renderer, game, camera, zoom, lighting, true);
     draw_overhead(renderer, graphics, game, cosmetics, camera, zoom, lighting);
     draw_canopy_shafts(renderer, game, camera, zoom);
     if (player != nullptr && show_hud)

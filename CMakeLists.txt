@@ -50,7 +50,8 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
-    src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp
+    src/surfaces/interaction.cpp
+    src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
     src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp src/items/stacking.cpp
     src/entities/attacks.cpp src/entities/defense.cpp
@@ -94,7 +95,7 @@ add_executable(gauche
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
-    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
+    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/menu/pages.cpp src/menu/view_builder.cpp src/menu/theme.cpp

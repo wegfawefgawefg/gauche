@@ -8,13 +8,14 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
+    const bool thrown = shot.label_a != static_cast<int>(ProjectileKind::Arrow);
     const float travel = shot.counter_a > 0 ?
         1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)) : 0;
     const float pixels = tile_pixels(zoom);
     SDL_FRect rect = tile_rect(shot.cell, camera, zoom);
     rect.x += static_cast<float>(shot.facing.x) * travel * pixels;
     rect.y += static_cast<float>(shot.facing.y) * travel * pixels;
-    if (bomb && shot.counter_a > 0) {
+    if (thrown && shot.counter_a > 0) {
         const float progress = (static_cast<float>(shot.attack_interval - shot.counter_a) + travel) /
             static_cast<float>(std::max(1, shot.attack_interval));
         rect.y -= pixels * .85F * std::sin(progress * 3.14159265F);
@@ -24,7 +25,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_Texture* texture = texture_for(graphics, shot.sprite);
     const LightColor light = lit_sprite_color(lighting, shot.cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-    const double angle = bomb ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
+    const double angle = thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
     SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);

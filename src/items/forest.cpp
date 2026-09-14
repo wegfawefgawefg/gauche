@@ -1,4 +1,5 @@
 #include "catalog.hpp"
+#include "materials.hpp"
 
 namespace {
 
@@ -31,6 +32,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* material = forest_material_item(kind)) return material;
     switch (kind) {
     case ItemKind::ThrowingRock: return &rock;
     case ItemKind::Hatchet: return &hatchet;

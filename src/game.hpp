@@ -3,6 +3,7 @@
 #include "graphics.hpp"
 #include "sound.hpp"
 #include "props/catalog.hpp"
+#include "surfaces/types.hpp"
 
 #include <array>
 #include <cstdint>
@@ -46,6 +47,7 @@ struct Tile {
     BreakRule break_rule = BreakRule::DigRequired;
     std::uint8_t required_dig_power = 1;
     Prop prop{};
+    Surface surface{};
 };
 
 struct Stage {
@@ -69,6 +71,7 @@ enum class ItemKind : std::uint8_t {
     Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
     Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
+    Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Count,
 };
 

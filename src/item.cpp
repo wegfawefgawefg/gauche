@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
+#include "items/materials.hpp"
 #include "item_attribute.hpp"
 #include "combat/shove.hpp"
 #include "entities/dispatch.hpp"
@@ -127,6 +128,12 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::Torch: case ItemKind::Lighter: case ItemKind::OilFlask:
+    case ItemKind::SapJar: case ItemKind::WaterFlask: case ItemKind::MushroomSpores:
+    case ItemKind::SmokePot: case ItemKind::HoneyPot:
+        used = use_material_item(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::Wall:
         if (range >= 1 && range <= 2) {
             Tile* tile = game.stage.at(target);

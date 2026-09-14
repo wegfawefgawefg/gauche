@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "../world/water.hpp"
+#include "../surfaces/interaction.hpp"
 #include "../world/encounter.hpp"
 
 #include <algorithm>
@@ -38,14 +39,14 @@ void step_entity_timers(Game& game, int slot) {
     entity.use_flash = std::max(0, entity.use_flash - 1);
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
-    cool_in_water(game, slot);
+    contact_surface(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
     if (entity.scorch_ticks > 0 && entity.health > 0) {
         --entity.scorch_ticks;
-        if (entity.scorch_ticks % 30 == 0)
+        if (game.tick % 30 == 0)
             damage_entity(game, slot, 2, entity.cell, false);
-        if (entity.health > 0 && entity.scorch_ticks > 0 && entity.scorch_ticks % 90 == 0)
+        if (entity.health > 0 && entity.scorch_ticks > 0 && game.tick % 90 == 0)
             emit_sound(game, SoundId::FirePanic, entity.cell);
     }
     if (entity.burn_ticks > 0) {

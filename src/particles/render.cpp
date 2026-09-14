@@ -1,5 +1,5 @@
 #include "system.hpp"
-#include "../world/water.hpp"
+#include "../surfaces/interaction.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -92,7 +92,7 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
         if (ring.water && stage != nullptr) {
             const Cell cell{static_cast<int>(std::floor(ring.x + std::cos(first) * ring.radius)),
                 static_cast<int>(std::floor(ring.y + std::sin(first) * ring.radius * height))};
-            if (!shallow_water(stage->at_or_border(cell).kind)) continue;
+            if (!surface_wet(stage->at_or_border(cell))) continue;
         }
         SDL_RenderLine(renderer,
             cx + std::cos(first) * ring.radius * pixels,

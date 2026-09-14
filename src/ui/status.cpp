@@ -21,7 +21,7 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, float x, float bottom) {
     if (player.health <= 0) return;
     char burning[80];
-    const int weak = (player.scorch_ticks + 29) / 30 * 2;
+    const int weak = static_cast<int>((game.tick + static_cast<std::uint64_t>(player.scorch_ticks)) / 30 - game.tick / 30) * 2;
     const int strong = static_cast<int>((game.tick + static_cast<std::uint64_t>(player.burn_ticks)) / 30 - game.tick / 30) * 4;
     const int per_second = (player.scorch_ticks > 0 ? 4 : 0) + (player.burn_ticks > 0 ? 8 : 0);
     std::snprintf(burning, sizeof(burning), "%d HP/S NOW | %d DMG LEFT", per_second, weak + strong);

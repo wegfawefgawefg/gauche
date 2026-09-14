@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../surfaces/interaction.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
@@ -52,7 +53,8 @@ void step_wolf(Game& game, int slot) {
     if (leader != nullptr && leader->health > 0) {
         const Entity* prey = get_entity(game, leader->entity_b);
         if (prey != nullptr && prey->health > 0 && prey->owner >= 0 && prey->owner < 4 &&
-            game.run.online[static_cast<std::size_t>(prey->owner)] && distance(wolf.cell, prey->cell) < 12)
+            game.run.online[static_cast<std::size_t>(prey->owner)] && distance(wolf.cell, prey->cell) < 12 &&
+            !smoke_hides(game.stage, wolf.cell, prey->cell))
             target = leader->entity_b.slot;
     }
     if (target < 0) {

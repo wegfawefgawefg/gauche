@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "world/water.hpp"
+#include "surfaces/interaction.hpp"
 #include "entities/dispatch.hpp"
 
 #include <cstdint>
@@ -74,7 +75,8 @@ bool move_entity(Game& game, int slot, Cell destination) {
     enter_actor_cell(game, slot);
     entity.move_wait = entity.move_interval;
     if (tile->kind == TileKind::Ice) entity.move_wait += 5;
-    if (shallow_water(tile->kind) && wading_actor(entity))
+    if (wading_actor(entity)) entity.move_wait += surface_step_delay(*tile);
+    if (surface_wet(*tile) && wading_actor(entity))
         emit_sound(game, ((destination.x + destination.y + slot) & 1) == 0 ?
             SoundId::WaterStep1 : SoundId::WaterStep2, destination);
     else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||

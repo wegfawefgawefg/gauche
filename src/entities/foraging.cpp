@@ -26,8 +26,9 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
         const Entity& food = game.entities[static_cast<std::size_t>(i)];
         if (food.kind != EntityKind::GroundItem || food.ground_item.count <= 0) continue;
         const ItemKind kind = food.ground_item.kind;
-        if (kind != ItemKind::RawMeat && kind != ItemKind::CookedMeat) continue;
-        if (distance(animal.cell, food.cell) > (kind == ItemKind::CookedMeat ? 9 : 6)) continue;
+        const bool honey = kind == ItemKind::HoneyPot && animal.kind == EntityKind::Bear;
+        if (!honey && kind != ItemKind::RawMeat && kind != ItemKind::CookedMeat) continue;
+        if (distance(animal.cell, food.cell) > (kind == ItemKind::CookedMeat || honey ? 9 : 6)) continue;
         const int occupant = entity_at(game, food.cell, true);
         if (occupant >= 0 && occupant != slot) continue;
         candidates.push_back(i);

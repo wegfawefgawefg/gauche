@@ -1,6 +1,8 @@
 #include "system.hpp"
 #include "templates.hpp"
 #include "water.hpp"
+#include "../surfaces/render.hpp"
+#include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
 
 #include <algorithm>
@@ -80,7 +82,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
                 entity.kind == EntityKind::Train ? 2.2F : 1.1F,
                 entity.kind == EntityKind::Train ? .18F : .035F, entity.cell - pose.cell);
         ++pose.steps;
-        if (shallow_water(game.stage.at_or_border(entity.cell).kind) && wading_actor(entity))
+        if (surface_wet(game.stage.at_or_border(entity.cell)) && wading_actor(entity))
             spawn_water_rings(cosmetics, entity.cell, true);
         else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
             entity.kind == EntityKind::ZombieStack)
@@ -134,6 +136,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::BottleBreak:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::Pottery, 4, seed);
+        break;
     case SoundId::ArrowImpact:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 2, seed);
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Feather, 1, seed ^ 951U);
@@ -227,6 +232,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
             }
         }
     observe_water(cosmetics, game, focus);
+    observe_surfaces(cosmetics, game, focus);
     if (game.run.phase == RunPhase::Arena || (game.run.floor > 4 && game.run.floor <= 8))
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
 }

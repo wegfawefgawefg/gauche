@@ -73,6 +73,8 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, tile.max_hp);
         mix(hash, static_cast<std::uint64_t>(tile.break_rule));
         mix(hash, tile.required_dig_power);
+        mix(hash, static_cast<std::uint64_t>(tile.surface.liquid));
+        for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks}) mix(hash, ticks);
         mix(hash, static_cast<std::uint64_t>(tile.prop.kind));
         mix(hash, tile.prop.hp);
         mix(hash, tile.prop.variant);

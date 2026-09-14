@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "surfaces/interaction.hpp"
 #include "items/action.hpp"
 #include "entities/dispatch.hpp"
 
@@ -115,6 +116,8 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.sound_count = 0;
     game.impact_count = 0;
     if (step_interlude(game, inputs)) return;
+
+    step_surfaces(game);
 
     // TIMERS: A cooldown reaching zero can act on this tick.
     for (int slot = 0; slot < max_entities; ++slot)

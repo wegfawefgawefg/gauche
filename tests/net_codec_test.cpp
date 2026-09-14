@@ -65,6 +65,7 @@ int main() {
     original.stage.tiles[4].thaw_kind = TileKind::Spring;
     original.stage.tiles[4].freeze_ticks = 77;
     original.stage.tiles[5].surface.warmth_ticks = 117;
+    original.stage.tiles[5].surface.whiteout_ticks = 213;
     original.stage.tiles[6].prop = {PropKind::IceBlock, 23, 0, false, 411};
     original.stage.tiles[9].prop = {PropKind::AlarmClock, 13, 1, false, 237};
     original.stage.tiles[8].prop = {PropKind::BeamLamp, 19, 1, false, 0, true};

@@ -6,6 +6,40 @@
 
 namespace {
 
+void draw_whiteout(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+                   const Stage& stage, std::uint64_t tick, Cell cell) {
+    // EDGES: Shared corner coverage softens the patch into adjoining clear cells.
+    constexpr Cell corners[]{{0,0},{1,0},{1,1},{0,1}};
+    SDL_Vertex vertices[4]{};
+    bool visible = false;
+    for (int i=0;i<4;++i) {
+        const Cell corner = cell+corners[i];
+        float cover = 0;
+        for (Cell offset : {Cell{0,0},{-1,0},{0,-1},{-1,-1}})
+            cover += std::min(1.0F,static_cast<float>(stage.at_or_border(corner+offset).surface.whiteout_ticks)/12);
+        visible |= cover > 0;
+        vertices[i].position = {rect.x+rect.w*static_cast<float>(corners[i].x),
+            rect.y+rect.h*static_cast<float>(corners[i].y)};
+        vertices[i].color = {light.red*.56F,light.green*.65F,light.blue*.71F,cover*.035F};
+    }
+    if (!visible) return;
+    constexpr int indices[]{0,1,2,0,2,3};
+    SDL_RenderGeometry(renderer,nullptr,vertices,4,indices,6);
+    const int ticks = stage.at_or_border(cell).surface.whiteout_ticks;
+    if (ticks <= 0) return;
+    const float fade = std::min(1.0F,static_cast<float>(ticks)/12);
+    // SQUALL: A few moving streaks describe air, without replacing the ground texture.
+    for (int i=0;i<3;++i) {
+        const auto offset = static_cast<std::uint64_t>(cell.x*17+cell.y*23+i*19);
+        const float age = static_cast<float>((tick+offset)%48)/48;
+        const float x = rect.x+rect.w*age;
+        const float y = rect.y+rect.h*(.15F+static_cast<float>(i)*.29F+age*.12F);
+        SDL_SetRenderDrawColorFloat(renderer,light.red*.81F,light.green*.88F,light.blue*.94F,
+            .7F*fade*std::sin(age*3.14159265F));
+        SDL_RenderLine(renderer,x,y,x+rect.w*.14F,y+rect.h*.03F);
+    }
+}
+
 void draw_warmth(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
                  int ticks, std::uint64_t tick, Cell cell, bool steam) {
     const float fade = std::min(1.0F, static_cast<float>(ticks) / 60);
@@ -116,6 +150,7 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             if (surface.warmth_ticks > 0)
                 draw_warmth(renderer, rect, light, surface.warmth_ticks, game.tick, cell, clouds);
             if (clouds) {
+                draw_whiteout(renderer,rect,light,game.stage,game.tick,cell);
                 const int time = std::max(surface.smoke_ticks, surface.sleep_ticks);
                 if (surface.scent_ticks > 0)
                     draw_scent(renderer, rect, light,

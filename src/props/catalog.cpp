@@ -2,6 +2,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::WeatherVane: return {Sprite::WeatherVane, SoundId::VaneBreak, 18, false, false};
     case PropKind::FishingCreel: return {Sprite::FishingCreel, SoundId::CreelBreak, 12, true, false};
     case PropKind::AlarmClock: return {Sprite::AlarmClock, SoundId::ClockBreak, 8, false, false};
     case PropKind::LensCase: return {Sprite::LensCase, SoundId::LensCaseBreak, 16, true, false};

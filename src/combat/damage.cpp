@@ -8,6 +8,7 @@
 #include "../entities/frozen_pilgrim.hpp"
 #include "../entities/fishing_widow.hpp"
 #include "../entities/seal_thief.hpp"
+#include "../entities/whiteout_drummer.hpp"
 #include "../entities/death_sound.hpp"
 #include "shove.hpp"
 #include "../entities/attacks.hpp"
@@ -27,6 +28,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    interrupt_whiteout_drummer(entity);
     interrupt_seal_thief(entity);
     interrupt_fishing_widow(entity);
     interrupt_frozen_pilgrim(entity);

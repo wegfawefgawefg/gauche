@@ -6,6 +6,7 @@
 #include "entities/eel_render.hpp"
 #include "entities/mason_render.hpp"
 #include "entities/knight_render.hpp"
+#include "entities/drummer_render.hpp"
 #include "entities/warden_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
@@ -181,6 +182,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_projectile(renderer, graphics, entity, game, camera, zoom, lighting);
             continue;
         }
+        if (entity.kind == EntityKind::WhiteoutDrummer) draw_drummer_warning(renderer, game, entity, camera, zoom, lighting);
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.

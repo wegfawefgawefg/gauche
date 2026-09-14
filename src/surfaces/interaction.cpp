@@ -13,7 +13,7 @@ namespace {
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
     if (prop.covered) return true;
-    return prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
+    return prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
 } // namespace
@@ -102,6 +102,7 @@ void step_surfaces(Game& game) {
             if (surface_wet(tile)) surface.gritted = false;
             if (surface.liquid_ticks > 0 && --surface.liquid_ticks == 0) surface.liquid = LiquidKind::None;
             if (surface.smoke_ticks > 0) --surface.smoke_ticks;
+            if (surface.whiteout_ticks > 0) --surface.whiteout_ticks;
             if (surface.sleep_ticks > 0) --surface.sleep_ticks;
             if (surface.scent_ticks > 0) --surface.scent_ticks;
             if (surface_wet(tile) || surface.fire_ticks > 0) surface.scent_ticks = 0;
@@ -126,11 +127,11 @@ void step_surfaces(Game& game) {
 
 bool smoke_hides(const Stage& stage, Cell from, Cell to) {
     const int steps = std::max(std::abs(to.x - from.x), std::abs(to.y - from.y));
-    if (steps == 0) return stage.at_or_border(from).surface.smoke_ticks >= 60;
+    if (steps == 0) return obscures_sight(stage.at_or_border(from).surface);
     for (int step = 0; step <= steps; ++step) {
         const Cell cell{from.x + (to.x - from.x) * step / steps,
                         from.y + (to.y - from.y) * step / steps};
-        if (stage.at_or_border(cell).surface.smoke_ticks >= 60) return true;
+        if (obscures_sight(stage.at_or_border(cell).surface)) return true;
     }
     return false;
 }

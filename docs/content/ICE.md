@@ -49,7 +49,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 11 | Fishing widow | Implemented: 64 HP, 0.6s fixed-lane tell, six-tile traveling hook for 14 damage. Pulls the first struck actor every ten ticks, then untangles for 1.5s. Sidestep, cover or interrupt her to cut the line; allies can be hooked. | Fishing huts; 20% fishing line, 20% smoked fish. |
 | 12 | Candle keeper | Relights a bounded set of nearby candles and protects the nearest one. Its flame strike dims its own lamp; stealing or wetting a candle redirects its attention. | Chapel; 30% candle stub, 15% wick spool. |
 | 13 | Shard colony | Three separate crystals connect with dangerous pulses only after all endpoints flash. Destroy or displace one node to break that connection. Nodes share a colony handle. | Crystal gallery; 25% crystal lens per colony, not per node. |
-| 14 | Whiteout drummer | Beats three audible cues before a short snow squall obscures targeting in a marked area. Cannot attack directly; interrupt or use its squall as cover. | Weather station; 20% muffling felt, 15% signal flare. |
+| 14 | Whiteout drummer | Implemented: 44 HP; three beats, 0.4s apart, then a four-second radius-2 squall at a fixed target within six cells. No direct damage. Damage, sleep, stun or displacement interrupts the 1.2s buildup. | Weather station; 20% muffling felt. Signal flare drop awaits that item. |
 | 15 | Seal thief | Implemented: 56 HP; steals one loose food, prefers fish, then takes seven-tick steps to a reachable bank. Holds food for 3s before eating. Adjacent threats provoke a 0.5s bark then 16-damage fixed bite; damage/sleep/stun/displacement interrupts. | Reservoir/fishing huts; carried food returned intact, independent 25% raw meat. |
 | 16 | Icicle spider | Anchors a strand to a wall, stretches it across a corridor, then waits beside it. Strand roots briefly and can be cut or burned; spider must rebuild after triggering. | Service passages; 20% fishing line, 10% ice needle. |
 | 17 | Boiler porter | Pushes a steaming tank one cell at a time. A leaking pressure cue precedes a directional vent; rupture sends hot water along open cells, including toward other enemies. | Bathhouse; 25% pressure valve, 20% coal lump. |
@@ -119,7 +119,7 @@ same effective item definition as attacks, including rare attributes.
 | 44 | Folded bridge | Place three walkable planks across shallow/deep water; requires support at both ends. Burnable, 30 HP per section. One kit. | Uncommon; 24 |
 | 45 | Thaw charge | Place a 2s fuse against a wall; opens only heat-fragile ice in a two-cell line. Steam hurts adjacent actors for 10. Stack 3. | Uncommon; 19 |
 | 46 | Effigy mask | Hold still while facing to draw watching effigies' attention as though another observer were present; consumes one of 12 charges per second. | Rare; 28 |
-| 47 | Snow globe | Place a 6s local whiteout that obscures targeting for all sides; the glass breaks after one use. Stack 2. | Uncommon; 20 |
+| 47 | Snow globe | Implemented: break in the adjacent cell for 6s of radius-2 whiteout. Blocks sight for all sides, not shots; no damage/chill. Walls constrain spread. Stack 2; Big gives radius 3. | Uncommon; 20 |
 | 48 | Borrowed summer | A 4s moving warmth aura thaws surfaces and clears allied chill; cold creatures react to the real heat source. Two uses, no damage immunity. | Rare; 38 |
 | 49 | Stillwater bell | Ring to stop surface currents and active slips within 4 for 3s; does not stun actors or halt voluntary movement. Four uses. | Rare; 30 |
 | 50 | Emergency doorstop | Jam an adjacent moving gate open until the 25-HP wedge breaks; only works while that gate is open. Recoverable; no opening a locked gate for free. | Uncommon; 21 |
@@ -191,9 +191,10 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Eleven regional debris types are implemented: ice chips, snow clumps, mirror
+Thirteen regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips and fishing floats. Creels scatter wicker, line and a small float.
+wicker strips, fishing floats, globe glass and copper curls. Globes leave glass;
+weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers
@@ -249,3 +250,11 @@ item UI/patterns, world interactions and deterministic state serialization.
 Keep descriptions and actual behavior aligned; a table entry is not completion.
 Use strict builds and static captures of assets/room compositions. Record any
 behavior still awaiting the user's playtest without silently checking it off.
+
+
+Weather-station slice: courtyard geometry with snowy edges, a central ruin floor,
+a drummer with an early frost bat or later Echo Hound, and Snow Globe supplies
+within floor budgets. Sparse 18-HP weather vanes are nonblocking metal props,
+not fuel or guaranteed loot. Existing route protection constrains placement.
+See [weather implementation](../history/ICE_WEATHER.md) for synced obscuration,
+interrupt rules and the distinction between action cues and ambient audio.

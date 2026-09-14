@@ -8,6 +8,7 @@ namespace {
 
 PropKind room_prop(Game& game, RoomRole role) {
     const unsigned int roll = random_u32(game);
+    if (ice_floor(game.run.floor) && role == RoomRole::WeatherStation) return PropKind::WeatherVane;
     if (ice_floor(game.run.floor) && role == RoomRole::FishingHut) return PropKind::FishingCreel;
     if (ice_floor(game.run.floor) && role == RoomRole::Observatory)
         return roll % 3 == 0 ? PropKind::LensCase : roll % 3 == 1 ? PropKind::CrystalLens : PropKind::MirrorShard;
@@ -66,7 +67,7 @@ void scatter_room_props(Game& game, const FloorPlan& plan) {
                     break;
                 }
             }
-        if (cold && room.role != RoomRole::FishingHut && room.role != RoomRole::Shelter &&
+        if (cold && room.role != RoomRole::WeatherStation && room.role != RoomRole::FishingHut && room.role != RoomRole::Shelter &&
             room.role != RoomRole::Bathhouse && room.role != RoomRole::Cache &&
             room.role != RoomRole::Observatory && room.role != RoomRole::Shrine) continue;
         const int patches = room.role == RoomRole::Thicket ? 7 : 3;

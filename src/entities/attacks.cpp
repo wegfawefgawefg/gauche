@@ -119,7 +119,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
 }
 
 static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target) {
-    if (smoke_blocks && game.stage.at_or_border(from).surface.smoke_ticks >= 60) return false;
+    if (smoke_blocks && obscures_sight(game.stage.at_or_border(from).surface)) return false;
     // GRID RAY: Corner gaps must not leak dust or a creature's line of sight.
     const int dx = to.x - from.x, dy = to.y - from.y;
     const int nx = std::abs(dx), ny = std::abs(dy);
@@ -130,7 +130,7 @@ static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks,
         const Tile* tile = game.stage.at(at);
         if (tile == nullptr || !walkable(tile->kind) ||
             (prop_blocks(tile->prop) && !(solid_target && at == to)) ||
-            (smoke_blocks && tile->surface.smoke_ticks >= 60)) return false;
+            (smoke_blocks && obscures_sight(tile->surface))) return false;
         // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.
         if (at != to) {
             const int actor = entity_at(game, at, true);

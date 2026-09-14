@@ -2,6 +2,7 @@
 #include "alarms.hpp"
 #include "fishing_line.hpp"
 #include "fish.hpp"
+#include "snow_globe.hpp"
 #include "muffling.hpp"
 #include "optics.hpp"
 #include "eel_battery.hpp"
@@ -15,7 +16,9 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* globe = snow_globe_item(kind)) return globe;
     if (const RegionalItem* fish = fish_item(kind)) return fish;
+    if (const RegionalItem* globe = snow_globe_item(kind)) return globe;
     if (const RegionalItem* fishing = fishing_line_item(kind)) return fishing;
     if (const RegionalItem* alarm = alarm_item(kind)) return alarm;
     if (const RegionalItem* felt = muffling_item(kind)) return felt;

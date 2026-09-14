@@ -107,6 +107,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::WeatherStation) {
+        enemy(game, room, EntityKind::WhiteoutDrummer, 1, budget);
+        enemy(game, room, round >= 2 ? EntityKind::EchoHound : EntityKind::FrostBat, 2, budget);
+        return;
+    }
     if (ice_floor(game.run.floor) && room.role == RoomRole::EchoTunnel) {
         enemy(game, room, EntityKind::EchoHound, 2, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
@@ -201,6 +206,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+        } else if (room.role == RoomRole::WeatherStation) {
+            supply(game, room, ItemKind::SnowGlobe, 1, budget.equipment);
         } else if (room.role == RoomRole::EchoTunnel) {
             constexpr ItemKind quiet_tools[]{ItemKind::IceNeedle, ItemKind::MufflingFelt, ItemKind::AlarmClock};
             supply(game, room, quiet_tools[round % 3], round % 3 == 0 ? 3 : 1, budget.equipment);

@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/snow_globe.hpp"
 #include "items/optics.hpp"
 #include "items/muffling.hpp"
 #include "props/cloth.hpp"
@@ -92,6 +93,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::SnowGlobe:
+        used = use_snow_globe(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::FishingLine:
         used = launch_fishing_hook(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
@@ -330,7 +335,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         item.cooldown = cooldown;
         user.use_flash = 8;
         if (const RegionalItem* spec = regional_item(used_kind)) {
-            if (!item_is_melee(used_kind)) emit_sound(game, spec->sound, user.cell);
+            if (!item_is_melee(used_kind)) emit_sound(game, spec->sound,
+                used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
         }
         else switch (used_kind) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;

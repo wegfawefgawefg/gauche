@@ -21,6 +21,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     entity.sleep_ticks = 0;
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
     if (entity.health == 0) emit_sound(game, entity.kind == EntityKind::CrateMimic ?
+        SoundId::WoodCrack : entity.kind == EntityKind::RootTurret || entity.kind == EntityKind::BrambleGuard ?
         SoundId::WoodCrack : entity.kind == EntityKind::ThornSnail ?
         SoundId::ShellKnock : SoundId::AnimalCrush1, entity.cell);
     if (entity.health == 0) drop_enemy_loot(game, entity);

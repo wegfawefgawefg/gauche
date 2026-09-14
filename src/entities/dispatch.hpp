@@ -52,3 +52,8 @@ void init_spore_toad(Entity& entity);
 void step_spore_toad(Game& game, int slot);
 void init_crate_mimic(Entity& entity);
 void step_crate_mimic(Game& game, int slot);
+
+void init_root_turret(Entity& entity);
+void step_root_turret(Game& game, int slot);
+void init_bramble_guard(Entity& entity);
+void step_bramble_guard(Game& game, int slot);

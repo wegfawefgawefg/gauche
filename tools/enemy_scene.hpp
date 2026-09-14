@@ -30,6 +30,8 @@ inline void arrange_enemy_scene(Game& game, Cosmetics& cosmetics) {
         enemy.facing = direction;
         return enemy;
     };
+    actor(EntityKind::RootTurret, {9, 18}, 1, {0, -1}).sprite = Sprite::RootTurretCoiled;
+    actor(EntityKind::BrambleGuard, {10, 16}, 1, {1, 0}).sprite = Sprite::BrambleGuardSwing;
     actor(EntityKind::Boar, {8, 7}, 1, {1, 0}).counter_a = 6;
     actor(EntityKind::ThornSnail, {17, 7}, 0, {1, 0});
     Entity& shell = actor(EntityKind::ThornSnail, {20, 7}, 1, {1, 0});
@@ -42,5 +44,5 @@ inline void arrange_enemy_scene(Game& game, Cosmetics& cosmetics) {
     actor(EntityKind::Bat, {24, 17}, 1, {0, -1}).counter_a = 4;
     actor(EntityKind::CrateMimic, {24, 10}, 1, {0, 1}).sprite = Sprite::CrateMimic;
     for (Entity& enemy : game.entities)
-        if (enemy.kind == EntityKind::CrateMimic) enemy.point_b = enemy.cell + enemy.facing;
+        if (enemy.kind == EntityKind::CrateMimic || enemy.kind == EntityKind::BrambleGuard) enemy.point_b = enemy.cell + enemy.facing;
 }

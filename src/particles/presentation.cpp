@@ -76,6 +76,11 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
                 pose.kind == EntityKind::Chicken ? DebrisKind::Feather : DebrisKind::BoneChip,
                 3, seed);
         }
+        if (pose.seen && pose.health > 0 &&
+            (pose.kind == EntityKind::RootTurret || pose.kind == EntityKind::BrambleGuard)) {
+            scatter_material(cosmetics.debris, pose.cell, DebrisKind::WoodChip, 5, seed);
+            scatter_material(cosmetics.debris, pose.cell, DebrisKind::OakLeaf, 3, seed+1);
+        }
         pose = {};
         return;
     }

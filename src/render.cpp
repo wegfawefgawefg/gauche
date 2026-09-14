@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "entities/plant_render.hpp"
 #include "items/fire_render.hpp"
 #include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
@@ -241,6 +242,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
         if (entity.kind == EntityKind::GroundItem)
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
+        if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
@@ -326,6 +328,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting, &game.stage);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 1);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
+    draw_plant_lash(renderer, game, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
                        camera, zoom, &lighting, &game.stage);

@@ -11,6 +11,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::RootTurret:
+        if (enemy.label_a == 1)
+            for (int i = 1; i <= enemy.counter_a; ++i)
+                add(enemy.cell + Cell{enemy.facing.x*i, enemy.facing.y*i});
+        break;
     case EntityKind::Boar:
         if (enemy.label_a == 1 || enemy.label_a == 2)
             for (int i = 1; i <= enemy.counter_a; ++i)
@@ -34,7 +39,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.sleep = true;
         }
         break;
-    case EntityKind::Wolf: case EntityKind::CrateMimic:
+    case EntityKind::BrambleGuard: case EntityKind::Wolf: case EntityKind::CrateMimic:
         if (enemy.label_a == 1) add(enemy.point_b);
         break;
     case EntityKind::Bat: case EntityKind::FrostBat:

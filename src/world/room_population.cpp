@@ -36,11 +36,28 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
     return choices[random_u32(game) % choices.size()];
 }
 
-void enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
-    if (cost > budget.threat) return;
+Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
+    if (cost > budget.threat) return {};
     if (const auto cell = room_space(game, room)) {
-        spawn_entity(game, kind, *cell);
-        budget.threat -= cost;
+        const Handle spawned = spawn_entity(game, kind, *cell);
+        if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
+        return spawned;
+    }
+    return {};
+}
+
+void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guarded) {
+    const Handle root_handle = enemy(game, room, EntityKind::RootTurret, 2, budget);
+    const Entity* root = get_entity(game, root_handle);
+    if (root == nullptr || !guarded || budget.threat < 2) return;
+    for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+        const Cell cell = root->cell + side;
+        const Tile* tile = game.stage.at(cell);
+        if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, false) >= 0 ||
+            distance(cell, game.run.spawn) < 4) continue;
+        Entity* guard = get_entity(game, spawn_entity(game, EntityKind::BrambleGuard, cell));
+        if (guard != nullptr) { guard->entity_a = root_handle; budget.threat -= 2; }
+        break;
     }
 }
 
@@ -54,7 +71,8 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     }
     switch (room.role) {
     case RoomRole::Thicket:
-        enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
+        if (random_u32(game) % 3 == 0) rooted_watch(game, room, budget, round > 0);
+        else enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
         if (round > 0) enemy(game, room, EntityKind::ThornSnail, 2, budget);
         break;
     case RoomRole::Brook:
@@ -75,6 +93,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         else enemy(game, room, EntityKind::ThornSnail, 2, budget);
         break;
     case RoomRole::Shrine:
+        if (random_u32(game) % 2 == 0) { rooted_watch(game, room, budget, round > 0); break; }
         enemy(game, room, round > 0 ? EntityKind::Bear : EntityKind::Wolf,
               round > 0 ? 3 : 2, budget);
         break;

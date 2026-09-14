@@ -36,6 +36,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     case EntityKind::Chicken: case EntityKind::Bunny:
         if (random_u32(game) % 10 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
         break;
+    case EntityKind::RootTurret:
+        if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::Stick);
+        break;
+    case EntityKind::BrambleGuard:
+        if (random_u32(game) % 100 < 15) place_ground_item(game, enemy.cell, ItemKind::SapJar);
+        break;
     case EntityKind::SporeToad:
         if (random_u32(game) % 4 == 0) place_ground_item(game, enemy.cell, ItemKind::MushroomSpores);
         break;

@@ -336,3 +336,21 @@ The pickaxe has a narrow curved double-ended metal head rather than an axe-like
 slab; its placeholder generator matches the asset. The original Rust fist sprite
 is rotated clockwise so right-facing use punches forward. Enlarged nearest-neighbor
 asset inspection checked both silhouettes; held left-facing mirroring is unchanged.
+
+
+## Root turrets and bramble guards
+
+Two more forest adversaries bring the implemented roster to twelve. Root turrets
+have 65 HP, remain rooted, turn in delayed quarter turns, coil for 42 ticks, then
+lash a fixed five-cell lane for 18 damage and recover for 90 ticks. A directional
+bud communicates facing and a short visible vine shows resolution without debug
+patterns. Fire affects the rooted plant as well as mobile susceptible actors.
+Bramble guards have 90 HP, ordinary breakable bucklers, and generation-checked
+wards. They choose a cell between a ward and the threat, excluding the ward's
+committed attack cells; a 24-tick adjacent swing exposes them before a 42-tick
+recovery. Orphans seek another nearby ward or return to territory. Thickets and
+shrines can contain roots; guarded pairs start after forest round one and consume
+the existing threat budget. Current drops are 20% stick / 15% sap jar; planned
+seed-bag/resin-glue finds remain pending. Four new synthesized cues, four sprite
+poses and wood/leaf death scraps are integrated. Strict builds and static sprite/
+encounter renders checked, with no gameplay playtest. Gameplay version advanced.

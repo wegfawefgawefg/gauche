@@ -21,7 +21,7 @@ enum class SoundId : std::size_t {
     BumpWood, BumpStone,
     CookingSizzle, WaterStep1, WaterStep2, WaterDouse, MeatMunch, ChickenPeck, BowDraw, BowRelease, ArrowImpact, BombThrow, BombLand, BombFuse, FistWindup, StickWindup, PickaxeWindup, FireCatch, TorchSwing, LighterSpark, BottleThrow, BottleBreak, WaterPour, HoneyPlace,
     PistolShot, MusketShot, ShotgunShot, SmgShot, RocketLaunch,
-    PistolReload, ShellReload, PowderReload, CrossbowReload, RocketReload, EggEat,
+    PistolReload, ShellReload, PowderReload, CrossbowReload, RocketReload, EggEat, RootCoil, RootLash, BrambleRustle, BrambleStrike,
     Count,
 };
 
@@ -40,5 +40,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "rock_throw", "rock_impact", "axe_swing", "spear_thrust", "crossbow_shot", "blunder_shot", "maul_swing", "rake_sweep", "knife_stab", "weapon_reload", "weapon_empty",
     "bump_wood", "bump_stone", "cooking_sizzle", "water_step1", "water_step2", "water_douse", "meat_munch", "chicken_peck", "bow_draw", "bow_release", "arrow_impact", "bomb_throw", "bomb_land", "bomb_fuse", "fist_windup", "stick_windup", "pickaxe_windup", "fire_catch", "torch_swing", "lighter_spark", "bottle_throw", "bottle_break", "water_pour", "honey_place",
     "pistol_shot", "musket_shot", "shotgun_shot", "smg_shot", "rocket_launch",
-    "pistol_reload", "shell_reload", "powder_reload", "crossbow_reload", "rocket_reload", "egg_eat",
+    "pistol_reload", "shell_reload", "powder_reload", "crossbow_reload", "rocket_reload", "egg_eat", "root_coil", "root_lash", "bramble_rustle", "bramble_strike",
 };

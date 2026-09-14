@@ -6,6 +6,33 @@
 
 namespace {
 
+void draw_warmth(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+                 int ticks, std::uint64_t tick, Cell cell, bool steam) {
+    const float fade = std::min(1.0F, static_cast<float>(ticks) / 60);
+    if (steam) {
+        // HEAT: Two thin rising wisps; keep the actor and underlying ground readable.
+        for (int i = 0; i < 2; ++i) {
+            const auto offset = static_cast<std::uint64_t>(cell.x * 17 + cell.y * 29 + i * 41);
+            const float age = static_cast<float>((tick + offset) % 90) / 90;
+            SDL_SetRenderDrawColorFloat(renderer, light.red * .74F, light.green * .70F,
+                light.blue * .58F, fade * .22F * std::sin(age * 3.14159265F));
+            const float x = rect.x + rect.w * (.32F + static_cast<float>(i) * .34F);
+            const float y = rect.y + rect.h * (.75F - age * .4F);
+            const SDL_FPoint points[]{{x, y}, {x + rect.w * .05F, y - rect.h * .13F},
+                {x - rect.w * .02F, y - rect.h * .23F}};
+            SDL_RenderLines(renderer, points, 3);
+        }
+        return;
+    }
+    SDL_SetRenderDrawColorFloat(renderer, light.red * .77F, light.green * .48F,
+        light.blue * .22F, fade * .9F);
+    for (Cell grain : {Cell{4, 6}, {10, 4}, {8, 12}}) {
+        const SDL_FRect flake{rect.x + rect.w * static_cast<float>(grain.x) / 16,
+            rect.y + rect.h * static_cast<float>(grain.y) / 16, rect.w / 16, rect.h / 16};
+        SDL_RenderFillRect(renderer, &flake);
+    }
+}
+
 void draw_grit(SDL_Renderer* renderer, SDL_FRect rect, LightColor light, Cell cell) {
     constexpr Cell grains[]{{3, 5}, {10, 3}, {7, 11}, {12, 10}, {4, 13}};
     SDL_SetRenderDrawColorFloat(renderer, light.red * .62F, light.green * .54F,
@@ -86,6 +113,8 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             const Surface& surface = game.stage.at(cell)->surface;
             const LightColor light = light_at_cell(lighting, cell);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (surface.warmth_ticks > 0)
+                draw_warmth(renderer, rect, light, surface.warmth_ticks, game.tick, cell, clouds);
             if (clouds) {
                 const int time = std::max(surface.smoke_ticks, surface.sleep_ticks);
                 if (surface.scent_ticks > 0)

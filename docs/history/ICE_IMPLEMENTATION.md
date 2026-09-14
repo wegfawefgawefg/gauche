@@ -217,3 +217,35 @@ timers; both source kind and timer are serialized and hashed. Snapshot layout
 is 29, gameplay compatibility E1. Static pool/card renders were inspected; no
 live playtest or new test suite ran. Ice has three enemies and four items; the
 remaining catalog and broader master list stay open.
+
+## Heat Capsule and lingering warmth (2026-09-14)
+
+Heat Capsule breaks around its user, warming their cell and four cardinal
+neighbors for four seconds. Big extends each arm to two cells. It consumes one
+from a stack of four, costs 8 gold and has a 45-tick cooldown. Shelter/bathhouse
+supplies, ice rewards and ice shops include it. Cards show the self-centered
+cross, actual warm reach and duration; the debug preview shares its exposure
+function with the effect. Solid cover stops warmth reaching cells behind it.
+
+Surface warmth has its own deterministic timer, separate from fire, wetness,
+chill and lighting. It immediately clears chill and thaws affected ice, then
+continues to resist freezing and melt cold projectiles while present. Actors
+entering the patch lose chill through the existing temperature check. Warm
+water stays water; a restored diver opening remains an opening. Oil/sap or
+flammable props can ignite immediately or when introduced later. The patch
+itself deals no damage and provides no health or burn immunity. Cold can quench
+its fires, but remaining chemical warmth may reignite fuel on the next tick.
+
+A capsule's painted area never expands through neighboring warm cells. Only
+actual flames warm their cardinal neighbors, so burning fuel can legitimately
+spread heat farther. Three small ochre flakes and faint rising wisps show each
+warm cell, fading in its final second. No broad colored overlay or new ambient
+light was added. A native foil capsule sprite and two offline sounds provide a
+crack and a brief chemical fizz; heat visuals remain local cosmetics.
+
+Game/render builds pass with strict warnings, the existing snapshot codec check
+passes with a nonzero warmth timer, and static terrain/card renders were
+inspected. Generated audio decodes without non-finite samples or clipping. No
+live playtest or new test suite ran. Snapshot layout is 30 and gameplay
+compatibility E2. Ice now has three catalog enemies and five catalog items;
+remaining enemies, tools, debris, ambience and progression remain open.

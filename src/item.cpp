@@ -2,6 +2,7 @@
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/air_bladder.hpp"
+#include "items/heat_capsule.hpp"
 #include "items/woodland_tools.hpp"
 #include "items/remedies.hpp"
 #include "items/ground_tools.hpp"
@@ -81,6 +82,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HeatCapsule:
+        used = use_heat_capsule(game, user_slot);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::ColdFlask:
         used = launch_projectile(game, user_slot, item, direction, item_pattern(item).maximum);
         cooldown = item_pattern(item).cooldown;

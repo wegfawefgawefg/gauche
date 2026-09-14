@@ -1,4 +1,5 @@
 #include "temperature.hpp"
+#include "interaction.hpp"
 #include "../world/water.hpp"
 
 #include <algorithm>
@@ -20,9 +21,7 @@ bool hot_actor(const Entity& actor) {
     return held && hot_item(*held);
 }
 
-} // namespace
-
-bool hot_cell(const Game& game, Cell cell) {
+bool flame_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return false;
     if (tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return true;
@@ -33,10 +32,32 @@ bool hot_cell(const Game& game, Cell cell) {
     return false;
 }
 
+} // namespace
+
+bool hot_cell(const Game& game, Cell cell) {
+    const Tile* tile = game.stage.at(cell);
+    return tile && (tile->surface.warmth_ticks > 0 || flame_cell(game, cell));
+}
+
 bool warm_cell(const Game& game, Cell cell) {
+    const Tile* tile = game.stage.at(cell);
+    if (tile && tile->surface.warmth_ticks > 0) return true;
+    // REACH: A capsule already paints its area. Only actual flames warm adjacent cells.
     for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}})
-        if (hot_cell(game, cell + offset)) return true;
+        if (flame_cell(game, cell + offset)) return true;
     return false;
+}
+
+bool warm_surface(Game& game, Cell cell, int ticks) {
+    Tile* tile = game.stage.at(cell);
+    if (tile == nullptr || !walkable(tile->kind) || ticks <= 0) return false;
+    tile->surface.warmth_ticks = static_cast<std::uint16_t>(std::clamp(
+        std::max(ticks, static_cast<int>(tile->surface.warmth_ticks)), 1, 240));
+    if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
+    ignite_surface(game, cell);
+    for (Entity& actor : game.entities)
+        if (actor.kind != EntityKind::None && actor.cell == cell) actor.freeze_ticks = 0;
+    return true;
 }
 
 bool freeze_water(Game& game, Cell cell, int ticks) {
@@ -103,6 +124,13 @@ void step_temperature(Game& game) {
         for (int x = 0; x < game.stage.width; ++x) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
+            if (tile.surface.warmth_ticks > 0) {
+                --tile.surface.warmth_ticks;
+                if (tile.surface.warmth_ticks > 0) {
+                    if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
+                    ignite_surface(game, cell);
+                }
+            }
             if (tile.freeze_ticks > 0) {
                 if (tile.kind != TileKind::Ice) {
                     tile.freeze_ticks = 0; tile.thaw_kind = TileKind::Empty;

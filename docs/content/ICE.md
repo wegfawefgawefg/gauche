@@ -83,7 +83,7 @@ same effective item definition as attacks, including rare attributes.
 | 8 | Cold flask | Implemented: traveling throw to 5, 3s chill in a cross, 8s shallow-water ice, douses small fires. Stack 3; Big extends each arm, Long throws to 9. | Common; 10 |
 | 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Clears a three-cell fan of snow, revealing covered loot/props; secondary packs collected snow into a snowball if space permits. 60 durability. | Common; 9 |
-| 11 | Heat capsule | Break next to the user for a 4s warm patch; thaws nearby ice and removes chill, but ignites oil. Stack 4. | Common; 8 |
+| 11 | Heat capsule | Implemented: a 4s warm cross around the user; thaws ice, clears chill and resists cold, but ignites oil even when spilled later. Stack 4; Big extends each arm. | Common; 8 |
 | 12 | Coal lump | Feed a lit stove for longer heat or throw an inert lump for 4 damage. Does not spontaneously ignite. Stack 8. | Common; 3 |
 | 13 | Candle stub | Place a small finite lamp; pick it back up with remaining fuel. Eighty seconds of light per candle, stack only equal unused candles. | Common; 5 |
 | 14 | Wick spool | Adds 30s to an adjacent fuel lamp or candle; cannot refill batteries or living emitters. Four portions. | Common; 7 |

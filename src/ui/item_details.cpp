@@ -159,6 +159,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     if (item.kind == ItemKind::AirBladder)
         std::snprintf(line, sizeof(line), "SHOVE 1 | FLOAT UP TO 16");
+    if (item.kind == ItemKind::HeatCapsule)
+        std::snprintf(line, sizeof(line), "WARMTH 4s | THAW + CLEAR CHILL");
     if (item.kind == ItemKind::ColdFlask)
         std::snprintf(line, sizeof(line), "CHILL 3s | FREEZE WATER 8s");
     if (item.kind == ItemKind::IceNeedle)
@@ -227,6 +229,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                       pattern.maximum, item.dig_power);
     else if (item.kind == ItemKind::AirBladder)
         std::snprintf(line, sizeof(line), "PUSH REACH %d", pattern.blast_radius);
+    else if (item.kind == ItemKind::HeatCapsule)
+        std::snprintf(line, sizeof(line), "WARM REACH %d", pattern.blast_radius);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
     if (item.kind == ItemKind::PitchBomb)
         std::snprintf(line, sizeof(line), "FUSE 2s | FIRE 6s + RESIN");

@@ -159,7 +159,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, ItemKind::AirBladder, 1, budget.equipment);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
             supply(game, room, ItemKind::Bandage, 2, budget.healing);
-            supply(game, room, ItemKind::Torch, 1, budget.equipment);
+            supply(game, room, ItemKind::HeatCapsule, 2, budget.equipment);
         } else if (room.role == RoomRole::EchoTunnel) {
             supply(game, room, ItemKind::IceNeedle, 3, budget.equipment);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {

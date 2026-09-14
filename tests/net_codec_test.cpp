@@ -60,6 +60,7 @@ int main() {
     original.stage.tiles[4].kind = TileKind::Ice;
     original.stage.tiles[4].thaw_kind = TileKind::Spring;
     original.stage.tiles[4].freeze_ticks = 77;
+    original.stage.tiles[5].surface.warmth_ticks = 117;
     owner->inventory.slots[5] = make_item(ItemKind::GritPouch, 1, ItemAttribute::Big);
     owner->inventory.slots[5].uses = 2;
     original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};

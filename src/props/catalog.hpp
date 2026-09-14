@@ -2,20 +2,22 @@
 
 #include "../graphics.hpp"
 #include "../sound.hpp"
+#include "../lighting/emitter.hpp"
 
 #include <cstdint>
 
 enum class PropKind : std::uint8_t { None, Leaves, Twigs, Fern, TallGrass,
-    Puffball, RottenLog, Crate, Nest, ClayPot, Count };
+    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, Count };
 
-// STORAGE: One four-byte prop per tile, independent of actor slots and inventories.
+// STORAGE: One compact prop per tile, independent of actor slots and inventories.
 struct Prop {
     PropKind kind = PropKind::None;
     std::uint8_t hp = 0;
     std::uint8_t variant = 0;
     bool broken = false;
+    std::uint16_t growth_ticks = 0;
 };
-static_assert(sizeof(Prop) == 4);
+static_assert(sizeof(Prop) == 6);
 
 struct PropSpec {
     Sprite sprite;
@@ -23,6 +25,7 @@ struct PropSpec {
     int health;
     bool blocking;
     bool breaks_on_step;
+    LightEmitter light{};
 };
 
 PropSpec prop_spec(PropKind kind);

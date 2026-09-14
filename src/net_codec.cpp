@@ -224,7 +224,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(18);
+    writer.u32(19);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -241,6 +241,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
         writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
         writer.u8(static_cast<std::uint8_t>(tile.prop.broken));
+        writer.u16(tile.prop.growth_ticks);
     }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
@@ -286,7 +287,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 18) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 19) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -317,8 +318,12 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.prop.kind = static_cast<PropKind>(reader.u8());
         tile.prop.hp = reader.u8(); tile.prop.variant = reader.u8();
         tile.prop.broken = reader.u8() != 0;
+        tile.prop.growth_ticks = reader.u16();
         if (tile.prop.kind >= PropKind::Count ||
-            (tile.prop.broken && tile.prop.hp != 0)) reader.okay = false;
+            tile.prop.hp > prop_spec(tile.prop.kind).health ||
+            (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
+            tile.prop.growth_ticks > 180 ||
+            (tile.prop.kind != PropKind::Shoot && tile.prop.growth_ticks != 0)) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
     }

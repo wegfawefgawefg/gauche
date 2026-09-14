@@ -2,6 +2,7 @@
 #include "surfaces/interaction.hpp"
 #include "items/action.hpp"
 #include "entities/dispatch.hpp"
+#include "props/growth.hpp"
 
 #include <algorithm>
 
@@ -120,6 +121,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     if (step_interlude(game, inputs)) return;
 
     step_surfaces(game);
+    step_prop_growth(game);
 
     // TIMERS: A cooldown reaching zero can act on this tick.
     for (int slot = 0; slot < max_entities; ++slot)

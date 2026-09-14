@@ -40,6 +40,7 @@ enum class Sprite : std::size_t {
     ForagerGoblin, ForagerGoblinKnife, CarrionCrow, CarrionCrowSnatch,
     BurrowWormHead, BurrowWormBody, BurrowWormBite,
     ForestTree, ForestTimber, TreeStump, TimberBroken,
+    DiggingClaws, ResinGlue, SeedBag, LanternSeed, Shoot, ShootTall, RootCover, LanternPlant,
     Count,
 };
 

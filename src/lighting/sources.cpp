@@ -1,5 +1,6 @@
 #include "field.hpp"
 #include "../items/fire.hpp"
+#include "../props/growth.hpp"
 
 #include <algorithm>
 
@@ -34,7 +35,9 @@ std::vector<LightSource> collect_light_sources(const Game& game,
 
     for (int y = cache.origin.y; y < cache.origin.y + cache.height; ++y)
         for (int x = cache.origin.x; x < cache.origin.x + cache.width; ++x) {
-            if (game.stage.at_or_border({x, y}).surface.fire_ticks == 0) continue;
+            const Tile& tile = game.stage.at_or_border({x, y});
+            add_emitter(sources, cache, {x, y}, prop_light(tile.prop));
+            if (tile.surface.fire_ticks == 0) continue;
             // CLUSTERS: Share neighboring emitters, but isolated flames always cast light.
             bool covered = false;
             if ((x + y) % 2 != 0)

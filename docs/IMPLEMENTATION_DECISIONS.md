@@ -322,3 +322,30 @@ of debug UI. Gubsy exposes that value and lets hosts opt out of its default over
 Gauche places a quiet counter beneath its zoom label, clear of the floor title;
 the initial unmeasured value is `--`. Show FPS still uses the existing saved setting.
 Strict builds pass; a static HUD capture checks placement. No live playtest.
+
+
+## Woodland tools and planted props
+
+Four further regional items bring the forest to 22 implemented types. Digging
+claws deal 8 damage with dig power 1, a three-tick windup, 18-tick cooldown and
+18 uses. Resin repairs all missing condition on the carried item with the largest
+absolute condition loss (slot order breaks ties); it neither refills uses/ammo
+nor consumes itself when nothing needs repair. Its comparison card names the
+repair target and shows before/after condition.
+
+A six-use seed bag plants an 8-HP shoot on clear dry ground. Two shoot sprites
+show the three-second growth delay before 40-HP blocking root cover. Damage
+carries through maturation; occupying the tile holds growth until it is clear.
+Actors, items and fixtures cannot be planted over. Lantern seeds stack to four,
+consume one per planting and create 12-HP passable flowers with radius-five,
+strength-800 yellow-green light. Both plants can be cut or burned. Prop emitters
+use shared light data; moth AI searches nearby planted lamps using that same data.
+Plants are compact six-byte props, not actor slots. Breakage creates local root
+and leaf debris. Growth remaining is hashed, validated and saved in snapshot 19;
+gameplay compatibility is CB. Root turrets, bramble guards, woodpeckers and moths
+now drop these matching items at the catalog rates. Room/reward/shop pools include
+them. Eight sprites and five short synthesized cues have committed offline sources.
+
+Strict game/render builds pass. Static world and comparison captures check plant
+stages, lamp color, silhouettes, uses and resin repair preview. No live playtest
+or new gameplay test suite was run.

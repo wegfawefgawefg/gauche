@@ -35,6 +35,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
 void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
     prop.hp = 0;
     prop.broken = true;
+    prop.growth_ticks = 0;
     const PropSpec spec = prop_spec(prop.kind);
     emit_sound(game, spec.sound, cell);
     if (game.impact_count < static_cast<int>(game.impacts.size()))

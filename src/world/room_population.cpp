@@ -149,11 +149,12 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         }
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
-    case RoomRole::Workshop:
-        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::Pickaxe : ItemKind::BearTrap,
-               1, budget.equipment);
+    case RoomRole::Workshop: {
+        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws};
+        supply(game, room, tools[random_u32(game) % std::size(tools)], 1, budget.equipment);
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
+    }
     case RoomRole::Cache: {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
@@ -168,7 +169,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
                2, budget.equipment);
         break;
     case RoomRole::Thicket: {
-        constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar};
+        constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar,
+            ItemKind::SeedBag, ItemKind::LanternSeed};
         supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment);
         break;
     }

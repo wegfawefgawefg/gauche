@@ -43,6 +43,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "forager_goblin", "forager_goblin_knife", "carrion_crow", "carrion_crow_snatch",
     "burrow_worm_head", "burrow_worm_body", "burrow_worm_bite",
     "forest_tree", "forest_timber", "tree_stump", "timber_broken",
+    "digging_claws", "resin_glue", "seed_bag", "lantern_seed", "shoot", "shoot_tall", "root_cover", "lantern_plant",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

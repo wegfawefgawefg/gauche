@@ -6,6 +6,7 @@
 #include "flier_scene.hpp"
 #include "scavenger_scene.hpp"
 #include "woodland_scene.hpp"
+#include "woodland_tools_scene.hpp"
 #include "footprint_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
@@ -220,11 +221,13 @@ int main(int argc, char** argv) {
             insert_item(player.inventory, make_item(kind, kind == ItemKind::Egg ? 4 : 1));
         player.inventory.selected = 2;
     }
+    if (mode == "wood-tools" || mode == "wood-tool-items")
+        arrange_woodland_tools(game, cosmetics, player);
     if (mode == "artifacts") {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
         interaction.slot_focus = mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
@@ -247,7 +250,7 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
     if (mode == "fps") draw_frame_rate(renderer, 60);

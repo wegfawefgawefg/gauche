@@ -4,6 +4,7 @@
 #include "sound.hpp"
 #include "props/catalog.hpp"
 #include "surfaces/types.hpp"
+#include "lighting/emitter.hpp"
 
 #include <array>
 #include <cstdint>
@@ -84,23 +85,13 @@ enum class ItemKind : std::uint8_t {
     Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
-    Egg, FriedEgg,
+    Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     Count,
 };
 
 enum class ItemAttribute : std::uint8_t {
     None, Strong, Agile, Durable, Fragile, Heavy, Big,
     Long, Piercing, Restorative,
-};
-
-struct LightTint {
-    std::uint8_t red = 255, green = 255, blue = 255;
-};
-
-struct LightEmitter {
-    int radius = 0;
-    int strength = 0; // Thousandths of one source unit.
-    LightTint color{};
 };
 
 struct Item {

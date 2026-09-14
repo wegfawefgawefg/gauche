@@ -80,6 +80,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, tile.prop.hp);
         mix(hash, tile.prop.variant);
         mix(hash, static_cast<std::uint64_t>(tile.prop.broken));
+        mix(hash, tile.prop.growth_ticks);
     }
     for (const Entity& entity : game.entities) {
         mix(hash, static_cast<std::uint64_t>(entity.kind));

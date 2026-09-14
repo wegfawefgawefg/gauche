@@ -1,5 +1,6 @@
 #include "behavior.hpp"
 #include "../items/fire.hpp"
+#include "../props/growth.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -30,6 +31,10 @@ void find_lamp(Game& game, Entity& moth) {
         consider(source.cell, item_light(*source.inventory.held()), handle);
         if (source.kind == EntityKind::GroundItem) consider(source.cell, item_light(source.ground_item), handle);
     }
+    // PLANTS: Search a bounded patch, using the same emitter as the light renderer.
+    for (int y = std::max(0, moth.cell.y - 10); y <= std::min(game.stage.height - 1, moth.cell.y + 10); ++y)
+        for (int x = std::max(0, moth.cell.x - 10); x <= std::min(game.stage.width - 1, moth.cell.x + 10); ++x)
+            consider({x, y}, prop_light(game.stage.at({x, y})->prop), {});
     // CANOPY: Gaps compete as fixed environmental sources, not fake entities.
     for (int i = 0; i < game.run.roof_light_count; ++i) {
         const StageLight& gap = game.run.roof_lights[static_cast<std::size_t>(i)];

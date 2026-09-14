@@ -16,7 +16,9 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             if (prop.kind == PropKind::None || prop.broken) continue;
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
-            SDL_Texture* texture = texture_for(graphics, spec.sprite);
+            const Sprite sprite = prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
+                Sprite::ShootTall : spec.sprite;
+            SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, 0, nullptr,

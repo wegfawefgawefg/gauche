@@ -2,6 +2,7 @@
 #include "item_details.hpp"
 #include "../items/action.hpp"
 #include "../items/catalog.hpp"
+#include "../items/woodland_tools.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "pattern_diagram.hpp"
@@ -117,6 +118,15 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::ResinGlue) {
+        const int repair = resin_repair_slot(player.inventory);
+        if (repair < 0) std::snprintf(line, sizeof(line), "NOTHING NEEDS REPAIR");
+        else {
+            const Item& target = player.inventory.slots[static_cast<std::size_t>(repair)];
+            std::snprintf(line, sizeof(line), "%s %d -> %d", item_name(target.kind),
+                target.durability, target.max_durability);
+        }
+    }
     text(renderer, x + 10.0F, y + 96.0F, line);
     std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
                   static_cast<double>(item.cooldown) / 60.0,

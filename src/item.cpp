@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
+#include "items/woodland_tools.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
 #include "item_attribute.hpp"
@@ -64,6 +65,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::ResinGlue: case ItemKind::SeedBag: case ItemKind::LanternSeed:
+        used = use_woodland_tool(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::Torch: case ItemKind::Lighter: case ItemKind::OilFlask:
     case ItemKind::SapJar: case ItemKind::WaterFlask: case ItemKind::MushroomSpores:
     case ItemKind::SmokePot: case ItemKind::HoneyPot:
@@ -92,7 +97,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         break;
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
-    case ItemKind::Rake: case ItemKind::FlintKnife:
+    case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range >= 1 && range <= item_pattern(item).maximum) {
             const ItemPattern pattern = item_pattern(item);

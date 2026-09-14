@@ -303,9 +303,11 @@ Distinct behavior, encounter role, silhouette, sound, and sensible drops matter
 more than different colors or HP values. Room, tile, prop, hazard, and container
 variety belongs to every biome too.
 
-- [ ] Design a full forest catalog to those quotas, including enemies with
+- [x] Design a full forest catalog to those quotas, including enemies with
   tells and drop tables, strange or weak-but-useful items, prop/debris families,
   room roles, tile types, chests/boxes, and new sound requirements.
+  See [Forest catalog](content/FOREST.md): 20 adversaries, 50 regional finds,
+  20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
 - [ ] Design a full ice catalog to the same quotas and quality bar.

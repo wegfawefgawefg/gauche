@@ -126,6 +126,7 @@ int main(int argc, char** argv) {
         }
     }
     Entity& player = *get_entity(game, game.players[0]);
+    player.owner = 0;
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));
     insert_item(player.inventory, make_item(ItemKind::Buckler));

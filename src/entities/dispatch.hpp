@@ -57,3 +57,12 @@ void init_root_turret(Entity& entity);
 void step_root_turret(Game& game, int slot);
 void init_bramble_guard(Entity& entity);
 void step_bramble_guard(Game& game, int slot);
+
+void init_mosquito(Entity& entity);
+void step_mosquito(Game& game, int slot);
+
+void init_owl(Entity& entity);
+void step_owl(Game& game, int slot);
+
+void init_woodpecker(Entity& entity);
+void step_woodpecker(Game& game, int slot);

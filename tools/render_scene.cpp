@@ -3,6 +3,7 @@
 #include "floor_overview.hpp"
 #include "enemy_scene.hpp"
 #include "plant_scene.hpp"
+#include "flier_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -113,6 +114,7 @@ int main(int argc, char** argv) {
         arrange_enemy_scene(game, cosmetics);
         debug_panels().world_enemies = true;
     }
+    if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);

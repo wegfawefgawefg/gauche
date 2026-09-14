@@ -265,17 +265,17 @@ and honey now share burning/wetting/concealment/bait rules. Oil slipping, wasp
 bait and natural sap sources remain; toads drop spores. Nests now yield stackable
 eggs, fried at campfires (eighteen regional item types). Other drops await items.
 
-Forest implementation slice: twelve adversaries exist: wolf, bear, bat, zombie,
-zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret
-and bramble guard. Wolves flank; bears defend territory; bats dive and rest;
-boars charge/crush; snails deflect front hits; moths seek emitters; toads puff sleep;
-mimics disguise and retreat. Roots turn, coil and lash fixed lanes. Bramble guards
-screen allies with breakable bucklers and step out of their committed attacks.
-Twenty distinct enemy sound cues and minimalist silhouettes are integrated into
-room pools. Meat, spores, mimic supplies and plant stick/sap drops are live;
-planned seed/glue and moth/snail drops await their items. Attack resolution and
-debug previews share committed cells. Strict builds and static captures passed;
-behavior and balance playtesting remain with the user.
+Forest implementation slice: fifteen adversaries exist: wolf, bear, bat, zombie,
+zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret,
+bramble guard, mosquito, owl and woodpecker. Wolves flank; bears defend territory;
+boars crush; snails deflect; moths seek lamps; toads puff sleep; mimics disguise.
+Roots lash lanes; guards screen allies with breakable shields. Mosquitoes drain
+and retreat; owls swoop to old positions; woodpeckers drill and get their beak stuck.
+Twenty-eight new enemy cues and distinct silhouettes are integrated into room pools.
+Current drops use existing themed finds; planned seed/glue, bird-seed/digging-claw
+and moth/snail drops await their items. Attack resolution and debug previews share
+committed cells. Strict builds and static captures passed; behavior and balance
+playtesting remain with the user.
 
 - [ ] Design a full ice catalog to the same quotas and quality bar.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.

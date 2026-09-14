@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "items/fire_render.hpp"
 #include "surfaces/render.hpp"
@@ -234,6 +235,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y += (static_cast<float>(entity.point_a.y - entity.cell.y) - .6F) * pixels * remaining;
                 angle += static_cast<double>(remaining * 270);
             }
+            apply_flight_pose(entity, game.tick, body_rect, angle);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
                 nullptr, pose != nullptr && pose->horizontal_flip ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
@@ -322,6 +324,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting, &game.stage);
+    draw_owl_landing(renderer, graphics, game, camera, zoom, lighting);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
     if (cosmetics != nullptr)

@@ -77,7 +77,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         break;
     case RoomRole::Brook:
         enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::SporeToad : EntityKind::LanternMoth, 1, budget);
-        if (round > 0) enemy(game, room, EntityKind::Bat, 1, budget);
+        if (round > 0) enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Bat : EntityKind::Mosquito, 1, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Bunny, *cell);
         break;
     case RoomRole::Ruins:
@@ -101,11 +101,13 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (const auto cell = room_space(game, room)) spawn_chicken_family(game, *cell);
         break;
     case RoomRole::Workshop:
+        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Woodpecker, 2, budget);
         if (round > 0 && random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Dog, *cell);
         break;
     case RoomRole::Clearing:
-        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Bat, 1, budget);
+        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Owl, 2, budget);
+        else enemy(game, room, EntityKind::Mosquito, 1, budget);
         break;
     default: break;
     }

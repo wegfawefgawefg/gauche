@@ -364,3 +364,21 @@ should alternate cardinal steps like Adventures with Chickens, without overridin
 explicit aim. The stronger green canopies are now distracting: reduce their
 brightness to roughly one fifth of the current result, preserving their shapes,
 anchoring and center mask. These are added tasks, not yet implemented.
+
+
+## Mosquitoes, owls and woodpeckers
+
+The forest roster now has fifteen implemented adversaries. Mosquitoes (12 HP)
+hover for eighteen ticks, dart up to three steps toward a committed old position,
+drain five HP on contact, heal only actual drained health, then retreat/digest.
+A missed dart leaves a 42-tick opening. Owls (38 HP) watch a territory, hoot for
+forty ticks and swoop to an old target cell marked by a small wing shadow. They
+rest and return to their perch instead of chasing indefinitely. Woodpeckers
+(30 HP) rattle before a fixed six-step drill, chip props and dig-power-one terrain
+for eighteen damage per peck, and pause ninety ticks after a hard collision.
+Their attack on an actor is ten damage and ends the drill. Flying creatures no
+longer stomp ground props/campfires or make water footsteps; smoke/sleep still
+affect them. Six sprites, eight synthesized cues and distinct flight poses join
+clearing, brook and workshop pools. Current 10% water / 15% egg / 15% rock drops
+are live; planned bird seed and digging claws remain pending. Strict builds and
+a static flier encounter capture checked; no gameplay playtest performed.

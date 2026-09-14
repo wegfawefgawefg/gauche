@@ -16,6 +16,14 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             for (int i = 1; i <= enemy.counter_a; ++i)
                 add(enemy.cell + Cell{enemy.facing.x*i, enemy.facing.y*i});
         break;
+    case EntityKind::Woodpecker:
+        if (enemy.label_a == 1 || enemy.label_a == 2)
+            for (int i = 1; i <= enemy.counter_a; ++i)
+                add(enemy.cell + Cell{enemy.facing.x*i, enemy.facing.y*i});
+        break;
+    case EntityKind::Owl: case EntityKind::Mosquito:
+        if (enemy.label_a == 1 || enemy.label_a == 2) add(enemy.point_b);
+        break;
     case EntityKind::Boar:
         if (enemy.label_a == 1 || enemy.label_a == 2)
             for (int i = 1; i <= enemy.counter_a; ++i)

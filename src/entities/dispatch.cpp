@@ -9,6 +9,9 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Boar: init_boar(entity); break;
     case EntityKind::ThornSnail: init_thorn_snail(entity); break;
     case EntityKind::LanternMoth: init_lantern_moth(entity); break;
+    case EntityKind::Mosquito: init_mosquito(entity); break;
+    case EntityKind::Owl: init_owl(entity); break;
+    case EntityKind::Woodpecker: init_woodpecker(entity); break;
     case EntityKind::RootTurret: init_root_turret(entity); break;
     case EntityKind::BrambleGuard: init_bramble_guard(entity); break;
     case EntityKind::SporeToad: init_spore_toad(entity); break;
@@ -42,6 +45,9 @@ void step_entity(Game& game, int slot) {
     case EntityKind::Boar: step_boar(game, slot); break;
     case EntityKind::ThornSnail: step_thorn_snail(game, slot); break;
     case EntityKind::LanternMoth: step_lantern_moth(game, slot); break;
+    case EntityKind::Mosquito: step_mosquito(game, slot); break;
+    case EntityKind::Owl: step_owl(game, slot); break;
+    case EntityKind::Woodpecker: step_woodpecker(game, slot); break;
     case EntityKind::RootTurret: step_root_turret(game, slot); break;
     case EntityKind::BrambleGuard: step_bramble_guard(game, slot); break;
     case EntityKind::SporeToad: step_spore_toad(game, slot); break;

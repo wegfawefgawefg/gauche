@@ -35,6 +35,7 @@ enum class Sprite : std::size_t {
     ShallowWaterA, ShallowWaterB, SpringA, SpringB, Arrow, BombLit, BowDrawn, CanopyOak, CanopyPine,
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Rocket, Bolt, Egg, FriedEgg, RootTurret, RootTurretCoiled, BrambleGuard, BrambleGuardSwing,
+    Mosquito, MosquitoFed, Owl, OwlFlying, Woodpecker, WoodpeckerDrilling,
     Count,
 };
 

@@ -5,8 +5,11 @@
 #include <gubsy/runtime.hpp>
 
 void register_game_bindings(GubsyRuntime& runtime);
+BindsProfile default_game_binds();
 void observe_input_device(const SDL_Event& event);
 bool pointer_device_active();
+bool controller_input_active();
+SDL_JoystickID active_gamepad_id();
 bool inventory_button_down(GubsyRuntime& runtime);
 bool compare_button_down(GubsyRuntime& runtime);
 bool compact_details_button_down(GubsyRuntime& runtime);

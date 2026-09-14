@@ -93,9 +93,6 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
         if (event.gbutton.button == SDL_GAMEPAD_BUTTON_EAST) {
             ui.request_back = true; return true;
         }
-        if (event.gbutton.button == SDL_GAMEPAD_BUTTON_WEST) {
-            ui.request_drop = true; return true;
-        }
     }
     if (!ui.inventory_open && (offering(game, owner) || game.run.phase == RunPhase::Shop)) {
         if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat) {
@@ -173,6 +170,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
     const bool pickup = input.pickup && !ui.pickup_latch;
     ui.confirm_latch = input.confirm;
     ui.pickup_latch = input.pickup;
+    input.pickup = pickup;
     const int nav = ui.inventory_open ? input.move.y : input.move.x;
     if (nav != 0 && nav != ui.move_latch) {
         if (ui.inventory_open)

@@ -4,6 +4,8 @@
 #include "item_meter.hpp"
 #include "text.hpp"
 #include "scale.hpp"
+#include "prompts.hpp"
+#include "../items/ground_interaction.hpp"
 #include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
 
@@ -45,11 +47,13 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     // The inventory stays clear of the player, with the selected row protruding.
     for (int index = 0; index < quick_slots; ++index) {
         const bool selected = index == player.inventory.selected;
-        const float x = selected ? 25.0F : 17.0F;
+        const InputPrompt slot_key = action_prompt(static_cast<Action>(action_id(Action::Slot1) + index));
+        const float key_width = controller_input_active() ? 14 :
+            std::max(14.0F, 6 * static_cast<float>(slot_key.label.size()) + 6);
+        const float x = key_width + (selected ? 16.0F : 8.0F);
         const float y = 58.0F + static_cast<float>(index) * 20.0F;
         panel(renderer, x, y, 104.0F, 18.0F, selected);
-        char number[2]{static_cast<char>('1' + index), '\0'};
-        ui_text(renderer, 5.0F, y + 6.0F, number);
+        if (!controller_input_active()) draw_prompt(renderer, 2, y + 3, slot_key);
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind != ItemKind::None) {
             SDL_FRect icon{x + 3.0F, y + 3.0F, 12.0F, 12.0F};
@@ -117,8 +121,13 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (pointer.inside && entity.cell == pointer.cell) { ground = &entity; break; }
         if (ground == nullptr && entity.cell == player.cell) ground = &entity;
     }
+    const GroundAction action = ground_action(game, player);
+    if (action != GroundAction::None)
+        draw_action_hint(renderer, width * .5F - 90, height - 74, Action::Pickup,
+            action == GroundAction::Drop ? "DROP HELD" : action == GroundAction::Swap ? "SWAP HELD" :
+            action == GroundAction::Blocked ? "PACK FULL" : "PICK UP");
     if (ground == nullptr) return;
-    const char* label = ground->cell == player.cell ? "E PICK UP" : "GROUND";
+    const char* label = "GROUND";
     if (compact_details)
         draw_compact_item_details(renderer, graphics, ground->ground_item,
                                   width * .5F - 90.0F, height - 53.0F, 180.0F, label);

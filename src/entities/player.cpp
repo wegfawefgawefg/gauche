@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "../items/bow.hpp"
 #include "../items/action.hpp"
+#include "../items/ground_interaction.hpp"
 #include "../item_pattern.hpp"
 #include "../world/ground_items.hpp"
 #include "../world/loot.hpp"
@@ -8,18 +9,6 @@
 #include <cstdlib>
 
 namespace {
-
-void pickup_item(Game& game, Entity& player) {
-    for (int slot = 0; slot < max_entities; ++slot) {
-        Entity& ground = game.entities[static_cast<std::size_t>(slot)];
-        if (ground.kind != EntityKind::GroundItem || ground.cell != player.cell) continue;
-        if (transfer_item(player.inventory, ground.ground_item) == 0) return;
-        if (ground.ground_item.count == 0)
-            remove_entity(game, {slot, ground.generation});
-        emit_sound(game, SoundId::Confirm, player.cell, false);
-        return;
-    }
-}
 
 Cell facing_from_aim(Cell aim, Cell fallback) {
     if (aim.x == 0 && aim.y == 0) return fallback;
@@ -37,19 +26,6 @@ void init_player(Entity& entity) {
     entity.impassable = true;
     insert_item(entity.inventory, make_item(ItemKind::Fist));
     insert_item(entity.inventory, make_item(ItemKind::Bandage, 2));
-}
-
-void drop_player_item(Game& game, Entity& player) {
-    Item& item = *player.inventory.held();
-    if (item.kind == ItemKind::None || item.kind == ItemKind::Fist) return;
-    const Cell destination = nearby_ground_item_cell(game, player.cell);
-    const Handle dropped = spawn_entity(game, EntityKind::GroundItem, destination);
-    if (Entity* entity = get_entity(game, dropped)) {
-        entity->ground_item = item;
-        entity->sprite = item_sprite(item);
-        item = {};
-        emit_sound(game, SoundId::Drop, player.cell);
-    }
 }
 
 void step_player(Game& game, int slot, const Input& input) {
@@ -83,7 +59,11 @@ void step_player(Game& game, int slot, const Input& input) {
     collect_coins(game, player);
 
     // INTERACTIONS: The player owns pickup, fixture use, and the held item.
-    if (input.pickup) pickup_item(game, player);
+    if (input.pickup) {
+        cancel_item_action(player);
+        pickup_or_drop(game, player);
+        return;
+    }
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);

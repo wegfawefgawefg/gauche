@@ -218,3 +218,23 @@ rotation, keeping the top upright. The custom cursor draws once after menus and
 ImGui at window resolution, with high-DPI conversion; the OS/ImGui cursors stay
 hidden. Pad mode still hides Gauche's cursor. Removed duplicate casing emission
 from the old pose observer; actual shot events own firearm casings.
+
+## Contextual ground items and input prompts
+
+The pickup binding is now one contextual press: merge/fill carried stacks and
+empty slots first, otherwise exchange the ground item with selected droppable
+equipment. On empty ground it drops the selected item. Swapping reuses the
+ground entity and preserves the entire item; oversized pickup leftovers reserve
+an extra entity before committing. Fists are currently the non-droppable item;
+future attached/cursed gear must extend the shared eligibility function. Pickup
+is edge-triggered so holding X cannot swap repeatedly. It cancels a pending bow
+or melee action before exchanging equipment. Gameplay version changed.
+
+HUD/inventory/reward prompts now resolve from the active Gubsy profile and last
+keyboard/mouse versus controller input. Both legacy Gubsy IDs and encoded device
+bindings are supported. Keyboard keys have offset caps; SDL's actual face-button
+labels select letters or PlayStation shapes, with layout-specific shoulders and
+triggers. The ground hint distinguishes pickup, swap, drop and full pack. Profile
+menus, pause diagrams and remaining shortcut handling are still the menu pass.
+Strict builds and static keyboard HUD/inventory captures checked; controller
+hardware/layout switching and pickup feel await user playtesting.

@@ -53,7 +53,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
-    src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp src/items/stacking.cpp
+    src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp src/items/stacking.cpp src/items/ground_interaction.cpp
     src/entities/attacks.cpp src/entities/defense.cpp
     src/entities/boar.cpp src/entities/thorn_snail.cpp src/entities/lantern_moth.cpp
     src/entities/spore_toad.cpp src/entities/crate_mimic.cpp
@@ -89,10 +89,10 @@ set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
     src/main.cpp src/app/options.cpp src/debug/panels.cpp src/ui/status.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp
     src/render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
-    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp

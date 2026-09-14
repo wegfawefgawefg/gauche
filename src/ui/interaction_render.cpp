@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "prompts.hpp"
 #include "item_details.hpp"
 #include "item_meter.hpp"
 #include "text.hpp"
@@ -274,10 +275,10 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_item_details(renderer, graphics, *player, *player->inventory.held(),
                           413.0F + shift, 77.0F, 199.0F, 214.0F, "HELD");
     }
-    text(renderer, 26.0F, 321.0F, comparing ?
-         "X / E / DEL DROP   UP/DOWN COMPARE" :
-         "X / E / DEL DROP   A / ENTER EQUIP", 218, 198, 152);
-    text(renderer, 425.0F, 321.0F, "Q / Y / B BACK", 218, 198, 152);
+    draw_action_hint(renderer, 26, 319, Action::Pickup, "DROP");
+    draw_action_hint(renderer, 170, 319, comparing ? Action::MoveDown : Action::Confirm,
+                     comparing ? "COMPARE" : "EQUIP");
+    draw_action_hint(renderer, 425, 319, Action::Inventory, "BACK");
     if (!ui.notice.empty()) text(renderer, 26.0F, 342.0F, ui.notice, 231, 111, 87);
 }
 
@@ -319,8 +320,9 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         } else reward_card(renderer, graphics, *player, reward_offer(game, owner, index),
                            x, 82.0F, 187.0F, index == ui.offer_focus, label.c_str());
     }
-    text(renderer, 25.0F, 321.0F, "1-3 / A CHOOSE    C / R3 COMPARE    Q / Y PACK",
-         218, 198, 152);
+    draw_action_hint(renderer, 25, 319, Action::Confirm, "CHOOSE");
+    draw_action_hint(renderer, 215, 319, Action::Compare, "COMPARE");
+    draw_action_hint(renderer, 425, 319, Action::Inventory, "PACK");
     if (shop)
         text(renderer, 445.0F, 341.0F, ui.offer_focus == 3 ?
              "> CONTINUE" : "CONTINUE >", 218, 198, 152);

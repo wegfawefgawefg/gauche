@@ -451,7 +451,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [ ] Diagnose visible tile-center/vertex bias in lighting using canopy-on/off
   captures against Splonks. Preserve intentional dappled patterns; fix unwanted
   interpolation seams/facets without flattening the dramatic contrast.
-- [ ] Contextual pickup/drop on the configured interact button (Xbox X by default):
+- [x] Contextual pickup/drop on the configured interact button (Xbox X by default):
   empty ground drops the selected droppable item; a pickup merges/fills a free
   slot; full inventory swaps with selected equipment if legal. Preserve counts,
   cooldowns, uses and attributes atomically; blocked/cursed drops must fail safely.

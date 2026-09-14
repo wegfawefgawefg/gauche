@@ -1,4 +1,6 @@
 #include "input.hpp"
+#include "input/actions.hpp"
+#include "input/prompts.hpp"
 #include "view.hpp"
 
 #include <gubsy/input/types.hpp>
@@ -10,16 +12,6 @@
 #include <cmath>
 
 namespace {
-
-enum class Action : int {
-    MoveUp, MoveDown, MoveLeft, MoveRight,
-    AimUp, AimDown, AimLeft, AimRight,
-    Use, Pickup, Drop, Reload, Interact, Confirm,
-    Slot1, Slot2, Slot3, Slot4, Slot5, Slot6,
-    PreviousSlot, NextSlot, Inventory, Compare, CompactDetails,
-};
-
-constexpr int action_id(Action action) { return static_cast<int>(action); }
 
 bool down(GubsyRuntime& runtime, Action action) {
     return gubsy_lobby_player_action_down(runtime, 0, action_id(action));
@@ -127,7 +119,15 @@ void migrate_old_controller_defaults(BindsProfile& profile) {
 
 } // namespace
 
+BindsProfile default_game_binds() {
+    BindsProfile profile;
+    profile.name = "DefaultBinds";
+    default_binds(profile);
+    return profile;
+}
+
 void register_game_bindings(GubsyRuntime& runtime) {
+    set_prompt_runtime(runtime);
     BindsSchema schema;
     schema.add_action(action_id(Action::MoveUp), "Move Up", "Movement");
     schema.add_action(action_id(Action::MoveDown), "Move Down", "Movement");
@@ -138,7 +138,7 @@ void register_game_bindings(GubsyRuntime& runtime) {
     schema.add_action(action_id(Action::AimLeft), "Aim / Use Left", "Combat");
     schema.add_action(action_id(Action::AimRight), "Aim / Use Right", "Combat");
     schema.add_action(action_id(Action::Use), "Use Held Item", "Combat");
-    schema.add_action(action_id(Action::Pickup), "Pick Up", "Items");
+    schema.add_action(action_id(Action::Pickup), "Pick Up / Drop / Swap", "Items");
     schema.add_action(action_id(Action::Drop), "Drop", "Items");
     schema.add_action(action_id(Action::Reload), "Reload", "Combat");
     schema.add_action(action_id(Action::Interact), "Interact", "World");

@@ -72,6 +72,9 @@ int main() {
     Entity* keeper = get_entity(original,spawn_entity(original,EntityKind::CandleKeeper,{11,8}));
     keeper->timer_b = 119; keeper->light = {}; keeper->point_b = {12,8};
     keeper->entity_b = original.players[0]; keeper->attack_wait = 299;
+    original.stage.tiles[13].prop = {PropKind::Stove,23,1,false,7011};
+    Entity* coal = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{22,8}));
+    coal->ground_item = make_item(ItemKind::CoalLump,7,ItemAttribute::Long);
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
     owner->inventory.slots[5] = make_item(ItemKind::CandleStub, 1, ItemAttribute::Durable);

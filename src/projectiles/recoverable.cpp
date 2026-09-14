@@ -37,7 +37,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
         loose->ground_item = item;
         loose->sprite = item_sprite(item);
     }
-    emit_sound(game, item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : SoundId::RockImpact, cell);
+    emit_sound(game, item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, cell);
 }
 
 bool catch_boomerang(Game& game, int slot) {
@@ -150,7 +150,7 @@ void step_recoverable(Game& game, int slot) {
         if (shot.ground_item.kind == ItemKind::IceNeedle && actor.health < health && !hot_cell(game, next))
             apply_chill(game.entities[static_cast<std::size_t>(index)], 60);
         if ((boomerang && shot.label_b == 2) || (!boomerang && shot.counter_c == 0)) { land(game, slot); return; }
-        emit_sound(game, boomerang ? SoundId::BoomerangHit : shot.ground_item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : SoundId::RockImpact, next);
+        emit_sound(game, boomerang ? SoundId::BoomerangHit : shot.ground_item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : shot.ground_item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, next);
     }
     if (shot.counter_a == 0) {
         if (boomerang && shot.label_b == 0) turn_back(game, slot);

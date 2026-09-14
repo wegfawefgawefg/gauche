@@ -1,5 +1,6 @@
 #include "render.hpp"
 #include "candle.hpp"
+#include "stove.hpp"
 #include "alarm_clock.hpp"
 
 #include <algorithm>
@@ -18,14 +19,14 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             if (prop.kind == PropKind::None || prop.broken) continue;
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
-            const Sprite sprite = candle_lit(prop) ? Sprite::CandleLit : prop.kind == PropKind::AlarmClock ? alarm_clock_sprite(prop) : prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
+            const Sprite sprite = stove_lit(prop) ? Sprite::StoveLit : candle_lit(prop) ? Sprite::CandleLit : prop.kind == PropKind::AlarmClock ? alarm_clock_sprite(prop) : prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
                 Sprite::ShootTall : prop.kind == PropKind::IceBlock && prop.growth_ticks <= 120 ?
                 Sprite::IceBlockThaw : spec.sprite;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, 0, nullptr,
-                prop.variant % 2 == 0 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
+                (prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
             SDL_SetTextureColorModFloat(texture, 1, 1, 1);
             if (prop.covered) {
                 SDL_Texture* cloth = texture_for(graphics, Sprite::FeltCover);

@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "props/candle.hpp"
+#include "items/coal.hpp"
 #include "items/fish.hpp"
 #include "items/snow_globe.hpp"
 #include "items/optics.hpp"
@@ -95,6 +96,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::CoalLump:
+        used = use_coal(game,user_slot,direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::CandleStub:
         used = place_candle(game, user.cell + direction, item);
         cooldown = item_pattern(item).cooldown;
@@ -349,7 +354,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (const RegionalItem* spec = regional_item(used_kind)) {
             if (used_kind == ItemKind::CandleStub)
                 emit_sound(game, item.loaded > 0 ? SoundId::CandleLight : SoundId::Drop, user.cell + direction);
-            else if (!item_is_melee(used_kind)) emit_sound(game, spec->sound,
+            else if (!item_is_melee(used_kind) && used_kind != ItemKind::CoalLump) emit_sound(game, spec->sound,
                 used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
         }
         else switch (used_kind) {

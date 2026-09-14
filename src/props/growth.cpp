@@ -1,5 +1,6 @@
 #include "growth.hpp"
 #include "candle.hpp"
+#include "stove.hpp"
 #include "ice_cover.hpp"
 #include "alarm_clock.hpp"
 #include "../surfaces/interaction.hpp"
@@ -30,6 +31,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind == PropKind::Stove) { step_stove(game,cell); continue; }
             if (prop.kind == PropKind::Candle) { step_candle(game,cell); continue; }
             if (prop.kind == PropKind::AlarmClock) { step_alarm_clock(game, cell); continue; }
             if (prop.kind == PropKind::IceBlock) { age_ice_cover(game, cell); continue; }
@@ -46,6 +48,6 @@ void step_prop_growth(Game& game) {
 }
 
 LightEmitter prop_light(const Prop& prop) {
-    if (prop.kind == PropKind::Candle && !candle_lit(prop)) return {};
+    if ((prop.kind == PropKind::Candle || prop.kind == PropKind::Stove) && !prop_has_flame(prop)) return {};
     return prop.broken || prop.covered ? LightEmitter{} : prop_spec(prop.kind).light;
 }

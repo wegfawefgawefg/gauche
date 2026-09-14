@@ -84,7 +84,7 @@ same effective item definition as attacks, including rare attributes.
 | 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Implemented: clears three adjacent snow cells, exposing burrowers and snow-cache supplies. Holds 12 snow; secondary packs one normal snowball if inventory has room. 60 repairable condition, one wear per successful scoop. Big clears five cells; Durable has 120 condition. | Common; 9 |
 | 11 | Heat capsule | Implemented: a 4s warm cross around the user; thaws ice, clears chill and resists cold, but ignites oil even when spilled later. Stack 4; Big extends each arm. | Common; 8 |
-| 12 | Coal lump | Feed a lit stove for longer heat or throw an inert lump for 4 damage. Does not spontaneously ignite. Stack 8. | Common; 3 |
+| 12 | Coal lump | Implemented: feed an adjacent stove +20s fuel, capped at 120s. Cold stoves need separate ignition. Otherwise throw to 6 at four ticks/cell for 4 damage and recover the lump. Stack 8. | Common; 3 |
 | 13 | Candle stub | Implemented: place an 80s lamp with 6 HP (Durable 12), recover remaining fuel and condition. Only equal unused candles stack, up to four. Water snuffs it; warmth thaws nearby ice. | Common; 5 |
 | 14 | Wick spool | Implemented: add up to 30s fuel to an adjacent candle, capped at 80s. Four portions (Durable eight); no repair or automatic relight. No electrical or living emitter refill. | Common; 7 |
 | 15 | Signal flare | Fires to 8 and burns where it lands for 15s; bright red light, hot contact and noise on launch. Stack 3. | Common; 10 |
@@ -191,9 +191,10 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Seventeen regional debris types are implemented: ice chips, snow clumps, mirror
+Eighteen regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips, fishing floats, globe glass, copper curls, kelp scraps, tin lids, wax and charred wick. Kelp chewing leaves wet scraps; globes leave glass;
+wicker strips, fishing floats, globe glass, copper curls, kelp scraps, tin lids, wax, charred wick and coal crumbs. Kelp chewing leaves wet scraps; globes leave glass;
+Coal impacts/stove burnout leave coal crumbs. Bathhouses can contain fuel-limited iron stoves.
 Spent/broken candles leave wax and wick. Memorial courts hold recoverable candles.
 Each opened lunch tin leaves one metal lid and ice chips; weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come

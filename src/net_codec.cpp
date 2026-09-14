@@ -1,6 +1,7 @@
 #include "net_codec.hpp"
 #include "props/cloth.hpp"
 #include "props/candle.hpp"
+#include "props/stove.hpp"
 #include "items/muffling.hpp"
 #include "projectiles/projectile.hpp"
 
@@ -381,10 +382,10 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind >= PropKind::Count ||
             tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
-            tile.prop.growth_ticks > (tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
-            (tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            tile.prop.growth_ticks > (tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
+            (tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if (tile.prop.kind == PropKind::Candle && (tile.prop.variant > 3 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
-        if (tile.prop.kind == PropKind::AlarmClock && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
+        if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
     }

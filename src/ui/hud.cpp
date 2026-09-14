@@ -1,5 +1,9 @@
 #include "presentation.hpp"
 #include "item_details.hpp"
+#include "item_meter.hpp"
+#include "text.hpp"
+#include "../item_attribute.hpp"
+#include "../item_pattern.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -9,8 +13,7 @@
 namespace {
 
 void ui_text(SDL_Renderer* renderer, float x, float y, const char* value) {
-    SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
-    SDL_RenderDebugText(renderer, x, y, value);
+    small_ui_text(renderer, x, y, value);
 }
 
 void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
@@ -33,6 +36,7 @@ void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
 
 void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
               const Game& game, const Entity& player) {
+    const bool quiet = (SDL_GetModState() & SDL_KMOD_ALT) != 0;
     // The inventory stays clear of the player, with the selected row protruding.
     for (int index = 0; index < quick_slots; ++index) {
         const bool selected = index == player.inventory.selected;
@@ -40,23 +44,31 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         const float y = 58.0F + static_cast<float>(index) * 20.0F;
         panel(renderer, x, y, 104.0F, 18.0F, selected);
         char number[2]{static_cast<char>('1' + index), '\0'};
-        ui_text(renderer, 4.0F, y + 5.0F, number);
+        ui_text(renderer, 5.0F, y + 6.0F, number);
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind != ItemKind::None) {
-            SDL_FRect icon{x + 3.0F, y + 1.0F, 15.0F, 15.0F};
+            SDL_FRect icon{x + 3.0F, y + 3.0F, 12.0F, 12.0F};
             SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)),
                               nullptr, &icon);
-            char name[10];
-            std::snprintf(name, sizeof(name), item.count > 1 ? "%.6s" : "%.9s",
-                          item_name(item.kind));
-            ui_text(renderer, x + 21.0F, y + 4.0F, name);
-            if (item.count > 1) {
-                char count[16];
-                std::snprintf(count, sizeof(count), "x%d", item.count);
-                const float count_x = x + 101.0F -
-                    static_cast<float>(std::char_traits<char>::length(count)) * 8.0F;
-                ui_text(renderer, count_x, y + 4.0F, count);
+            if (!quiet) {
+                const std::string label = item.attribute == ItemAttribute::None ?
+                    item_name(item.kind) :
+                    std::string{item_attribute_name(item.attribute), 1} +
+                    " " + item_name(item.kind);
+                small_ui_text(renderer, x + 19.0F, y + 1.0F,
+                              label.substr(0, 13), 235, 230, 214);
             }
+            const std::string state = item_state_text(item, true);
+            small_ui_text(renderer, x + 19.0F, y + 9.0F,
+                          state.substr(0, 6), 200, 207, 189);
+            small_ui_text(renderer, x + 60.0F, y + 9.0F,
+                          item_cooldown_text(item), 217, 183, 128);
+            draw_item_meter(renderer, x + 19.0F, y + 16.0F, 38.0F, 2.0F,
+                            item_meter_current(item), item_meter_capacity(item),
+                            {139, 190, 134, 255});
+            draw_item_meter(renderer, x + 60.0F, y + 16.0F, 42.0F, 2.0F,
+                            item.cooldown, item_pattern(item).cooldown,
+                            {218, 156, 79, 255});
         }
         if (selected) {
             SDL_FRect arrow{x - 14.0F, y + 3.0F, 11.0F, 11.0F};
@@ -78,9 +90,10 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     ui_text(renderer, 20.0F, 335.0F, health);
 
     const Item& held = *player.inventory.held();
-    if (held.kind != ItemKind::None)
+    if (!quiet && held.kind != ItemKind::None)
         draw_item_details(renderer, graphics, player, held,
                           446.0F, 164.0F, 180.0F, 172.0F, "SELECTED");
+    if (quiet) return;
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::GroundItem && entity.cell == player.cell &&
             entity.ground_item.kind != ItemKind::None) {

@@ -16,7 +16,7 @@ enum class Action : int {
     AimUp, AimDown, AimLeft, AimRight,
     Use, Pickup, Drop, Reload, Interact, Confirm,
     Slot1, Slot2, Slot3, Slot4, Slot5, Slot6,
-    PreviousSlot, NextSlot, Inventory,
+    PreviousSlot, NextSlot, Inventory, Compare,
 };
 
 constexpr int action_id(Action action) { return static_cast<int>(action); }
@@ -43,6 +43,7 @@ void default_binds(BindsProfile& profile) {
     bind(profile, GubsyButton::KB_E, Action::Pickup);
     bind(profile, GubsyButton::KB_Q, Action::Inventory);
     bind(profile, GubsyButton::KB_TAB, Action::Inventory);
+    bind(profile, GubsyButton::KB_C, Action::Compare);
     bind(profile, GubsyButton::KB_R, Action::Reload);
     bind(profile, GubsyButton::KB_F, Action::Interact);
     bind(profile, GubsyButton::KB_ENTER, Action::Confirm);
@@ -53,6 +54,7 @@ void default_binds(BindsProfile& profile) {
     bind(profile, GubsyButton::GP_DPAD_RIGHT, Action::MoveRight);
     bind(profile, GubsyButton::GP_X, Action::Pickup);
     bind(profile, GubsyButton::GP_Y, Action::Inventory);
+    bind(profile, GubsyButton::GP_RIGHT_STICK_BUTTON, Action::Compare);
     bind(profile, GubsyButton::GP_B, Action::Reload);
     bind(profile, GubsyButton::GP_A, Action::Interact);
     bind(profile, GubsyButton::GP_A, Action::Confirm);
@@ -145,6 +147,7 @@ void register_game_bindings(GubsyRuntime& runtime) {
     schema.add_action(action_id(Action::PreviousSlot), "Previous Slot", "Items");
     schema.add_action(action_id(Action::NextSlot), "Next Slot", "Items");
     schema.add_action(action_id(Action::Inventory), "Open Inventory", "Items");
+    schema.add_action(action_id(Action::Compare), "Compare Items", "Items");
     schema.add_axis_2d(0, "Analog Move", "Movement");
     schema.add_axis_2d(1, "Analog Aim", "Combat");
     schema.add_axis_1d(0, "Use Trigger", "Combat");
@@ -161,7 +164,9 @@ void register_game_bindings(GubsyRuntime& runtime) {
                                              Action::Use);
         const bool old_drop = has_bind(*existing, GubsyButton::KB_Q, Action::Drop) ||
                               has_bind(*existing, GubsyButton::GP_Y, Action::Drop);
-        if (old_controller || old_drop) {
+        const bool missing_compare =
+            ginput::button_binds_for_action(*existing, action_id(Action::Compare)).empty();
+        if (old_controller || old_drop || missing_compare) {
             BindsProfile migrated = *existing;
             if (old_controller) migrate_old_controller_defaults(migrated);
             (void)ginput::remove_button_bind(migrated,
@@ -171,6 +176,10 @@ void register_game_bindings(GubsyRuntime& runtime) {
             bind(migrated, GubsyButton::KB_Q, Action::Inventory);
             bind(migrated, GubsyButton::KB_TAB, Action::Inventory);
             bind(migrated, GubsyButton::GP_Y, Action::Inventory);
+            if (missing_compare) {
+                bind(migrated, GubsyButton::KB_C, Action::Compare);
+                bind(migrated, GubsyButton::GP_RIGHT_STICK_BUTTON, Action::Compare);
+            }
             (void)gubsy_replace_binds_profile(runtime, migrated);
         }
         return;
@@ -184,6 +193,10 @@ void register_game_bindings(GubsyRuntime& runtime) {
 
 bool inventory_button_down(GubsyRuntime& runtime) {
     return down(runtime, Action::Inventory);
+}
+
+bool compare_button_down(GubsyRuntime& runtime) {
+    return down(runtime, Action::Compare);
 }
 
 Input read_local_input(GubsyRuntime& runtime, const Game& game,

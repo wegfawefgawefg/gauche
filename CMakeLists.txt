@@ -72,8 +72,9 @@ set(GAUCHE_ENTITY_SOURCES
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
-    src/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/interaction.cpp
-    src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp
+    src/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/ui/pattern_diagram.cpp src/ui/interaction.cpp
+    src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp

@@ -1,9 +1,12 @@
 #include "item_details.hpp"
 #include "../item_pattern.hpp"
+#include "../item_attribute.hpp"
+#include "pattern_diagram.hpp"
+#include "item_meter.hpp"
+#include "text.hpp"
 
 #include <algorithm>
 #include <cstdio>
-#include <cstdlib>
 #include <string>
 #include <string_view>
 
@@ -24,9 +27,7 @@ void plate(SDL_Renderer* renderer, float x, float y, float width, float height,
 void text(SDL_Renderer* renderer, float x, float y, std::string_view words,
           std::uint8_t red = 235, std::uint8_t green = 230,
           std::uint8_t blue = 214) {
-    SDL_SetRenderDrawColor(renderer, red, green, blue, 255);
-    const std::string copy{words};
-    SDL_RenderDebugText(renderer, x, y, copy.c_str());
+    small_ui_text(renderer, x, y, words, red, green, blue);
 }
 
 void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
@@ -37,63 +38,10 @@ void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
             const std::size_t gap = words.rfind(' ', count);
             if (gap != std::string_view::npos && gap > 0) count = gap;
         }
-        text(renderer, x, y + static_cast<float>(line) * 11.0F,
+        text(renderer, x, y + static_cast<float>(line) * 9.0F,
              words.substr(0, count), 194, 192, 180);
         words.remove_prefix(count);
         while (!words.empty() && words.front() == ' ') words.remove_prefix(1);
-    }
-}
-
-void pattern_cell(SDL_Renderer* renderer, float x, float y, float side,
-                  PatternEffect effect, bool travel) {
-    const std::uint8_t red = effect == PatternEffect::Damage ? 222 :
-                             (effect == PatternEffect::Heal ? 87 : 212);
-    const std::uint8_t green = effect == PatternEffect::Damage ? 73 :
-                               (effect == PatternEffect::Heal ? 206 : 210);
-    const std::uint8_t blue = effect == PatternEffect::Damage ? 57 :
-                              (effect == PatternEffect::Heal ? 112 : 193);
-    SDL_FRect cell{x, y, side - 1.0F, side - 1.0F};
-    SDL_SetRenderDrawColor(renderer, red, green, blue, travel ? 85 : 230);
-    if (travel) SDL_RenderRect(renderer, &cell);
-    else SDL_RenderFillRect(renderer, &cell);
-}
-
-void pattern_diagram(SDL_Renderer* renderer, ItemKind kind,
-                     float x, float y, float width) {
-    const ItemPattern pattern = item_pattern(kind);
-    if (pattern.effect == PatternEffect::None) return;
-    const float side = pattern.maximum > 10 ? 6.0F : 8.0F;
-    const float left = x + 12.0F;
-    const float middle = y + 16.0F;
-    text(renderer, left, middle - 3.0F, "P", 235, 230, 214);
-    if (pattern.minimum == 0 && pattern.maximum == 0) {
-        pattern_cell(renderer, left + side + 3.0F, middle, side,
-                     pattern.effect, false);
-        return;
-    }
-    const int reach = std::min(pattern.maximum, static_cast<int>((width - 35.0F) / side));
-    for (int step = 1; step <= reach; ++step)
-        pattern_cell(renderer, left + 12.0F + static_cast<float>(step - 1) * side,
-                     middle, side, pattern.effect,
-                     pattern.blast_radius > 0 && (pattern.ray || step < reach));
-    if (pattern.blast_radius == 0) return;
-    const float impact_x = left + 12.0F + static_cast<float>(reach - 1) * side;
-    for (int dy = -pattern.blast_radius; dy <= pattern.blast_radius; ++dy)
-        for (int dx = -pattern.blast_radius; dx <= pattern.blast_radius; ++dx)
-            if (std::abs(dx) + std::abs(dy) <= pattern.blast_radius)
-                pattern_cell(renderer, impact_x + static_cast<float>(dx) * side,
-                             middle + static_cast<float>(dy) * side,
-                             side, pattern.effect, false);
-}
-
-int heal_amount(ItemKind kind) {
-    switch (kind) {
-    case ItemKind::Medkit: return 100;
-    case ItemKind::Bandage: return 10;
-    case ItemKind::Bandaid: return 1;
-    case ItemKind::RawMeat: return 4;
-    case ItemKind::CookedMeat: return 18;
-    default: return 0;
     }
 }
 
@@ -118,7 +66,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::Stick: return "A sturdy one-tile strike with more force than a fist.";
     case ItemKind::Shotgun: return "Powerful close-range shot with a slow recovery.";
     case ItemKind::SMG: return "Rapid straight shots with a large magazine.";
-    case ItemKind::BearTrap: return "Place a trap on the next clear tile.";
+    case ItemKind::BearTrap: return "Open the jaws first. Then place it; a victim takes 100 damage.";
     case ItemKind::Mine: return "Place an explosive trap on the next clear tile.";
     case ItemKind::Pickaxe: return "Strike the next tile and break weak rock quickly.";
     case ItemKind::RawMeat: return "Eat for 4 health, or cook it at a campfire.";
@@ -141,36 +89,50 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     text(renderer, x + 3.0F, y - 5.0F, label);
     if (item.kind == ItemKind::None) return;
-    SDL_FRect icon{x + 9.0F, y + 22.0F, 30.0F, 30.0F};
-    SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)), nullptr, &icon);
-    text(renderer, x + 46.0F, y + 23.0F, item_name(item.kind));
+    SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
+    SDL_RenderTexture(renderer, texture_for(graphics,
+        item.kind == ItemKind::BearTrap && item.opened ?
+        Sprite::BearTrapOpen : item_sprite(item.kind)), nullptr, &icon);
+    text(renderer, x + 39.0F, y + 22.0F, item_name(item.kind));
     char line[80];
     std::snprintf(line, sizeof(line), "x%d  %s", item.count,
                   item.cooldown > 0 ? "COOLING" : "READY");
-    text(renderer, x + 46.0F, y + 38.0F, line, 186, 189, 174);
-    wrapped(renderer, x + 10.0F, y + 61.0F,
-            static_cast<int>((width - 20.0F) / 8.0F), 3,
+    if (item.attribute != ItemAttribute::None) {
+        text(renderer, x + 39.0F, y + 34.0F,
+             item_attribute_name(item.attribute), 218, 169, 94);
+        text(renderer, x + 10.0F, y + 48.0F,
+             item_attribute_effect(item.attribute), 218, 169, 94);
+    } else text(renderer, x + 39.0F, y + 34.0F, line, 186, 189, 174);
+    wrapped(renderer, x + 10.0F, y + 59.0F,
+            static_cast<int>((width - 20.0F) / 6.0F), 4,
             item_description(item.kind));
-    const ItemPattern pattern = item_pattern(item.kind);
+    const ItemPattern pattern = item_pattern(item);
     if (pattern.damage > 0)
-        std::snprintf(line, sizeof(line), "DMG %d  CD %.2fs",
-                      pattern.damage, static_cast<double>(pattern.cooldown) / 60.0);
-    else if (heal_amount(item.kind) > 0)
-        std::snprintf(line, sizeof(line), "HEAL +%d  HP %d/%d", heal_amount(item.kind),
+        std::snprintf(line, sizeof(line), "DAMAGE %d", pattern.damage);
+    else if (pattern.heal > 0)
+        std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
-    else std::snprintf(line, sizeof(line), "CD %.2fs",
-                       static_cast<double>(pattern.cooldown) / 60.0);
-    text(renderer, x + 10.0F, y + 101.0F, line);
-    if (item.loaded > 0 || item.spare > 0)
-        std::snprintf(line, sizeof(line), "AMMO %d / %d",
-                      item.loaded, item.spare);
-    else if (item.durability > 0)
-        std::snprintf(line, sizeof(line), "SHIELD %d", item.durability);
-    else std::snprintf(line, sizeof(line), "RANGE %d-%d",
-                       pattern.minimum, pattern.maximum);
-    text(renderer, x + 10.0F, y + 116.0F, line, 194, 192, 180);
+    else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    text(renderer, x + 10.0F, y + 96.0F, line);
+    std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
+                  static_cast<double>(item.cooldown) / 60.0,
+                  static_cast<double>(pattern.cooldown) / 60.0);
+    text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
+    if (item_is_gun(item.kind))
+        std::snprintf(line, sizeof(line), "MAG %d / %d   SPARE %d",
+                      item.loaded, item_meter_capacity(item), item.spare);
+    else if (item.max_durability > 0)
+        std::snprintf(line, sizeof(line), "CONDITION %d / %d",
+                      item.durability, item.max_durability);
+    else if (item.max_uses > 0)
+        std::snprintf(line, sizeof(line), "USES %d / %d",
+                      item.uses, item.max_uses);
+    else std::snprintf(line, sizeof(line), "STACK %d", item.count);
+    text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
+    std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
+    text(renderer, x + 10.0F, y + 129.0F, line, 194, 192, 180);
     if (height >= 165.0F) {
-        text(renderer, x + 10.0F, y + 136.0F, "PATTERN", 185, 185, 172);
-        pattern_diagram(renderer, item.kind, x, y + 142.0F, width);
+        text(renderer, x + 10.0F, y + 140.0F, "PATTERN", 185, 185, 172);
+        draw_pattern_diagram(renderer, item, x + 10.0F, y + 148.0F, width);
     }
 }

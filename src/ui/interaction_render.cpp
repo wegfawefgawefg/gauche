@@ -1,5 +1,8 @@
 #include "interaction.hpp"
 #include "item_details.hpp"
+#include "item_meter.hpp"
+#include "text.hpp"
+#include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
 
 #include <algorithm>
@@ -12,9 +15,7 @@ namespace {
 void text(SDL_Renderer* renderer, float x, float y, std::string_view value,
           std::uint8_t red = 235, std::uint8_t green = 230,
           std::uint8_t blue = 214) {
-    SDL_SetRenderDrawColor(renderer, red, green, blue, 255);
-    const std::string copy{value};
-    SDL_RenderDebugText(renderer, x, y, copy.c_str());
+    small_ui_text(renderer, x, y, value, red, green, blue);
 }
 
 void shade(SDL_Renderer* renderer) {
@@ -111,7 +112,7 @@ void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
             const std::size_t gap = words.rfind(' ', count);
             if (gap != std::string_view::npos && gap > 0) count = gap;
         }
-        text(renderer, x, y + static_cast<float>(line) * 11.0F,
+        text(renderer, x, y + static_cast<float>(line) * 9.0F,
              words.substr(0, count), 194, 192, 180);
         words.remove_prefix(count);
         while (!words.empty() && words.front() == ' ') words.remove_prefix(1);
@@ -131,11 +132,11 @@ void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     frame(renderer, x, y, width, 214.0F, selected);
     text(renderer, x + 8.0F, y + 13.0F, label, 206, 158, 92);
-    SDL_FRect icon{x + 10.0F, y + 39.0F, 34.0F, 34.0F};
+    SDL_FRect icon{x + 10.0F, y + 39.0F, 26.0F, 26.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, reward_icon(reward)), nullptr, &icon);
-    text(renderer, x + 51.0F, y + 47.0F, reward_name(reward));
+    text(renderer, x + 43.0F, y + 46.0F, reward_name(reward));
     wrapped(renderer, x + 10.0F, y + 89.0F,
-            static_cast<int>((width - 20.0F) / 8.0F), 4,
+            static_cast<int>((width - 20.0F) / 6.0F), 5,
             reward_description(reward));
     char line[80];
     if (reward.kind == RewardKind::Health)
@@ -170,9 +171,22 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
         text(renderer, x + 8.0F, y + 11.0F, number, 151, 149, 140);
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind == ItemKind::None) continue;
-        SDL_FRect icon{x + 26.0F, y + 5.0F, 22.0F, 22.0F};
+        SDL_FRect icon{x + 26.0F, y + 5.0F, 18.0F, 18.0F};
         SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item.kind)), nullptr, &icon);
-        text(renderer, x + 55.0F, y + 11.0F, item_name(item.kind));
+        text(renderer, x + 49.0F, y + 5.0F,
+             item_display_name(item).substr(0, 17),
+             item.attribute == ItemAttribute::None ? 235 : 218,
+             item.attribute == ItemAttribute::None ? 230 : 169,
+             item.attribute == ItemAttribute::None ? 214 : 94);
+        text(renderer, x + 49.0F, y + 15.0F, item_state_text(item), 188, 205, 181);
+        text(renderer, x + 102.0F, y + 15.0F,
+             item_cooldown_text(item), 218, 184, 133);
+        draw_item_meter(renderer, x + 49.0F, y + 25.0F, 48.0F, 3.0F,
+                        item_meter_current(item), item_meter_capacity(item),
+                        {139, 190, 134, 255});
+        draw_item_meter(renderer, x + 102.0F, y + 25.0F, 45.0F, 3.0F,
+                        item.cooldown, item_pattern(item).cooldown,
+                        {218, 156, 79, 255});
     }
 }
 
@@ -186,33 +200,56 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float shift = (1.0F - ui.slide) * 220.0F;
     const bool shop_offer = game.run.phase == RunPhase::Shop && ui.offer_focus < 3 &&
         game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)] != ItemKind::None;
-    const bool comparing = has_reward_offer(game, owner) || shop_offer;
+    const Item* ground = nullptr;
+    if (ui.compare_ground)
+        for (const Entity& entity : game.entities)
+            if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell &&
+                entity.ground_item.kind != ItemKind::None) {
+                ground = &entity.ground_item;
+                break;
+            }
+    const bool comparing = ground != nullptr || has_reward_offer(game, owner) || shop_offer;
     if (comparing) {
-        const Reward offer = shop_offer ? Reward{RewardKind::Item,
+        const Reward offer = ground != nullptr ? Reward{RewardKind::Item,
+            ground->kind, ArtifactKind::None, ground->count, ground->attribute} :
+            shop_offer ? Reward{RewardKind::Item,
             game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)],
             ArtifactKind::None, 1} : reward_offer(game, owner, ui.offer_focus);
-        reward_card(renderer, graphics, *player, offer,
-                    204.0F + shift, 77.0F, 194.0F, false, "OFFER");
+        if (ground != nullptr)
+            draw_item_details(renderer, graphics, *player, *ground,
+                              204.0F + shift, 77.0F, 194.0F, 214.0F, "GROUND");
+        else reward_card(renderer, graphics, *player, offer,
+                         204.0F + shift, 77.0F, 194.0F, false, "OFFER");
         draw_item_details(renderer, graphics, *player, focused,
                           413.0F + shift, 77.0F, 199.0F, 214.0F, "YOUR SLOT");
         if (offer.kind == RewardKind::Item && focused.kind != ItemKind::None) {
-            const ItemPattern gain = item_pattern(offer.item);
-            const ItemPattern held = item_pattern(focused.kind);
+            const Item offered_item = ground != nullptr ? *ground : reward_item(offer);
+            const ItemPattern gain = item_pattern(offered_item);
+            const ItemPattern held = item_pattern(focused);
             char delta[96];
             std::snprintf(delta, sizeof(delta), "COMPARE  DMG %+d   REACH %+d   CD %+.2fs",
                           gain.damage - held.damage,
                           gain.maximum - held.maximum,
                           static_cast<double>(gain.cooldown - held.cooldown) / 60.0);
             text(renderer, 208.0F, 300.0F, delta, 136, 213, 147);
+            const std::string from = item_state_text(focused);
+            const std::string to = item_state_text(offered_item);
+            std::snprintf(delta, sizeof(delta), "STATE  %s | %s    %s -> %s",
+                          from.empty() ? "-" : from.c_str(),
+                          to.empty() ? "-" : to.c_str(),
+                          item_attribute_name(focused.attribute),
+                          item_attribute_name(offered_item.attribute));
+            text(renderer, 208.0F, 310.0F, delta, 188, 205, 181);
         }
     } else {
         draw_item_details(renderer, graphics, *player, focused,
                           204.0F + shift, 77.0F, 194.0F, 214.0F, "INSPECT");
-        if (ui.slot_focus != player->inventory.selected)
-            draw_item_details(renderer, graphics, *player, *player->inventory.held(),
-                              413.0F + shift, 77.0F, 199.0F, 214.0F, "HELD");
+        draw_item_details(renderer, graphics, *player, *player->inventory.held(),
+                          413.0F + shift, 77.0F, 199.0F, 214.0F, "HELD");
     }
-    text(renderer, 26.0F, 321.0F, "X / E / DEL DROP   A / ENTER EQUIP", 218, 198, 152);
+    text(renderer, 26.0F, 321.0F, comparing ?
+         "X / E / DEL DROP   UP/DOWN COMPARE" :
+         "X / E / DEL DROP   A / ENTER EQUIP", 218, 198, 152);
     text(renderer, 425.0F, 321.0F, "Q / Y / B BACK", 218, 198, 152);
     if (!ui.notice.empty()) text(renderer, 26.0F, 342.0F, ui.notice, 231, 111, 87);
 }
@@ -256,7 +293,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         } else reward_card(renderer, graphics, *player, reward_offer(game, owner, index),
                            x, 82.0F, 187.0F, index == ui.offer_focus, label.c_str());
     }
-    text(renderer, 25.0F, 321.0F, "1-3 / A CHOOSE    Q / Y COMPARE & MANAGE PACK",
+    text(renderer, 25.0F, 321.0F, "1-3 / A CHOOSE    C / R3 COMPARE    Q / Y PACK",
          218, 198, 152);
     if (shop)
         text(renderer, 445.0F, 341.0F, ui.offer_focus == 3 ?

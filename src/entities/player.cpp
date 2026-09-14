@@ -69,7 +69,7 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.reload) reload_held_item(game, slot);
     if (input.use) {
         const Cell target = aimed_item_target(player, input.aim,
-                                               item_pattern(player.inventory.held()->kind));
+                                               item_pattern(*player.inventory.held()));
         if (!interact_with_fixture(game, player.owner, target))
             use_held_item(game, slot, target);
     }

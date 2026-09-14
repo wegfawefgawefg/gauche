@@ -46,7 +46,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, ViewCamera camera,
                          float zoom, const PointerState& pointer) {
     const Item& held = *player.inventory.held();
-    const ItemPattern pattern = item_pattern(held.kind);
+    const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (pattern.ray) {
@@ -55,8 +55,12 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             cell = cell + player.facing;
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
+            const bool pierced = pattern.piercing ||
+                has_artifact(player, ArtifactKind::AllPiercing);
             const bool impact = !walkable(tile->kind) ||
-                                entity_at(game, cell, true) >= 0 || step == pattern.maximum;
+                (entity_at(game, cell, true) >= 0 &&
+                 (!pierced || held.kind == ItemKind::RocketLauncher)) ||
+                step == pattern.maximum;
             if (pattern.blast_radius > 0) {
                 mark(renderer, cell, camera, zoom, pattern.effect, !impact);
                 if (impact) blast_marks(renderer, cell, pattern.blast_radius,
@@ -66,14 +70,31 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     } else if (pattern.minimum == 0 && pattern.maximum == 0) {
         mark(renderer, player.cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::Fist || held.kind == ItemKind::Stick ||
+               held.kind == ItemKind::Pickaxe) {
+        const Cell sideways{-player.facing.y, player.facing.x};
+        for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
+            for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
+                const Cell cell = player.cell +
+                    Cell{player.facing.x * reach + sideways.x * lane,
+                         player.facing.y * reach + sideways.y * lane};
+                const Tile* tile = game.stage.at(cell);
+                if (tile == nullptr) break;
+                mark(renderer, cell, camera, zoom, pattern.effect);
+                if (!walkable(tile->kind) || entity_at(game, cell, true) >= 0) break;
+            }
     } else {
         const Cell aim = pointer.left && pointer.inside ?
             pointer.cell - player.cell : player.facing;
         const Cell target = aimed_item_target(player, aim, pattern);
-        if (pattern.blast_radius > 0)
+        if (pattern.blast_radius > 0) {
+            for (int reach = 1; reach < distance(player.cell, target); ++reach)
+                mark(renderer, player.cell +
+                     Cell{player.facing.x * reach, player.facing.y * reach},
+                     camera, zoom, pattern.effect, true);
             blast_marks(renderer, target, pattern.blast_radius,
                         camera, zoom, pattern.effect);
-        else mark(renderer, target, camera, zoom, pattern.effect);
+        } else mark(renderer, target, camera, zoom, pattern.effect);
     }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     if (!pointer.inside || held.kind == ItemKind::None) return;

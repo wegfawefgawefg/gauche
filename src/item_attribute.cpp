@@ -27,6 +27,27 @@ const char* item_attribute_name(ItemAttribute attribute) {
     return "";
 }
 
+const char* item_attribute_effect(ItemAttribute attribute) {
+    switch (attribute) {
+    case ItemAttribute::None: return "";
+    case ItemAttribute::Strong: return "DMG +25%";
+    case ItemAttribute::Agile: return "COOLDOWN -25%";
+    case ItemAttribute::Durable: return "CONDITION X2";
+    case ItemAttribute::Fragile: return "DMG +40%, HALF USES";
+    case ItemAttribute::Heavy: return "DMG +33%, CD +50%";
+    case ItemAttribute::Big: return "WIDER STRIKE / BLAST";
+    case ItemAttribute::Long: return "LONGER REACH";
+    case ItemAttribute::Piercing: return "SHOTS PIERCE ACTORS";
+    case ItemAttribute::Restorative: return "HEAL +50%, CD +25%";
+    }
+    return "";
+}
+
+std::string item_display_name(const Item& item) {
+    if (item.attribute == ItemAttribute::None) return item_name(item.kind);
+    return std::string{item_attribute_name(item.attribute)} + " " + item_name(item.kind);
+}
+
 bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     const bool weapon = item_is_gun(kind) || item_is_melee(kind);
     const bool condition = kind == ItemKind::Stick || kind == ItemKind::Pickaxe;

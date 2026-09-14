@@ -31,6 +31,7 @@ bool shop_fits(const Game& game, int owner, int index) {
 void reset_if_run_changed(InteractionUi& ui, const Game& game) {
     if (game.tick < ui.last_tick || game.run.phase != ui.last_phase) {
         ui.inventory_open = false;
+        ui.compare_ground = false;
         ui.offer_focus = 0;
         ui.notice.clear();
     }
@@ -136,12 +137,30 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
     const bool offered = offering(game, owner);
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool open_down = inventory_button_down(runtime);
+    const bool compare_down = compare_button_down(runtime);
     if (open_down && !ui.inventory_latch) {
         ui.inventory_open = !ui.inventory_open;
+        ui.compare_ground = false;
         ui.slot_focus = 0;
         ui.notice.clear();
     }
     ui.inventory_latch = open_down;
+    if (compare_down && !ui.compare_latch) {
+        ui.inventory_open = !ui.inventory_open;
+        ui.compare_ground = false;
+        if (ui.inventory_open && !offered && !shop) {
+            const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+            if (player != nullptr)
+                for (const Entity& entity : game.entities)
+                    if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell) {
+                        ui.compare_ground = true;
+                        break;
+                    }
+        }
+        ui.slot_focus = 0;
+        ui.notice.clear();
+    }
+    ui.compare_latch = compare_down;
     if (ui.request_back) ui.inventory_open = false;
     ui.request_back = false;
     if (ui.mouse_slot >= 0) ui.slot_focus = ui.mouse_slot;
@@ -184,8 +203,8 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
             } else ui.notice = "This slot cannot be dropped";
         } else if (confirm && !offered && !shop) {
             input.select = ui.slot_focus;
-            ui.inventory_open = false;
-        } else if (confirm) ui.inventory_open = false;
+            ui.notice = "Held item changed";
+        }
         ui.mouse_choice = -1;
         return;
     }

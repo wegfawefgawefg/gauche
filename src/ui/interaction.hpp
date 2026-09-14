@@ -9,6 +9,8 @@
 struct InteractionUi {
     bool inventory_open = false;
     bool inventory_latch = false;
+    bool compare_latch = false;
+    bool compare_ground = false;
     bool confirm_latch = false;
     bool pickup_latch = false;
     int move_latch = 0;

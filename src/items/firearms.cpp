@@ -1,4 +1,5 @@
 #include "firearms.hpp"
+#include "../combat/beams.hpp"
 #include "catalog.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../combat/ranged.hpp"
@@ -21,6 +22,7 @@ SoundId firing_sound(ItemKind kind) {
 
 SoundId firearm_reload_sound(ItemKind kind) {
     switch (kind) {
+    case ItemKind::LensCarbine: return SoundId::LensReload;
     case ItemKind::Pistol: case ItemKind::SMG: return SoundId::PistolReload;
     case ItemKind::Shotgun: return SoundId::ShellReload;
     case ItemKind::Musket: case ItemKind::Blunderbuss: return SoundId::PowderReload;
@@ -49,7 +51,10 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     const Cell origin = user.cell, sideways{-direction.y, direction.x};
     for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
         const Cell source = origin + Cell{sideways.x * lane, sideways.y * lane};
-        fire_bullet(game, user_slot, source, direction, item, lane == 0);
+        if (item.kind == ItemKind::LensCarbine)
+            resolve_beam(game, trace_beam(game, source, direction, pattern.damage, pattern.maximum,
+                pattern.piercing || has_artifact(user, ArtifactKind::AllPiercing)));
+        else fire_bullet(game, user_slot, source, direction, item, lane == 0);
     }
     --item.loaded;
     item.cooldown = pattern.cooldown;

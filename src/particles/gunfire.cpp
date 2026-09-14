@@ -20,14 +20,15 @@ void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
             continue;
         }
         RibbonParticle tracer;
-        tracer.life = tracer.span = 4;
+        tracer.life = tracer.span = shot.beam ? 9 : 4;
         tracer.count = 2;
         tracer.red = 246; tracer.green = 213; tracer.blue = 145;
+        if (shot.beam) { tracer.red = 191; tracer.green = 224; tracer.blue = 242; }
         tracer.points[0] = {static_cast<float>(shot.source.x) + .5F, static_cast<float>(shot.source.y) + .5F};
         tracer.points[1] = {static_cast<float>(shot.end.x) + .5F, static_cast<float>(shot.end.y) + .5F};
         if (cosmetics.ribbons.size() < 256) cosmetics.ribbons.push_back(tracer);
         if (shot.muzzle) {
-            cosmetics.flashes.push_back({{shot.source, 3, .85F, {1, .76F, .38F}}, 4, 4});
+            cosmetics.flashes.push_back({{shot.source, 3, .85F, shot.beam ? LightColor{.65F, .85F, 1.0F} : LightColor{1, .76F, .38F}}, 4, 4});
             push_debris(cosmetics.debris, shot.source, 1.1F, .035F);
             if (shot.casing) scatter_material(cosmetics.debris, shot.source, DebrisKind::BrassCase, 1, key);
         }

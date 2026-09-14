@@ -169,6 +169,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
     if (item.kind == ItemKind::SnowScoop)
         std::snprintf(line, sizeof(line), "CLEAR %d | SNOW %d/12", pattern.half_width * 2 + 1, item.loaded);
+    if (item.kind == ItemKind::MirrorShard)
+        std::snprintf(line, sizeof(line), "PLACED HP 8 | TURNS BEAMS");
+    if (item.kind == ItemKind::CrystalLens)
+        std::snprintf(line, sizeof(line), "PLACED HP 18 | SPLIT 50%%/50%%");
     if (item.kind == ItemKind::Snowball)
         std::snprintf(line, sizeof(line), "DMG %d | WET PATCH 2s", pattern.damage);
     if (item.kind == ItemKind::EelBattery)
@@ -228,7 +232,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::RottenFruit) {
+    if (item.kind == ItemKind::MirrorShard) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "TURN MIRROR AHEAD");
+    } else if (item.kind == ItemKind::RottenFruit) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
     } else if (item.kind == ItemKind::SnowScoop) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, item.loaded > 0 ? "PACK SNOWBALL" : "COLLECT SNOW FIRST");

@@ -476,3 +476,5 @@ No live playtest or broad new test suite ran.
 
 See [ice implementation notes](history/ICE_IMPLEMENTATION.md) for terrain,
 footing, skaters and regional item progress. The live checklist remains MASTER_TASKS.md.
+
+See [observatory optics](history/ICE_OPTICS.md) for beams, mirrors and lenses.

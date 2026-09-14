@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/optics.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/eel_battery.hpp"
@@ -86,6 +87,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::MirrorShard: case ItemKind::CrystalLens:
+        used = place_optic(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::WoolWrap: case ItemKind::HotBroth: case ItemKind::IcePoultice:
         used = use_cold_remedy(game, user_slot);
         cooldown = item_pattern(item).cooldown;
@@ -228,6 +233,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = true;
         cooldown = item_pattern(item).cooldown;
         break;
+    case ItemKind::LensCarbine:
     case ItemKind::Crossbow: case ItemKind::Blunderbuss:
     case ItemKind::Pistol: case ItemKind::Musket:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
@@ -334,6 +340,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (rotate_mirror(game, user_slot)) return true;
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::SnowScoop)
         return pack_snowball(game, user_slot);
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::RottenFruit)

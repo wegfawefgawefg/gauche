@@ -1,5 +1,6 @@
 #include "../props/scarecrow.hpp"
 #include "presentation.hpp"
+#include "../combat/beams.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../projectiles/net.hpp"
 #include "../projectiles/thunder.hpp"
@@ -69,7 +70,12 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::SnowScoop) {
+    if (held.kind == ItemKind::LensCarbine) {
+        const BeamTrace beam = trace_beam(game, player.cell, facing, pattern.damage, pattern.maximum,
+            pattern.piercing || has_artifact(player, ArtifactKind::AllPiercing));
+        for (int i = 0; i < beam.count; ++i)
+            mark(renderer, beam.cells[static_cast<std::size_t>(i)].cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::SnowScoop) {
         const Cell side{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
             const Cell cell = player.cell + facing + Cell{side.x * lane, side.y * lane};

@@ -77,7 +77,7 @@ same effective item definition as attacks, including rare attributes.
 | 2 | Chisel | Implemented: 9-damage jab with 0.05s windup, dig power 1, 0.3s cooldown; double damage to ice-material walls and ice blocks. 40 condition, wears per swing and accepts glue. | Common; 12 |
 | 3 | Skate blade | Three-cell lateral slash, 12 damage; striking while slipping extends the slash one cell ahead. 36 durability. | Common; 16 |
 | 4 | Harpoon gun | One shot loaded, 28 damage to range 10; leaves a tether. Holding use reels the victim until blocked; reload releases it. | Uncommon; 32 |
-| 5 | Lens carbine | Instant 18-damage line to 12, three charges per magazine; crosses clear crystal but stops at opaque cover. Mirrors redirect cardinally. | Rare; 40 |
+| 5 | Lens carbine | Implemented: instant 18-damage beam to 12, three loaded/six spare; 0.4s cooldown, 1.33s reload. Mirrors turn it, lenses split it, opaque cover stops it. Returned light can hit the shooter. | Rare; 40 |
 | 6 | Snowball | Implemented: 1-damage throw to 5 at 5 ticks/cell; breaks into a 2s wet patch and quenches the impact cell. Damage disrupts fragile windups. Stack 12; Long reaches 9. Shields/parries and All Piercing retain their rules. | Common; 2 |
 | 7 | Ice brick | Implemented: tap-release places adjacent 35-HP cover for 10s; hold 0.3s-release throws to 3 for 14 damage. Heat melts it; impact shatters it. Stack 3. Long throws to 7; Strong/Heavy increase thrown damage. | Common; 8 |
 | 8 | Cold flask | Implemented: traveling throw to 5, 3s chill in a cross, 8s shallow-water ice, douses small fires. Stack 3; Big extends each arm, Long throws to 9. | Common; 10 |
@@ -98,8 +98,8 @@ same effective item definition as attacks, including rare attributes.
 | 23 | Eel battery | Implemented: adjacent 14-damage contact, weakening along four connected wet steps; 0.75s cooldown, three charges. Hits friends and the user through water. Eels are immune. Big reaches five wet steps; Durable has six charges. | Uncommon; 24 |
 | 24 | Copper wire | Lay up to six linked conductive cells; transfers a received shock, consumes a segment per cell. No idle damage or free power. | Common; 11 |
 | 25 | Grounding spike | Plant to absorb one nearby conducted shock and leave a hot spent spike; recover when cool. Stack 3. | Uncommon; 15 |
-| 26 | Mirror shard | Place a fragile diagonal reflector; secondary rotates it. Returns eligible beams, not arbitrary bullets or explosions. Stack 3. | Uncommon; 16 |
-| 27 | Crystal lens | Place to split one incoming cardinal beam into two weaker perpendicular beams; 18 HP. Each beam has a finite shared reflection budget. | Rare; 30 |
+| 26 | Mirror shard | Implemented: place an 8-HP diagonal beam reflector. Secondary rotates it with a shard or empty hand. Bullets break it; footsteps do not. Stack 3. | Uncommon; 16 |
+| 27 | Crystal lens | Implemented: place an 18-HP nonblocking lens. Splits an incoming beam into two perpendicular half-damage branches, sharing one finite travel budget. Bullets break it; consumes on placement. | Rare; 30 |
 | 28 | Prism bomb | Throw with 1.5s fuse; bursts four short light beams for 16 damage each. Mirrors/lenses change those paths. Stack 2. | Rare; 28 |
 | 29 | Black felt | Cover one adjacent reflector or light fixture until removed/burned. Three pieces; useful for dark routes and stopping beam puzzles. | Common; 7 |
 | 30 | Muffling felt | Wrap held equipment to suppress its next six ordinary use-noise events; impacts and explosions remain audible. Two wraps. | Uncommon; 14 |

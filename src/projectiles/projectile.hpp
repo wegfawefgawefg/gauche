@@ -1,7 +1,7 @@
 #pragma once
 #include "../game.hpp"
 
-enum class ProjectileKind { Arrow, Bomb, Flask, Rocket, Hook, Drill, Swap, Rock, Boomerang };
+enum class ProjectileKind { Arrow, Bomb, Flask, Rocket, Hook, Drill, Swap, Rock, Boomerang, Net };
 constexpr int bomb_fuse_ticks = 150;
 void init_projectile(Entity& entity);
 void step_projectile(Game& game, int slot);

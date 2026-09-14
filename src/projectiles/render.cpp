@@ -1,12 +1,42 @@
 #include "render.hpp"
 #include "../lighting/render.hpp"
+#include "../item_pattern.hpp"
 
 #include <algorithm>
 #include <cmath>
 
+namespace {
+
+void draw_net(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity& shot,
+              const Game& game, ViewCamera camera, float zoom, const LightingCache& lighting) {
+    const int width = item_pattern(shot.ground_item).half_width;
+    const Cell side{-shot.facing.y, shot.facing.x};
+    const float travel = projectile_blocked(game, shot.cell + shot.facing) ? 0 :
+        std::clamp(1 - static_cast<float>(shot.timer_b) / 4, 0.0F, 1.0F);
+    const float pixels = tile_pixels(zoom);
+    SDL_Texture* texture = texture_for(graphics, Sprite::NetFlight);
+    const double angle = std::atan2(static_cast<double>(shot.facing.y), static_cast<double>(shot.facing.x)) * 180 / 3.141592653589793;
+    for (int lane = -width; lane <= width; ++lane) {
+        if ((shot.label_b & (1 << (lane + width))) == 0) continue;
+        const Cell cell = shot.cell + Cell{side.x * lane, side.y * lane};
+        if (projectile_blocked(game, cell)) continue;
+        SDL_FRect rect = tile_rect(cell, camera, zoom);
+        const float offset = projectile_blocked(game, cell + shot.facing) ? 0 : travel;
+        rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
+        rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
+        const LightColor light = lit_sprite_color(lighting, cell);
+        SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
+        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
+    }
+    SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+}
+
+} // namespace
+
 void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
+    if (shot.label_a == static_cast<int>(ProjectileKind::Net)) { draw_net(renderer, graphics, shot, game, camera, zoom, lighting); return; }
     const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);

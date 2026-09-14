@@ -83,7 +83,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 31 | Acorn mine | Place next cell, arm in 20 ticks; contact or destruction bursts four 2-cell lanes for 22 damage. Big extends to three cells; three per stack. | Uncommon / 16 |
 | 32 | Thorn caltrops | Scatter over three facing cells; repeated small step damage, finite thorns. | Common / 10 |
 | 33 | Rope snare | Place next cell, arm in 20 ticks; roots a grounded actor for 3s without stopping attacks. Allies can cut or shove free; recoverable after release. Stacks to three. | Common / 9 |
-| 34 | Throwing net | Three-cell wide cast 1–3; briefly roots actors while leaving their attacks available. | Uncommon / 15 |
+| 34 | Throwing net | Traveling three-cell wide cast 1–3; roots the first group for 2s without disabling attacks. Walls catch the net; Big widens it, Long extends reach. | Uncommon / 15 |
 | 35 | Shield lantern | Facing block with a light; 24 durability, weaker than a plain buckler but illuminates a fight. | Uncommon / 24 |
 | 36 | Reflecting pan | Short active parry window; returns a direct ranged hit, costs durability even on success. | Rare / 32 |
 | 37 | Digging claws | Adjacent dig-power-1 strike; quick but only 18 uses, modest actor damage. | Uncommon / 17 |
@@ -93,13 +93,13 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
 | 42 | Spring trap | Place facing next cell, arm in 20 ticks; launches a grounded actor two cells in that direction, with ordinary crush rules. Single trigger; stacks to two. | Uncommon / 20 |
 | 43 | Straw decoy | Place next cell; has HP and draws nearby enemy attention until destroyed. | Common / 12 |
-| 44 | Sticky boots | Activate self; temporarily resists pushes and slipping, but slows ordinary steps. | Uncommon / 18 |
+| 44 | Sticky boots | Four activations: resist shoves/oil slips for 6s, double ordinary step recovery; crushers still crush. | Uncommon / 18 |
 | 45 | Resin glue | Repairs the most damaged carried durable item; does not refill ammo or consumed charges. | Uncommon / 14 |
 | 46 | Scarecrow | Place a destructible ward; birds and small animals hesitate around it, larger predators do not. | Uncommon / 16 |
 | 47 | Lantern seed | Plant a stationary dim lamp; useful for seeing and drawing moths away. Four seeds. | Common / 8 |
 | 48 | Thunder acorn | Line 1–5 to first target, then a short adjacent chain; wet targets conduct farther. | Rare / 30 |
 | 49 | Fungal bread | Immediate 25 HP heal followed by a short sleep; someone else should guard the eater. | Common / 9 |
-| 50 | Rabbit charm | Use to retreat several cells opposite aim, stopping at obstructions; three escapes, no permanent dodge stat. | Rare / 28 |
+| 50 | Rabbit charm | Retreat up to three actual cells opposite aim, stopping at obstructions. Every landing applies hazards; three escapes, no permanent dodge stat. | Rare / 28 |
 
 ## Room and material sources
 

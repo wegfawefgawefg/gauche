@@ -12,7 +12,8 @@ namespace {
 void release_snare(Game& game, int slot, bool broken) {
     Entity& trap = game.entities[static_cast<std::size_t>(slot)];
     if (Entity* captive = get_entity(game, trap.entity_a))
-        if (captive->vitals.rooted <= trap.timer_a) captive->vitals.rooted = 0;
+        if (captive->vitals.root_kind == RootKind::Rope && captive->vitals.rooted <= trap.timer_a)
+            captive->vitals.rooted = 0;
     const Cell cell = trap.cell;
     if (broken) remove_entity(game, {slot, trap.generation});
     else {

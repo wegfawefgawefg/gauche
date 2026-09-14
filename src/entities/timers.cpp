@@ -31,7 +31,7 @@ std::optional<Cell> free_entrance_cell(const Game& game) {
 void step_entity_timers(Game& game, int slot) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None) return;
-    if (entity.freeze_ticks == 0 || game.tick % 2 == 0)
+    if (game.tick % static_cast<std::uint64_t>(movement_slow_factor(entity)) == 0)
         entity.move_wait = std::max(0, entity.move_wait - movement_recovery_rate(entity));
     entity.timer_a = std::max(0, entity.timer_a - 1);
     entity.timer_b = std::max(0, entity.timer_b - 1);

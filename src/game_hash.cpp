@@ -112,7 +112,8 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.sleep_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.stun_ticks));
         for (auto ticks : {entity.vitals.healing_left, entity.vitals.healing_wait,
-            entity.vitals.sleep_guard, entity.vitals.stun_guard, entity.vitals.haste, entity.vitals.rooted}) mix(hash, ticks);
+            entity.vitals.sleep_guard, entity.vitals.stun_guard, entity.vitals.haste, entity.vitals.rooted, entity.vitals.grip}) mix(hash, ticks);
+        mix(hash, static_cast<std::uint64_t>(entity.vitals.root_kind));
         mix(hash, static_cast<std::uint64_t>(entity.train_cars_left));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.x));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.y));

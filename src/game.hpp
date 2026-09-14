@@ -89,7 +89,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm,
     Count,
 };
 
@@ -284,7 +284,7 @@ Entity* get_entity(Game& game, Handle handle);
 const Entity* get_entity(const Game& game, Handle handle);
 void remove_entity(Game& game, Handle handle);
 int entity_at(const Game& game, Cell cell, bool impassable_only = false);
-bool move_entity(Game& game, int slot, Cell destination);
+bool move_entity(Game& game, int slot, Cell destination, bool allow_slip = true);
 void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable = true);
 void enter_actor_cell(Game& game, int slot);
 void crush_entity(Game& game, int slot, Cell attacker);

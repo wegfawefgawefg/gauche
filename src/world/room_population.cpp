@@ -145,7 +145,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         {
             constexpr ItemKind relics[]{ItemKind::ConductorHat, ItemKind::RocketLauncher,
                 ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Blunderbuss, ItemKind::Crossbow,
-                ItemKind::RootDrill, ItemKind::SwapSeed};
+                ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::RabbitCharm};
             place_ground_item(game, *cell, relics[random_u32(game) % std::size(relics)]);
         }
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
@@ -160,7 +160,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
             ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
-            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn, ItemKind::Boomerang, ItemKind::SpringTrap, ItemKind::AcornMine};
+            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn, ItemKind::Boomerang, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::ThrowingNet, ItemKind::StickyBoots};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};

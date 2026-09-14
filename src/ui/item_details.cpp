@@ -135,6 +135,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (player.health <= 3) std::snprintf(line, sizeof(line), "NEEDS MORE THAN 3 HP");
         else std::snprintf(line, sizeof(line), "HP %d -> %d | GUARD 10s", player.health, player.health - 3);
     }
+    if (item.kind == ItemKind::StickyBoots) {
+        Entity gripped = player;
+        gripped.vitals.grip = 360;
+        std::snprintf(line, sizeof(line), "STEP %d -> %d TICKS", movement_beat(player, player.move_interval),
+            movement_beat(gripped, gripped.move_interval));
+    }
     if (item.kind == ItemKind::Chili) {
         Entity faster = player;
         faster.vitals.haste = 240;
@@ -176,7 +182,13 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    if (item.kind == ItemKind::AcornMine)
+    if (item.kind == ItemKind::ThrowingNet)
+        std::snprintf(line, sizeof(line), "RANGE %d | ROOT 2.0s", pattern.maximum);
+    else if (item.kind == ItemKind::StickyBoots)
+        std::snprintf(line, sizeof(line), "GRIP 6.0s | SLOW STEPS");
+    else if (item.kind == ItemKind::RabbitCharm)
+        std::snprintf(line, sizeof(line), "RETREAT UP TO 3 CELLS");
+    else if (item.kind == ItemKind::AcornMine)
         std::snprintf(line, sizeof(line), "PLACE 1 | SPLINTERS %d", pattern.blast_radius);
     else if (item.kind == ItemKind::RopeSnare)
         std::snprintf(line, sizeof(line), "PLACE 1 | ROOT 3.0s");

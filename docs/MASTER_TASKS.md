@@ -253,15 +253,15 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
-Forest item slice: thirty-seven regional items now have shared definitions,
+Forest item slice: forty regional items now have shared definitions,
 UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
 Rocks fly and land; boomerangs hit out/back and return; hatchet cleaves wood; spear pierces; crossbow reloads
 one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
 rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
 items remains the forest target. Torch/lighter/oil/sap/water/spores/smoke/honey share fire, wetting, concealment and bait rules.
-Oil slipping and natural sap sources remain; toads drop spores. Nests now yield stackable
+Oil slips walkers one extra cell; natural sap sources remain. Toads drop spores; nests yield stackable
 eggs, fried at campfires. Seeds grow cover/lamps; claws dig; resin repairs. Herbs regenerate, splints cure stun,
-root prevents sleep, chili speeds steps then burns, fungal bread heals then sleeps; snares root, springs shove, acorn mines chain.
+root prevents sleep, chili speeds then burns, fungal bread heals then sleeps; snares/nets root, springs shove, mines chain. Boots resist shoves/slips; rabbit charms retreat.
 
 Forest implementation slice: twenty adversaries exist: wolf, bear, bat, zombie,
 zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret,

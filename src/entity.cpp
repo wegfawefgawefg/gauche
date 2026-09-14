@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "world/water.hpp"
 #include "surfaces/interaction.hpp"
+#include "surfaces/slip.hpp"
 #include "entities/dispatch.hpp"
 
 #include <cstdint>
@@ -59,7 +60,7 @@ int entity_at(const Game& game, Cell cell, bool impassable_only) {
     return -1;
 }
 
-bool move_entity(Game& game, int slot, Cell destination) {
+bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     if (slot < 0 || slot >= max_entities) return false;
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     const Tile* tile = game.stage.at(destination);
@@ -70,9 +71,11 @@ bool move_entity(Game& game, int slot, Cell destination) {
         entity.move_wait = entity.move_interval;
         return false;
     }
-    entity.facing = destination - entity.cell;
+    const Cell direction = destination - entity.cell;
+    entity.facing = direction;
     entity.cell = destination;
     enter_actor_cell(game, slot);
+    if (allow_slip && entity.cell == destination && slip_on_oil(game, slot, direction)) return true;
     entity.move_wait = entity.move_interval;
     // LANDING: A spring can move us again during contact; effects use the final cell.
     if (entity.health <= 0) return true;

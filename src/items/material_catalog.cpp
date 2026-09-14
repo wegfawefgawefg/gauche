@@ -7,7 +7,7 @@ constexpr RegionalItem torch{"Torch", "A portable flame. Strike and ignite dry g
 constexpr RegionalItem lighter{"Lighter", "A tiny spark, 20 uses. Try oil, sap, or dry growth.",
     Sprite::Lighter, {1, 1, 0, 0, 25, PatternEffect::Utility},
     ItemAction::Material, 6, 1, false, 20, 0, 0, 0, 0, SoundId::LighterSpark};
-constexpr RegionalItem oil{"Oil flask", "Throw an oily diamond. A spark turns it into a spreading fire.",
+constexpr RegionalItem oil{"Oil flask", "Oily ground slips a walker one extra cell. A spark turns it into spreading fire.",
     Sprite::OilFlask, {1, 5, 2, 0, 40, PatternEffect::Utility},
     ItemAction::Throw, 8, 3, true, 0, 0, 0, 0, 0, SoundId::BottleThrow};
 constexpr RegionalItem sap{"Sap jar", "Throw a sticky cross. Slows steps and burns longer than oil.",

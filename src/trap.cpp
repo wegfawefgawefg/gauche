@@ -40,7 +40,8 @@ void step_crusher(Game& game, int slot) {
     const bool blocked = behind == nullptr || !walkable(*behind) ||
                          entity_at(game, pushed, true) >= 0;
     if (victim >= 0) {
-        if (blocked) crush_entity(game, victim, crusher.cell);
+        if (blocked || game.entities[static_cast<std::size_t>(victim)].vitals.grip > 0)
+            crush_entity(game, victim, crusher.cell);
         else {
             Entity& actor = game.entities[static_cast<std::size_t>(victim)];
             actor.cell = pushed;

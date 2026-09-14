@@ -1,5 +1,6 @@
 #include "presentation.hpp"
 #include "../projectiles/projectile.hpp"
+#include "../projectiles/net.hpp"
 #include "../projectiles/root_drill.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
@@ -55,7 +56,24 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (pattern.cross_blast) {
+    if (held.kind == ItemKind::ThrowingNet) {
+        const Cell side{-facing.y, facing.x};
+        int lanes = (1 << (pattern.half_width * 2 + 1)) - 1;
+        for (int reach = 1; reach <= pattern.maximum; ++reach) {
+            const Cell center = player.cell + Cell{facing.x * reach, facing.y * reach};
+            lanes = net_open_lanes(game, center, side, pattern.half_width, lanes);
+            if (lanes == 0) break;
+            bool caught = false;
+            for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+                if ((lanes & (1 << (lane + pattern.half_width))) == 0) continue;
+                const Cell cell = center + Cell{side.x * lane, side.y * lane};
+                mark(renderer, cell, camera, zoom, pattern.effect);
+                const int target = entity_at(game, cell, true);
+                caught |= target >= 0 && net_target(game.entities[static_cast<std::size_t>(target)]);
+            }
+            if (caught) break;
+        }
+    } else if (pattern.cross_blast) {
         const Cell center = player.cell + facing;
         mark(renderer, center, camera, zoom, pattern.effect);
         for (Cell direction : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {

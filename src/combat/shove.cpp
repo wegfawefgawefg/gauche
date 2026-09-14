@@ -20,7 +20,7 @@ bool shove_in_front(Game& game, int user_slot, Cell direction) {
 bool shove_actor(Game& game, int target_slot, Cell direction, Cell source) {
     if (target_slot < 0 || target_slot >= max_entities || distance({}, direction) != 1) return false;
     Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
-    if (target.hard_blocker) return false;
+    if (target.hard_blocker || target.vitals.grip > 0) return false;
     const Cell destination = target.cell + direction;
     const Tile* tile = game.stage.at(destination);
     const int blocker_slot = entity_at(game, destination, true);

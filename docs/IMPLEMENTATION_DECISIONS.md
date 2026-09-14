@@ -381,3 +381,37 @@ state reuses existing counters, timers, facing, handles and copied items.
 Workshop/cache finds and reward/shop pools contain the new items. Strict game
 and render builds plus static armed-state, root-HUD, base/Big comparison captures
 pass. No live playtest or new gameplay test suite was run.
+
+
+## Nets, gripping boots and retreat charms
+
+These three finds bring the regional forest item count to 40. Room finds,
+rewards and shops include them. Five generated sprites and seven offline cues
+cover throwing/catching/falling cloth, sticking/releasing boots, retreat and oil.
+
+Throwing nets travel one cell every four ticks, three cells wide, up to three
+cells forward. The first occupied row roots eligible actors for 120 ticks;
+attacks remain available. Walls and blocking fixtures stop the center lane and
+tear off edge lanes. Big widens to five lanes; Long extends reach to seven.
+The net is consumed; local cloth scraps remain. Root overlays distinguish nets
+from snares, and a snare cannot release a newer net root.
+
+Sticky boots have four uses. Each provides 360 ticks of grip, blocking shoves
+and oil slips while doubling ordinary movement recovery. Freeze and haste
+compose with that delay. Crushers still crush; swaps remain teleports. The HUD
+shows the grip duration and tradeoff, and item cards show actual step deltas.
+
+Rabbit charms have three uses. Each retreats up to three cardinal cells opposite
+aim, applying every intermediate contact. Obstacles, death, rooting, or a spring/
+oil displacement stop the retreat. A fully blocked attempt consumes no use.
+Actors stay on their real cells; this introduces no visual movement interpolation.
+
+An ordinary grounded step onto oil slips one extra cell in its direction if
+that cell is clear. Slip does not recurse across an oil lake or crush actors
+against blocked tiles. Landing hazards still apply. Grip/root prevent slipping.
+
+Grip and root kind enter hashes and snapshots (layout 23, compatibility D2).
+Net payload, lanes and timers reuse existing saved projectile fields. Strict game
+and render builds pass. Static item comparisons and world captures were inspected,
+including Big Net, step deltas, charge counts and status overlays. No live
+playtest, network session or new gameplay test suite was run for this slice.

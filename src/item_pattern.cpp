@@ -58,7 +58,7 @@ ItemPattern item_pattern(const Item& item) {
         pattern.cooldown = (pattern.cooldown * 3 + 1) / 2;
         break;
     case ItemAttribute::Big:
-        if (item.kind == ItemKind::ThornCaltrops) ++pattern.half_width;
+        if (item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
         else if (pattern.blast_radius > 0) ++pattern.blast_radius;
         else if (pattern.effect == PatternEffect::Damage && !pattern.ray) {
             pattern.maximum = std::max(2, pattern.maximum);

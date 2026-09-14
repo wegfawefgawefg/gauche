@@ -10,8 +10,9 @@ bool apply_sleep(Entity& actor, int ticks) {
     return true;
 }
 
-bool apply_root(Entity& actor, int ticks) {
+bool apply_root(Entity& actor, int ticks, RootKind kind) {
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0) return false;
+    if (ticks >= actor.vitals.rooted) actor.vitals.root_kind = kind;
     actor.vitals.rooted = static_cast<std::uint16_t>(std::clamp(std::max(ticks, static_cast<int>(actor.vitals.rooted)), 0, 600));
     return true;
 }
@@ -22,13 +23,17 @@ bool apply_stun(Entity& actor, int ticks) {
     return true;
 }
 
+int movement_slow_factor(const Entity& actor) {
+    return (actor.freeze_ticks > 0 ? 2 : 1) * (actor.vitals.grip > 0 ? 2 : 1);
+}
+
 int movement_recovery_rate(const Entity& actor) {
     return actor.vitals.haste > 0 ? 2 : 1;
 }
 
 int movement_beat(const Entity& actor, int recovery) {
     const int rate = movement_recovery_rate(actor);
-    return ((recovery + rate - 1) / rate) * (actor.freeze_ticks > 0 ? 2 : 1);
+    return ((recovery + rate - 1) / rate) * movement_slow_factor(actor);
 }
 
 void step_vital_effects(Game& game, int slot) {
@@ -36,6 +41,8 @@ void step_vital_effects(Game& game, int slot) {
     VitalEffects& effects = actor.vitals;
     if (actor.health <= 0) { effects = {}; return; }
     if (effects.rooted > 0) --effects.rooted;
+    if (effects.rooted == 0) effects.root_kind = RootKind::Rope;
+    if (effects.grip > 0 && --effects.grip == 0) emit_sound(game, SoundId::BootsRelease, actor.cell);
     if (effects.sleep_guard > 0) --effects.sleep_guard;
     if (effects.stun_guard > 0) --effects.stun_guard;
 

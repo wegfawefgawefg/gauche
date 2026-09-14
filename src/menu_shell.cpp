@@ -224,6 +224,14 @@ void open_game_menu(MenuShell& menu) {
     menu.visible = true;
 }
 
+void open_end_menu(MenuShell& menu, bool victory) {
+    if (menu.visible || !menu.playing) return;
+    menu.front.allow_restart = menu.network->role != NetRole::Client;
+    show_menu_screen(menu.front, victory ? MenuScreen::Victory : MenuScreen::Death);
+    menu.front_visible = true;
+    menu.visible = true;
+}
+
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height) {
     sync_direct_members(menu);

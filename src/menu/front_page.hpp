@@ -11,7 +11,8 @@
 
 enum class MenuScreen {
     Main, Lobby, Rules, Host, Join, Players, Player, Settings, Display, Audio,
-    Controls, ProfileEditor, Bindings, BindDetail, BindChoices, InputOptions, Pause,
+    Controls, ProfileEditor, Bindings, BindDetail, BindChoices, InputOptions,
+    Pause, Death, Victory,
 };
 
 struct FrontPage {

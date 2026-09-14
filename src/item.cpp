@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "item_pattern.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -51,29 +52,25 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
     const bool piercing = has_artifact(user, ArtifactKind::AllPiercing) &&
                           item.kind != ItemKind::RocketLauncher;
-    int range = 14;
-    int damage = 35;
-    int cooldown = 40;
-    switch (item.kind) {
-    case ItemKind::Pistol: range = 9; damage = 16; cooldown = 12; break;
-    case ItemKind::Shotgun: range = 5; damage = 48; cooldown = 32; break;
-    case ItemKind::SMG: range = 8; damage = 9; cooldown = 4; break;
-    case ItemKind::RocketLauncher: damage = 80; cooldown = 48; break;
-    default: break;
-    }
+    const ItemPattern pattern = item_pattern(item.kind);
+    const int range = pattern.maximum;
+    const int damage = pattern.damage;
+    const int cooldown = pattern.cooldown;
     Cell cell = user.cell;
     for (int step = 0; step < range; ++step) {
         cell = cell + direction;
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr) break;
         if (!walkable(tile->kind)) {
-            if (item.kind == ItemKind::RocketLauncher) blast(game, cell, 2, damage, user.cell);
+            if (item.kind == ItemKind::RocketLauncher)
+                blast(game, cell, pattern.blast_radius, damage, user.cell);
             else if (item.kind == ItemKind::Musket) damage_tile(game.stage, cell, 25);
             break;
         }
         const int target = entity_at(game, cell, true);
         if (target >= 0 && target != user_slot) {
-            if (item.kind == ItemKind::RocketLauncher) blast(game, cell, 2, damage, user.cell);
+            if (item.kind == ItemKind::RocketLauncher)
+                blast(game, cell, pattern.blast_radius, damage, user.cell);
             else {
                 const int prior_health = game.entities[static_cast<std::size_t>(target)].health;
                 damage_entity(game, target, damage, user.cell);
@@ -84,7 +81,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
             if (!piercing) break;
         }
         if (step == range - 1 && item.kind == ItemKind::RocketLauncher)
-            blast(game, cell, 2, damage, user.cell);
+            blast(game, cell, pattern.blast_radius, damage, user.cell);
     }
     --item.loaded;
     item.cooldown = cooldown;
@@ -245,14 +242,12 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (range == 1) {
             const int hit = entity_at(game, target, true);
             if (hit >= 0 && hit != user_slot) {
-                damage_entity(game, hit, item.kind == ItemKind::Pickaxe ? 22 :
-                              (item.kind == ItemKind::Stick ? 17 : 10), user.cell);
+                damage_entity(game, hit, item_pattern(item.kind).damage, user.cell);
                 used = true;
             } else used = damage_tile(game.stage, target,
                                       item.kind == ItemKind::Pickaxe ? 50 :
-                                      (item.kind == ItemKind::Stick ? 17 : 10));
-            cooldown = item.kind == ItemKind::Pickaxe ? 24 :
-                       (item.kind == ItemKind::Stick ? 16 : 12);
+                                      item_pattern(item.kind).damage);
+            cooldown = item_pattern(item.kind).cooldown;
         }
         break;
     case ItemKind::ConductorHat: {
@@ -265,7 +260,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         user.block_ticks = 15;
         shove(game, user_slot, direction);
         used = true;
-        cooldown = 30;
+        cooldown = item_pattern(item.kind).cooldown;
         break;
     case ItemKind::Pistol: case ItemKind::Musket: case ItemKind::Bow:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
@@ -273,9 +268,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         return used;
     case ItemKind::Bomb:
         if (range <= 3) {
-            blast(game, target, 2, 65, user.cell);
+            const ItemPattern pattern = item_pattern(item.kind);
+            blast(game, target, pattern.blast_radius, pattern.damage, user.cell);
             used = consumed = true;
-            cooldown = 45;
+            cooldown = pattern.cooldown;
         }
         break;
     case ItemKind::SleepMeds:

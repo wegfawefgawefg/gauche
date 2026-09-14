@@ -270,6 +270,28 @@ bool held_item_direction() {
     return check(trigger.stage.at({2, 1})->kind == TileKind::Wall,
                  "trigger with a neutral aim stick did not use facing");
 }
+
+bool repeated_inventory_drops() {
+    Game game = small_game();
+    game.run.phase = RunPhase::Reward;
+    Entity* player = get_entity(game, game.players[0]);
+    player->inventory.slots[2] = make_item(ItemKind::Pickaxe);
+    player->inventory.slots[3] = make_item(ItemKind::Bow);
+    std::array<Input, 4> input{};
+    input[0].select = 2;
+    input[0].drop = true;
+    step_game(game, input);
+    input[0].select = 3;
+    step_game(game, input);
+    int drops = 0;
+    for (const Entity& entity : game.entities)
+        if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell) ++drops;
+    return check(drops == 2 &&
+                 player->inventory.slots[2].kind == ItemKind::None &&
+                 player->inventory.slots[3].kind == ItemKind::None,
+                 "inventory could not drop two different slots on one tile");
+}
+
 bool switch_route() {
     Game game;
     start_run(game, 7171);
@@ -492,6 +514,7 @@ int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
         !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
+        !repeated_inventory_drops() ||
         !switch_route() || !forest_tools() ||
         !track_before_train() || !forest_progression() || !den_room_rules() ||
         !crusher_room_rules() || !zombie_chicken_rules() || !footstep_rules())

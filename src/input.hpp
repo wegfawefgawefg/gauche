@@ -5,6 +5,7 @@
 #include <gubsy/runtime.hpp>
 
 void register_game_bindings(GubsyRuntime& runtime);
+bool inventory_button_down(GubsyRuntime& runtime);
 struct PointerState {
     float x = 0.0F;
     float y = 0.0F;

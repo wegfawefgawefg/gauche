@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../item_pattern.hpp"
 
 #include <cstdlib>
 
@@ -37,8 +38,8 @@ void init_player(Entity& entity) {
 void drop_player_item(Game& game, Entity& player) {
     Item& item = *player.inventory.held();
     if (item.kind == ItemKind::None || item.kind == ItemKind::Fist) return;
-    for (const Entity& entity : game.entities)
-        if (entity.kind == EntityKind::GroundItem && entity.cell == player.cell) return;
+    // What if several slots are dropped here? Ground items can share a tile;
+    // pickup takes them one at a time.
     const Handle dropped = spawn_entity(game, EntityKind::GroundItem, player.cell);
     if (Entity* entity = get_entity(game, dropped)) {
         entity->ground_item = item;
@@ -67,7 +68,8 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.drop) drop_player_item(game, player);
     if (input.reload) reload_held_item(game, slot);
     if (input.use) {
-        const Cell target = player.cell + (input.aim == Cell{} ? player.facing : input.aim);
+        const Cell target = aimed_item_target(player, input.aim,
+                                               item_pattern(player.inventory.held()->kind));
         if (!interact_with_fixture(game, player.owner, target))
             use_held_item(game, slot, target);
     }

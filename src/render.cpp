@@ -235,8 +235,9 @@ void draw_lighting(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
-                 const Game& game, int local_owner, bool can_restart, float zoom,
-                 const Cosmetics* cosmetics, const PointerState& pointer) {
+                 const Game& game, int local_owner, float zoom,
+                 const Cosmetics* cosmetics, const PointerState& pointer,
+                 bool show_hud) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     const ViewCamera camera = cosmetics != nullptr ?
         camera_for(*cosmetics, game, local_owner) :
@@ -244,16 +245,16 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground, camera, zoom);
-    if (player != nullptr) draw_item_range_base(renderer, *player, camera, zoom);
     draw_entities(renderer, graphics, game, camera,
                   player == nullptr ? Cell{32, 32} : player->cell, zoom, cosmetics);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground, camera, zoom);
     draw_lighting(renderer, game, camera, local_owner, zoom);
-    if (player != nullptr) draw_item_range_top(renderer, *player, camera, zoom, pointer, graphics);
+    if (player != nullptr)
+        draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
-    if (player != nullptr) draw_hud(renderer, graphics, game, *player);
+    if (player != nullptr && show_hud) draw_hud(renderer, graphics, game, *player);
     SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
@@ -268,21 +269,6 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     char zoom_label[24];
     std::snprintf(zoom_label, sizeof(zoom_label), "ZOOM %.2fX", static_cast<double>(zoom));
     SDL_RenderDebugText(renderer, 537.0F, 12.0F, zoom_label);
-    draw_interlude(renderer, graphics, game, local_owner);
-    if (game.run.phase == RunPhase::Won)
-        SDL_RenderDebugText(renderer, 230.0F, 190.0F,
-                            can_restart ? "PRESS ENTER TO RESTART" : "WAIT FOR HOST");
-    if (game.game_over) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 8, 8, 9, 190);
-        SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};
-        SDL_RenderFillRect(renderer, &shade);
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-        SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
-        SDL_RenderDebugText(renderer, 260.0F, 166.0F, "GAME OVER");
-        SDL_RenderDebugText(renderer, 230.0F, 187.0F,
-                            can_restart ? "PRESS ENTER TO RESTART" : "WAIT FOR HOST");
-    }
     draw_pointer(renderer, graphics, pointer);
 }
 

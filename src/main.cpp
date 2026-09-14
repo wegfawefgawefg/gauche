@@ -10,6 +10,7 @@
 #include "menu_shell.hpp"
 #include "menu/actions.hpp"
 #include "particles/system.hpp"
+#include "ui/interaction.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -29,6 +30,8 @@ bool wants_smoke(int argc, char** argv) {
         if (std::string_view{argv[index]} == "--smoke" ||
             std::string_view{argv[index]} == "--smoke-game" ||
             std::string_view{argv[index]} == "--smoke-run" ||
+            std::string_view{argv[index]} == "--smoke-reward" ||
+            std::string_view{argv[index]} == "--smoke-inventory" ||
             std::string_view{argv[index]} == "--smoke-menu" ||
             std::string_view{argv[index]} == "--smoke-menu-page" ||
             std::string_view{argv[index]} == "--smoke-menu-action" ||
@@ -106,28 +109,10 @@ GubsyAppConfig app_config() {
     return config;
 }
 
-bool seed_menu_layout(std::string& error) {
-    const auto source = asset_root() / "gubsy" / "ui_layouts" / "layouts.lisp";
-    const auto target = user_data_root() / "gubsy" / "ui_layouts" / "layouts.lisp";
-    std::error_code io_error;
-    std::filesystem::create_directories(target.parent_path(), io_error);
-    if (!io_error && !std::filesystem::exists(target))
-        std::filesystem::copy_file(source, target, io_error);
-    if (!io_error && std::filesystem::is_regular_file(target)) return true;
-    error = "Could not prepare Gubsy menu layouts from " + source.string() +
-            ": " + io_error.message();
-    return false;
-}
-
 } // namespace
 
 int main(int argc, char** argv) {
     const bool smoke = wants_smoke(argc, argv);
-    std::string layout_error;
-    if (!seed_menu_layout(layout_error)) {
-        std::fprintf(stderr, "%s\n", layout_error.c_str());
-        return 1;
-    }
     GubsyRuntime host;
     if (!init_gubsy_runtime(host, app_config()) || !gubsy_init_sdl_renderer(host)) {
         std::fprintf(stderr, "Gubsy host failed: %s\n", SDL_GetError());
@@ -194,13 +179,21 @@ int main(int argc, char** argv) {
         }
     } else {
         if (has_arg(argc, argv, "--smoke-game")) start_test_arena(game, 12345);
-        if (has_arg(argc, argv, "--smoke-run")) start_run(game, 12345);
+        if (has_arg(argc, argv, "--smoke-run") ||
+            has_arg(argc, argv, "--smoke-reward") ||
+            has_arg(argc, argv, "--smoke-inventory")) start_run(game, 12345);
+        if (has_arg(argc, argv, "--smoke-reward")) finish_floor(game);
     }
     MenuShell menu;
     init_menu_shell(menu, host, game, network, requested_death_policy(argc, argv),
                     identity_path);
     menu.playing = network.role == NetRole::Host || game.started;
     Cosmetics cosmetics;
+    InteractionUi interaction;
+    if (has_arg(argc, argv, "--smoke-inventory")) {
+        interaction.inventory_open = true;
+        interaction.slide = 1.0F;
+    }
     const bool menu_smoke = has_arg(argc, argv, "--smoke-menu");
     const bool lobby_smoke = has_arg(argc, argv, "--smoke-lobby");
     const bool leave_smoke = has_arg(argc, argv, "--smoke-leave");
@@ -219,6 +212,7 @@ int main(int argc, char** argv) {
             {"profile", MenuScreen::ProfileEditor}, {"bindings", MenuScreen::Bindings},
             {"detail", MenuScreen::BindDetail},
             {"input", MenuScreen::InputOptions}, {"pause", MenuScreen::Pause},
+            {"death", MenuScreen::Death}, {"victory", MenuScreen::Victory},
         };
         for (const auto& target : pages)
             if (menu_page == target.name) show_menu_screen(menu.front, target.screen);
@@ -258,6 +252,11 @@ int main(int argc, char** argv) {
             const bool capturing_bind = menu.front_visible && menu.front.capturing_bind;
             gubsy_process_sdl_event(host, event);
             if (process_menu_shell_event(menu, event, gubsy_get_frame(host))) continue;
+            const Game& event_game = network.role == NetRole::Solo ? game : network.rollback.game;
+            if (menu.playing && !menu.visible &&
+                interaction_event(interaction, event, gubsy_get_frame(host), event_game,
+                                  network.role == NetRole::Solo ? 0 : network.local_owner))
+                continue;
             if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
                 running = false;
             }
@@ -296,24 +295,6 @@ int main(int argc, char** argv) {
                                       event.key.key == SDLK_EQUALS))
                 zoom = std::clamp(zoom + (event.key.key == SDLK_EQUALS ? 0.25F : -0.25F),
                                   0.5F, 8.0F);
-            if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
-                !menu.visible && network.role == NetRole::Solo &&
-                (!game.started || game.game_over ||
-                               game.run.phase == RunPhase::Won)) {
-                start_run(game, SDL_GetTicks() + 1);
-                game.run.death_policy = menu.death_policy;
-                audio.played_events.fill(0);
-                play_song(audio, 1);
-            }
-            if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RETURN &&
-                !menu.visible &&
-                network.role == NetRole::Host &&
-                (network.rollback.game.game_over ||
-                 network.rollback.game.run.phase == RunPhase::Won)) {
-                restart_host_run(network, SDL_GetTicks() + 1);
-                audio.played_events.fill(0);
-                play_song(audio, 1);
-            }
         }
         gubsy_update_device_state(host);
         if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())
@@ -373,11 +354,12 @@ int main(int argc, char** argv) {
                 (network.role == NetRole::Client && network.ready && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
-                if (!smoke && menu.playing && !menu.visible)
-                    inputs[static_cast<std::size_t>(owner)] =
-                    read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
-                                     camera_for(cosmetics, active, owner),
-                                     input_reader);
+                if (!smoke && menu.playing && !menu.visible) {
+                    Input& local = inputs[static_cast<std::size_t>(owner)];
+                    local = read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
+                                             camera_for(cosmetics, active, owner), input_reader);
+                    apply_interaction_input(interaction, active, owner, host, local);
+                }
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);
                 const Entity* listener = get_entity(active,
@@ -389,8 +371,15 @@ int main(int argc, char** argv) {
             accumulated -= step_seconds;
         }
 
+        const Game& ended = network.role == NetRole::Solo ? game : network.rollback.game;
+        if (menu.playing && !menu.visible &&
+            (ended.game_over || ended.run.phase == RunPhase::Won))
+            open_end_menu(menu, ended.run.phase == RunPhase::Won);
+
         const GubsyFrame frame = gubsy_get_frame(host);
-        if (menu.playing && !menu.visible) SDL_HideCursor();
+        if (menu.playing && !menu.visible && !interaction.inventory_open &&
+            !has_reward_offer(ended, networked ? network.local_owner : 0) &&
+            ended.run.phase != RunPhase::Shop) SDL_HideCursor();
         else SDL_ShowCursor();
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
@@ -413,12 +402,17 @@ int main(int argc, char** argv) {
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
-                        network.role != NetRole::Client, zoom, &cosmetics,
+                        zoom, &cosmetics,
                         read_pointer(frame, active, networked ? network.local_owner : 0,
                                      zoom, camera_for(cosmetics, active,
-                                                      networked ? network.local_owner : 0)));
+                                                      networked ? network.local_owner : 0)),
+                        !interaction.inventory_open &&
+                        !has_reward_offer(active, networked ? network.local_owner : 0) &&
+                        active.run.phase != RunPhase::Shop);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
+            draw_interaction(frame.renderer, graphics, active,
+                             networked ? network.local_owner : 0, interaction);
         } else if (menu.visible) {
             render_title_backdrop(frame.renderer, graphics, title_scene);
         } else if (!menu.visible) {

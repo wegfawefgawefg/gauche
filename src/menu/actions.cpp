@@ -97,6 +97,7 @@ void back(MenuShell& menu) {
     case MenuScreen::InputOptions: show_menu_screen(page, MenuScreen::ProfileEditor); break;
     case MenuScreen::Pause:
         menu.visible = menu.front_visible = false; break;
+    case MenuScreen::Death: case MenuScreen::Victory: break;
     }
 }
 

@@ -27,6 +27,7 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
                      const std::string& identity_path);
 void show_title_menu(MenuShell& menu);
 void open_game_menu(MenuShell& menu);
+void open_end_menu(MenuShell& menu, bool victory);
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height);
 void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int height);

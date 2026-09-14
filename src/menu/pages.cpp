@@ -350,6 +350,16 @@ void pause_page(ViewBuilder& ui, const FrontPage& page) {
     ui.focus_group("menu", "resume", "card");
 }
 
+void end_page(ViewBuilder& ui, const FrontPage& page, bool victory) {
+    frame(ui, victory ? "Run Cleared" : "Run Over", 570.0F, 370.0F);
+    ui.label("card", "end-note", page.allow_restart ?
+             "Choose what happens next." : "Waiting for the host to restart.",
+             42.0F, 17.0F);
+    if (page.allow_restart) button(ui, "restart", "Start a New Run", "restart", 54.0F);
+    button(ui, "title", "Return to Main Menu", "title", 50.0F);
+    ui.focus_group("menu", page.allow_restart ? "restart" : "title", "card");
+}
+
 } // namespace
 
 gview::View build_menu_page(const FrontPage& page, int width, int height,
@@ -373,6 +383,8 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
     case MenuScreen::BindChoices: binding_choices_page(ui, page); break;
     case MenuScreen::InputOptions: input_options_page(ui, page); break;
     case MenuScreen::Pause: pause_page(ui, page); break;
+    case MenuScreen::Death: end_page(ui, page, false); break;
+    case MenuScreen::Victory: end_page(ui, page, true); break;
     }
     if (!page.toast.empty()) {
         ui.label("card", "toast", page.toast, 28.0F, 14.0F,

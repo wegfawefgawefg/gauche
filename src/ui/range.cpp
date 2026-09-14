@@ -1,91 +1,88 @@
 #include "presentation.hpp"
+#include "../item_pattern.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
-#include <cmath>
+#include <cstdlib>
 
 ItemRange item_range(ItemKind kind) {
-    switch (kind) {
-    case ItemKind::Wall: return {1, 2};
-    case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
-    case ItemKind::Buckler: case ItemKind::BearTrap: case ItemKind::Mine: return {1, 1};
-    case ItemKind::Bomb: case ItemKind::SleepMeds: return {0, 3};
-    case ItemKind::Pistol: return {1, 9};
-    case ItemKind::Shotgun: return {1, 5};
-    case ItemKind::SMG: return {1, 8};
-    case ItemKind::Musket: case ItemKind::Bow: case ItemKind::RocketLauncher:
-        return {1, 14};
-    default: return {};
-    }
+    const ItemPattern pattern = item_pattern(kind);
+    return {pattern.minimum, pattern.maximum};
 }
 
 namespace {
 
-bool in_range(Cell origin, Cell cell, ItemRange range) {
-    const int steps = distance(origin, cell);
-    return steps >= range.minimum && steps <= range.maximum;
+void mark(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
+          PatternEffect effect, bool travel = false) {
+    const SDL_FRect rect = tile_rect(cell, camera, zoom);
+    const std::uint8_t red = effect == PatternEffect::Damage ? 225 :
+                             (effect == PatternEffect::Heal ? 91 : 223);
+    const std::uint8_t green = effect == PatternEffect::Damage ? 71 :
+                               (effect == PatternEffect::Heal ? 219 : 225);
+    const std::uint8_t blue = effect == PatternEffect::Damage ? 57 :
+                              (effect == PatternEffect::Heal ? 110 : 210);
+    SDL_SetRenderDrawColor(renderer, red, green, blue, travel ? 30 : 49);
+    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer, red, green, blue, travel ? 90 : 155);
+    if (travel) {
+        const float side = rect.w * 0.28F;
+        SDL_RenderLine(renderer, rect.x, rect.y, rect.x + side, rect.y);
+        SDL_RenderLine(renderer, rect.x + rect.w - side, rect.y + rect.h,
+                       rect.x + rect.w, rect.y + rect.h);
+    } else SDL_RenderRect(renderer, &rect);
 }
 
-void border(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
-            Cell origin, ItemRange range) {
-    const SDL_FRect rect = tile_rect(cell, camera, zoom);
-    if (!in_range(origin, cell + Cell{0, -1}, range))
-        SDL_RenderLine(renderer, rect.x, rect.y, rect.x + rect.w, rect.y);
-    if (!in_range(origin, cell + Cell{0, 1}, range))
-        SDL_RenderLine(renderer, rect.x, rect.y + rect.h, rect.x + rect.w, rect.y + rect.h);
-    if (!in_range(origin, cell + Cell{-1, 0}, range))
-        SDL_RenderLine(renderer, rect.x, rect.y, rect.x, rect.y + rect.h);
-    if (!in_range(origin, cell + Cell{1, 0}, range))
-        SDL_RenderLine(renderer, rect.x + rect.w, rect.y, rect.x + rect.w, rect.y + rect.h);
+void blast_marks(SDL_Renderer* renderer, Cell center, int radius,
+                 ViewCamera camera, float zoom, PatternEffect effect) {
+    for (int dy = -radius; dy <= radius; ++dy)
+        for (int dx = -radius; dx <= radius; ++dx)
+            if (std::abs(dx) + std::abs(dy) <= radius)
+                mark(renderer, center + Cell{dx, dy}, camera, zoom, effect);
 }
 
 } // namespace
 
-void draw_item_range_base(SDL_Renderer* renderer, const Entity& player,
-                          ViewCamera camera, float zoom) {
-    const ItemRange range = item_range(player.inventory.held()->kind);
-    if (range.maximum == 0) return;
+void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
+                         const Game& game, const Entity& player, ViewCamera camera,
+                         float zoom, const PointerState& pointer) {
+    const Item& held = *player.inventory.held();
+    const ItemPattern pattern = item_pattern(held.kind);
+    if (pattern.effect == PatternEffect::None) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 40);
-    for (int y = -range.maximum; y <= range.maximum; ++y) {
-        for (int x = -range.maximum; x <= range.maximum; ++x) {
-            const Cell cell = player.cell + Cell{x, y};
-            if (!in_range(player.cell, cell, range)) continue;
-            const SDL_FRect rect = tile_rect(cell, camera, zoom);
-            SDL_RenderFillRect(renderer, &rect);
+    if (pattern.ray) {
+        Cell cell = player.cell;
+        for (int step = 1; step <= pattern.maximum; ++step) {
+            cell = cell + player.facing;
+            const Tile* tile = game.stage.at(cell);
+            if (tile == nullptr) break;
+            const bool impact = !walkable(tile->kind) ||
+                                entity_at(game, cell, true) >= 0 || step == pattern.maximum;
+            if (pattern.blast_radius > 0) {
+                mark(renderer, cell, camera, zoom, pattern.effect, !impact);
+                if (impact) blast_marks(renderer, cell, pattern.blast_radius,
+                                        camera, zoom, pattern.effect);
+            } else mark(renderer, cell, camera, zoom, pattern.effect);
+            if (impact) break;
         }
+    } else if (pattern.minimum == 0 && pattern.maximum == 0) {
+        mark(renderer, player.cell, camera, zoom, pattern.effect);
+    } else {
+        const Cell aim = pointer.left && pointer.inside ?
+            pointer.cell - player.cell : player.facing;
+        const Cell target = aimed_item_target(player, aim, pattern);
+        if (pattern.blast_radius > 0)
+            blast_marks(renderer, target, pattern.blast_radius,
+                        camera, zoom, pattern.effect);
+        else mark(renderer, target, camera, zoom, pattern.effect);
     }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-}
-
-void draw_item_range_top(SDL_Renderer* renderer, const Entity& player, ViewCamera camera,
-                         float zoom, const PointerState& pointer,
-                         const GameGraphics& graphics) {
-    const Item& held = *player.inventory.held();
-    const ItemRange range = item_range(held.kind);
-    if (range.maximum > 0) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 48);
-        for (int y = -range.maximum; y <= range.maximum; ++y)
-            for (int x = -range.maximum; x <= range.maximum; ++x) {
-                const Cell cell = player.cell + Cell{x, y};
-                if (in_range(player.cell, cell, range))
-                    border(renderer, cell, camera, zoom, player.cell, range);
-            }
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-    }
     if (!pointer.inside || held.kind == ItemKind::None) return;
-    const bool valid = range.maximum == 0 || in_range(player.cell, pointer.cell, range);
-    SDL_FRect target = tile_rect(pointer.cell, camera, zoom);
+    const SDL_FRect target = tile_rect(pointer.cell, camera, zoom);
+    const float side = target.w * 0.45F;
+    SDL_FRect icon{target.x + (target.w - side) * 0.5F,
+                   target.y + (target.h - side) * 0.5F, side, side};
     SDL_Texture* texture = texture_for(graphics, item_sprite(held.kind));
-    const float side = target.w * 0.5F;
-    target.x += (target.w - side) * 0.5F;
-    target.y += (target.h - side) * 0.5F;
-    target.w = target.h = side;
-    SDL_SetTextureColorMod(texture, valid ? 255 : 70, valid ? 255 : 70,
-                           valid ? 255 : 70);
-    SDL_SetTextureAlphaMod(texture, 190);
-    SDL_RenderTexture(renderer, texture, nullptr, &target);
-    SDL_SetTextureColorMod(texture, 255, 255, 255);
+    SDL_SetTextureAlphaMod(texture, 150);
+    SDL_RenderTexture(renderer, texture, nullptr, &icon);
     SDL_SetTextureAlphaMod(texture, 255);
 }

@@ -1,9 +1,11 @@
 #include "item_pattern.hpp"
+#include "items/catalog.hpp"
 
 #include <algorithm>
 #include <cstdlib>
 
 ItemPattern item_pattern(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->pattern;
     switch (kind) {
     case ItemKind::Fist: return {1, 1, 0, 10, 12, PatternEffect::Damage};
     case ItemKind::Stick: return {1, 1, 0, 17, 16, PatternEffect::Damage};
@@ -28,7 +30,7 @@ ItemPattern item_pattern(ItemKind kind) {
     case ItemKind::CookedMeat: return {0, 0, 0, 0, 90, PatternEffect::Heal, false, 0, 18};
     case ItemKind::Ammo: case ItemKind::ConductorHat:
         return {0, 0, 0, 0, 0, PatternEffect::Utility};
-    case ItemKind::None: break;
+    default: break;
     }
     return {};
 }

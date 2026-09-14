@@ -74,6 +74,7 @@ void step_entity_timers(Game& game, int slot) {
             } else entity.spawn_wait = 1;
         }
     }
+    entity.ground_item.cooldown = std::max(0, entity.ground_item.cooldown - 1);
     for (Item& item : entity.inventory.slots)
         item.cooldown = std::max(0, item.cooldown - 1);
 }

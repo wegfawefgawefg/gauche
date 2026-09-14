@@ -1,4 +1,6 @@
 #include "game.hpp"
+#include "items/catalog.hpp"
+#include "item_attribute.hpp"
 #include "combat/shove.hpp"
 #include "entities/dispatch.hpp"
 #include "entities/behavior.hpp"
@@ -11,13 +13,8 @@
 
 namespace {
 
-bool is_gun(ItemKind kind) {
-    return kind == ItemKind::Pistol || kind == ItemKind::Musket ||
-           kind == ItemKind::Bow || kind == ItemKind::RocketLauncher ||
-           kind == ItemKind::Shotgun || kind == ItemKind::SMG;
-}
-
 int magazine_size(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->magazine;
     switch (kind) {
     case ItemKind::Pistol: return 12;
     case ItemKind::Shotgun: return 6;
@@ -47,7 +44,11 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
 }
 
 bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
-    if (item.loaded <= 0) return false;
+    if (item.loaded <= 0) {
+        item.cooldown = 15;
+        emit_sound(game, SoundId::WeaponEmpty, game.entities[static_cast<std::size_t>(user_slot)].cell);
+        return false;
+    }
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
     const ItemPattern pattern = item_pattern(item);
     const bool piercing = pattern.piercing ||
@@ -56,7 +57,10 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     const int range = pattern.maximum;
     const int damage = pattern.damage;
     const int cooldown = pattern.cooldown;
-    Cell cell = user.cell;
+    const Cell origin = user.cell;
+    const Cell sideways{-direction.y, direction.x};
+    for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+    Cell cell = origin + Cell{sideways.x * lane, sideways.y * lane};
     for (int step = 0; step < range; ++step) {
         cell = cell + direction;
         const Tile* tile = game.stage.at(cell);
@@ -90,39 +94,19 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         if (step == range - 1 && item.kind == ItemKind::RocketLauncher)
             blast(game, cell, pattern.blast_radius, damage, user.cell);
     }
+    }
     --item.loaded;
     item.cooldown = cooldown;
-    emit_sound(game, item.kind == ItemKind::RocketLauncher ? SoundId::Explosion1 :
-               SoundId::SmallLaser, user.cell);
-    return true;
-}
-
-bool strike_melee(Game& game, int user_slot, Cell direction,
-                  int dig_power, ItemPattern pattern) {
-    const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
-    const Cell sideways{-direction.y, direction.x};
-    bool struck = false;
-    for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
-        for (int reach = 1; reach <= pattern.maximum; ++reach) {
-            const Cell cell = origin + Cell{direction.x * reach + sideways.x * lane,
-                                            direction.y * reach + sideways.y * lane};
-            const Tile* tile = game.stage.at(cell);
-            if (tile == nullptr) break;
-            const bool blocked = !walkable(*tile);
-            struck |= hit_prop(game, cell, pattern.damage, origin);
-            const int hit = entity_at(game, cell, true);
-            if (hit >= 0 && hit != user_slot) {
-                damage_entity(game, hit, pattern.damage, origin);
-                struck = true;
-                break;
-            }
-            struck |= hit_terrain(game, cell, origin, pattern.damage, dig_power);
-            // CONTACT: An unsuccessful blow still costs its attack beat.
-            struck |= blocked;
-            if (blocked) break;
-        }
+    user.use_flash = 6;
+    const RegionalItem* spec = regional_item(item.kind);
+    emit_sound(game, spec != nullptr ? spec->sound :
+        item.kind == ItemKind::RocketLauncher ? SoundId::Explosion1 : SoundId::SmallLaser, origin);
+    if (item.kind == ItemKind::Blunderbuss) {
+        const Cell facing = user.facing;
+        move_entity(game, user_slot, origin - direction);
+        user.facing = facing;
     }
-    return struck;
+    return true;
 }
 
 } // namespace
@@ -162,10 +146,12 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             cooldown = pattern.cooldown;
         }
         break;
+    case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
+    case ItemKind::Rake: case ItemKind::FlintKnife:
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range >= 1 && range <= item_pattern(item).maximum) {
             const ItemPattern pattern = item_pattern(item);
-            used = strike_melee(game, user_slot, direction, item.dig_power, pattern);
+            used = strike_melee(game, user_slot, direction, item);
             cooldown = pattern.cooldown;
         }
         break;
@@ -181,10 +167,15 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = true;
         cooldown = item_pattern(item).cooldown;
         break;
+    case ItemKind::Crossbow: case ItemKind::Blunderbuss:
     case ItemKind::Pistol: case ItemKind::Musket: case ItemKind::Bow:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
         used = fire_weapon(game, user_slot, direction, item);
         return used;
+    case ItemKind::ThrowingRock:
+        used = throw_rock(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::Bomb:
         if (range <= 3) {
             const ItemPattern pattern = item_pattern(item);
@@ -231,20 +222,22 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     case ItemKind::Ammo:
         for (Item& weapon : user.inventory.slots) {
-            if (is_gun(weapon.kind)) {
+            if (item_is_gun(weapon.kind)) {
                 weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 :
                                 std::max(12, magazine_size(weapon.kind) * 3);
                 used = true;
             }
         }
         break;
-    case ItemKind::None:
+    case ItemKind::Count: case ItemKind::None:
         break;
     }
     if (used) {
         item.cooldown = cooldown;
         user.use_flash = 8;
-        switch (used_kind) {
+        if (const RegionalItem* spec = regional_item(used_kind))
+            emit_sound(game, spec->sound, user.cell);
+        else switch (used_kind) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
         case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
         case ItemKind::RawMeat: case ItemKind::CookedMeat:
@@ -277,6 +270,8 @@ bool reload_held_item(Game& game, int user_slot) {
     const int transfer = std::min(capacity - item.loaded, item.spare);
     item.loaded += transfer;
     item.spare -= transfer;
-    item.cooldown = item.kind == ItemKind::Pistol ? 45 : 60;
+    const RegionalItem* spec = regional_item(item.kind);
+    item.cooldown = spec != nullptr ? spec->reload : item.kind == ItemKind::Pistol ? 45 : 60;
+    emit_sound(game, SoundId::WeaponReload, game.entities[static_cast<std::size_t>(user_slot)].cell);
     return true;
 }

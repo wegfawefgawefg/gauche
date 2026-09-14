@@ -310,6 +310,13 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
+Forest item slice: the first eight regional items now have shared definitions,
+UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
+Rock recovers at impact; hatchet cleaves wood; spear pierces; crossbow reloads
+one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
+rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
+items remains the forest target. Other regional drops still await their items.
+
 Forest implementation slice: ten roster adversaries now exist (wolf, bear, bat,
 zombie, zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic).
 Wolves follow generation-checked leaders and flank; bears defend a territory and
@@ -394,6 +401,23 @@ the available art reference; new source scripts keep a small explicit palette.
   Scene placement may come from the generated map; collision, depth, damage
   or other water/terrain rules remain deterministic gameplay. Reconnect should
   rebuild nearby loops without replaying every one-shot trigger.
+
+## Playtest feedback: status, contact and debug visibility
+
+- [ ] Show named player status indicators with remaining timers. Distinguish
+  sleep, stun, chill/freeze and burning; show burn rate and remaining damage,
+  and explain what each status stops or slows. Keep them compact but legible.
+- [ ] Replace repeated blocked-walk beeps with a restrained first-contact bonk;
+  suppress repeats while holding into the same obstruction. Distinguish wood
+  and hard surfaces where appropriate; remove impact particles from mere bumps.
+- [ ] A blocked movement attempt still turns aim unless explicit aiming from
+  the right stick, keyboard aim or mouse overrides it.
+- [ ] Inspect campfire flame anchors/layers: wisps should rise from the burning
+  top, not below the base. Preserve correct actors-over-ground-fixtures order.
+- [ ] Keep item inspection patterns. Default player/enemy world attack grids
+  off; expose independent categorized ImGui debug checkboxes for them.
+- [ ] Inspect and follow Splonks' F1 global ImGui visibility and F2 debug-window
+  selector behavior. Local debug state must not alter gameplay/network state.
 
 ## Suggested order
 

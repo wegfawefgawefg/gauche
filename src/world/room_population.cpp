@@ -115,7 +115,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         if (const auto cell = room_space(game, room))
         {
             constexpr ItemKind relics[]{ItemKind::ConductorHat, ItemKind::RocketLauncher,
-                ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Bomb, ItemKind::Buckler};
+                ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Blunderbuss, ItemKind::Crossbow};
             place_ground_item(game, *cell, relics[random_u32(game) % std::size(relics)]);
         }
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
@@ -127,7 +127,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         break;
     case RoomRole::Cache: {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
-            ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds};
+            ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
+            ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
         supply(game, room, ItemKind::Bandage, 2, budget.healing);
         break;
@@ -136,6 +137,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         supply(game, room, ItemKind::Medkit, 1, budget.healing);
         break;
     case RoomRole::Orchard: case RoomRole::Clearing:
+        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::ThrowingRock : ItemKind::Rake, 1, budget.equipment);
         supply(game, room, ItemKind::Bandage, 2, budget.healing);
         break;
     default:

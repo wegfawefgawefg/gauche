@@ -1,5 +1,6 @@
 #include "presentation.hpp"
 #include "../item_pattern.hpp"
+#include "../item_attribute.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -50,7 +51,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (pattern.effect == PatternEffect::None) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (pattern.ray) {
-        Cell cell = player.cell;
+        const Cell sideways{-player.facing.y, player.facing.x};
+        for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+        Cell cell = player.cell + Cell{sideways.x * lane, sideways.y * lane};
         for (int step = 1; step <= pattern.maximum; ++step) {
             cell = cell + player.facing;
             const Tile* tile = game.stage.at(cell);
@@ -68,10 +71,10 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             } else mark(renderer, cell, camera, zoom, pattern.effect);
             if (impact) break;
         }
+        }
     } else if (pattern.minimum == 0 && pattern.maximum == 0) {
         mark(renderer, player.cell, camera, zoom, pattern.effect);
-    } else if (held.kind == ItemKind::Fist || held.kind == ItemKind::Stick ||
-               held.kind == ItemKind::Pickaxe) {
+    } else if (item_is_melee(held.kind)) {
         const Cell sideways{-player.facing.y, player.facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
             for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
@@ -81,7 +84,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Tile* tile = game.stage.at(cell);
                 if (tile == nullptr) break;
                 mark(renderer, cell, camera, zoom, pattern.effect);
-                if (!walkable(*tile) || entity_at(game, cell, true) >= 0) break;
+                if (!walkable(*tile) || (!pattern.piercing && entity_at(game, cell, true) >= 0)) break;
             }
     } else {
         const Cell aim = pointer.left && pointer.inside ?

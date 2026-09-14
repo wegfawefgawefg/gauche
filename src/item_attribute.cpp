@@ -1,12 +1,15 @@
 #include "item_attribute.hpp"
+#include "items/catalog.hpp"
 
 bool item_is_gun(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->action == ItemAction::Gun;
     return kind == ItemKind::Pistol || kind == ItemKind::Musket ||
            kind == ItemKind::Bow || kind == ItemKind::RocketLauncher ||
            kind == ItemKind::Shotgun || kind == ItemKind::SMG;
 }
 
 bool item_is_melee(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->action == ItemAction::Melee;
     return kind == ItemKind::Fist || kind == ItemKind::Stick ||
            kind == ItemKind::Pickaxe;
 }
@@ -49,8 +52,11 @@ std::string item_display_name(const Item& item) {
 }
 
 bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
-    const bool weapon = item_is_gun(kind) || item_is_melee(kind);
-    const bool condition = kind == ItemKind::Stick || kind == ItemKind::Pickaxe;
+    const RegionalItem* spec = regional_item(kind);
+    const bool weapon = item_is_gun(kind) || item_is_melee(kind) ||
+        (spec != nullptr && spec->pattern.damage > 0);
+    const bool condition = kind == ItemKind::Stick || kind == ItemKind::Pickaxe ||
+        (spec != nullptr && spec->uses > 0);
     switch (attribute) {
     case ItemAttribute::None: return true;
     case ItemAttribute::Strong: case ItemAttribute::Agile:

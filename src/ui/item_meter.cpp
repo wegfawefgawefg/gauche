@@ -1,4 +1,5 @@
 #include "item_meter.hpp"
+#include "../items/catalog.hpp"
 #include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
 
@@ -40,6 +41,8 @@ std::string item_state_text(const Item& item, bool compact) {
 int item_meter_capacity(const Item& item) {
     if (item.max_durability > 0) return item.max_durability;
     if (item.max_uses > 0) return item.max_uses;
+    if (const RegionalItem* spec = regional_item(item.kind); spec != nullptr && spec->magazine > 0)
+        return spec->magazine;
     switch (item.kind) {
     case ItemKind::Pistol: return 12;
     case ItemKind::Shotgun: return 6;

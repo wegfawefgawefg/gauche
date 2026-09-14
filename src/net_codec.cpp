@@ -107,7 +107,7 @@ void write_item(PacketWriter& writer, const Item& item) {
 Item read_item(PacketReader& reader) {
     Item item;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(ItemKind::CookedMeat)) reader.okay = false;
+    if (kind >= static_cast<std::uint8_t>(ItemKind::Count)) reader.okay = false;
     item.kind = static_cast<ItemKind>(kind);
     item.attribute = static_cast<ItemAttribute>(reader.u8());
     item.count = reader.i32(); item.max_count = reader.i32();
@@ -345,7 +345,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             reward.artifact = static_cast<ArtifactKind>(reader.u8());
             reward.amount = reader.i32();
             reward.attribute = static_cast<ItemAttribute>(reader.u8());
-            if (reward.kind > RewardKind::Speed || reward.item > ItemKind::CookedMeat ||
+            if (reward.kind > RewardKind::Speed || reward.item >= ItemKind::Count ||
                 reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0 ||
                 reward.attribute > ItemAttribute::Restorative)
                 reader.okay = false;
@@ -357,7 +357,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
                 reward.artifact = static_cast<ArtifactKind>(reader.u8());
                 reward.amount = reader.i32();
                 reward.attribute = static_cast<ItemAttribute>(reader.u8());
-                if (reward.kind > RewardKind::Speed || reward.item > ItemKind::CookedMeat ||
+                if (reward.kind > RewardKind::Speed || reward.item >= ItemKind::Count ||
                     reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0 ||
                     reward.attribute > ItemAttribute::Restorative)
                     reader.okay = false;
@@ -366,7 +366,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     }
     for (ItemKind& item : run.shop_stock) {
         item = static_cast<ItemKind>(reader.u8());
-        if (item > ItemKind::CookedMeat) reader.okay = false;
+        if (item >= ItemKind::Count) reader.okay = false;
     }
     for (Entity& entity : result.entities) entity = read_entity(reader);
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }

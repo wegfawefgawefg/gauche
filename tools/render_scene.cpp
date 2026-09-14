@@ -136,7 +136,13 @@ int main(int argc, char** argv) {
     player.inventory.slots[1].durability = 17;
     place_coins(game, player.cell + Cell{1, 1}, 12);
     game.run.coins[0] = 27;
-    if (mode == "inventory") {
+    if (mode == "items") {
+        player.inventory = {};
+        for (ItemKind kind : {ItemKind::HuntingSpear, ItemKind::Hatchet, ItemKind::Blunderbuss,
+                              ItemKind::ThrowingRock, ItemKind::WoodenMaul, ItemKind::FlintKnife})
+            insert_item(player.inventory, make_item(kind));
+    }
+    if (mode == "inventory" || mode == "items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
         interaction.slot_focus = 2;

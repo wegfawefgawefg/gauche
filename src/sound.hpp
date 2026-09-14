@@ -17,6 +17,7 @@ enum class SoundId : std::size_t {
     LeavesCrunch, TwigSnap, PlantCut, SporePuff, WoodCrack, PotBreak,
     ZombieTopple, EncounterBell, GateClose, GraveRise, EncounterClear, CoinPickup,
     BoarSnort, BoarHit, ShellKnock, ShellScrape, ToadCroak, ToadPuff, MothFlutter, MothDust, MimicWake, MimicBite, WolfHowl, WolfBite, BearRear, BearSlam, BatSqueak, BatBite,
+    RockThrow, RockImpact, AxeSwing, SpearThrust, CrossbowShot, BlunderShot, MaulSwing, RakeSweep, KnifeStab, WeaponReload, WeaponEmpty,
     Count,
 };
 
@@ -32,4 +33,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "leaves_crunch", "twig_snap", "plant_cut", "spore_puff", "wood_crack", "pot_break",
     "zombie_topple", "encounter_bell", "gate_close", "grave_rise", "encounter_clear", "coin_pickup",
     "boar_snort", "boar_hit", "shell_knock", "shell_scrape", "toad_croak", "toad_puff", "moth_flutter", "moth_dust", "mimic_wake", "mimic_bite", "wolf_howl", "wolf_bite", "bear_rear", "bear_slam", "bat_squeak", "bat_bite",
+    "rock_throw", "rock_impact", "axe_swing", "spear_thrust", "crossbow_shot", "blunder_shot", "maul_swing", "rake_sweep", "knife_stab", "weapon_reload", "weapon_empty",
 };

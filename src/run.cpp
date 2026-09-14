@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/catalog.hpp"
 #include "world/encounter.hpp"
 #include "item_attribute.hpp"
 
@@ -32,6 +33,14 @@ ItemAttribute rare_attribute(Game& game, ItemKind kind) {
 }
 
 Reward random_reward(Game& game, int category) {
+    if (category == 0 && game.run.floor <= 4 && random_u32(game) % 2 == 0) {
+        constexpr ItemKind finds[]{ItemKind::Hatchet, ItemKind::HuntingSpear,
+            ItemKind::Crossbow, ItemKind::Blunderbuss, ItemKind::WoodenMaul,
+            ItemKind::Rake, ItemKind::FlintKnife, ItemKind::ThrowingRock};
+        const ItemKind kind = finds[random_u32(game) % std::size(finds)];
+        return {RewardKind::Item, kind, ArtifactKind::None,
+                kind == ItemKind::ThrowingRock ? 3 : 1, rare_attribute(game, kind)};
+    }
     if (category == 0) {
         constexpr std::array<ItemKind, 11> items{
             ItemKind::Pistol, ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
@@ -57,6 +66,7 @@ Reward random_reward(Game& game, int category) {
 }
 
 int price(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->price;
     switch (kind) {
     case ItemKind::Bandage: return 12;
     case ItemKind::Buckler: return 35;
@@ -253,6 +263,13 @@ void advance_run(Game& game) {
                                    game.run.floor > 4 ? ItemKind::Mine : ItemKind::Buckler,
                                    game.run.floor > 8 ? ItemKind::RocketLauncher :
                                    (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
+            if (game.run.floor <= 4) {
+                constexpr ItemKind tools[]{ItemKind::Hatchet, ItemKind::WoodenMaul,
+                    ItemKind::HuntingSpear, ItemKind::FlintKnife};
+                game.run.shop_stock[1] = tools[random_u32(game) % std::size(tools)];
+                game.run.shop_stock[2] = random_u32(game) % 2 == 0 ?
+                    ItemKind::Crossbow : ItemKind::Blunderbuss;
+            }
             return;
         }
         ready_next_floor(game);

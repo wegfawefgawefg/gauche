@@ -68,6 +68,8 @@ enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
     Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
     Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
+    ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
+    Count,
 };
 
 enum class ItemAttribute : std::uint8_t {

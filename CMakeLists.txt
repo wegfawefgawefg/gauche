@@ -51,6 +51,7 @@ endif()
 
 set(GAUCHE_ENTITY_SOURCES
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
+    src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp
     src/entities/attacks.cpp src/entities/defense.cpp
     src/entities/boar.cpp src/entities/thorn_snail.cpp src/entities/lantern_moth.cpp
     src/entities/spore_toad.cpp src/entities/crate_mimic.cpp

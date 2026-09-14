@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/catalog.hpp"
 #include "item_attribute.hpp"
 
 #include <algorithm>
@@ -52,6 +53,14 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     case ItemKind::SMG: item.loaded = 30; item.spare = 120; break;
     default: break;
     }
+    if (const RegionalItem* spec = regional_item(kind)) {
+        item.max_count = spec->max_count;
+        item.consume_on_use = spec->consume;
+        item.max_uses = spec->uses;
+        item.loaded = spec->magazine;
+        item.spare = spec->spare;
+        item.dig_power = spec->dig_power;
+    }
     if (item.attribute == ItemAttribute::Durable) {
         item.max_durability *= 2;
         item.max_uses *= 2;
@@ -64,6 +73,7 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
 }
 
 Sprite item_sprite(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->sprite;
     switch (kind) {
     case ItemKind::Wall: return Sprite::Wall;
     case ItemKind::Medkit: return Sprite::Medkit;
@@ -96,6 +106,7 @@ Sprite item_sprite(const Item& item) {
 }
 
 const char* item_name(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->name;
     switch (kind) {
     case ItemKind::None: return "Empty";
     case ItemKind::Wall: return "Wall";
@@ -120,6 +131,7 @@ const char* item_name(ItemKind kind) {
     case ItemKind::Pickaxe: return "Pickaxe";
     case ItemKind::RawMeat: return "Raw Meat";
     case ItemKind::CookedMeat: return "Cooked Meat";
+    default: break;
     }
     return "Unknown";
 }

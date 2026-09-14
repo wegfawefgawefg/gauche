@@ -1,4 +1,5 @@
 #include "item_details.hpp"
+#include "../items/catalog.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "pattern_diagram.hpp"
@@ -48,6 +49,7 @@ void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
 } // namespace
 
 const char* item_description(ItemKind kind) {
+    if (const RegionalItem* spec = regional_item(kind)) return spec->description;
     switch (kind) {
     case ItemKind::Wall: return "Build a wall on nearby ground. It blocks paths and fire.";
     case ItemKind::Medkit: return "Restore up to 100 health. One use consumes one kit.";
@@ -72,6 +74,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::RawMeat: return "Eat for 4 health, or cook it at a campfire.";
     case ItemKind::CookedMeat: return "Eat for 18 health after cooking it at a fire.";
     case ItemKind::None: return "Empty slot.";
+    default: break;
     }
     return "";
 }

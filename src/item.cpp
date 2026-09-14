@@ -26,13 +26,6 @@ int magazine_size(ItemKind kind) {
     }
 }
 
-Cell cardinal_toward(Cell from, Cell to, Cell fallback) {
-    const Cell difference = to - from;
-    if (std::abs(difference.x) >= std::abs(difference.y) && difference.x != 0)
-        return {difference.x > 0 ? 1 : -1, 0};
-    if (difference.y != 0) return {0, difference.y > 0 ? 1 : -1};
-    return fallback;
-}
 
 void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
     emit_sound(game, SoundId::Explosion, center);
@@ -175,77 +168,6 @@ bool strike_melee(Game& game, int user_slot, Cell direction,
 
 void blast_area(Game& game, Cell center, int radius, int damage, Cell attacker) {
     blast(game, center, radius, damage, attacker);
-}
-
-namespace {
-
-void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
-    Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.health <= 0 || damage <= 0 || entity.kind == EntityKind::Encounter ||
-        entity.kind == EntityKind::EncounterGate || entity.kind == EntityKind::WaveVent) return;
-    remember_attacker(game, slot, attacker);
-    entity.health = std::max(0, entity.health - damage);
-    entity.use_flash = 6;
-    entity.sleep_ticks = 0;
-    if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
-    if (entity.health == 0 &&
-        (entity.kind == EntityKind::Chicken || entity.kind == EntityKind::Bunny) &&
-        random_u32(game) % 10 == 0) {
-        const Handle meat = spawn_entity(game, EntityKind::GroundItem,
-                                         nearby_ground_item_cell(game, entity.cell));
-        if (Entity* drop = get_entity(game, meat)) {
-            drop->ground_item = make_item(ItemKind::RawMeat);
-            drop->sprite = Sprite::RawMeat;
-        }
-    }
-    if (entity.health == 0 && entity.kind == EntityKind::Player) {
-        entity.impassable = false;
-        entity.sprite = Sprite::PlayerDead;
-        entity.spawn_wait = 180;
-    }
-    if (entity.health == 0 && entity.kind != EntityKind::Player &&
-        entity.kind != EntityKind::Chicken && entity.kind != EntityKind::Bunny &&
-        entity.kind != EntityKind::Train && entity.kind != EntityKind::Trap) {
-        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-            const Entity* player = get_entity(game, game.players[owner]);
-            if (player != nullptr && player->cell == attacker) {
-                game.run.coins[owner] += 5;
-                break;
-            }
-        }
-    }
-    if (entity.health == 0) topple_zombie_stack(game, slot);
-}
-
-} // namespace
-
-void crush_entity(Game& game, int slot, Cell attacker) {
-    apply_health_damage(game, slot, 1000000, attacker);
-}
-
-void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable) {
-    Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
-        entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
-        entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
-        entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire ||
-        entity.kind == EntityKind::Crusher ||
-        damage <= 0) return;
-    Item* held = entity.inventory.held();
-    if (blockable && entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
-        entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
-        held->durability -= std::max(1, damage);
-        emit_sound(game, SoundId::SturdyBlockBouncedOn, entity.cell);
-        if (held->durability <= 0) *held = {};
-        return;
-    }
-    apply_health_damage(game, slot, damage, attacker);
-    if (blockable && entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
-        random_u32(game) % 4 == 0) {
-        const int reflected = entity_at(game, attacker, true);
-        if (reflected >= 0 && reflected != slot)
-            apply_health_damage(game, reflected, std::max(1, damage / 2), entity.cell);
-    }
 }
 
 bool use_held_item(Game& game, int user_slot, Cell target) {

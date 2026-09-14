@@ -20,6 +20,9 @@ void init_fixture(Entity& entity) {
         entity.sprite = Sprite::EncounterGate;
         entity.fixture_open = true;
         break;
+    case EntityKind::Coins:
+        entity.sprite = Sprite::Coins;
+        break;
     case EntityKind::WaveVent:
         entity.sprite = Sprite::GraveVent;
         entity.light = {2, 120, {157, 117, 190}};

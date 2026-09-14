@@ -291,7 +291,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
          (pending ? "CHOOSE MISSED REWARD" : "CHOOSE ONE REWARD"));
     if (shop) {
         char coins[40];
-        std::snprintf(coins, sizeof(coins), "COINS %d",
+        std::snprintf(coins, sizeof(coins), "GOLD %d",
                       game.run.coins[static_cast<std::size_t>(owner)]);
         text(renderer, 518.0F, 26.0F, coins, 224, 183, 112);
     }

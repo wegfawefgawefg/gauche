@@ -21,7 +21,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Train: init_train(entity); break;
     case EntityKind::Key: case EntityKind::Door: case EntityKind::Exit:
     case EntityKind::Trap: case EntityKind::Switch: case EntityKind::Campfire:
-    case EntityKind::WaveVent: case EntityKind::EncounterGate:
+    case EntityKind::Coins: case EntityKind::WaveVent: case EntityKind::EncounterGate:
     case EntityKind::Crusher: init_fixture(entity); break;
     case EntityKind::GroundItem: case EntityKind::None: break;
     }

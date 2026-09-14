@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "../item_pattern.hpp"
 #include "../world/ground_items.hpp"
+#include "../world/loot.hpp"
 
 #include <cstdlib>
 
@@ -61,6 +62,7 @@ void step_player(Game& game, int slot, const Input& input) {
         move_entity(game, slot, player.cell + movement);
     }
     player.facing = facing_from_aim(input.aim, player.facing);
+    collect_coins(game, player);
 
     // INTERACTIONS: The player owns pickup, fixture use, and the held item.
     if (input.pickup) pickup_item(game, player);

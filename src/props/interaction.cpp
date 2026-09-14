@@ -1,5 +1,6 @@
 #include "interaction.hpp"
 #include "../world/ground_items.hpp"
+#include "../world/loot.hpp"
 
 #include <algorithm>
 
@@ -15,8 +16,12 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         if (roll < 35) item = ItemKind::Ammo;
         else if (roll < 60) item = ItemKind::Bandage;
         else if (roll < 70) item = ItemKind::SleepMeds;
+        else if (roll < 90) place_coins(game, cell, 4 + static_cast<int>(random_u32(game) % 7));
         break;
-    case PropKind::ClayPot: if (roll < 15) item = ItemKind::Bandaid; break;
+    case PropKind::ClayPot:
+        if (roll < 15) item = ItemKind::Bandaid;
+        else if (roll < 45) place_coins(game, cell, 2 + static_cast<int>(random_u32(game) % 5));
+        break;
     default: break;
     }
     if (item == ItemKind::None) return;

@@ -340,6 +340,19 @@ variety belongs to every biome too.
   system remains; artifacts may become central or be cut if the game plays
   better without them.
 
+Currency implementation: collectible gold piles now appear in room stashes,
+crates, pots, and zombie pockets. Animals use explicit meat drop chances; the
+old automatic five-coins-per-kill rule is removed. Walking over gold collects it
+for that player, with a new coin sound and a compact HUD total. Floor stashes
+budget roughly 18–36 gold before incidental finds. Existing occasional shops
+remain; later biome stock and balance still await the catalog/playtesting pass.
+Strict build and a static HUD/pickup capture checked. Damage and enemy loot now
+live in their own domains instead of the item-use file.
+
+Palette note: no palette, GPL/PAL, ASE or Aseprite source file was found in the
+current `gauche-rs` checkout, including ignored files. Existing PNG colors remain
+the available art reference; new source scripts keep a small explicit palette.
+
 ## Suggested order
 
 1. Tile rules and deterministic tests, then tile impact visuals.

@@ -1,5 +1,6 @@
 #include "encounter.hpp"
 #include "ground_items.hpp"
+#include "loot.hpp"
 #include "../props/interaction.hpp"
 
 namespace {
@@ -79,6 +80,8 @@ void populate_haunted_house(Game& game) {
         if (distance(cell, game.run.spawn) > 5 && entity_at(game, cell, false) < 0)
             place_prop(game.stage, cell, i % 4 == 0 ? PropKind::RottenLog : PropKind::Leaves);
     }
+    place_coins(game, {22, 17}, 14);
+    place_coins(game, {52, 17}, 14);
     place_ground_item(game, {23, 45}, ItemKind::Shotgun);
     place_ground_item(game, {52, 45}, ItemKind::Buckler);
     place_ground_item(game, {35, 33}, ItemKind::Ammo);

@@ -138,12 +138,14 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
             entity.kind == EntityKind::WaveVent ? 0 :
-            entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ? 1 : 2;
+            entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
+            entity.kind == EntityKind::Coins ? 1 : 2;
         if (entity_layer != layer) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
-        if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key) {
+        if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
+            entity.kind == EntityKind::Coins) {
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
             rect.w = rect.h = pixels * 0.5F;
         }

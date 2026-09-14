@@ -165,7 +165,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::WaveVent)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::Coins)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;
@@ -219,7 +219,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(13);
+    writer.u32(14);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -278,7 +278,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 13) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 14) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

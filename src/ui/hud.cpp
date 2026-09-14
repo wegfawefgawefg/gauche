@@ -93,6 +93,11 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     std::snprintf(health, sizeof(health), "HP %d / %d", player.health, player.max_health);
     ui_text(renderer, 20.0F, height - 25.0F, health);
 
+    if (player.owner >= 0 && player.owner < 4) {
+        char money[32];
+        std::snprintf(money, sizeof(money), "GOLD %d", game.run.coins[static_cast<std::size_t>(player.owner)]);
+        small_ui_text(renderer, 20, height - 43, money, 218, 179, 97);
+    }
     const Item& held = *player.inventory.held();
     if (quiet) return;
     if (held.kind != ItemKind::None) {

@@ -33,6 +33,7 @@ struct ImpactEvent {
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
 constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
+Cell cardinal_toward(Cell from, Cell to, Cell fallback);
 
 enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
@@ -120,7 +121,7 @@ bool insert_item(Inventory& inventory, Item item);
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
-    Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent,
+    Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
 };
 struct Handle {
     int slot = -1;

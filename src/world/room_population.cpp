@@ -1,5 +1,6 @@
 #include "route.hpp"
 #include "ground_items.hpp"
+#include "loot.hpp"
 #include "../entities/dispatch.hpp"
 
 #include <algorithm>
@@ -8,7 +9,7 @@
 
 namespace {
 
-struct Supplies { int threat, healing, ammunition, equipment; };
+struct Supplies { int threat, healing, ammunition, equipment, stashes; };
 
 std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
     const int width = room.half_width * 2 + 1;
@@ -92,7 +93,17 @@ void supply(Game& game, const RoomPlan& room, ItemKind kind, int count, int& rem
     }
 }
 
+void stash(Game& game, const RoomPlan& room, Supplies& budget) {
+    if (budget.stashes <= 0) return;
+    if (const auto cell = room_space(game, room)) {
+        place_coins(game, *cell, 6 + static_cast<int>(random_u32(game) % 7));
+        --budget.stashes;
+    }
+}
+
 void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
+    if (room.role == RoomRole::Cache || room.role == RoomRole::Shrine ||
+        room.role == RoomRole::Workshop || room.role == RoomRole::Secret) stash(game, room, budget);
     switch (room.role) {
     case RoomRole::Secret:
         if (const auto cell = room_space(game, room))
@@ -142,7 +153,7 @@ void room_light(Game& game, const RoomPlan& room) {
 
 void populate_rooms(Game& game, const FloorPlan& plan) {
     const int round = (game.run.floor - 1) % 4;
-    Supplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3};
+    Supplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     game.run.roof_lights = {};
     game.run.roof_light_count = 0;
     // LANDMARKS: Reserve objectives before any scatter or encounter placement.
@@ -166,4 +177,9 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     }
     if (budget.equipment > 0) supply(game, shrine, ItemKind::Bow, 1, budget.equipment);
     if (budget.ammunition > 0) supply(game, shrine, ItemKind::Ammo, 1, budget.ammunition);
+    while (budget.stashes > 0) {
+        const int before = budget.stashes;
+        stash(game, shrine, budget);
+        if (before == budget.stashes) break;
+    }
 }

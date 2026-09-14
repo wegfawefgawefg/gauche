@@ -5,6 +5,15 @@
 
 int distance(Cell a, Cell b) { return std::abs(a.x - b.x) + std::abs(a.y - b.y); }
 
+Cell cardinal_toward(Cell from, Cell to, Cell fallback) {
+    const Cell difference = to - from;
+    if (std::abs(difference.x) >= std::abs(difference.y) && difference.x != 0)
+        return {difference.x > 0 ? 1 : -1, 0};
+    if (difference.y != 0) return {0, difference.y > 0 ? 1 : -1};
+    return fallback;
+}
+
+
 bool Stage::in_bounds(Cell cell) const {
     return cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;
 }

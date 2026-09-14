@@ -28,7 +28,7 @@ enum class Sprite : std::size_t {
     DebrisOakLeaf, DebrisBirchLeaf, DebrisPineNeedle, DebrisTwig, DebrisBark, DebrisWoodChip, DebrisRoot,
     DebrisFernLeaf, DebrisGrassBlade, DebrisMushroomCap, DebrisMushroomStem, DebrisSpore, DebrisAcorn, DebrisSeedHusk,
     DebrisFeather, DebrisBoneChip, DebrisPottery, DebrisCloth, DebrisBrassCase, DebrisStoneChip,
-    EncounterGate, GraveVent,
+    EncounterGate, GraveVent, Coins,
     Count,
 };
 

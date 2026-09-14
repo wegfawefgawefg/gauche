@@ -26,7 +26,7 @@ bool in_range(Cell origin, Cell cell, ItemRange range) {
     return steps >= range.minimum && steps <= range.maximum;
 }
 
-void border(SDL_Renderer* renderer, Cell cell, Cell camera, float zoom,
+void border(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
             Cell origin, ItemRange range) {
     const SDL_FRect rect = tile_rect(cell, camera, zoom);
     if (!in_range(origin, cell + Cell{0, -1}, range))
@@ -42,7 +42,7 @@ void border(SDL_Renderer* renderer, Cell cell, Cell camera, float zoom,
 } // namespace
 
 void draw_item_range_base(SDL_Renderer* renderer, const Entity& player,
-                          Cell camera, float zoom) {
+                          ViewCamera camera, float zoom) {
     const ItemRange range = item_range(player.inventory.held()->kind);
     if (range.maximum == 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -58,7 +58,7 @@ void draw_item_range_base(SDL_Renderer* renderer, const Entity& player,
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
-void draw_item_range_top(SDL_Renderer* renderer, const Entity& player, Cell camera,
+void draw_item_range_top(SDL_Renderer* renderer, const Entity& player, ViewCamera camera,
                          float zoom, const PointerState& pointer,
                          const GameGraphics& graphics) {
     const Item& held = *player.inventory.held();

@@ -38,7 +38,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
 }
 
 void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
-                const Game& game, Cell camera, float zoom, const Cosmetics* cosmetics) {
+                const Game& game, ViewCamera camera, float zoom, const Cosmetics* cosmetics) {
     const float pixels = tile_pixels(zoom);
     const SDL_FRect area = tile_rect({0, 0}, camera, zoom);
     SDL_FRect bounds{area.x, area.y, static_cast<float>(game.stage.width) * pixels,
@@ -47,10 +47,10 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_RenderFillRect(renderer, &bounds);
     const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
     const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
-    for (int y = std::max(0, camera.y - rows);
-         y <= std::min(game.stage.height - 1, camera.y + rows); ++y) {
-        for (int x = std::max(0, camera.x - columns);
-             x <= std::min(game.stage.width - 1, camera.x + columns); ++x) {
+    for (int y = std::max(0, static_cast<int>(camera.y) - rows);
+         y <= std::min(game.stage.height - 1, static_cast<int>(camera.y) + rows); ++y) {
+        for (int x = std::max(0, static_cast<int>(camera.x) - columns);
+             x <= std::min(game.stage.width - 1, static_cast<int>(camera.x) + columns); ++x) {
             const Cell cell{x, y};
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr ||
@@ -90,7 +90,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
 }
 
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
-                   const Game& game, Cell camera, Cell focus, float zoom,
+                   const Game& game, ViewCamera camera, Cell focus, float zoom,
                    const Cosmetics* cosmetics) {
     const float pixels = tile_pixels(zoom);
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
@@ -189,7 +189,7 @@ float light_from(const Stage& stage, Cell source, Cell cell, float radius) {
     return 1.0F - distance_to_light / radius;
 }
 
-void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera,
+void draw_lighting(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
                    int local_owner, float zoom) {
     if (game.run.phase == RunPhase::Arena) return;
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
@@ -204,10 +204,10 @@ void draw_lighting(SDL_Renderer* renderer, const Game& game, Cell camera,
     const float pixels = tile_pixels(zoom);
     const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
     const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
-    for (int y = std::max(0, camera.y - rows);
-         y <= std::min(game.stage.height - 1, camera.y + rows); ++y) {
-        for (int x = std::max(0, camera.x - columns);
-             x <= std::min(game.stage.width - 1, camera.x + columns); ++x) {
+    for (int y = std::max(0, static_cast<int>(camera.y) - rows);
+         y <= std::min(game.stage.height - 1, static_cast<int>(camera.y) + rows); ++y) {
+        for (int x = std::max(0, static_cast<int>(camera.x) - columns);
+             x <= std::min(game.stage.width - 1, static_cast<int>(camera.x) + columns); ++x) {
             const Cell cell{x, y};
             if (!game.stage.in_bounds(cell)) continue;
             float light = 0.34F;
@@ -238,12 +238,15 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                  const Game& game, int local_owner, bool can_restart, float zoom,
                  const Cosmetics* cosmetics, const PointerState& pointer) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
-    const Cell camera = player == nullptr ? Cell{32, 32} : player->cell;
+    const ViewCamera camera = cosmetics != nullptr ?
+        camera_for(*cosmetics, game, local_owner) :
+        ViewCamera{player == nullptr ? Cell{32, 32} : player->cell};
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground, camera, zoom);
     if (player != nullptr) draw_item_range_base(renderer, *player, camera, zoom);
-    draw_entities(renderer, graphics, game, camera, camera, zoom, cosmetics);
+    draw_entities(renderer, graphics, game, camera,
+                  player == nullptr ? Cell{32, 32} : player->cell, zoom, cosmetics);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground, camera, zoom);
     draw_lighting(renderer, game, camera, local_owner, zoom);
@@ -285,9 +288,10 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
 
 void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
                            const Game& scene) {
-    const Cell camera = scene.run.spawn + Cell{2, 0};
+    const ViewCamera camera = scene.run.spawn + Cell{2, 0};
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr);
-    draw_entities(renderer, graphics, scene, camera, camera, 2.0F, nullptr);
+    draw_entities(renderer, graphics, scene, camera,
+                  scene.run.spawn + Cell{2, 0}, 2.0F, nullptr);
     draw_lighting(renderer, scene, camera, 0, 2.0F);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);

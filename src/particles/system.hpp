@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.hpp"
+#include "../view.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -89,10 +90,13 @@ struct Cosmetics {
     std::uint64_t last_tick = 0;
     int last_floor = -1;
     RunPhase last_phase = RunPhase::Arena;
+    ViewCamera camera{};
+    bool camera_ready = false;
 };
 
 void step_particles(Cosmetics& cosmetics);
 void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus,
                       float zoom = 2.0F);
+ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner);
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
-                    const Cosmetics& cosmetics, ParticleLayer layer, Cell camera, float zoom);
+                    const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera, float zoom);

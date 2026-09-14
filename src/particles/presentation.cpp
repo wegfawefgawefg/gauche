@@ -2,6 +2,7 @@
 #include "templates.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 namespace {
 
@@ -128,6 +129,16 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
     cosmetics.last_tick = game.tick;
     cosmetics.last_floor = game.run.floor;
     cosmetics.last_phase = game.run.phase;
+    if (!cosmetics.camera_ready ||
+        std::abs(cosmetics.camera.x - static_cast<float>(focus.x)) > 12.0F ||
+        std::abs(cosmetics.camera.y - static_cast<float>(focus.y)) > 12.0F) {
+        cosmetics.camera = focus;
+        cosmetics.camera_ready = true;
+    } else {
+        constexpr float follow = 0.18F;
+        cosmetics.camera.x += (static_cast<float>(focus.x) - cosmetics.camera.x) * follow;
+        cosmetics.camera.y += (static_cast<float>(focus.y) - cosmetics.camera.y) * follow;
+    }
     step_particles(cosmetics);
     for (int slot = 0; slot < max_entities; ++slot)
         observe_entity(cosmetics, game, slot);
@@ -141,4 +152,12 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         }
     if (game.run.phase == RunPhase::Arena || game.run.floor <= 4)
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
+}
+
+ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner) {
+    if (cosmetics.camera_ready) return cosmetics.camera;
+    if (owner >= 0 && owner < 4)
+        if (const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]))
+            return player->cell;
+    return {32.0F, 32.0F};
 }

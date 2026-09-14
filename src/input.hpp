@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game.hpp"
+#include "view.hpp"
 #include <gubsy/runtime.hpp>
 
 void register_game_bindings(GubsyRuntime& runtime);
@@ -16,7 +17,7 @@ struct InputReaderState {
     bool next_slot_down = false;
 };
 PointerState read_pointer(const GubsyFrame& frame, const Game& game,
-                          int owner, float zoom);
+                          int owner, float zoom, ViewCamera camera);
 Input read_local_input(GubsyRuntime& runtime, const Game& game,
-                       const GubsyFrame& frame, int owner, float zoom,
+                       const GubsyFrame& frame, int owner, float zoom, ViewCamera camera,
                        InputReaderState& reader);

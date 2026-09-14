@@ -169,7 +169,7 @@ void register_game_bindings(GubsyRuntime& runtime) {
 }
 
 Input read_local_input(GubsyRuntime& runtime, const Game& game,
-                       const GubsyFrame& frame, int owner, float zoom,
+                       const GubsyFrame& frame, int owner, float zoom, ViewCamera camera,
                        InputReaderState& reader) {
     Input input;
     const InputSettingsProfile* tuning = gubsy_lobby_input_settings_profile(
@@ -219,7 +219,7 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
     reader.previous_slot_down = previous;
     reader.next_slot_down = next;
 
-    const PointerState pointer = read_pointer(frame, game, owner, zoom);
+    const PointerState pointer = read_pointer(frame, game, owner, zoom, camera);
     if (pointer.inside && pointer.left) {
         const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
         input.aim = pointer.cell - player->cell;
@@ -229,7 +229,7 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
 }
 
 PointerState read_pointer(const GubsyFrame& frame, const Game& game,
-                          int owner, float zoom) {
+                          int owner, float zoom, ViewCamera camera) {
     PointerState pointer;
     if (frame.window == nullptr || owner < 0 || owner >= 4) return pointer;
     float mouse_x = 0.0F;
@@ -258,9 +258,9 @@ PointerState read_pointer(const GubsyFrame& frame, const Game& game,
         render_y >= static_cast<float>(frame.render_height)) return pointer;
     pointer.x = render_x * view_width / static_cast<float>(frame.render_width);
     pointer.y = render_y * view_height / static_cast<float>(frame.render_height);
-    pointer.cell.x = player->cell.x + static_cast<int>(std::floor(
+    pointer.cell.x = static_cast<int>(std::floor(camera.x +
         (pointer.x - view_center_x) / tile_pixels(zoom)));
-    pointer.cell.y = player->cell.y + static_cast<int>(std::floor(
+    pointer.cell.y = static_cast<int>(std::floor(camera.y +
         (pointer.y - view_center_y) / tile_pixels(zoom)));
     pointer.inside = true;
     return pointer;

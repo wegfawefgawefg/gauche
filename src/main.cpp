@@ -376,6 +376,7 @@ int main(int argc, char** argv) {
                 if (!smoke && menu.playing && !menu.visible)
                     inputs[static_cast<std::size_t>(owner)] =
                     read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
+                                     camera_for(cosmetics, active, owner),
                                      input_reader);
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);
@@ -413,7 +414,9 @@ int main(int argc, char** argv) {
         if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
                         network.role != NetRole::Client, zoom, &cosmetics,
-                        read_pointer(frame, active, networked ? network.local_owner : 0, zoom));
+                        read_pointer(frame, active, networked ? network.local_owner : 0,
+                                     zoom, camera_for(cosmetics, active,
+                                                      networked ? network.local_owner : 0)));
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
         } else if (menu.visible) {

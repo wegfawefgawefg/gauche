@@ -8,16 +8,16 @@ namespace {
 
 constexpr float pi = 3.14159265358979323846F;
 
-float screen_x(float x, Cell camera, float pixels, float parallax) {
-    return view_center_x + (x - static_cast<float>(camera.x)) * parallax * pixels;
+float screen_x(float x, ViewCamera camera, float pixels, float parallax) {
+    return view_center_x + (x - camera.x) * parallax * pixels;
 }
 
-float screen_y(float y, Cell camera, float pixels, float parallax) {
-    return view_center_y + (y - static_cast<float>(camera.y)) * parallax * pixels;
+float screen_y(float y, ViewCamera camera, float pixels, float parallax) {
+    return view_center_y + (y - camera.y) * parallax * pixels;
 }
 
 void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
-                 const SpriteParticle& particle, Cell camera, float pixels) {
+                 const SpriteParticle& particle, ViewCamera camera, float pixels) {
     const float age = static_cast<float>(particle.span - particle.life);
     const float progress = particle.span > 0 ? age / static_cast<float>(particle.span) : 0.0F;
     const float curve = particle.motion == ParticleMotion::Arc ?
@@ -46,7 +46,7 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
 }
 
 void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
-                 Cell camera, float pixels) {
+                 ViewCamera camera, float pixels) {
     if (ribbon.count < 2) return;
     const auto alpha = static_cast<std::uint8_t>(
         220 * ribbon.life / std::max(1, ribbon.span));
@@ -63,7 +63,7 @@ void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
 }
 
 void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
-               Cell camera, float pixels) {
+               ViewCamera camera, float pixels) {
     const auto alpha = static_cast<std::uint8_t>(
         205 * ring.life / std::max(1, ring.span));
     SDL_SetRenderDrawColor(renderer, ring.red, ring.green, ring.blue, alpha);
@@ -83,7 +83,8 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
 } // namespace
 
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
-                    const Cosmetics& cosmetics, ParticleLayer layer, Cell camera, float zoom) {
+                    const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
+                    float zoom) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (const SpriteParticle& particle : cosmetics.sprites)

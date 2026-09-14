@@ -47,6 +47,8 @@ int main() {
     if (!check(has_sprite(cosmetics, Sprite::PlayerFootprint, ParticleLayer::Ground) &&
                has_sprite(cosmetics, Sprite::ZombieFootprint, ParticleLayer::Ground),
                "movement did not leave both footprint types") ||
+        !check(cosmetics.camera.x > 2.0F && cosmetics.camera.x < 3.0F,
+               "camera snapped to the next tile") ||
         !check(game_hash(game) == before_prints, "footprints changed gameplay state"))
         return 1;
 

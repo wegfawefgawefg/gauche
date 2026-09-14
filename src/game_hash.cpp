@@ -111,7 +111,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.x));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.y));
         mix(hash, static_cast<std::uint64_t>(entity.spawn_wait));
-        for (Handle handle : {entity.entity_a, entity.entity_b}) {
+        for (Handle handle : {entity.entity_a, entity.entity_b, entity.encounter}) {
             mix(hash, static_cast<std::uint64_t>(handle.slot));
             mix(hash, handle.generation);
         }

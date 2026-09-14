@@ -8,6 +8,7 @@
 #include "ui/scale.hpp"
 #include "view.hpp"
 #include "world/wall_render.hpp"
+#include "world/encounter.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -132,10 +133,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
-            (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
+            ((entity.kind == EntityKind::Door || entity.kind == EntityKind::EncounterGate) && entity.fixture_open)) continue;
         const int entity_layer = entity.kind == EntityKind::Campfire ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
-            entity.kind == EntityKind::Switch ? 0 :
+            entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
+            entity.kind == EntityKind::WaveVent ? 0 :
             entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ? 1 : 2;
         if (entity_layer != layer) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
@@ -280,6 +282,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     draw_run_status(renderer, game, zoom);
+    if (player != nullptr) draw_encounter_status(renderer, game, *player);
     draw_pointer(renderer, graphics, pointer);
 }
 

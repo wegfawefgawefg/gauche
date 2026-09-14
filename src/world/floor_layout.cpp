@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "encounter.hpp"
 #include "../props/interaction.hpp"
 
 #include <array>
@@ -27,12 +28,16 @@ void generate_world_floor(Game& game) {
     game.run.phase = RunPhase::Playing;
 
     // ROUTE: Geometry and role pools share one seeded plan; no content can block its dry paths.
-    FloorPlan plan = plan_floor(game);
-    carve_floor(game, plan);
-    game.run.spawn = plan.rooms[0].center;
-    game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
-    game.run.has_key = false;
-    game.run.objective = (game.run.floor - 1) % 2 == 0 ? ObjectiveKind::Key : ObjectiveKind::Switch;
+    const bool haunted = make_haunted_floor(game);
+    FloorPlan plan;
+    if (!haunted) {
+        plan = plan_floor(game);
+        carve_floor(game, plan);
+        game.run.spawn = plan.rooms[0].center;
+        game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
+        game.run.has_key = false;
+        game.run.objective = (game.run.floor - 1) % 2 == 0 ? ObjectiveKind::Key : ObjectiveKind::Switch;
+    }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
     for (std::size_t owner = 0; owner < 4; ++owner) {
@@ -61,7 +66,7 @@ void generate_world_floor(Game& game) {
         }
     }
 
-    populate_rooms(game, plan);
-    scatter_room_props(game, plan);
+    if (haunted) populate_haunted_house(game);
+    else { populate_rooms(game, plan); scatter_room_props(game, plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

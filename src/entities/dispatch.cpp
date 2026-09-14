@@ -1,8 +1,10 @@
 #include "dispatch.hpp"
+#include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::Encounter: init_encounter(entity); break;
     case EntityKind::Player: init_player(entity); break;
     case EntityKind::ZombieStack: init_zombie_stack(game, entity); break;
     case EntityKind::Zombie: init_zombie(game, entity); break;
@@ -19,6 +21,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Train: init_train(entity); break;
     case EntityKind::Key: case EntityKind::Door: case EntityKind::Exit:
     case EntityKind::Trap: case EntityKind::Switch: case EntityKind::Campfire:
+    case EntityKind::WaveVent: case EntityKind::EncounterGate:
     case EntityKind::Crusher: init_fixture(entity); break;
     case EntityKind::GroundItem: case EntityKind::None: break;
     }
@@ -26,6 +29,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::Encounter: step_encounter(game, slot); break;
     case EntityKind::ZombieStack: step_zombie_stack(game, slot); break;
     case EntityKind::Zombie: step_zombie(game, slot); break;
     case EntityKind::Chicken: step_chicken(game, slot); break;

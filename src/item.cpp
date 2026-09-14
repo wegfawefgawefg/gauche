@@ -181,7 +181,8 @@ namespace {
 
 void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.health <= 0 || damage <= 0) return;
+    if (entity.health <= 0 || damage <= 0 || entity.kind == EntityKind::Encounter ||
+        entity.kind == EntityKind::EncounterGate || entity.kind == EntityKind::WaveVent) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;

@@ -66,6 +66,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/spawner.cpp
     src/entities/train.cpp
     src/entities/fixtures.cpp
+    src/entities/navigation.cpp
     src/entities/behavior.cpp
     src/entities/timers.cpp
     src/entities/contact.cpp
@@ -73,7 +74,8 @@ set(GAUCHE_ENTITY_SOURCES
 
 set(GAUCHE_WORLD_SOURCES src/world/floor_layout.cpp src/world/floor_reachability.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp
-    src/world/room_population.cpp)
+    src/world/room_population.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
+    src/world/haunted_house.cpp)
 
 set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)
 
@@ -82,7 +84,7 @@ set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp
-    src/render.cpp src/world/wall_render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
+    src/render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp

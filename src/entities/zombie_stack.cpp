@@ -36,6 +36,10 @@ void release_survivor(Game& game, Entity& stack) {
         const Handle handle = spawn_entity(game, EntityKind::Zombie, cell);
         Entity* survivor = get_entity(game, handle);
         if (survivor == nullptr) return; // Full actor pool: keep the survivor in the stack.
+        survivor->encounter = stack.encounter;
+        survivor->burn_ticks = stack.burn_ticks;
+        survivor->scorch_ticks = stack.scorch_ticks;
+        survivor->freeze_ticks = stack.freeze_ticks;
         survivor->point_a = stack.cell;
         survivor->label_b = 1;
         survivor->timer_b = survivor->stun_ticks = 24;
@@ -50,8 +54,12 @@ void release_survivor(Game& game, Entity& stack) {
 void step_zombie_stack(Game& game, int slot) {
     Entity& stack = game.entities[static_cast<std::size_t>(slot)];
     if (stack.label_a == 0) {
-        const int target = nearest_player(game, stack.cell, 8);
-        if (target >= 0) approach(game, slot, game.entities[static_cast<std::size_t>(target)].cell);
+        const int target = nearest_player(game, stack.cell, stack.encounter.slot >= 0 ? 60 : 8);
+        if (target >= 0) {
+            const Cell destination = game.entities[static_cast<std::size_t>(target)].cell;
+            if (stack.encounter.slot >= 0) pursue(game, slot, destination);
+            else approach(game, slot, destination);
+        }
         else wander(game, slot);
         bite(game, slot, 8);
         maybe_growl(game, slot, SoundId::ZombieGrowl2);

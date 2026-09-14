@@ -15,7 +15,8 @@ bool floor_reachable(const Game& game) {
     Cell key{-1, -1};
     Cell door{-1, -1};
     for (const Entity& entity : game.entities) {
-        if (entity.kind == EntityKind::Key || entity.kind == EntityKind::Switch)
+        if (entity.kind == EntityKind::Key || entity.kind == EntityKind::Switch ||
+            entity.kind == EntityKind::Encounter)
             key = entity.cell;
         if (entity.kind == EntityKind::Door) door = entity.cell;
     }

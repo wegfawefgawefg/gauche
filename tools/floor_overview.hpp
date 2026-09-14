@@ -6,19 +6,26 @@
 #include <algorithm>
 #include <cstdio>
 
-inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed) {
+inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, const Game* supplied = nullptr) {
     Game game;
     game.rng = seed == 0 ? 1 : seed;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    FloorPlan plan = plan_floor(game);
-    carve_floor(game, plan);
-    game.run.spawn = plan.rooms[0].center;
-    game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
-    const Handle player = spawn_entity(game, EntityKind::Player, game.run.spawn);
-    game.players[0] = player;
-    populate_rooms(game, plan);
-    scatter_room_props(game, plan);
+    FloorPlan plan;
+    if (supplied != nullptr) {
+        game = *supplied;
+        plan.width = game.stage.width;
+        plan.height = game.stage.height;
+    } else {
+        plan = plan_floor(game);
+        carve_floor(game, plan);
+        game.run.spawn = plan.rooms[0].center;
+        game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
+        const Handle player = spawn_entity(game, EntityKind::Player, game.run.spawn);
+        game.players[0] = player;
+        populate_rooms(game, plan);
+        scatter_room_props(game, plan);
+    }
     const float scale = std::min(580.0F / static_cast<float>(plan.width),
                                  310.0F / static_cast<float>(plan.height));
     const float left = (640 - static_cast<float>(plan.width) * scale) * .5F;
@@ -56,6 +63,8 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed) {
     char header[160];
     std::snprintf(header, sizeof(header), "SEED %llu   %zu ROOMS   %zu LINKS   %dx%d   ROUTE %s",
         static_cast<unsigned long long>(seed), plan.rooms.size(), plan.edges.size(),
+        plan.width, plan.height, floor_reachable(game) ? "VALID" : "BLOCKED");
+    if (supplied != nullptr) std::snprintf(header, sizeof(header), "HAUNTED HOUSE   %dx%d   LEVER ROUTE %s",
         plan.width, plan.height, floor_reachable(game) ? "VALID" : "BLOCKED");
     small_ui_text(renderer, 15, 8, header);
     small_ui_text(renderer, 15, 346, "BLUE SPAWN    GOLD KEY    GREEN EXIT    RED ACTORS / DOOR");

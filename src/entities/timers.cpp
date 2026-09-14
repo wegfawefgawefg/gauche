@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../world/encounter.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -7,6 +8,7 @@
 namespace {
 
 std::optional<Cell> free_entrance_cell(const Game& game) {
+    if (const auto inside = encounter_join_cell(game)) return inside;
     for (int radius = 0; radius <= 8; ++radius) {
         for (int dy = -radius; dy <= radius; ++dy) {
             const int dx = radius - std::abs(dy);

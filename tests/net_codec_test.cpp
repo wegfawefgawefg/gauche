@@ -7,6 +7,7 @@ int main() {
     start_run(original, 22991);
     for (int tick = 0; tick < 120; ++tick) step_game(original, {});
     if (Entity* player = get_entity(original, original.players[0])) {
+        player->encounter = {401, 17};
         player->entity_a = original.players[0];
         player->entity_b = {400, 91}; // A stale reference is valid saved behavior state.
         player->point_a = {13, 27}; player->point_b = {19, 8};

@@ -75,7 +75,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
                 entity.kind == EntityKind::Train ? 2.2F : 1.1F,
                 entity.kind == EntityKind::Train ? .18F : .035F, entity.cell - pose.cell);
         ++pose.steps;
-        if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie)
+        if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+            entity.kind == EntityKind::ZombieStack)
             spawn_footprint(cosmetics, entity.cell, entity.kind,
                             (pose.steps & 1U) != 0, seed);
         pose.angle = static_cast<float>(visual_bits(seed) % 31U) - 15.0F;
@@ -126,6 +127,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::GraveRise:
+        spawn_debris(cosmetics, sound.cell, seed);
+        break;
     case SoundId::ZombieTopple:
         spawn_death(cosmetics, sound.cell, EntityKind::Zombie, 85.0F, seed);
         push_debris(cosmetics.debris, sound.cell, 1.6F, .07F);

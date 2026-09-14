@@ -10,3 +10,5 @@ void maybe_growl(Game& game, int slot, SoundId sound);
 
 void remember_attacker(Game& game, int slot, Cell from);
 void flee(Game& game, int slot, Cell threat);
+
+void pursue(Game& game, int slot, Cell target);

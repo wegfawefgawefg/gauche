@@ -120,7 +120,7 @@ bool insert_item(Inventory& inventory, Item item);
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
-    Switch, Campfire, Den, Crusher, Dog, ZombieStack,
+    Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent,
 };
 struct Handle {
     int slot = -1;
@@ -135,6 +135,7 @@ struct Entity {
     Cell facing{0, 1};
     // BEHAVIOR: Each kind names its slots beside its own init/step code.
     Handle entity_a{}, entity_b{};
+    Handle encounter{}; // Room ownership must not overwrite an enemy's behavior references.
     Cell point_a{}, point_b{};
     int counter_a = 0, counter_b = 0;
     int label_a = 0, label_b = 0;

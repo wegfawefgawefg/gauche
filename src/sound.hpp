@@ -15,7 +15,7 @@ enum class SoundId : std::size_t {
     DistantTrainSound, RailPlace, TrainPassing, Drop,
     FirePanic, FireTrample, FireOut,
     LeavesCrunch, TwigSnap, PlantCut, SporePuff, WoodCrack, PotBreak,
-    ZombieTopple,
+    ZombieTopple, EncounterBell, GateClose, GraveRise, EncounterClear,
     Count,
 };
 
@@ -29,5 +29,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "zombie_scratch1", "punch1", "cloth_rip", "cant_use", "chick", "hen", "rooster",
     "distant_train_sound", "rail_place", "train_passing", "drop", "fire_panic", "fire_trample", "fire_out",
     "leaves_crunch", "twig_snap", "plant_cut", "spore_puff", "wood_crack", "pot_break",
-    "zombie_topple",
+    "zombie_topple", "encounter_bell", "gate_close", "grave_rise", "encounter_clear",
 };

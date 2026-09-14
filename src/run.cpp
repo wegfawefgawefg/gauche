@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "world/encounter.hpp"
 #include "item_attribute.hpp"
 
 #include <algorithm>
@@ -111,6 +112,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
                                  fixture.generation});
             return true;
         }
+        if (fixture.kind == EntityKind::Encounter) return request_encounter(game, fixture);
         if (fixture.kind == EntityKind::Switch && !fixture.fixture_open) {
             fixture.fixture_open = true;
             game.run.has_key = true;
@@ -137,6 +139,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             return true;
         }
         if (fixture.kind == EntityKind::Exit && game.run.phase == RunPhase::Playing) {
+            if (!encounter_released(game, fixture.entity_a)) return false;
             for (std::size_t member_owner = 0; member_owner < 4; ++member_owner) {
                 if (!game.run.online[member_owner]) continue;
                 const Entity* member = get_entity(game, game.players[member_owner]);

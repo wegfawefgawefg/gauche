@@ -35,7 +35,9 @@ void init_zombie(Game& game, Entity& entity) {
 // SLOTS: label_b/timer_b and point_a retain the brief fall from a toppled stack.
 void step_zombie(Game& game, int slot) {
     Entity& zombie = game.entities[static_cast<std::size_t>(slot)];
-    wander(game, slot);
+    const int target = zombie.encounter.slot >= 0 ? nearest_player(game, zombie.cell, 60) : -1;
+    if (target >= 0) pursue(game, slot, game.entities[static_cast<std::size_t>(target)].cell);
+    else wander(game, slot);
     scratch_neighbor(game, slot);
     maybe_growl(game, slot, (slot + static_cast<int>(zombie.generation)) % 2 == 0 ?
                         SoundId::ZombieGrowl1 : SoundId::ZombieGrowl2);

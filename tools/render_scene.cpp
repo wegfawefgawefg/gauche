@@ -1,5 +1,6 @@
 #include "../src/game.hpp"
 #include "floor_overview.hpp"
+#include "../src/world/encounter.hpp"
 #include "../src/render.hpp"
 #include "../src/input.hpp"
 #include "../src/particles/templates.hpp"
@@ -69,7 +70,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 4) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack|layout|floor] [seed]\n");
+        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack|layout|floor|mansion|mansion-map] [seed]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -106,6 +107,23 @@ int main(int argc, char** argv) {
         start_run(game, argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
         cosmetics = {};
     }
+    if (mode == "mansion" || mode == "mansion-map") {
+        game = {};
+        cosmetics = {};
+        game.rng = 1;
+        game.run.floor = 3;
+        game.run.phase = RunPhase::Playing;
+        game.run.online[0] = true;
+        make_haunted_floor(game, true);
+        game.players[0] = spawn_entity(game, EntityKind::Player, {37, 36});
+        populate_haunted_house(game);
+        for (Entity& fixture : game.entities) {
+            if (fixture.kind == EntityKind::Encounter) {
+                fixture.label_a = static_cast<int>(EncounterPhase::Countdown);
+                fixture.timer_a = 60;
+            }
+        }
+    }
     Entity& player = *get_entity(game, game.players[0]);
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));
@@ -126,6 +144,7 @@ int main(int argc, char** argv) {
     SDL_RenderClear(renderer);
     if (mode == "layout") render_floor_overview(renderer,
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
+    else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
         render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, mode == "hud", true);
         draw_interaction(renderer, graphics, game, 0, interaction);

@@ -76,7 +76,7 @@ bool move_entity(Game& game, int slot, Cell destination) {
     entity.move_wait = entity.move_interval;
     if (tile->kind == TileKind::Ice) entity.move_wait += 5;
     if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
-        entity.kind == EntityKind::Chicken)
+        entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)
         emit_sound(game, ((destination.x + destination.y + slot) & 1) == 0 ?
                    SoundId::Step1 : SoundId::Step2,
                    destination);

@@ -234,7 +234,7 @@ physical controller feel and click feedback await user playtesting.
   readability, viable supplies, and reachable objectives. Extend deterministic
   tests beyond basic reachability to locks, room placement, co-op transitions,
   and damage-created shortcuts.
-- [ ] Design and build the haunted-house unique: a large outdoor approach with
+- [x] Design and build the haunted-house unique: a large outdoor approach with
   trees, grass, perhaps water, and a central mansion fortress. A switch inside
   seals the exit and starts classic Call of Duty Zombies-inspired survival
   waves; a defined completion condition releases the party. Author its layout
@@ -248,8 +248,21 @@ lighting. A protected dry route excludes blocking props and water/lava. Supplies
 roll on connected interior floor, and healing/equipment have a floor budget.
 Four static seed overviews (1, 72, 22991, 90731) and a normal camera capture were
 inspected, with valid objective/exit route summaries. New starts under NoRespawn
-now correctly spawn their first player. Full authored uniques, encounter gates,
-richer biome pools and user playtesting remain open.
+now correctly spawn their first player. The first authored unique and wave gates are implemented below; richer biome pools
+and user playtesting remain open.
+
+Haunted house implementation: a rare Forest 3 replacement with an outdoor approach,
+two ponds and a central 76x68 mansion layout. Its lever gathers living connected
+players, gives a 1.5-second warning and closes the gates. Three waves emerge from
+announced grave openings; later waves include toppling stacks. Ammo and bandages
+arrive between waves, and clearing every linked survivor releases the gates and
+exit. Empty-room recovery opens the gates without deleting remaining enemies;
+joining/respawning players get a free interior cell during an active encounter.
+Linked ownership is separate from AI target slots and included in snapshots/hashes.
+Room navigation, four new sounds and gate/grave art are integrated. Strict build,
+the existing codec check, a mansion overview and a normal camera capture pass.
+The static route check establishes lever access; co-op timing, combat difficulty
+and complete wave playthroughs await the user's playtesting.
 
 ## Biome content farm
 

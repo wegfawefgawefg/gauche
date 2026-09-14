@@ -1,4 +1,5 @@
 #include "net_session_internal.hpp"
+#include "world/encounter.hpp"
 
 #include <algorithm>
 #include <utility>
@@ -22,6 +23,7 @@ void welcome(NetSession& session, NetEndpoint endpoint, std::uint64_t identity, 
 }
 
 Cell join_cell(const Game& game, int owner) {
+    if (const auto inside = encounter_join_cell(game)) return *inside;
     const Cell center = game.run.spawn + Cell{owner, 0};
     for (int radius = 0; radius <= 4; ++radius) {
         for (int dy = -radius; dy <= radius; ++dy) {

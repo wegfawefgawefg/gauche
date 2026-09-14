@@ -40,7 +40,7 @@ void step_chicken(Game& game, int slot) {
             chicken.point_b = threat->cell;
         flee(game, slot, chicken.point_b);
     } else if (leader != nullptr && leader->kind == EntityKind::Chicken && leader->health > 0) {
-        if (distance(chicken.cell, leader->cell) > 1) approach(game, slot, leader->cell);
+        if (distance(chicken.cell, leader->cell) > 1) pursue(game, slot, leader->cell);
     } else if (distance(chicken.cell, chicken.point_a) > 7) approach(game, slot, chicken.point_a);
     else wander(game, slot);
     const SoundId call = chicken.label_a == 0 ? SoundId::Chick :

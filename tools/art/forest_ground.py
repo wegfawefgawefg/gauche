@@ -19,3 +19,5 @@ if __name__ == "__main__":
     ground("forest_floor_c", [([(10, 5), (11, 5)], "#202b23")])
     # Grass clumps will be separate props, not a repeated mark in every floor tile.
     ground("forest_grass", [], (39, 53, 40, 255))
+    ground("forest_ruin", [([(4, 10), (6, 10)], "#2b2e26"),
+                           ([(11, 5), (12, 5)], "#24291f")], (36, 41, 34, 255))

@@ -354,3 +354,13 @@ the existing threat budget. Current drops are 20% stick / 15% sap jar; planned
 seed-bag/resin-glue finds remain pending. Four new synthesized cues, four sprite
 poses and wood/leaf death scraps are integrated. Strict builds and static sprite/
 encounter renders checked, with no gameplay playtest. Gameplay version advanced.
+
+
+## Latest camera/canopy playtest follow-up (pending)
+
+The user likes the new smooth camera. Footprints now appear about one tile ahead
+of the rendered player and should trail the presented feet. Diagonal movement
+should alternate cardinal steps like Adventures with Chickens, without overriding
+explicit aim. The stronger green canopies are now distracting: reduce their
+brightness to roughly one fifth of the current result, preserving their shapes,
+anchoring and center mask. These are added tasks, not yet implemented.

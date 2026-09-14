@@ -64,9 +64,8 @@ visible until implemented; visual changes awaiting inspection are noted explicit
   than entity-slot order. Check items, traps, fire, actors, and held items when
   they overlap.
 - [x] Restore visible left/right footstep sprites behind walking actors.
-  Footsteps already spawn for players and zombies, but at 12% opacity and then
-  get darkened by tile lighting. Tune size, fade, and brightness for the forest
-  floor, keeping them subtle and cosmetic.
+  Keep them subtle and cosmetic, readable on the forest floor.
+- [ ] Fix footprints appearing a tile ahead of the smoothly rendered player; trail the presented feet.
 - [ ] Test entry-only trampling, five-entry extinguishing, burn damage/death,
   cooking before/after extinction, and deterministic rollback/reconnect. Check
   particles, sound cadence, overlap, and footprints in a captured scene.
@@ -432,6 +431,8 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [x] Rework the camera using Adventures with Chickens' rectilinear presentation
   as reference. Remove the current headache-inducing jumps; smooth movement and
   rendering across simulation ticks, frame rates, stops and direction changes.
+- [ ] Alternate cardinal steps while diagonal movement is held, as in Adventures
+  with Chickens; preserve explicit aim overrides and deterministic movement.
 - [x] Lower campfire flame anchors slightly so their bottom overlaps the upper
   half of the wood sprite. Preserve the flame/base/actor ordering deliberately.
 - [x] Give rockets real travel; apply delayed impact to future weapons that need
@@ -480,6 +481,8 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 
 - [x] Make forest canopies greener and more opaque while keeping the large
   dithered viewing mask and anchored parallax. Avoid dark smoke-like foliage.
+- [ ] Reduce the now-distracting canopy to roughly 20% of its current brightness;
+  preserve the green silhouette, anchored parallax and dithered center mask.
 - [x] Clarify pick-three selection: the angled red banner must consistently mark
   the focused choice, with stronger focus animation and a clear choose prompt.
 - [x] Expose owned artifacts and their effects in the HUD/inventory.

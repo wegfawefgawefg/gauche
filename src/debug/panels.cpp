@@ -39,7 +39,7 @@ bool debug_captures_input() {
 
 void draw_debug_panels(const Game& game, int owner) {
     if (!imgui_is_initialized()) return;
-    ImGui::GetIO().MouseDrawCursor = panels.visible && pointer_device_active() && imgui_want_capture_mouse();
+    ImGui::GetIO().MouseDrawCursor = false;
     imgui_new_frame();
     if (panels.visible && panels.selector) {
         ImGui::SetNextWindowPos({16, 16}, ImGuiCond_FirstUseEver);

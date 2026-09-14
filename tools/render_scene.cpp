@@ -4,6 +4,7 @@
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
+#include "motion_scene.hpp"
 #include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
@@ -112,6 +113,7 @@ int main(int argc, char** argv) {
     }
     if (mode == "water") arrange_water_scene(game, cosmetics);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
+    if (mode == "motion") arrange_motion_scene(game, cosmetics);
     if (mode == "projectiles" || mode == "bow") arrange_projectile_scene(game, cosmetics);
     if (mode == "ballistics") arrange_ballistics_scene(game, cosmetics);
     if (mode == "canopy") {

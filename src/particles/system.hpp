@@ -81,6 +81,9 @@ struct EntityPose {
     bool horizontal_flip = false;
     bool seen = false;
     std::uint32_t steps = 0;
+    ViewCamera previous_position{}, position{};
+    int movement_remaining = 0;
+    bool motion_ready = false;
 };
 
 struct Cosmetics {
@@ -99,6 +102,7 @@ struct Cosmetics {
     RunPhase last_phase = RunPhase::Arena;
     ViewCamera camera{};
     bool camera_ready = false;
+    float frame_alpha = 1.0F;
 };
 
 void step_particles(Cosmetics& cosmetics);

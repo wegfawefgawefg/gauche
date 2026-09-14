@@ -14,3 +14,4 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
               const PointerState& pointer, bool compact_details);
 void draw_pointer(SDL_Renderer* renderer, const GameGraphics& graphics,
                   const PointerState& pointer);
+void draw_window_pointer(SDL_Renderer* renderer, SDL_Window* window, const GameGraphics& graphics);

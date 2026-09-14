@@ -13,6 +13,7 @@
 #include "menu/actions.hpp"
 #include "particles/system.hpp"
 #include "ui/interaction.hpp"
+#include "ui/presentation.hpp"
 #include <algorithm>
 #include <charconv>
 #include <cmath>
@@ -303,15 +304,14 @@ int main(int argc, char** argv) {
         }
 
         const Game& ended = network.role == NetRole::Solo ? game : network.rollback.game;
+        cosmetics.frame_alpha = menu.visible || ended.game_over ? 1.0F :
+            std::clamp(static_cast<float>(accumulated / step_seconds), 0.0F, 1.0F);
         if (menu.playing && !menu.visible &&
             (ended.game_over || ended.run.phase == RunPhase::Won))
             open_end_menu(menu, ended.run.phase == RunPhase::Won);
 
         const GubsyFrame frame = gubsy_get_frame(host);
-        if (!pointer_device_active() || (menu.playing && !menu.visible && !interaction.inventory_open &&
-            !has_reward_offer(ended, networked ? network.local_owner : 0) &&
-            ended.run.phase != RunPhase::Shop)) SDL_HideCursor();
-        else SDL_ShowCursor();
+        SDL_HideCursor();
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
             shutdown_audio(audio);
@@ -381,6 +381,7 @@ int main(int argc, char** argv) {
             return 1;
         }
         draw_debug_panels(active, networked ? network.local_owner : 0);
+        draw_window_pointer(frame.renderer, frame.window, graphics);
         gubsy_present_frame(host);
         ++frames;
         if (!smoke) {

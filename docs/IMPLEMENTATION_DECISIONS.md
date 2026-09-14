@@ -201,3 +201,20 @@ Room navigation, four new sounds and gate/grave art are integrated. Strict build
 the existing codec check, a mansion overview and a normal camera capture pass.
 The static route check establishes lever access; co-op timing, combat difficulty
 and complete wave playthroughs await the user's playtesting.
+
+## Camera, facing and cursor feedback
+
+Adventures with Chickens transitions its displayed actor to a finite guide point
+and centers the camera on that same displayed position, then interpolates across
+simulation ticks. Gauche now uses that approach: local actor poses finish each
+step over the movement beat (capped at twelve ticks); the render remainder
+interpolates positions and the local camera together. Teleports/new generations
+reset their guide immediately. Actor poses remain outside game state. A static
+fractional-position/four-direction capture and strict builds checked; actual
+smoothness across the user's monitor/frame rate awaits their playtesting.
+
+Left-facing held art now mirrors its local vertical axis before the 180-degree
+rotation, keeping the top upright. The custom cursor draws once after menus and
+ImGui at window resolution, with high-DPI conversion; the OS/ImGui cursors stay
+hidden. Pad mode still hides Gauche's cursor. Removed duplicate casing emission
+from the old pose observer; actual shot events own firearm casings.

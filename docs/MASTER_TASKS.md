@@ -428,7 +428,7 @@ Forest ambience: 20 generated cues, dedicated loop/event voices and local
 schedules. Build checked; shallow-water scenes and later biomes remain.
 ## Playtest feedback: camera, controls, menus and world detail
 
-- [ ] Rework the camera using Adventures with Chickens' rectilinear presentation
+- [x] Rework the camera using Adventures with Chickens' rectilinear presentation
   as reference. Remove the current headache-inducing jumps; smooth movement and
   rendering across simulation ticks, frame rates, stops and direction changes.
 - [ ] Lower campfire flame anchors slightly so their bottom overlaps the upper
@@ -437,7 +437,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   flight. Keep deliberate instant-hit guns, with visible muzzle flashes/tracers.
 - [ ] Replace the axe-like pickaxe icon with a recognizable pickaxe. Rotate the
   fist artwork clockwise so neutral/right-facing use reads as a forward punch.
-- [ ] Fix left-facing held art without upside-down weapons: mirror around the
+- [x] Fix left-facing held art without upside-down weapons: mirror around the
   appropriate sprite axis/center. Verify all four directions and held enemy items.
 - [ ] Add wood/tree terrain with recognizable material and break rules; forest
   obstacles should include actual trees/wood, not only nondescript green walls.
@@ -461,7 +461,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [ ] Detect SDL controller layout (Xbox, PlayStation, Nintendo), including the
   active mode reported by third-party pads. Show recognizable button glyphs and
   Xbox colors; keyboard letters sit on small offset keycaps. Handle device changes.
-- [ ] Hide the OS mouse whenever Gauche draws its own pointer. Render the custom
+- [x] Hide the OS mouse whenever Gauche draws its own pointer. Render the custom
   pointer above menus/configuration panels as well as gameplay; preserve pad hiding.
 - [ ] Give all menus a usability/layout pass: consistent small bottom-left Back,
   primary actions apart from lists, Create Profile above/right of the profile list,

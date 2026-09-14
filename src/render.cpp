@@ -6,6 +6,7 @@
 #include "debug/panels.hpp"
 #include "entities/intent_render.hpp"
 #include "particles/system.hpp"
+#include "particles/motion.hpp"
 #include "lighting/field.hpp"
 #include "lighting/render.hpp"
 #include "lighting/canopy.hpp"
@@ -155,6 +156,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             continue;
         }
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
+        const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
+        if (pose != nullptr && pose->seen && pose->motion_ready && pose->generation == entity.generation) {
+            const ViewCamera position = presented_position(*pose, cosmetics->frame_alpha);
+            rect.x += (position.x - static_cast<float>(entity.cell.x)) * pixels;
+            rect.y += (position.y - static_cast<float>(entity.cell.y)) * pixels;
+        }
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
@@ -170,7 +177,6 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             rect.x -= pixels * 0.5F; rect.y -= pixels * 0.5F;
             rect.w = rect.h = pixels * 2.0F;
         }
-        const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         if (pose != nullptr && pose->seen && pose->generation == entity.generation &&
             pose->shake > 0.0F) {
             const std::uint32_t jitter = static_cast<std::uint32_t>(
@@ -251,7 +257,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_SetTextureColorModFloat(held_texture, brightness.red,
                                         brightness.green, brightness.blue);
             SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,
-                                     angle, nullptr, SDL_FLIP_NONE);
+                                     angle, nullptr, held_facing.x < 0 ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
             SDL_SetTextureColorModFloat(held_texture, 1.0F, 1.0F, 1.0F);
             if (held->kind == ItemKind::Buckler) {
                 SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
@@ -328,7 +334,6 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     draw_run_status(renderer, game, zoom);
     if (player != nullptr) draw_encounter_status(renderer, game, *player);
-    draw_pointer(renderer, graphics, pointer);
 }
 
 void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,

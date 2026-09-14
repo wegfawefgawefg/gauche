@@ -1,5 +1,6 @@
 #include "system.hpp"
 #include "gunfire.hpp"
+#include "motion.hpp"
 #include "templates.hpp"
 #include "water.hpp"
 #include "../surfaces/render.hpp"
@@ -93,10 +94,6 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     }
     if (same && (entity.attack_wait > pose.attack_wait ||
                  entity.use_flash > pose.use_flash)) {
-        const ItemKind held = entity.inventory.held()->kind;
-        if (entity.use_flash > pose.use_flash && (held == ItemKind::Pistol ||
-            held == ItemKind::Musket || held == ItemKind::Shotgun || held == ItemKind::SMG))
-            scatter_material(cosmetics.debris, entity.cell, DebrisKind::BrassCase, 1, seed);
         pose.angle = attack_angle(entity.facing);
         if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
             entity.attack_wait > pose.attack_wait)
@@ -112,6 +109,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_death(cosmetics, entity.cell, EntityKind::None, pose.angle, seed);
     }
     if (!same) pose = {};
+    step_actor_motion(pose, entity, same);
     pose.seen = true;
     pose.generation = entity.generation;
     pose.kind = entity.kind;
@@ -190,10 +188,6 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         std::abs(cosmetics.camera.y - static_cast<float>(focus.y)) > 12.0F) {
         cosmetics.camera = focus;
         cosmetics.camera_ready = true;
-    } else {
-        constexpr float follow = 0.18F;
-        cosmetics.camera.x += (static_cast<float>(focus.x) - cosmetics.camera.x) * follow;
-        cosmetics.camera.y += (static_cast<float>(focus.y) - cosmetics.camera.y) * follow;
     }
     step_particles(cosmetics);
     const bool fresh_debris = !cosmetics.debris.ready;
@@ -240,6 +234,14 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
 }
 
 ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner) {
+    if (owner >= 0 && owner < 4) {
+        const Handle handle = game.players[static_cast<std::size_t>(owner)];
+        if (const Entity* player = get_entity(game, handle)) {
+            const EntityPose& pose = cosmetics.poses[static_cast<std::size_t>(handle.slot)];
+            if (pose.seen && pose.motion_ready && pose.generation == player->generation)
+                return presented_position(pose, cosmetics.frame_alpha);
+        }
+    }
     if (cosmetics.camera_ready) return cosmetics.camera;
     if (owner >= 0 && owner < 4)
         if (const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]))

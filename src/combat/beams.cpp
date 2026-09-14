@@ -1,4 +1,5 @@
 #include "beams.hpp"
+#include "../entities/mirror_knight.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../props/interaction.hpp"
 
@@ -31,11 +32,14 @@ BeamTrace trace_beam(const Game& game, Cell source, Cell direction, int damage, 
         if (slot >= 0) {
             const Entity& actor = game.entities[static_cast<std::size_t>(slot)];
             hit.target = {slot, actor.generation};
-            if (!piercing || actor.hard_blocker) hit.stop = true;
+            hit.reflected = !hit.stop && knight_reflects(actor, ray.direction);
+            if (!hit.reflected && (!piercing || actor.hard_blocker)) hit.stop = true;
         }
         trace.cells[static_cast<std::size_t>(trace.count++)] = hit;
         if (hit.stop) continue;
-        if (hit.optic && tile->prop.kind == PropKind::MirrorShard) {
+        if (hit.reflected) {
+            rays[static_cast<std::size_t>(pending++)] = {cell, {-ray.direction.x, -ray.direction.y}, ray.damage, reach};
+        } else if (hit.optic && tile->prop.kind == PropKind::MirrorShard) {
             const Cell turned = tile->prop.variant % 2 == 0 ?
                 Cell{-ray.direction.y, -ray.direction.x} : Cell{ray.direction.y, ray.direction.x};
             rays[static_cast<std::size_t>(pending++)] = {cell, turned, ray.damage, reach};
@@ -62,11 +66,18 @@ void resolve_beam(Game& game, const BeamTrace& trace) {
         bool strongest = true;
         for (int j = 0; j < trace.count; ++j) {
             const BeamCell& other = trace.cells[static_cast<std::size_t>(j)];
-            if (other.cell == hit.cell && (other.damage > hit.damage || (other.damage == hit.damage && j < i))) {
+            if (other.cell == hit.cell && other.reflected == hit.reflected && (other.damage > hit.damage || (other.damage == hit.damage && j < i))) {
                 strongest = false; break;
             }
         }
         if (!strongest) continue;
+        if (hit.reflected) {
+            if (Entity* knight = get_entity(game, hit.target)) {
+                knight->use_flash = 8;
+                emit_sound(game, SoundId::KnightReflect, hit.cell);
+            }
+            continue;
+        }
         if (!hit.optic) hit_prop(game, hit.cell, hit.damage, hit.from);
         if (get_entity(game, hit.target))
             damage_entity(game, hit.target.slot, hit.damage, hit.from);

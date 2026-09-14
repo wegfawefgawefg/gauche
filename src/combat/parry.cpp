@@ -1,4 +1,5 @@
 #include "parry.hpp"
+#include "../entities/mirror_knight.hpp"
 #include "../projectiles/projectile.hpp"
 
 #include <algorithm>
@@ -13,6 +14,11 @@ bool parry_active(const Entity& actor) {
 // CONTACT: Called only by direct ranged impacts, never melee, explosions or hazards.
 bool parry_ranged_hit(Game& game, int defender_slot, Cell incoming) {
     Entity& defender = game.entities[static_cast<std::size_t>(defender_slot)];
+    if (knight_reflects(defender, incoming)) {
+        defender.use_flash = 8;
+        emit_sound(game, SoundId::KnightReflect, defender.cell);
+        return true;
+    }
     if (!parry_active(defender) || defender.facing != Cell{-incoming.x, -incoming.y}) return false;
     Item& pan = *defender.inventory.held();
     pan.durability -= parry_wear;

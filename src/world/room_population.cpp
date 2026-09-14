@@ -86,6 +86,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::Observatory) {
+        enemy(game, room, EntityKind::MirrorKnight, 3, budget);
+        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        return;
+    }
     if (game.run.floor > 4) {
         const EntityKind hazard = game.run.floor <= 8 ? EntityKind::Ember : EntityKind::FrostBat;
         enemy(game, room, hazard, 2, budget);

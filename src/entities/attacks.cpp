@@ -3,6 +3,7 @@
 #include "steam_leech.hpp"
 #include "ice_mason.hpp"
 #include "snow_burrower.hpp"
+#include "mirror_knight.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -15,6 +16,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::MirrorKnight:
+        if (enemy.label_a == KnightSwing && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::SnowBurrower:
         if (enemy.label_a == SnowWarn) add(enemy.point_b);
         break;

@@ -5,7 +5,7 @@ struct BeamCell {
     Cell from{}, cell{};
     int damage = 0;
     Handle target{};
-    bool optic = false, stop = false;
+    bool optic = false, stop = false, reflected = false;
 };
 struct BeamTrace {
     std::array<BeamCell, 128> cells{};

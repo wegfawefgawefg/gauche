@@ -41,3 +41,40 @@ and mirror orientation uses the already serialized prop variant. Gameplay
 compatibility advances from E8 to E9. Strict game/render/codec builds pass;
 existing snapshot codec check passes. Static optics, mirror-card and lens-card
 captures were inspected. No live playtest or new test suite was run.
+
+## Mirror Knight (2026-09-14)
+
+The eighth ice enemy now guards observatory rooms, costing three threat points.
+It has 90 HP and a 22-tick movement beat. With a visible target aligned within
+six cells, it spends 18 ticks raising its shield before a 60-tick stationary
+guard. Shield direction stays fixed through that stance. It lowers the shield
+for a 27-tick committed adjacent sword strike dealing 22 damage, then recovers
+for 48 ticks. An unused guard lowers into 24-tick recovery. Guard reuse has a
+120-tick cooldown; during advance it pursues visible threats or investigates
+noise and wanders using the existing free-neighbor behavior.
+
+Frontal eligible projectile contacts use the same finite flight deadlines and
+leg budgets as pan reflection. Bullets, arrows, rockets and recoverable direct
+throws can return to their shooter. Thrown explosives and area effects retain
+their own rules. Light beams also reflect: the pure beam trace captures the
+raised stance before resolving any damage, and shares the original finite
+travel budget. A branch can hit the knight from another side even if another
+branch reflected. Such a flank hit is not discarded as a duplicate reflection.
+Melee still damages it; this is a projectile shield, not universal immunity.
+
+Actual damage, sleep and stun interrupt raise/guard/swing into 48-tick recovery.
+A displaced knight's shield fails immediately because its committed origin no
+longer matches; its next step cancels the old attack. All strikes and debug
+previews use the same fixed target cell. Shared label/timer/point fields own the
+stance, with the c-slots left to hearing. No per-species struct or body-position
+interpolation was introduced.
+
+Five body poses and two shield images distinguish lowered/raising/ready states;
+the separate shield sits on the guarded cardinal edge. Six generated sounds
+cover raising, readiness, windup, slash, reflection and armored death. One saved
+loot roll gives 20% Mirror Shard, 20% 3–6 gold, otherwise nothing.
+
+Gameplay compatibility is EA; snapshot layout stays 31. Strict game/render/codec
+builds and the existing codec check pass. Static stance/directional-shield and
+reflected-beam captures were inspected. Live behavior/balance remains for the
+user's playtesting; no live playtest or new test suite was run.

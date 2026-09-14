@@ -5,6 +5,7 @@
 #include "entities/leech_render.hpp"
 #include "entities/eel_render.hpp"
 #include "entities/mason_render.hpp"
+#include "entities/knight_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -278,6 +279,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_SetRenderDrawColorFloat(renderer, brightness.red * .8F, brightness.green * .9F, brightness.blue, 1);
             SDL_RenderDebugText(renderer, rect.x + rect.w * .25F, rect.y + rect.h * .25F, label);
         }
+        if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::IceMason) draw_mason_block(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);

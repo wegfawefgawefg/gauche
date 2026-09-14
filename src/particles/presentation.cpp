@@ -32,7 +32,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
             sound.sound != SoundId::SmallLaser && sound.sound != SoundId::Explosion &&
             sound.sound != SoundId::Explosion1 && sound.sound != SoundId::BearSlam &&
             sound.sound != SoundId::BoarHit && sound.sound != SoundId::WolfBite &&
-            sound.sound != SoundId::MasonJab && sound.sound != SoundId::BatBite && sound.sound != SoundId::SkaterHit && sound.sound != SoundId::DiverStrike && sound.sound != SoundId::MimicBite) continue;
+            sound.sound != SoundId::KnightSlash && sound.sound != SoundId::MasonJab && sound.sound != SoundId::BatBite && sound.sound != SoundId::SkaterHit && sound.sound != SoundId::DiverStrike && sound.sound != SoundId::MimicBite) continue;
         closest = length;
         source = sound.cell;
     }
@@ -51,7 +51,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;

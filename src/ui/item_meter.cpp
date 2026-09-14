@@ -19,7 +19,10 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind == ItemKind::SnowScoop)
+    if (item.kind == ItemKind::CandleStub) {
+        if (item_stackable(item)) std::snprintf(result, sizeof(result), "x%d %ds", item.count, (item.loaded+59)/60);
+        else std::snprintf(result, sizeof(result), "%ds %d/%d", (item.loaded+59)/60, item.durability, item.max_durability);
+    } else if (item.kind == ItemKind::SnowScoop)
         std::snprintf(result, sizeof(result), compact ? "%d/%d S%d" : "COND %d/%d SNOW %d", item.durability, item.max_durability, item.loaded);
     else if (item.kind == ItemKind::Bow)
         std::snprintf(result, sizeof(result), compact ? "%d" : "QUIVER %d ARROWS", item.loaded);

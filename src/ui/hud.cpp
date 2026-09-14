@@ -125,24 +125,19 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_item_details(renderer, graphics, player, held,
                               width - 194.0F, height - 232.0F, 180.0F, 208.0F, "SELECTED");
     }
-    const Entity* ground = nullptr;
-    for (const Entity& entity : game.entities) {
-        if (entity.kind != EntityKind::GroundItem ||
-            entity.ground_item.kind == ItemKind::None) continue;
-        if (pointer.inside && entity.cell == pointer.cell) { ground = &entity; break; }
-        if (ground == nullptr && entity.cell == player.cell) ground = &entity;
-    }
+    Item ground = pointer.inside ? pickup_item_at(game,pointer.cell) : Item{};
+    if (ground.kind == ItemKind::None) ground = pickup_item_at(game,player.cell);
     const GroundAction action = ground_action(game, player);
     if (action != GroundAction::None)
         draw_action_hint(renderer, width * .5F - 90, height - 74, Action::Pickup,
             action == GroundAction::Drop ? "DROP HELD" : action == GroundAction::Swap ? "SWAP HELD" :
             action == GroundAction::Blocked ? "PACK FULL" : "PICK UP");
-    if (ground == nullptr) return;
+    if (ground.kind == ItemKind::None) return;
     const char* label = "GROUND";
     if (compact_details)
-        draw_compact_item_details(renderer, graphics, ground->ground_item,
+        draw_compact_item_details(renderer, graphics, ground,
                                   width * .5F - 90.0F, height - 53.0F, 180.0F, label);
     else
-        draw_item_details(renderer, graphics, player, ground->ground_item,
+        draw_item_details(renderer, graphics, player, ground,
                           width * .5F - 90.0F, height - 232.0F, 180.0F, 208.0F, label);
 }

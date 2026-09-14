@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../items/ground_interaction.hpp"
 #include "../input.hpp"
 #include "scale.hpp"
 
@@ -162,11 +163,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
         if (ui.inventory_open && !offered && !shop) {
             const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
             if (player != nullptr)
-                for (const Entity& entity : game.entities)
-                    if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell) {
-                        ui.compare_ground = true;
-                        break;
-                    }
+                ui.compare_ground = pickup_item_at(game,player->cell).kind != ItemKind::None;
         }
         ui.slot_focus = 0;
         ui.notice.clear();

@@ -45,7 +45,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 7 | Glass eel | Implemented: 42 HP, swims connected water; 0.8s visible charge then 18-damage pulse, weakening along up to four wet steps. Damage, chill, sleep, stun or displacement interrupts it. Dry/frozen ground cuts the circuit. | Reservoir/bathhouse; 20% eel battery, 15% raw meat, one roll. |
 | 8 | Avalanche ram | Implemented: 76 HP, 0.6s pawing tell then a fixed two-cell lunge at six ticks/cell. 12 damage and one-cell shove; ploughs snow and ice blocks. Solid cover or a facing buckler stuns it for 1.25s. Damage/sleep/stun/displacement interrupt. | Cliff paths; implemented single roll: 35% two raw meat, 10% wool wrap. |
 | 9 | Frost bat | Hangs still, exhales a narrow traveling frost puff, then relocates to another perch. Implemented: 24 HP, 0.5s inhale, six-cell traveling puff for 6 damage and 2s chill; flames dissolve it and shields block it. | Ice caves; 15% ice needle. |
-| 10 | Snow effigy | Implemented behavior: 60 HP; wakes on first observation or disturbance. Any awake player watching within seven tiles holds it still. Looking away permits eighteen-tick steps and a 0.5s fixed 16-damage strike; looking back cancels it. Heat exposes an 18-HP frame. | Memorial court implemented. Planned drops remain open: 20% candle stub, 10% effigy mask, pending those items. |
+| 10 | Snow effigy | Implemented behavior: 60 HP; wakes on first observation or disturbance. Any awake player watching within seven tiles holds it still. Looking away permits eighteen-tick steps and a 0.5s fixed 16-damage strike; looking back cancels it. Heat exposes an 18-HP frame. | Memorial court implemented. Implemented 20% candle stub drop; the planned additional 10% mask remains pending that item. |
 | 11 | Fishing widow | Implemented: 64 HP, 0.6s fixed-lane tell, six-tile traveling hook for 14 damage. Pulls the first struck actor every ten ticks, then untangles for 1.5s. Sidestep, cover or interrupt her to cut the line; allies can be hooked. | Fishing huts; 20% fishing line, 20% smoked fish. |
 | 12 | Candle keeper | Relights a bounded set of nearby candles and protects the nearest one. Its flame strike dims its own lamp; stealing or wetting a candle redirects its attention. | Chapel; 30% candle stub, 15% wick spool. |
 | 13 | Shard colony | Three separate crystals connect with dangerous pulses only after all endpoints flash. Destroy or displace one node to break that connection. Nodes share a colony handle. | Crystal gallery; 25% crystal lens per colony, not per node. |
@@ -85,8 +85,8 @@ same effective item definition as attacks, including rare attributes.
 | 10 | Snow scoop | Implemented: clears three adjacent snow cells, exposing burrowers and snow-cache supplies. Holds 12 snow; secondary packs one normal snowball if inventory has room. 60 repairable condition, one wear per successful scoop. Big clears five cells; Durable has 120 condition. | Common; 9 |
 | 11 | Heat capsule | Implemented: a 4s warm cross around the user; thaws ice, clears chill and resists cold, but ignites oil even when spilled later. Stack 4; Big extends each arm. | Common; 8 |
 | 12 | Coal lump | Feed a lit stove for longer heat or throw an inert lump for 4 damage. Does not spontaneously ignite. Stack 8. | Common; 3 |
-| 13 | Candle stub | Place a small finite lamp; pick it back up with remaining fuel. Eighty seconds of light per candle, stack only equal unused candles. | Common; 5 |
-| 14 | Wick spool | Adds 30s to an adjacent fuel lamp or candle; cannot refill batteries or living emitters. Four portions. | Common; 7 |
+| 13 | Candle stub | Implemented: place an 80s lamp with 6 HP (Durable 12), recover remaining fuel and condition. Only equal unused candles stack, up to four. Water snuffs it; warmth thaws nearby ice. | Common; 5 |
+| 14 | Wick spool | Implemented: add up to 30s fuel to an adjacent candle, capped at 80s. Four portions (Durable eight); no repair or automatic relight. No electrical or living emitter refill. | Common; 7 |
 | 15 | Signal flare | Fires to 8 and burns where it lands for 15s; bright red light, hot contact and noise on launch. Stack 3. | Common; 10 |
 | 16 | Storm lantern | Aim to shutter its directional light; secondary toggles shutter fully closed. No damage; 120s fuel, conserved while shut. | Uncommon; 20 |
 | 17 | Heat siphon | Transfer up to 5s of burn/fuel from an adjacent source into a carried charge, then discharge a short flame cone. Six charge capacity. | Rare; 34 |
@@ -191,9 +191,10 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Fifteen regional debris types are implemented: ice chips, snow clumps, mirror
+Seventeen regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips, fishing floats, globe glass, copper curls, kelp scraps and tin lids. Kelp chewing leaves wet scraps; globes leave glass;
+wicker strips, fishing floats, globe glass, copper curls, kelp scraps, tin lids, wax and charred wick. Kelp chewing leaves wet scraps; globes leave glass;
+Spent/broken candles leave wax and wick. Memorial courts hold recoverable candles.
 Each opened lunch tin leaves one metal lid and ice chips; weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from

@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../props/candle.hpp"
 #include "../world/terrain_material.hpp"
 #include "../world/water.hpp"
 #include "../props/interaction.hpp"
@@ -13,7 +14,7 @@ namespace {
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
     if (prop.covered) return true;
-    return prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
+    return prop.kind != PropKind::Candle && prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
 } // namespace
@@ -29,6 +30,7 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     Surface& surface = tile->surface;
     if (kind == LiquidKind::Rot && surface.fire_ticks > 0) return false;
     if (water_liquid(kind)) {
+        douse_candle(game,cell);
         if (surface.fire_ticks > 0) emit_sound(game, SoundId::WaterDouse, cell);
         surface.fire_ticks = 0;
         surface.gritted = false;
@@ -51,7 +53,8 @@ bool ignite_surface(Game& game, Cell cell) {
     Surface& surface = tile->surface;
     if (surface.fire_ticks > 0) return false;
     const bool fuel = surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap;
-    if (!wood && !fuel && !dry_growth(tile->prop)) return false;
+    const bool lit = light_candle(game,cell);
+    if (!wood && !fuel && !dry_growth(tile->prop)) return lit;
     const bool cloth_only = tile->prop.covered && !wood && !fuel;
     remove_prop_cover(game, cell, true);
     surface.fire_ticks = static_cast<std::uint16_t>(cloth_only ? 30 : wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);

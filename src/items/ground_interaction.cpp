@@ -1,4 +1,5 @@
 #include "ground_interaction.hpp"
+#include "../props/candle.hpp"
 #include "../world/floating_items.hpp"
 #include "../world/ground_items.hpp"
 
@@ -19,11 +20,16 @@ bool item_can_drop(const Item& item) {
     return item.kind != ItemKind::None && item.kind != ItemKind::Fist && item.count > 0 && item.flight.slot < 0;
 }
 
+Item pickup_item_at(const Game& game, Cell cell) {
+    const int slot = ground_slot(game,cell);
+    if (slot >= 0) return game.entities[static_cast<std::size_t>(slot)].ground_item;
+    return candle_item(game.stage.at_or_border(cell).prop);
+}
+
 GroundAction ground_action(const Game& game, const Entity& player) {
-    const int slot = ground_slot(game, player.cell);
-    if (slot < 0) return item_can_drop(*player.inventory.held()) ? GroundAction::Drop : GroundAction::None;
+    Item incoming = pickup_item_at(game,player.cell);
+    if (incoming.kind == ItemKind::None) return item_can_drop(*player.inventory.held()) ? GroundAction::Drop : GroundAction::None;
     Inventory candidate = player.inventory;
-    Item incoming = game.entities[static_cast<std::size_t>(slot)].ground_item;
     if (transfer_item(candidate, incoming) > 0) return GroundAction::Pickup;
     return item_can_drop(*player.inventory.held()) ? GroundAction::Swap : GroundAction::Blocked;
 }
@@ -43,7 +49,12 @@ void drop_player_item(Game& game, Entity& player) {
 }
 
 bool pickup_or_drop(Game& game, Entity& player) {
-    const int slot = ground_slot(game, player.cell);
+    int slot = ground_slot(game, player.cell);
+    if (slot < 0 && candle_item(game.stage.at_or_border(player.cell).prop).kind != ItemKind::None) {
+        if (ground_action(game,player) == GroundAction::Blocked) return false;
+        slot = release_candle(game,player.cell);
+        if (slot < 0) return false;
+    }
     if (slot < 0) {
         if (!item_can_drop(*player.inventory.held())) return false;
         drop_player_item(game, player);

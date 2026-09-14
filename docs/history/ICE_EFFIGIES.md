@@ -38,9 +38,9 @@
 
 ## Still open
 
-- Implement Candle Stub and Effigy Mask, then wire the planned single drop roll:
-  20% candle, 10% mask, otherwise empty. Neither missing item is replaced by an
-  unrelated reward or counted as complete. Current effigies have no item drop.
+- Candle Stub now supplies the first 20% of the planned single drop roll; see
+  [candles](ICE_CANDLES.md). Effigy Mask remains unimplemented: reserve the next
+  10% of that roll when its behavior and item exist. No substitute reward.
 - The mask needs a useful additional observer behavior, not a redundant charge
   for the player's existing free gaze. Preserve this intent when implementing it.
 - Player playtesting owns the gaze boundary, timings and balance. Ice content

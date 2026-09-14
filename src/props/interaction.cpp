@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "candle.hpp"
 #include "cloth.hpp"
 #include "../combat/beams.hpp"
 #include "../world/ground_items.hpp"
@@ -88,6 +89,10 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
+    if (kind == PropKind::Candle) {
+        tile->prop.variant = candle_lit_bit;
+        tile->prop.growth_ticks = candle_fuel_ticks;
+    }
     return true;
 }
 

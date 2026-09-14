@@ -1,4 +1,5 @@
 #include "steam_leech.hpp"
+#include "../props/candle.hpp"
 #include "attacks.hpp"
 #include "../surfaces/temperature.hpp"
 
@@ -8,7 +9,7 @@ bool leech_source_cell(const Game& game, const Entity& leech, Cell& cell) {
     if (leech.label_b == 1) {
         cell = leech.point_b;
         const Tile* tile = game.stage.at(cell);
-        return tile && (tile->surface.warmth_ticks > 0 || tile->surface.fire_ticks > 0 ||
+        return tile && (candle_lit(tile->prop) || tile->surface.warmth_ticks > 0 || tile->surface.fire_ticks > 0 ||
             tile->kind == TileKind::Lava);
     }
     const Entity* source = get_entity(game, leech.entity_a);

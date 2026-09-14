@@ -1,4 +1,5 @@
 #include "temperature.hpp"
+#include "../props/candle.hpp"
 #include "../props/lunch_tin.hpp"
 #include "../world/snow.hpp"
 #include "../props/ice_cover.hpp"
@@ -32,7 +33,7 @@ namespace {
 bool flame_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return false;
-    if (tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return !leech_drains_cell(game, cell);
+    if (candle_lit(tile->prop) || tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return !leech_drains_cell(game, cell);
     // SOURCES: A lamp's color is not heat. Only exposed flames melt cold projectiles.
     for (const Entity& actor : game.entities) {
         if (actor.cell == cell && entity_has_flame(actor)) return !leech_drains_cell(game, cell);
@@ -107,6 +108,7 @@ void quench_cell(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return;
     bool quenched = tile->surface.fire_ticks > 0;
+    douse_candle(game,cell);
     tile->surface.fire_ticks = 0;
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
@@ -159,7 +161,7 @@ void step_temperature(Game& game) {
                     emit_sound(game, SoundId::IceThaw, cell);
                 } else --tile.freeze_ticks;
             }
-            if ((tile.kind == TileKind::Lava || tile.surface.fire_ticks > 0) && !drained(cell)) flames.push_back(cell);
+            if ((candle_lit(tile.prop) || tile.kind == TileKind::Lava || tile.surface.fire_ticks > 0) && !drained(cell)) flames.push_back(cell);
         }
     for (const Entity& actor : game.entities)
         if (entity_has_flame(actor) && !drained(actor.cell)) flames.push_back(actor.cell);

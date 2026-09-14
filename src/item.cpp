@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "props/candle.hpp"
 #include "items/fish.hpp"
 #include "items/snow_globe.hpp"
 #include "items/optics.hpp"
@@ -94,6 +95,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::CandleStub:
+        used = place_candle(game, user.cell + direction, item);
+        cooldown = item_pattern(item).cooldown;
+        break;
+    case ItemKind::WickSpool:
+        used = refill_candle(game, user.cell + direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::SaltedKelp:
         return eat_held_kelp(game, user_slot);
     case ItemKind::SnowGlobe:
@@ -338,7 +347,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         item.cooldown = cooldown;
         user.use_flash = 8;
         if (const RegionalItem* spec = regional_item(used_kind)) {
-            if (!item_is_melee(used_kind)) emit_sound(game, spec->sound,
+            if (used_kind == ItemKind::CandleStub)
+                emit_sound(game, item.loaded > 0 ? SoundId::CandleLight : SoundId::Drop, user.cell + direction);
+            else if (!item_is_melee(used_kind)) emit_sound(game, spec->sound,
                 used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
         }
         else switch (used_kind) {
@@ -362,7 +373,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
+            if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
+            else if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
             else if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
             else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
             else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);

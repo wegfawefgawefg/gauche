@@ -1,5 +1,6 @@
 #include "net_codec.hpp"
 #include "props/cloth.hpp"
+#include "props/candle.hpp"
 #include "items/muffling.hpp"
 #include "projectiles/projectile.hpp"
 
@@ -138,6 +139,7 @@ Item read_item(PacketReader& reader) {
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang)) reader.okay = false;
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
     if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
+    if (item.kind == ItemKind::CandleStub && item.loaded > candle_fuel_ticks) reader.okay = false;
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
         item.loaded < 0 || item.spare < 0 ||
         item.durability < 0 || item.max_durability < item.durability ||
@@ -379,8 +381,9 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind >= PropKind::Count ||
             tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
-            tile.prop.growth_ticks > (tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
-            (tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            tile.prop.growth_ticks > (tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
+            (tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+        if (tile.prop.kind == PropKind::Candle && (tile.prop.variant > 3 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.prop.kind == PropKind::AlarmClock && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;

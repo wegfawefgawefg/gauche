@@ -1,7 +1,9 @@
 #include "catalog.hpp"
+#include "candle.hpp"
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::Candle: return {Sprite::CandleStub, SoundId::CandleBreak, 6, false, false, {3,650,{255,182,82}}};
     case PropKind::FrozenLunchTin: return {Sprite::FrozenLunchTin, SoundId::TinOpen, 16, true, false};
     case PropKind::WeatherVane: return {Sprite::WeatherVane, SoundId::VaneBreak, 18, false, false};
     case PropKind::FishingCreel: return {Sprite::FishingCreel, SoundId::CreelBreak, 12, true, false};
@@ -39,5 +41,6 @@ bool prop_blocks(const Prop& prop) {
 
 int prop_max_health(const Prop& prop) {
     const int base = prop_spec(prop.kind).health;
+    if (prop.kind == PropKind::Candle && (prop.variant & candle_durable_bit)) return base * 2;
     return prop.kind == PropKind::AlarmClock && prop.variant == 1 ? base * 2 : base;
 }

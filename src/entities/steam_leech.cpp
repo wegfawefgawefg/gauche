@@ -1,4 +1,5 @@
 #include "steam_leech.hpp"
+#include "../props/candle.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "hearing.hpp"
@@ -38,7 +39,7 @@ bool find_heat(Game& game, Entity& leech) {
     for (int y = std::max(0, leech.cell.y - 9); y <= std::min(game.stage.height - 1, leech.cell.y + 9); ++y)
         for (int x = std::max(0, leech.cell.x - 9); x <= std::min(game.stage.width - 1, leech.cell.x + 9); ++x) {
             const Tile& tile = *game.stage.at({x, y});
-            if (tile.surface.warmth_ticks > 0 || tile.surface.fire_ticks > 0 || tile.kind == TileKind::Lava)
+            if (candle_lit(tile.prop) || tile.surface.warmth_ticks > 0 || tile.surface.fire_ticks > 0 || tile.kind == TileKind::Lava)
                 consider({x, y}, {}, true);
         }
     leech.timer_b = 30;

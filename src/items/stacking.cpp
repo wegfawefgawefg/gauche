@@ -1,9 +1,12 @@
 #include "../game.hpp"
+#include "../props/candle.hpp"
 #include "../item_attribute.hpp"
 
 #include <algorithm>
 
 bool item_stackable(const Item& item) {
+    if (item.kind == ItemKind::CandleStub)
+        return !item.opened && item.loaded == candle_fuel_ticks && item.durability == item.max_durability && item.max_count > 1;
     return item.max_count > 1 && item.max_uses == 0 && item.max_durability == 0 && !item_is_gun(item.kind);
 }
 

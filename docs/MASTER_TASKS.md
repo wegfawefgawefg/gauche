@@ -274,8 +274,8 @@ behavior and balance playtesting remain the user's.
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
   Eleven cold room roles host sixteen enemy types, including [effigies](history/ICE_EFFIGIES.md),
-  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Twenty-five items include
-  [observatory optics](history/ICE_OPTICS.md). Sixteen of twenty enemy behaviors, twenty-five of fifty items; [salt remedies](history/ICE_SALT.md) add costly cures and bait.
+  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Twenty-seven items include
+  [observatory optics](history/ICE_OPTICS.md). Sixteen of twenty enemy behaviors, twenty-seven of fifty items; [recoverable candles](history/ICE_CANDLES.md) add fuel, warmth and wick supplies.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

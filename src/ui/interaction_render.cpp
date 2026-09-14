@@ -1,5 +1,6 @@
 #include "../items/fire_render.hpp"
 #include "interaction.hpp"
+#include "../items/ground_interaction.hpp"
 #include "prompts.hpp"
 #include "item_details.hpp"
 #include "item_meter.hpp"
@@ -228,14 +229,8 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float shift = (1.0F - ui.slide) * 220.0F;
     const bool shop_offer = game.run.phase == RunPhase::Shop && ui.offer_focus < 3 &&
         game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)] != ItemKind::None;
-    const Item* ground = nullptr;
-    if (ui.compare_ground)
-        for (const Entity& entity : game.entities)
-            if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell &&
-                entity.ground_item.kind != ItemKind::None) {
-                ground = &entity.ground_item;
-                break;
-            }
+    const Item loose = ui.compare_ground ? pickup_item_at(game,player->cell) : Item{};
+    const Item* ground = loose.kind != ItemKind::None ? &loose : nullptr;
     const bool comparing = ground != nullptr || has_reward_offer(game, owner) || shop_offer;
     if (comparing) {
         const Reward offer = ground != nullptr ? Reward{RewardKind::Item,

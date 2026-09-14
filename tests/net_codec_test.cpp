@@ -68,6 +68,11 @@ int main() {
     original.stage.tiles[5].surface.whiteout_ticks = 213;
     original.stage.tiles[5].surface.liquid = LiquidKind::Brine;
     original.stage.tiles[5].surface.liquid_ticks = 321;
+    original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
+    owner->inventory.slots[5] = make_item(ItemKind::CandleStub, 1, ItemAttribute::Durable);
+    owner->inventory.slots[5].loaded = 1234;
+    owner->inventory.slots[5].durability = 3;
+    owner->inventory.slots[5].opened = true;
     original.stage.tiles[10].prop = {PropKind::FrozenLunchTin, 7, 0, false};
     original.stage.tiles[6].prop = {PropKind::IceBlock, 23, 0, false, 411};
     original.stage.tiles[9].prop = {PropKind::AlarmClock, 13, 1, false, 237};

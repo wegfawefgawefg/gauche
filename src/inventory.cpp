@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "props/candle.hpp"
 #include "items/catalog.hpp"
 #include "item_attribute.hpp"
 
@@ -70,6 +71,7 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
         if (item.max_uses > 0) item.max_uses = std::max(1, item.max_uses / 2);
         if (item.max_durability > 0) item.max_durability = std::max(1, item.max_durability / 2);
     }
+    if (kind == ItemKind::CandleStub) item.loaded = candle_fuel_ticks;
     if (kind == ItemKind::Pickaxe) item.dig_power = 2;
     item.durability = item.max_durability;
     item.uses = item.max_uses;

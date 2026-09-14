@@ -358,12 +358,15 @@ encounter renders checked, with no gameplay playtest. Gameplay version advanced.
 
 ## Camera/canopy playtest follow-up
 
-The user likes the smooth camera, but footsteps were placed at the authoritative
-next tile before the displayed body arrived. They now spawn at the previous
-presented feet position, preserving a local trail without changing gameplay.
+Actor interpolation made the body lag behind its actual tile, making attacks and
+footprints appear displaced. The temporary footprint compensation is reverted:
+footprints use the original authoritative cell placement. Bodies and held items
+snap to their real cells; only the camera follows an interpolated guide. Existing
+shake, tilt and squash remain. This preserves the cute tile steps without hiding
+where collisions and attacks happen.
 Canopy RGB modulation is one fifth of the previous result; opacity, green source
 art, anchored parallax and center mask remain. A presentation-only capture feeds
-recorded cardinal cells into the cosmetic observer and shows the trailing prints.
+recorded cardinal cells into the cosmetic observer and shows the restored prints.
 Diagonal input now alternates cardinal axes from the last successful move, like
 Chickens' successful-axis selection. A blocked preferred axis falls back to the
 other before spending its beat. This preserves speed, bump latching and explicit
@@ -388,3 +391,17 @@ affect them. Six sprites, eight synthesized cues and distinct flight poses join
 clearing, brook and workshop pools. Current 10% water / 15% egg / 15% rock drops
 are live; planned bird seed and digging claws remain pending. Strict builds and
 a static flier encounter capture checked; no gameplay playtest performed.
+
+
+## Flock yield pressure
+
+Calm followers use counter_c as a short yield request. When their preceding bird
+is boxed in, a chick tries a free cardinal step away from it. If also blocked, its
+request passes down the adjacent follower chain until a tail has space. Each bird
+still pays its own movement interval and records its departed cell for followers;
+no simultaneous recursive push, overlap or teleport. Seeded random direction order
+varies the shuffle without creating local-only gameplay. Gameplay compatibility is
+C6; the existing snapshot already includes counter_c.
+
+The corrected actor/footprint rendering passes strict game/render builds and a
+static recorded-position capture. Flock behavior has not been playtested.

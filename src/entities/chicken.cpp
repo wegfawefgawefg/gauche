@@ -6,7 +6,7 @@
 
 // SLOTS: label_a = chick/hen/rooster; entity_a = preceding bird; entity_b = threat.
 // point_a = home; point_b/timer_b = delayed trail; timer_a = alarm memory.
-// counter_a/b = last threat x/y. Every bird uses the same trail contract.
+// counter_a/b = last threat x/y; counter_c = trail yield lifetime.
 void init_chicken(Game& game, Entity& entity) {
     const int variant = static_cast<int>(random_u32(game) % 4);
     entity.label_a = variant < 2 ? 0 : variant - 1;
@@ -41,6 +41,7 @@ void defend_family(Game& game, int slot, Entity& chicken) {
 
 void step_chicken(Game& game, int slot) {
     Entity& chicken = game.entities[static_cast<std::size_t>(slot)];
+    if (chicken.counter_c > 0) --chicken.counter_c;
     const Entity* threat = get_entity(game, chicken.entity_b);
     if (threat != nullptr && threat->health > 0) {
         chicken.counter_a = threat->cell.x;
@@ -64,9 +65,9 @@ void step_chicken(Game& game, int slot) {
                 chicken.entity_a = find_chain_tail(game, slot, EntityKind::Chicken, 12);
             leader = get_entity(game, chicken.entity_a);
         }
-        if (leader != nullptr && leader->kind == EntityKind::Chicken && leader->health > 0)
-            follow_trail(game, slot, *leader);
-        else if (distance(chicken.cell, chicken.point_a) > 7) pursue(game, slot, chicken.point_a);
+        if (leader != nullptr && leader->kind == EntityKind::Chicken && leader->health > 0) {
+            if (!yield_trail(game, slot, *leader)) follow_trail(game, slot, *leader);
+        } else if (distance(chicken.cell, chicken.point_a) > 7) pursue(game, slot, chicken.point_a);
         else wander(game, slot);
     }
     record_trail(chicken, previous, scared ? 2 : 5);

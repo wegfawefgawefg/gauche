@@ -81,9 +81,9 @@ struct EntityPose {
     bool horizontal_flip = false;
     bool seen = false;
     std::uint32_t steps = 0;
-    ViewCamera previous_position{}, position{};
-    int movement_remaining = 0;
-    bool motion_ready = false;
+    ViewCamera previous_camera{}, camera_position{};
+    int camera_steps_remaining = 0;
+    bool camera_guide_ready = false;
 };
 
 struct Cosmetics {

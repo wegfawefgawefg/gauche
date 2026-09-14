@@ -96,8 +96,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_water_rings(cosmetics, entity.cell, true);
         else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
             entity.kind == EntityKind::ZombieStack)
-            spawn_footprint(cosmetics, pose.motion_ready ?
-                presented_position(pose, cosmetics.frame_alpha) : ViewCamera{pose.cell}, entity.kind,
+            spawn_footprint(cosmetics, entity.cell, entity.kind,
                             (pose.steps & 1U) != 0, seed);
         pose.angle = static_cast<float>(visual_bits(seed) % 31U) - 15.0F;
     }
@@ -118,7 +117,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_death(cosmetics, entity.cell, EntityKind::None, pose.angle, seed);
     }
     if (!same) pose = {};
-    step_actor_motion(pose, entity, same);
+    step_camera_guide(pose, entity, same);
     pose.seen = true;
     pose.generation = entity.generation;
     pose.kind = entity.kind;
@@ -248,8 +247,8 @@ ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner) {
         const Handle handle = game.players[static_cast<std::size_t>(owner)];
         if (const Entity* player = get_entity(game, handle)) {
             const EntityPose& pose = cosmetics.poses[static_cast<std::size_t>(handle.slot)];
-            if (pose.seen && pose.motion_ready && pose.generation == player->generation)
-                return presented_position(pose, cosmetics.frame_alpha);
+            if (pose.seen && pose.camera_guide_ready && pose.generation == player->generation)
+                return camera_guide_position(pose, cosmetics.frame_alpha);
         }
     }
     if (cosmetics.camera_ready) return cosmetics.camera;

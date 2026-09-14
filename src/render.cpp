@@ -160,11 +160,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
-        if (pose != nullptr && pose->seen && pose->motion_ready && pose->generation == entity.generation) {
-            const ViewCamera position = presented_position(*pose, cosmetics->frame_alpha);
-            rect.x += (position.x - static_cast<float>(entity.cell.x)) * pixels;
-            rect.y += (position.y - static_cast<float>(entity.cell.y)) * pixels;
-        }
+        // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||

@@ -65,7 +65,7 @@ visible until implemented; visual changes awaiting inspection are noted explicit
   they overlap.
 - [x] Restore visible left/right footstep sprites behind walking actors.
   Keep them subtle and cosmetic, readable on the forest floor.
-- [x] Fix footprints appearing a tile ahead of the smoothly rendered player; trail the presented feet.
+- [x] Preserve original tile footprints; snap actors to real cells and smooth only the camera.
 - [ ] Test entry-only trampling, five-entry extinguishing, burn damage/death,
   cooking before/after extinction, and deterministic rollback/reconnect. Check
   particles, sound cadence, overlap, and footprints in a captured scene.
@@ -389,7 +389,7 @@ the available art reference; new source scripts keep a small explicit palette.
   animal magically knowing about every piece of meat across the floor.
 - [x] Rework chicken families into generation-checked follow chains: first
   chick follows mother, others follow the preceding chick. Follow previous
-  positions with a small delay; avoid surrounding/blocking the mother. Make
+  positions with a small delay; yield down blocked chains to free the mother. Make
   frightened chicks visibly scurry with fast little steps and animation.
 - [x] Give mothers a protective response when their chicks are attacked;
   survivors remember the attacker and do not immediately wander back to danger.
@@ -428,9 +428,9 @@ Forest ambience: 20 generated cues, dedicated loop/event voices and local
 schedules. Build checked; shallow-water scenes and later biomes remain.
 ## Playtest feedback: camera, controls, menus and world detail
 
-- [x] Rework the camera using Adventures with Chickens' rectilinear presentation
-  as reference. Remove the current headache-inducing jumps; smooth movement and
-  rendering across simulation ticks, frame rates, stops and direction changes.
+- [x] Smooth the camera guide while actors snap to their authoritative tiles;
+  keep camera motion continuous across simulation ticks, frame rates, stops
+  and direction changes without delaying bodies, held items or attack origins.
 - [x] Alternate cardinal steps while diagonal movement is held, as in Adventures
   with Chickens; preserve explicit aim overrides and deterministic movement.
 - [x] Lower campfire flame anchors slightly so their bottom overlaps the upper

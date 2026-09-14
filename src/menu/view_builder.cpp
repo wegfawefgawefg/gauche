@@ -136,8 +136,6 @@ glayout::GraphNode ViewBuilder::container_node(std::string id, glayout::Containe
     glayout::GraphNode node;
     node.id = std::move(id);
     node.container = kind;
-    if (compact() && width.kind == glayout::LengthKind::Pixels && width.value > 300.0f)
-        width = {glayout::LengthKind::Percent, 0.44f};
     node.size.width = scale_pixels(width, scale_);
     node.size.height = scale_pixels(height, scale_);
     node.gap = gap * scale_;

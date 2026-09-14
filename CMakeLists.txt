@@ -98,8 +98,8 @@ add_executable(gauche
     src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
-    src/menu/pages.cpp src/menu/view_builder.cpp src/menu/theme.cpp
-    src/menu/actions.cpp)
+    src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp
+    src/menu/actions.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
 if(WIN32)

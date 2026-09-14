@@ -1,5 +1,8 @@
 #include "pages.hpp"
-#include "view_builder.hpp"
+#include "page_chrome.hpp"
+#include "control_pages.hpp"
+#include "control_reference.hpp"
+#include "profiles.hpp"
 
 #include <gubsy/input/binds_profile.hpp>
 #include <gubsy/lobby/state.hpp>
@@ -9,61 +12,15 @@
 
 namespace {
 
-using gauche_menu::ViewBuilder;
-
-std::string button_label(int code) {
-    ginput::DeviceButton decoded;
-    if (!ginput::decode_button(code, decoded))
-        return binds_input_label(BindsActionType::Button, code);
-    if (decoded.kind == ginput::DeviceKind::Keyboard) {
-        const char* name = SDL_GetScancodeName(static_cast<SDL_Scancode>(decoded.code));
-        return "Keyboard " + std::string{name == nullptr ? "Unknown" : name};
-    }
-    if (decoded.kind == ginput::DeviceKind::Gamepad) {
-        const char* name = SDL_GetGamepadStringForButton(
-            static_cast<SDL_GamepadButton>(decoded.code));
-        return "Gamepad " + std::string{name == nullptr ? "Unknown" : name};
-    }
-    if (decoded.kind == ginput::DeviceKind::Mouse)
-        return "Mouse button " + std::to_string(decoded.code);
-    return "Device button " + std::to_string(decoded.code);
-}
-
-void frame(ViewBuilder& ui, std::string title, float width = 760.0F,
-           float height = 520.0F) {
-    ui.layout_container("root", "shell", glayout::ContainerKind::Stack,
-                        {glayout::LengthKind::Fill, 1.0F},
-                        {glayout::LengthKind::Fill, 1.0F});
-    ui.container("shell", "card", glayout::ContainerKind::Column,
-                 {glayout::LengthKind::Pixels, width},
-                 {glayout::LengthKind::Pixels, height}, 8.0F,
-                 {24.0F, 20.0F, 24.0F, 20.0F});
-    ui.layout("card").align = glayout::Align::Center;
-    ui.spec("card").style_class = "large-main-panel";
-    ui.label("card", "heading", std::move(title), 70.0F, 36.0F,
-             gview::TextAlign::Center);
-}
-
-void button(ViewBuilder& ui, std::string id, std::string label,
-            std::string action, float height = 46.0F) {
-    const std::string node_id = id;
-    ui.button("card", std::move(id), std::move(label), std::move(action),
-              "menu", height);
-    ui.spec(node_id).text_style.size = 19.0F * ui.scale();
-}
-
-void footer(ViewBuilder& ui, std::string first) {
-    button(ui, "back", "Back", "back", 42.0F);
-    ui.focus_group("menu", std::move(first), "card");
-}
+using namespace gauche_menu;
 
 void main_page(ViewBuilder& ui) {
     frame(ui, "GAUCHE", 520.0F, 385.0F);
-    button(ui, "play", "Play", "play", 51.0F);
     button(ui, "quick", "Quick Run", "quick", 51.0F);
+    button(ui, "play", "Play", "play", 51.0F);
     button(ui, "settings", "Settings", "settings", 51.0F);
     button(ui, "quit", "Quit", "quit", 51.0F);
-    ui.focus_group("menu", "play", "card");
+    ui.focus_group("menu", "quick", "card");
 }
 
 void lobby_page(ViewBuilder& ui, const FrontPage& page, int death_policy) {
@@ -202,151 +159,18 @@ void audio_page(ViewBuilder& ui, const FrontPage& page) {
     footer(ui, "master");
 }
 
-void controls_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Control Profiles", 790.0F, 500.0F);
-    ui.label("card", "control-help", "Edit a profile, then assign it in Player Setup.",
-             40.0F, 16.0F);
-    for (const BindsProfile& profile : gubsy_get_binds_profiles(*page.backend))
-        button(ui, "profile-" + std::to_string(profile.id), profile.name + "  ·  Edit",
-               "profile:" + std::to_string(profile.id));
-    button(ui, "profile-new", "+ Create Profile", "profile:new");
-    footer(ui, gubsy_get_binds_profiles(*page.backend).empty() ? "back" :
-               "profile-" + std::to_string(gubsy_get_binds_profiles(*page.backend).front().id));
-}
-
-void profile_editor_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Edit · " + page.profile_name, 760.0F, 490.0F);
-    ui.text_input("card", "profile-name", "Profile name", "profile-name", "menu", 48.0F);
-    button(ui, "profile-save", "Save Name", "profile:save");
-    button(ui, "profile-bindings", "Button and Analog Mappings", "profile:bindings");
-    button(ui, "profile-input", "Controller Options", "input-options");
-    button(ui, "profile-copy", "Duplicate Profile", "profile:copy");
-    ui.label("card", "profile-note", "Assign this profile in Player Setup.", 35.0F, 15.0F);
-    footer(ui, "profile-name");
-}
-
-void bindings_page(ViewBuilder& ui, const FrontPage& page) {
-    const BindsProfile* profile = gubsy_find_binds_profile(*page.backend,
-                                                            page.selected_profile);
-    frame(ui, profile ? profile->name + " · Bindings" : "Bindings", 900.0F, 620.0F);
-    ui.layout_container("card", "binding-list", glayout::ContainerKind::Column,
-                        {glayout::LengthKind::Fill, 1.0F},
-                        {glayout::LengthKind::Fill, 1.0F}, 4.0F);
-    ui.scrolling("binding-list");
-    const BindsSchema& schema = get_binds_schema();
-    for (const ginput::SchemaEntry& entry : schema.actions()) {
-        std::string mapping;
-        if (profile != nullptr)
-            for (const ginput::ButtonBind& bind :
-                 ginput::button_binds_for_action(*profile, entry.id)) {
-                if (!mapping.empty()) mapping += ", ";
-                mapping += button_label(bind.device_button);
-            }
-        if (mapping.empty()) mapping = "Unbound";
-        ui.button("binding-list", "bind-" + std::to_string(entry.id),
-                  entry.label + "  ·  " + mapping,
-                  "bind:0:" + std::to_string(entry.id),
-                  "menu", 39.0F);
-    }
-    for (const ginput::SchemaEntry& entry : schema.axes_1d())
-        ui.button("binding-list", "axis1-" + std::to_string(entry.id),
-                  entry.label + "  ·  Analog", "bind:1:" + std::to_string(entry.id),
-                  "menu", 39.0F);
-    for (const ginput::SchemaEntry& entry : schema.axes_2d())
-        ui.button("binding-list", "axis2-" + std::to_string(entry.id),
-                  entry.label + "  ·  Analog", "bind:2:" + std::to_string(entry.id),
-                  "menu", 39.0F);
-    ui.label("card", "binding-help", page.capturing_bind ?
-             "Press a key, mouse button, or gamepad button…" :
-             "Select an action to view, add, or remove mappings.", 34.0F, 15.0F);
-    button(ui, "input-options", "Stick and trigger options", "input-options", 42.0F);
-    footer(ui, schema.actions().empty() ? "back" :
-               "bind-" + std::to_string(schema.actions().front().id));
-}
-
-void input_options_page(ViewBuilder& ui, const FrontPage&) {
-    frame(ui, "Controller Options", 760.0F, 520.0F);
-    ui.layout_container("card", "input-list", glayout::ContainerKind::Column,
-                        {glayout::LengthKind::Fill, 1.0F},
-                        {glayout::LengthKind::Fill, 1.0F}, 5.0F);
-    ui.scrolling("input-list");
-    ui.slider("input-list", "controller-sensitivity", "Controller sensitivity",
-              "input:controller-sensitivity", "menu", 0.4, 2.0, 0.05, 46.0F);
-    ui.slider("input-list", "stick-deadzone", "Stick deadzone",
-              "input:stick-deadzone", "menu", 0.0, 0.95, 0.01, 46.0F);
-    ui.slider("input-list", "trigger-threshold", "Trigger threshold",
-              "input:trigger-threshold", "menu", 0.01, 1.0, 0.01, 46.0F);
-    ui.toggle("input-list", "controller-invert-x", "Invert controller X",
-              "input:controller-invert-x", "menu", 42.0F);
-    ui.toggle("input-list", "controller-invert-y", "Invert controller Y",
-              "input:controller-invert-y", "menu", 42.0F);
-    ui.label("card", "mouse-note", "Mouse aim follows the pointer directly.",
-             32.0F, 16.0F);
-    footer(ui, "controller-sensitivity");
-}
-
-void binding_detail_page(ViewBuilder& ui, const FrontPage& page) {
-    const BindsProfile* profile = gubsy_find_binds_profile(*page.backend,
-                                                            page.selected_profile);
-    const BindsSchema& schema = get_binds_schema();
-    const ginput::SchemaEntry* entry = page.selected_bind_type == BindsActionType::Button ?
-        schema.find_action(page.selected_bind_action) :
-        (page.selected_bind_type == BindsActionType::Analog1D ?
-         schema.find_axis_1d(page.selected_bind_action) :
-         schema.find_axis_2d(page.selected_bind_action));
-    frame(ui, entry ? entry->label : "Binding", 760.0F, 520.0F);
-    ui.label("card", "binding-instruction", "Existing mappings", 36.0F, 17.0F);
-    int index = 0;
-    if (profile != nullptr && page.selected_bind_type == BindsActionType::Button)
-        for (const ginput::ButtonBind& mapping :
-             ginput::button_binds_for_action(*profile, page.selected_bind_action)) {
-            button(ui, "mapping-" + std::to_string(index),
-                   button_label(mapping.device_button) +
-                   "  ·  Remove", "bind:remove:" + std::to_string(index));
-            ++index;
-        }
-    if (profile != nullptr && page.selected_bind_type == BindsActionType::Analog1D)
-        for (const ginput::Axis1DBind& mapping :
-             ginput::binds_for_axis_1d(*profile, page.selected_bind_action)) {
-            button(ui, "mapping-" + std::to_string(index),
-                   binds_input_label(BindsActionType::Analog1D, mapping.device_axis) +
-                   "  ·  Remove", "bind:remove:" + std::to_string(index));
-            ++index;
-        }
-    if (profile != nullptr && page.selected_bind_type == BindsActionType::Analog2D)
-        for (const ginput::Axis2DBind& mapping :
-             ginput::binds_for_axis_2d(*profile, page.selected_bind_action)) {
-            button(ui, "mapping-" + std::to_string(index),
-                   binds_input_label(BindsActionType::Analog2D, mapping.device_stick) +
-                   "  ·  Remove", "bind:remove:" + std::to_string(index));
-            ++index;
-        }
-    if (index == 0) ui.label("card", "no-mapping", "No mappings yet", 40.0F, 15.0F);
-    button(ui, "binding-add", page.capturing_bind ? "Press a button…" :
-           "+ Add Mapping", "bind:add");
-    button(ui, "binding-clear", "Clear Action", "bind:clear");
-    footer(ui, "binding-add");
-}
-
-void binding_choices_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Choose Analog Input", 720.0F, 510.0F);
-    ui.layout_container("card", "choice-list", glayout::ContainerKind::Column,
-                        {glayout::LengthKind::Fill, 1.0F},
-                        {glayout::LengthKind::Fill, 1.0F}, 4.0F);
-    ui.scrolling("choice-list");
-    const std::vector<InputChoice>& choices = binds_input_choices(page.selected_bind_type);
-    for (std::size_t index = 0; index < choices.size(); ++index)
-        ui.button("choice-list", "choice-" + std::to_string(index), choices[index].label,
-                  "bind:choice:" + std::to_string(index), "menu", 42.0F);
-    footer(ui, choices.empty() ? "back" : "choice-0");
-}
-
 void pause_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Paused", 560.0F, 410.0F);
-    button(ui, "resume", "Resume", "resume");
-    if (page.allow_restart) button(ui, "restart", "Restart Run", "restart");
-    button(ui, "pause-settings", "Settings", "settings");
-    button(ui, "title", "Quit to Main Menu", "title");
+    frame(ui, "Paused", 950, 600);
+    ui.layout_container("card", "pause-body", glayout::ContainerKind::Row,
+        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Fill, 1}, 24);
+    ui.layout_container("pause-body", "pause-actions", glayout::ContainerKind::Column,
+        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Fill, 1}, 8);
+    ui.button("pause-actions", "resume", "Resume", "resume", "menu", 46);
+    if (page.allow_restart)
+        ui.button("pause-actions", "restart", "Restart Run", "restart", "menu", 46);
+    ui.button("pause-actions", "pause-settings", "Settings", "settings", "menu", 46);
+    ui.button("pause-actions", "title", "Quit to Main Menu", "title", "menu", 46);
+    control_reference(ui, "pause-body", page, active_profile_id(page));
     ui.focus_group("menu", "resume", "card");
 }
 
@@ -390,5 +214,7 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
         ui.label("card", "toast", page.toast, 28.0F, 14.0F,
                  gview::TextAlign::Center);
     }
+    ui.layout("card").size.width.value = std::min(ui.layout("card").size.width.value,
+        static_cast<float>(width) - 24);
     return ui.finish();
 }

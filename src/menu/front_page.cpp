@@ -1,5 +1,9 @@
 #include "front_page.hpp"
 #include "pages.hpp"
+#include "profiles.hpp"
+#include "text_edit.hpp"
+#include "control_reference.hpp"
+#include "audio.hpp"
 #include "../graphics.hpp"
 #include "../input.hpp"
 
@@ -58,6 +62,7 @@ InputSettingsProfile* selected_tuning(FrontPage& page) {
 
 bool capture_button(FrontPage& page, const SDL_Event& event) {
     if (!page.capturing_bind || page.backend == nullptr) return false;
+    if (profile_read_only(page)) { page.capturing_bind = false; return true; }
     if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
         page.capturing_bind = false;
         page.toast = "Binding capture cancelled";
@@ -110,6 +115,8 @@ std::string projection(const FrontPage& page, int death_policy) {
             lobby.last_error + ":" + std::to_string(lobby.game_members.size()) + ":" +
             std::to_string(gubsy_get_binds_profiles(*page.backend).size());
     }
+    result += ":" + std::to_string(controller_input_active()) + ":" +
+        std::to_string(active_gamepad_id());
     return result;
 }
 
@@ -134,6 +141,8 @@ bool init_front_page(FrontPage& page, GubsyRuntime& backend, SDL_Renderer* rende
         page.painter->register_texture(entry.id, texture);
         page.textures.emplace(entry.id, texture);
     }
+    page.painter->register_surface("control-diagram", [&page](SDL_Renderer* target,
+        const gview::PaintCommand& command) { draw_control_diagram(target, command, page); });
     return true;
 }
 
@@ -249,11 +258,14 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
             if (key == "join-host") page.join_host = *text;
             if (key == "join-port") page.join_port = *text;
             if (key == "host-port") page.host_port = *text;
-            if (key == "profile-name") page.profile_name = *text;
+            if (key == "profile-name" && !profile_read_only(page)) {
+                page.profile_name = *text;
+                (void)save_profile_name(page);
+            }
             return;
         }
         InputSettingsProfile* tuning = selected_tuning(page);
-        if (tuning == nullptr) return;
+        if (tuning == nullptr || profile_read_only(page)) return;
         if (const double* number = std::get_if<double>(&value)) {
             const float level = static_cast<float>(*number);
             if (key == "input:controller-sensitivity") tuning->controller_sensitivity = level;
@@ -265,6 +277,12 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
             if (key == "input:controller-invert-y") tuning->controller_invert_y = *enabled;
         }
         (void)save_input_settings_profile(*tuning);
+        menu_feedback(page, gview::FeedbackEvent::Toggle);
+    };
+    host.feedback = [&page](gview::FeedbackEvent event, gview::NodeIndex node) {
+        if (event == gview::FeedbackEvent::Activate &&
+            page.runtime.view().nodes[node].source.action == "back") return;
+        menu_feedback(page, event);
     };
     host.action = [&page](std::string_view action, gview::NodeIndex) {
         page.action = action;
@@ -272,7 +290,16 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
     glayout::ResolveInput resolution{};
     resolution.viewport = {0.0F, 0.0F, static_cast<float>(width),
                            static_cast<float>(height)};
+    finish_text_edit(page, input, resolution, host);
     page.runtime.frame(resolution, page.input, host);
+    update_control_preview(page);
+    std::string hovered;
+    for (gview::NodeIndex i = 0; i < page.runtime.state().size(); ++i)
+        if (page.runtime.state()[i].hovered)
+            hovered = page.runtime.view().nodes[i].source.layout_id;
+    if (!hovered.empty() && hovered != page.hovered_control && page.input.pointer.moved)
+        menu_feedback(page, gview::FeedbackEvent::Move);
+    page.hovered_control = std::move(hovered);
     const float pointer_x = page.input.pointer.x;
     const float pointer_y = page.input.pointer.y;
     page.input = {};

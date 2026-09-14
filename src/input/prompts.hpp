@@ -11,3 +11,5 @@ struct InputPrompt {
 
 void set_prompt_runtime(GubsyRuntime& runtime);
 InputPrompt action_prompt(Action action, int profile_id = -1);
+InputPrompt pad_button_prompt(SDL_GamepadButton button);
+InputPrompt stick_prompt(int action, int profile_id);

@@ -238,3 +238,27 @@ triggers. The ground hint distinguishes pickup, swap, drop and full pack. Profil
 menus, pause diagrams and remaining shortcut handling are still the menu pass.
 Strict builds and static keyboard HUD/inventory captures checked; controller
 hardware/layout switching and pickup feel await user playtesting.
+
+
+## Profile management and menu reference
+
+Defaults are read-only in name editing, binding capture/removal, and controller
+settings. Creating a profile copies Gauche's default bindings and selects it for
+the indicated local player; duplication copies both bindings and tuning. The
+profile list marks Active, selects on its main row, and exposes Edit/View as a
+separate action. Names commit on Enter, navigating away, outside click or ending
+editing with Back. Invalid/reserved/duplicate names retain the previous name.
+GView's Confirm-only text commit is handled at the Gauche integration boundary.
+
+Profiles, editing and pause have a device-specific bindings legend and schematic.
+Hover/focus previews a profile without selecting it. Create is above/right of the
+list; shared Back buttons sit bottom-left; Quick Run precedes Play. Lists scroll
+rather than pushing navigation offscreen. The entire menu usability task remains
+open for continued polish, including FPS placement and remaining shortcut hints.
+
+Four new offline synthesized menu sounds give dry ticks for navigation/change,
+a short confirm and a descending back sound. A separate local mixer voice follows
+master/effects volume, deduplicates rapid hovering and never enters gameplay state.
+Strict executable/render-target builds and isolated-data, dummy-SDL static menu
+captures checked defaults, new-profile presentation and keyboard/controller
+legends. These are render checks, not hardware input or gameplay playtests.

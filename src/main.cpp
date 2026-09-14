@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
     MenuShell menu;
     init_menu_shell(menu, host, game, network, requested_death_policy(argc, argv),
                     identity_path);
+    menu.front.audio = &audio;
     menu.playing = network.role == NetRole::Host || game.started;
     Cosmetics cosmetics;
     InteractionUi interaction;
@@ -127,6 +128,12 @@ int main(int argc, char** argv) {
         show_title_menu(menu);
     const std::string_view menu_page = value_arg(argc, argv, "--smoke-menu-page");
     if (!menu_page.empty()) {
+        if (has_arg(argc, argv, "--capture-pad")) {
+            SDL_Event device{};
+            device.type = SDL_EVENT_GAMEPAD_BUTTON_DOWN;
+            device.gbutton.button = SDL_GAMEPAD_BUTTON_SOUTH;
+            observe_input_device(device);
+        }
         constexpr struct { std::string_view name; MenuScreen screen; } pages[]{
             {"main", MenuScreen::Main}, {"lobby", MenuScreen::Lobby},
             {"rules", MenuScreen::Rules}, {"host", MenuScreen::Host},

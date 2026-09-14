@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 
+struct GameAudio;
+
 enum class MenuScreen {
     Main, Lobby, Rules, Host, Join, Players, Player, Settings, Display, Audio,
     Controls, ProfileEditor, Bindings, BindDetail, BindChoices, InputOptions,
@@ -20,6 +22,8 @@ struct FrontPage {
     std::unique_ptr<gview::Sdl3Renderer> painter;
     std::unordered_map<std::string, SDL_Texture*> textures;
     GubsyRuntime* backend = nullptr;
+    GameAudio* audio = nullptr;
+    std::string hovered_control;
     gview::InputFrame input{};
     MenuScreen screen = MenuScreen::Main;
     MenuScreen settings_return = MenuScreen::Main;
@@ -32,6 +36,7 @@ struct FrontPage {
     std::string projection;
     int selected_player = 0;
     int selected_profile = -1;
+    int preview_profile = -1;
     int selected_bind_action = 0;
     BindsActionType selected_bind_type = BindsActionType::Button;
     bool capturing_bind = false;

@@ -13,6 +13,9 @@ struct GameAudio {
     AmbientAudio ambience;
     MIX_Mixer* mixer = nullptr;
     MIX_Track* music_track = nullptr;
+    MIX_Track* menu_track = nullptr;
+    std::array<MIX_Audio*, 4> menu_sounds{};
+    std::uint64_t last_menu_sound = 0;
     std::array<MIX_Track*, 12> tracks{};
     std::array<MIX_Audio*, static_cast<std::size_t>(SoundId::Count)> sounds{};
     std::array<MIX_Audio*, 2> songs{};

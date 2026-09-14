@@ -21,6 +21,11 @@ InputPrompt gamepad_button(int code) {
     SDL_Gamepad* gamepad = SDL_GetGamepadFromID(active_gamepad_id());
     const auto button = static_cast<SDL_GamepadButton>(code);
     prompt.face = gamepad == nullptr ? SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN : SDL_GetGamepadButtonLabel(gamepad, button);
+    if (gamepad == nullptr && button >= SDL_GAMEPAD_BUTTON_SOUTH && button <= SDL_GAMEPAD_BUTTON_NORTH) {
+        constexpr SDL_GamepadButtonLabel labels[]{SDL_GAMEPAD_BUTTON_LABEL_A,
+            SDL_GAMEPAD_BUTTON_LABEL_B, SDL_GAMEPAD_BUTTON_LABEL_X, SDL_GAMEPAD_BUTTON_LABEL_Y};
+        prompt.face = labels[static_cast<int>(button)];
+    }
     switch (prompt.face) {
     case SDL_GAMEPAD_BUTTON_LABEL_A: prompt.label = "A"; break;
     case SDL_GAMEPAD_BUTTON_LABEL_B: prompt.label = "B"; break;
@@ -35,6 +40,10 @@ InputPrompt gamepad_button(int code) {
         switch (button) {
         case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER: prompt.label = family == 1 ? "L1" : family == 2 ? "L" : "LB"; break;
         case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER: prompt.label = family == 1 ? "R1" : family == 2 ? "R" : "RB"; break;
+        case SDL_GAMEPAD_BUTTON_DPAD_UP: prompt.label = "D-up"; break;
+        case SDL_GAMEPAD_BUTTON_DPAD_DOWN: prompt.label = "D-down"; break;
+        case SDL_GAMEPAD_BUTTON_DPAD_LEFT: prompt.label = "D-left"; break;
+        case SDL_GAMEPAD_BUTTON_DPAD_RIGHT: prompt.label = "D-right"; break;
         case SDL_GAMEPAD_BUTTON_LEFT_STICK: prompt.label = "L3"; break;
         case SDL_GAMEPAD_BUTTON_RIGHT_STICK: prompt.label = "R3"; break;
         case SDL_GAMEPAD_BUTTON_BACK: prompt.label = family == 2 ? "-" : family == 1 ? "Share" : "View"; break;
@@ -104,4 +113,27 @@ InputPrompt action_prompt(Action action, int profile_id) {
             }
         }
     return {"--", pad};
+}
+
+InputPrompt pad_button_prompt(SDL_GamepadButton button) { return gamepad_button(button); }
+
+InputPrompt stick_prompt(int action, int profile_id) {
+    if (backend == nullptr) return {"--", true};
+    const auto* profile = gubsy_find_binds_profile(*backend, profile_id);
+    if (profile == nullptr) return {"--", true};
+    for (const auto& binding : ginput::binds_for_axis_2d(*profile, action)) {
+        ginput::DeviceAxis2D stick;
+        int code = binding.device_stick;
+        if (ginput::decode_axis_2d(code, stick)) {
+            if (stick.kind != ginput::DeviceKind::Gamepad) continue;
+            if (stick.x_code == SDL_GAMEPAD_AXIS_LEFTX && stick.y_code == SDL_GAMEPAD_AXIS_LEFTY)
+                return {"Left stick", true};
+            if (stick.x_code == SDL_GAMEPAD_AXIS_RIGHTX && stick.y_code == SDL_GAMEPAD_AXIS_RIGHTY)
+                return {"Right stick", true};
+            return {"Custom axes", true};
+        }
+        if (code == 0) return {"Left stick", true};
+        if (code == 1) return {"Right stick", true};
+    }
+    return {"--", true};
 }

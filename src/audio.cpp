@@ -53,7 +53,8 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
         return false;
     }
     audio.music_track = MIX_CreateTrack(audio.mixer);
-    if (audio.music_track == nullptr) {
+    audio.menu_track = MIX_CreateTrack(audio.mixer);
+    if (audio.music_track == nullptr || audio.menu_track == nullptr) {
         error = std::string{"Unable to create music track: "} + SDL_GetError();
         shutdown_audio(audio);
         return false;
@@ -73,6 +74,12 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
             return false;
         }
     }
+    constexpr const char* menu_names[]{"menu_move", "menu_activate", "menu_back", "menu_change"};
+    for (std::size_t index = 0; index < audio.menu_sounds.size(); ++index)
+        if (!load_audio_asset(audio, audio.menu_sounds[index], root / "sounds" /
+                (std::string{menu_names[index]} + ".ogg"), true, error)) {
+            shutdown_audio(audio); return false;
+        }
     for (int index = 0; index < 2; ++index) {
         const auto path = root / "music" / (index == 0 ? "title.ogg" : "playing.ogg");
         if (!load_audio_asset(audio, audio.songs[static_cast<std::size_t>(index)],
@@ -94,6 +101,11 @@ void shutdown_audio(GameAudio& audio) {
         if (sound != nullptr) MIX_DestroyAudio(sound);
         sound = nullptr;
     }
+    if (audio.menu_track != nullptr) MIX_StopTrack(audio.menu_track, 0);
+    for (MIX_Audio*& sound : audio.menu_sounds) {
+        if (sound != nullptr) MIX_DestroyAudio(sound);
+        sound = nullptr;
+    }
     for (MIX_Audio*& song : audio.songs) {
         if (song != nullptr) MIX_DestroyAudio(song);
         song = nullptr;
@@ -101,6 +113,7 @@ void shutdown_audio(GameAudio& audio) {
     if (audio.mixer != nullptr) MIX_DestroyMixer(audio.mixer);
     audio.mixer = nullptr;
     audio.music_track = nullptr;
+    audio.menu_track = nullptr;
     audio.tracks.fill(nullptr);
     audio.current_song = -1;
     audio.initialized = false;

@@ -466,28 +466,30 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [ ] Give all menus a usability/layout pass: consistent small bottom-left Back,
   primary actions apart from lists, Create Profile above/right of the profile list,
   Quickplay above Play, readable controller settings with relevant help text.
-- [ ] Default bindings are read-only. Create editable profiles from defaults;
+- [x] Default bindings are read-only. Create editable profiles from defaults;
   save profile-name edits automatically on blur. Show the active assigned profile
   and allow assigning/selecting it from the profile list, with clear local-player scope.
-- [ ] Preview bindings beside profile selection/editing, preferably a labeled pad
+- [x] Preview bindings beside profile selection/editing, preferably a labeled pad
   or keyboard diagram; include a compact controls reference beside the pause menu.
-- [ ] Add restrained menu focus/hover, activate, change and back sounds; avoid
+- [x] Add restrained menu focus/hover, activate, change and back sounds; avoid
   repeated hover spam and ensure keyboard/controller changes receive feedback too.
 - [ ] Fix the enabled FPS display reporting zero and its overlap with the floor HUD.
 
+## Playtest feedback: canopy, choices and enemy presence
+
+- [ ] Make forest canopies greener and more opaque while keeping the large
+  dithered viewing mask and anchored parallax. Avoid dark smoke-like foliage.
+- [ ] Clarify pick-three selection: the angled red banner must consistently mark
+  the focused choice, with stronger focus animation and a clear choose prompt.
+- [ ] Expose owned artifacts and their effects in the HUD/inventory.
+- [ ] Let adult chickens survive about four ordinary punches; investigate mothers
+  getting stuck despite an open route, including repeated blocked direction choices.
+- [ ] Make mimics substantially tougher and frightening when revealed. Preserve
+  enemies worth avoiding until prepared, alongside nuisance/flavor enemies.
+
 ## Suggested order
 
-1. Tile rules, then tile impact visuals.
-2. Campfire state/contact rules, then rendering, particles, and audio.
-3. Forest ground simplification, reactive props and loose debris, then canopy
-   lighting, cloud shadows, distance-fade removal, and footprint visibility.
-4. Compact UI default, UI sizing, pointer device switching, and captures.
-5. Route graph and authored forest room pool, then forest content slices and
-   contextual loot, sound, and unique floors.
-6. Extend each later biome through the same design, implementation, and
-   playtest loop; decide the fourth biome and the reward/artifact direction
-   from complete runs.
-
-Use the Rust tile behavior as a parity reference and the current C++ lighting
-as the visual baseline. Review each visible change in an SDL capture at normal
-zoom before calling the task complete.
+Finish active playtest fixes, then forest content slices, contextual loot and
+unique floors. Extend each later biome through design, implementation and user
+playtesting. Keep Rust as the parity reference and current C++ lighting as the
+visual baseline; review visible changes in static captures at normal zoom.

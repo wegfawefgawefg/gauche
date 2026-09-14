@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "items/optics.hpp"
+#include "items/muffling.hpp"
 #include "props/cloth.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
@@ -89,6 +90,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::MufflingFelt:
+        used = apply_muffling(game, user_slot);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::BlackFelt:
         used = cover_optic(game, user.cell + direction);
         cooldown = item_pattern(item).cooldown;
@@ -311,6 +316,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     }
     if (used) {
+        if (item_is_melee(used_kind)) finish_muffled_use(game, item, user.cell);
         item.cooldown = cooldown;
         user.use_flash = 8;
         if (const RegionalItem* spec = regional_item(used_kind)) {
@@ -337,7 +343,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
+            if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
+            else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
             else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
             else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
             else if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);

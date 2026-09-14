@@ -70,6 +70,7 @@ int main() {
     original.stage.tiles[7].material = TileMaterial::Ice;
     owner->inventory.slots[0] = make_item(ItemKind::Chisel, 1, ItemAttribute::Fragile);
     owner->inventory.slots[0].durability = 13;
+    owner->inventory.slots[0].muffled_uses = 4;
     owner->inventory.slots[5] = make_item(ItemKind::GritPouch, 1, ItemAttribute::Big);
     owner->inventory.slots[5].uses = 2;
     original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};

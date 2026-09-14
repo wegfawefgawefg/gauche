@@ -110,12 +110,12 @@ void sweep_dead(Game& game) {
 
 } // namespace
 
-void emit_sound(Game& game, SoundId sound, Cell cell, bool positional) {
-    if (positional) hear_world_action(game, sound, cell);
+void emit_sound(Game& game, SoundId sound, Cell cell, bool positional, bool muffled) {
+    if (positional && !muffled) hear_world_action(game, sound, cell);
     if (game.sound_count >= static_cast<int>(game.sounds.size())) return;
     const auto sequence = static_cast<std::uint8_t>(game.sound_count);
     game.sounds[static_cast<std::size_t>(game.sound_count++)] =
-        {sound, cell, game.tick, sequence, positional};
+        {sound, cell, game.tick, sequence, positional, muffled};
 }
 
 void step_game(Game& game, const std::array<Input, 4>& inputs) {

@@ -274,8 +274,8 @@ behavior and balance playtesting remain the user's.
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
   Seven cold room roles now host ten enemy types, including burrowers,
-  Mirror Knights, Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Eighteen items include
-  [observatory optics](history/ICE_OPTICS.md). Ten of twenty enemies, eighteen of fifty items; balance remains for playtesting.
+  Mirror Knights, Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Nineteen items include
+  [observatory optics](history/ICE_OPTICS.md). Ten of twenty enemies, nineteen of fifty items; balance remains for playtesting.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

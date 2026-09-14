@@ -1,4 +1,5 @@
 #include "item_meter.hpp"
+#include "text.hpp"
 #include "../items/catalog.hpp"
 #include "../item_attribute.hpp"
 #include "../item_pattern.hpp"
@@ -17,7 +18,7 @@ std::string item_cooldown_text(const Item& item) {
 
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return compact ? "OUT" : "IN FLIGHT";
-    char result[32];
+    char result[32]{};
     if (item.kind == ItemKind::SnowScoop)
         std::snprintf(result, sizeof(result), compact ? "%d/%d S%d" : "COND %d/%d SNOW %d", item.durability, item.max_durability, item.loaded);
     else if (item.kind == ItemKind::Bow)
@@ -37,8 +38,13 @@ std::string item_state_text(const Item& item, bool compact) {
     else if (item_stackable(item))
         std::snprintf(result, sizeof(result), compact ? "x%d" : "STACK %d/%d",
                       item.count, item.max_count);
-    else return {};
-    return result;
+    std::string state = result;
+    if (!compact && item.muffled_uses > 0) {
+        if (!state.empty()) state += " ";
+        state += "QUIET ";
+        state += std::to_string(item.muffled_uses);
+    }
+    return state;
 }
 
 int item_meter_capacity(const Item& item) {
@@ -76,4 +82,13 @@ void draw_item_meter(SDL_Renderer* renderer, float x, float y,
     base.w *= amount;
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 240);
     SDL_RenderFillRect(renderer, &base);
+}
+
+void draw_muffled_count(SDL_Renderer* renderer, const Item& item, float x, float y) {
+    if (item.muffled_uses == 0) return;
+    const SDL_FRect badge{x, y, 14, 8};
+    SDL_SetRenderDrawColor(renderer, 27, 42, 43, 255);
+    SDL_RenderFillRect(renderer, &badge);
+    const char label[]{'Q', static_cast<char>('0' + item.muffled_uses), '\0'};
+    small_ui_text(renderer, x + 1, y, label, 162, 210, 202);
 }

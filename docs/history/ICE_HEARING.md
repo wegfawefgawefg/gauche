@@ -46,3 +46,47 @@ warnings, existing snapshot codec check passes, and a static pose capture was
 inspected. Sprite formats and decoded audio headroom pass. No live playtest or
 new suite was run; behavior and balance remain for the user's playtesting.
 The master goal is still incomplete.
+
+## Muffling Felt (2026-09-14)
+
+The nineteenth regional item supplies two applications, four with Durable,
+costs fourteen and takes 45 ticks to apply. Each application wraps the next
+unwrapped melee weapon or gun after the felt's inventory slot, wrapping around
+once. Its detail card names the actual target slot and weapon before use. Ground
+and reward previews ask the player to equip it before predicting a target.
+Existing wrapping is never refreshed or overwritten; no valid target means no
+use or cooldown spent. Consumable throws, noisemakers, food and fixtures cannot
+be wrapped. Fists, bows, repairable blades and firearms can.
+
+A wrapped weapon suppresses ordinary use-noise propagation to Echo Hounds and
+plays those cues at one-quarter local volume. Impact sounds, broken scenery,
+explosions, footsteps and real damage reactions stay unchanged. Rocket launch
+can be quiet while its later explosion remains loud. Melee windup, bow draw and
+release, gun report and launched crossbow/rocket cues use an item-aware emission
+helper; all impact paths retain ordinary emission. The sixth use is still quiet.
+A gun volley spends one charge regardless of pellets; failed allocation/empty
+clicks spend none. Completed melee actions spend one, cancelled windups none.
+Bow release spends one after successfully creating an arrow, never per draw tick.
+
+The remaining six-use allowance lives on the weapon as `muffled_uses`, independent
+of ammo, durability, use count or rare attribute. Drops, trades and saved/rejoined
+state preserve it. Emptying a wrap produces a quiet unwinding cue and local felt
+scraps; exhausting the two-application item has its own empty-sleeve cue rather
+than a box smash. One icon and three generated cloth sounds are included.
+Inventory/HUD/compact cards show a small Q-count badge, leaving ammo, condition
+and cooldown numbers in their own places. Full details spell out QUIET USES.
+The HUD also now allows seven characters in its condition readout so an existing
+durable rake displays 800/800 instead of truncating the last digit.
+
+Regional shops/rewards and alternating echo-tunnel supplies include the felt.
+Echo Hound's single loot roll is now 25% raw meat, 10% Muffling Felt, otherwise
+nothing. No artifact or inventory-UI state is repurposed to store its effect.
+Snapshot layout advances to 33; gameplay compatibility to EF. Both inventory
+and ground/payload items include the new byte in the codec and hash, with bounds
+and item-eligibility validation. Cosmetic sound events carry a muffled playback
+flag; that flag does not depend on local audio settings.
+
+Strict builds pass without warnings. The existing codec round-trip includes a
+partly used wrapped weapon and passes. Static inventory/held comparisons and
+compact HUD captures were inspected; image format and decoded audio headroom
+pass. No live playtest or new suite was run. The master goal remains open.

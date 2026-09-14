@@ -1,5 +1,6 @@
 #include "net_codec.hpp"
 #include "props/cloth.hpp"
+#include "items/muffling.hpp"
 #include "projectiles/projectile.hpp"
 
 #include <algorithm>
@@ -108,6 +109,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     write_light(writer, item.light);
     writer.i32(item.dig_power);
     writer.i32(item.flame_ticks);
+    writer.u8(item.muffled_uses);
     writer.i32(item.flight.slot); writer.u32(item.flight.generation);
     writer.i32(item.anchor.slot); writer.u32(item.anchor.generation);
 }
@@ -126,6 +128,8 @@ Item read_item(PacketReader& reader) {
     item.light = read_light(reader);
     item.dig_power = reader.i32();
     item.flame_ticks = reader.i32();
+    item.muffled_uses = reader.u8();
+    if (item.muffled_uses > 6 || (item.muffled_uses > 0 && !muffleable_item(item))) reader.okay = false;
     item.flight = {reader.i32(), reader.u32()};
     item.anchor = {reader.i32(), reader.u32()};
     if (item.anchor.slot < -1 || item.anchor.slot >= max_entities ||
@@ -255,7 +259,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(32);
+    writer.u32(33);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -327,7 +331,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 32) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 33) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

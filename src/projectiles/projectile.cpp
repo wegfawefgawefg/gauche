@@ -1,4 +1,5 @@
 #include "projectile.hpp"
+#include "../items/muffling.hpp"
 #include "frost.hpp"
 #include "ice_brick.hpp"
 #include "snowball.hpp"
@@ -70,7 +71,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
         shot->light = {2, 180, {255, 156, 56}};
         emit_sound(game, SoundId::BombFuse, owner.cell);
     }
-    if (!flask) emit_sound(game, bomb ? SoundId::BombThrow : rocket ? SoundId::RocketLaunch :
+    if (!flask) emit_weapon_sound(game, item, bomb ? SoundId::BombThrow : rocket ? SoundId::RocketLaunch :
         item.kind == ItemKind::Crossbow ? SoundId::CrossbowShot : SoundId::BowRelease, owner.cell);
     return true;
 }

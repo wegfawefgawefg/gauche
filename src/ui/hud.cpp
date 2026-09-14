@@ -75,9 +75,10 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
                 std::snprintf(remaining, sizeof(remaining), "%ds", (item.flame_ticks+59)/60);
                 small_ui_text(renderer, x+83, y+1, remaining, 235, 167, 80);
             }
+            draw_muffled_count(renderer, item, x + 3, y + 10);
             const std::string state = item_state_text(item, true);
             small_ui_text(renderer, x + 19.0F, y + 9.0F,
-                          state.substr(0, 6), 200, 207, 189);
+                          state.substr(0, 7), 200, 207, 189);
             small_ui_text(renderer, x + 60.0F, y + 9.0F,
                           item_cooldown_text(item), 217, 183, 128);
             draw_item_meter(renderer, x + 19.0F, y + 16.0F, 38.0F, 2.0F,

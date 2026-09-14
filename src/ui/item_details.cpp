@@ -3,6 +3,7 @@
 #include "item_details.hpp"
 #include "../items/action.hpp"
 #include "../items/catalog.hpp"
+#include "../items/muffling.hpp"
 #include "../items/woodland_tools.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
@@ -97,6 +98,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
+    draw_muffled_count(renderer, item, x + 18, y + 39);
     text(renderer, x + 39.0F, y + 22.0F, item.flame_ticks > 0 ? "Lit Stick" : item_name(item.kind));
     char line[80];
     if (item_stackable(item))
@@ -169,6 +171,17 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
     if (item.kind == ItemKind::SnowScoop)
         std::snprintf(line, sizeof(line), "CLEAR %d | SNOW %d/12", pattern.half_width * 2 + 1, item.loaded);
+    if (item.kind == ItemKind::MufflingFelt) {
+        Inventory order = player.inventory;
+        bool carried = false;
+        for (int slot = 0; slot < quick_slots; ++slot)
+            if (&player.inventory.slots[static_cast<std::size_t>(slot)] == &item) { order.selected = slot; carried = true; }
+        const int target = muffling_target_slot(order);
+        if (!carried) std::snprintf(line, sizeof(line), "EQUIP TO PREVIEW TARGET");
+        else if (target < 0) std::snprintf(line, sizeof(line), "NO UNWRAPPED WEAPON");
+        else std::snprintf(line, sizeof(line), "WRAP #%d: %s", target + 1,
+            item_name(order.slots[static_cast<std::size_t>(target)].kind));
+    }
     if (item.kind == ItemKind::BlackFelt)
         std::snprintf(line, sizeof(line), "BLOCKS LIGHT | BURNS / TEARS");
     if (item.kind == ItemKind::PrismBomb)
@@ -244,6 +257,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
     } else if (item.kind == ItemKind::SnowScoop) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, item.loaded > 0 ? "PACK SNOWBALL" : "COLLECT SNOW FIRST");
+    } else if (item.muffled_uses > 0) {
+        std::snprintf(line, sizeof(line), "QUIET USES %u / 6", static_cast<unsigned int>(item.muffled_uses));
+        text(renderer, x + 10, y + 129, line, 167, 197, 199);
     } else if (item.flame_ticks > 0) {
         std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
         text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
@@ -303,6 +319,7 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
     SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
+    draw_muffled_count(renderer, item, x + 8, y + 22);
     if (item.flame_ticks > 0) {
         char status[64];
         std::snprintf(status, sizeof(status), "%s  FIRE %ds", label, (item.flame_ticks+59)/60);

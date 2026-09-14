@@ -1,4 +1,5 @@
 #include "bow.hpp"
+#include "muffling.hpp"
 #include "action.hpp"
 #include "../item_pattern.hpp"
 #include "../projectiles/projectile.hpp"
@@ -28,7 +29,7 @@ bool step_bow(Game& game, int slot, const Input& input) {
             bow.cooldown = 15;
             return true;
         }
-        if (user.counter_a == 0) emit_sound(game, SoundId::BowDraw, user.cell);
+        if (user.counter_a == 0) emit_weapon_sound(game, bow, SoundId::BowDraw, user.cell);
         user.counter_a = std::min(user.counter_a + 1, 12);
         user.label_b = user.inventory.selected + 1;
         user.point_b = user.facing;
@@ -36,6 +37,7 @@ bool step_bow(Game& game, int slot, const Input& input) {
     }
     if (user.counter_a > 0 && bow.loaded > 0 &&
         launch_projectile(game, slot, bow, user.point_b, item_pattern(bow).maximum)) {
+        finish_muffled_use(game, bow, user.cell);
         --bow.loaded;
         bow.cooldown = item_pattern(bow).cooldown;
         user.use_flash = 6;

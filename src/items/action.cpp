@@ -1,5 +1,6 @@
 #include "action.hpp"
 #include "catalog.hpp"
+#include "muffling.hpp"
 #include "../item_attribute.hpp"
 
 #include <algorithm>
@@ -68,7 +69,7 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
     user.point_b = user.facing;
     user.ground_item = held;
     const RegionalItem* spec = regional_item(held.kind);
-    emit_sound(game, spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
+    emit_weapon_sound(game, held, spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
         SoundId::FistWindup : held.kind == ItemKind::Pickaxe ? SoundId::PickaxeWindup : SoundId::StickWindup, user.cell);
     return true;
 }

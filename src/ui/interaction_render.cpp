@@ -164,6 +164,7 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
             std::snprintf(remaining, sizeof(remaining), "%ds", (item.flame_ticks+59)/60);
             text(renderer, x+130, y+5, remaining, 235, 167, 80);
         }
+        draw_muffled_count(renderer, item, x + 28, y + 22);
         text(renderer, x + 49.0F, y + 15.0F,
              item_state_text(item, true), 188, 205, 181);
         text(renderer, x + 102.0F, y + 15.0F,

@@ -42,7 +42,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::FistWindup: case SoundId::StickWindup: case SoundId::PickaxeWindup:
     case SoundId::AxeSwing: case SoundId::SpearThrust: case SoundId::MaulSwing:
     case SoundId::RakeSweep: case SoundId::KnifeStab: case SoundId::TorchSwing:
-    case SoundId::Punch1: case SoundId::ChiselJab: case SoundId::BlockLand:
+    case SoundId::ClawScratch: case SoundId::Punch1: case SoundId::ChiselJab: case SoundId::BlockLand:
     case SoundId::BumpWood: case SoundId::BumpStone:
         radius = 4; break;
     default: return;

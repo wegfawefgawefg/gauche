@@ -144,7 +144,7 @@ void play_game_sounds(GameAudio& audio, const Game& game, Cell listener) {
             audio.played_events.end()) continue;
         audio.played_events[audio.next_event++ % audio.played_events.size()] = key;
 
-        float volume = 0.9F * audio.master_level * audio.sound_level;
+        float volume = 0.9F * audio.master_level * audio.sound_level * (event.muffled ? .25F : 1.0F);
         MIX_StereoGains stereo{1.0F, 1.0F};
         if (event.positional) {
             const float dx = static_cast<float>(event.cell.x - listener.x);

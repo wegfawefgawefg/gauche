@@ -26,6 +26,7 @@
 #include "warden_scene.hpp"
 #include "felt_scene.hpp"
 #include "echo_scene.hpp"
+#include "muffling_scene.hpp"
 #include "quarry_tools_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -160,7 +161,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "echo-hounds" || mode == "felt" || mode == "felt-items" || mode == "wardens" || mode == "warden-beam" || mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
+    if (mode == "muffling" || mode == "muffling-hud" || mode == "echo-hounds" || mode == "felt" || mode == "felt-items" || mode == "wardens" || mode == "warden-beam" || mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -270,6 +271,7 @@ int main(int argc, char** argv) {
     }
     if (mode == "eels" || mode == "eel-arcs" || mode == "eel-items")
         arrange_eel_scene(game, cosmetics, player, mode == "eel-arcs");
+    if (mode == "muffling" || mode == "muffling-hud") arrange_muffling_scene(game, cosmetics, player);
     if (mode == "echo-hounds") arrange_echo_scene(game, cosmetics, player);
     if (mode == "felt" || mode == "felt-items")
         arrange_felt_scene(game, cosmetics, player, mode == "felt");
@@ -331,10 +333,10 @@ int main(int argc, char** argv) {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "felt-items" || mode == "prism-items" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-tools" || mode == "snowball-items" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "cold-remedies" || mode == "cold-poultice" || mode == "heat-items" || mode == "cold-items" || mode == "air-items" || mode == "ice-needles" || mode == "grit-items" || mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "muffling" || mode == "felt-items" || mode == "prism-items" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-tools" || mode == "snowball-items" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "cold-remedies" || mode == "cold-poultice" || mode == "heat-items" || mode == "cold-items" || mode == "air-items" || mode == "ice-needles" || mode == "grit-items" || mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
-        interaction.slot_focus = mode == "felt-items" ? 0 : mode == "prism-items" ? 1 : mode == "mirror-item" ? 1 : mode == "snow-tools" ? 1 : mode == "snowball-items" ? 2 : mode == "quarry-tools" ? 0 : mode == "quarry-bricks" ? 2 : mode == "cold-remedies" ? 0 : mode == "cold-poultice" ? 2 : mode == "fruit-item" ? 2 : mode == "mixture-items" || mode == "mixture-big" ? 1 : mode == "noise-items" || mode == "noise-big" ? 1 : mode == "rabbit-item" ? 3 : mode == "movement-items" || mode == "movement-big" ? 1 : mode == "trap-items" || mode == "trap-big" ? 3 : mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
+        interaction.slot_focus = mode == "muffling" ? 0 : mode == "felt-items" ? 0 : mode == "prism-items" ? 1 : mode == "mirror-item" ? 1 : mode == "snow-tools" ? 1 : mode == "snowball-items" ? 2 : mode == "quarry-tools" ? 0 : mode == "quarry-bricks" ? 2 : mode == "cold-remedies" ? 0 : mode == "cold-poultice" ? 2 : mode == "fruit-item" ? 2 : mode == "mixture-items" || mode == "mixture-big" ? 1 : mode == "noise-items" || mode == "noise-big" ? 1 : mode == "rabbit-item" ? 3 : mode == "movement-items" || mode == "movement-big" ? 1 : mode == "trap-items" || mode == "trap-big" ? 3 : mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
     } else if (mode == "reward" || mode == "reward-focus") {
         interaction.offer_focus = mode == "reward-focus" ? 1 : 0;
         game.run.phase = RunPhase::Reward;
@@ -355,7 +357,7 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "cold-recovery" || mode == "poultice-recovery" || mode == "skaters" || mode == "pockets" || mode == "thunder" || mode == "whistle" || mode == "decoys" || mode == "wards" || mode == "parries" || mode == "shields" || mode == "mixtures" || mode == "noisemakers" || mode == "movement-tools" || mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "muffling-hud" || mode == "cold-recovery" || mode == "poultice-recovery" || mode == "skaters" || mode == "pockets" || mode == "thunder" || mode == "whistle" || mode == "decoys" || mode == "wards" || mode == "parries" || mode == "shields" || mode == "mixtures" || mode == "noisemakers" || mode == "movement-tools" || mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
     if (mode == "fps") draw_frame_rate(renderer, 60);

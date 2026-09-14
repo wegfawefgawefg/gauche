@@ -158,6 +158,7 @@ std::uint64_t game_hash(const Game& game) {
             mix_light(hash, item.light);
             mix(hash, static_cast<std::uint64_t>(item.dig_power));
             mix(hash, static_cast<std::uint64_t>(item.flame_ticks));
+            mix(hash, item.muffled_uses);
             mix(hash, static_cast<std::uint64_t>(item.flight.slot));
             mix(hash, item.flight.generation);
             mix(hash, static_cast<std::uint64_t>(item.anchor.slot));
@@ -180,6 +181,7 @@ std::uint64_t game_hash(const Game& game) {
         mix_light(hash, ground.light);
         mix(hash, static_cast<std::uint64_t>(ground.dig_power));
         mix(hash, static_cast<std::uint64_t>(ground.flame_ticks));
+        mix(hash, ground.muffled_uses);
         mix(hash, static_cast<std::uint64_t>(ground.flight.slot));
         mix(hash, ground.flight.generation);
         mix(hash, static_cast<std::uint64_t>(ground.anchor.slot));

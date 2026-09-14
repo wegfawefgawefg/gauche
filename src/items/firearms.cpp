@@ -1,4 +1,5 @@
 #include "firearms.hpp"
+#include "muffling.hpp"
 #include "../combat/beams.hpp"
 #include "catalog.hpp"
 #include "../projectiles/projectile.hpp"
@@ -43,6 +44,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     if (item.kind == ItemKind::Crossbow || item.kind == ItemKind::RocketLauncher) {
         // FLIGHT: Allocation must succeed before spending ammunition or recovery.
         if (!launch_projectile(game, user_slot, item, direction, pattern.maximum)) return false;
+        finish_muffled_use(game, item, user.cell);
         --item.loaded;
         item.cooldown = pattern.cooldown;
         user.use_flash = 6;
@@ -59,7 +61,8 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     --item.loaded;
     item.cooldown = pattern.cooldown;
     user.use_flash = 6;
-    emit_sound(game, user.kind == EntityKind::Ember ? SoundId::SmallLaser : firing_sound(item.kind), origin);
+    emit_weapon_sound(game, item, user.kind == EntityKind::Ember ? SoundId::SmallLaser : firing_sound(item.kind), origin);
+    finish_muffled_use(game, item, origin);
     if (item.kind == ItemKind::Blunderbuss) {
         const Cell facing = user.facing;
         move_entity(game, user_slot, origin - direction);

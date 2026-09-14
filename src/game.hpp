@@ -23,6 +23,7 @@ struct SoundEvent {
     std::uint64_t tick = 0;
     std::uint8_t sequence = 0;
     bool positional = true;
+    bool muffled = false;
 };
 
 struct ImpactEvent {
@@ -92,7 +93,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt, MufflingFelt,
     Count,
 };
 
@@ -126,6 +127,7 @@ struct Item {
     LightEmitter light{};
     int dig_power = 0;
     int flame_ticks = 0;
+    std::uint8_t muffled_uses = 0;
     Handle flight{};
     Handle anchor{}; // A placed fixture owned by this item, independent of flight reservations.
 };
@@ -284,7 +286,7 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power =
                  TileImpact impact = TileImpact::Strike);
 
 std::uint32_t random_u32(Game& game);
-void emit_sound(Game& game, SoundId sound, Cell cell, bool positional = true);
+void emit_sound(Game& game, SoundId sound, Cell cell, bool positional = true, bool muffled = false);
 Handle spawn_entity(Game& game, EntityKind kind, Cell cell);
 Entity* get_entity(Game& game, Handle handle);
 const Entity* get_entity(const Game& game, Handle handle);

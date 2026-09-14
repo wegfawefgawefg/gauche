@@ -41,12 +41,13 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
     const bool hook = shot.label_a == static_cast<int>(ProjectileKind::Hook);
+    const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
@@ -85,12 +86,12 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
             x - static_cast<float>(shot.facing.x) * pixels * .65F,
             y - static_cast<float>(shot.facing.y) * pixels * .65F);
     }
-    if (bomb || cracker || pitch) {
+    if (prism || bomb || cracker || pitch) {
         // FUSE: A few local sparks communicate danger without a debug attack grid.
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < 3; ++i) {
             const float beat = static_cast<float>((game.tick + static_cast<std::uint64_t>(i * 5)) % 17) / 17;
-            SDL_SetRenderDrawColor(renderer, 255, static_cast<Uint8>(180 - i * 25), 62,
+            SDL_SetRenderDrawColor(renderer, prism ? 186 : 255, static_cast<Uint8>(prism ? 218 : 180 - i * 25), prism ? 255 : 62,
                 static_cast<Uint8>(230 * (1-beat)));
             SDL_RenderPoint(renderer, rect.x + rect.w * .68F + pixels * beat * (i == 1 ? -.18F : .12F),
                 rect.y + rect.h * .1F - pixels * beat * .35F);

@@ -78,3 +78,37 @@ Gameplay compatibility is EA; snapshot layout stays 31. Strict game/render/codec
 builds and the existing codec check pass. Static stance/directional-shield and
 reflected-beam captures were inspected. Live behavior/balance remains for the
 user's playtesting; no live playtest or new test suite was run.
+
+## Prism Bomb (2026-09-14)
+
+The seventeenth ice item is a thrown light bomb: three-cell flight at eight
+simulation ticks per tile, a fixed 90-tick fuse from launch, 0.75s use recovery,
+stack two, price 28. Cover stops the throw on its near side; bodies may pass
+under it. Landing does not reset the fuse. The final half-second uses brighter
+charge seams/light and quicker fuse cues. Big extends each burst beam from
+four to five cells; Long throws four instead of three. Strong and Heavy modify
+beam damage; Agile modifies recovery. All Piercing is saved at launch.
+
+At fuse expiry it releases four cardinal 16-damage beams and hits the center
+once. The four beams use a single pure snapshot and shared finite queue; actor
+and prop damage is deduplicated across the entire burst. Mirrors, splitting
+lenses and guarding knights change their paths. A split halves damage, opaque
+cover stops a ray, and contact at the bomb's center cannot be shielded by facing
+away from it. Cover created on the source cell absorbs the outward burst.
+Friends and the thrower can be hit. The bomb deals no contact damage in flight,
+and no invisible explosion goes off at the aimed location on use.
+
+The shared trace now accepts either one initial ray or four. The latter gets
+four normal ray budgets plus its center, capped at 128 contacts overall. This
+keeps mirror loops finite and advances split paths fairly. The world debug
+preview uses the actual landing and beam geometry; the item card shows the
+unobstructed cross and effective beam length/fuse. Three new images and four
+OGG cues cover the item, charge, throw, fuse, landing and burst. Broken prism
+pieces use existing local crystal-splinter debris.
+
+Observatory supplies alternate carbine and prism bomb by round, and ice shops
+and rewards can offer the bomb. Snapshot layout remains 31, with appended item
+and projectile kinds; gameplay compatibility is EB. Strict game/render/codec
+builds, existing codec check and image/audio checks pass. Static flight/fuse,
+beam-burst and modifier-comparison captures were inspected. No live playtest
+or new test suite was run.

@@ -70,7 +70,15 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::LensCarbine) {
+    if (held.kind == ItemKind::PrismBomb) {
+        const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
+        for (int step = 1; step < distance(player.cell, center); ++step)
+            mark(renderer, player.cell + Cell{facing.x * step, facing.y * step}, camera, zoom, pattern.effect, true);
+        const BeamTrace beam = trace_beam_burst(game, center, pattern.damage, pattern.blast_radius,
+            has_artifact(player, ArtifactKind::AllPiercing));
+        for (int i = 0; i < beam.count; ++i)
+            mark(renderer, beam.cells[static_cast<std::size_t>(i)].cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::LensCarbine) {
         const BeamTrace beam = trace_beam(game, player.cell, facing, pattern.damage, pattern.maximum,
             pattern.piercing || has_artifact(player, ArtifactKind::AllPiercing));
         for (int i = 0; i < beam.count; ++i)

@@ -53,7 +53,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/heat_capsule.cpp src/items/cold_flask.cpp src/items/air_bladder.cpp src/world/floating_items.cpp
     src/items/quarry_tools.cpp src/items/ice_brick.cpp src/projectiles/ice_brick.cpp
     src/entities/mirror_knight.cpp
-    src/combat/beams.cpp src/items/optics.cpp
+    src/combat/beams.cpp src/items/optics.cpp src/projectiles/prism.cpp
     src/entities/snow_burrower.cpp src/world/snow.cpp src/items/snow_tools.cpp src/projectiles/snowball.cpp
     src/entities/glass_eel.cpp src/surfaces/conduction.cpp src/items/eel_battery.cpp
     src/entities/ice_mason.cpp src/props/ice_cover.cpp

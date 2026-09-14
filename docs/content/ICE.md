@@ -100,7 +100,7 @@ same effective item definition as attacks, including rare attributes.
 | 25 | Grounding spike | Plant to absorb one nearby conducted shock and leave a hot spent spike; recover when cool. Stack 3. | Uncommon; 15 |
 | 26 | Mirror shard | Implemented: place an 8-HP diagonal beam reflector. Secondary rotates it with a shard or empty hand. Bullets break it; footsteps do not. Stack 3. | Uncommon; 16 |
 | 27 | Crystal lens | Implemented: place an 18-HP nonblocking lens. Splits an incoming beam into two perpendicular half-damage branches, sharing one finite travel budget. Bullets break it; consumes on placement. | Rare; 30 |
-| 28 | Prism bomb | Throw with 1.5s fuse; bursts four short light beams for 16 damage each. Mirrors/lenses change those paths. Stack 2. | Rare; 28 |
+| 28 | Prism bomb | Implemented: throw to 3 with 1.5s fuse from launch; four range-4 beams, 16 damage each, one shared bounded trace. Mirrors/lenses/knights redirect them. Big extends beams; Long extends throw. Stack 2. | Rare; 28 |
 | 29 | Black felt | Cover one adjacent reflector or light fixture until removed/burned. Three pieces; useful for dark routes and stopping beam puzzles. | Common; 7 |
 | 30 | Muffling felt | Wrap held equipment to suppress its next six ordinary use-noise events; impacts and explosions remain audible. Two wraps. | Uncommon; 14 |
 | 31 | Echo pebble | Throw to 7; repeats the last nearby non-explosion use-noise three times from its landing. No duplicate gameplay attack. Stack 3. | Uncommon; 16 |

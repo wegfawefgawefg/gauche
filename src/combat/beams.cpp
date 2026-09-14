@@ -5,20 +5,36 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <span>
 
 bool optical_prop(const Prop& prop) {
     return !prop.broken && (prop.kind == PropKind::MirrorShard || prop.kind == PropKind::CrystalLens);
 }
 
-BeamTrace trace_beam(const Game& game, Cell source, Cell direction, int damage, int reach, bool piercing) {
+namespace {
+
+BeamTrace trace_paths(const Game& game, Cell source, std::span<const Cell> directions,
+                      int damage, int reach, bool piercing, bool burst) {
     BeamTrace trace;
-    if (std::abs(direction.x) + std::abs(direction.y) != 1 || damage <= 0 || reach <= 0) return trace;
+    if (damage <= 0 || reach <= 0 || !game.stage.at(source)) return trace;
     reach = std::clamp(reach, 1, 32);
     struct Ray { Cell cell, direction; int damage, remaining; };
-    std::array<Ray, 257> rays{};
-    rays[0] = {source, direction, damage, reach};
-    int pending = 1;
-    const int budget = std::min(128, reach * 4);
+    std::array<Ray, 260> rays{};
+    int pending = 0;
+    for (Cell direction : directions) {
+        if (std::abs(direction.x) + std::abs(direction.y) != 1) return trace;
+        rays[static_cast<std::size_t>(pending++)] = {source, direction, damage, reach};
+    }
+    if (burst) {
+        BeamCell center{source, source, damage};
+        center.optic = optical_prop(game.stage.at(source)->prop);
+        center.stop = projectile_blocked(game, source);
+        const int target = entity_at(game, source, true);
+        if (target >= 0) center.target = {target, game.entities[static_cast<std::size_t>(target)].generation};
+        trace.cells[static_cast<std::size_t>(trace.count++)] = center;
+        if (center.stop) return trace;
+    }
+    const int budget = std::min(128, reach * 4 * pending + trace.count);
     // QUEUE: Branches advance in alternating steps, sharing one finite travel budget.
     for (int next = 0; next < pending && trace.count < budget; ++next) {
         const Ray ray = rays[static_cast<std::size_t>(next)];
@@ -55,6 +71,17 @@ BeamTrace trace_beam(const Game& game, Cell source, Cell direction, int damage, 
     return trace;
 }
 
+} // namespace
+
+BeamTrace trace_beam(const Game& game, Cell source, Cell direction, int damage, int reach, bool piercing) {
+    return trace_paths(game, source, std::span{&direction, 1}, damage, reach, piercing, false);
+}
+
+BeamTrace trace_beam_burst(const Game& game, Cell source, int damage, int reach, bool piercing) {
+    constexpr Cell sides[]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    return trace_paths(game, source, sides, damage, reach, piercing, true);
+}
+
 void resolve_beam(Game& game, const BeamTrace& trace) {
     // SNAPSHOT: Broken cover and death drops cannot change this shot's already traced route.
     for (int i = 0; i < trace.count; ++i) {
@@ -80,6 +107,6 @@ void resolve_beam(Game& game, const BeamTrace& trace) {
         }
         if (!hit.optic) hit_prop(game, hit.cell, hit.damage, hit.from);
         if (get_entity(game, hit.target))
-            damage_entity(game, hit.target.slot, hit.damage, hit.from);
+            damage_entity(game, hit.target.slot, hit.damage, hit.from, hit.from != hit.cell);
     }
 }

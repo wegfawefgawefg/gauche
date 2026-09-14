@@ -5,6 +5,7 @@
 #include "items/eel_battery.hpp"
 #include "items/snow_tools.hpp"
 #include "projectiles/snowball.hpp"
+#include "projectiles/prism.hpp"
 #include "items/air_bladder.hpp"
 #include "items/heat_capsule.hpp"
 #include "items/cold_remedies.hpp"
@@ -87,6 +88,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::PrismBomb:
+        used = launch_prism_bomb(game, user_slot, item, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::MirrorShard: case ItemKind::CrystalLens:
         used = place_optic(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

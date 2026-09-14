@@ -169,6 +169,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
     if (item.kind == ItemKind::SnowScoop)
         std::snprintf(line, sizeof(line), "CLEAR %d | SNOW %d/12", pattern.half_width * 2 + 1, item.loaded);
+    if (item.kind == ItemKind::PrismBomb)
+        std::snprintf(line, sizeof(line), "DMG %d | FUSE 1.5s | BEAM %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::MirrorShard)
         std::snprintf(line, sizeof(line), "PLACED HP 8 | TURNS BEAMS");
     if (item.kind == ItemKind::CrystalLens)

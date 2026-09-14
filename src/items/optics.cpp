@@ -13,10 +13,15 @@ constexpr RegionalItem lens{"Crystal Lens", "Place a fragile lens, 18 HP. Splits
     Sprite::CrystalLens, {1, 1, 0, 0, 24, PatternEffect::Utility},
     ItemAction::Material, 30, 1, true, 0, 0, 0, 0, 0, SoundId::OpticPlace};
 
+constexpr RegionalItem bomb{"Prism Bomb", "Throw, then 1.5s fuse. Bursts four light beams. Mirrors turn them; lenses split them. Step out of their lanes.",
+    Sprite::PrismBomb, {3, 3, 4, 16, 45, PatternEffect::Damage, false, 0, 0, false, false, true},
+    ItemAction::Throw, 28, 2, true, 0, 0, 0, 0, 0, SoundId::PrismThrow};
+
 } // namespace
 
 const RegionalItem* optics_item(ItemKind kind) {
     switch (kind) {
+    case ItemKind::PrismBomb: return &bomb;
     case ItemKind::LensCarbine: return &carbine;
     case ItemKind::MirrorShard: return &mirror;
     case ItemKind::CrystalLens: return &lens;

@@ -262,6 +262,7 @@ bool held_item_direction() {
     trigger.run.online[0] = true;
     Entity* actor = get_entity(trigger, trigger.players[0]);
     actor->owner = 0;
+    actor->inventory.slots[0] = make_item(ItemKind::Wall, 1);
     actor->facing = {0, -1};
     std::array<Input, 4> press{};
     press[0].use = true;

@@ -189,6 +189,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.h += pixels * .18F;
                 angle -= entity.facing.x < 0 ? -12.0 : 12.0;
             }
+            if (entity.kind == EntityKind::Chicken && entity.label_a == 0 && entity.move_wait > 0) {
+                const float scurry = std::sin(static_cast<float>(game.tick % 120) * (entity.timer_a > 0 ? 1.7F : .8F));
+                body_rect.y -= pixels * .035F * std::abs(scurry);
+                angle += static_cast<double>(scurry * (entity.timer_a > 0 ? 18 : 8));
+            }
             if (entity.kind == EntityKind::LanternMoth) {
                 const float wing = .84F + .16F * std::cos(static_cast<float>(game.tick % 60) * .7F);
                 body_rect.x += body_rect.w * (1.0F - wing) * .5F;

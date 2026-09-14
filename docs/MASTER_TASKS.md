@@ -435,15 +435,15 @@ the available art reference; new source scripts keep a small explicit palette.
 
 ## Playtest feedback: creatures, melee and forest visibility
 
-- [ ] Give cooked meat a distinct munch/chew cue, separate from bandages.
+- [x] Give cooked meat a distinct munch/chew cue, separate from bandages.
 - [ ] Add dropped meat as bait for appropriate hungry animals: bounded scent
   range, reachable targets, competing threats and consumption. Avoid every
   animal magically knowing about every piece of meat across the floor.
-- [ ] Rework chicken families into generation-checked follow chains: first
+- [x] Rework chicken families into generation-checked follow chains: first
   chick follows mother, others follow the preceding chick. Follow previous
   positions with a small delay; avoid surrounding/blocking the mother. Make
   frightened chicks visibly scurry with fast little steps and animation.
-- [ ] Give mothers a protective response when their chicks are attacked;
+- [x] Give mothers a protective response when their chicks are attacked;
   survivors remember the attacker and do not immediately wander back to danger.
   Reuse the chain-following helpers for suitable later creatures.
 - [x] Walkable puddles/streams extinguish burning.
@@ -459,6 +459,10 @@ the available art reference; new source scripts keep a small explicit palette.
 - [ ] Redesign bow input around hold-to-draw/release-to-fire, taking Splonks'
   bow feel as reference. Eliminate the manual magazine-style bow reload; add
   audible draw, tension/release and impact, with visible traveling arrows.
+- [ ] Replace instant-use bomb explosions with thrown travel, a landing cue,
+  visible burning fuse/sparks, audible fuse and delayed detonation. Give the
+  thrower time to escape; resolve the blast at the bomb's final position. Keep
+  fuse/travel deterministic and document timing/radius in its item details.
 - [ ] Separate instant-hit cosmetic tracers from deterministic traveling or
   persistent projectiles (arrows, grenades, spells). Travel/hit timing must match
   damage timing; arrows splinter into local debris on impact. Retain explicit

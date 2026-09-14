@@ -13,8 +13,10 @@ void remember_attacker(Game& game, int slot, Cell from) {
     for (Entity& bird : game.entities) {
         if (bird.kind != EntityKind::Chicken || distance(victim.cell, bird.cell) > 5) continue;
         bird.entity_b = threat;
-        bird.point_b = from;
-        bird.timer_a = 180;
+        bird.counter_a = from.x;
+        bird.counter_b = from.y;
+        bird.timer_a = 480;
+        bird.move_wait = std::min(bird.move_wait, 3);
     }
 }
 

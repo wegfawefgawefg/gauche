@@ -240,8 +240,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         else switch (used_kind) {
         case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
         case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
-        case ItemKind::RawMeat: case ItemKind::CookedMeat:
             emit_sound(game, SoundId::ClothRip, user.cell); break;
+        case ItemKind::RawMeat: case ItemKind::CookedMeat:
+            emit_sound(game, SoundId::MeatMunch, user.cell); break;
         case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
             emit_sound(game, SoundId::Punch1, user.cell); break;
         case ItemKind::ConductorHat:

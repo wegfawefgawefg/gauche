@@ -49,3 +49,13 @@ and clip at dry banks. The ambience placement recognizes both depths and stops
 a water source if its tile changes. Snapshot terrain IDs and gameplay version
 were updated. Strict builds and a static spring capture checked; user owns
 interaction and balance playtesting. Poison/residue washing remains pending.
+
+## Chicken follow chains and food cues
+
+Families spawn in a chain. A shared trail helper follows departed cells after
+a five-tick delay; dead leaders are replaced by a free preceding chain tail
+without cycles. Chicks use nine-tick steps, five while scared, with a faster
+body wobble. Nearby adults defend the family with pecks; chicks retain eight
+seconds of alarm and renew it while the attacker remains close. Cooking and
+eating now have separate sizzle and munch cues. Strict build checked; follower
+spacing, protective aggression and sound feel await user playtesting.

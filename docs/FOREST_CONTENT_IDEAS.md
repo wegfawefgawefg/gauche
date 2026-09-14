@@ -3,6 +3,8 @@
 This is a candidate pool, not a locked item list. The first forest floor should
 make fists, a stick, a bow, herbs, animals, traps, and route shortcuts feel
 different before the game asks players to understand a large inventory.
+The wider per-biome targets and new room direction are in
+[the content farm brief](CONTENT_FARM_BRIEF.md).
 
 ## Design bias
 

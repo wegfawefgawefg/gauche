@@ -20,8 +20,8 @@ float ambient_seed(const Stage& stage, Cell cell) {
         if (!solid(stage, cell + direction)) open += 1.0F;
     constexpr std::array<Cell, 4> diagonals{{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}};
     for (Cell direction : diagonals)
-        if (!solid(stage, cell + direction)) open += 0.5F;
-    return (wall ? 0.06F : 0.10F) + 0.08F * open / 6.0F;
+        if (!solid(stage, cell + direction)) open += 1.0F;
+    return (wall ? 0.06F : 0.10F) + 0.08F * open / 8.0F;
 }
 
 void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
@@ -37,12 +37,15 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
         target.red = std::max(target.red, source.color.red * current.power);
         target.green = std::max(target.green, source.color.green * current.power);
         target.blue = std::max(target.blue, source.color.blue * current.power);
-        if (current.distance >= source.radius) continue;
+        // What if a wall receives light? Its face glows, but it cannot relay light behind it.
+        if (current.distance >= source.radius || solid(stage, current.cell)) continue;
         for (Cell direction : neighbors) {
             const Cell next = current.cell + direction;
             if (!cache.contains(next)) continue;
-            const float decay = solid(stage, next) ? 0.24F :
+            const float material_decay = solid(stage, next) ? 0.24F :
                 stage.at_or_border(next).kind == TileKind::Water ? 0.17F : 0.13F;
+            const float decay = std::max(material_decay,
+                source.power / static_cast<float>(source.radius));
             const float power = current.power - decay;
             if (power <= 0.02F) continue;
             float& prior = best[cache.index(next)];
@@ -54,10 +57,12 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
 }
 
 LightColor display_color(float ambient, LightColor cast) {
+    // GRADE: Splonks' shared ambient seed stays, while dark values remain dark here.
+    const auto grade = [ambient](float value) {
+        return std::pow(std::clamp(ambient + value, 0.0F, 1.0F), 1.45F);
+    };
     return {
-        0.10F + 0.90F * std::clamp(ambient + cast.red, 0.0F, 1.0F),
-        0.10F + 0.90F * std::clamp(ambient + cast.green, 0.0F, 1.0F),
-        0.10F + 0.90F * std::clamp(ambient + cast.blue, 0.0F, 1.0F),
+        grade(cast.red), grade(cast.green), grade(cast.blue),
     };
 }
 

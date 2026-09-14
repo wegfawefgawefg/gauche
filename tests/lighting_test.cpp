@@ -31,15 +31,24 @@ int main() {
     build_lighting(cache, game, {4, 4}, 2.0F);
     const float closed = cache.ambient[cache.index({3, 3})];
     const float unlit = light_at_cell(cache, {7, 7}).red;
-    if (!check(unlit < 0.25F, "unlit tiles are too bright")) return 1;
+    if (!check(unlit < 0.12F, "unlit tiles are too bright")) return 1;
     game.stage.at({2, 2})->kind = TileKind::Empty;
     build_lighting(cache, game, {4, 4}, 2.0F);
+    const float diagonal_open = cache.ambient[cache.index({3, 3})];
     if (!check(cache.ambient[cache.index({3, 3})] > closed,
                "diagonal openness did not lift ambient light") ||
         !check(cache.ambient[cache.index({7, 7})] == closed,
                "openness leaked beyond adjacent tiles")) return 1;
+    game.stage.at({2, 2})->kind = TileKind::Wall;
+    game.stage.at({3, 2})->kind = TileKind::Empty;
+    build_lighting(cache, game, {4, 4}, 2.0F);
+    if (!check(near(cache.ambient[cache.index({3, 3})], diagonal_open),
+               "cardinal and diagonal openness weights differ from the active Splonks profile"))
+        return 1;
 
     // BORDER: Game collision remains bounded while its visible wall is lit.
+    game.stage.at({1, 1})->kind = TileKind::Empty;
+    game.stage.at({0, 1})->kind = TileKind::Empty;
     game.run.roof_lights[0].cell = {1, 1};
     game.run.roof_light_count = 1;
     build_lighting(cache, game, {0, 1}, 2.0F);
@@ -99,6 +108,18 @@ int main() {
     const LightColor green = light_at_cell(cache, ground.cell);
     if (!check(green.green > 0.9F && green.green > green.red + 0.5F,
                "ground item instance light was ignored")) return 1;
+
+    // SHADOW: A lit wall must not act as a light source for its far side.
+    Game blocked = closed_stage();
+    for (int x = 1; x <= 7; ++x)
+        blocked.stage.at({x, 4})->kind = TileKind::Empty;
+    blocked.stage.at({4, 4})->kind = TileKind::Wall;
+    const LightFlash wall_light{{{2, 4}, 8, 1.35F, {1.0F, 1.0F, 1.0F}}, 1, 1};
+    build_lighting(cache, blocked, {4, 4}, 2.0F, std::span{&wall_light, 1});
+    const float front = light_at_cell(cache, {4, 4}).red;
+    const float shadow = light_at_cell(cache, {5, 4}).red;
+    if (!check(front > 0.5F && shadow < 0.12F,
+               "solid tile passed source light into the room behind it")) return 1;
     std::puts("lighting rules passed");
     return 0;
 }

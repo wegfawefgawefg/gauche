@@ -67,8 +67,8 @@ ammunition.
 
 ## Splonks-style lighting
 
-- [x] Seed a subtle ambient field from tile openness, including diagonals,
-  in addition to a readable minimum ambient level.
+- [x] Seed ambient light from tile openness, with equal cardinal and diagonal
+  weights as in the active Splonks workspace settings.
 - [x] Add colored, falloff-based light sources for stage fixtures, entities,
   carried or ground items where appropriate, and short-lived effects. Keep
   self-glow distinct from light cast onto the world.
@@ -80,6 +80,13 @@ ammunition.
 - [x] Keep derived lighting in a local render cache, separate from lockstep
   gameplay state. Include only light inputs that must be reproducible across
   rollback or reconnect in synchronized state.
+- [x] Stop light propagation at solid tiles and remove the extra output
+  brightness floor. Give Gauche a stronger contrast curve than the active
+  Splonks profile so distant rooms remain dark.
+
+Splonks' active `data/settings.cfg` uses full terrain exposure and output
+levels 0–1. Its code defaults use only 12% exposure and a much brighter
+foreground; the active profile is the relevant visual reference here.
 
 The reference for lighting is
 `Splonks/splonks-cpp-gview-menu` on

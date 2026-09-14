@@ -275,7 +275,11 @@ Forty-three new enemy cues and distinct silhouettes are integrated into room poo
 Drops/bait/caltrops are integrated. Horns shove; hooks reel; drills bore; swap seeds exchange actors. Bells draw investigations; delayed firecrackers startle small creatures.
 Strict builds and static captures passed; behavior/balance playtesting is the user's.
 
-- [ ] Design a full ice catalog to the same quotas and quality bar.
+- [x] Design a full ice catalog to the same quotas and quality bar.
+  See [Ice catalog](content/ICE.md): the drowned observatory, with twenty
+  adversaries, fifty regional finds, twenty debris materials, twenty ambient
+  cues, container pools and four-floor room progression. Heat, water, footing,
+  sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.

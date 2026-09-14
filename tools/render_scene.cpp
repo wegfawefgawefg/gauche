@@ -13,6 +13,7 @@
 #include "material_scene.hpp"
 #include "motion_scene.hpp"
 #include "camera_path.hpp"
+#include "light_gradient_scene.hpp"
 #include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
@@ -130,7 +131,7 @@ int main(int argc, char** argv) {
     if (mode == "motion") arrange_motion_scene(game, cosmetics);
     if (mode == "projectiles" || mode == "bow") arrange_projectile_scene(game, cosmetics);
     if (mode == "ballistics") arrange_ballistics_scene(game, cosmetics);
-    if (mode == "canopy") {
+    if (mode == "canopy" || mode == "light-gradient") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};
     }
@@ -245,7 +246,8 @@ int main(int argc, char** argv) {
         SDL_RenderClear(renderer);
         for (Tile& tile : game.stage.tiles) tile.kind = TileKind::Wall;
         draw_overhead(renderer, graphics, game, &cosmetics, cosmetics.camera, 2, {});
-    } else if (mode == "camera-path") render_camera_path(renderer);
+    } else if (mode == "light-gradient") render_light_gradient(renderer, game, cosmetics.camera);
+    else if (mode == "camera-path") render_camera_path(renderer);
     else if (mode == "layout") render_floor_overview(renderer,
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);

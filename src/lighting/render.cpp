@@ -11,23 +11,45 @@ SDL_FColor vertex_color(LightColor light, LightColor tint) {
             std::clamp(light.blue * tint.blue, 0.0F, 1.0F), 1.0F};
 }
 
+SDL_FColor blend(SDL_FColor a, SDL_FColor b, float t) {
+    return {a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t,
+            a.b + (b.b - a.b) * t, 1.0F};
+}
+
 } // namespace
 
 void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
                    SDL_FRect rect, Cell cell, const LightingCache& lighting,
                    LightColor tint) {
     if (texture == nullptr) return;
-    const std::array<SDL_Vertex, 4> vertices{{
-        {{rect.x, rect.y},
-         vertex_color(light_at_corner(lighting, cell), tint), {0.0F, 0.0F}},
-        {{rect.x + rect.w, rect.y},
-         vertex_color(light_at_corner(lighting, cell + Cell{1, 0}), tint), {1.0F, 0.0F}},
-        {{rect.x + rect.w, rect.y + rect.h},
-         vertex_color(light_at_corner(lighting, cell + Cell{1, 1}), tint), {1.0F, 1.0F}},
-        {{rect.x, rect.y + rect.h},
-         vertex_color(light_at_corner(lighting, cell + Cell{0, 1}), tint), {0.0F, 1.0F}},
-    }};
-    constexpr std::array<int, 6> indices{{0, 1, 2, 0, 2, 3}};
+    const SDL_FColor nw = vertex_color(light_at_corner(lighting, cell), tint);
+    const SDL_FColor ne = vertex_color(light_at_corner(lighting, cell + Cell{1, 0}), tint);
+    const SDL_FColor sw = vertex_color(light_at_corner(lighting, cell + Cell{0, 1}), tint);
+    const SDL_FColor se = vertex_color(light_at_corner(lighting, cell + Cell{1, 1}), tint);
+
+    // GRADIENT: A single diagonal splits nonplanar corner colors into two visible facets.
+    // Bilinear subdivision preserves shared edges and the original four light samples.
+    constexpr int divisions = 4, stride = divisions + 1;
+    std::array<SDL_Vertex, stride * stride> vertices{};
+    for (int y = 0; y <= divisions; ++y)
+        for (int x = 0; x <= divisions; ++x) {
+            const float u = static_cast<float>(x) / divisions;
+            const float v = static_cast<float>(y) / divisions;
+            vertices[static_cast<std::size_t>(y * stride + x)] = {
+                {rect.x + rect.w * u, rect.y + rect.h * v},
+                blend(blend(nw, ne, u), blend(sw, se, u), v), {u, v}};
+        }
+    static constexpr auto indices = [] {
+        std::array<int, divisions * divisions * 6> result{};
+        int next = 0;
+        for (int y = 0; y < divisions; ++y)
+            for (int x = 0; x < divisions; ++x) {
+                const int a = y * stride + x;
+                for (int index : {a, a + 1, a + stride + 1, a, a + stride + 1, a + stride})
+                    result[static_cast<std::size_t>(next++)] = index;
+            }
+        return result;
+    }();
     SDL_RenderGeometry(renderer, texture, vertices.data(),
                        static_cast<int>(vertices.size()),
                        indices.data(), static_cast<int>(indices.size()));

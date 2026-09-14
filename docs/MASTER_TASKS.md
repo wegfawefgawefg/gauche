@@ -451,7 +451,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [x] Support igniting a held stick into a temporary burning weapon, initially
   about 30 seconds; spread fire to susceptible actors/materials and communicate
   its remaining burn time. Keep item state deterministic through drop/swap.
-- [ ] Diagnose visible tile-center/vertex bias in lighting using canopy-on/off
+- [x] Diagnose visible tile-center/vertex bias in lighting using canopy-on/off
   captures against Splonks. Preserve intentional dappled patterns; fix unwanted
   interpolation seams/facets without flattening the dramatic contrast.
 - [x] Contextual pickup/drop on the configured interact button (Xbox X by default):

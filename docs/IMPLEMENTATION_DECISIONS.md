@@ -349,3 +349,21 @@ them. Eight sprites and five short synthesized cues have committed offline sourc
 Strict game/render builds pass. Static world and comparison captures check plant
 stages, lamp color, silhouettes, uses and resin repair preview. No live playtest
 or new gameplay test suite was run.
+
+
+## Tile-light gradient facets
+
+The Splonks gview workspace and Gauche both submit four corner colors across two
+triangles. With sharply varying canopy samples, that makes an artificial diagonal
+brightness crease inside each tile. Gauche now bilinearly interpolates those same
+four corner values over a four-by-four subdivision. Shared edge colors, point
+source strengths, canopy stencil, grading and ambient darkness are preserved.
+This adds geometry within the existing tile draw call rather than additional
+light samples or a different gameplay light field.
+
+A static diagnostic enlarges the most affected cell from the canopy fixture and
+shows old/new interpolation side by side. Its original diagonal-center green
+error relative to bilinear interpolation was 0.09864; subdivision bounds that
+error to 0.00617. Canopy-on/off world captures retain the patterned patches with
+a softer interior gradient. Strict game/render builds pass. No live performance
+or playtest claim; each drawn tile now submits 25 vertices and 32 triangles.

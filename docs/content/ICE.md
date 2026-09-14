@@ -54,7 +54,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 16 | Icicle spider | Anchors a strand to a wall, stretches it across a corridor, then waits beside it. Strand roots briefly and can be cut or burned; spider must rebuild after triggering. | Service passages; 20% fishing line, 10% ice needle. |
 | 17 | Boiler porter | Pushes a steaming tank one cell at a time. A leaking pressure cue precedes a directional vent; rupture sends hot water along open cells, including toward other enemies. | Bathhouse; 25% pressure valve, 20% coal lump. |
 | 18 | Echo hound | Implemented: 44 HP, nine-tick steps; commits to a heard cell for up to 3s, warns 0.4s before a 14-damage bite, then listens again. Snow quiets steps; water amplifies them. Stillness and thrown noise can fool it. | Echo tunnels; 25% raw meat, 10% muffling felt, one roll. |
-| 19 | Frozen pilgrim | Limps toward warmth, thaws into a quick but fragile attacker, then refreezes after leaving heat. Both changes are visible windups; cold can slow it again. | Shelter/chapel; 25% gold, 15% hot broth. |
+| 19 | Frozen pilgrim | Implemented: 48 HP; frozen crust halves ordinary damage, 36-tick steps toward reachable warmth. Thaws for 0.8s into an eight-tick walker, with a 0.3s tell for 16 damage. Four seconds away from heat starts 0.6s refreezing; chill forces it early. HP persists. | Shelter; late bathhouse. 25% 2–5 gold, 15% hot broth, one roll. |
 | 20 | Lens warden | Implemented: 64 HP; turns a station mirror for 0.5s, charges its physical lamp for 0.8s, then fires a 26-damage reflected beam. Damage, displacement or interrupted apparatus cancels it. | Observatory vault; 35% lens carbine, otherwise 4–8 gold. |
 
 Reuse shared counters, timers, points and generation-checked handles. Document
@@ -191,8 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Six regional debris types are implemented: ice chips, snow clumps, mirror
-chips, crystal splinters, felt scraps and clock gears. Clock gears scatter from
+Seven regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters, felt scraps, clock gears and wool tufts. Tufts come
+from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers
 and smashed lens cases, with light-piece friction and local wind response.
 All use the shared cosmetic pool; remaining catalog materials are still open.

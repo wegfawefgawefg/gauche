@@ -32,7 +32,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
             sound.sound != SoundId::SmallLaser && sound.sound != SoundId::Explosion &&
             sound.sound != SoundId::Explosion1 && sound.sound != SoundId::BearSlam &&
             sound.sound != SoundId::BoarHit && sound.sound != SoundId::WolfBite &&
-            sound.sound != SoundId::KnightSlash && sound.sound != SoundId::MasonJab && sound.sound != SoundId::BatBite && sound.sound != SoundId::SkaterHit && sound.sound != SoundId::DiverStrike && sound.sound != SoundId::MimicBite) continue;
+            sound.sound != SoundId::PilgrimSlash && sound.sound != SoundId::KnightSlash && sound.sound != SoundId::MasonJab && sound.sound != SoundId::BatBite && sound.sound != SoundId::SkaterHit && sound.sound != SoundId::DiverStrike && sound.sound != SoundId::MimicBite) continue;
         closest = length;
         source = sound.cell;
     }
@@ -51,7 +51,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;
@@ -148,6 +148,12 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::PilgrimDeath: case SoundId::WoolBurn:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoolTuft, 4, seed, false);
+        break;
+    case SoundId::PilgrimWake: case SoundId::PilgrimShellHit:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::IceChip, 3, seed);
+        break;
     case SoundId::MuffleUnwind: case SoundId::MuffleEmpty:
     case SoundId::FeltTear: case SoundId::FeltBurn:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Felt, 4, seed, false);

@@ -82,9 +82,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         return;
     }
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Bathhouse || room.role == RoomRole::Shelter)) {
-        if (room.role == RoomRole::Bathhouse && round % 2 == 1) enemy(game, room, EntityKind::GlassEel, 2, budget);
+        if (room.role == RoomRole::Shelter) enemy(game, room, EntityKind::FrozenPilgrim, 2, budget);
+        else if (round % 2 == 1) enemy(game, room, EntityKind::GlassEel, 2, budget);
         else enemy(game, room, EntityKind::SteamLeech, 2, budget);
-        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        if (round >= 2) enemy(game, room, room.role == RoomRole::Shelter ?
+            EntityKind::SteamLeech : EntityKind::FrozenPilgrim, 2, budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::Observatory) {

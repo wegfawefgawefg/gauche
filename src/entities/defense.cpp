@@ -1,5 +1,6 @@
 #include "attacks.hpp"
 #include "bell_diver.hpp"
+#include "frozen_pilgrim.hpp"
 #include "../item_pattern.hpp"
 
 #include <algorithm>
@@ -9,6 +10,11 @@ int enemy_defense(Game& game, int slot, int damage, Cell source, bool blockable)
     if (!blockable) return damage;
     // DEPTH: Ordinary strikes pass above the swimmer. Area shocks still reach it.
     if (diver_submerged(enemy)) return 0;
+    // CRUST: Thawing sheds protection. Heat and unblocked damage bypass the ice.
+    if (pilgrim_crusted(enemy)) {
+        emit_sound(game, SoundId::PilgrimShellHit, enemy.cell);
+        return std::max(1, damage / 2);
+    }
     if (enemy.kind == EntityKind::BurrowWorm && enemy.label_a == 1) {
         const int attacker = entity_at(game, source, true);
         const Entity* user = attacker < 0 ? nullptr : &game.entities[static_cast<std::size_t>(attacker)];

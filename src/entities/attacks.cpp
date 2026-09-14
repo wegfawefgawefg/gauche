@@ -5,6 +5,7 @@
 #include "snow_burrower.hpp"
 #include "mirror_knight.hpp"
 #include "echo_hound.hpp"
+#include "frozen_pilgrim.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -17,6 +18,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::FrozenPilgrim:
+        if (enemy.label_a == PilgrimStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::EchoHound:
         if (enemy.label_a == EchoBite && enemy.cell == Cell{enemy.counter_a, enemy.counter_b}) add(enemy.point_b);
         break;

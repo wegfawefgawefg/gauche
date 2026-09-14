@@ -14,6 +14,7 @@
 #include "particles/system.hpp"
 #include "ui/interaction.hpp"
 #include "ui/presentation.hpp"
+#include "ui/frame_rate.hpp"
 #include <algorithm>
 #include <charconv>
 #include <cmath>
@@ -368,6 +369,8 @@ int main(int argc, char** argv) {
             SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F,
                                 networked ? network.status.c_str() : "PRESS ENTER TO START");
         }
+        if (menu.front.show_fps)
+            draw_frame_rate(frame.renderer, gubsy_displayed_fps(host));
         SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
         render_menu_shell(menu, frame.renderer, frame.render_width, frame.render_height);
         if (capture != nullptr && !captured && frames >= capture_frame) {

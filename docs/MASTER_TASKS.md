@@ -476,7 +476,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   or keyboard diagram; include a compact controls reference beside the pause menu.
 - [x] Add restrained menu focus/hover, activate, change and back sounds; avoid
   repeated hover spam and ensure keyboard/controller changes receive feedback too.
-- [ ] Fix the enabled FPS display reporting zero and its overlap with the floor HUD.
+- [x] Fix the enabled FPS display reporting zero and its overlap with the floor HUD.
 
 ## Playtest feedback: canopy, choices and enemy presence
 

@@ -85,6 +85,7 @@ GubsyAppConfig app_config() {
     config.render_height = 360;
     config.resizable_window = true;
     config.apply_display_settings = true;
+    config.draw_fps_overlay = false;
     return config;
 }
 

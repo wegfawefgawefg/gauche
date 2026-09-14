@@ -24,7 +24,7 @@ if(EXISTS "${GAUCHE_GUBSY_DIR}/CMakeLists.txt")
 else()
     FetchContent_Declare(gubsy
         GIT_REPOSITORY https://github.com/wegfawefgawefg/gubsy.git
-        GIT_TAG f95d5644fc254d85d8406a47df23def8f89dc0dd)
+        GIT_TAG c4d5408c74e61914f3886099db799919a2637696)
     FetchContent_MakeAvailable(gubsy)
     set(GAUCHE_GUBSY_DIR "${gubsy_SOURCE_DIR}")
 endif()

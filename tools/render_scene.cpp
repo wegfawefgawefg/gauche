@@ -21,6 +21,7 @@
 #include "../src/particles/templates.hpp"
 #include "../src/props/interaction.hpp"
 #include "../src/ui/interaction.hpp"
+#include "../src/ui/frame_rate.hpp"
 
 #include <SDL3_image/SDL_image.h>
 
@@ -246,9 +247,10 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "lit-stick" || mode == "hud" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
+    if (mode == "fps") draw_frame_rate(renderer, 60);
     if (mode == "debug") {
         SDL_SetRenderScale(renderer, 1, 1);
         draw_debug_panels(game, 0);

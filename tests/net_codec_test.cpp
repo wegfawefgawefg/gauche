@@ -12,10 +12,14 @@ int main() {
         player->sleep_ticks = 31;
         player->stun_ticks = 3;
         player->artifacts = 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
+        player->inventory.slots[2] =
+            make_item(ItemKind::Pickaxe, 1, ItemAttribute::Durable);
+        player->inventory.slots[2].uses = 7;
     }
     original.run.pending_count[0] = 1;
     original.run.pending_offers[0][0][0] =
-        {RewardKind::Health, ItemKind::None, ArtifactKind::None, 20};
+        {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,
+         1, ItemAttribute::Big};
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

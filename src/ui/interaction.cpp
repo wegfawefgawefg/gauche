@@ -17,7 +17,7 @@ bool reward_fits(const Game& game, int owner, int index) {
     const Reward reward = reward_offer(game, owner, index);
     if (reward.kind != RewardKind::Item) return true;
     Inventory trial = player->inventory;
-    return insert_item(trial, make_item(reward.item, reward.amount));
+    return insert_item(trial, reward_item(reward));
 }
 
 bool shop_fits(const Game& game, int owner, int index) {

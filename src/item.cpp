@@ -50,9 +50,10 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
 bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     if (item.loaded <= 0) return false;
     Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
-    const bool piercing = has_artifact(user, ArtifactKind::AllPiercing) &&
-                          item.kind != ItemKind::RocketLauncher;
-    const ItemPattern pattern = item_pattern(item.kind);
+    const ItemPattern pattern = item_pattern(item);
+    const bool piercing = pattern.piercing ||
+        (has_artifact(user, ArtifactKind::AllPiercing) &&
+         item.kind != ItemKind::RocketLauncher);
     const int range = pattern.maximum;
     const int damage = pattern.damage;
     const int cooldown = pattern.cooldown;
@@ -127,6 +128,32 @@ bool shove(Game& game, int user_slot, Cell direction) {
     target.cell = destination;
     target.move_wait = target.move_interval;
     return true;
+}
+
+bool strike_melee(Game& game, int user_slot, Cell direction,
+                  ItemKind kind, ItemPattern pattern) {
+    const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
+    const Cell sideways{-direction.y, direction.x};
+    bool struck = false;
+    for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+        for (int reach = 1; reach <= pattern.maximum; ++reach) {
+            const Cell cell = origin + Cell{direction.x * reach + sideways.x * lane,
+                                            direction.y * reach + sideways.y * lane};
+            const Tile* tile = game.stage.at(cell);
+            if (tile == nullptr) break;
+            const bool blocked = !walkable(tile->kind);
+            const int hit = entity_at(game, cell, true);
+            if (hit >= 0 && hit != user_slot) {
+                damage_entity(game, hit, pattern.damage, origin);
+                struck = true;
+                break;
+            }
+            struck |= damage_tile(game.stage, cell,
+                                   kind == ItemKind::Pickaxe ? 50 : pattern.damage);
+            if (blocked) break;
+        }
+    }
+    return struck;
 }
 
 } // namespace
@@ -227,27 +254,17 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
     case ItemKind::RawMeat: case ItemKind::CookedMeat:
         if (user.health < user.max_health) {
-            const int heal = item.kind == ItemKind::Medkit ? 100 :
-                             (item.kind == ItemKind::Bandage ? 10 :
-                              item.kind == ItemKind::CookedMeat ? 18 :
-                              item.kind == ItemKind::RawMeat ? 4 : 1);
-            user.health = std::min(user.max_health, user.health + heal);
+            const ItemPattern pattern = item_pattern(item);
+            user.health = std::min(user.max_health, user.health + pattern.heal);
             used = consumed = true;
-            cooldown = item.kind == ItemKind::Medkit ? 300 :
-                       (item.kind == ItemKind::Bandage ? 120 :
-                        item.kind == ItemKind::CookedMeat ? 90 : 12);
+            cooldown = pattern.cooldown;
         }
         break;
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
-        if (range == 1) {
-            const int hit = entity_at(game, target, true);
-            if (hit >= 0 && hit != user_slot) {
-                damage_entity(game, hit, item_pattern(item.kind).damage, user.cell);
-                used = true;
-            } else used = damage_tile(game.stage, target,
-                                      item.kind == ItemKind::Pickaxe ? 50 :
-                                      item_pattern(item.kind).damage);
-            cooldown = item_pattern(item.kind).cooldown;
+        if (range >= 1 && range <= item_pattern(item).maximum) {
+            const ItemPattern pattern = item_pattern(item);
+            used = strike_melee(game, user_slot, direction, item.kind, pattern);
+            cooldown = pattern.cooldown;
         }
         break;
     case ItemKind::ConductorHat: {
@@ -260,7 +277,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         user.block_ticks = 15;
         shove(game, user_slot, direction);
         used = true;
-        cooldown = item_pattern(item.kind).cooldown;
+        cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::Pistol: case ItemKind::Musket: case ItemKind::Bow:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
@@ -268,7 +285,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         return used;
     case ItemKind::Bomb:
         if (range <= 3) {
-            const ItemPattern pattern = item_pattern(item.kind);
+            const ItemPattern pattern = item_pattern(item);
             blast(game, target, pattern.blast_radius, pattern.damage, user.cell);
             used = consumed = true;
             cooldown = pattern.cooldown;
@@ -286,6 +303,12 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         break;
     case ItemKind::BearTrap: case ItemKind::Mine:
+        if (item.kind == ItemKind::BearTrap && !item.opened) {
+            item.opened = true;
+            item.cooldown = 10;
+            emit_sound(game, SoundId::SturdyBlockBouncedOn, user.cell);
+            return true;
+        }
         if (range == 1) {
             const Tile* tile = game.stage.at(target);
             if (tile != nullptr && walkable(tile->kind) &&
@@ -294,9 +317,12 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
                 if (Entity* placed = get_entity(game, trap)) {
                     placed->owner = user.owner;
                     placed->ground_item = make_item(item.kind);
-                    placed->sprite = item_sprite(item.kind);
+                    placed->ground_item.opened = item.kind == ItemKind::BearTrap;
+                    placed->sprite = item.kind == ItemKind::BearTrap ?
+                        Sprite::BearTrapOpen : item_sprite(item.kind);
                     used = consumed = true;
                     cooldown = 20;
+                    item.opened = false;
                 }
             }
         }
@@ -331,6 +357,11 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         case ItemKind::BearTrap: case ItemKind::Mine:
             emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
+        }
+        if (item.max_uses > 0 && --item.uses <= 0) {
+            emit_sound(game, SoundId::BoxBreak, user.cell);
+            item = {};
+            return true;
         }
         if (consumed && --item.count <= 0) item = {};
     }

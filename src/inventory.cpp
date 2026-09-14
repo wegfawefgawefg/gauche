@@ -1,14 +1,21 @@
 #include "game.hpp"
+#include "item_attribute.hpp"
 
 #include <algorithm>
 
 Item* Inventory::held() { return &slots[static_cast<std::size_t>(selected)]; }
 const Item* Inventory::held() const { return &slots[static_cast<std::size_t>(selected)]; }
 
-Item make_item(ItemKind kind, int count) {
-    Item item{kind, count};
+Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
+    Item item;
+    item.kind = kind;
+    item.attribute = item_accepts_attribute(kind, attribute) ?
+        attribute : ItemAttribute::None;
+    item.count = count;
     switch (kind) {
-    case ItemKind::Buckler: item.durability = 30; break;
+    case ItemKind::Buckler: item.max_durability = 30; break;
+    case ItemKind::Stick: item.max_uses = 18; break;
+    case ItemKind::Pickaxe: item.max_uses = 32; break;
     case ItemKind::Pistol: item.loaded = 12; item.spare = 48; break;
     case ItemKind::Musket: item.loaded = 1; item.spare = 12; break;
     case ItemKind::Bow: item.loaded = 1; item.spare = 20; break;
@@ -17,6 +24,13 @@ Item make_item(ItemKind kind, int count) {
     case ItemKind::SMG: item.loaded = 30; item.spare = 120; break;
     default: break;
     }
+    if (item.attribute == ItemAttribute::Durable) {
+        item.max_durability *= 2;
+        item.max_uses *= 2;
+    } else if (item.attribute == ItemAttribute::Fragile)
+        item.max_uses = std::max(1, item.max_uses / 2);
+    item.durability = item.max_durability;
+    item.uses = item.max_uses;
     return item;
 }
 
@@ -87,7 +101,8 @@ bool insert_item(Inventory& inventory, Item item) {
     const int maximum = item.kind == ItemKind::Wall ? 99 : 20;
     if (stackable) {
         for (Item& slot : inventory.slots) {
-            if (slot.kind != item.kind || slot.count >= maximum) continue;
+            if (slot.kind != item.kind || slot.attribute != item.attribute ||
+                slot.opened != item.opened || slot.count >= maximum) continue;
             const int transfer = std::min(maximum - slot.count, item.count);
             slot.count += transfer;
             item.count -= transfer;

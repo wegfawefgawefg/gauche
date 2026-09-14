@@ -38,6 +38,7 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(reward.item));
             mix(hash, static_cast<std::uint64_t>(reward.artifact));
             mix(hash, static_cast<std::uint64_t>(reward.amount));
+            mix(hash, static_cast<std::uint64_t>(reward.attribute));
         }
         for (const auto& offer : game.run.pending_offers[owner]) {
             for (const Reward& reward : offer) {
@@ -45,6 +46,7 @@ std::uint64_t game_hash(const Game& game) {
                 mix(hash, static_cast<std::uint64_t>(reward.item));
                 mix(hash, static_cast<std::uint64_t>(reward.artifact));
                 mix(hash, static_cast<std::uint64_t>(reward.amount));
+                mix(hash, static_cast<std::uint64_t>(reward.attribute));
             }
         }
     }
@@ -88,19 +90,29 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.inventory.selected));
         for (const Item& item : entity.inventory.slots) {
             mix(hash, static_cast<std::uint64_t>(item.kind));
+            mix(hash, static_cast<std::uint64_t>(item.attribute));
             mix(hash, static_cast<std::uint64_t>(item.count));
             mix(hash, static_cast<std::uint64_t>(item.cooldown));
             mix(hash, static_cast<std::uint64_t>(item.loaded));
             mix(hash, static_cast<std::uint64_t>(item.spare));
             mix(hash, static_cast<std::uint64_t>(item.durability));
+            mix(hash, static_cast<std::uint64_t>(item.max_durability));
+            mix(hash, static_cast<std::uint64_t>(item.uses));
+            mix(hash, static_cast<std::uint64_t>(item.max_uses));
+            mix(hash, static_cast<std::uint64_t>(item.opened));
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
+        mix(hash, static_cast<std::uint64_t>(ground.attribute));
         mix(hash, static_cast<std::uint64_t>(ground.count));
         mix(hash, static_cast<std::uint64_t>(ground.cooldown));
         mix(hash, static_cast<std::uint64_t>(ground.loaded));
         mix(hash, static_cast<std::uint64_t>(ground.spare));
         mix(hash, static_cast<std::uint64_t>(ground.durability));
+        mix(hash, static_cast<std::uint64_t>(ground.max_durability));
+        mix(hash, static_cast<std::uint64_t>(ground.uses));
+        mix(hash, static_cast<std::uint64_t>(ground.max_uses));
+        mix(hash, static_cast<std::uint64_t>(ground.opened));
     }
     return hash;
 }

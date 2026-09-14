@@ -1,4 +1,5 @@
 #include "../src/game.hpp"
+#include "../src/item_pattern.hpp"
 
 #include <algorithm>
 #include <array>
@@ -178,14 +179,53 @@ bool equipment_rules() {
     Game trap_game = small_game();
     Entity* trapper = get_entity(trap_game, trap_game.players[0]);
     trapper->inventory.slots[0] = make_item(ItemKind::BearTrap);
+    if (!check(use_held_item(trap_game, trap_game.players[0].slot, {3, 2}) &&
+               trapper->inventory.held()->opened,
+               "bear trap did not open before placement")) return false;
+    trapper->inventory.held()->cooldown = 0;
     if (!check(use_held_item(trap_game, trap_game.players[0].slot, {3, 2}),
-               "bear trap placement failed")) return false;
+               "open bear trap placement failed")) return false;
     const Handle wolf = spawn_entity(trap_game, EntityKind::Wolf, {4, 2});
     move_entity(trap_game, wolf.slot, {3, 2});
     step_game(trap_game, {});
-    return check(get_entity(trap_game, wolf)->health == 27 &&
-                 get_entity(trap_game, wolf)->stun_ticks > 0,
-                 "placed bear trap did not catch a moving actor");
+    bool recovered = false;
+    for (const Entity& entity : trap_game.entities)
+        recovered |= entity.kind == EntityKind::GroundItem &&
+            entity.cell == Cell{3, 2} && entity.ground_item.kind == ItemKind::BearTrap &&
+            !entity.ground_item.opened;
+    return check(get_entity(trap_game, wolf) == nullptr && recovered,
+                 "open bear trap did not deal 100 and remain recoverable");
+}
+
+bool item_attribute_rules() {
+    Game heavy = small_game();
+    Entity* shooter = get_entity(heavy, heavy.players[0]);
+    shooter->inventory.slots[0] = make_item(ItemKind::Pistol, 1, ItemAttribute::Heavy);
+    const Handle target = spawn_entity(heavy, EntityKind::Wolf, {4, 2});
+    if (!check(use_held_item(heavy, heavy.players[0].slot, {4, 2}) &&
+               get_entity(heavy, target)->health == 23 &&
+               shooter->inventory.held()->cooldown == 18,
+               "heavy attribute did not raise damage and cooldown")) return false;
+
+    Game big = small_game();
+    Entity* striker = get_entity(big, big.players[0]);
+    striker->inventory.slots[0] = make_item(ItemKind::Stick, 1, ItemAttribute::Big);
+    const Handle distant = spawn_entity(big, EntityKind::Wolf, {4, 2});
+    if (!check(item_pattern(*striker->inventory.held()).half_width == 1 &&
+               use_held_item(big, big.players[0].slot, {4, 2}) &&
+               get_entity(big, distant)->health == 28,
+               "big attribute changed the preview but not the melee reach")) return false;
+    striker->inventory.held()->cooldown = 0;
+    striker->inventory.held()->uses = 1;
+    use_held_item(big, big.players[0].slot, {4, 2});
+    if (!check(striker->inventory.held()->kind == ItemKind::None,
+               "limited-use stick did not break")) return false;
+
+    const Item durable = make_item(ItemKind::Buckler, 1, ItemAttribute::Durable);
+    const Item restorative = make_item(ItemKind::Bandage, 1, ItemAttribute::Restorative);
+    return check(durable.durability == 60 && durable.max_durability == 60 &&
+                 item_pattern(restorative).heal == 15,
+                 "condition and healing attributes did not alter item rules");
 }
 
 bool offline_reward_rules() {
@@ -513,6 +553,7 @@ bool footstep_rules() {
 int main() {
     if (!deterministic_replay() || !handle_reuse() || !buckler_rules() ||
         !artifact_rules() || !status_rules() || !equipment_rules() ||
+        !item_attribute_rules() ||
         !offline_reward_rules() || !entrance_respawn_rules() || !held_item_direction() ||
         !repeated_inventory_drops() ||
         !switch_route() || !forest_tools() ||

@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "item_attribute.hpp"
 
 #include <algorithm>
 #include <array>
@@ -7,6 +8,21 @@
 #include <vector>
 
 namespace {
+
+ItemAttribute rare_attribute(Game& game, ItemKind kind) {
+    if (random_u32(game) % 7 != 0) return ItemAttribute::None;
+    constexpr ItemAttribute choices[]{ItemAttribute::Strong, ItemAttribute::Agile,
+        ItemAttribute::Durable, ItemAttribute::Fragile, ItemAttribute::Heavy,
+        ItemAttribute::Big, ItemAttribute::Long, ItemAttribute::Piercing,
+        ItemAttribute::Restorative};
+    std::array<ItemAttribute, 9> eligible{};
+    int count = 0;
+    for (ItemAttribute choice : choices)
+        if (item_accepts_attribute(kind, choice))
+            eligible[static_cast<std::size_t>(count++)] = choice;
+    return count == 0 ? ItemAttribute::None :
+        eligible[random_u32(game) % static_cast<std::uint32_t>(count)];
+}
 
 Reward random_reward(Game& game, int category) {
     if (category == 0) {
@@ -18,7 +34,8 @@ Reward random_reward(Game& game, int category) {
         const ItemKind kind = items[random_u32(game) % items.size()];
         return {RewardKind::Item, kind, ArtifactKind::None,
                 kind == ItemKind::Bomb ? 3 :
-                (kind == ItemKind::Medkit || kind == ItemKind::SleepMeds ? 2 : 1)};
+                (kind == ItemKind::Medkit || kind == ItemKind::SleepMeds ? 2 : 1),
+                rare_attribute(game, kind)};
     }
     if (category == 1) {
         constexpr std::array<ArtifactKind, 4> artifacts{
@@ -58,6 +75,10 @@ void ready_next_floor(Game& game) {
 }
 
 } // namespace
+
+Item reward_item(Reward reward) {
+    return make_item(reward.item, reward.amount, reward.attribute);
+}
 
 void start_run(Game& game, std::uint64_t seed) {
     game = {};
@@ -145,7 +166,7 @@ namespace {
 bool grant_reward(Entity& player, Reward reward) {
     switch (reward.kind) {
     case RewardKind::Item:
-        if (!insert_item(player.inventory, make_item(reward.item, reward.amount))) return false;
+        if (!insert_item(player.inventory, reward_item(reward))) return false;
         break;
     case RewardKind::Artifact:
         if (!has_artifact(player, reward.artifact)) {

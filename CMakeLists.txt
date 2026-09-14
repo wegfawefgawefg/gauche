@@ -71,7 +71,7 @@ set(GAUCHE_ENTITY_SOURCES
 
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
     src/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
@@ -113,19 +113,19 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(gauche_tests
         tests/game_test.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp
-        src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME game_rules COMMAND gauche_tests)
     add_executable(gauche_rollback_tests
         tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
     add_executable(gauche_codec_tests
         tests/net_codec_test.cpp src/net_codec.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
@@ -139,7 +139,7 @@ if(BUILD_TESTING)
         tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -150,7 +150,7 @@ if(BUILD_TESTING)
         tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -160,7 +160,7 @@ if(BUILD_TESTING)
     add_executable(gauche_presentation_tests
         tests/presentation_test.cpp src/particles/system.cpp
         src/particles/templates.cpp src/particles/presentation.cpp
-        src/stage.cpp ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_pattern.cpp
+        src/stage.cpp ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
         src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)

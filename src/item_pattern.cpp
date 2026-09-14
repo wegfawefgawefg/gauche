@@ -21,16 +21,54 @@ ItemPattern item_pattern(ItemKind kind) {
     case ItemKind::BearTrap: case ItemKind::Mine:
         return {1, 1, 0, 0, 20, PatternEffect::Utility};
     case ItemKind::SleepMeds: return {0, 3, 0, 0, 30, PatternEffect::Utility};
-    case ItemKind::Medkit: return {0, 0, 0, 0, 300, PatternEffect::Heal};
-    case ItemKind::Bandage: return {0, 0, 0, 0, 120, PatternEffect::Heal};
-    case ItemKind::Bandaid: return {0, 0, 0, 0, 12, PatternEffect::Heal};
-    case ItemKind::RawMeat: return {0, 0, 0, 0, 12, PatternEffect::Heal};
-    case ItemKind::CookedMeat: return {0, 0, 0, 0, 90, PatternEffect::Heal};
+    case ItemKind::Medkit: return {0, 0, 0, 0, 300, PatternEffect::Heal, false, 0, 100};
+    case ItemKind::Bandage: return {0, 0, 0, 0, 120, PatternEffect::Heal, false, 0, 10};
+    case ItemKind::Bandaid: return {0, 0, 0, 0, 12, PatternEffect::Heal, false, 0, 1};
+    case ItemKind::RawMeat: return {0, 0, 0, 0, 12, PatternEffect::Heal, false, 0, 4};
+    case ItemKind::CookedMeat: return {0, 0, 0, 0, 90, PatternEffect::Heal, false, 0, 18};
     case ItemKind::Ammo: case ItemKind::ConductorHat:
         return {0, 0, 0, 0, 0, PatternEffect::Utility};
     case ItemKind::None: break;
     }
     return {};
+}
+
+ItemPattern item_pattern(const Item& item) {
+    ItemPattern pattern = item_pattern(item.kind);
+    switch (item.attribute) {
+    case ItemAttribute::None: case ItemAttribute::Durable: break;
+    case ItemAttribute::Strong:
+        pattern.damage = (pattern.damage * 5 + 3) / 4;
+        break;
+    case ItemAttribute::Agile:
+        pattern.cooldown = std::max(1, (pattern.cooldown * 3 + 2) / 4);
+        break;
+    case ItemAttribute::Fragile:
+        pattern.damage = (pattern.damage * 7 + 4) / 5;
+        break;
+    case ItemAttribute::Heavy:
+        pattern.damage = (pattern.damage * 4 + 2) / 3;
+        pattern.cooldown = (pattern.cooldown * 3 + 1) / 2;
+        break;
+    case ItemAttribute::Big:
+        if (pattern.blast_radius > 0) ++pattern.blast_radius;
+        else if (pattern.effect == PatternEffect::Damage && !pattern.ray) {
+            pattern.maximum = std::max(2, pattern.maximum);
+            pattern.half_width = 1;
+        }
+        break;
+    case ItemAttribute::Long:
+        pattern.maximum += pattern.ray ? 4 : 1;
+        break;
+    case ItemAttribute::Piercing:
+        pattern.piercing = pattern.ray;
+        break;
+    case ItemAttribute::Restorative:
+        pattern.heal = (pattern.heal * 3 + 1) / 2;
+        pattern.cooldown = (pattern.cooldown * 5 + 3) / 4;
+        break;
+    }
+    return pattern;
 }
 
 Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern) {

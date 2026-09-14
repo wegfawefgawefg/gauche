@@ -42,6 +42,21 @@ field. The C++ port already has `durability` for the buckler and per-gun
 `loaded`/`spare` counts, but has no stored maximum durability. Model each
 kind of capacity explicitly where needed instead of overloading `count`.
 
+## Rare item attributes
+
+- [ ] Bring back the spirit of Rust's `Strong`, `Agile`, `Durable`, `Fragile`,
+  `Heavy`, and `Big` attributes as explicit, uncommon item-instance modifiers.
+  They should be recognizable in names, cards, comparison, and the left list.
+- [ ] Make attributes change actual item rules and pattern data. For example,
+  Heavy can hit harder with a longer cooldown; Big can enlarge a blast or
+  strike shape; Durable and Fragile can alter condition or uses. Define their
+  effects per item family so nonsensical combinations are excluded.
+- [ ] Let a small number of post-floor item rewards roll one interesting
+  modifier. Show the modified stats and pattern before choosing. Keep the
+  modifier in deterministic item state, snapshots, and reconnects.
+- [ ] Keep Rust's clear distinction between stack count, consume-on-use, and
+  cooldown while adding the newer C++ durability and magazine rules.
+
 ## Bear trap
 
 - [ ] First use opens a closed trap with a distinct sound and visible state.

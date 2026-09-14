@@ -125,7 +125,7 @@ void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (selected) frame(renderer, x - 2.0F, y - 2.0F,
                             width + 4.0F, 218.0F, true);
         draw_item_details(renderer, graphics, player,
-                          make_item(reward.item, reward.amount),
+                          reward_item(reward),
                           x, y, width, 214.0F, label);
         return;
     }

@@ -12,7 +12,11 @@ struct ItemPattern {
     int cooldown = 0;
     PatternEffect effect = PatternEffect::None;
     bool ray = false;
+    int half_width = 0;
+    int heal = 0;
+    bool piercing = false;
 };
 
 ItemPattern item_pattern(ItemKind kind);
+ItemPattern item_pattern(const Item& item);
 Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern);

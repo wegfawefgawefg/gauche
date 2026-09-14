@@ -51,13 +51,23 @@ enum class ItemKind : std::uint8_t {
     Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
 };
 
+enum class ItemAttribute : std::uint8_t {
+    None, Strong, Agile, Durable, Fragile, Heavy, Big,
+    Long, Piercing, Restorative,
+};
+
 struct Item {
     ItemKind kind = ItemKind::None;
+    ItemAttribute attribute = ItemAttribute::None;
     int count = 0;
     int cooldown = 0;
     int loaded = 0;
     int spare = 0;
     int durability = 0;
+    int max_durability = 0;
+    int uses = 0;
+    int max_uses = 0;
+    bool opened = false;
 };
 
 constexpr int quick_slots = 6;
@@ -68,7 +78,8 @@ struct Inventory {
     const Item* held() const;
 };
 
-Item make_item(ItemKind kind, int count = 1);
+Item make_item(ItemKind kind, int count = 1,
+               ItemAttribute attribute = ItemAttribute::None);
 Sprite item_sprite(ItemKind kind);
 const char* item_name(ItemKind kind);
 bool insert_item(Inventory& inventory, Item item);
@@ -143,7 +154,9 @@ struct Reward {
     ItemKind item = ItemKind::None;
     ArtifactKind artifact = ArtifactKind::None;
     int amount = 0;
+    ItemAttribute attribute = ItemAttribute::None;
 };
+Item reward_item(Reward reward);
 struct Run {
     RunPhase phase = RunPhase::Arena;
     int floor = 0;

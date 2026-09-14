@@ -131,3 +131,14 @@ The existing [forest content sketch](FOREST_CONTENT_IDEAS.md) is a smaller
 candidate pool for the first floor. The [master task list](MASTER_TASKS.md)
 tracks all open work; this brief captures the larger content ambition and
 unresolved choices.
+
+## Ambient scenes (2026-09-14 addition)
+
+Add at least 20 ambient sound sources/cues per biome, separate from combat SFX.
+Support positional persistent loops with volume/falloff, one-shot or rearmed
+area triggers, and occasional level-wide events with chance and cooldown.
+Environmental vignettes combine sources and visible context: a stream falling
+from a wall into shallow, steppable water, puddle rings from feet, wind through
+a gap, creaking ruins and distant screams. These are room/prefab scene contents,
+not full actors. Playback, ripples and local trigger history are cosmetic and
+not network-synchronized; any gameplay terrain/material rules still are.

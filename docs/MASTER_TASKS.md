@@ -355,6 +355,34 @@ Palette note: no palette, GPL/PAL, ASE or Aseprite source file was found in the
 current `gauche-rs` checkout, including ignored files. Existing PNG colors remain
 the available art reference; new source scripts keep a small explicit palette.
 
+## Ambient sound and environmental scenes
+
+- [ ] Inspect Splonks' ambient audio and reuse suitable loading/mixing pieces;
+  give Gauche separate, simple ownership for persistent loops, area triggers,
+  and occasional level-wide ambience rather than stuffing them into enemy AI.
+- [ ] Author **at least 20 distinct ambient sound sources/cues per biome**
+  (80 across four), with thematic assets, placement rules, volume and falloff.
+  Include continuous water/wind/machinery, occasional wildlife/distant events,
+  and unsettling one-shot creaks, screams or other discoveries. This is an
+  additional quota, separate from combat and item sound effects.
+- [ ] Add positional looping sources with per-source gain, near/far falloff,
+  smooth enter/exit fades, sensible voice limits and listener-aware mixing.
+- [ ] Add point/area triggers: enter once, optionally rearm after leaving or a
+  cooldown; allow delayed/distant responses such as a creak or scream.
+- [ ] Add a per-level list of occasional ambient events, each with a local
+  random chance, cooldown and sound variations. Frame-rate-independent timing;
+  avoid replay bursts, immediate repetition and overlapping loud cues.
+- [ ] Author small environmental scenes inside room/prefab pools: wall-fed
+  stream/waterfall into shallow pools, wind through a broken wall, creaking
+  ruin, etc. Combine terrain/decor, local audio and local visual effects.
+- [ ] Shallow-water steps produce expanding puddle rings and splashes, with
+  appropriate water footsteps; streams/ripples stay restrained and readable.
+- [ ] Keep ambient playback, random schedules, trigger-consumed flags and
+  ripples in local presentation state, outside snapshots/gameplay hashes.
+  Scene placement may come from the generated map; collision, depth, damage
+  or other water/terrain rules remain deterministic gameplay. Reconnect should
+  rebuild nearby loops without replaying every one-shot trigger.
+
 ## Suggested order
 
 1. Tile rules and deterministic tests, then tile impact visuals.

@@ -32,12 +32,13 @@ enum class Sprite : std::size_t {
     Boar, ThornSnail, ThornSnailClosed, LanternMoth, SporeToad, SporeToadSwollen, CrateMimic,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
     StatusSleep, StatusStun, StatusChill,
-    ShallowWaterA, ShallowWaterB, SpringA, SpringB, Arrow, BombLit, BowDrawn,
+    ShallowWaterA, ShallowWaterB, SpringA, SpringB, Arrow, BombLit, BowDrawn, CanopyOak, CanopyPine,
     Count,
 };
 
 struct GameGraphics {
     mutable SDL_Texture* interaction_canvas = nullptr;
+    mutable SDL_Texture* overhead_canvas = nullptr;
     std::array<SDL_Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
     GameGraphics() = default;
     GameGraphics(const GameGraphics&) = delete;

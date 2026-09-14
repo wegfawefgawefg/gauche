@@ -3,6 +3,7 @@
 #include "enemy_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
+#include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
 #include "../src/world/loot.hpp"
@@ -190,7 +191,12 @@ int main(int argc, char** argv) {
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    if (mode == "layout") render_floor_overview(renderer,
+    if (mode == "overhead") {
+        SDL_SetRenderDrawColor(renderer, 80, 98, 77, 255);
+        SDL_RenderClear(renderer);
+        for (Tile& tile : game.stage.tiles) tile.kind = TileKind::Wall;
+        draw_overhead(renderer, graphics, game, &cosmetics, cosmetics.camera, 2, {});
+    } else if (mode == "layout") render_floor_overview(renderer,
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {

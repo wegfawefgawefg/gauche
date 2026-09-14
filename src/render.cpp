@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "scenery/overhead.hpp"
 #include "projectiles/render.hpp"
 #include "debug/panels.hpp"
 #include "entities/intent_render.hpp"
@@ -313,8 +314,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                        camera, zoom, &lighting, &game.stage);
     if (player != nullptr && debug_panels().world_items)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
-    if (cosmetics != nullptr)
-        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
+    draw_overhead(renderer, graphics, game, cosmetics, camera, zoom, lighting);
     draw_canopy_shafts(renderer, game, camera, zoom);
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);

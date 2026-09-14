@@ -227,7 +227,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
             }
         }
     observe_water(cosmetics, game, focus);
-    if (game.run.phase == RunPhase::Arena || game.run.floor <= 4)
+    if (game.run.phase == RunPhase::Arena || (game.run.floor > 4 && game.run.floor <= 8))
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
 }
 

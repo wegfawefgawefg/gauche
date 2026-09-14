@@ -35,7 +35,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "boar", "thorn_snail", "thorn_snail_closed", "lantern_moth", "spore_toad", "spore_toad_swollen", "crate_mimic",
     "throwing_rock", "hatchet", "hunting_spear", "crossbow", "blunderbuss", "wooden_maul", "rake", "flint_knife",
     "status_sleep", "status_stun", "status_chill",
-    "shallow_water_a", "shallow_water_b", "spring_a", "spring_b", "arrow", "bomb_lit", "bow_drawn",
+    "shallow_water_a", "shallow_water_b", "spring_a", "spring_b", "arrow", "bomb_lit", "bow_drawn", "canopy_oak", "canopy_pine",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,
@@ -55,6 +55,8 @@ bool require_file(const std::filesystem::path& path, std::string& error) {
 } // namespace
 
 void unload_graphics(GameGraphics& graphics) {
+    SDL_DestroyTexture(graphics.overhead_canvas);
+    graphics.overhead_canvas = nullptr;
     SDL_DestroyTexture(graphics.interaction_canvas);
     graphics.interaction_canvas = nullptr;
     for (SDL_Texture*& texture : graphics.textures) {

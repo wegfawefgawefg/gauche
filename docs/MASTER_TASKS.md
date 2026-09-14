@@ -449,7 +449,7 @@ the available art reference; new source scripts keep a small explicit palette.
 - [x] Walkable puddles/streams extinguish burning.
 - [ ] Define which water washes off poison/residue when those statuses and
   materials are implemented.
-- [ ] Replace forest's washed-out overhead cloud veil with fixed world-anchored
+- [x] Replace forest's washed-out overhead cloud veil with fixed world-anchored
   canopy silhouettes and camera parallax. Retain slow cloud effects where they
   fit (especially industry/lava); use a large soft/dithered central cutout so
   overhead foliage/clouds preserve the play area. Keep ground shadows separate.

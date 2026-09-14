@@ -85,3 +85,15 @@ sleep or death cancels preparation; fixture interactions such as cooking take
 priority. Shared player action slots and serialized item storage preserve the
 committed attack across rollback. Details expose windup; held art pulls back
 along its committed direction. Strict build checked; user owns timing playtests.
+
+## Overhead canopy visibility
+
+Forest overhead foliage uses quiet oak/pine silhouettes anchored to seeded wall
+positions. Camera parallax supplies movement; the silhouettes do not drift.
+Slow clouds remain in the arena and industrial/fire floors. Both share a wide
+central ellipse cleared through the overhead target, with a two-pixel dithered
+edge. Ground dappled lighting/shadows remain independent. Foliage inherits local
+light rather than making dark areas glow. A flat-background static capture
+caught software rendering discarding transparent geometry; cached unblended
+rectangle fills now clear the alpha correctly. Scene/inspection captures and
+strict builds checked, without gameplay runs.

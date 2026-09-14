@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
+#include "../surfaces/scent.hpp"
 #include "attacks.hpp"
 #include "scavenging.hpp"
 
@@ -77,6 +78,7 @@ void step_forager_goblin(Game& game, int slot) {
         return;
     }
     if (step_hearing(game, slot)) return;
+    if (step_scent(game, slot)) return;
     if (goblin.timer_a == 0) {
         goblin.entity_a = find_scavenge(game, slot, false, 7);
         goblin.timer_a = 45;

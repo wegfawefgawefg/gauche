@@ -25,11 +25,13 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || tile->kind == TileKind::Wall || !walkable(tile->kind)) return false;
     Surface& surface = tile->surface;
+    if (kind == LiquidKind::Rot && surface.fire_ticks > 0) return false;
     if (kind == LiquidKind::Water) {
         if (surface.fire_ticks > 0) emit_sound(game, SoundId::WaterDouse, cell);
         surface.fire_ticks = 0;
         surface.smoke_ticks = static_cast<std::uint16_t>(std::min(45, static_cast<int>(surface.smoke_ticks)));
         surface.sleep_ticks = 0;
+        surface.scent_ticks = 0;
         if (tile->kind == TileKind::Lava) *tile = {TileKind::Ruin, 0, 0};
     } else if (surface_wet(*tile)) return false;
     surface.liquid = kind;
@@ -64,7 +66,12 @@ void contact_surface(Game& game, int slot) {
         if (surface_wet(*tile)) {
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) emit_sound(game, SoundId::WaterDouse, actor.cell);
             actor.burn_ticks = actor.scorch_ticks = 0;
+            actor.vitals.nausea = actor.vitals.nausea_wait = 0;
         } else {
+            if (tile->surface.liquid == LiquidKind::Rot && tile->surface.liquid_ticks > 0) {
+                if (actor.vitals.nausea == 0 && actor.kind == EntityKind::Player) emit_sound(game, SoundId::NauseaGag, actor.cell);
+                apply_nausea(actor, 180);
+            }
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) ignite_surface(game, actor.cell);
             if (tile->surface.fire_ticks > 0) {
                 if (actor.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, actor.cell);
@@ -77,7 +84,7 @@ void contact_surface(Game& game, int slot) {
 }
 
 int surface_step_delay(const Tile& tile) {
-    return tile.surface.liquid == LiquidKind::Sap || tile.surface.liquid == LiquidKind::Honey ? 8 : 0;
+    return tile.surface.liquid == LiquidKind::Sap || tile.surface.liquid == LiquidKind::Honey || tile.surface.liquid == LiquidKind::SpentSap ? 8 : 0;
 }
 
 void step_surfaces(Game& game) {
@@ -90,9 +97,16 @@ void step_surfaces(Game& game) {
             if (surface.liquid_ticks > 0 && --surface.liquid_ticks == 0) surface.liquid = LiquidKind::None;
             if (surface.smoke_ticks > 0) --surface.smoke_ticks;
             if (surface.sleep_ticks > 0) --surface.sleep_ticks;
+            if (surface.scent_ticks > 0) --surface.scent_ticks;
+            if (surface_wet(tile) || surface.fire_ticks > 0) surface.scent_ticks = 0;
+            if (surface.fire_ticks > 0 && surface.liquid == LiquidKind::Rot) {
+                surface.liquid = LiquidKind::None; surface.liquid_ticks = 0;
+            }
             if (surface.fire_ticks == 0) continue;
             if (surface_wet(tile)) { surface.fire_ticks = 0; continue; }
             --surface.fire_ticks;
+            if (surface.fire_ticks == 0 && surface.liquid == LiquidKind::Sap && surface.liquid_ticks > 0)
+                surface.liquid = LiquidKind::SpentSap;
             if (surface.fire_ticks == 0 || game.tick % 30 != 0) continue;
             surface.smoke_ticks = 100;
             hit_prop(game, cell, 5, cell);

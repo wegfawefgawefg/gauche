@@ -3,7 +3,9 @@
 #include "../game.hpp"
 #include <vector>
 
-// SHARED SLOTS: point_c sound origin, label_c investigate/startle, timer_c memory.
+enum AttentionMode { NoAttention, InvestigateNoise, StartleNoise, FollowScent, SniffScent };
+
+// SHARED SLOTS: point_c origin, label_c attention mode, timer_c memory.
 // Each species calls step_hearing at an interruptible point in its own step.
 std::vector<Cell> audible_cells(const Game& game, Cell origin, int radius);
 void make_noise(Game& game, Cell origin, int radius, int startle_radius = 0);

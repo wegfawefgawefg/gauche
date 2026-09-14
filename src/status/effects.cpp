@@ -4,6 +4,14 @@
 
 #include <algorithm>
 
+bool apply_nausea(Entity& actor, int ticks) {
+    if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker ||
+        actor.kind == EntityKind::Ember || ticks <= 0) return false;
+    if (actor.vitals.nausea == 0) actor.vitals.nausea_wait = 60;
+    actor.vitals.nausea = static_cast<std::uint16_t>(std::clamp(std::max(ticks, static_cast<int>(actor.vitals.nausea)), 0, 600));
+    return true;
+}
+
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
     actor.sleep_ticks = std::max(actor.sleep_ticks, ticks);
@@ -45,6 +53,18 @@ void step_vital_effects(Game& game, int slot) {
     if (effects.grip > 0 && --effects.grip == 0) emit_sound(game, SoundId::BootsRelease, actor.cell);
     if (effects.sleep_guard > 0) --effects.sleep_guard;
     if (effects.stun_guard > 0) --effects.stun_guard;
+
+    // ROT: Refresh duration without resetting the damage beat; water clears both.
+    if (effects.nausea > 0) {
+        --effects.nausea;
+        if (effects.nausea_wait > 0) --effects.nausea_wait;
+        if (effects.nausea_wait == 0) {
+            effects.nausea_wait = 60;
+            damage_entity(game, slot, 1, actor.cell, false);
+            if (actor.health <= 0) return;
+        }
+        if (effects.nausea == 0) effects.nausea_wait = 0;
+    }
 
     // HERBS: Spend one point every third of a second, even if already fully healed.
     if (effects.healing_left > 0) {

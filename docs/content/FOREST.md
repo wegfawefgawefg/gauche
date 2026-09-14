@@ -67,7 +67,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 15 | Seed bag | Plant the next cell; a shoot grows into destructible cover after a visible delay. Six seeds. | Common / 8 |
 | 16 | Mushroom spores | Small sleep cloud at range 1–3; affects friends and enemies, damage wakes them. | Common / 10 |
 | 17 | Smoke pot | Throw 1–5; obscures creature targeting in a small area without changing authoritative lighting math. | Common / 10 |
-| 18 | Stink bomb | Throw 1–4; a lingering scent draws scavengers and distracts hunting animals. | Common / 7 |
+| 18 | Stink bomb | Throw 1–4; a 10s scent patch draws hungry animals and scavengers along reachable routes. Sniffing spends scent; water/fire clears it. Stacks to four. | Common / 7 |
 | 19 | Honey pot | Place bait; draws bears and wasps, sticky to walk through. A deliberate trap ingredient. | Common / 8 |
 | 20 | Hand bell | 80 rings, 90-tick cooldown. Wakes sleepers along a wall-blocked 10-cell sound path; curious creatures investigate that location for up to 5s. No damage. | Common / 5 |
 | 21 | Hunting horn | Facing cone 1–3 (one/three/five cells wide); shoves each target once and wakes it. Walls crush, friends count. 100-tick cooldown, eight uses. | Uncommon / 22 |
@@ -77,9 +77,9 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 25 | Splint | Self; removes movement stun and briefly protects against another root/stun. Two uses. | Common / 6 |
 | 26 | Bitter root | Self; wakes the user and gives short sleep resistance, with a small immediate HP cost. | Common / 5 |
 | 27 | Chili | Self; faster steps for a short burst, followed by a brief weak burn. Three peppers. | Common / 7 |
-| 28 | Rotten fruit | Throw 1–4; splats a nauseating patch, useful as scavenger bait; eating it is a bad heal. | Common / 2 |
+| 28 | Rotten fruit | Throw 1–4; a 10s rotten bait patch causes 3s of nausea (1 HP/s). Reload/secondary eats one for 3 HP followed by 6s nausea. Water cures it; stacks to eight. | Common / 2 |
 | 29 | Firecracker | Throws 1–4, 90-tick fuse. Bang is heard along 10 cells of open path; small creatures within 3 are stunned for 30 ticks then flee. Big widens startle; Long extends throw. Five per stack. | Common / 7 |
-| 30 | Pitch bomb | Throw 2–6; delayed burning splash with sticky residue. Strong against growth, dangerous around friends. | Uncommon / 18 |
+| 30 | Pitch bomb | Throw to 6, 2s fuse from use; 12-damage radius-2 splash leaves 6s of burning sap then spent sticky residue. Water quenches it; stacks to three. | Uncommon / 18 |
 | 31 | Acorn mine | Place next cell, arm in 20 ticks; contact or destruction bursts four 2-cell lanes for 22 damage. Big extends to three cells; three per stack. | Uncommon / 16 |
 | 32 | Thorn caltrops | Scatter over three facing cells; repeated small step damage, finite thorns. | Common / 10 |
 | 33 | Rope snare | Place next cell, arm in 20 ticks; roots a grounded actor for 3s without stopping attacks. Allies can cut or shove free; recoverable after release. Stacks to three. | Common / 9 |

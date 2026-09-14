@@ -30,7 +30,7 @@ void control_reference(gauche_menu::ViewBuilder& ui, std::string_view parent,
     row("aim", "Aim", pad ? stick_prompt(1, id).label : "Mouse");
     row("use", "Use / draw bow", bind(Action::Use));
     row("pickup", "Pick up / drop / swap", bind(Action::Pickup));
-    row("reload", "Reload", bind(Action::Reload));
+    row("reload", "Reload / secondary", bind(Action::Reload));
     row("interact", "Interact", bind(Action::Interact));
     row("inventory", "Inventory", bind(Action::Inventory));
     row("compare", "Compare", bind(Action::Compare));

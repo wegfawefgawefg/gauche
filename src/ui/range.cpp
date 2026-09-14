@@ -5,6 +5,7 @@
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
+#include "../items/mixtures.hpp"
 #include "../entities/attacks.hpp"
 #include "../entities/hearing.hpp"
 #include "../view.hpp"
@@ -57,7 +58,11 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::HandBell || held.kind == ItemKind::Firecracker) {
+    if (forest_mixture(held.kind) != nullptr) {
+        const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
+        for (Cell cell : mixture_cells(game, held, center))
+            mark(renderer, cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::HandBell || held.kind == ItemKind::Firecracker) {
         const Cell center = held.kind == ItemKind::HandBell ? player.cell :
             bomb_landing(game, player.cell, facing, pattern.maximum);
         for (Cell cell : audible_cells(game, center, pattern.blast_radius))

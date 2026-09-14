@@ -9,6 +9,7 @@
 #include "items/woodland_traps.hpp"
 #include "items/movement_tools.hpp"
 #include "items/noisemakers.hpp"
+#include "items/mixtures.hpp"
 #include "projectiles/hook.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
@@ -74,6 +75,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::StinkBomb: case ItemKind::RottenFruit: case ItemKind::PitchBomb:
+        used = throw_mixture(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::HandBell: case ItemKind::Firecracker:
         used = use_noisemaker(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -257,6 +262,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::RottenFruit)
+        return eat_rotten_fruit(game, user_slot);
     Item& item = *game.entities[static_cast<std::size_t>(user_slot)].inventory.held();
     const int capacity = magazine_size(item.kind);
     if (capacity == 0 || item.loaded >= capacity || item.spare <= 0 || item.cooldown > 0)

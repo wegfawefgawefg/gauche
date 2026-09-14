@@ -455,3 +455,40 @@ wasp trail recording remain in their own steppers. These fields enter snapshots
 Strict game/render builds and static world/item captures pass, including the Big
 startle footprint and the bell's centered radius diagram. No live playtest,
 network session or added gameplay test suite was run for this slice.
+
+
+## Scent, rotten fruit and pitch
+
+Three more regional finds bring the forest count to 45. Five generated sprites
+and eleven offline cues distinguish soft fruit, ceramic scent jars, sniffing,
+nausea and sticky burning pitch. Room/reward/shop pools include all three;
+rotten logs have a 15% fruit drop. Static captures cover haze, rot, flames/fuses,
+item comparisons, nausea and the actual bound secondary-action prompt.
+
+Stink bombs fly four cells, then leave a radius-one scent patch for 600 ticks.
+Hungry wolves/bears/boars/dogs, crows and unladen goblins investigate reachable
+scent within eight cells. Food/combat/noise retain their species priorities.
+Sniffing spends 90 scent ticks and holds attention briefly. Water and fire clear
+scent. Follow/sniff use the shared c slots; neither steals attack or flock state.
+
+Rotten fruit also flies four cells and splats a radius-one patch for 600 ticks.
+Grounded contact refreshes 180 ticks of nausea: one damage per second on a saved
+independent beat. Refreshing cannot postpone that damage forever. The HUD shows
+its timer/rate and water cure. Scavengers nibble the finite patch; crows also carry
+and eat loose fruit. On the reload/secondary binding, players can instead eat one
+for 3 HP and 360 ticks of nausea. Full-health/empty/cooling attempts consume none.
+The item card uses the active device/profile glyph for this contextual action.
+
+Pitch bombs fly six cells with a 120-tick fuse starting on use. The radius-two
+splash deals 12 damage, chips exposed props and deposits burning sap. Its covered
+cells are captured before destruction, so breaking cover cannot expand the same
+burst. Burning floor sap lasts six seconds, then becomes nonfuel spent sap for
+the remaining residue lifetime (15 seconds total). Both forms add eight recovery
+ticks to ordinary steps. Wood uses its own ignition lifetime. Water quenches and
+washes residue; friendlies and existing traps remain vulnerable to the splash.
+
+Big widens all three patches; Long extends throws; damage attributes affect pitch.
+Scent/rot rendering is local, while liquid kind/lifetime, scent lifetime, nausea
+and its damage beat are hashed and saved (snapshot 25, compatibility D4). Debug
+footprints use the same bounded wall/cover-aware splash cells as gameplay.
+Strict game/render builds pass. No live playtest or new gameplay test suite ran.

@@ -1,5 +1,6 @@
 #include "foraging.hpp"
 #include "behavior.hpp"
+#include "../surfaces/scent.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -19,7 +20,7 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
     }
     if (animal.label_b == 1 && animal.counter_b > 270) return true;
     if (animal.counter_b > 0) { animal.label_b = 0; return false; }
-    if (animal.move_wait > 0) return animal.label_b == 2;
+    if (animal.move_wait > 0) return animal.label_b == 2 || step_scent(game, slot);
     animal.label_b = 0;
     std::vector<int> candidates;
     for (int i = 0; i < max_entities; ++i) {
@@ -55,5 +56,5 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
             return true;
         }
     }
-    return false;
+    return step_scent(game, slot);
 }

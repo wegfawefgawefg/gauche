@@ -11,6 +11,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
+    case PropKind::RottenLog: if (roll < 15) item = ItemKind::RottenFruit; break;
     case PropKind::Nest: if (roll < 18) item = ItemKind::Egg; break;
     case PropKind::Crate:
         if (roll < 35) item = ItemKind::Ammo;
@@ -48,7 +49,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
                 distance(actor.cell, cell) <= 1)
                 apply_sleep(actor, 75);
     }
-    if (prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
+    if (prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::ClayPot) drop_contents(game, cell, prop.kind);
 }
 

@@ -8,6 +8,7 @@
 #include "pattern_diagram.hpp"
 #include "item_meter.hpp"
 #include "text.hpp"
+#include "prompts.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -119,6 +120,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::StinkBomb)
+        std::snprintf(line, sizeof(line), "SCENT 10s | NO DAMAGE");
+    if (item.kind == ItemKind::RottenFruit)
+        std::snprintf(line, sizeof(line), "NAUSEA 1 HP/s | WATER CURES");
     if (item.kind == ItemKind::HandBell)
         std::snprintf(line, sizeof(line), "WAKE + INVESTIGATE 5s");
     if (item.kind == ItemKind::Firecracker)
@@ -175,7 +180,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.flame_ticks > 0) {
+    if (item.kind == ItemKind::RottenFruit) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
+    } else if (item.flame_ticks > 0) {
         std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
         text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
     } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
@@ -186,7 +193,11 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    if (item.kind == ItemKind::HandBell)
+    if (item.kind == ItemKind::PitchBomb)
+        std::snprintf(line, sizeof(line), "FUSE 2s | FIRE 6s + RESIN");
+    else if (item.kind == ItemKind::RottenFruit)
+        std::snprintf(line, sizeof(line), "THROW %d | ROT PATCH 10s", pattern.maximum);
+    else if (item.kind == ItemKind::HandBell)
         std::snprintf(line, sizeof(line), "HEARD UP TO %d CELLS", pattern.blast_radius);
     else if (item.kind == ItemKind::Firecracker)
         std::snprintf(line, sizeof(line), "FUSE 1.5s | STARTLE %d", pattern.blast_radius);
@@ -223,7 +234,9 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
     SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
-    if (item.flame_ticks > 0) {
+    if (item.kind == ItemKind::RottenFruit) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
+    } else if (item.flame_ticks > 0) {
         char status[64];
         std::snprintf(status, sizeof(status), "%s  FIRE %ds", label, (item.flame_ticks+59)/60);
         text(renderer, x + 28.0F, y + 3.0F, status, 235, 167, 80);

@@ -157,6 +157,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u16(entity.vitals.healing_left); writer.u16(entity.vitals.healing_wait);
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
+    writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
     writer.u16(entity.vitals.grip); writer.u8(static_cast<std::uint8_t>(entity.vitals.root_kind));
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
@@ -200,6 +201,8 @@ Entity read_entity(PacketReader& reader) {
     entity.vitals.healing_left = reader.u16(); entity.vitals.healing_wait = reader.u16();
     entity.vitals.sleep_guard = reader.u16(); entity.vitals.stun_guard = reader.u16();
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
+    entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();
+    if (entity.vitals.nausea > 600 || entity.vitals.nausea_wait > 60) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());
     if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > 20 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
@@ -216,7 +219,7 @@ Entity read_entity(PacketReader& reader) {
     entity.counter_a = reader.i32(); entity.counter_b = reader.i32(); entity.counter_c = reader.i32();
     entity.label_a = reader.i32(); entity.label_b = reader.i32(); entity.label_c = reader.i32();
     entity.timer_a = reader.i32(); entity.timer_b = reader.i32(); entity.timer_c = reader.i32();
-    if (entity.label_c < 0 || entity.label_c > 2 || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
+    if (entity.label_c < 0 || entity.label_c > 4 || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     entity.birth_tick = reader.u64();
     entity.impassable = reader.u8() != 0;
@@ -241,7 +244,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(24);
+    writer.u32(25);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -254,7 +257,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u8(tile.required_dig_power);
         writer.u8(static_cast<std::uint8_t>(tile.material));
         writer.u8(static_cast<std::uint8_t>(tile.surface.liquid));
-        for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks}) writer.u16(ticks);
+        for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks}) writer.u16(ticks);
         writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
         writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
         writer.u8(static_cast<std::uint8_t>(tile.prop.broken));
@@ -309,7 +312,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 24) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 25) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -335,7 +338,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.material >= TileMaterial::Count) reader.okay = false;
         tile.surface.liquid = static_cast<LiquidKind>(reader.u8());
         tile.surface.liquid_ticks = reader.u16(); tile.surface.fire_ticks = reader.u16();
-        tile.surface.smoke_ticks = reader.u16(); tile.surface.sleep_ticks = reader.u16();
+        tile.surface.smoke_ticks = reader.u16(); tile.surface.sleep_ticks = reader.u16(); tile.surface.scent_ticks = reader.u16();
+        if (tile.surface.scent_ticks > 600) reader.okay = false;
         if (tile.surface.liquid >= LiquidKind::Count) reader.okay = false;
         tile.prop.kind = static_cast<PropKind>(reader.u8());
         tile.prop.hp = reader.u8(); tile.prop.variant = reader.u8();

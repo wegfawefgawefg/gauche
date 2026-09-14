@@ -44,7 +44,9 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
-    const bool thrown = bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
+    const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
+    const bool thrown = mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
@@ -83,7 +85,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
             x - static_cast<float>(shot.facing.x) * pixels * .65F,
             y - static_cast<float>(shot.facing.y) * pixels * .65F);
     }
-    if (bomb || cracker) {
+    if (bomb || cracker || pitch) {
         // FUSE: A few local sparks communicate danger without a debug attack grid.
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < 3; ++i) {

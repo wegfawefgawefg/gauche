@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
+#include "../surfaces/scent.hpp"
 #include "attacks.hpp"
 #include "scavenging.hpp"
 #include "bird_feeding.hpp"
@@ -80,14 +81,20 @@ void step_carrion_crow(Game& game, int slot) {
         else if (crow.timer_a == 0) {
             const Item& meal = *crow.inventory.held();
             const bool sleepy = meal.kind == ItemKind::FungalBread;
+            const SoundId munch = meal.kind == ItemKind::RottenFruit ? SoundId::FruitMunch : sleepy ? SoundId::BreadMunch : SoundId::MeatMunch;
             crow.health = std::min(crow.max_health, crow.health + item_pattern(meal).heal);
             if (sleepy) apply_sleep(crow, 120);
+            if (meal.kind == ItemKind::RottenFruit) {
+                crow.health = std::min(crow.max_health, crow.health + 3);
+                apply_nausea(crow, 360);
+            }
             *crow.inventory.held() = {};
             crow.label_a = 0; crow.timer_a = 90;
-            emit_sound(game, sleepy ? SoundId::BreadMunch : SoundId::MeatMunch, crow.cell);
+            emit_sound(game, munch, crow.cell);
         }
         return;
     }
+    if (step_scent(game, slot)) return;
     if (feed_on_bird_seed(game, slot)) return;
     if (crow.timer_a == 0) {
         crow.entity_a = find_scavenge(game, slot, true, 8);

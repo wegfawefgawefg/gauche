@@ -33,6 +33,7 @@ enum class SoundId : std::size_t {
     DrillStart, DrillBite, DrillStop, SwapCast, SwapFold, SwapFade,
     BoomerangThrow, BoomerangHit, BoomerangCatch, BoomerangLand,
     NetThrow, NetCatch, NetFall, BootsStick, BootsRelease, RabbitEscape, OilSlip,
+    StinkThrow, StinkBreak, FruitThrow, FruitSplat, FruitMunch, PitchThrow, PitchFuse, PitchLand, PitchBurst, ScentSniff, NauseaGag,
     HandBell, CrackerThrow, CrackerFuse, CrackerLand, CrackerBang,
     SnarePlace, SnareCatch, SnareRelease, SpringSet, SpringLaunch, SpringBreak, AcornSet, AcornBurst,
     Count,
@@ -65,6 +66,7 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "drill_start", "drill_bite", "drill_stop", "swap_cast", "swap_fold", "swap_fade",
     "boomerang_throw", "boomerang_hit", "boomerang_catch", "boomerang_land",
     "net_throw", "net_catch", "net_fall", "boots_stick", "boots_release", "rabbit_escape", "oil_slip",
+    "stink_throw", "stink_break", "fruit_throw", "fruit_splat", "fruit_munch", "pitch_throw", "pitch_fuse", "pitch_land", "pitch_burst", "scent_sniff", "nausea_gag",
     "hand_bell", "cracker_throw", "cracker_fuse", "cracker_land", "cracker_bang",
     "snare_place", "snare_catch", "snare_release", "spring_set", "spring_launch", "spring_break", "acorn_set", "acorn_burst",
 };

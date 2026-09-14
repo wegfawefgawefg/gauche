@@ -33,6 +33,8 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
     const std::array rows{
         StatusRow{"BURNING", std::max(player.scorch_ticks, player.burn_ticks),
                   {233, 150, 76, 255}, burning, Sprite::FlameA},
+        StatusRow{"NAUSEOUS", player.vitals.nausea, {173, 192, 105, 255},
+                  "1 HP/S | WATER CLEARS", Sprite::StatusNausea},
         StatusRow{"ASLEEP", player.sleep_ticks, {184, 164, 224, 255},
                   "DAMAGE/BITTER ROOT WAKES", Sprite::StatusSleep},
         StatusRow{"STUNNED", player.stun_ticks, {231, 198, 91, 255},

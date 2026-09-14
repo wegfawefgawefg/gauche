@@ -8,8 +8,6 @@
 
 namespace {
 
-enum { Investigate = 1, Startle = 2 };
-
 bool curious(EntityKind kind) {
     switch (kind) {
     case EntityKind::Wolf: case EntityKind::Bear: case EntityKind::Boar:
@@ -73,18 +71,18 @@ void make_noise(Game& game, Cell origin, int radius, int startle_radius) {
             std::find(heard.begin(), heard.end(), actor.cell) == heard.end()) continue;
         actor.sleep_ticks = 0;
         if (skittish(actor.kind) && std::find(startled.begin(), startled.end(), actor.cell) != startled.end()) {
-            actor.point_c = origin; actor.label_c = Startle; actor.timer_c = 150;
+            actor.point_c = origin; actor.label_c = StartleNoise; actor.timer_c = 150;
             apply_stun(actor, 30);
-        } else if (curious(actor.kind) && actor.label_c != Startle) {
-            actor.point_c = origin; actor.label_c = Investigate; actor.timer_c = 300;
+        } else if (curious(actor.kind) && actor.label_c != StartleNoise) {
+            actor.point_c = origin; actor.label_c = InvestigateNoise; actor.timer_c = 300;
         }
     }
 }
 
 bool step_hearing(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-    if (actor.timer_c <= 0 || actor.label_c == 0) return false;
-    if (actor.label_c == Startle) { flee(game, slot, actor.point_c); return true; }
+    if (actor.timer_c <= 0 || (actor.label_c != InvestigateNoise && actor.label_c != StartleNoise)) return false;
+    if (actor.label_c == StartleNoise) { flee(game, slot, actor.point_c); return true; }
     // THREATS: Adjacent visible players and actual hits take priority over a distant bell.
     const int threat = nearest_player(game, actor.cell, 1);
     if (threat >= 0 && clear_sight(game, actor.cell, game.entities[static_cast<std::size_t>(threat)].cell)) {

@@ -89,7 +89,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb,
     Count,
 };
 
@@ -160,7 +160,7 @@ struct Entity {
     // BEHAVIOR: Each kind names its slots beside its own init/step code.
     Handle entity_a{}, entity_b{};
     Handle encounter{}; // Room ownership must not overwrite an enemy's behavior references.
-    // HEARING: c point/label/timer hold the last noise; a/b remain species-owned.
+    // ATTENTION: c point/label/timer hold noise/scent; a/b remain species-owned.
     Cell point_a{}, point_b{}, point_c{};
     int counter_a = 0, counter_b = 0, counter_c = 0;
     int label_a = 0, label_b = 0, label_c = 0;

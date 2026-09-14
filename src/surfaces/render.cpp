@@ -41,6 +41,26 @@ void draw_haze(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
     }
 }
 
+// SCENT: A few rising strokes leave the underlying ground readable.
+void draw_scent(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+                float fade, std::uint64_t tick, Cell cell) {
+    for (int wisp = 0; wisp < 2; ++wisp) {
+        const int offset = (cell.x * 13 + cell.y * 29 + wisp * 47) % 90;
+        const float age = static_cast<float>((tick + static_cast<std::uint64_t>(offset + 90)) % 90) / 90;
+        const float opacity = .65F * fade * std::sin(age * 3.14159265F);
+        SDL_SetRenderDrawColorFloat(renderer, light.red * .60F, light.green * .73F,
+            light.blue * .32F, opacity);
+        SDL_FPoint points[6];
+        for (int i = 0; i < 6; ++i) {
+            const float phase = static_cast<float>(i) / 5;
+            points[i] = {rect.x + rect.w * (.30F + static_cast<float>(wisp) * .35F +
+                .08F * std::sin(phase * 6.2831853F + age * 4)),
+                rect.y + rect.h * (.80F - age * .35F - phase * .4F)};
+        }
+        SDL_RenderLines(renderer, points, 6);
+    }
+}
+
 } // namespace
 
 void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
@@ -56,6 +76,9 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             if (clouds) {
                 const int time = std::max(surface.smoke_ticks, surface.sleep_ticks);
+                if (surface.scent_ticks > 0)
+                    draw_scent(renderer, rect, light,
+                        std::min(1.0F, static_cast<float>(surface.scent_ticks) / 90), game.tick, cell);
                 if (time <= 0) continue;
                 draw_haze(renderer, rect, light, surface.sleep_ticks > 0,
                     .32F * std::min(1.0F, static_cast<float>(time) / 60), game.tick, cell);
@@ -64,6 +87,8 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             if (surface.liquid == LiquidKind::None) continue;
             LightColor color;
             switch (surface.liquid) {
+            case LiquidKind::Rot: color = {.34F, .38F, .14F}; break;
+            case LiquidKind::SpentSap: color = {.28F, .20F, .12F}; break;
             case LiquidKind::Oil: color = {.13F, .14F, .22F}; break;
             case LiquidKind::Sap: color = {.50F, .31F, .13F}; break;
             case LiquidKind::Water: color = {.24F, .46F, .48F}; break;

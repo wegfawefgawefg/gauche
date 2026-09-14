@@ -157,6 +157,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                 target.durability, target.max_durability);
         }
     }
+    if (item.kind == ItemKind::GritPouch)
+        std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
     if (item.kind == ItemKind::HerbBag)
         std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal,
             static_cast<double>(pattern.heal) / 3);

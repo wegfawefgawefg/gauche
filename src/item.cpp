@@ -12,6 +12,7 @@
 #include "items/mixtures.hpp"
 #include "items/decoys.hpp"
 #include "items/pocket_door.hpp"
+#include "items/ice_footing.hpp"
 #include "projectiles/hook.hpp"
 #include "projectiles/thunder.hpp"
 #include "projectiles/recoverable.hpp"
@@ -79,6 +80,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::GritPouch:
+        used = scatter_grit(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::PocketDoor:
         used = place_pocket_door(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -275,7 +280,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         default: break;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);
+            if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
+            else if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);
             item = {};
             return true;
         }

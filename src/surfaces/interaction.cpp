@@ -29,6 +29,7 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     if (kind == LiquidKind::Water) {
         if (surface.fire_ticks > 0) emit_sound(game, SoundId::WaterDouse, cell);
         surface.fire_ticks = 0;
+        surface.gritted = false;
         surface.smoke_ticks = static_cast<std::uint16_t>(std::min(45, static_cast<int>(surface.smoke_ticks)));
         surface.sleep_ticks = 0;
         surface.scent_ticks = 0;
@@ -94,6 +95,7 @@ void step_surfaces(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Surface& surface = tile.surface;
+            if (surface_wet(tile)) surface.gritted = false;
             if (surface.liquid_ticks > 0 && --surface.liquid_ticks == 0) surface.liquid = LiquidKind::None;
             if (surface.smoke_ticks > 0) --surface.smoke_ticks;
             if (surface.sleep_ticks > 0) --surface.sleep_ticks;

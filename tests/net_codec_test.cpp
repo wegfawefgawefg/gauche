@@ -53,6 +53,10 @@ int main() {
             fire.fire_dim_ticks = 47;
         }
     original.stage.tiles[0] = {TileKind::Wall, 37, 0, 125, BreakRule::DigRequired, 3};
+    original.stage.tiles[3].kind = TileKind::Ice;
+    original.stage.tiles[3].surface.gritted = true;
+    owner->inventory.slots[5] = make_item(ItemKind::GritPouch, 1, ItemAttribute::Big);
+    owner->inventory.slots[5].uses = 2;
     original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};
     original.stage.tiles[2].prop = {PropKind::Puffball, 0, 9, true};
     original.run.pending_count[0] = 1;

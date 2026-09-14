@@ -75,18 +75,18 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     entity.facing = direction;
     entity.cell = destination;
     enter_actor_cell(game, slot);
-    if (allow_slip && entity.cell == destination && slip_on_oil(game, slot, direction)) return true;
+    if (allow_slip && entity.cell == destination && slip_on_surface(game, slot, direction)) return true;
     entity.move_wait = entity.move_interval;
     // LANDING: A spring can move us again during contact; effects use the final cell.
     if (entity.health <= 0) return true;
     tile = game.stage.at(entity.cell);
     if (tile == nullptr) return true;
-    if (tile->kind == TileKind::Ice) entity.move_wait += 5;
     if (wading_actor(entity)) entity.move_wait += surface_step_delay(*tile);
     if (surface_wet(*tile) && wading_actor(entity))
         emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
             SoundId::WaterStep1 : SoundId::WaterStep2, entity.cell);
-    else if (wading_actor(entity) && (tile->kind == TileKind::Snow || tile->kind == TileKind::Ice)) {
+    else if (wading_actor(entity) && entity.kind != EntityKind::RimeSkater &&
+             (tile->kind == TileKind::Snow || tile->kind == TileKind::Ice)) {
         const bool alternate = ((entity.cell.x + entity.cell.y + slot) & 1) != 0;
         emit_sound(game, tile->kind == TileKind::Snow ?
             (alternate ? SoundId::SnowStep2 : SoundId::SnowStep1) :

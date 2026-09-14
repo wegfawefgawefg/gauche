@@ -8,7 +8,7 @@ namespace {
 constexpr RegionalItem net{"Throwing Net", "A traveling wide cast. Roots the first group for 2s; they can still attack. Walls catch the net.",
     Sprite::ThrowingNet, {1, 3, 0, 0, 60, PatternEffect::Utility, true, 1},
     ItemAction::Throw, 15, 3, true, 0, 0, 0, 0, 0, SoundId::NetThrow};
-constexpr RegionalItem boots{"Sticky Boots", "Grip for 6s: resist shoves and oil slips, but each step takes longer. Crushers still crush. Four uses.",
+constexpr RegionalItem boots{"Sticky Boots", "Grip for 6s: resist shoves and slips, but each step takes longer. Crushers still crush. Four uses.",
     Sprite::StickyBoots, {0, 0, 0, 0, 45, PatternEffect::Utility},
     ItemAction::Material, 18, 1, false, 4, 0, 0, 0, 0, SoundId::BootsStick};
 constexpr RegionalItem rabbit{"Rabbit Charm", "Retreat up to 3 cells opposite your aim. Stops at obstacles; hazards still apply. Three escapes.",

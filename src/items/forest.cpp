@@ -46,7 +46,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 
 } // namespace
 
-const RegionalItem* regional_item(ItemKind kind) {
+const RegionalItem* forest_item(ItemKind kind) {
     if (const RegionalItem* passage = forest_pocket_door(kind)) return passage;
     if (const RegionalItem* decoy = forest_decoy(kind)) return decoy;
     if (const RegionalItem* shield = forest_shield(kind)) return shield;

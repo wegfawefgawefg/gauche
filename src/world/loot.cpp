@@ -30,6 +30,9 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::RimeSkater:
+        if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::GritPouch);
+        break;
     case EntityKind::ForagerGoblin:
         drop_scavenged_items(game, enemy);
         if (random_u32(game) % 2 == 0) place_coins(game, enemy.cell, 3 + static_cast<int>(random_u32(game) % 5));

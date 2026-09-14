@@ -10,6 +10,7 @@
 #include "footprint_scene.hpp"
 #include "water_scene.hpp"
 #include "ice_scene.hpp"
+#include "rime_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
 #include "motion_scene.hpp"
@@ -142,7 +143,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "ice-terrain" || mode == "ice-floor")
+    if (mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -240,6 +241,7 @@ int main(int argc, char** argv) {
             insert_item(player.inventory, make_item(kind, kind == ItemKind::Egg ? 4 : 1));
         player.inventory.selected = 2;
     }
+    if (mode == "skaters" || mode == "grit-items") arrange_rime_scene(game, cosmetics, player);
     if (mode == "decoy-items" || mode == "decoys")
         arrange_decoys(game, cosmetics, player, mode == "decoys", true);
     if (mode == "ward-items" || mode == "wards")
@@ -278,7 +280,7 @@ int main(int argc, char** argv) {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "grit-items" || mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
         interaction.slot_focus = mode == "fruit-item" ? 2 : mode == "mixture-items" || mode == "mixture-big" ? 1 : mode == "noise-items" || mode == "noise-big" ? 1 : mode == "rabbit-item" ? 3 : mode == "movement-items" || mode == "movement-big" ? 1 : mode == "trap-items" || mode == "trap-big" ? 3 : mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
@@ -302,7 +304,7 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "pockets" || mode == "thunder" || mode == "whistle" || mode == "decoys" || mode == "wards" || mode == "parries" || mode == "shields" || mode == "mixtures" || mode == "noisemakers" || mode == "movement-tools" || mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "skaters" || mode == "pockets" || mode == "thunder" || mode == "whistle" || mode == "decoys" || mode == "wards" || mode == "parries" || mode == "shields" || mode == "mixtures" || mode == "noisemakers" || mode == "movement-tools" || mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
     if (mode == "fps") draw_frame_rate(renderer, 60);

@@ -9,6 +9,7 @@
 #include "../items/materials.hpp"
 #include "../items/pocket_door.hpp"
 #include "../items/mixtures.hpp"
+#include "../surfaces/interaction.hpp"
 #include "../entities/attacks.hpp"
 #include "../entities/hearing.hpp"
 #include "../view.hpp"
@@ -90,6 +91,15 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             bomb_landing(game, player.cell, facing, pattern.maximum);
         for (Cell cell : audible_cells(game, center, pattern.blast_radius))
             mark(renderer, cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::GritPouch) {
+        const Cell side{-facing.y, facing.x};
+        for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+            const Cell cell = player.cell + facing + Cell{side.x * lane, side.y * lane};
+            const Tile* tile = game.stage.at(cell);
+            if (tile != nullptr && tile->kind == TileKind::Ice && !tile->surface.gritted &&
+                !surface_wet(*tile) && clear_sight(game, player.cell, cell))
+                mark(renderer, cell, camera, zoom, pattern.effect);
+        }
     } else if (held.kind == ItemKind::ThrowingNet) {
         const Cell side{-facing.y, facing.x};
         int lanes = (1 << (pattern.half_width * 2 + 1)) - 1;

@@ -33,6 +33,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     case EntityKind::Owl: case EntityKind::Mosquito:
         if (enemy.label_a == 1 || enemy.label_a == 2) add(enemy.point_b);
         break;
+    case EntityKind::RimeSkater:
+        if (enemy.label_a == 1 || enemy.label_a == 2)
+            for (int i = 1; i <= enemy.counter_a; ++i)
+                add(enemy.cell + Cell{enemy.point_b.x * i, enemy.point_b.y * i});
+        break;
     case EntityKind::Boar:
         if (enemy.label_a == 1 || enemy.label_a == 2)
             for (int i = 1; i <= enemy.counter_a; ++i)

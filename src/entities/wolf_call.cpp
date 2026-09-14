@@ -8,6 +8,7 @@ namespace {
 bool hostile_prey(const Entity& actor) {
     if (actor.health <= 0 || actor.hard_blocker) return false;
     switch (actor.kind) {
+    case EntityKind::RimeSkater:
     case EntityKind::Zombie: case EntityKind::ZombieStack: case EntityKind::Bear:
     case EntityKind::Boar: case EntityKind::Bat: case EntityKind::FrostBat:
     case EntityKind::Ember: case EntityKind::ThornSnail: case EntityKind::LanternMoth:

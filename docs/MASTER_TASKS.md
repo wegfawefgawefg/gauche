@@ -273,9 +273,9 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Terrain foundation: seven cold room roles, native slate/snow/ice/water art,
-  dry routes, shared shelter supplies/containers and four new footing cues.
-  Regional enemies/items, material interactions and ambient catalog remain open.
+  Seven cold room roles, native terrain and footing cues now support Rime Skaters
+  and Grit Pouches: committed glides, traction, visible grains and water washing.
+  One of twenty enemies and one of fifty items; remaining content stays open.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

@@ -12,7 +12,7 @@ namespace {
 
 struct Supplies { int threat, healing, ammunition, equipment, stashes; };
 
-std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
+std::optional<Cell> room_space(Game& game, const RoomPlan& room, bool ice = false) {
     const int width = room.half_width * 2 + 1;
     std::vector<bool> seen(static_cast<std::size_t>(width * (room.half_height * 2 + 1)), false);
     std::vector<Cell> queue{room.center}, choices;
@@ -28,7 +28,7 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava) continue;
         if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0 &&
-            tile->kind != TileKind::Spring)
+            tile->kind != TileKind::Spring && (!ice || tile->kind == TileKind::Ice))
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }
@@ -39,7 +39,7 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
 
 Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
     if (cost > budget.threat) return {};
-    if (const auto cell = room_space(game, room)) {
+    if (const auto cell = room_space(game, room, kind == EntityKind::RimeSkater)) {
         const Handle spawned = kind == EntityKind::BurrowWorm ?
             spawn_burrow_worm(game, *cell) : spawn_entity(game, kind, *cell);
         if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
@@ -65,6 +65,12 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
+    if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
+        room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
+        enemy(game, room, EntityKind::RimeSkater, 2, budget);
+        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        return;
+    }
     if (game.run.floor > 4) {
         const EntityKind hazard = game.run.floor <= 8 ? EntityKind::Ember : EntityKind::FrostBat;
         enemy(game, room, hazard, 2, budget);
@@ -142,7 +148,9 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
     if (ice_floor(game.run.floor)) {
         if (room.role == RoomRole::Cache || room.role == RoomRole::Observatory ||
             room.role == RoomRole::Secret || room.role == RoomRole::Shrine) stash(game, room, budget);
-        if (room.role == RoomRole::FishingHut) {
+        if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
+            supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
+        } else if (room.role == RoomRole::FishingHut) {
             supply(game, room, ItemKind::CookedMeat, 2, budget.healing);
             supply(game, room, ItemKind::RopeHook, 1, budget.equipment);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {

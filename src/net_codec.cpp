@@ -251,7 +251,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(27);
+    writer.u32(28);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -264,6 +264,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u8(tile.required_dig_power);
         writer.u8(static_cast<std::uint8_t>(tile.material));
         writer.u8(static_cast<std::uint8_t>(tile.surface.liquid));
+        writer.u8(tile.surface.gritted ? 1 : 0);
         for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks}) writer.u16(ticks);
         writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
         writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
@@ -319,7 +320,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 27) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 28) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -344,6 +345,9 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.material = static_cast<TileMaterial>(reader.u8());
         if (tile.material >= TileMaterial::Count) reader.okay = false;
         tile.surface.liquid = static_cast<LiquidKind>(reader.u8());
+        const auto gritted = reader.u8();
+        if (gritted > 1) reader.okay = false;
+        tile.surface.gritted = gritted != 0;
         tile.surface.liquid_ticks = reader.u16(); tile.surface.fire_ticks = reader.u16();
         tile.surface.smoke_ticks = reader.u16(); tile.surface.sleep_ticks = reader.u16(); tile.surface.scent_ticks = reader.u16();
         if (tile.surface.scent_ticks > 600) reader.okay = false;

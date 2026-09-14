@@ -38,6 +38,7 @@ enum class SoundId : std::size_t {
     SnarePlace, SnareCatch, SnareRelease, SpringSet, SpringLaunch, SpringBreak, AcornSet, AcornBurst,
     LanternRaise, LanternBlock, LanternBreak, PanRaise, PanReflect, PanBreak, ScarecrowPlant, ScarecrowTear, DecoyPlant, DecoyHit, DecoyTear, WolfWhistle, WolfAnswer, ThunderThrow, ThunderCrack, PocketPlace, PocketLink, PocketTravel, PocketBlocked,
     SnowStep1, SnowStep2, IceStep1, IceStep2,
+    SkaterPush, SkaterBrake, SkaterHit, SkaterBreak, GritScatter, GritEmpty, IceSlip,
     Count,
 };
 
@@ -73,4 +74,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "snare_place", "snare_catch", "snare_release", "spring_set", "spring_launch", "spring_break", "acorn_set", "acorn_burst",
     "lantern_raise", "lantern_block", "lantern_break", "pan_raise", "pan_reflect", "pan_break", "scarecrow_plant", "scarecrow_tear", "decoy_plant", "decoy_hit", "decoy_tear", "wolf_whistle", "wolf_answer", "thunder_throw", "thunder_crack", "pocket_place", "pocket_link", "pocket_travel", "pocket_blocked",
     "snow_step1", "snow_step2", "ice_step1", "ice_step2",
+    "skater_push", "skater_brake", "skater_hit", "skater_break", "grit_scatter", "grit_empty", "ice_slip",
 };

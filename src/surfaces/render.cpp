@@ -6,6 +6,18 @@
 
 namespace {
 
+void draw_grit(SDL_Renderer* renderer, SDL_FRect rect, LightColor light, Cell cell) {
+    constexpr Cell grains[]{{3, 5}, {10, 3}, {7, 11}, {12, 10}, {4, 13}};
+    SDL_SetRenderDrawColorFloat(renderer, light.red * .62F, light.green * .54F,
+        light.blue * .39F, 1);
+    for (Cell grain : grains) {
+        const int x = (cell.x + cell.y) % 2 == 0 ? grain.x : 15 - grain.x;
+        const SDL_FRect dot{rect.x + rect.w * static_cast<float>(x) / 16,
+            rect.y + rect.h * static_cast<float>(grain.y) / 16, rect.w / 16, rect.h / 16};
+        SDL_RenderFillRect(renderer, &dot);
+    }
+}
+
 void draw_puddle(SDL_Renderer* renderer, const Stage& stage, Cell cell,
                  SDL_FRect rect, LiquidKind kind) {
     const auto same = [&](Cell side) {
@@ -84,6 +96,7 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
                     .32F * std::min(1.0F, static_cast<float>(time) / 60), game.tick, cell);
                 continue;
             }
+            if (surface.gritted) draw_grit(renderer, rect, light, cell);
             if (surface.liquid == LiquidKind::None) continue;
             LightColor color;
             switch (surface.liquid) {

@@ -36,7 +36,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 
 | # | Enemy | Behavior, tell and counterplay | Habitat; drops |
 | --- | --- | --- | --- |
-| 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. | Reservoir; 20% grit pouch, 10% skate blade. |
+| 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; 20% grit pouch, 10% skate blade. |
 | 2 | Bell diver | Walks submerged between visible air holes, rings its brass helmet, then climbs out to swing. Blocking one hole redirects it; never attacks while visually submerged. | Flooded galleries; 20% air bladder, 25% small gold. |
 | 3 | Snow burrower | A moving mound exposes its route; bursts at its committed destination and remains exposed while digging back in. Cleared ground prevents reburrowing there. | Snow banks; 25% raw meat, 15% snow scoop. |
 | 4 | Ice mason | Carries one visible block, places temporary breakable cover between itself and a threat, then retreats to cut another from eligible ice. Interrupt its long cutting beat. | Quarry; 20% ice brick, 15% chisel. |
@@ -81,7 +81,7 @@ same effective item definition as attacks, including rare attributes.
 | 6 | Snowball | Thrown to 5, 1 damage; wets the target and interrupts a fragile charging action. Stack 12. | Common; 2 |
 | 7 | Ice brick | Place blocking 35-HP cover or throw to 3 for 14 damage; thrown bricks shatter, heat melts placed ones. Stack 3. | Common; 8 |
 | 8 | Cold flask | Throw to 5; chills actors in a cross, freezes shallow water for 8s, extinguishes small fires. Stack 3. | Common; 10 |
-| 9 | Grit pouch | Fans across three adjacent tiles; stops ice slipping until washed away. Six uses. No universal terrain immunity. | Common; 6 |
+| 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Clears a three-cell fan of snow, revealing covered loot/props; secondary packs collected snow into a snowball if space permits. 60 durability. | Common; 9 |
 | 11 | Heat capsule | Break next to the user for a 4s warm patch; thaws nearby ice and removes chill, but ignites oil. Stack 4. | Common; 8 |
 | 12 | Coal lump | Feed a lit stove for longer heat or throw an inert lump for 4 damage. Does not spontaneously ignite. Stack 8. | Common; 3 |

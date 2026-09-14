@@ -65,7 +65,7 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     case ItemAttribute::Durable: return condition || kind == ItemKind::Buckler || (spec && spec->durability > 0);
     case ItemAttribute::Fragile: return condition && weapon;
     case ItemAttribute::Big:
-        return kind == ItemKind::ThrowingNet || kind == ItemKind::ThornCaltrops || item_is_melee(kind) || (spec != nullptr && spec->pattern.blast_radius > 0) || kind == ItemKind::Bomb ||
+        return kind == ItemKind::GritPouch || kind == ItemKind::ThrowingNet || kind == ItemKind::ThornCaltrops || item_is_melee(kind) || (spec != nullptr && spec->pattern.blast_radius > 0) || kind == ItemKind::Bomb ||
                kind == ItemKind::RocketLauncher;
     case ItemAttribute::Long: return kind == ItemKind::WolfWhistle || kind == ItemKind::Firecracker || kind == ItemKind::StinkBomb || kind == ItemKind::RottenFruit || (weapon && kind != ItemKind::AcornMine) || kind == ItemKind::RopeHook || kind == ItemKind::SwapSeed || kind == ItemKind::ThrowingNet;
     case ItemAttribute::Piercing:

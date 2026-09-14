@@ -4,6 +4,7 @@
 #include "remedies.hpp"
 #include "ground_tools.hpp"
 #include "displacement.hpp"
+#include "root_relics.hpp"
 
 namespace {
 
@@ -36,6 +37,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* relic = forest_root_relic(kind)) return relic;
     if (const RegionalItem* tool = forest_displacement_item(kind)) return tool;
     if (const RegionalItem* tool = forest_ground_tool(kind)) return tool;
     if (const RegionalItem* remedy = forest_remedy(kind)) return remedy;

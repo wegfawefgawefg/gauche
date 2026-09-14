@@ -89,7 +89,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed,
     Count,
 };
 

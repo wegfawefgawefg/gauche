@@ -144,7 +144,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         if (const auto cell = room_space(game, room))
         {
             constexpr ItemKind relics[]{ItemKind::ConductorHat, ItemKind::RocketLauncher,
-                ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Blunderbuss, ItemKind::Crossbow};
+                ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Blunderbuss, ItemKind::Crossbow,
+                ItemKind::RootDrill, ItemKind::SwapSeed};
             place_ground_item(game, *cell, relics[random_u32(game) % std::size(relics)]);
         }
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);

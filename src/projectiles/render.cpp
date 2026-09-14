@@ -7,16 +7,19 @@
 void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
+    const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
+    const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
     const bool hook = shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool thrown = bomb || shot.label_a == static_cast<int>(ProjectileKind::Flask);
-    const float travel = shot.counter_a > 0 && (!hook || shot.label_b == 0) ?
-        1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)) : 0;
+    const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
+        std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
     SDL_FRect rect = tile_rect(shot.cell, camera, zoom);
-    rect.x += static_cast<float>(shot.facing.x) * travel * pixels;
-    rect.y += static_cast<float>(shot.facing.y) * travel * pixels;
+    const float offset = drill && shot.label_b == 1 ? .25F : travel;
+    rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
+    rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
     if (thrown && shot.counter_a > 0) {
         const float progress = (static_cast<float>(shot.attack_interval - shot.counter_a) + travel) /
             static_cast<float>(std::max(1, shot.attack_interval));
@@ -27,8 +30,9 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_Texture* texture = texture_for(graphics, shot.sprite);
     const LightColor light = lit_sprite_color(lighting, shot.cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-    const double angle = thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
+    const double angle = swap ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
+    const double wobble = drill ? ((game.tick / 3) % 2 == 0 ? -7.0 : 7.0) : 0;
     if (hook) {
         if (const Entity* owner = get_entity(game, shot.entity_a)) {
             const SDL_FRect hand = tile_rect(owner->cell, camera, zoom);
@@ -37,7 +41,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                 rect.x + rect.w * .5F, rect.y + rect.h * .5F);
         }
     }
-    SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (rocket) {
         SDL_SetRenderDrawColor(renderer, 255, 181, 76, 255);

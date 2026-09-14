@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/root_relics.cpp src/projectiles/root_drill.cpp src/projectiles/swap.cpp
     src/items/displacement.cpp src/projectiles/hook.cpp src/debris/air.cpp
     src/items/ground_tools.cpp src/entities/bird_feeding.cpp
     src/status/effects.cpp src/items/remedies.cpp

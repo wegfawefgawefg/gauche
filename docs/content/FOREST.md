@@ -87,9 +87,9 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 35 | Shield lantern | Facing block with a light; 24 durability, weaker than a plain buckler but illuminates a fight. | Uncommon / 24 |
 | 36 | Reflecting pan | Short active parry window; returns a direct ranged hit, costs durability even on success. | Rare / 32 |
 | 37 | Digging claws | Adjacent dig-power-1 strike; quick but only 18 uses, modest actor damage. | Uncommon / 17 |
-| 38 | Root drill | Bores a committed line 1–5 through eligible terrain; loud, three charges, dig power 3. | Rare / 38 |
+| 38 | Root drill | Bores a committed line 1–5; six-tick bites, 24 body damage, double terrain damage and dig power 3. Three charges; 90-tick cooldown. | Rare / 38 |
 | 39 | Rope hook | Traveling line 1–6; reels an actor/loose item or the user toward a solid anchor, up to three steps. Sideways motion breaks the tether. 75-tick cooldown, 24 uses. | Uncommon / 25 |
-| 40 | Swap seed | Line 1–5; swaps with the first movable actor if both destinations remain legal. | Rare / 32 |
+| 40 | Swap seed | Traveling line 1–5; swaps with the first movable actor if both landings remain legal. Hazards apply after the atomic swap. Stacks to three, 60-tick cooldown. | Rare / 32 |
 | 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
 | 42 | Spring trap | Place facing next cell; launches the next actor two cells in that direction, with ordinary crush rules. | Uncommon / 20 |
 | 43 | Straw decoy | Place next cell; has HP and draws nearby enemy attention until destroyed. | Common / 12 |

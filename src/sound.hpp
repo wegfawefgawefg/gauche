@@ -30,6 +30,7 @@ enum class SoundId : std::size_t {
     HerbsChew, SplintBind, RootChew, ChiliBite, BreadMunch,
     SeedScatter, SeedPeck, ThornScatter, ThornPrick,
     HornBlast, HookCast, HookLatch, HookReel, HookRelease,
+    DrillStart, DrillBite, DrillStop, SwapCast, SwapFold, SwapFade,
     Count,
 };
 
@@ -57,4 +58,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "herbs_chew", "splint_bind", "root_chew", "chili_bite", "bread_munch",
     "seed_scatter", "seed_peck", "thorn_scatter", "thorn_prick",
     "horn_blast", "hook_cast", "hook_latch", "hook_reel", "hook_release",
+    "drill_start", "drill_bite", "drill_stop", "swap_cast", "swap_fold", "swap_fade",
 };

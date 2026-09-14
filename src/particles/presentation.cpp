@@ -88,7 +88,9 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         pose = {};
         return;
     }
-    if (same && entity.cell != pose.cell) {
+    const bool teleport = std::any_of(game.sounds.begin(), game.sounds.begin() + game.sound_count,
+        [&entity](const SoundEvent& sound) { return sound.sound == SoundId::SwapFold && sound.cell == entity.cell; });
+    if (same && !teleport && entity.cell != pose.cell) {
         if (entity.kind != EntityKind::GroundItem && entity.kind != EntityKind::RailLayer)
             push_debris(cosmetics.debris, entity.cell,
                 entity.kind == EntityKind::Train ? 2.2F : 1.1F,
@@ -119,7 +121,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_death(cosmetics, entity.cell, EntityKind::None, pose.angle, seed);
     }
     if (!same) pose = {};
-    if (entity.kind == EntityKind::Player) step_camera_guide(pose, entity, same);
+    if (entity.kind == EntityKind::Player) step_camera_guide(pose, entity, same && !teleport);
     pose.seen = true;
     pose.generation = entity.generation;
     pose.kind = entity.kind;

@@ -5,6 +5,7 @@
 #include "items/remedies.hpp"
 #include "items/ground_tools.hpp"
 #include "items/displacement.hpp"
+#include "items/root_relics.hpp"
 #include "projectiles/hook.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
@@ -69,6 +70,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::RootDrill: case ItemKind::SwapSeed:
+        used = launch_root_relic(game, user_slot, item, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::HuntingHorn:
         used = blow_hunting_horn(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

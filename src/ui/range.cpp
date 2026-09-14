@@ -1,5 +1,6 @@
 #include "presentation.hpp"
 #include "../projectiles/projectile.hpp"
+#include "../projectiles/root_drill.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
@@ -71,7 +72,8 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
                 (pattern.effect == PatternEffect::Damage && has_artifact(player, ArtifactKind::AllPiercing));
-            const bool impact = projectile_blocked(game, cell) ||
+            const bool obstacle = held.kind == ItemKind::RootDrill ? root_drill_blocked(game, cell, held) : projectile_blocked(game, cell);
+            const bool impact = obstacle ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||
                 step == pattern.maximum;

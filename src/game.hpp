@@ -35,7 +35,7 @@ constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 Cell cardinal_toward(Cell from, Cell to, Cell fallback);
 
-enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice };
+enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Count };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
 enum class TileImpact : std::uint8_t { Strike, Blast, Train };
 struct Tile {

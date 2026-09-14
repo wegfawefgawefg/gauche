@@ -22,7 +22,8 @@ PropKind room_prop(Game& game, RoomRole role) {
 
 bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking) {
     const Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava ||
+    if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava || tile->kind == TileKind::ShallowWater ||
+        tile->kind == TileKind::Spring ||
         tile->prop.kind != PropKind::None || plan.protected_cell(cell)) return false;
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::None) continue;

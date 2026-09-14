@@ -38,6 +38,10 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     case TileKind::Grass: return Sprite::Grass;
     case TileKind::Wall: return Sprite::Wall;
     case TileKind::Ruin: return Sprite::Ruin;
+    case TileKind::ShallowWater:
+        return (tick / 45) % 2 == 0 ? Sprite::ShallowWaterA : Sprite::ShallowWaterB;
+    case TileKind::Spring:
+        return (tick / 12) % 2 == 0 ? Sprite::SpringA : Sprite::SpringB;
     case TileKind::Water:
         return ((tick / 60 + tile.water_phase) % 2 == 0) ? Sprite::Water3 : Sprite::Water4;
     case TileKind::Rail: return Sprite::Rail;
@@ -283,16 +287,16 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_debris(renderer, graphics, cosmetics->debris, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
-                       camera, zoom, &lighting);
+                       camera, zoom, &lighting, &game.stage);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
     if (cosmetics != nullptr)
-        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting);
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting, &game.stage);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 1);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
-                       camera, zoom, &lighting);
+                       camera, zoom, &lighting, &game.stage);
     if (player != nullptr && debug_panels().world_items)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)

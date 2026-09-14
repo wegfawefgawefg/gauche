@@ -294,7 +294,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     result.stage.tiles.resize(tile_count);
     for (Tile& tile : result.stage.tiles) {
         const std::uint8_t kind = reader.u8();
-        if (kind > static_cast<std::uint8_t>(TileKind::Ice)) reader.okay = false;
+        if (kind >= static_cast<std::uint8_t>(TileKind::Count)) reader.okay = false;
         tile.kind = static_cast<TileKind>(kind);
         tile.hp = reader.u16(); tile.water_phase = reader.u8();
         tile.max_hp = reader.u16();

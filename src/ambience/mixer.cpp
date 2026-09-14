@@ -1,4 +1,5 @@
 #include "system.hpp"
+#include "../world/water.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,7 +28,7 @@ float source_gain(const AmbientSource& source, const Game& game, Cell listener) 
         source.cue == AmbientCue::PoolDrips || source.cue == AmbientCue::ReedHiss ||
         source.cue == AmbientCue::Frogs) {
         const Tile* tile = game.stage.at(source.cell);
-        if (tile == nullptr || tile->kind != TileKind::Water) return 0;
+        if (tile == nullptr || (tile->kind != TileKind::Water && !shallow_water(tile->kind))) return 0;
     }
     const AmbientSpec& spec = ambient_specs[static_cast<std::size_t>(source.cue)];
     if (source.global) return spec.gain;

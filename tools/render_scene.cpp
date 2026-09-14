@@ -1,6 +1,7 @@
 #include "../src/game.hpp"
 #include "floor_overview.hpp"
 #include "enemy_scene.hpp"
+#include "water_scene.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
 #include "../src/world/loot.hpp"
@@ -106,6 +107,7 @@ int main(int argc, char** argv) {
         arrange_enemy_scene(game, cosmetics);
         debug_panels().world_enemies = true;
     }
+    if (mode == "water") arrange_water_scene(game, cosmetics);
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};

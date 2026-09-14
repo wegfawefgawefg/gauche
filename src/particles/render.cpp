@@ -1,4 +1,5 @@
 #include "system.hpp"
+#include "../world/water.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -73,20 +74,31 @@ void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
 }
 
 void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
-               ViewCamera camera, float pixels) {
+               ViewCamera camera, float pixels, const LightingCache* lighting, const Stage* stage) {
     const auto alpha = static_cast<std::uint8_t>(
         205 * ring.life / std::max(1, ring.span));
-    SDL_SetRenderDrawColor(renderer, ring.red, ring.green, ring.blue, alpha);
+    const LightColor light = lighting != nullptr && ring.water ? light_at_cell(*lighting,
+        {static_cast<int>(ring.x), static_cast<int>(ring.y)}) : LightColor{1, 1, 1};
+    SDL_SetRenderDrawColorFloat(renderer, light.red * static_cast<float>(ring.red) / 255,
+        light.green * static_cast<float>(ring.green) / 255,
+        light.blue * static_cast<float>(ring.blue) / 255, static_cast<float>(alpha) / 255);
     const float cx = screen_x(ring.x, camera, pixels, 1.0F);
     const float cy = screen_y(ring.y, camera, pixels, 1.0F);
     for (int index = 0; index < 24; ++index) {
         const float first = 2.0F * pi * static_cast<float>(index) / 24.0F;
         const float second = 2.0F * pi * static_cast<float>(index + 1) / 24.0F;
+        // BANK: Ripples end at the shoreline instead of crossing walls and dry paths.
+        const float height = ring.water ? .65F : 1;
+        if (ring.water && stage != nullptr) {
+            const Cell cell{static_cast<int>(std::floor(ring.x + std::cos(first) * ring.radius)),
+                static_cast<int>(std::floor(ring.y + std::sin(first) * ring.radius * height))};
+            if (!shallow_water(stage->at_or_border(cell).kind)) continue;
+        }
         SDL_RenderLine(renderer,
             cx + std::cos(first) * ring.radius * pixels,
-            cy + std::sin(first) * ring.radius * pixels,
+            cy + std::sin(first) * ring.radius * pixels * height,
             cx + std::cos(second) * ring.radius * pixels,
-            cy + std::sin(second) * ring.radius * pixels);
+            cy + std::sin(second) * ring.radius * pixels * height);
     }
 }
 
@@ -94,7 +106,7 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
 
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
-                    float zoom, const LightingCache* lighting) {
+                    float zoom, const LightingCache* lighting, const Stage* stage) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (const SpriteParticle& particle : cosmetics.sprites)
@@ -103,6 +115,6 @@ void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
     for (const RibbonParticle& ribbon : cosmetics.ribbons)
         if (ribbon.layer == layer) draw_ribbon(renderer, ribbon, camera, pixels);
     for (const RingParticle& ring : cosmetics.rings)
-        if (ring.layer == layer) draw_ring(renderer, ring, camera, pixels);
+        if (ring.layer == layer) draw_ring(renderer, ring, camera, pixels, lighting, stage);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }

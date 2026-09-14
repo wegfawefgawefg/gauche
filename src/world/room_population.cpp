@@ -26,7 +26,8 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
         seen[index] = true;
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava) continue;
-        if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0)
+        if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0 &&
+            tile->kind != TileKind::Spring)
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }

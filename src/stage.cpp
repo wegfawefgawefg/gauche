@@ -37,7 +37,8 @@ const Tile& Stage::at_or_border(Cell cell) const {
 bool walkable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass ||
            kind == TileKind::Ruin || kind == TileKind::Rail ||
-           kind == TileKind::Lava || kind == TileKind::Ice;
+           kind == TileKind::Lava || kind == TileKind::Ice ||
+           kind == TileKind::ShallowWater || kind == TileKind::Spring;
 }
 
 bool buildable(TileKind kind) {

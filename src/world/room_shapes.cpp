@@ -36,7 +36,7 @@ TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
     if (trail) return TileKind::Empty;
     if (room.role == RoomRole::Ruins || room.role == RoomRole::Workshop ||
         room.role == RoomRole::Shrine) return TileKind::Ruin;
-    if (room.role == RoomRole::Brook && std::abs(x + y / 2) <= 2) return TileKind::Water;
+    if (room.role == RoomRole::Brook && std::abs(x + y / 2) <= 2) return TileKind::ShallowWater;
     if (game.run.floor <= 4) {
         if (room.role == RoomRole::Thicket || room.role == RoomRole::Orchard ||
             x * x + y * y > room.half_width * room.half_height / 2) return TileKind::Grass;

@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../world/water.hpp"
 #include "../world/encounter.hpp"
 
 #include <algorithm>
@@ -36,6 +37,8 @@ void step_entity_timers(Game& game, int slot) {
     entity.block_ticks = std::max(0, entity.block_ticks - 1);
     entity.use_flash = std::max(0, entity.use_flash - 1);
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
+
+    cool_in_water(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
     if (entity.scorch_ticks > 0 && entity.health > 0) {

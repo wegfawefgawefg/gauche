@@ -57,6 +57,7 @@ struct RingParticle {
     float speed = 0.0F;
     int life = 0;
     int span = 0;
+    bool water = false;
     std::uint8_t red = 255;
     std::uint8_t green = 255;
     std::uint8_t blue = 255;
@@ -106,4 +107,5 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus,
 ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner);
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
-                    float zoom, const LightingCache* lighting = nullptr);
+                    float zoom, const LightingCache* lighting = nullptr,
+                    const Stage* stage = nullptr);

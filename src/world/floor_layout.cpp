@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "water.hpp"
 #include "encounter.hpp"
 #include "../props/interaction.hpp"
 
@@ -33,6 +34,7 @@ void generate_world_floor(Game& game) {
     if (!haunted) {
         plan = plan_floor(game);
         carve_floor(game, plan);
+        place_water_scenes(game, plan);
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         game.run.has_key = false;

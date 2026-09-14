@@ -1,5 +1,7 @@
 #include "system.hpp"
 #include "templates.hpp"
+#include "water.hpp"
+#include "../world/water.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -78,7 +80,9 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
                 entity.kind == EntityKind::Train ? 2.2F : 1.1F,
                 entity.kind == EntityKind::Train ? .18F : .035F, entity.cell - pose.cell);
         ++pose.steps;
-        if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+        if (shallow_water(game.stage.at_or_border(entity.cell).kind) && wading_actor(entity))
+            spawn_water_rings(cosmetics, entity.cell, true);
+        else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
             entity.kind == EntityKind::ZombieStack)
             spawn_footprint(cosmetics, entity.cell, entity.kind,
                             (pose.steps & 1U) != 0, seed);
@@ -218,6 +222,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
                     spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
             }
         }
+    observe_water(cosmetics, game, focus);
     if (game.run.phase == RunPhase::Arena || game.run.floor <= 4)
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
 }

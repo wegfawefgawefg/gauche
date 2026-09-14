@@ -82,7 +82,7 @@ set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp
-    src/render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
+    src/render.cpp src/world/wall_render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp

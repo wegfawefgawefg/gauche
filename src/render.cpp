@@ -7,6 +7,7 @@
 #include "props/render.hpp"
 #include "ui/scale.hpp"
 #include "view.hpp"
+#include "world/wall_render.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -115,6 +116,8 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderTexture(renderer, texture, nullptr, &rect);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
+            if (world >= 0 && tile.kind == TileKind::Wall)
+                draw_wall_contour(renderer, game.stage, cell, rect, lighting, tint);
             draw_tile_damage(renderer, tile, cell, rect, lighting);
         }
     }

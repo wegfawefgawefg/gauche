@@ -115,6 +115,15 @@ of the room-role generator work below.
 
 ## Forest ground art
 
+- [x] Replace the generic forest wall's platformer-style bright top strip and
+  repeating brick rows with a minimal top-down wall mass. It must tile in both
+  axes; show the contour only where wall meets open space, under the same smooth
+  lighting. Keep damage cracks, HP feedback and final broken terrain readable.
+  Replaced the repeated ledges with a quiet shared surface and a neighbor-aware,
+  corner-lit contour on all exposed sides. Strict build and static normal-camera,
+  canopy and damaged-wall captures checked (2026-09-14).
+
+
 - [x] Simplify the three forest floor textures and grass. Use broad, calm
   color areas with sparse, purposeful marks; remove the repeated high-frequency
   speckles that make every tile equally busy. Preserve negative space around

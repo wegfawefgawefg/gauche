@@ -1,5 +1,8 @@
 # Gauche item UI and lighting milestone
 
+Completed milestone archive. Current open work lives in the
+[Gauche master task list](MASTER_TASKS.md).
+
 These agreed changes are implemented. The player will handle hands-on
 playtesting; the automated gameplay, rollback, snapshot, network, presentation,
 lighting, menu, UI, and border smoke checks run through CTest.

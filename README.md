@@ -2,6 +2,8 @@
 
 Gauche is a C++20, tile-step co-op dungeon run built from the original [Rust prototype](../gauche-rs). The Rust TestArena, its actors, items, train, art, and sound are the baseline. The new run adds keyed and switched exits, procedural room routes, forest/fire/ice worlds, guns, traps, artifacts, rewards, shops, lighting, and direct UDP co-op.
 
+The current work is tracked in one place: [the master task list](docs/MASTER_TASKS.md).
+
 ## Build and run
 
 The project uses SDL3 and the pinned Gubsy host. CMake fetches dependencies when they are not available locally. From the repository root, build and launch with:

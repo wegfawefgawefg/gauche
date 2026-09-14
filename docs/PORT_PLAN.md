@@ -1,5 +1,8 @@
 # Gauche C++ port plan
 
+Original architectural blueprint. Current open work is tracked in the
+[Gauche master task list](MASTER_TASKS.md).
+
 ## Target
 
 Make `gauche` the new C++ game and keep the original Rust history in

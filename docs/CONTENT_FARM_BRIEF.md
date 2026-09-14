@@ -128,6 +128,6 @@ loot sources, and completion condition. Each prop/debris family should say
 what breaks it, what remains, and how the fragments move.
 
 The existing [forest content sketch](FOREST_CONTENT_IDEAS.md) is a smaller
-candidate pool for the first floor. The [forest polish tasks](FOREST_POLISH_TASKS.md)
-cover near-term rendering and rules; this brief captures the larger content
-ambition and unresolved choices.
+candidate pool for the first floor. The [master task list](MASTER_TASKS.md)
+tracks all open work; this brief captures the larger content ambition and
+unresolved choices.

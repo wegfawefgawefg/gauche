@@ -281,7 +281,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                                      angle, nullptr, held_facing.x < 0 ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
             SDL_SetTextureColorModFloat(held_texture, 1.0F, 1.0F, 1.0F);
             draw_item_flame(renderer, graphics, *held, held_rect, held_facing, game.tick);
-            if (held->kind == ItemKind::Buckler) {
+            if (held->kind == ItemKind::Buckler ||
+                (held->kind == ItemKind::ShieldLantern && entity.block_ticks > 0)) {
                 SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
                 SDL_RenderRect(renderer, &held_rect);
             }

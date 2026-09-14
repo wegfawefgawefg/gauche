@@ -8,7 +8,6 @@ namespace {
 
 LightEmitter initial_item_light(ItemKind kind) {
     switch (kind) {
-    case ItemKind::Torch: return {5, 900, {255, 167, 74}};
     case ItemKind::Medkit: return {3, 420, {71, 255, 92}};
     case ItemKind::ConductorHat: return {3, 460, {255, 184, 69}};
     case ItemKind::RocketLauncher: case ItemKind::Mine:
@@ -61,6 +60,8 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
         item.loaded = spec->magazine;
         item.spare = spec->spare;
         item.dig_power = spec->dig_power;
+        item.max_durability = spec->durability;
+        item.light = spec->light;
     }
     if (item.attribute == ItemAttribute::Durable) {
         item.max_durability *= 2;

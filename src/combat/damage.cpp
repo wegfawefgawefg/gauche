@@ -51,8 +51,13 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
     Item* held = entity.inventory.held();
     if (blockable && blocks_facing(entity, attacker)) {
         held->durability -= std::max(1, damage);
-        emit_sound(game, SoundId::SturdyBlockBouncedOn, entity.cell);
-        if (held->durability <= 0) *held = {};
+        const bool lantern = held->kind == ItemKind::ShieldLantern;
+        emit_sound(game, lantern ? SoundId::LanternBlock : SoundId::SturdyBlockBouncedOn, entity.cell);
+        if (held->durability <= 0) {
+            if (lantern) emit_sound(game, SoundId::LanternBreak, entity.cell);
+            *held = {};
+            entity.block_ticks = 0;
+        }
         return;
     }
     damage = enemy_defense(game, slot, damage, attacker, blockable);

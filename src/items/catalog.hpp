@@ -18,6 +18,8 @@ struct RegionalItem {
     int reload = 60;
     int dig_power = 0;
     SoundId sound = SoundId::Punch1;
+    int durability = 0;
+    LightEmitter light{};
 };
 
 const RegionalItem* regional_item(ItemKind kind);

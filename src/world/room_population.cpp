@@ -160,7 +160,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
             ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
-            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn, ItemKind::Boomerang, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::StinkBomb, ItemKind::RottenFruit, ItemKind::PitchBomb, ItemKind::HandBell, ItemKind::Firecracker, ItemKind::ThrowingNet, ItemKind::StickyBoots};
+            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn, ItemKind::Boomerang, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::StinkBomb, ItemKind::RottenFruit, ItemKind::PitchBomb, ItemKind::ShieldLantern, ItemKind::HandBell, ItemKind::Firecracker, ItemKind::ThrowingNet, ItemKind::StickyBoots};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};

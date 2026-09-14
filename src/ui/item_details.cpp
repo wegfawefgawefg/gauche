@@ -120,6 +120,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::ShieldLantern)
+        std::snprintf(line, sizeof(line), "FRONT GUARD 0.25s | LIGHT %d", item.light.radius);
     if (item.kind == ItemKind::StinkBomb)
         std::snprintf(line, sizeof(line), "SCENT 10s | NO DAMAGE");
     if (item.kind == ItemKind::RottenFruit)

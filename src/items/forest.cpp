@@ -9,6 +9,7 @@
 #include "movement_tools.hpp"
 #include "noisemakers.hpp"
 #include "mixtures.hpp"
+#include "shields.hpp"
 
 namespace {
 
@@ -44,6 +45,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* shield = forest_shield(kind)) return shield;
     if (const RegionalItem* mixture = forest_mixture(kind)) return mixture;
     if (const RegionalItem* noise = forest_noisemaker(kind)) return noise;
     if (const RegionalItem* movement = forest_movement_item(kind)) return movement;

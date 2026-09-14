@@ -142,3 +142,150 @@ handles are hashed, snapshotted and validated; layout is 21, compatibility D0.
 One sprite and four offline-synthesized cues accompany cache/reward/shop integration.
 Strict game/render builds and static in-flight HUD, comparison card and world
 captures pass. No live playtest or new gameplay test suite was run.
+
+
+## Snares, spring traps and acorn mines
+
+These three finds bring the forest item catalog to 37. Place on an empty dry
+walkable adjacent cell, then arm for 20 ticks. Intact props, fixtures and actors
+prevent placement without consuming an item. Grounded actors trigger them;
+flying creatures do not. All traps affect friends. Setup/catch/release/launch/
+break/burst cues have eight new offline sound sources and seven sprite states.
+
+A rope snare has 8 HP and roots its captive for 180 ticks without disabling
+attacks or item use. Its generation handle releases safely on death, removal,
+a shove/teleport away, expiry, or cutting the rope. After ordinary release it
+becomes a recoverable ground item in the same entity slot. A destroyed rope
+is lost. The general root timer is shared actor state, independent of AI slots;
+movement rejects voluntary steps, while forced movement remains possible.
+A rope overlay and ROOTED timer explain the restriction on the player's HUD.
+
+A spring has 20 HP, fires once, and applies up to two cardinal shoves along its
+visible arrow. Ordinary actor blockers stop travel; hard surfaces crush. It
+removes itself before landing contacts, so chained springs are finite. Each
+landing processes hazards; outer contact does not double-trample a fire, and
+footstep sounds use the final cell rather than the originally requested step.
+
+An acorn mine has 8 HP and bursts on contact or destruction, including fire,
+melee and explosions. It hits its cell and casts four 22-damage splinter lanes,
+each two cells long, stopping at walls, blocking props or the first body.
+Other mines can chain. Big extends lanes to three cells; Strong/Heavy affect
+damage. Cards and debug previews use a cross pattern. Splinters and shell husks
+also enter local movable debris. None of those cosmetics changes gameplay.
+
+Root duration enters hashes and snapshots (layout 22, compatibility D1). Trap
+state reuses existing counters, timers, facing, handles and copied items.
+Workshop/cache finds and reward/shop pools contain the new items. Strict game
+and render builds plus static armed-state, root-HUD, base/Big comparison captures
+pass. No live playtest or new gameplay test suite was run.
+
+
+## Nets, gripping boots and retreat charms
+
+These three finds bring the regional forest item count to 40. Room finds,
+rewards and shops include them. Five generated sprites and seven offline cues
+cover throwing/catching/falling cloth, sticking/releasing boots, retreat and oil.
+
+Throwing nets travel one cell every four ticks, three cells wide, up to three
+cells forward. The first occupied row roots eligible actors for 120 ticks;
+attacks remain available. Walls and blocking fixtures stop the center lane and
+tear off edge lanes. Big widens to five lanes; Long extends reach to seven.
+The net is consumed; local cloth scraps remain. Root overlays distinguish nets
+from snares, and a snare cannot release a newer net root.
+
+Sticky boots have four uses. Each provides 360 ticks of grip, blocking shoves
+and oil slips while doubling ordinary movement recovery. Freeze and haste
+compose with that delay. Crushers still crush; swaps remain teleports. The HUD
+shows the grip duration and tradeoff, and item cards show actual step deltas.
+
+Rabbit charms have three uses. Each retreats up to three cardinal cells opposite
+aim, applying every intermediate contact. Obstacles, death, rooting, or a spring/
+oil displacement stop the retreat. A fully blocked attempt consumes no use.
+Actors stay on their real cells; this introduces no visual movement interpolation.
+
+An ordinary grounded step onto oil slips one extra cell in its direction if
+that cell is clear. Slip does not recurse across an oil lake or crush actors
+against blocked tiles. Landing hazards still apply. Grip/root prevent slipping.
+
+Grip and root kind enter hashes and snapshots (layout 23, compatibility D2).
+Net payload, lanes and timers reuse existing saved projectile fields. Strict game
+and render builds pass. Static item comparisons and world captures were inspected,
+including Big Net, step deltas, charge counts and status overlays. No live
+playtest, network session or new gameplay test suite was run for this slice.
+
+
+## Bells, firecrackers and creature hearing
+
+Two more finds bring the regional forest item count to 42. They enter room,
+reward and shop pools with three generated sprites and five new offline sounds.
+The bell uses an inharmonic brass ring; crackers have paper toss/landing, quiet
+fizz and a sharp bang. Local rings, sparks and loose scraps do not affect state.
+
+Hand Bell has 80 uses and a 90-tick cooldown. Each ring wakes living sleepers,
+including teammates and stationary creatures, and calls curious species to its
+current cell. Memory lasts at most 300 ticks. Wolves, bears, boars, dogs, zombies,
+stacks, unladen goblins and mimics can investigate. A hidden mimic reveals itself.
+An adjacent visible player, arriving at the location, losing a route or being hit
+ends investigation. Species-specific food/carrying/defense priorities remain.
+
+Firecrackers stack to five and throw four cells at eight ticks per cell. The
+90-tick fuse starts on throwing, continues after landing, and does not depend on
+the owner's survival. Walls stop the throw at the previous cell. The bang wakes
+sleepers and draws investigators along ten cells of open path. Within three cells
+of open path, small species receive 30 ticks of stun and 150 ticks of startle
+memory, including that stun time. Birds, bats, small insects, toads and rabbits
+flee once their current committed behavior allows it; players are not stunned.
+Big expands startle to four cells, Long throws five. Neither version deals damage.
+
+Gameplay hearing uses an explicit bounded cardinal flood around the noise, with
+walls, blocking props and closed doors/gates stopping propagation. Bodies and
+smoke do not stop it. The same footprint feeds debug pattern rendering. Ordinary
+ambient and audio playback events never invoke hearing: mute settings and local
+cosmetic sound randomness cannot change an enemy's behavior.
+
+Shared point_c/label_c/timer_c retain origin, investigate/startle mode and memory.
+Each participating species calls the helper at an interruptible point instead
+of applying one stepper to all actors. Existing bite/dive/charge tells and chicken/
+wasp trail recording remain in their own steppers. These fields enter snapshots
+(layout 24, compatibility D3) and hashes; spawned actors initialize them empty.
+
+Strict game/render builds and static world/item captures pass, including the Big
+startle footprint and the bell's centered radius diagram. No live playtest,
+network session or added gameplay test suite was run for this slice.
+
+
+## Scent, rotten fruit and pitch
+
+Three more regional finds bring the forest count to 45. Five generated sprites
+and eleven offline cues distinguish soft fruit, ceramic scent jars, sniffing,
+nausea and sticky burning pitch. Room/reward/shop pools include all three;
+rotten logs have a 15% fruit drop. Static captures cover haze, rot, flames/fuses,
+item comparisons, nausea and the actual bound secondary-action prompt.
+
+Stink bombs fly four cells, then leave a radius-one scent patch for 600 ticks.
+Hungry wolves/bears/boars/dogs, crows and unladen goblins investigate reachable
+scent within eight cells. Food/combat/noise retain their species priorities.
+Sniffing spends 90 scent ticks and holds attention briefly. Water and fire clear
+scent. Follow/sniff use the shared c slots; neither steals attack or flock state.
+
+Rotten fruit also flies four cells and splats a radius-one patch for 600 ticks.
+Grounded contact refreshes 180 ticks of nausea: one damage per second on a saved
+independent beat. Refreshing cannot postpone that damage forever. The HUD shows
+its timer/rate and water cure. Scavengers nibble the finite patch; crows also carry
+and eat loose fruit. On the reload/secondary binding, players can instead eat one
+for 3 HP and 360 ticks of nausea. Full-health/empty/cooling attempts consume none.
+The item card uses the active device/profile glyph for this contextual action.
+
+Pitch bombs fly six cells with a 120-tick fuse starting on use. The radius-two
+splash deals 12 damage, chips exposed props and deposits burning sap. Its covered
+cells are captured before destruction, so breaking cover cannot expand the same
+burst. Burning floor sap lasts six seconds, then becomes nonfuel spent sap for
+the remaining residue lifetime (15 seconds total). Both forms add eight recovery
+ticks to ordinary steps. Wood uses its own ignition lifetime. Water quenches and
+washes residue; friendlies and existing traps remain vulnerable to the splash.
+
+Big widens all three patches; Long extends throws; damage attributes affect pitch.
+Scent/rot rendering is local, while liquid kind/lifetime, scent lifetime, nausea
+and its damage beat are hashed and saved (snapshot 25, compatibility D4). Debug
+footprints use the same bounded wall/cover-aware splash cells as gameplay.
+Strict game/render builds pass. No live playtest or new gameplay test suite ran.

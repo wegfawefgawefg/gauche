@@ -159,7 +159,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = get_entity(game, rail) != nullptr;
         break;
     }
-    case ItemKind::Buckler:
+    case ItemKind::ShieldLantern: case ItemKind::Buckler:
         user.block_ticks = 15;
         shove_in_front(game, user_slot, direction);
         used = true;

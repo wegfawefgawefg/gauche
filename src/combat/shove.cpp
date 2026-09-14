@@ -47,6 +47,8 @@ bool shove_actor(Game& game, int target_slot, Cell direction, Cell source) {
 }
 
 bool blocks_facing(const Entity& actor, Cell attacker) {
-    return actor.block_ticks > 0 && actor.inventory.held()->kind == ItemKind::Buckler &&
+    const Item& held = *actor.inventory.held();
+    const bool shield = held.kind == ItemKind::Buckler || held.kind == ItemKind::ShieldLantern;
+    return actor.health > 0 && actor.block_ticks > 0 && shield && held.count > 0 && held.durability > 0 &&
         actor.facing == cardinal_toward(actor.cell, attacker, actor.facing);
 }

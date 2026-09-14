@@ -92,7 +92,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball,
     Count,
 };
 
@@ -152,7 +152,7 @@ enum class EntityKind : std::uint8_t {
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
-    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel,
+    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower,
     Count,
 };
 

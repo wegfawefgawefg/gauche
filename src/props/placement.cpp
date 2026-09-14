@@ -51,6 +51,18 @@ void scatter_room_props(Game& game, const FloorPlan& plan) {
     const bool cold = ice_floor(game.run.floor);
     if (game.run.floor > 4 && !cold) return;
     for (const RoomPlan& room : plan.rooms) {
+        // STASH: A few snowy lumps hide regional supplies off the mandatory paths.
+        if (cold && (room.role == RoomRole::IceQuarry || room.role == RoomRole::Reservoir))
+            for (int attempt = 0; attempt < 8; ++attempt) {
+                const Cell cell = room.center + Cell{
+                    static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_width * 2)) - room.half_width,
+                    static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_height * 2)) - room.half_height};
+                const Tile* tile = game.stage.at(cell);
+                if (tile && tile->kind == TileKind::Snow && suitable(game, plan, cell, false)) {
+                    place_prop(game.stage, cell, PropKind::SnowCache);
+                    break;
+                }
+            }
         if (cold && room.role != RoomRole::FishingHut && room.role != RoomRole::Shelter &&
             room.role != RoomRole::Bathhouse && room.role != RoomRole::Cache &&
             room.role != RoomRole::Observatory && room.role != RoomRole::Shrine) continue;

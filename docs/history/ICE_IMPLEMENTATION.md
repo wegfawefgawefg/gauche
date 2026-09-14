@@ -462,3 +462,36 @@ local debris material. Remaining biome tasks stay open.
   added. Gameplay compatibility E7 prevents older peers joining these rules.
   No live playtest or new test suite. Six enemies and eleven items are now
   implemented from this catalog; remaining content and final balance stay open.
+
+
+## Snow Burrowers, scoops and snowballs
+
+- Added a 36-HP Snow Burrower, visible as a traveling mound on dry snow. Its
+  adjacent bite commits for 27 ticks, deals 14 damage and exposes its body for
+  75 ticks. Diving takes another 30 ticks; movement under snow takes 12 ticks.
+  Damage, sleep, stun or cleared/wet/hot ground expose it for 90 ticks.
+- Cleared ground cannot support another dive. Exposed creatures crawl slowly
+  toward nearby snow; a bounded 145-node/eight-step search handles their local
+  terrain and occupancy. A moved windup cannot hit its old destination.
+- Snow Scoops clear three cells (five when Big), collect at most 12 snow, and
+  spend one of 60 repairable condition per successful stroke. Durable doubles
+  condition. Reload/secondary packs one normal snowball into a compatible stack
+  or empty slot; full inventory rejects the transaction without losing snow.
+  Existing loaded storage belongs to collected snow for this item, never ammo.
+- Snowballs travel five ticks per cell, up to five cells (nine when Long), doing
+  1 damage. They leave a two-second water patch and quench their impact cell.
+  Existing damage interrupts vulnerable windups. Shields block contact damage;
+  parries reverse flight under a finite deadline. All Piercing crosses actors.
+- Added small Snow Cache props on optional snowy quarry/reservoir cells. Scoop,
+  step, attack or warmth reveals one saved-RNG roll: 30% three snowballs, 20%
+  Wool Wrap, 15% Ammo, 25% three gold, 10% empty. Snow is not flammable fuel.
+- Warmth and adjacent flames clear snow using the same terrain operation.
+  Added local Snow Clump debris from scoops, caches and impacts; it follows the
+  existing bounded loose-debris rules and can be swept or pushed around.
+- Added eight sparse sprites and ten offline-generated sounds. Static captures
+  inspected the four creature poses, cleared ground, caches, flight, base/Big
+  scoop comparison, packing hint and base/Long snowball range diagrams.
+- Game/render/codec strict builds and the existing codec check passed. Asset
+  dimensions, RGBA and decoded OGG headroom checked. Gameplay version E8; no new
+  snapshot fields, live playtest or test suite. Seven ice enemies, thirteen
+  regional items and two ice debris materials are implemented; the catalog stays open.

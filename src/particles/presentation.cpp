@@ -51,7 +51,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;
@@ -148,6 +148,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::SnowSplat: case SoundId::SnowBurst:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::SnowClump, 4, seed);
+        break;
     case SoundId::StinkBreak: case SoundId::PitchBurst:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Pottery, 4, seed);
         break;
@@ -243,6 +246,10 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
             cosmetics.seen_events.end()) continue;
         cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
         const ImpactEvent& impact = game.impacts[static_cast<std::size_t>(index)];
+        if (impact.material == Sprite::DebrisSnowClump) {
+            scatter_material(cosmetics.debris, impact.cell, DebrisKind::SnowClump, 4, key);
+            continue;
+        }
         if (distance(impact.cell, focus) <= 18)
             spawn_terrain_impact(cosmetics, impact, key);
         if (impact.prop != PropKind::None && !fresh_debris)

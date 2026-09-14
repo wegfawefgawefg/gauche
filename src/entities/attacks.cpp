@@ -2,6 +2,7 @@
 #include "bell_diver.hpp"
 #include "steam_leech.hpp"
 #include "ice_mason.hpp"
+#include "snow_burrower.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -14,6 +15,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::SnowBurrower:
+        if (enemy.label_a == SnowWarn) add(enemy.point_b);
+        break;
     case EntityKind::IceMason:
         if (enemy.label_a == MasonSwing) add(enemy.point_b);
         break;

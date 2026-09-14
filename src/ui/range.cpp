@@ -69,7 +69,14 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (pattern.conduction) {
+    if (held.kind == ItemKind::SnowScoop) {
+        const Cell side{-facing.y, facing.x};
+        for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
+            const Cell cell = player.cell + facing + Cell{side.x * lane, side.y * lane};
+            if (game.stage.at_or_border(cell).kind == TileKind::Snow && clear_attack_sight(game, player.cell, cell, false))
+                mark(renderer, cell, camera, zoom, pattern.effect);
+        }
+    } else if (pattern.conduction) {
         const WetWave wave = wet_wave(game, player.cell + facing, pattern.blast_radius);
         for (int i = 0; i < wave.count; ++i)
             mark(renderer, wave.nodes[static_cast<std::size_t>(i)].cell, camera, zoom, pattern.effect);

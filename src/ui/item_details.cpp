@@ -167,6 +167,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "DMG %d | CHILL 1s", pattern.damage);
     else if (item.kind == ItemKind::GritPouch)
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
+    if (item.kind == ItemKind::SnowScoop)
+        std::snprintf(line, sizeof(line), "CLEAR %d | SNOW %d/12", pattern.half_width * 2 + 1, item.loaded);
+    if (item.kind == ItemKind::Snowball)
+        std::snprintf(line, sizeof(line), "DMG %d | WET PATCH 2s", pattern.damage);
     if (item.kind == ItemKind::EelBattery)
         std::snprintf(line, sizeof(line), "DMG %d | WET PATH %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::Chisel)
@@ -226,6 +230,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
     if (item.kind == ItemKind::RottenFruit) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
+    } else if (item.kind == ItemKind::SnowScoop) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, item.loaded > 0 ? "PACK SNOWBALL" : "COLLECT SNOW FIRST");
     } else if (item.flame_ticks > 0) {
         std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
         text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
@@ -287,6 +293,8 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
     if (item.kind == ItemKind::RottenFruit) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
+    } else if (item.kind == ItemKind::SnowScoop) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, item.loaded > 0 ? "PACK SNOWBALL" : "COLLECT SNOW FIRST");
     } else if (item.flame_ticks > 0) {
         char status[64];
         std::snprintf(status, sizeof(status), "%s  FIRE %ds", label, (item.flame_ticks+59)/60);

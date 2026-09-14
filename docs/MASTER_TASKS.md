@@ -273,9 +273,9 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Seven cold room roles now host six enemy types, including Glass Eels whose
-  charge follows connected water. Eleven regional items include their three-use
-  battery. Six of twenty enemies, eleven of fifty items implemented; balance remains for playtesting.
+  Seven cold room roles now host seven enemy types, including exposed/
+  burrowing Snow Burrowers. Thirteen regional items include snow scoops and
+  snowballs. Seven of twenty enemies, thirteen of fifty items implemented; balance remains for playtesting.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

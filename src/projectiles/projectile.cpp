@@ -1,6 +1,7 @@
 #include "projectile.hpp"
 #include "frost.hpp"
 #include "ice_brick.hpp"
+#include "snowball.hpp"
 #include "hook.hpp"
 #include "root_drill.hpp"
 #include "swap.hpp"
@@ -27,6 +28,7 @@ void init_projectile(Entity& entity) {
 }
 
 int projectile_step_ticks(const Entity& entity) {
+    if (entity.label_a == static_cast<int>(ProjectileKind::Snowball)) return 5;
     if (entity.label_a == static_cast<int>(ProjectileKind::FrostPuff)) return frost_puff_step_ticks;
     if (entity.label_a == static_cast<int>(ProjectileKind::ThunderAcorn)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::Net)) return 4;
@@ -107,6 +109,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Snowball)) { step_snowball(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::IceBrick)) { step_ice_brick_flight(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::FrostPuff)) { step_frost_puff(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::ThunderAcorn)) { step_thunder_acorn(game, slot); return; }

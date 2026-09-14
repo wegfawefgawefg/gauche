@@ -2,6 +2,8 @@
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/eel_battery.hpp"
+#include "items/snow_tools.hpp"
+#include "projectiles/snowball.hpp"
 #include "items/air_bladder.hpp"
 #include "items/heat_capsule.hpp"
 #include "items/cold_remedies.hpp"
@@ -184,6 +186,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             cooldown = pattern.cooldown;
         }
         break;
+    case ItemKind::SnowScoop:
+        used = use_snow_scoop(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
+    case ItemKind::Snowball:
+        used = launch_snowball(game, user_slot, item, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::EelBattery:
         used = use_eel_battery(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -305,8 +315,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
         }
-        if (used_kind == ItemKind::Chisel && --item.durability <= 0) {
-            emit_sound(game, SoundId::ChiselBreak, user.cell);
+        if ((used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
+            emit_sound(game, used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);
             item = {};
             return true;
         }
@@ -324,6 +334,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::SnowScoop)
+        return pack_snowball(game, user_slot);
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::RottenFruit)
         return eat_rotten_fruit(game, user_slot);
     Item& item = *game.entities[static_cast<std::size_t>(user_slot)].inventory.held();

@@ -31,7 +31,8 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind
         if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0 &&
             tile->kind != TileKind::Spring && (kind != EntityKind::RimeSkater || tile->kind == TileKind::Ice) &&
             (kind != EntityKind::BellDiver || tile->kind == TileKind::IceHole) &&
-            (kind != EntityKind::GlassEel || surface_wet(*tile)))
+            (kind != EntityKind::GlassEel || surface_wet(*tile)) &&
+            (kind != EntityKind::SnowBurrower || tile->kind == TileKind::Snow))
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }
@@ -75,6 +76,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
             enemy(game, room, EntityKind::BellDiver, 2, budget);
         else enemy(game, room, EntityKind::RimeSkater, 2, budget);
         if (room.role == RoomRole::Reservoir) enemy(game, room, EntityKind::GlassEel, 2, budget);
+        else if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
         else if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
@@ -171,7 +173,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, ItemKind::AirBladder, 1, budget.equipment);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
-            supply(game, room, room.role == RoomRole::Shelter ? ItemKind::WoolWrap : ItemKind::HeatCapsule, 2, budget.equipment);
+            supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
+                room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
         } else if (room.role == RoomRole::EchoTunnel) {
             supply(game, room, ItemKind::IceNeedle, 3, budget.equipment);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {

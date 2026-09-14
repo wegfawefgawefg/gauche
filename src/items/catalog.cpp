@@ -1,5 +1,6 @@
 #include "catalog.hpp"
 #include "eel_battery.hpp"
+#include "snow_tools.hpp"
 #include "quarry_tools.hpp"
 #include "air_bladder.hpp"
 #include "cold_flask.hpp"
@@ -9,6 +10,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* snow = snow_tool_item(kind)) return snow;
     if (const RegionalItem* battery = eel_battery_item(kind)) return battery;
     if (const RegionalItem* quarry = quarry_item(kind)) return quarry;
     if (const RegionalItem* footing = ice_footing_item(kind)) return footing;

@@ -1,6 +1,7 @@
 #include "effects.hpp"
 #include "../entities/ice_mason.hpp"
 #include "../entities/glass_eel.hpp"
+#include "../entities/snow_burrower.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../game.hpp"
 #include "../surfaces/interaction.hpp"
@@ -28,6 +29,7 @@ bool apply_nausea(Entity& actor, int ticks) {
 
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
+    expose_snow_burrower(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
@@ -44,6 +46,7 @@ bool apply_root(Entity& actor, int ticks, RootKind kind) {
 
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
+    expose_snow_burrower(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);

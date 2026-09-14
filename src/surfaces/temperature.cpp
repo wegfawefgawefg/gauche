@@ -1,4 +1,5 @@
 #include "temperature.hpp"
+#include "../world/snow.hpp"
 #include "../props/ice_cover.hpp"
 #include "interaction.hpp"
 #include "../entities/steam_leech.hpp"
@@ -60,6 +61,7 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
     tile->surface.warmth_ticks = static_cast<std::uint16_t>(std::clamp(
         std::max(ticks, static_cast<int>(tile->surface.warmth_ticks)), 1, 240));
     if (leech_drains_cell(game, cell)) return true;
+    clear_snow(game, cell);
     melt_ice_cover(game, cell);
     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
     ignite_surface(game, cell);
@@ -139,6 +141,7 @@ void step_temperature(Game& game) {
             if (tile.surface.warmth_ticks > 0) {
                 --tile.surface.warmth_ticks;
                 if (tile.surface.warmth_ticks > 0 && !drained(cell)) {
+                    clear_snow(game, cell);
                     melt_ice_cover(game, cell);
                     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
                     ignite_surface(game, cell);
@@ -159,6 +162,7 @@ void step_temperature(Game& game) {
     for (Cell flame : flames) {
         bool thawed = false;
         for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+            clear_snow(game, flame + offset);
             melt_ice_cover(game, flame + offset);
             thawed |= thaw_water(game, flame + offset);
         }

@@ -52,7 +52,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "cold_shallow_a", "cold_shallow_b", "cold_water_a", "cold_water_b",
     "rime_skater", "rime_skater_push", "rime_skater_glide", "grit_pouch",
     "frost_bat_inhale", "frost_bat_flying", "frost_puff", "ice_needle",
-    "ice_hole", "bell_diver", "diver_bubbles", "diver_bell", "diver_rise", "diver_swing", "diver_sink", "air_bladder", "item_float", "cold_flask", "frozen_water", "thawing_water", "heat_capsule", "steam_leech", "leech_latch", "leech_feed", "leech_swell", "leech_spent", "steam_puff", "wool_wrap", "hot_broth", "ice_poultice", "ice_mason", "mason_carry", "mason_cut", "mason_build", "mason_jab", "ice_block", "ice_block_thaw", "debris_ice_chip", "chisel", "glass_eel", "eel_charge", "eel_spent", "eel_stranded", "eel_battery",
+    "ice_hole", "bell_diver", "diver_bubbles", "diver_bell", "diver_rise", "diver_swing", "diver_sink", "air_bladder", "item_float", "cold_flask", "frozen_water", "thawing_water", "heat_capsule", "steam_leech", "leech_latch", "leech_feed", "leech_swell", "leech_spent", "steam_puff", "wool_wrap", "hot_broth", "ice_poultice", "ice_mason", "mason_carry", "mason_cut", "mason_build", "mason_jab", "ice_block", "ice_block_thaw", "debris_ice_chip", "chisel", "glass_eel", "eel_charge", "eel_spent", "eel_stranded", "eel_battery", "snow_burrower", "snow_mound", "snow_warn", "snow_dive", "snow_scoop", "snowball", "snow_cache", "debris_snow_clump",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

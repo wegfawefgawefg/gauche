@@ -7,12 +7,14 @@
 #include "steam_leech.hpp"
 #include "ice_mason.hpp"
 #include "glass_eel.hpp"
+#include "snow_burrower.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::SnowBurrower: init_snow_burrower(entity); break;
     case EntityKind::GlassEel: init_glass_eel(entity); break;
     case EntityKind::IceMason: init_ice_mason(entity); break;
     case EntityKind::SteamLeech: init_steam_leech(entity); break;
@@ -62,6 +64,7 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::SnowBurrower: step_snow_burrower(game, slot); break;
     case EntityKind::GlassEel: step_glass_eel(game, slot); break;
     case EntityKind::IceMason: step_ice_mason(game, slot); break;
     case EntityKind::SteamLeech: step_steam_leech(game, slot); break;

@@ -154,3 +154,46 @@ Gameplay compatibility is EC; snapshot layout stays 31. Strict game/render/codec
 builds and existing codec check pass. Static charge/turn and fired-path captures
 were inspected; image/audio formats and headroom pass. Live encounters and
 balance remain for the user's playtesting; no live playtest or new suite ran.
+
+## Black Felt and lens cases (2026-09-14)
+
+The eighteenth ice item covers an adjacent dry, intact mirror, splitting lens,
+or beam lamp. It stacks to three, costs seven, consumes one piece per covering,
+and has 18-tick recovery. Already covered, wet or burning targets reject use
+without consuming cloth. Covering preserves the prop's health and orientation.
+A covered prop absorbs light beams without taking their damage, stops their
+trace even with piercing, and supplies no light emission. Bodies can still
+walk through it; ordinary attacks can still break it. An actor standing on its
+cell can be hit by an incoming beam; cloth is not a personal shield.
+
+Covering a warden's lamp or mirror, or a reflector in its feed path, interrupts
+turn/charge through the shared station validity check. The charged rendering,
+light boost, debug trace and eventual shot all read that same validity.
+Secondary with Black Felt or an empty slot tears off adjacent cloth, destroys
+it without refund, and has 12-tick recovery. A covered mirror cannot be rotated
+until uncovered. Gun reloads retain their existing meaning.
+
+Fire removes cloth and plays a short burning cue. Cloth alone leaves a brief
+half-second flame/smoke patch; existing oil, sap and wood retain their normal
+fuel duration. Breaking the underlying prop tears off the cover. Loose felt
+scraps are local cosmetics with light-piece friction/wind and shared collision,
+never extra simulated actors or gameplay fuel. A draped sprite covers the
+optical face while keeping some base hardware visible.
+
+Observatories can now scatter 16-HP blocking wooden lens cases, with protected
+routes/objective spacing preserved. A single saved loot roll gives 30% mirror
+shard, 20% crystal lens, 15% three-piece felt bundle, 15% 3–6 gold, 20% empty.
+Breakage scatters wood, crystal and felt. Cases are flammable and survive
+footsteps. Black Felt also enters regional rewards and shops. Four new 16px
+sprites and four offline-generated cues cover the item, drape, case, loose felt,
+covering, tearing, burning and case breakage.
+
+Props now explicitly store `covered`, increasing their struct from six to
+eight bytes; actors and item inventories gain no fields. The state is hashed
+and serialized, and the decoder rejects covers on broken/ineligible props.
+Snapshot layout advances to 32 and gameplay compatibility to ED. Strict
+builds pass without warnings; the existing codec round-trip includes a covered
+lamp and passes. Static covered/uncovered optics, stopped beam and item-card
+captures were inspected; sprite formats and decoded audio headroom pass.
+No live playtest or new test suite was run. Ice content and the master goal
+remain incomplete: nine enemies, eighteen regional items, five local debris.

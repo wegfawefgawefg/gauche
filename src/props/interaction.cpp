@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "cloth.hpp"
 #include "../combat/beams.hpp"
 #include "../world/ground_items.hpp"
 #include "../world/loot.hpp"
@@ -12,6 +13,12 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
+    case PropKind::LensCase:
+        if (roll < 30) item = ItemKind::MirrorShard;
+        else if (roll < 50) item = ItemKind::CrystalLens;
+        else if (roll < 65) item = ItemKind::BlackFelt;
+        else if (roll < 80) place_coins(game, cell, 3 + static_cast<int>(random_u32(game) % 4));
+        break;
     case PropKind::SnowCache:
         if (roll < 30) item = ItemKind::Snowball;
         else if (roll < 50) item = ItemKind::WoolWrap;
@@ -36,11 +43,13 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     const Cell destination = nearby_ground_item_cell(game, cell);
     Entity* dropped = get_entity(game, spawn_entity(game, EntityKind::GroundItem, destination));
     if (dropped == nullptr) return;
-    dropped->ground_item = make_item(item, kind == PropKind::SnowCache && item == ItemKind::Snowball ? 3 : 1);
+    const bool bundle = item == ItemKind::BlackFelt || (kind == PropKind::SnowCache && item == ItemKind::Snowball);
+    dropped->ground_item = make_item(item, bundle ? 3 : 1);
     dropped->sprite = item_sprite(item);
 }
 
 void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
+    remove_prop_cover(game, cell, false);
     prop.hp = 0;
     prop.broken = true;
     prop.growth_ticks = 0;
@@ -59,7 +68,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
                 apply_sleep(actor, 75);
     }
     if (prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
-        prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache) drop_contents(game, cell, prop.kind);
+        prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
 }
 
 } // namespace

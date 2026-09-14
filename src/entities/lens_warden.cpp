@@ -22,8 +22,8 @@ void recover(Entity& warden, int ticks) {
 bool apparatus(const Game& game, const Entity& warden) {
     const Tile* lamp = game.stage.at(warden.point_a);
     const Tile* mirror = game.stage.at(warden.point_b);
-    return lamp && mirror && lamp->prop.kind == PropKind::BeamLamp && !lamp->prop.broken &&
-        mirror->prop.kind == PropKind::MirrorShard && !mirror->prop.broken &&
+    return lamp && mirror && lamp->prop.kind == PropKind::BeamLamp && !lamp->prop.broken && !lamp->prop.covered &&
+        mirror->prop.kind == PropKind::MirrorShard && !mirror->prop.broken && !mirror->prop.covered &&
         distance(home(warden), warden.point_b) == 1;
 }
 
@@ -37,7 +37,7 @@ bool lamp_path(const Game& game, const Entity& warden) {
     for (int i = 1; i <= length; ++i) {
         const Cell cell = from + Cell{direction.x * i, direction.y * i};
         if (projectile_blocked(game, cell)) return false;
-        if (i < length && optical_prop(game.stage.at(cell)->prop)) return false;
+        if (i < length && (optical_prop(game.stage.at(cell)->prop) || game.stage.at(cell)->prop.covered)) return false;
     }
     return true;
 }

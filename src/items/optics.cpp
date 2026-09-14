@@ -13,6 +13,10 @@ constexpr RegionalItem lens{"Crystal Lens", "Place a fragile lens, 18 HP. Splits
     Sprite::CrystalLens, {1, 1, 0, 0, 24, PatternEffect::Utility},
     ItemAction::Material, 30, 1, true, 0, 0, 0, 0, 0, SoundId::OpticPlace};
 
+constexpr RegionalItem felt{"Black Felt", "Cover optics: blocks beams and lamp light. Burns away. Tear off with felt or empty hand; destroys cloth.",
+    Sprite::BlackFelt, {1, 1, 0, 0, 18, PatternEffect::Utility},
+    ItemAction::Material, 7, 3, true, 0, 0, 0, 0, 0, SoundId::FeltCover};
+
 constexpr RegionalItem bomb{"Prism Bomb", "Throw, then 1.5s fuse. Bursts four light beams. Mirrors turn them; lenses split them. Step out of their lanes.",
     Sprite::PrismBomb, {3, 3, 4, 16, 45, PatternEffect::Damage, false, 0, 0, false, false, true},
     ItemAction::Throw, 28, 2, true, 0, 0, 0, 0, 0, SoundId::PrismThrow};
@@ -21,6 +25,7 @@ constexpr RegionalItem bomb{"Prism Bomb", "Throw, then 1.5s fuse. Bursts four li
 
 const RegionalItem* optics_item(ItemKind kind) {
     switch (kind) {
+    case ItemKind::BlackFelt: return &felt;
     case ItemKind::PrismBomb: return &bomb;
     case ItemKind::LensCarbine: return &carbine;
     case ItemKind::MirrorShard: return &mirror;
@@ -42,7 +47,7 @@ bool rotate_mirror(Game& game, int slot) {
     if (held.kind != ItemKind::None && held.kind != ItemKind::MirrorShard) return false;
     if (held.cooldown > 0) return false;
     Tile* tile = game.stage.at(actor.cell + actor.facing);
-    if (!tile || tile->prop.broken || tile->prop.kind != PropKind::MirrorShard) return false;
+    if (!tile || tile->prop.broken || tile->prop.covered || tile->prop.kind != PropKind::MirrorShard) return false;
     tile->prop.variant ^= 1;
     held.cooldown = 12;
     emit_sound(game, SoundId::OpticTurn, actor.cell + actor.facing);

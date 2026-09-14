@@ -24,7 +24,7 @@ bool free_cell(const Stage& stage, float x, float y) {
 bool light_material(DebrisKind kind) {
     return kind == DebrisKind::OakLeaf || kind == DebrisKind::BirchLeaf ||
            kind == DebrisKind::FernLeaf || kind == DebrisKind::GrassBlade ||
-           kind == DebrisKind::Feather || kind == DebrisKind::Straw || kind == DebrisKind::Spore;
+           kind == DebrisKind::Felt || kind == DebrisKind::Feather || kind == DebrisKind::Straw || kind == DebrisKind::Spore;
 }
 
 } // namespace

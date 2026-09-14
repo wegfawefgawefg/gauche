@@ -42,5 +42,5 @@ void step_prop_growth(Game& game) {
 }
 
 LightEmitter prop_light(const Prop& prop) {
-    return prop.broken ? LightEmitter{} : prop_spec(prop.kind).light;
+    return prop.broken || prop.covered ? LightEmitter{} : prop_spec(prop.kind).light;
 }

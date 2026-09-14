@@ -169,6 +169,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
     if (item.kind == ItemKind::SnowScoop)
         std::snprintf(line, sizeof(line), "CLEAR %d | SNOW %d/12", pattern.half_width * 2 + 1, item.loaded);
+    if (item.kind == ItemKind::BlackFelt)
+        std::snprintf(line, sizeof(line), "BLOCKS LIGHT | BURNS / TEARS");
     if (item.kind == ItemKind::PrismBomb)
         std::snprintf(line, sizeof(line), "DMG %d | FUSE 1.5s | BEAM %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::MirrorShard)
@@ -234,7 +236,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::MirrorShard) {
+    if (item.kind == ItemKind::BlackFelt) {
+        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "TEAR OFF COVER AHEAD");
+    } else if (item.kind == ItemKind::MirrorShard) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "TURN MIRROR AHEAD");
     } else if (item.kind == ItemKind::RottenFruit) {
         draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");

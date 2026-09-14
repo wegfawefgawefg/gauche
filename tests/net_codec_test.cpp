@@ -66,6 +66,7 @@ int main() {
     original.stage.tiles[4].freeze_ticks = 77;
     original.stage.tiles[5].surface.warmth_ticks = 117;
     original.stage.tiles[6].prop = {PropKind::IceBlock, 23, 0, false, 411};
+    original.stage.tiles[8].prop = {PropKind::BeamLamp, 19, 1, false, 0, true};
     original.stage.tiles[7].material = TileMaterial::Ice;
     owner->inventory.slots[0] = make_item(ItemKind::Chisel, 1, ItemAttribute::Fragile);
     owner->inventory.slots[0].durability = 13;

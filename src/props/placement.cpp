@@ -9,7 +9,7 @@ namespace {
 PropKind room_prop(Game& game, RoomRole role) {
     const unsigned int roll = random_u32(game);
     if (ice_floor(game.run.floor) && role == RoomRole::Observatory)
-        return roll % 3 == 0 ? PropKind::CrystalLens : PropKind::MirrorShard;
+        return roll % 3 == 0 ? PropKind::LensCase : roll % 3 == 1 ? PropKind::CrystalLens : PropKind::MirrorShard;
     if (ice_floor(game.run.floor))
         return role == RoomRole::Bathhouse || role == RoomRole::Shrine ?
             PropKind::ClayPot : PropKind::Crate;

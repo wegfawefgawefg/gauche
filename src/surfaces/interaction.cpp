@@ -2,6 +2,7 @@
 #include "../world/terrain_material.hpp"
 #include "../world/water.hpp"
 #include "../props/interaction.hpp"
+#include "../props/cloth.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -11,6 +12,7 @@ namespace {
 
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
+    if (prop.covered) return true;
     return prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
@@ -50,7 +52,9 @@ bool ignite_surface(Game& game, Cell cell) {
     if (surface.fire_ticks > 0) return false;
     const bool fuel = surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap;
     if (!wood && !fuel && !dry_growth(tile->prop)) return false;
-    surface.fire_ticks = static_cast<std::uint16_t>(wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);
+    const bool cloth_only = tile->prop.covered && !wood && !fuel;
+    remove_prop_cover(game, cell, true);
+    surface.fire_ticks = static_cast<std::uint16_t>(cloth_only ? 30 : wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);
     surface.smoke_ticks = std::max<std::uint16_t>(surface.smoke_ticks, 100);
     if (surface.liquid == LiquidKind::Oil) surface.liquid_ticks = 240;
     if (surface.liquid == LiquidKind::Sap) surface.liquid_ticks = 360;
@@ -106,6 +110,7 @@ void step_surfaces(Game& game) {
             }
             if (surface.fire_ticks == 0) continue;
             if (surface_wet(tile)) { surface.fire_ticks = 0; continue; }
+            remove_prop_cover(game, cell, true);
             --surface.fire_ticks;
             if (surface.fire_ticks == 0 && surface.liquid == LiquidKind::Sap && surface.liquid_ticks > 0)
                 surface.liquid = LiquidKind::SpentSap;

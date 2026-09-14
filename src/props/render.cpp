@@ -25,6 +25,12 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, 0, nullptr,
                 prop.variant % 2 == 0 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
             SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+            if (prop.covered) {
+                SDL_Texture* cloth = texture_for(graphics, Sprite::FeltCover);
+                SDL_SetTextureColorModFloat(cloth, light.red, light.green, light.blue);
+                SDL_RenderTexture(renderer, cloth, nullptr, &rect);
+                SDL_SetTextureColorModFloat(cloth, 1, 1, 1);
+            }
             if (prop.hp < spec.health) {
                 SDL_FRect bar{rect.x + rect.w * .2F, rect.y + rect.h * .87F,
                     rect.w * .6F * static_cast<float>(prop.hp) / static_cast<float>(spec.health), 1};

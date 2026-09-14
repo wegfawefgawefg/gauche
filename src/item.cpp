@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "items/optics.hpp"
+#include "props/cloth.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/eel_battery.hpp"
@@ -88,6 +89,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::BlackFelt:
+        used = cover_optic(game, user.cell + direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::PrismBomb:
         used = launch_prism_bomb(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
@@ -345,6 +350,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (uncover_optic(game, user_slot)) return true;
     if (rotate_mirror(game, user_slot)) return true;
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::SnowScoop)
         return pack_snowball(game, user_slot);

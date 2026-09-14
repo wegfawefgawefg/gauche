@@ -101,7 +101,7 @@ same effective item definition as attacks, including rare attributes.
 | 26 | Mirror shard | Implemented: place an 8-HP diagonal beam reflector. Secondary rotates it with a shard or empty hand. Bullets break it; footsteps do not. Stack 3. | Uncommon; 16 |
 | 27 | Crystal lens | Implemented: place an 18-HP nonblocking lens. Splits an incoming beam into two perpendicular half-damage branches, sharing one finite travel budget. Bullets break it; consumes on placement. | Rare; 30 |
 | 28 | Prism bomb | Implemented: throw to 3 with 1.5s fuse from launch; four range-4 beams, 16 damage each, one shared bounded trace. Mirrors/lenses/knights redirect them. Big extends beams; Long extends throw. Stack 2. | Rare; 28 |
-| 29 | Black felt | Cover one adjacent reflector or light fixture until removed/burned. Three pieces; useful for dark routes and stopping beam puzzles. | Common; 7 |
+| 29 | Black felt | Implemented: cover an adjacent mirror, lens or beam lamp. Stops light beams, disables lamp emission and interrupts its warden. Stack 3; consumes one. Fire burns it off; secondary with felt or an empty hand tears it off without refund. | Common; 7 |
 | 30 | Muffling felt | Wrap held equipment to suppress its next six ordinary use-noise events; impacts and explosions remain audible. Two wraps. | Uncommon; 14 |
 | 31 | Echo pebble | Throw to 7; repeats the last nearby non-explosion use-noise three times from its landing. No duplicate gameplay attack. Stack 3. | Uncommon; 16 |
 | 32 | Tuning fork | Short 0.5s windup sends a straight vibration through contiguous brittle crystal to 8; breaks weak crystal, 8 actor damage. 24 uses. | Uncommon; 22 |
@@ -175,7 +175,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | Maintenance locker | 20 coal, 20 sealant, 15 valve, 15 ammo, 30 empty | Boiler gallery |
 | Candle cabinet | 35 stub, 20 wick, 15 wool, 30 empty | Chapel/shelter |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
-| Lens case | 30 shard, 20 lens, 15 black felt, 15 gold, 20 empty | Guarded observatory |
+| Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 20 empty | Guarded observatory; 16 HP, blocking, breakable wood |
 | Locked expedition chest | 40 regional weapon, 35 regional utility, 25 medicine; plus 6–12 gold | Optional key branch |
 
 Ordinary shops offer medicine, fuel, ammo and two local tools. Rare shops can
@@ -191,8 +191,10 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Blue ice chips are implemented for smashed mason blocks, with local collision
-and heavy-piece friction. The other nineteen materials remain planned.
+Five regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters and felt scraps. Felt comes from torn/burned covers
+and smashed lens cases, with light-piece friction and local wind response.
+All use the shared cosmetic pool; remaining catalog materials are still open.
 
 ## Twenty ambient cues and small scenes
 

@@ -1,6 +1,7 @@
 #include "../props/scarecrow.hpp"
 #include "presentation.hpp"
 #include "../combat/beams.hpp"
+#include "../props/cloth.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../projectiles/net.hpp"
 #include "../projectiles/thunder.hpp"
@@ -70,7 +71,11 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::PrismBomb) {
+    if (held.kind == ItemKind::BlackFelt) {
+        const Cell cell = player.cell + facing;
+        const Tile* tile = game.stage.at(cell);
+        if (tile && can_cover_optic(*tile)) mark(renderer, cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::PrismBomb) {
         const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
         for (int step = 1; step < distance(player.cell, center); ++step)
             mark(renderer, player.cell + Cell{facing.x * step, facing.y * step}, camera, zoom, pattern.effect, true);

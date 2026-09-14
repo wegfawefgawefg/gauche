@@ -119,17 +119,32 @@ rectangle over damaged walls.
   low-HP response readable at the 16-pixel scale. Resolve contact once on
   entry, and route weapon hits and blasts through the prop before or alongside
   the underlying tile according to an explicit rule.
-- [ ] Let broken props leave a small, bounded scatter of material-specific
-  trash: leaves, sticks, wood chips, or mushroom bits. Walking through it
-  nudges the pieces aside and gives the floor a little life. This is local
-  presentation while it has no collision, damage, loot, or AI effect; do not
-  spend lockstep state or full entities on each scrap.
 - [ ] Save persistent breakage, collision, and loot rolls in deterministic
-  floor state; keep flying leaves, nudged trash, dust, spores, and sound playback
-  cosmetic. If a future scrap can block a tile or be picked up, promote that
-  particular rule to synchronized state.
+  floor state; keep flying leaves, dust, spores, and sound playback cosmetic.
   Check co-op rollback/reconnect and ensure props cannot hide critical loot,
   objectives, players, or attack previews.
+
+## Loose debris
+
+- [ ] Add a small floor-bound **loose debris** collection, distinct from the
+  existing short-lived particles and from props/entities. A piece has a
+  material/sprite, sub-tile position, small velocity, and settled state. It
+  can rest on the floor for the level rather than disappearing on a timer.
+- [ ] Breaking a prop releases material-specific pieces: leaves, twigs, wood
+  chips, mushroom bits, or similar scraps. Apply local impulses from actor
+  steps, blasts, trains, and gentle outdoor wind. Pieces slide or tumble a
+  short distance, slow with friction, avoid passing through solid walls, and
+  settle again. Draw them above floor tiles but beneath actors, using the same
+  lighting as the ground.
+- [ ] Let debris collect naturally without unlimited sprite growth. Cap loose
+  pieces per room or cell and merge older settled pieces into small litter
+  piles; a later step can scatter a pile again. Leave clear space around
+  objectives, loot, attack previews, and important actor silhouettes.
+- [ ] Keep motion and pile presentation local while scraps have no collision,
+  damage, loot, or AI effect. Deduplicate break events across rollback, clear
+  the collection on floor change, and reconstruct a basic settled scatter from
+  saved broken-prop state on reconnect. If a future scrap becomes an actual
+  pickup or obstacle, synchronize that specific gameplay object.
 
 ## UI and pointer
 
@@ -154,8 +169,8 @@ rectangle over damaged walls.
 
 1. Tile rules and deterministic tests, then tile impact visuals.
 2. Campfire state/contact rules and tests, then rendering, particles, and audio.
-3. Forest ground simplification and reactive props, then canopy lighting,
-   cloud shadows, distance-fade removal, and footprint visibility.
+3. Forest ground simplification, reactive props and loose debris, then canopy
+   lighting, cloud shadows, distance-fade removal, and footprint visibility.
 4. Compact UI default, UI sizing, pointer device switching, and captures.
 
 Use the Rust tile behavior as a parity reference and the current C++ lighting

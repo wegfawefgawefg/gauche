@@ -34,6 +34,7 @@
 #include "seal_scene.hpp"
 #include "whiteout_scene.hpp"
 #include "brine_scene.hpp"
+#include "ram_scene.hpp"
 #include "quarry_tools_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -168,7 +169,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "brine-items" || mode == "brine" || mode == "drummers" || mode == "whiteout" || mode == "kelp-items" || mode == "globe-items" || mode == "seals" || mode == "widows" || mode == "fish-bait" || mode == "fish-items" || mode == "fishing-cast" || mode == "fishing-reel" || mode == "fishing-items" || mode == "pilgrims" || mode == "alarms" || mode == "alarm-items" || mode == "muffling" || mode == "muffling-hud" || mode == "echo-hounds" || mode == "felt" || mode == "felt-items" || mode == "wardens" || mode == "warden-beam" || mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
+    if (mode == "rams" || mode == "brine-items" || mode == "brine" || mode == "drummers" || mode == "whiteout" || mode == "kelp-items" || mode == "globe-items" || mode == "seals" || mode == "widows" || mode == "fish-bait" || mode == "fish-items" || mode == "fishing-cast" || mode == "fishing-reel" || mode == "fishing-items" || mode == "pilgrims" || mode == "alarms" || mode == "alarm-items" || mode == "muffling" || mode == "muffling-hud" || mode == "echo-hounds" || mode == "felt" || mode == "felt-items" || mode == "wardens" || mode == "warden-beam" || mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -278,7 +279,8 @@ int main(int argc, char** argv) {
     }
     if (mode == "eels" || mode == "eel-arcs" || mode == "eel-items")
         arrange_eel_scene(game, cosmetics, player, mode == "eel-arcs");
-    if (mode == "brine-items" || mode == "brine" || mode == "drummers" || mode == "whiteout" || mode == "kelp-items" || mode == "globe-items") arrange_whiteout_scene(game, cosmetics, player, mode == "whiteout");
+    if (mode == "rams" || mode == "brine-items" || mode == "brine" || mode == "drummers" || mode == "whiteout" || mode == "kelp-items" || mode == "globe-items") arrange_whiteout_scene(game, cosmetics, player, mode == "whiteout");
+    if (mode == "rams") arrange_ram_scene(game, cosmetics, player);
     if (mode == "brine-items" || mode == "brine") arrange_brine_scene(game, cosmetics, player);
     if (mode == "kelp-items") {
         player.inventory = {};

@@ -15,12 +15,14 @@
 #include "fishing_widow.hpp"
 #include "seal_thief.hpp"
 #include "whiteout_drummer.hpp"
+#include "avalanche_ram.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::AvalancheRam: init_avalanche_ram(entity); break;
     case EntityKind::WhiteoutDrummer: init_whiteout_drummer(entity); break;
     case EntityKind::SealThief: init_seal_thief(entity); break;
     case EntityKind::FishingWidow: init_fishing_widow(entity); break;
@@ -78,6 +80,7 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::AvalancheRam: step_avalanche_ram(game, slot); break;
     case EntityKind::WhiteoutDrummer: step_whiteout_drummer(game, slot); break;
     case EntityKind::SealThief: step_seal_thief(game, slot); break;
     case EntityKind::FishingWidow: step_fishing_widow(game, slot); break;

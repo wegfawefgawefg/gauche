@@ -30,6 +30,12 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::AvalancheRam: {
+        const auto roll = random_u32(game) % 100;
+        if (roll < 35) place_ground_item(game, enemy.cell, ItemKind::RawMeat, 2);
+        else if (roll < 45) place_ground_item(game, enemy.cell, ItemKind::WoolWrap);
+        break;
+    }
     case EntityKind::WhiteoutDrummer:
         if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::MufflingFelt);
         break;

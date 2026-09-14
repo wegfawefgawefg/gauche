@@ -8,6 +8,7 @@
 #include "frozen_pilgrim.hpp"
 #include "fishing_widow.hpp"
 #include "seal_thief.hpp"
+#include "avalanche_ram.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -20,6 +21,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::AvalancheRam:
+        if ((enemy.label_a == RamPaw || enemy.label_a == RamLunge) && enemy.cell == enemy.point_a)
+            for (int i=1;i<=enemy.counter_a;++i)
+                add(enemy.cell + Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::SealThief:
         if (enemy.label_a == SealBark && enemy.cell == enemy.point_a) add(enemy.point_b);
         break;

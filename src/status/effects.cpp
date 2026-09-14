@@ -9,6 +9,7 @@
 #include "../entities/fishing_widow.hpp"
 #include "../entities/seal_thief.hpp"
 #include "../entities/whiteout_drummer.hpp"
+#include "../entities/avalanche_ram.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../game.hpp"
 #include "../surfaces/interaction.hpp"
@@ -38,6 +39,7 @@ bool apply_nausea(Entity& actor, int ticks) {
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
     interrupt_whiteout_drummer(actor);
+    interrupt_avalanche_ram(actor);
     interrupt_seal_thief(actor);
     interrupt_fishing_widow(actor);
     interrupt_frozen_pilgrim(actor);
@@ -62,6 +64,7 @@ bool apply_root(Entity& actor, int ticks, RootKind kind) {
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
     interrupt_whiteout_drummer(actor);
+    interrupt_avalanche_ram(actor);
     interrupt_seal_thief(actor);
     interrupt_fishing_widow(actor);
     interrupt_frozen_pilgrim(actor);

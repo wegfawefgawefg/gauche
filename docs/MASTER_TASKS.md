@@ -273,9 +273,9 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Eight cold room roles now host fourteen enemy types, including burrowers,
-  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Twenty-three items include
-  [observatory optics](history/ICE_OPTICS.md). Fourteen of twenty enemies, twenty-five of fifty items; [salt remedies](history/ICE_SALT.md) add costly cures and bait.
+  Ten cold room roles host fifteen enemy types, including [rams](history/ICE_CLIFFS.md),
+  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Twenty-five items include
+  [observatory optics](history/ICE_OPTICS.md). Fifteen of twenty enemies, twenty-five of fifty items; [salt remedies](history/ICE_SALT.md) add costly cures and bait.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

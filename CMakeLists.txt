@@ -55,6 +55,8 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/lens_warden.cpp src/entities/lens_watch.cpp src/world/lens_watch.cpp
     src/items/alarms.cpp src/props/alarm_clock.cpp
     src/items/fishing_line.cpp src/projectiles/fishing.cpp
+    src/entities/death_sound.cpp
+    src/entities/seal_thief.cpp src/entities/seal_route.cpp
     src/items/fish.cpp src/entities/fishing_widow.cpp src/projectiles/widow_hook.cpp
     src/items/muffling.cpp
     src/entities/echo_hound.cpp src/entities/echo_hearing.cpp

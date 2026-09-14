@@ -50,7 +50,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 12 | Candle keeper | Relights a bounded set of nearby candles and protects the nearest one. Its flame strike dims its own lamp; stealing or wetting a candle redirects its attention. | Chapel; 30% candle stub, 15% wick spool. |
 | 13 | Shard colony | Three separate crystals connect with dangerous pulses only after all endpoints flash. Destroy or displace one node to break that connection. Nodes share a colony handle. | Crystal gallery; 25% crystal lens per colony, not per node. |
 | 14 | Whiteout drummer | Beats three audible cues before a short snow squall obscures targeting in a marked area. Cannot attack directly; interrupt or use its squall as cover. | Weather station; 20% muffling felt, 15% signal flare. |
-| 15 | Seal thief | Slides in to steal a loose fish or food item, then retreats to a reachable water edge. Does not delete stolen food instantly; biting follows a warning bark. | Landing; carried food, 25% raw meat. |
+| 15 | Seal thief | Implemented: 56 HP; steals one loose food, prefers fish, then takes seven-tick steps to a reachable bank. Holds food for 3s before eating. Adjacent threats provoke a 0.5s bark then 16-damage fixed bite; damage/sleep/stun/displacement interrupts. | Reservoir/fishing huts; carried food returned intact, independent 25% raw meat. |
 | 16 | Icicle spider | Anchors a strand to a wall, stretches it across a corridor, then waits beside it. Strand roots briefly and can be cut or burned; spider must rebuild after triggering. | Service passages; 20% fishing line, 10% ice needle. |
 | 17 | Boiler porter | Pushes a steaming tank one cell at a time. A leaking pressure cue precedes a directional vent; rupture sends hot water along open cells, including toward other enemies. | Bathhouse; 25% pressure valve, 20% coal lump. |
 | 18 | Echo hound | Implemented: 44 HP, nine-tick steps; commits to a heard cell for up to 3s, warns 0.4s before a 14-damage bite, then listens again. Snow quiets steps; water amplifies them. Stillness and thrown noise can fool it. | Echo tunnels; 25% raw meat, 10% muffling felt, one roll. |
@@ -108,7 +108,7 @@ same effective item definition as attacks, including rare attributes.
 | 33 | Alarm clock | Implemented: place, wait 3s, then five once-per-second radius-10 acoustic pulses. Recover after 5s, keeping damage. 8 HP, or 16 Durable; attacks can destroy it. No stun. | Common; 10 |
 | 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
 | 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
-| 36 | Smoked fish | Implemented: 14 immediate HP (21 Restorative), stack 6. Dropped fish lures eels within six connected water steps and land meat-eaters within nine tiles. Does not cancel a committed shock. Seal bait awaits seals. | Common; 6 |
+| 36 | Smoked fish | Implemented: 14 immediate HP (21 Restorative), stack 6. Dropped fish lures eels within six connected water steps and land meat-eaters within nine tiles. Does not cancel a committed shock. Seals prefer it within eight reachable steps. | Common; 6 |
 | 37 | Salted kelp | Eat to clear nausea, at a cost of 3 HP; placed kelp is bait for reservoir wildlife. Stack 5. | Common; 4 |
 | 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
 | 39 | Flask of brine | Throw a small puddle that melts fragile ice and resists refreezing for 8s. Causes 4 damage on an open wound; stack 3. | Common; 9 |
@@ -170,7 +170,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 
 | Container | Initial weighted pool | Placement |
 | --- | --- | --- |
-| Fishing creel | 35 smoked fish, 20 line, 15 air bladder, 30 empty | Huts and landing |
+| Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
 | Frozen lunch tin | 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; heat or ordinary damage opens |
 | Maintenance locker | 20 coal, 20 sealant, 15 valve, 15 ammo, 30 empty | Boiler gallery |
 | Candle cabinet | 35 stub, 20 wick, 15 wool, 30 empty | Chapel/shelter |
@@ -191,8 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Nine regional debris types are implemented: ice chips, snow clumps, mirror
-chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers and fish bones.
+Eleven regional debris types are implemented: ice chips, snow clumps, mirror
+chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
+wicker strips and fishing floats. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers

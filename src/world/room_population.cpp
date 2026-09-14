@@ -5,6 +5,7 @@
 #include "lens_watch.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
+#include "../entities/seal_thief.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -33,7 +34,8 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind
             tile->kind != TileKind::Spring && (kind != EntityKind::RimeSkater || tile->kind == TileKind::Ice) &&
             (kind != EntityKind::BellDiver || tile->kind == TileKind::IceHole) &&
             (kind != EntityKind::GlassEel || surface_wet(*tile)) &&
-            (kind != EntityKind::SnowBurrower || tile->kind == TileKind::Snow))
+            (kind != EntityKind::SnowBurrower || tile->kind == TileKind::Snow) &&
+            (kind != EntityKind::SealThief || seal_bank(game,cell)))
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }
@@ -76,9 +78,15 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         else if (room.role == RoomRole::FishingHut) enemy(game, room, EntityKind::FishingWidow, 2, budget);
         else if (room.role == RoomRole::Reservoir && round % 2 == 1) enemy(game, room, EntityKind::BellDiver, 2, budget);
         else enemy(game, room, EntityKind::RimeSkater, 2, budget);
-        if (room.role == RoomRole::Reservoir) enemy(game, room, EntityKind::GlassEel, 2, budget);
+        if (room.role == RoomRole::Reservoir) {
+            enemy(game, room, EntityKind::GlassEel, 2, budget);
+            enemy(game, room, EntityKind::SealThief, 1, budget);
+        }
         else if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
-        else if (round >= 2) enemy(game, room, EntityKind::BellDiver, 2, budget);
+        else {
+            enemy(game, room, EntityKind::SealThief, 1, budget);
+            if (round >= 2) enemy(game, room, EntityKind::BellDiver, 2, budget);
+        }
         return;
     }
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Bathhouse || room.role == RoomRole::Shelter)) {

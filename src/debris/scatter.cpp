@@ -32,6 +32,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
                          std::uint64_t seed, bool settled) {
     DebrisKind first = DebrisKind::WoodChip, second = DebrisKind::Bark;
     switch (kind) {
+    case PropKind::FishingCreel: first = DebrisKind::Wicker; second = DebrisKind::RopeFiber; break;
     case PropKind::AlarmClock: first = DebrisKind::ClockGear; second = DebrisKind::BrassCase; break;
     case PropKind::LensCase: first = DebrisKind::WoodChip; second = DebrisKind::CrystalSplinter; break;
     case PropKind::BeamLamp: first = DebrisKind::MirrorChip; second = DebrisKind::BrassCase; break;
@@ -59,6 +60,8 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
         scatter_material(debris, cell, DebrisKind::MushroomStem, 1, seed + 17, settled);
     if (kind == PropKind::Nest)
         scatter_material(debris, cell, DebrisKind::Acorn, 1, seed + 31, settled);
+    if (kind == PropKind::FishingCreel)
+        scatter_material(debris, cell, DebrisKind::FishingFloat, 1, seed + 63, settled);
     if (kind == PropKind::LensCase)
         scatter_material(debris, cell, DebrisKind::Felt, 2, seed + 59, settled);
     if (kind == PropKind::Crate)

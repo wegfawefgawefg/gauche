@@ -13,12 +13,14 @@
 #include "echo_hound.hpp"
 #include "frozen_pilgrim.hpp"
 #include "fishing_widow.hpp"
+#include "seal_thief.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::SealThief: init_seal_thief(entity); break;
     case EntityKind::FishingWidow: init_fishing_widow(entity); break;
     case EntityKind::FrozenPilgrim: init_frozen_pilgrim(entity); break;
     case EntityKind::EchoHound: init_echo_hound(entity); break;
@@ -74,6 +76,7 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::SealThief: step_seal_thief(game, slot); break;
     case EntityKind::FishingWidow: step_fishing_widow(game, slot); break;
     case EntityKind::FrozenPilgrim: step_frozen_pilgrim(game, slot); break;
     case EntityKind::EchoHound: step_echo_hound(game, slot); break;

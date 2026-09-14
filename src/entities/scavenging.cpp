@@ -27,7 +27,7 @@ Handle find_scavenge(const Game& game, int slot, bool food_only, int radius) {
     return best;
 }
 
-bool collect_scavenge(Game& game, int slot, Handle handle, bool one) {
+bool collect_scavenge(Game& game, int slot, Handle handle, bool one, SoundId sound) {
     Entity& scavenger = game.entities[static_cast<std::size_t>(slot)];
     Entity* loose = get_entity(game, handle);
     Item& held = *scavenger.inventory.held();
@@ -37,7 +37,7 @@ bool collect_scavenge(Game& game, int slot, Handle handle, bool one) {
     if (one) held.count = 1;
     loose->ground_item.count -= held.count;
     if (loose->ground_item.count == 0) remove_entity(game, handle);
-    emit_sound(game, SoundId::ScavengeTake, scavenger.cell);
+    emit_sound(game, sound, scavenger.cell);
     return true;
 }
 

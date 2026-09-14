@@ -77,9 +77,53 @@ route respects cover and impassable bodies. Eating consumes one fish, heals the
 eel by four, rests it for 1.5s and suppresses new feeding for five seconds of
 awake activity. Bait competes with starting a shock, never cancels an existing
 charge. Wolves, bears, boars and dogs also accept fish through their existing
-nine-tile rich-food scent routing. Seal interactions and fish crates remain open.
+nine-tile rich-food scent routing. The next slice adds seals and fishing creels.
 
 This follow-up uses existing saved fields; snapshot layout stays 33 and gameplay
 protocol advances to F3. Strict build and existing codec checks pass. Static
 `widows`, `fish-bait` and `fish-items` captures and PNG/audio checks validate asset
 wiring and panel fit; no live gameplay or balance claims are made.
+
+
+## Seal thieves and fishing creels
+
+The thirteenth implemented Ice adversary is a 56-HP Seal Thief. Reservoir and
+fishing-hut banks can host one within the floor threat budget. It has fourteen-tick
+ordinary steps, seven while carrying, with ordinary water/ice footing rules.
+Its eight-step bounded cardinal search prefers smoked fish over meat and eggs,
+respects walls, props and bodies, and excludes lava and deep water. It steals one
+loose item rather than taking from a player's inventory. Generation-checked food
+references are re-evaluated as loose food floats, moves or gets picked up.
+
+The item keeps its complete instance state in the seal's held inventory and is
+visible beside its mouth. With food, the seal chooses a reachable water edge,
+favoring distance from a visible nearby threat. It settles for three seconds
+before consuming the food and healing by that item's effective healing value.
+Threats within two cells interrupt eating. It then stays fed for eight seconds
+of awake activity. If no bank is reachable, it keeps the item instead of deleting
+it or eating through cover. Death returns carried food intact plus an independent
+25% chance of raw meat.
+
+An adjacent visible player or decoy provokes a half-second warning bark, then a
+16-damage bite at the committed cell, followed by 0.8s recovery. Damage, sleep,
+stun or displacement cancels the stance. It does not chase a distant player to
+bite them. No actor position interpolation was added.
+
+Fishing huts now scatter woven creels in their existing protected-path-aware
+prop pass. A creel has 12 HP, blocks walking, burns and breaks under attacks.
+Breaking rolls once: 35% smoked fish, 20% fishing line, 15% air bladder, 30% empty.
+The broken prop cannot reroll contents. Wicker strips and fishing floats are the
+tenth and eleventh regional debris types; creels also leave rope fibers. Wicker
+gets light-material drift, floats heavier friction, all in the existing local
+cosmetic pool. Broken creels reconstruct settled litter on join.
+
+Five seal poses, basket art, two debris sprites and eight original offline audio
+cues are committed. Barks and basket impacts participate in the existing hound
+hearing rules independently of client audio playback. Death sounds now use a
+small explicit species dispatch instead of an expanding damage-path expression.
+
+Protocol F4 rejects older gameplay; entity/item/prop snapshot layout stays 33.
+Validation: strict game/render/codec build, existing snapshot codec check, static
+`seals` render, 16x16 RGBA asset checks and decoded finite/headroom audio checks.
+No live playtesting; encounter density, tells and feeding balance remain the
+user's to judge. Separate landing layouts and the rest of the catalog stay open.

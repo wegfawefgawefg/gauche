@@ -6,6 +6,7 @@
 #include "entities/eel_render.hpp"
 #include "entities/mason_render.hpp"
 #include "entities/knight_render.hpp"
+#include "entities/warden_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -369,6 +370,8 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     draw_surfaces(renderer, game, camera, zoom, lighting, false);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting);
+    for (const Entity& actor : game.entities)
+        if (actor.kind == EntityKind::LensWarden) draw_warden_charge(renderer, graphics, game, actor, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_debris(renderer, graphics, cosmetics->debris, camera, zoom, lighting);
     if (cosmetics != nullptr)

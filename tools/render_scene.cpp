@@ -23,6 +23,7 @@
 #include "optics_scene.hpp"
 #include "knight_scene.hpp"
 #include "prism_scene.hpp"
+#include "warden_scene.hpp"
 #include "quarry_tools_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -157,7 +158,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
+    if (mode == "wardens" || mode == "warden-beam" || mode == "prisms" || mode == "prism-burst" || mode == "prism-items" || mode == "knights" || mode == "knight-beam" || mode == "optics" || mode == "optic-items" || mode == "mirror-item" || mode == "snow-burrowers" || mode == "snow-tools" || mode == "snowball-items" || mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -267,6 +268,8 @@ int main(int argc, char** argv) {
     }
     if (mode == "eels" || mode == "eel-arcs" || mode == "eel-items")
         arrange_eel_scene(game, cosmetics, player, mode == "eel-arcs");
+    if (mode == "wardens" || mode == "warden-beam")
+        arrange_warden_scene(game, cosmetics, player, mode == "warden-beam");
     if (mode == "prisms" || mode == "prism-burst" || mode == "prism-items")
         arrange_prism_scene(game, cosmetics, player, mode == "prism-burst");
     if (mode == "knights" || mode == "knight-beam")

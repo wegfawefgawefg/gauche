@@ -55,7 +55,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 17 | Boiler porter | Pushes a steaming tank one cell at a time. A leaking pressure cue precedes a directional vent; rupture sends hot water along open cells, including toward other enemies. | Bathhouse; 25% pressure valve, 20% coal lump. |
 | 18 | Echo hound | Investigates propagated footsteps and weapon sounds, commits to the last heard cell, then listens again. Stillness and thrown noise can fool it; no omniscient chase through walls. | Dark tunnels; 25% raw meat, 10% muffling felt. |
 | 19 | Frozen pilgrim | Limps toward warmth, thaws into a quick but fragile attacker, then refreezes after leaving heat. Both changes are visible windups; cold can slow it again. | Shelter/chapel; 25% gold, 15% hot broth. |
-| 20 | Lens warden | Rotates a visible mirror toward a fixed lamp, locks a reflected cardinal lane, then fires. Break sight, move the mirror or get behind it during the turning beat. | Observatory vault; 35% lens carbine, otherwise 4–8 gold. |
+| 20 | Lens warden | Implemented: 64 HP; turns a station mirror for 0.5s, charges its physical lamp for 0.8s, then fires a 26-damage reflected beam. Damage, displacement or interrupted apparatus cancels it. | Observatory vault; 35% lens carbine, otherwise 4–8 gold. |
 
 Reuse shared counters, timers, points and generation-checked handles. Document
 state meanings beside each species. Colonies and porters need bounded helper

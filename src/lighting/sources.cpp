@@ -1,6 +1,7 @@
 #include "field.hpp"
 #include "../items/fire.hpp"
 #include "../entities/steam_leech.hpp"
+#include "../entities/lens_warden.hpp"
 #include "../props/growth.hpp"
 
 #include <algorithm>
@@ -27,6 +28,7 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     std::vector<LightSource> sources;
     sources.reserve(48);
     const auto drains = leech_drain_cells(game);
+    const auto charged = charged_warden_lamps(game);
     const auto heat_scale = [&drains](Cell cell) {
         return std::find(drains.begin(), drains.end(), cell) == drains.end() ? 1.0F : .25F;
     };
@@ -41,7 +43,8 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     for (int y = cache.origin.y; y < cache.origin.y + cache.height; ++y)
         for (int x = cache.origin.x; x < cache.origin.x + cache.width; ++x) {
             const Tile& tile = game.stage.at_or_border({x, y});
-            add_emitter(sources, cache, {x, y}, prop_light(tile.prop), heat_scale({x, y}));
+            const float charge = std::find(charged.begin(), charged.end(), Cell{x, y}) == charged.end() ? 1.0F : 1.8F;
+            add_emitter(sources, cache, {x, y}, prop_light(tile.prop), heat_scale({x, y}) * charge);
             if (tile.surface.fire_ticks == 0) continue;
             // CLUSTERS: Share neighboring emitters, but isolated flames always cast light.
             bool covered = false;

@@ -2,6 +2,7 @@
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "ice_terrain.hpp"
+#include "lens_watch.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
 
@@ -87,7 +88,12 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::Observatory) {
-        enemy(game, room, EntityKind::MirrorKnight, 3, budget);
+        bool warden = false;
+        if (round >= 2 && budget.threat >= 4) {
+            warden = get_entity(game, populate_lens_watch(game, room)) != nullptr;
+            if (warden) budget.threat -= 4;
+        }
+        if (!warden) enemy(game, room, EntityKind::MirrorKnight, 3, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }

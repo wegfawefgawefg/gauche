@@ -30,6 +30,10 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::LensWarden:
+        if (random_u32(game) % 100 < 35) place_ground_item(game, enemy.cell, ItemKind::LensCarbine);
+        else place_coins(game, enemy.cell, 4 + static_cast<int>(random_u32(game) % 5));
+        break;
     case EntityKind::MirrorKnight: {
         const unsigned int roll = random_u32(game) % 100;
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::MirrorShard);

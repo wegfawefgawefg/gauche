@@ -112,3 +112,45 @@ and projectile kinds; gameplay compatibility is EB. Strict game/render/codec
 builds, existing codec check and image/audio checks pass. Static flight/fuse,
 beam-burst and modifier-comparison captures were inspected. No live playtest
 or new test suite was run.
+
+## Lens Warden and lamp stations (2026-09-14)
+
+The ninth ice enemy operates a physical observatory station: a 24-HP lamp prop,
+an 8-HP mirror three cells away on a cardinal line, and the warden beside the
+mirror. The lamp has its own blue emitter. Both props are nonblocking and
+breakable; neither is idle fuel. A lamp breaks into local glass/brass scraps.
+Later observatories try to fit the complete station at a four-point threat cost,
+away from objectives and room edges. If it cannot fit, they keep the knight
+encounter. No extra helper actors or compulsory blocking tiles are introduced.
+
+A warden has 64 HP and checks possible reflected lanes every 24 ticks. It only
+starts turning when a real beam route can reach a living online player. It
+spends 30 ticks turning the mirror, then locks that angle and charges the lamp
+for 48 ticks. The resulting 26-damage beam uses the shared finite trace, with
+12-cell legs and a 48-contact budget. It can hit friends, reflect from a knight,
+or split at a lens. Damage is resolved only after the complete route is traced.
+The body recovers for 120 ticks after firing. The idle station begins with its
+mirror turned toward the operator; the first aim visibly changes its angle.
+
+Breaking or turning the mirror, breaking the lamp, obstructing its feed path,
+damaging/sleeping/stunning the operator, or displacing it cancels an in-progress
+turn/charge into 90-tick recovery. Turning a mirror while the warden is already
+turning also cancels rather than overwriting the player's intervention. A moved
+warden walks back to its original station at a 26-tick movement beat. Destroyed
+apparatus is not secretly recreated; replacing the mirror at the same station
+can make it operational again. The operator does not chase with invisible
+shots after losing its lamp.
+
+State uses shared phase/timers, lamp/mirror points, home coordinates and the
+saved mirror angle. No new per-species state structure is serialized. The
+lamp brightens only while the current station is valid and charging; its
+charged image and gathering motes draw beneath actors. The debug enemy pattern
+uses the same reflected route, without filtering it by straight sight from the
+operator. Four body images, two lamp images and five generated sound cues cover
+turning, charging, firing, death and lamp breakage. One loot decision yields a
+35% Lens Carbine or otherwise 4–8 gold.
+
+Gameplay compatibility is EC; snapshot layout stays 31. Strict game/render/codec
+builds and existing codec check pass. Static charge/turn and fired-path captures
+were inspected; image/audio formats and headroom pass. Live encounters and
+balance remain for the user's playtesting; no live playtest or new suite ran.

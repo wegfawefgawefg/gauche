@@ -2,6 +2,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::BeamLamp: return {Sprite::BeamLamp, SoundId::LampBreak, 24, false, false, {5, 850, {179, 208, 233}}};
     case PropKind::MirrorShard: return {Sprite::MirrorShard, SoundId::OpticBreak, 8, false, false};
     case PropKind::CrystalLens: return {Sprite::CrystalLens, SoundId::OpticBreak, 18, false, false};
     case PropKind::SnowCache: return {Sprite::SnowCache, SoundId::SnowScrape, 4, false, true};

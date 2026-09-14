@@ -4,6 +4,8 @@
 #include "items/woodland_tools.hpp"
 #include "items/remedies.hpp"
 #include "items/ground_tools.hpp"
+#include "items/displacement.hpp"
+#include "projectiles/hook.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
 #include "item_attribute.hpp"
@@ -67,6 +69,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HuntingHorn:
+        used = blow_hunting_horn(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
+    case ItemKind::RopeHook:
+        used = launch_hook(game, user_slot, item, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::BirdSeed: case ItemKind::ThornCaltrops:
         used = use_ground_tool(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

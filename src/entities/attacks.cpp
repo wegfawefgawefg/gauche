@@ -77,9 +77,15 @@ bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
     const Cell sx{dx > 0 ? 1 : -1, 0}, sy{0, dy > 0 ? 1 : -1};
     int ix = 0, iy = 0;
     Cell cell = from;
-    const auto open = [&game, smoke_blocks](Cell at) {
+    const auto open = [&game, smoke_blocks, to](Cell at) {
         const Tile* tile = game.stage.at(at);
-        return tile != nullptr && walkable(*tile) && (!smoke_blocks || tile->surface.smoke_ticks < 60);
+        if (tile == nullptr || !walkable(*tile) || (smoke_blocks && tile->surface.smoke_ticks >= 60)) return false;
+        // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.
+        if (at != to) {
+            const int actor = entity_at(game, at, true);
+            if (actor >= 0 && game.entities[static_cast<std::size_t>(actor)].hard_blocker) return false;
+        }
+        return true;
     };
     while (ix < nx || iy < ny) {
         const int horizontal = (1 + 2 * ix) * ny, vertical = (1 + 2 * iy) * nx;

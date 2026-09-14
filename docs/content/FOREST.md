@@ -70,7 +70,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 18 | Stink bomb | Throw 1–4; a lingering scent draws scavengers and distracts hunting animals. | Common / 7 |
 | 19 | Honey pot | Place bait; draws bears and wasps, sticky to walk through. A deliberate trap ingredient. | Common / 8 |
 | 20 | Hand bell | Audible radius 10; wakes sleepers and pulls investigation toward the user. Durable, no damage. | Common / 5 |
-| 21 | Hunting horn | Facing cone 1–3; shoves susceptible actors, 100-tick cooldown, eight uses. | Uncommon / 22 |
+| 21 | Hunting horn | Facing cone 1–3 (one/three/five cells wide); shoves each target once and wakes it. Walls crush, friends count. 100-tick cooldown, eight uses. | Uncommon / 22 |
 | 22 | Wolf whistle | Narrow call 1–6; briefly redirects an unattached wolf toward another hostile actor. Limited uses. | Uncommon / 20 |
 | 23 | Bird seed | Place a small bait pile; nearby birds/flocks gather rather than creating endless free animals. | Common / 4 |
 | 24 | Herb bag | Self heal over time, 18 HP total; cannot stack its own regeneration. Four portions. | Common / 7 |
@@ -88,7 +88,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 36 | Reflecting pan | Short active parry window; returns a direct ranged hit, costs durability even on success. | Rare / 32 |
 | 37 | Digging claws | Adjacent dig-power-1 strike; quick but only 18 uses, modest actor damage. | Uncommon / 17 |
 | 38 | Root drill | Bores a committed line 1–5 through eligible terrain; loud, three charges, dig power 3. | Rare / 38 |
-| 39 | Rope hook | Line 1–6; pulls a movable actor toward the user, or the user toward an anchored wall. | Uncommon / 25 |
+| 39 | Rope hook | Traveling line 1–6; reels an actor/loose item or the user toward a solid anchor, up to three steps. Sideways motion breaks the tether. 75-tick cooldown, 24 uses. | Uncommon / 25 |
 | 40 | Swap seed | Line 1–5; swaps with the first movable actor if both destinations remain legal. | Rare / 32 |
 | 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
 | 42 | Spring trap | Place facing next cell; launches the next actor two cells in that direction, with ordinary crush rules. | Uncommon / 20 |

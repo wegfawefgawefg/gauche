@@ -7,10 +7,11 @@
 void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
+    const bool hook = shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool thrown = bomb || shot.label_a == static_cast<int>(ProjectileKind::Flask);
-    const float travel = shot.counter_a > 0 ?
+    const float travel = shot.counter_a > 0 && (!hook || shot.label_b == 0) ?
         1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)) : 0;
     const float pixels = tile_pixels(zoom);
     SDL_FRect rect = tile_rect(shot.cell, camera, zoom);
@@ -28,6 +29,14 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
     const double angle = thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
+    if (hook) {
+        if (const Entity* owner = get_entity(game, shot.entity_a)) {
+            const SDL_FRect hand = tile_rect(owner->cell, camera, zoom);
+            SDL_SetRenderDrawColorFloat(renderer, light.red * .57F, light.green * .47F, light.blue * .31F, 1);
+            SDL_RenderLine(renderer, hand.x + hand.w * .5F, hand.y + hand.h * .5F,
+                rect.x + rect.w * .5F, rect.y + rect.h * .5F);
+        }
+    }
     SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (rocket) {

@@ -3,6 +3,7 @@
 #include "woodland_tools.hpp"
 #include "remedies.hpp"
 #include "ground_tools.hpp"
+#include "displacement.hpp"
 
 namespace {
 
@@ -35,6 +36,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* tool = forest_displacement_item(kind)) return tool;
     if (const RegionalItem* tool = forest_ground_tool(kind)) return tool;
     if (const RegionalItem* remedy = forest_remedy(kind)) return remedy;
     if (const RegionalItem* tool = woodland_tool(kind)) return tool;

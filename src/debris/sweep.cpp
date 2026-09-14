@@ -1,4 +1,5 @@
 #include "sweep.hpp"
+#include "air.hpp"
 #include "system.hpp"
 #include "../particles/system.hpp"
 
@@ -44,6 +45,8 @@ void observe_raking(Cosmetics& cosmetics, const Game& game) {
         const auto key = (1ULL << 61) | (game.tick << 8) | (static_cast<std::uint64_t>(index)+1);
         if (std::find(cosmetics.seen_events.begin(), cosmetics.seen_events.end(), key) != cosmetics.seen_events.end()) continue;
         cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
-        rake_debris(cosmetics.debris, game.stage, game.sweeps[static_cast<std::size_t>(index)]);
+        const SweepEvent& sweep = game.sweeps[static_cast<std::size_t>(index)];
+        if (sweep.outward) blow_debris(cosmetics, game, sweep);
+        else rake_debris(cosmetics.debris, game.stage, sweep);
     }
 }

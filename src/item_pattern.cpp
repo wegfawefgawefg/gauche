@@ -4,6 +4,10 @@
 #include <algorithm>
 #include <cstdlib>
 
+int pattern_half_width(ItemPattern pattern, int reach) {
+    return pattern.cone ? std::min(pattern.half_width, std::max(0, reach - 1)) : pattern.half_width;
+}
+
 ItemPattern item_pattern(ItemKind kind) {
     if (const RegionalItem* spec = regional_item(kind)) return spec->pattern;
     switch (kind) {

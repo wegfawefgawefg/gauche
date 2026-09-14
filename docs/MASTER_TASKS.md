@@ -253,7 +253,7 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
-Forest item slice: twenty-nine regional items now have shared definitions,
+Forest item slice: thirty-one regional items now have shared definitions,
 UI descriptions/icons/patterns, use sounds, room pools and reward/shop offers.
 Rock recovers at impact; hatchet cleaves wood; spear pierces; crossbow reloads
 one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
@@ -272,7 +272,7 @@ Mosquitoes drain/retreat; owls swoop; woodpeckers drill. Finite nests react to s
 wasps warn/sting and scatter when orphaned. Goblins carry off equipment; crows
 steal food, call nearby crows and return to a perch. Stolen instances drop intact.
 Forty-three new enemy cues and distinct silhouettes are integrated into room pools.
-Seed/glue/claw/lantern/root/bird-seed/thorn drops match enemies. Seed piles lure birds; finite caltrops hurt on entry.
+Matching drops, bird bait and finite caltrops are integrated. Horn cones shove; traveling hooks reel actors or users to anchors.
 Strict builds and static captures passed; behavior/balance playtesting is the user's.
 
 - [ ] Design a full ice catalog to the same quotas and quality bar.

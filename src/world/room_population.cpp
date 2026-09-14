@@ -150,7 +150,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
     case RoomRole::Workshop: {
-        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws, ItemKind::Splint};
+        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws, ItemKind::Splint, ItemKind::RopeHook};
         supply(game, room, tools[random_u32(game) % std::size(tools)], 1, budget.equipment);
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
@@ -159,7 +159,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
             ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
             ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
-            ItemKind::SmokePot, ItemKind::HoneyPot};
+            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn};
         supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};

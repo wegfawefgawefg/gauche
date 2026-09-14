@@ -15,8 +15,10 @@ struct ItemPattern {
     int half_width = 0;
     int heal = 0;
     bool piercing = false;
+    bool cone = false;
 };
 
+int pattern_half_width(ItemPattern pattern, int reach);
 ItemPattern item_pattern(ItemKind kind);
 ItemPattern item_pattern(const Item& item);
 Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern);

@@ -63,11 +63,11 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     case ItemAttribute::Strong: case ItemAttribute::Agile:
     case ItemAttribute::Heavy: return weapon;
     case ItemAttribute::Durable: return condition || kind == ItemKind::Buckler;
-    case ItemAttribute::Fragile: return condition;
+    case ItemAttribute::Fragile: return condition && weapon;
     case ItemAttribute::Big:
         return kind == ItemKind::ThornCaltrops || item_is_melee(kind) || (spec != nullptr && spec->pattern.blast_radius > 0) || kind == ItemKind::Bomb ||
                kind == ItemKind::RocketLauncher;
-    case ItemAttribute::Long: return weapon;
+    case ItemAttribute::Long: return weapon || kind == ItemKind::RopeHook;
     case ItemAttribute::Piercing:
         return item_is_gun(kind) && kind != ItemKind::RocketLauncher;
     case ItemAttribute::Restorative:

@@ -3,6 +3,7 @@
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
+#include "../entities/attacks.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -53,7 +54,14 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (pattern.ray) {
+    if (pattern.cone) {
+        const Cell side{-facing.y, facing.x};
+        for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach)
+            for (int lane = -pattern_half_width(pattern, reach); lane <= pattern_half_width(pattern, reach); ++lane) {
+                const Cell cell = player.cell + Cell{facing.x * reach + side.x * lane, facing.y * reach + side.y * lane};
+                if (clear_sight(game, player.cell, cell, false)) mark(renderer, cell, camera, zoom, pattern.effect);
+            }
+    } else if (pattern.ray) {
         const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
         Cell cell = player.cell + Cell{sideways.x * lane, sideways.y * lane};
@@ -62,7 +70,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
-                has_artifact(player, ArtifactKind::AllPiercing);
+                (pattern.effect == PatternEffect::Damage && has_artifact(player, ArtifactKind::AllPiercing));
             const bool impact = projectile_blocked(game, cell) ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||

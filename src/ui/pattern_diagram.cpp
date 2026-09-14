@@ -84,7 +84,7 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
                                  pattern.effect, false);
     } else {
         for (int reach = 1; reach <= pattern.maximum; ++reach)
-            for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
+            for (int lane = -pattern_half_width(pattern, reach); lane <= pattern_half_width(pattern, reach); ++lane)
                 colored_cell(renderer, layout, reach, lane,
                              pattern.effect, reach < pattern.minimum);
     }

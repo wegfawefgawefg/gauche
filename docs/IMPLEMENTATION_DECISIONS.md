@@ -424,3 +424,33 @@ Room, reward and shop pools include both. Four PNG sprites and four synthesized
 OGG cues include offline Python sources. Gameplay compatibility advances to CD;
 the snapshot layout remains 20. Strict game/render builds and static world/
 comparison captures pass. No live playtest or new gameplay test suite was run.
+
+
+## Horn cones and traveling rope hooks
+
+Two further regional items bring the count to 31. Hunting horns have eight uses
+and a 100-tick cooldown. Their facing cone covers one, three and five cells at
+reaches one through three. Resolution captures visible movable targets once,
+then shoves far to near with stable slot-order ties. It wakes affected sleepers
+and uses ordinary hard-surface crush rules; friends and loose items count.
+The shared pattern carries a cone flag, so cards and debug previews show the
+same widening shape. A local outward sweep scatters debris and draws brief
+curved gust strokes without syncing cosmetic particles.
+
+Rope hooks have 24 uses and a 75-tick cooldown. The hook travels one tile every
+four ticks, latches for eight ticks, then reels up to three cardinal steps at
+four ticks per step. A movable actor/item comes toward the owner; walls, blocking
+props and anchored actors pull the owner toward them. The user stops before
+obstructions and the anchor. Lateral movement, obstructed rope, death, stale
+generation handles or a removed/moved anchor releases the tether. Only one
+tether per user can exist. Long extends flight range from six to ten cells;
+Durable increases uses. Fragile now requires an actual damaging weapon instead
+of reducing utility-item uses for a nonexistent damage benefit.
+
+Hook state reuses projectile slots, handles and immutable item data already in
+hashes and snapshots. Gameplay compatibility is CE; snapshot layout remains 20.
+Closed hard-blocker entities now interrupt the shared sight ray between endpoints,
+so closed doors cannot leak creature sight or horn effects through a corridor.
+Three sprites and five offline-generated sounds accompany room/reward/shop
+integration. Strict game/render builds and static cone-card/tether/gust captures
+pass. No live playtest or new gameplay test suite was run.

@@ -116,6 +116,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.sound_count = 0;
     game.impact_count = 0;
     game.shot_count = 0;
+    game.sweep_count = 0;
     if (step_interlude(game, inputs)) return;
 
     step_surfaces(game);

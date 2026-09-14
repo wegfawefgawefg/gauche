@@ -17,6 +17,9 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
     const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
     const Cell sideways{-direction.y, direction.x};
     const ItemPattern pattern = item_pattern(item);
+    if (item.kind == ItemKind::Rake && game.sweep_count < static_cast<int>(game.sweeps.size()))
+        game.sweeps[static_cast<std::size_t>(game.sweep_count++)] =
+            {origin, direction, pattern.maximum, pattern.half_width};
     bool struck = false;
     std::array<bool, max_entities> hit_once{};
     for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {

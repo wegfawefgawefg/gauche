@@ -22,9 +22,9 @@ constexpr RegionalItem blunderbuss{"Blunderbuss", "Three short lanes, 10 damage 
 constexpr RegionalItem maul{"Wooden Maul", "A slow 28-damage blow that shoves. An immovable surface crushes the victim.",
     Sprite::WoodenMaul, {1, 1, 0, 28, 60, PatternEffect::Damage},
     ItemAction::Melee, 23, 1, false, 24, 0, 0, 60, 0, SoundId::MaulSwing};
-constexpr RegionalItem rake{"Rake", "Sweep three adjacent cells. Weak against beasts; clears brittle growth.",
+constexpr RegionalItem rake{"Rake", "Pull loose debris into a pile. Sweep three cells of brittle growth; 400 uses.",
     Sprite::Rake, {1, 1, 0, 7, 24, PatternEffect::Damage, false, 1},
-    ItemAction::Melee, 9, 1, false, 50, 0, 0, 60, 0, SoundId::RakeSweep};
+    ItemAction::Melee, 9, 1, false, 400, 0, 0, 60, 0, SoundId::RakeSweep};
 constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage against sleepers or from behind.",
     Sprite::FlintKnife, {1, 1, 0, 7, 12, PatternEffect::Damage},
     ItemAction::Melee, 12, 1, false, 60, 0, 0, 60, 0, SoundId::KnifeStab};
@@ -32,6 +32,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* food = forest_food_item(kind)) return food;
     if (const RegionalItem* material = forest_material_item(kind)) return material;
     switch (kind) {
     case ItemKind::ThrowingRock: return &rock;

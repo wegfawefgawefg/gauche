@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/campfire.hpp"
 #include "items/catalog.hpp"
 #include "world/encounter.hpp"
 #include "item_attribute.hpp"
@@ -132,19 +133,8 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
             return true;
         }
-        if (fixture.kind == EntityKind::Campfire && fixture.fire_tramples < 5) {
-            if (player->timer_b > 0) return true;
-            Inventory cooked = player->inventory;
-            for (Item& ingredient : cooked.slots) {
-                if (ingredient.kind != ItemKind::RawMeat || ingredient.count <= 0) continue;
-                if (--ingredient.count == 0) ingredient = {};
-                if (!insert_item(cooked, make_item(ItemKind::CookedMeat))) return false;
-                player->inventory = cooked;
-                player->timer_b = 45; // COOKING: Player timer_b is the per-portion beat.
-                emit_sound(game, SoundId::CookingSizzle, fixture.cell);
-                return true;
-            }
-        }
+        if (fixture.kind == EntityKind::Campfire && use_campfire(game, *player, fixture))
+            return true;
         if (fixture.kind == EntityKind::Door && game.run.has_key) {
             fixture.fixture_open = true;
             fixture.impassable = false;

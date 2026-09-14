@@ -71,7 +71,8 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
         return item_is_gun(kind) && kind != ItemKind::RocketLauncher;
     case ItemAttribute::Restorative:
         return kind == ItemKind::Medkit || kind == ItemKind::Bandage ||
-               kind == ItemKind::Bandaid || kind == ItemKind::CookedMeat;
+               kind == ItemKind::Bandaid || kind == ItemKind::CookedMeat ||
+               (spec != nullptr && spec->action == ItemAction::Food);
     }
     return false;
 }

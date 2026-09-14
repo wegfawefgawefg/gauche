@@ -11,7 +11,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
-    case PropKind::Nest: if (roll < 18) item = ItemKind::RawMeat; break;
+    case PropKind::Nest: if (roll < 18) item = ItemKind::Egg; break;
     case PropKind::Crate:
         if (roll < 35) item = ItemKind::Ammo;
         else if (roll < 60) item = ItemKind::Bandage;

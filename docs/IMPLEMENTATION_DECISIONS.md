@@ -299,3 +299,16 @@ named HUD badges and a two-column inventory strip with concise actual effects.
 A shared artifact catalog keeps reward and owned descriptions consistent, including
 Reflector's 25% half-hit return and Hearth's 1 HP/s, four-tile aura. Static reward
 focus and four-artifact inventory captures plus strict builds checked.
+
+
+## Raking and nest food
+
+Rake swings emit local cosmetic sweep events on contact, pulling loose scraps
+toward a small pile ahead of the player. Existing debris wall collision and
+material friction remain; no debris enters snapshots or gameplay hashes. Rakes
+have 400 uses. Nests retain their occasional drop chance but produce eggs. Eggs
+and fried eggs stack to twelve and restore 3/12 HP, with distinct sprites and a
+new soft bite/swallow sound. Campfires cook one portion at a time, prioritizing
+the held ingredient and committing only when the cooked portion fits. Existing
+meat cooking uses the same path. Strict game/render builds and a static inventory
+capture checked; the user retains playtesting. Gameplay compatibility advanced.

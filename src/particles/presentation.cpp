@@ -1,6 +1,7 @@
 #include "system.hpp"
 #include "gunfire.hpp"
 #include "motion.hpp"
+#include "../debris/sweep.hpp"
 #include "templates.hpp"
 #include "water.hpp"
 #include "../surfaces/render.hpp"
@@ -226,6 +227,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
                     spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
             }
         }
+    observe_raking(cosmetics, game);
     observe_gunfire(cosmetics, game, focus);
     observe_water(cosmetics, game, focus);
     observe_surfaces(cosmetics, game, focus);

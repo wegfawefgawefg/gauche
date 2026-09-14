@@ -43,3 +43,6 @@ void step_debris(LooseDebris& debris, const Stage& stage, std::uint64_t tick, bo
 void draw_debris(SDL_Renderer* renderer, const GameGraphics& graphics,
                   const LooseDebris& debris, ViewCamera camera, float zoom,
                   const LightingCache& lighting);
+
+float debris_friction(DebrisKind kind);
+void rake_debris(LooseDebris& debris, const Stage& stage, const SweepEvent& sweep);

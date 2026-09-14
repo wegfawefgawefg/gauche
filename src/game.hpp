@@ -31,6 +31,11 @@ struct ImpactEvent {
     PropKind prop = PropKind::None;
 };
 
+struct SweepEvent {
+    Cell source{}, direction{};
+    int reach = 1, half_width = 1;
+};
+
 struct ShotEvent {
     Cell source{}, end{};
     bool impact = false, muzzle = false, casing = false;
@@ -77,6 +82,7 @@ enum class ItemKind : std::uint8_t {
     Stick, Shotgun, SMG, BearTrap, Mine, Pickaxe, RawMeat, CookedMeat,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
+    Egg, FriedEgg,
     Count,
 };
 
@@ -259,6 +265,8 @@ struct Game {
     int impact_count = 0;
     std::array<ShotEvent, 128> shots{};
     int shot_count = 0;
+    std::array<SweepEvent, 32> sweeps{};
+    int sweep_count = 0;
 };
 
 bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power = 0,

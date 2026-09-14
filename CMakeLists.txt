@@ -53,7 +53,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
-    src/combat/melee.cpp src/items/forest.cpp src/items/throw.cpp src/items/stacking.cpp src/items/ground_interaction.cpp
+    src/combat/melee.cpp src/items/forest.cpp src/items/food.cpp src/items/campfire.cpp src/items/throw.cpp src/items/stacking.cpp src/items/ground_interaction.cpp
     src/entities/attacks.cpp src/entities/defense.cpp
     src/entities/boar.cpp src/entities/thorn_snail.cpp src/entities/lantern_moth.cpp
     src/entities/spore_toad.cpp src/entities/crate_mimic.cpp
@@ -85,7 +85,7 @@ set(GAUCHE_WORLD_SOURCES src/world/floor_layout.cpp src/world/floor_reachability
 
 set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)
 
-set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
+set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
     src/main.cpp src/app/options.cpp src/debug/panels.cpp src/ui/status.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}

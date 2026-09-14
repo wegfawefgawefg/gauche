@@ -29,6 +29,8 @@ bool light_material(DebrisKind kind) {
 
 } // namespace
 
+float debris_friction(DebrisKind kind) { return light_material(kind) ? .92F : .83F; }
+
 void rebuild_debris_index(LooseDebris& debris) {
     debris.buckets.fill(-1);
     for (std::size_t i = 0; i < debris.pieces.size(); ++i) {
@@ -117,7 +119,7 @@ void step_debris(LooseDebris& debris, const Stage& stage, std::uint64_t tick, bo
         else p.vx *= -.2F;
         if (free_cell(stage, p.x, p.y + p.vy)) p.y += p.vy;
         else p.vy *= -.2F;
-        const float friction = light_material(p.kind) ? .92F : .83F;
+        const float friction = debris_friction(p.kind);
         p.vx *= friction; p.vy *= friction;
         p.angle += p.spin;
         p.spin *= .88F;

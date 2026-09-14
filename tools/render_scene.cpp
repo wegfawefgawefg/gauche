@@ -190,14 +190,20 @@ int main(int argc, char** argv) {
                               ItemKind::ThrowingRock, ItemKind::WoodenMaul, ItemKind::FlintKnife})
             insert_item(player.inventory, make_item(kind));
     }
+    if (mode == "food") {
+        player.inventory = {};
+        for (ItemKind kind : {ItemKind::Fist, ItemKind::Egg, ItemKind::FriedEgg, ItemKind::Rake})
+            insert_item(player.inventory, make_item(kind, kind == ItemKind::Egg ? 4 : 1));
+        player.inventory.selected = 2;
+    }
     if (mode == "artifacts") {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
-        interaction.slot_focus = mode == "stacks" || mode == "bow" ? 1 : 2;
+        interaction.slot_focus = mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
     } else if (mode == "reward" || mode == "reward-focus") {
         interaction.offer_focus = mode == "reward-focus" ? 1 : 0;
         game.run.phase = RunPhase::Reward;

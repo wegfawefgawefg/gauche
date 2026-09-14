@@ -263,7 +263,8 @@ one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
 rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
 items remains the forest target. Torch, lighter, oil, sap, water, spores, smoke
 and honey now share burning/wetting/concealment/bait rules. Oil slipping, wasp
-bait and natural sap sources remain; toads now drop spores. Other drops await items.
+bait and natural sap sources remain; toads drop spores. Nests now yield stackable
+eggs, fried at campfires (eighteen regional item types). Other drops await items.
 
 Forest implementation slice: ten roster adversaries now exist (wolf, bear, bat,
 zombie, zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic).
@@ -441,9 +442,9 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   appropriate sprite axis/center. Verify all four directions and held enemy items.
 - [ ] Add wood/tree terrain with recognizable material and break rules; forest
   obstacles should include actual trees/wood, not only nondescript green walls.
-- [ ] Make the rake sweep loose leaves/debris into useful-looking piles locally;
+- [x] Make the rake sweep loose leaves/debris into useful-looking piles locally;
   greatly increase its available uses. Keep its current recognizable silhouette.
-- [ ] Make chicken nests drop eggs rather than raw meat; integrate eggs as finds
+- [x] Make chicken nests drop eggs rather than raw meat; integrate eggs as finds
   with sensible stack/use/cooking rules and fitting art/sound.
 - [ ] Support igniting a held stick into a temporary burning weapon, initially
   about 30 seconds; spread fire to susceptible actors/materials and communicate

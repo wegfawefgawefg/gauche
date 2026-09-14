@@ -242,6 +242,8 @@ void host_step(NetSession& session, Input local_input) {
     if (session.rollback.game.game_over) return;
     const std::uint64_t tick = session.rollback.game.tick + 1;
     std::array<Input, 4> inputs{};
+    for (int owner = 0; owner < 4; ++owner)
+        inputs[static_cast<std::size_t>(owner)] = missing_remote_input(session.rollback.game, owner);
     inputs[0] = local_input;
     for (int owner = 1; owner < 4; ++owner) {
         NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];

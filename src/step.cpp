@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "items/bow.hpp"
 #include "entities/dispatch.hpp"
 
 #include <algorithm>
@@ -40,9 +41,11 @@ void step_players(Game& game, const std::array<Input, 4>& inputs) {
     for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
         const Handle handle = game.players[owner];
         Entity* player = get_entity(game, handle);
-        if (player == nullptr || player->health <= 0 || !game.run.online[owner] ||
-            player->sleep_ticks > 0 || player->stun_ticks > 0) continue;
+        if (player == nullptr) continue;
+        if (player->health <= 0 || !game.run.online[owner] ||
+            player->sleep_ticks > 0 || player->stun_ticks > 0) { cancel_bow(*player); continue; }
         if (game.run.pending_count[owner] > 0) {
+            cancel_bow(*player);
             if (inputs[owner].drop) {
                 if (inputs[owner].select >= 0 && inputs[owner].select < quick_slots)
                     player->inventory.selected = inputs[owner].select;

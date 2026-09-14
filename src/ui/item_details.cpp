@@ -60,10 +60,10 @@ const char* item_description(ItemKind kind) {
     case ItemKind::Buckler: return "Block a hit, then shove the actor in front of you.";
     case ItemKind::Pistol: return "A reliable short-cooldown shot along a straight line.";
     case ItemKind::Musket: return "A loud, powerful single shot. Slow to reload.";
-    case ItemKind::Bow: return "A long straight shot with a single-arrow magazine.";
+    case ItemKind::Bow: return "Hold to draw; release an arrow. No reload. Damage arrives with the arrow.";
     case ItemKind::RocketLauncher: return "A rocket travels straight, then blasts the impact area.";
-    case ItemKind::Ammo: return "Supply every gun separately, including the held weapon.";
-    case ItemKind::Bomb: return "Throw a bomb a few tiles; its blast hits a wide area.";
+    case ItemKind::Ammo: return "Supply each gun and bow separately, including the held weapon.";
+    case ItemKind::Bomb: return "Throw forward. A 2.5s fuse starts on use, then it explodes. Get clear!";
     case ItemKind::SleepMeds: return "Put a nearby target to sleep for a short time.";
     case ItemKind::Stick: return "A sturdy one-tile strike with more force than a fist.";
     case ItemKind::Shotgun: return "Powerful close-range shot with a slow recovery.";
@@ -120,7 +120,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
-    if (item_is_gun(item.kind))
+    if (item.kind == ItemKind::Bow)
+        std::snprintf(line, sizeof(line), "QUIVER %d ARROWS", item.loaded);
+    else if (item_is_gun(item.kind))
         std::snprintf(line, sizeof(line), "MAG %d / %d   SPARE %d",
                       item.loaded, item_meter_capacity(item), item.spare);
     else if (item.max_durability > 0)

@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "projectiles/render.hpp"
 #include "debug/panels.hpp"
 #include "entities/intent_render.hpp"
 #include "particles/system.hpp"
@@ -146,6 +147,10 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
             entity.kind == EntityKind::Coins ? 1 : 2;
         if (entity_layer != layer) continue;
+        if (entity.kind == EntityKind::Projectile) {
+            draw_projectile(renderer, graphics, entity, game, camera, zoom, lighting);
+            continue;
+        }
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
@@ -231,7 +236,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const double angle = std::atan2(static_cast<double>(entity.facing.y),
                                             static_cast<double>(entity.facing.x)) *
                                  180.0 / 3.141592653589793;
-            SDL_Texture* held_texture = texture_for(graphics, item_sprite(*held));
+            const Sprite held_sprite = held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&
+                entity.counter_a > 0 ? Sprite::BowDrawn : item_sprite(*held);
+            SDL_Texture* held_texture = texture_for(graphics, held_sprite);
             SDL_SetTextureColorModFloat(held_texture, brightness.red,
                                         brightness.green, brightness.blue);
             SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,

@@ -1,4 +1,5 @@
 #include "presentation.hpp"
+#include "../projectiles/projectile.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
 #include "../view.hpp"
@@ -60,7 +61,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
                 has_artifact(player, ArtifactKind::AllPiercing);
-            const bool impact = !walkable(*tile) ||
+            const bool impact = (held.kind == ItemKind::Bow ? projectile_blocked(game, cell) : !walkable(*tile)) ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||
                 step == pattern.maximum;
@@ -89,7 +90,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else {
         const Cell aim = pointer.left && pointer.inside ?
             pointer.cell - player.cell : player.facing;
-        const Cell target = aimed_item_target(player, aim, pattern);
+        const Cell target = held.kind == ItemKind::Bomb ?
+            bomb_landing(game, player.cell, player.facing, pattern.maximum) :
+            aimed_item_target(player, aim, pattern);
         if (pattern.blast_radius > 0) {
             for (int reach = 1; reach < distance(player.cell, target); ++reach)
                 mark(renderer, player.cell +

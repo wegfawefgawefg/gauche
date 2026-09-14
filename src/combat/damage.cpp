@@ -40,7 +40,7 @@ void crush_entity(Game& game, int slot, Cell attacker) {
 
 void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
+    if (entity.kind == EntityKind::Projectile || entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
         entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
         entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire ||

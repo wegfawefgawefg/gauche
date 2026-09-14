@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../items/bow.hpp"
 #include "../item_pattern.hpp"
 #include "../world/ground_items.hpp"
 #include "../world/loot.hpp"
@@ -85,6 +86,8 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_bow(game, slot, input)) return;
+    if (input.cancel_use) return;
     if (input.reload) reload_held_item(game, slot);
     if (input.use) {
         const Cell target = aimed_item_target(player, input.aim,

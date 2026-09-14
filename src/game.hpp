@@ -126,7 +126,7 @@ enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
-    Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic,
+    Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile,
     Count,
 };
 struct Handle {
@@ -184,6 +184,7 @@ struct Input {
     Cell move{};
     Cell aim{};
     bool use = false;
+    bool cancel_use = false;
     bool pickup = false;
     bool drop = false;
     bool reload = false;

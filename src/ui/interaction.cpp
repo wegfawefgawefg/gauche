@@ -193,6 +193,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
     const bool drop = ui.request_drop || (ui.inventory_open && pickup);
     ui.request_drop = false;
     input = {};
+    input.cancel_use = true;
     if (ui.inventory_open) {
         if (number >= 0 && number < quick_slots) ui.slot_focus = number;
         if (drop) {

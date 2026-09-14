@@ -39,3 +39,12 @@ std::uint64_t bytes_hash(std::span<const std::uint8_t> bytes) {
     }
     return hash;
 }
+
+Input missing_remote_input(const Game& game, int owner) {
+    Input input;
+    if (owner < 0 || owner >= static_cast<int>(game.players.size())) return input;
+    const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    // RELEASE: A missing packet must not invent a bow release and a projectile.
+    input.use = player != nullptr && player->inventory.held()->kind == ItemKind::Bow && player->counter_a > 0;
+    return input;
+}

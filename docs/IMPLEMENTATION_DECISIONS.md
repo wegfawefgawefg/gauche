@@ -59,3 +59,17 @@ body wobble. Nearby adults defend the family with pecks; chicks retain eight
 seconds of alarm and renew it while the attacker remains close. Cooking and
 eating now have separate sizzle and munch cues. Strict build checked; follower
 spacing, protective aggression and sound feel await user playtesting.
+
+## Bow and fused bomb projectiles
+
+Splonks' bow arms on press and fires on release. Gauche follows that interaction:
+20-arrow quiver, no reload command, a drawn sprite/twang, 16-tick recovery. Each
+arrow travels one tile per three ticks, damages on contact and splinters into
+local wood/feather debris. Bombs throw up to three tiles, land against obstacles,
+and detonate after a 150-tick fuse measured from use; visible sparks, a small
+light and separate throw/landing/fuse sounds communicate it. Gameplay projectile
+state uses documented shared entity slots and snapshot serialization. An explicit
+input cancel bit handles inventory/menu/stun/death; missing network inputs retain
+a bow draw instead of inventing release. Wire version increased. Strict builds
+and static projectile/inspection captures checked, without playtesting. General
+bullet tracers, rocket travel and persistent spells remain to implement.

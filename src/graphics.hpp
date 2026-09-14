@@ -32,7 +32,7 @@ enum class Sprite : std::size_t {
     Boar, ThornSnail, ThornSnailClosed, LanternMoth, SporeToad, SporeToadSwollen, CrateMimic,
     ThrowingRock, Hatchet, HuntingSpear, Crossbow, Blunderbuss, WoodenMaul, Rake, FlintKnife,
     StatusSleep, StatusStun, StatusChill,
-    ShallowWaterA, ShallowWaterB, SpringA, SpringB,
+    ShallowWaterA, ShallowWaterB, SpringA, SpringB, Arrow, BombLit, BowDrawn,
     Count,
 };
 

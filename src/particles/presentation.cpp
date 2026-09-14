@@ -134,6 +134,10 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::ArrowImpact:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 2, seed);
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::Feather, 1, seed ^ 951U);
+        break;
     case SoundId::GraveRise:
         spawn_debris(cosmetics, sound.cell, seed);
         break;

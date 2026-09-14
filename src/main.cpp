@@ -163,6 +163,7 @@ int main(int argc, char** argv) {
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
                             0.5F, 8.0F);
     InputReaderState input_reader{};
+    bool cancel_pending_use = false;
     int frames = 0;
     std::uint64_t last_ticks = SDL_GetTicks();
     double accumulated = 0.0;
@@ -264,13 +265,14 @@ int main(int argc, char** argv) {
             for (int catchup = 0; catchup < 8 &&
                  !network.rollback.game.game_over &&
                  network.rollback.game.tick + 2 < network.host_tick; ++catchup)
-                step_network_game(network, {});
+                step_network_game(network, missing_remote_input(network.rollback.game, network.local_owner));
         }
 
         const std::uint64_t now = SDL_GetTicks();
         const double elapsed = static_cast<double>(now - last_ticks) / 1000.0;
         last_ticks = now;
         accumulated += smoke ? step_seconds : std::min(elapsed, 0.25);
+        if (menu.visible || debug_captures_input()) cancel_pending_use = true;
         while (accumulated >= step_seconds) {
             ++steps;
             Game& active = networked ? network.rollback.game : game;
@@ -280,11 +282,14 @@ int main(int argc, char** argv) {
                 (network.role == NetRole::Client && network.ready && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
+                for (Input& idle : inputs) idle.cancel_use = true;
                 if (!smoke && menu.playing && !menu.visible && !debug_captures_input()) {
                     Input& local = inputs[static_cast<std::size_t>(owner)];
                     local = read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
                                              camera_for(cosmetics, active, owner), input_reader);
                     apply_interaction_input(interaction, active, owner, host, local);
+                    local.cancel_use |= cancel_pending_use;
+                    cancel_pending_use = false;
                 }
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_game(game, inputs);

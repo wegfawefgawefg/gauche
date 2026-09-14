@@ -35,7 +35,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "boar", "thorn_snail", "thorn_snail_closed", "lantern_moth", "spore_toad", "spore_toad_swollen", "crate_mimic",
     "throwing_rock", "hatchet", "hunting_spear", "crossbow", "blunderbuss", "wooden_maul", "rake", "flint_knife",
     "status_sleep", "status_stun", "status_chill",
-    "shallow_water_a", "shallow_water_b", "spring_a", "spring_b",
+    "shallow_water_a", "shallow_water_b", "spring_a", "spring_b", "arrow", "bomb_lit", "bow_drawn",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

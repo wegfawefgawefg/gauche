@@ -17,7 +17,9 @@ std::string item_cooldown_text(const Item& item) {
 
 std::string item_state_text(const Item& item, bool compact) {
     char result[32];
-    if (item.max_durability > 0)
+    if (item.kind == ItemKind::Bow)
+        std::snprintf(result, sizeof(result), compact ? "%d" : "QUIVER %d ARROWS", item.loaded);
+    else if (item.max_durability > 0)
         std::snprintf(result, sizeof(result), compact ? "%d/%d" : "COND %d/%d",
                       item.durability, item.max_durability);
     else if (item.max_uses > 0)
@@ -45,7 +47,8 @@ int item_meter_capacity(const Item& item) {
     case ItemKind::Pistol: return 12;
     case ItemKind::Shotgun: return 6;
     case ItemKind::SMG: return 30;
-    case ItemKind::Musket: case ItemKind::Bow:
+    case ItemKind::Bow: return std::max(20, item.loaded);
+    case ItemKind::Musket:
     case ItemKind::RocketLauncher: return 1;
     default: return item_stackable(item) ? item.max_count : 0;
     }

@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "item_attribute.hpp"
 #include "combat/shove.hpp"
@@ -19,7 +20,7 @@ int magazine_size(ItemKind kind) {
     case ItemKind::Pistol: return 12;
     case ItemKind::Shotgun: return 6;
     case ItemKind::SMG: return 30;
-    case ItemKind::Musket: case ItemKind::Bow: case ItemKind::RocketLauncher: return 1;
+    case ItemKind::Musket: case ItemKind::RocketLauncher: return 1;
     default: return 0;
     }
 }
@@ -168,10 +169,11 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::Crossbow: case ItemKind::Blunderbuss:
-    case ItemKind::Pistol: case ItemKind::Musket: case ItemKind::Bow:
+    case ItemKind::Pistol: case ItemKind::Musket:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
         used = fire_weapon(game, user_slot, direction, item);
         return used;
+    case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
     case ItemKind::ThrowingRock:
         used = throw_rock(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
@@ -179,8 +181,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Bomb:
         if (range <= 3) {
             const ItemPattern pattern = item_pattern(item);
-            blast(game, target, pattern.blast_radius, pattern.damage, user.cell);
-            used = true;
+            used = launch_projectile(game, user_slot, item, direction, pattern.maximum);
             cooldown = pattern.cooldown;
         }
         break;
@@ -223,7 +224,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Ammo:
         for (Item& weapon : user.inventory.slots) {
             if (item_is_gun(weapon.kind)) {
-                weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 :
+                if (weapon.kind == ItemKind::Bow) weapon.loaded += 24;
+                else weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 :
                                 std::max(12, magazine_size(weapon.kind) * 3);
                 used = true;
             }

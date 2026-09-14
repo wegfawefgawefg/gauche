@@ -1,9 +1,11 @@
 #include "dispatch.hpp"
+#include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::Projectile: init_projectile(entity); break;
     case EntityKind::Boar: init_boar(entity); break;
     case EntityKind::ThornSnail: init_thorn_snail(entity); break;
     case EntityKind::LanternMoth: init_lantern_moth(entity); break;
@@ -34,6 +36,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::Projectile: step_projectile(game, slot); break;
     case EntityKind::Boar: step_boar(game, slot); break;
     case EntityKind::ThornSnail: step_thorn_snail(game, slot); break;
     case EntityKind::LanternMoth: step_lantern_moth(game, slot); break;

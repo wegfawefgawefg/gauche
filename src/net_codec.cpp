@@ -18,6 +18,7 @@ void PacketWriter::input(const Input& value) {
     i32(value.move.x); i32(value.move.y);
     i32(value.aim.x); i32(value.aim.y);
     u8(static_cast<std::uint8_t>(value.use));
+    u8(static_cast<std::uint8_t>(value.cancel_use));
     u8(static_cast<std::uint8_t>(value.pickup));
     u8(static_cast<std::uint8_t>(value.drop));
     u8(static_cast<std::uint8_t>(value.reload));
@@ -56,6 +57,7 @@ Input PacketReader::input() {
     value.move = {i32(), i32()};
     value.aim = {i32(), i32()};
     value.use = u8() != 0;
+    value.cancel_use = u8() != 0;
     value.pickup = u8() != 0;
     value.drop = u8() != 0;
     value.reload = u8() != 0;

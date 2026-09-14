@@ -13,11 +13,12 @@ ItemPattern item_pattern(ItemKind kind) {
     case ItemKind::Pistol: return {1, 9, 0, 16, 12, PatternEffect::Damage, true};
     case ItemKind::Shotgun: return {1, 5, 0, 48, 32, PatternEffect::Damage, true};
     case ItemKind::SMG: return {1, 8, 0, 9, 4, PatternEffect::Damage, true};
-    case ItemKind::Musket: case ItemKind::Bow:
+    case ItemKind::Bow: return {1, 14, 0, 35, 16, PatternEffect::Damage, true};
+    case ItemKind::Musket:
         return {1, 14, 0, 35, 40, PatternEffect::Damage, true};
     case ItemKind::RocketLauncher:
         return {1, 14, 2, 80, 48, PatternEffect::Damage, true};
-    case ItemKind::Bomb: return {0, 3, 2, 65, 45, PatternEffect::Damage};
+    case ItemKind::Bomb: return {3, 3, 2, 65, 45, PatternEffect::Damage};
     case ItemKind::Wall: return {1, 2, 0, 0, 6, PatternEffect::Utility};
     case ItemKind::Buckler: return {1, 1, 0, 0, 30, PatternEffect::Utility};
     case ItemKind::BearTrap: case ItemKind::Mine:
@@ -75,7 +76,8 @@ ItemPattern item_pattern(const Item& item) {
 
 Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern) {
     const Cell direction = user.facing;
-    const int reach = pattern.ray ? 1 :
+    const int reach = user.inventory.held()->kind == ItemKind::Bomb ? pattern.maximum :
+        pattern.ray ? 1 :
         std::clamp(std::max(std::abs(aim.x), std::abs(aim.y)),
                    std::max(1, pattern.minimum), std::max(1, pattern.maximum));
     return {user.cell.x + direction.x * reach,

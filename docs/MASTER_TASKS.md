@@ -456,10 +456,10 @@ the available art reference; new source scripts keep a small explicit palette.
 - [ ] Improve creature identity/readability; the user could not identify a
   round pursuing creature with a delayed attack/vocalization. Verify the sprite
   and behavior before identifying it; preserve that dodgeable attack timing.
-- [ ] Redesign bow input around hold-to-draw/release-to-fire, taking Splonks'
+- [x] Redesign bow input around hold-to-draw/release-to-fire, taking Splonks'
   bow feel as reference. Eliminate the manual magazine-style bow reload; add
   audible draw, tension/release and impact, with visible traveling arrows.
-- [ ] Replace instant-use bomb explosions with thrown travel, a landing cue,
+- [x] Replace instant-use bomb explosions with thrown travel, a landing cue,
   visible burning fuse/sparks, audible fuse and delayed detonation. Give the
   thrower time to escape; resolve the blast at the bomb's final position. Keep
   fuse/travel deterministic and document timing/radius in its item details.

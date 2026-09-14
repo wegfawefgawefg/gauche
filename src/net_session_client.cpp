@@ -90,6 +90,8 @@ void client_step(NetSession& session, Input local_input) {
         session.rollback.game.game_over) return;
     const std::uint64_t tick = session.rollback.game.tick + 1;
     std::array<Input, 4> inputs{};
+    for (int owner = 0; owner < 4; ++owner)
+        inputs[static_cast<std::size_t>(owner)] = missing_remote_input(session.rollback.game, owner);
     inputs[static_cast<std::size_t>(session.local_owner)] = local_input;
     predict_frame(session.rollback, inputs);
     session.sent_inputs[tick] = local_input;

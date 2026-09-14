@@ -2,6 +2,7 @@
 #include "floor_overview.hpp"
 #include "enemy_scene.hpp"
 #include "water_scene.hpp"
+#include "projectile_scene.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
 #include "../src/world/loot.hpp"
@@ -108,6 +109,7 @@ int main(int argc, char** argv) {
         debug_panels().world_enemies = true;
     }
     if (mode == "water") arrange_water_scene(game, cosmetics);
+    if (mode == "projectiles" || mode == "bow") arrange_projectile_scene(game, cosmetics);
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};
@@ -157,6 +159,12 @@ int main(int argc, char** argv) {
     player.inventory.slots[1].durability = 17;
     place_coins(game, player.cell + Cell{1, 1}, 12);
     game.run.coins[0] = 27;
+    if (mode == "projectiles" || mode == "bow") {
+        player.inventory = {};
+        insert_item(player.inventory, make_item(ItemKind::Bow));
+        insert_item(player.inventory, make_item(ItemKind::Bomb, 3));
+        player.counter_a = 12; player.label_b = 1;
+    }
     if (mode == "stacks") {
         player.inventory = {};
         insert_item(player.inventory, make_item(ItemKind::Fist));
@@ -170,10 +178,10 @@ int main(int argc, char** argv) {
                               ItemKind::ThrowingRock, ItemKind::WoodenMaul, ItemKind::FlintKnife})
             insert_item(player.inventory, make_item(kind));
     }
-    if (mode == "inventory" || mode == "items" || mode == "stacks") {
+    if (mode == "inventory" || mode == "items" || mode == "stacks" || mode == "bow") {
         interaction.inventory_open = true;
         interaction.slide = 1;
-        interaction.slot_focus = mode == "stacks" ? 1 : 2;
+        interaction.slot_focus = mode == "stacks" || mode == "bow" ? 1 : 2;
     } else if (mode == "reward") {
         game.run.phase = RunPhase::Reward;
         game.run.offers[0] = {Reward{RewardKind::Item, ItemKind::Pickaxe, ArtifactKind::None, 1},

@@ -446,3 +446,40 @@ remaining master systems still require implementation.
 Strict game/render builds pass. Static ordinary/Long cards and the wolf's call
 marker/timer were inspected. Both OGG files decode to finite, non-silent samples
 with headroom. No live playtest or new test suite was run.
+
+
+## Thunder acorn
+
+The fifty-first regional find is a three-acorn stack priced at 30, with a
+60-tick cooldown. A real projectile travels one cell per four ticks along a
+cardinal line, up to five cells, and discharges at the first body or obstruction.
+It survives its owner leaving or dying. Empty-range impacts produce sparks and
+can ignite fuel, but do not invent an area attack.
+
+A discharge captures at most four distinct generation-checked victims before
+applying any damage. The first hit deals 24; subsequent hits deal 18, 12 and 6.
+Each jump chooses the nearest eligible actor with stable slot-order ties. Dry
+bodies reach one Manhattan cell; grounded bodies in shallow/deep water or a
+poured-water patch reach three. Flying creatures do not become wet from the floor.
+Big adds one to both distances, Long extends the initial flight to nine, and
+normal damage modifiers scale the whole chain. Players, including the thrower,
+can be later victims; no actor is selected twice. Electricity bypasses a facing
+block. Cover, walls and closed doors block arcs, including diagonal corner gaps;
+water and smoke do not. Capturing first prevents breakage or zombie topples from
+adding fresh targets during the same discharge. Sparks ignite existing fuel
+through the shared surface rules and damage props on struck cells.
+
+The pattern has a chain flag: inspection shows the first-hit lane and outlined
+potential wet jump area rather than promising a filled explosion. Cards show
+all four damage values and both jump ranges. World debug preview uses the same
+chain selector. Two 16px seed sprites and two offline sounds accompany blue
+jagged ribbons, short spark forks and local light flashes. Electrical endpoints
+reuse presentation-only shot events; cosmetic jitter and flashes never affect
+hashes or snapshots. Projectile state uses existing shared slots. Snapshot layout
+stays 26, and gameplay compatibility is DA. Rewards, shops and room caches supply
+the item. Pocket Door remains unfinished from the original forest catalog.
+
+Strict game/render builds pass. Static normal/Big cards, traveling seed and
+dry-to-wet chain captures were inspected. The first impact drops local acorn
+fragments. Both sounds decode to finite, non-silent samples with headroom.
+No live playtest or new test suite ran.

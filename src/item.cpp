@@ -12,6 +12,7 @@
 #include "items/mixtures.hpp"
 #include "items/decoys.hpp"
 #include "projectiles/hook.hpp"
+#include "projectiles/thunder.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
 #include "items/firearms.hpp"
@@ -95,6 +96,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     case ItemKind::RopeSnare: case ItemKind::SpringTrap: case ItemKind::AcornMine:
         used = place_woodland_trap(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
+    case ItemKind::ThunderAcorn:
+        used = launch_thunder_acorn(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::RootDrill: case ItemKind::SwapSeed:

@@ -35,7 +35,7 @@ PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
                                              float x, float y,
                                              float width, float height) {
     // BOUNDS: Include the player and the full effect, then one quiet cell on each edge.
-    const int blast = std::max(0, pattern.blast_radius);
+    const int blast = std::max(0, pattern.blast_radius) + (pattern.chain ? 2 : 0);
     const int target = std::max(0, pattern.maximum);
     const int half = std::max(pattern.half_width, blast);
     PatternDiagramLayout layout;
@@ -74,7 +74,16 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     // EFFECT: Dashed travel has no hit; the destination and nearby lanes do.
     if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
         colored_cell(renderer, layout, 0, 0, pattern.effect, false);
-    else if (pattern.blast_radius > 0) {
+    else if (pattern.chain) {
+        // CHAIN: Solid cells are the first hit lane; outlines show a possible wet jump.
+        const int reach = pattern.blast_radius + 2;
+        for (int dy = -reach; dy <= reach; ++dy)
+            for (int dx = -reach; dx <= reach; ++dx)
+                if (std::abs(dx) + std::abs(dy) <= reach)
+                    colored_cell(renderer, layout, pattern.maximum + dx, dy, pattern.effect, true);
+        for (int step = 1; step <= pattern.maximum; ++step)
+            colored_cell(renderer, layout, step, 0, pattern.effect, false);
+    } else if (pattern.blast_radius > 0) {
         for (int reach = 1; reach < pattern.maximum; ++reach)
             colored_cell(renderer, layout, reach, 0, pattern.effect, true);
         for (int dy = -pattern.blast_radius; dy <= pattern.blast_radius; ++dy)

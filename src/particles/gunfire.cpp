@@ -1,4 +1,5 @@
 #include "gunfire.hpp"
+#include "electricity.hpp"
 #include "../projectiles/projectile.hpp"
 #include "templates.hpp"
 
@@ -12,6 +13,11 @@ void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
         cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
         const ShotEvent& shot = game.shots[static_cast<std::size_t>(index)];
         if (distance(shot.source, focus) > 24 && distance(shot.end, focus) > 24) continue;
+        if (shot.electric) {
+            spawn_electric_arc(cosmetics, shot.source, shot.end, key);
+            if (shot.casing) scatter_material(cosmetics.debris, shot.end, DebrisKind::Acorn, 2, key);
+            continue;
+        }
         RibbonParticle tracer;
         tracer.life = tracer.span = 4;
         tracer.count = 2;

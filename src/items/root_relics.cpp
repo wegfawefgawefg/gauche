@@ -3,6 +3,10 @@
 
 namespace {
 
+constexpr RegionalItem acorn{"Thunder Acorn", "Flies, then shocks four bodies. Jumps weaken; wet feet extend them. Friends too. Sparks light fuel.",
+    Sprite::ThunderAcorn, {1, 5, 1, 24, 60, PatternEffect::Damage, true, 0, 0, false, false, false, true},
+    ItemAction::Material, 30, 3, true, 0, 0, 0, 0, 0, SoundId::ThunderThrow};
+
 constexpr RegionalItem drill{"Root Drill", "Dig-power-3 auger bores a fixed line through walls and bodies. Unbreakable terrain stops it.",
     Sprite::RootDrill, {1, 5, 0, 24, 90, PatternEffect::Damage, true, 0, 0, true},
     ItemAction::Material, 38, 1, false, 3, 0, 0, 0, 3, SoundId::DrillStart};
@@ -14,6 +18,7 @@ constexpr RegionalItem seed{"Swap Seed", "Traveling seed swaps your positions. N
 
 const RegionalItem* forest_root_relic(ItemKind kind) {
     switch (kind) {
+    case ItemKind::ThunderAcorn: return &acorn;
     case ItemKind::RootDrill: return &drill;
     case ItemKind::SwapSeed: return &seed;
     default: return nullptr;

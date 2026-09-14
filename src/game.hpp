@@ -42,6 +42,7 @@ struct SweepEvent {
 struct ShotEvent {
     Cell source{}, end{};
     bool impact = false, muzzle = false, casing = false;
+    bool electric = false;
 };
 
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
@@ -89,7 +90,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn,
     Count,
 };
 

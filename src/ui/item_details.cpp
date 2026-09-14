@@ -121,6 +121,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (pattern.chain)
+        std::snprintf(line, sizeof(line), "HITS %d / %d / %d / %d", pattern.damage,
+            (pattern.damage * 3 + 3) / 4, (pattern.damage * 2 + 3) / 4, (pattern.damage + 3) / 4);
     if (item.kind == ItemKind::Scarecrow)
         std::snprintf(line, sizeof(line), "WARD %d TILES | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::Scarecrow).health);
     if (item.kind == ItemKind::StrawDecoy)
@@ -197,6 +200,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else if (item.flame_ticks > 0) {
         std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
         text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
+    } else if (pattern.chain) {
+        std::snprintf(line, sizeof(line), "4 HITS | JUMP %d / WET %d", pattern.blast_radius, pattern.blast_radius + 2);
+        text(renderer, x + 10, y + 129, line, 162, 196, 213);
     } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
     if (item_windup(item) > 0)
         std::snprintf(line, sizeof(line), "WINDUP %.2fs  RANGE %d-%d",

@@ -2,6 +2,7 @@
 #include "presentation.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../projectiles/net.hpp"
+#include "../projectiles/thunder.hpp"
 #include "../projectiles/root_drill.hpp"
 #include "../item_pattern.hpp"
 #include "../item_attribute.hpp"
@@ -121,6 +122,19 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Cell cell = player.cell + Cell{facing.x * reach + side.x * lane, facing.y * reach + side.y * lane};
                 if (clear_sight(game, player.cell, cell, false)) mark(renderer, cell, camera, zoom, pattern.effect);
             }
+    } else if (pattern.chain) {
+        Cell cell = player.cell;
+        for (int reach = 1; reach <= pattern.maximum; ++reach) {
+            cell = cell + facing;
+            mark(renderer, cell, camera, zoom, pattern.effect);
+            if (projectile_blocked(game, cell)) break;
+            const int victim = entity_at(game, cell, true);
+            if (victim < 0) continue;
+            const ThunderChain chain = thunder_chain(game, victim, pattern);
+            for (int index = 0; index < chain.count; ++index)
+                mark(renderer, chain.cells[static_cast<std::size_t>(index)], camera, zoom, pattern.effect);
+            break;
+        }
     } else if (pattern.ray) {
         const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {

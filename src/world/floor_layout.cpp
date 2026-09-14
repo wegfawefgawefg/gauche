@@ -93,5 +93,11 @@ void generate_world_floor(Game& game) {
     }
 
     populate_floor(game, columns, {branch_x, 5}, {extra_x, extra_y});
+    // BOUNDARY: Normal tools cannot tunnel off the generated floor.
+    for (int y = 0; y < game.stage.height; ++y)
+        for (int x = 0; x < game.stage.width; ++x)
+            if (x == 0 || y == 0 || x == game.stage.width - 1 || y == game.stage.height - 1)
+                *game.stage.at({x, y}) = {TileKind::Wall, 100, 0, 100,
+                                        BreakRule::Unbreakable, 0};
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

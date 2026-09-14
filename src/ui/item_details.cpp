@@ -57,7 +57,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::ConductorHat: return "Lay track and call a train that tears through walls.";
     case ItemKind::Buckler: return "Block a hit, then shove the actor in front of you.";
     case ItemKind::Pistol: return "A reliable short-cooldown shot along a straight line.";
-    case ItemKind::Musket: return "A heavy shot that can chip solid walls.";
+    case ItemKind::Musket: return "A loud, powerful single shot. Slow to reload.";
     case ItemKind::Bow: return "A long straight shot with a single-arrow magazine.";
     case ItemKind::RocketLauncher: return "A rocket travels straight, then blasts the impact area.";
     case ItemKind::Ammo: return "Supply every gun separately, including the held weapon.";
@@ -132,7 +132,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
+    if (item.dig_power > 0)
+        std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
+                      pattern.maximum, item.dig_power);
+    else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
     text(renderer, x + 10.0F, y + 129.0F, line, 194, 192, 180);
     if (height >= 165.0F) {
         text(renderer, x + 10.0F, y + 140.0F, "PATTERN", 185, 185, 172);

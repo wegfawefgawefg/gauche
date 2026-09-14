@@ -21,15 +21,27 @@ struct SoundEvent {
     bool positional = true;
 };
 
+struct ImpactEvent {
+    Cell cell{}, source{};
+    Sprite material = Sprite::Wall;
+    int damage = 0;
+    bool broken = false;
+};
+
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
 constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 
 enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice };
+enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
+enum class TileImpact : std::uint8_t { Strike, Blast, Train };
 struct Tile {
     TileKind kind = TileKind::Empty;
-    std::uint8_t hp = 0;
+    std::uint16_t hp = 0;
     std::uint8_t water_phase = 0;
+    std::uint16_t max_hp = 100;
+    BreakRule break_rule = BreakRule::DigRequired;
+    std::uint8_t required_dig_power = 1;
 };
 
 struct Stage {
@@ -44,7 +56,8 @@ struct Stage {
 
 bool walkable(TileKind kind);
 bool buildable(TileKind kind);
-bool damage_tile(Stage& stage, Cell cell, int damage);
+bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power = 0,
+                 TileImpact impact = TileImpact::Strike);
 
 enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
@@ -82,6 +95,7 @@ struct Item {
     int max_uses = 0;
     bool opened = false;
     LightEmitter light{};
+    int dig_power = 0;
 };
 
 constexpr int quick_slots = 6;
@@ -210,7 +224,13 @@ struct Game {
     Run run{};
     std::array<SoundEvent, 128> sounds{};
     int sound_count = 0;
+    // PRESENTATION: Impacts are regenerated on replay and never enter snapshots or hashes.
+    std::array<ImpactEvent, 128> impacts{};
+    int impact_count = 0;
 };
+
+bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power = 0,
+                 TileImpact impact = TileImpact::Strike);
 
 std::uint32_t random_u32(Game& game);
 void emit_sound(Game& game, SoundId sound, Cell cell, bool positional = true);

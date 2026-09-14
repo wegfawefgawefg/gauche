@@ -160,6 +160,17 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         observe_entity(cosmetics, game, slot);
     for (int index = 0; index < game.sound_count; ++index)
         observe_sound(cosmetics, game.sounds[static_cast<std::size_t>(index)], focus);
+    // TERRAIN: A replayed tile hit must not emit its fragments a second time.
+    for (int index = 0; index < game.impact_count; ++index) {
+        const auto key = (1ULL << 63) | (game.tick << 8) |
+                         (static_cast<std::uint64_t>(index) + 1);
+        if (std::find(cosmetics.seen_events.begin(), cosmetics.seen_events.end(), key) !=
+            cosmetics.seen_events.end()) continue;
+        cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
+        const ImpactEvent& impact = game.impacts[static_cast<std::size_t>(index)];
+        if (distance(impact.cell, focus) <= 18)
+            spawn_terrain_impact(cosmetics, impact, key);
+    }
     if (game.tick % 12 == 0)
         for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
             const Entity& entity = game.entities[slot];

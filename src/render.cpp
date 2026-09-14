@@ -38,6 +38,36 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     }
 }
 
+void draw_tile_damage(SDL_Renderer* renderer, const Tile& tile, Cell cell,
+                      SDL_FRect rect, const LightingCache& lighting) {
+    if (tile.kind != TileKind::Wall || tile.hp >= tile.max_hp || tile.max_hp == 0) return;
+    const float remaining = static_cast<float>(tile.hp) / static_cast<float>(tile.max_hp);
+    const LightColor light = lit_sprite_color(lighting, cell);
+    // FRACTURES: The same branching cuts work on every wall material.
+    SDL_SetRenderDrawColorFloat(renderer, light.red * 0.08F, light.green * 0.07F,
+                               light.blue * 0.06F, 1.0F);
+    const float flip = ((cell.x + cell.y) % 2 == 0) ? 1.0F : -1.0F;
+    const float cx = rect.x + rect.w * 0.5F;
+    const float cy = rect.y + rect.h * 0.48F;
+    SDL_RenderLine(renderer, cx, cy, cx + flip * rect.w * 0.16F, cy - rect.h * 0.26F);
+    SDL_RenderLine(renderer, cx, cy, cx - flip * rect.w * 0.20F, cy + rect.h * 0.22F);
+    if (remaining < 0.65F) {
+        SDL_RenderLine(renderer, cx, cy, cx + flip * rect.w * 0.33F, cy + rect.h * 0.16F);
+        SDL_RenderLine(renderer, cx - flip * rect.w * 0.1F, cy + rect.h * 0.11F,
+                       cx - flip * rect.w * 0.35F, cy + rect.h * 0.06F);
+    }
+    if (remaining < 0.3F)
+        SDL_RenderLine(renderer, cx, cy, cx - flip * rect.w * 0.38F, cy - rect.h * 0.35F);
+    // CONDITION: Dark-room bars inherit the material's light instead of glowing through walls.
+    SDL_FRect bar{rect.x + rect.w * 0.12F, rect.y + rect.h * 0.87F,
+                  rect.w * 0.76F, std::max(1.0F, rect.h * 0.045F)};
+    SDL_RenderFillRect(renderer, &bar);
+    bar.w *= remaining;
+    SDL_SetRenderDrawColorFloat(renderer, light.red * 0.88F, light.green * 0.68F,
+                               light.blue * 0.40F, 1.0F);
+    SDL_RenderFillRect(renderer, &bar);
+}
+
 void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Game& game, ViewCamera camera, float zoom,
                 const Cosmetics* cosmetics, const LightingCache& lighting) {
@@ -82,10 +112,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderTexture(renderer, texture, nullptr, &rect);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
-            if (tile.kind == TileKind::Wall && tile.hp < 100) {
-                SDL_SetRenderDrawColor(renderer, 30, 15, 15, 115);
-                SDL_RenderFillRect(renderer, &rect);
-            }
+            draw_tile_damage(renderer, tile, cell, rect, lighting);
         }
     }
 }

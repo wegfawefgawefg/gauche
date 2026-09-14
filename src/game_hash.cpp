@@ -70,6 +70,9 @@ std::uint64_t game_hash(const Game& game) {
     for (const Tile& tile : game.stage.tiles) {
         mix(hash, static_cast<std::uint64_t>(tile.kind));
         mix(hash, tile.hp);
+        mix(hash, tile.max_hp);
+        mix(hash, static_cast<std::uint64_t>(tile.break_rule));
+        mix(hash, tile.required_dig_power);
     }
     for (const Entity& entity : game.entities) {
         mix(hash, static_cast<std::uint64_t>(entity.kind));
@@ -121,6 +124,7 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(item.max_uses));
             mix(hash, static_cast<std::uint64_t>(item.opened));
             mix_light(hash, item.light);
+            mix(hash, static_cast<std::uint64_t>(item.dig_power));
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
@@ -137,6 +141,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(ground.max_uses));
         mix(hash, static_cast<std::uint64_t>(ground.opened));
         mix_light(hash, ground.light);
+        mix(hash, static_cast<std::uint64_t>(ground.dig_power));
     }
     return hash;
 }

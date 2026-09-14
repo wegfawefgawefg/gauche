@@ -37,7 +37,7 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
         for (int x = center.x - radius; x <= center.x + radius; ++x) {
             const Cell cell{x, y};
             if (distance(cell, center) > radius) continue;
-            damage_tile(game.stage, cell, damage);
+            hit_terrain(game, cell, attacker, damage, 2, TileImpact::Blast);
             for (int slot = 0; slot < max_entities; ++slot) {
                 Entity& target = game.entities[static_cast<std::size_t>(slot)];
                 if (target.kind != EntityKind::None && target.cell == cell &&
@@ -66,7 +66,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         if (!walkable(tile->kind)) {
             if (item.kind == ItemKind::RocketLauncher)
                 blast(game, cell, pattern.blast_radius, damage, user.cell);
-            else if (item.kind == ItemKind::Musket) damage_tile(game.stage, cell, 25);
+            else hit_terrain(game, cell, user.cell, damage, item.dig_power);
             break;
         }
         const int target = entity_at(game, cell, true);
@@ -132,7 +132,7 @@ bool shove(Game& game, int user_slot, Cell direction) {
 }
 
 bool strike_melee(Game& game, int user_slot, Cell direction,
-                  ItemKind kind, ItemPattern pattern) {
+                  int dig_power, ItemPattern pattern) {
     const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
     const Cell sideways{-direction.y, direction.x};
     bool struck = false;
@@ -149,8 +149,9 @@ bool strike_melee(Game& game, int user_slot, Cell direction,
                 struck = true;
                 break;
             }
-            struck |= damage_tile(game.stage, cell,
-                                   kind == ItemKind::Pickaxe ? 50 : pattern.damage);
+            struck |= hit_terrain(game, cell, origin, pattern.damage, dig_power);
+            // CONTACT: An unsuccessful blow still costs its attack beat.
+            struck |= blocked;
             if (blocked) break;
         }
     }
@@ -246,7 +247,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (range >= 1 && range <= 2) {
             Tile* tile = game.stage.at(target);
             if (tile != nullptr && buildable(tile->kind) && entity_at(game, target, true) < 0) {
-                *tile = {TileKind::Wall, 100, 0};
+                *tile = {TileKind::Wall, 100, 0, 100, BreakRule::Damageable, 0};
                 used = true;
                 cooldown = 6;
             }
@@ -264,7 +265,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range >= 1 && range <= item_pattern(item).maximum) {
             const ItemPattern pattern = item_pattern(item);
-            used = strike_melee(game, user_slot, direction, item.kind, pattern);
+            used = strike_melee(game, user_slot, direction, item.dig_power, pattern);
             cooldown = pattern.cooldown;
         }
         break;

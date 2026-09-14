@@ -102,6 +102,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     writer.i32(item.max_durability); writer.i32(item.uses); writer.i32(item.max_uses);
     writer.u8(static_cast<std::uint8_t>(item.opened));
     write_light(writer, item.light);
+    writer.i32(item.dig_power);
 }
 Item read_item(PacketReader& reader) {
     Item item;
@@ -116,6 +117,8 @@ Item read_item(PacketReader& reader) {
     item.max_durability = reader.i32(); item.uses = reader.i32();
     item.max_uses = reader.i32(); item.opened = reader.u8() != 0;
     item.light = read_light(reader);
+    item.dig_power = reader.i32();
+    if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
         item.loaded < 0 || item.spare < 0 ||
         item.durability < 0 || item.max_durability < item.durability ||
@@ -194,14 +197,17 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(8);
+    writer.u32(9);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
     writer.i32(game.stage.width); writer.i32(game.stage.height);
     for (const Tile& tile : game.stage.tiles) {
         writer.u8(static_cast<std::uint8_t>(tile.kind));
-        writer.u8(tile.hp); writer.u8(tile.water_phase);
+        writer.u16(tile.hp); writer.u8(tile.water_phase);
+        writer.u16(tile.max_hp);
+        writer.u8(static_cast<std::uint8_t>(tile.break_rule));
+        writer.u8(tile.required_dig_power);
     }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
@@ -247,7 +253,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 8) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 9) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -265,7 +271,12 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         const std::uint8_t kind = reader.u8();
         if (kind > static_cast<std::uint8_t>(TileKind::Ice)) reader.okay = false;
         tile.kind = static_cast<TileKind>(kind);
-        tile.hp = reader.u8(); tile.water_phase = reader.u8();
+        tile.hp = reader.u16(); tile.water_phase = reader.u8();
+        tile.max_hp = reader.u16();
+        tile.break_rule = static_cast<BreakRule>(reader.u8());
+        tile.required_dig_power = reader.u8();
+        if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
+            reader.okay = false;
     }
     Run& run = result.run;
     const std::uint8_t phase = reader.u8();

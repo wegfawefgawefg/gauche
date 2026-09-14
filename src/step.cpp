@@ -110,6 +110,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     if (!game.started || game.game_over) return;
     ++game.tick;
     game.sound_count = 0;
+    game.impact_count = 0;
     if (step_interlude(game, inputs)) return;
 
     // TIMERS: A cooldown reaching zero can act on this tick.

@@ -7,13 +7,19 @@ contains candidate content. The [old item/UI/lighting checklist](NEXT_TASKS.md)
 is completed history. The new lighting contrast is the visual starting point;
 preserve its dark, readable rooms.
 
+Execution started 2026-09-14. The user owns playtesting and balance feedback;
+this implementation pass uses builds and focused render/asset inspection, without
+adding a large test suite. Validation/playtest bullets below describe desired
+coverage, not a requirement to run autonomous playthroughs. Unchecked work stays
+visible until implemented; visual changes awaiting inspection are noted explicitly.
+
 ## Tile rules and damage feedback
 
-- [ ] Give tiles one explicit break rule: **unbreakable**, **damageable**, or
+- [x] Give tiles one explicit break rule: **unbreakable**, **damageable**, or
   **dig-required**. A dig-required tile also has a minimum dig power; a
   damageable tile needs only ordinary damage. Keep current/max HP for anything
   that can break. This avoids contradictory `diggable` and `unbreakable` flags.
-- [ ] Give items an optional numeric dig power (zero when absent). Damage still
+- [x] Give items an optional numeric dig power (zero when absent). Damage still
   determines how quickly an eligible tile loses HP; dig power determines
   whether the hit can start digging. A fist and ordinary gun have no dig power;
   a pickaxe does. Make generated forest walls dig-required and map boundaries
@@ -34,7 +40,9 @@ preserve its dark, readable rooms.
 Rust Gauche did not have a sequence of cracked wall sprites: damaged breakable
 tiles had a health bar and shake, hits threw debris, and a destroyed wall became
 Ruin. The C++ port currently lets any damage lower wall HP and draws a dark red
-rectangle over damaged walls.
+rectangle over damaged walls. The new implementation replaces this with shared
+branching cracks, a lit HP bar, and explicit impact events for shake/fragments.
+Strict release build passes; visual inspection and reconnect checks remain open.
 
 ## Campfires and movement effects
 

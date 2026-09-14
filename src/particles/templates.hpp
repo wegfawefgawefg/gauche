@@ -15,3 +15,5 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
 void spawn_weather_cloud(Cosmetics& cosmetics, Cell focus, std::uint64_t seed,
                          float zoom = 2.0F);
 void spawn_campfire_smoke(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);
+void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
+                           std::uint64_t seed);

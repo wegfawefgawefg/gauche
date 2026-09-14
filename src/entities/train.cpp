@@ -18,7 +18,7 @@ void step_rail(Game& game, int slot) {
     Entity& rail = game.entities[static_cast<std::size_t>(slot)];
     const Cell next = rail.cell + rail.facing;
     if (game.stage.in_bounds(next)) {
-        *game.stage.at(next) = {TileKind::Rail, 0, 0};
+        damage_tile(game.stage, next, 0, 0, TileImpact::Train);
         rail.cell = next;
         if (game.tick % 4 == 0) emit_sound(game, SoundId::RailPlace, next);
         return;

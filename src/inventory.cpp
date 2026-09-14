@@ -57,6 +57,7 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
         item.max_uses *= 2;
     } else if (item.attribute == ItemAttribute::Fragile)
         item.max_uses = std::max(1, item.max_uses / 2);
+    if (kind == ItemKind::Pickaxe) item.dig_power = 2;
     item.durability = item.max_durability;
     item.uses = item.max_uses;
     return item;
@@ -129,7 +130,7 @@ bool insert_item(Inventory& inventory, Item item) {
     if (item.max_count > 1) {
         for (Item& slot : inventory.slots) {
             if (slot.kind != item.kind || slot.attribute != item.attribute ||
-                slot.opened != item.opened || slot.max_count != item.max_count ||
+                slot.opened != item.opened || slot.dig_power != item.dig_power || slot.max_count != item.max_count ||
                 slot.consume_on_use != item.consume_on_use ||
                 slot.count >= slot.max_count) continue;
             const int transfer = std::min(slot.max_count - slot.count, item.count);

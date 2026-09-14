@@ -127,6 +127,14 @@ void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
     spray(cosmetics, cell, seed, 8, Sprite::Ruin, 0.1F, 0.018F);
 }
 
+void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
+                           std::uint64_t seed) {
+    shake_tiles(cosmetics, impact.cell, impact.damage > 0 ? 0.12F : 0.035F, 0);
+    if (impact.damage <= 0) return;
+    spray(cosmetics, impact.cell, seed, impact.broken ? 14 : 5,
+          impact.material, impact.broken ? 0.15F : 0.08F, 0.012F);
+}
+
 void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
                  float angle, std::uint64_t seed) {
     if (kind == EntityKind::Zombie || kind == EntityKind::Player) {

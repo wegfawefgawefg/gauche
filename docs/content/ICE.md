@@ -39,7 +39,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; 20% grit pouch, 10% skate blade. |
 | 2 | Bell diver | Implemented: 72 HP; swims between visible air holes, rings its brass helmet for 0.6s, emerges for 0.4s, then winds up an 18-damage swing for 0.5s. Blocking a hole redirects it; never attacks submerged. | Reservoir/fishing huts; 20% air bladder, 25% 2–5 gold implemented. |
 | 3 | Snow burrower | A moving mound exposes its route; bursts at its committed destination and remains exposed while digging back in. Cleared ground prevents reburrowing there. | Snow banks; 25% raw meat, 15% snow scoop. |
-| 4 | Ice mason | Carries one visible block, places temporary breakable cover between itself and a threat, then retreats to cut another from eligible ice. Interrupt its long cutting beat. | Quarry; 20% ice brick, 15% chisel. |
+| 4 | Ice mason | Implemented: 60 HP; places carried 35-HP cover after 0.5s, cuts replacement ice for 1.5s, and defends with a 0.4s jab for 12 damage. Damage, sleep, stun or displacement interrupts work. | Quarry; 25% 2–4 gold. Ice brick/chisel drops await those items. |
 | 5 | Mirror knight | A shield reflects frontal projectiles during a visible raised stance; attacks require lowering it. Flank, shove or strike during recovery. Reflection has the existing finite flight lifetime. | Observatory; 20% mirror shard, 20% gold. |
 | 6 | Steam leech | Implemented: 38 HP; seeks exposed flame or warm terrain, latches for 0.3s, feeds for 2s, then swells for 0.6s before a 12-damage cross. Drains light/heat output; cold, sleep, stun or displacement releases it. | Bathhouse/shelter; 20% heat capsule. Boiler rooms and 10% sealant await that content. |
 | 7 | Glass eel | Lives in connected water, charges visibly, then shocks a short wet path. Leave the water, interrupt charging or break connectivity; dry tiles stop propagation. | Reservoir; 20% eel battery, 15% raw meat. |
@@ -191,6 +191,8 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
+Blue ice chips are implemented for smashed mason blocks, with local collision
+and heavy-piece friction. The other nineteen materials remain planned.
 
 ## Twenty ambient cues and small scenes
 

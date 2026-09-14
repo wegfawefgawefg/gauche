@@ -68,7 +68,8 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
-        if (room.role == RoomRole::FishingHut || (room.role == RoomRole::Reservoir && round % 2 == 1))
+        if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
+        else if (room.role == RoomRole::FishingHut || (room.role == RoomRole::Reservoir && round % 2 == 1))
             enemy(game, room, EntityKind::BellDiver, 2, budget);
         else enemy(game, room, EntityKind::RimeSkater, 2, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);

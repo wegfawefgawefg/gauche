@@ -2,6 +2,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::IceBlock: return {Sprite::IceBlock, SoundId::IceBlockBreak, 35, true, false};
     case PropKind::StrawDecoy: return {Sprite::StrawDecoy, SoundId::DecoyTear, 40, true, false};
     case PropKind::Scarecrow: return {Sprite::Scarecrow, SoundId::ScarecrowTear, 28, true, false};
     case PropKind::BirdSeed: return {Sprite::BirdSeedPile, SoundId::SeedScatter, 12, false, false};

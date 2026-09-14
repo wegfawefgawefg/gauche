@@ -12,7 +12,7 @@ bool curious(EntityKind kind) {
     switch (kind) {
     case EntityKind::Wolf: case EntityKind::Bear: case EntityKind::Boar:
     case EntityKind::Dog: case EntityKind::Zombie: case EntityKind::ZombieStack:
-    case EntityKind::ForagerGoblin: case EntityKind::CrateMimic: return true;
+    case EntityKind::IceMason: case EntityKind::ForagerGoblin: case EntityKind::CrateMimic: return true;
     default: return false;
     }
 }

@@ -1,4 +1,5 @@
 #include "effects.hpp"
+#include "../entities/ice_mason.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../game.hpp"
 #include "../surfaces/interaction.hpp"
@@ -25,6 +26,7 @@ bool apply_nausea(Entity& actor, int ticks) {
 
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
+    interrupt_ice_mason(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
     actor.sleep_ticks = std::max(actor.sleep_ticks, ticks);
     return true;
@@ -39,6 +41,7 @@ bool apply_root(Entity& actor, int ticks, RootKind kind) {
 
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
+    interrupt_ice_mason(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
     actor.stun_ticks = std::max(actor.stun_ticks, ticks);
     return true;

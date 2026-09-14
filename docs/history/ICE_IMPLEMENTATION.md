@@ -331,3 +331,47 @@ Static comparison and status renders were inspected; sprites and decoded audio
 passed size, finite-sample and headroom checks. No live playtest or new test
 suite ran. Snapshot layout is 31; gameplay compatibility is E4. Ice now has
 four catalog enemies and eight catalog items; remaining requirements stay open.
+
+## Ice Mason and temporary cover (2026-09-14)
+
+Ice Masons replace skaters in quarry encounters. Each has 60 HP, a 24-tick
+movement beat and one visible carried block. Seeing a threat within six cells
+starts a 30-tick placement tell toward that threat. Placement requires an empty,
+dry, cool, walkable cell: no burying loot, fixtures, another actor or a living
+prop. Failed placement retains the carried block. An adjacent threat instead
+gets a committed 24-tick chisel warning and a 12-damage jab, followed by 42 ticks
+of recovery; the worker does not chase players just to jab them.
+
+After building, a bounded local search finds a reachable standing position
+beside native ice, favoring distance from the last visible threat. Cutting takes
+90 ticks. Finishing consumes that floor ice into shallow water and grants one
+replacement block. Temporary frozen lids, diver holes, occupied cells and hot
+ice are ineligible. Missing or inaccessible sources cause a pause/fallback,
+not free replenishment. Movement uses the existing bounded path finder and real
+cells. The shared phase, carried count, timers and two points hold all state.
+Ordinary noise can distract an idle worker through the hearing c-slots.
+
+Actual damage, sleep or stun cancels cutting, building and jabs. Displacement
+invalidates the remembered work origin before completion. Cutting also rechecks
+its source throughout the tell. An interrupted carried block remains visible;
+the cargo overlay stays below the worker's face in every facing direction.
+
+Placed blocks use the existing six-byte prop storage: 35 HP, blocking collision,
+and a ten-second clock in the prop timer slot. Their last two seconds show a
+cracked/melting sprite. Actual flames or chemical warmth melt them to a short
+water puddle; the worker cannot build on hot cells. Melting leaves the underlying
+floor and pre-existing non-water liquids intact. Ice is not flammable prop fuel.
+Breaking a block emits eight local blue ice chips, using the established debris
+budget, collision and heavy-piece friction. Melting produces no shatter debris.
+All cover expires, so even a narrow passage is never sealed permanently.
+
+Eight generated 16px sprites cover worker poses, intact/thawing cover and the
+first ice debris material. Nine new offline sounds cover cutting, lifting,
+placement, warning, jab, death and ice impacts. Current mason loot is a 25%
+chance of 2–4 gold; the planned brick and chisel drops remain open with those
+items. Strict game/render builds and the existing codec check pass, including
+a saved ice prop timer of 411 ticks. Static poses/cover were inspected and
+adjusted to preserve visible faces. Asset format/audio headroom checks pass.
+No live playtest or new suite ran. Snapshot layout stays 31; gameplay is E5.
+Ice totals: five enemies, eight items, one dedicated debris material; the rest
+of the catalog and biome integration remain open.

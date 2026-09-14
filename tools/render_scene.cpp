@@ -17,6 +17,7 @@
 #include "cold_scene.hpp"
 #include "heat_scene.hpp"
 #include "leech_scene.hpp"
+#include "mason_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
 #include "motion_scene.hpp"
@@ -150,7 +151,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
+    if (mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -258,6 +259,7 @@ int main(int argc, char** argv) {
             player.light = {12, 1700, {255, 239, 214}};
         }
     }
+    if (mode == "masons") arrange_mason_scene(game, cosmetics, player);
     if (mode == "heat-patch" || mode == "heat-items") arrange_heat_scene(game, cosmetics, player);
     if (mode == "cold-pool" || mode == "cold-items") arrange_cold_scene(game, cosmetics, player);
     if (mode == "air-float" || mode == "air-items") arrange_air_scene(game, cosmetics, player);

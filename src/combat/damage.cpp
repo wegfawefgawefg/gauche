@@ -1,4 +1,5 @@
 #include "../game.hpp"
+#include "../entities/ice_mason.hpp"
 #include "shove.hpp"
 #include "../entities/attacks.hpp"
 #include "../entities/dispatch.hpp"
@@ -17,12 +18,13 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    interrupt_ice_mason(entity);
     if (interrupt_recovery(entity)) emit_sound(game, SoundId::BrothSpill, entity.cell);
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
     if (entity.health == 0 && entity.kind == EntityKind::Trap) return;
-    if (entity.health == 0) emit_sound(game, entity.kind == EntityKind::SteamLeech ? SoundId::LeechDeath : entity.kind == EntityKind::BellDiver ? SoundId::DiverDeath : entity.kind == EntityKind::FrostBat ? SoundId::FrostDeath : entity.kind == EntityKind::RimeSkater ? SoundId::SkaterBreak : entity.kind == EntityKind::WaspNest ? SoundId::NestBreak : entity.kind == EntityKind::CrateMimic ?
+    if (entity.health == 0) emit_sound(game, entity.kind == EntityKind::IceMason ? SoundId::MasonDeath : entity.kind == EntityKind::SteamLeech ? SoundId::LeechDeath : entity.kind == EntityKind::BellDiver ? SoundId::DiverDeath : entity.kind == EntityKind::FrostBat ? SoundId::FrostDeath : entity.kind == EntityKind::RimeSkater ? SoundId::SkaterBreak : entity.kind == EntityKind::WaspNest ? SoundId::NestBreak : entity.kind == EntityKind::CrateMimic ?
         SoundId::WoodCrack : entity.kind == EntityKind::RootTurret || entity.kind == EntityKind::BrambleGuard ?
         SoundId::WoodCrack : entity.kind == EntityKind::ThornSnail ?
         SoundId::ShellKnock : SoundId::AnimalCrush1, entity.cell);

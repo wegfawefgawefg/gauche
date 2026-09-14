@@ -17,7 +17,8 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
             const Sprite sprite = prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
-                Sprite::ShootTall : spec.sprite;
+                Sprite::ShootTall : prop.kind == PropKind::IceBlock && prop.growth_ticks <= 120 ?
+                Sprite::IceBlockThaw : spec.sprite;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);

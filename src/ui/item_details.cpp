@@ -291,11 +291,7 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
     SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
-    if (item.kind == ItemKind::RottenFruit) {
-        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, "EAT +3 HP / NAUSEA 6s");
-    } else if (item.kind == ItemKind::SnowScoop) {
-        draw_action_hint(renderer, x + 10, y + 127, Action::Reload, item.loaded > 0 ? "PACK SNOWBALL" : "COLLECT SNOW FIRST");
-    } else if (item.flame_ticks > 0) {
+    if (item.flame_ticks > 0) {
         char status[64];
         std::snprintf(status, sizeof(status), "%s  FIRE %ds", label, (item.flame_ticks+59)/60);
         text(renderer, x + 28.0F, y + 3.0F, status, 235, 167, 80);

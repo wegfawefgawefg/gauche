@@ -23,7 +23,9 @@ float hit_angle(const Game& game, Cell target, float fallback) {
         if (length == 0 || length >= closest) continue;
         if (sound.sound != SoundId::ZombieScratch1 && sound.sound != SoundId::Punch1 &&
             sound.sound != SoundId::SmallLaser && sound.sound != SoundId::Explosion &&
-            sound.sound != SoundId::Explosion1) continue;
+            sound.sound != SoundId::Explosion1 && sound.sound != SoundId::BearSlam &&
+            sound.sound != SoundId::BoarHit && sound.sound != SoundId::WolfBite &&
+            sound.sound != SoundId::BatBite && sound.sound != SoundId::MimicBite) continue;
         closest = length;
         source = sound.cell;
     }
@@ -37,7 +39,8 @@ bool bleeds(EntityKind kind) {
     switch (kind) {
     case EntityKind::Player: case EntityKind::ZombieStack: case EntityKind::Zombie: case EntityKind::Chicken:
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
-    case EntityKind::Bear:
+    case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
+    case EntityKind::ThornSnail: case EntityKind::LanternMoth:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;

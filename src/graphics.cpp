@@ -31,6 +31,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "debris_wood_chip", "debris_root", "debris_fern_leaf", "debris_grass_blade", "debris_mushroom_cap",
     "debris_mushroom_stem", "debris_spore", "debris_acorn", "debris_seed_husk", "debris_feather",
     "debris_bone_chip", "debris_pottery", "debris_cloth", "debris_brass_case", "debris_stone_chip", "encounter_gate", "grave_vent", "coins",
+    "boar", "thorn_snail", "thorn_snail_closed", "lantern_moth", "spore_toad", "spore_toad_swollen", "crate_mimic",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

@@ -53,11 +53,12 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     }
     switch (room.role) {
     case RoomRole::Thicket:
-        enemy(game, room, EntityKind::Wolf, 2, budget);
-        if (round > 0) enemy(game, room, EntityKind::Wolf, 2, budget);
+        enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
+        if (round > 0) enemy(game, room, EntityKind::ThornSnail, 2, budget);
         break;
     case RoomRole::Brook:
-        enemy(game, room, EntityKind::Bat, 1, budget);
+        enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::SporeToad : EntityKind::LanternMoth, 1, budget);
+        if (round > 0) enemy(game, room, EntityKind::Bat, 1, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Bunny, *cell);
         break;
     case RoomRole::Ruins:
@@ -68,7 +69,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         enemy(game, room, EntityKind::Wolf, 2, budget);
         if (round > 0) enemy(game, room, EntityKind::Den, 4, budget);
         break;
-    case RoomRole::Cache: case RoomRole::Shrine:
+    case RoomRole::Cache:
+        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
+        else enemy(game, room, EntityKind::ThornSnail, 2, budget);
+        break;
+    case RoomRole::Shrine:
         enemy(game, room, round > 0 ? EntityKind::Bear : EntityKind::Wolf,
               round > 0 ? 3 : 2, budget);
         break;
@@ -76,6 +81,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (const auto cell = room_space(game, room)) spawn_chicken_family(game, *cell);
         break;
     case RoomRole::Workshop:
+        if (round > 0 && random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Dog, *cell);
         break;
     case RoomRole::Clearing:

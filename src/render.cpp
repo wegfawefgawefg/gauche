@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "entities/intent_render.hpp"
 #include "particles/system.hpp"
 #include "lighting/field.hpp"
 #include "lighting/render.hpp"
@@ -178,6 +179,17 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         for (int body = 0; body < bodies; ++body) {
             SDL_FRect body_rect = rect;
             double angle = pose != nullptr && pose->seen ? pose->angle : 0.0;
+            // TELLS: Keep the creature visible while its committed attack winds up.
+            if (entity.kind == EntityKind::Bear && entity.label_a == 1) {
+                body_rect.y -= pixels * .18F;
+                body_rect.h += pixels * .18F;
+                angle -= entity.facing.x < 0 ? -12.0 : 12.0;
+            }
+            if (entity.kind == EntityKind::LanternMoth) {
+                const float wing = .84F + .16F * std::cos(static_cast<float>(game.tick % 60) * .7F);
+                body_rect.x += body_rect.w * (1.0F - wing) * .5F;
+                body_rect.w *= wing;
+            }
             if (body > 0) {
                 const float sway = std::sin(static_cast<float>(game.tick % 6000) * .05F +
                                            static_cast<float>(body)) * .08F;
@@ -224,7 +236,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind != EntityKind::Player && entity.health > 0 &&
             entity.health < entity.max_health && entity.max_health < 1000000) {
             SDL_FRect bar{rect.x + 2.0F, rect.y - 4.0F,
-                          28.0F * static_cast<float>(entity.health) /
+                          (rect.w - 4.0F) * static_cast<float>(entity.health) /
                           static_cast<float>(entity.max_health), 2.0F};
             SDL_SetRenderDrawColor(renderer, 198, 65, 59, 255);
             SDL_RenderFillRect(renderer, &bar);
@@ -272,6 +284,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting);
+    draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,

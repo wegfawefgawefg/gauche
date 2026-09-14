@@ -1,19 +1,44 @@
 #include "behavior.hpp"
 #include "dispatch.hpp"
+#include "attacks.hpp"
 
+// SLOTS: point_a territory, point_b remembered threat; label_a walk/rear/recover;
+// timer_a attack beat; timer_b anger. A retreat beyond its territory ends pursuit.
 void init_bear(Entity& bear) {
     bear.sprite = Sprite::Bear;
     bear.health = bear.max_health = 140;
-    bear.move_interval = 25;
-    bear.attack_interval = 55;
+    bear.move_interval = 28;
     bear.impassable = true;
+    bear.point_a = bear.cell;
 }
 
 void step_bear(Game& game, int slot) {
     Entity& bear = game.entities[static_cast<std::size_t>(slot)];
-    const int target = nearest_player(game, bear.cell, 9);
-    if (target < 0) wander(game, slot);
-    else if (distance(bear.cell, game.entities[static_cast<std::size_t>(target)].cell) > 1)
-        approach(game, slot, game.entities[static_cast<std::size_t>(target)].cell);
-    bite(game, slot, 24);
+    if (bear.label_a == 1) {
+        if (bear.timer_a > 0) return;
+        resolve_enemy_attack(game, slot, 24, SoundId::BearSlam);
+        bear.label_a = 2;
+        bear.timer_a = 70;
+        return;
+    }
+    if (bear.label_a == 2) {
+        if (bear.timer_a == 0) bear.label_a = 0;
+        return;
+    }
+    const int target = nearest_player(game, bear.cell, bear.timer_b > 0 ? 8 : 3);
+    if (target < 0 || distance(bear.cell, bear.point_a) > 8) {
+        if (distance(bear.cell, bear.point_a) > 1) pursue(game, slot, bear.point_a);
+        else if (game.tick % 60 == 0) wander(game, slot);
+        return;
+    }
+    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    if (!clear_sight(game, bear.cell, cell)) return;
+    bear.point_b = cell;
+    bear.timer_b = 300;
+    if (distance(bear.cell, cell) <= 2) {
+        bear.facing = cardinal_toward(bear.cell, cell, bear.facing);
+        bear.label_a = 1;
+        bear.timer_a = 42;
+        emit_sound(game, SoundId::BearRear, bear.cell);
+    } else pursue(game, slot, cell);
 }

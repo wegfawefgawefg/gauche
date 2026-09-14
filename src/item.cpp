@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "combat/shove.hpp"
 #include "entities/dispatch.hpp"
 #include "entities/behavior.hpp"
 #include "item_pattern.hpp"
@@ -96,46 +97,6 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     return true;
 }
 
-bool shove(Game& game, int user_slot, Cell direction) {
-    const Cell front = game.entities[static_cast<std::size_t>(user_slot)].cell + direction;
-    int target_slot = entity_at(game, front, true);
-    if (target_slot < 0) {
-        for (int slot = 0; slot < max_entities; ++slot) {
-            const Entity& candidate = game.entities[static_cast<std::size_t>(slot)];
-            if (candidate.kind == EntityKind::GroundItem && candidate.cell == front) {
-                target_slot = slot;
-                break;
-            }
-        }
-    }
-    if (target_slot < 0 || target_slot == user_slot) return false;
-    Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
-    if (target.hard_blocker) return false;
-    const Cell destination = front + direction;
-    const Tile* tile = game.stage.at(destination);
-    const int blocker_slot = entity_at(game, destination, true);
-    const bool hard_tile = tile == nullptr || !walkable(*tile);
-    const bool hard_actor = blocker_slot >= 0 &&
-        game.entities[static_cast<std::size_t>(blocker_slot)].hard_blocker;
-    if (hard_tile || hard_actor) {
-        if (target.kind == EntityKind::GroundItem)
-            remove_entity(game, {target_slot, target.generation});
-        else crush_entity(game, target_slot, game.entities[static_cast<std::size_t>(user_slot)].cell);
-        return true;
-    }
-    // Ordinary teammates and loose items do not turn a shove into a crush.
-    if (blocker_slot >= 0) return false;
-    if (target.kind == EntityKind::GroundItem) {
-        for (const Entity& other : game.entities)
-            if (&other != &target && other.kind == EntityKind::GroundItem &&
-                other.cell == destination) return false;
-    }
-    target.cell = destination;
-    enter_actor_cell(game, target_slot);
-    target.move_wait = target.move_interval;
-    return true;
-}
-
 bool strike_melee(Game& game, int user_slot, Cell direction,
                   int dig_power, ItemPattern pattern) {
     const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
@@ -216,7 +177,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     }
     case ItemKind::Buckler:
         user.block_ticks = 15;
-        shove(game, user_slot, direction);
+        shove_in_front(game, user_slot, direction);
         used = true;
         cooldown = item_pattern(item).cooldown;
         break;

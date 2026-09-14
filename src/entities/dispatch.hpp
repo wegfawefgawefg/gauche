@@ -41,3 +41,14 @@ void step_zombie_stack(Game& game, int slot);
 bool topple_zombie_stack(Game& game, int slot);
 
 void spawn_chicken_family(Game& game, Cell cell);
+
+void init_boar(Entity& entity);
+void step_boar(Game& game, int slot);
+void init_thorn_snail(Entity& entity);
+void step_thorn_snail(Game& game, int slot);
+void init_lantern_moth(Entity& entity);
+void step_lantern_moth(Game& game, int slot);
+void init_spore_toad(Entity& entity);
+void step_spore_toad(Game& game, int slot);
+void init_crate_mimic(Entity& entity);
+void step_crate_mimic(Game& game, int slot);

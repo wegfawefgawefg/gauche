@@ -310,6 +310,18 @@ variety belongs to every biome too.
   20 loose materials, room sources, container pools and sound requirements.
 - [ ] Implement, asset, sound, test, and playtest the forest catalog in coherent
   slices until it meets the quotas and works with the new generator.
+Forest implementation slice: ten roster adversaries now exist (wolf, bear, bat,
+zombie, zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic).
+Wolves follow generation-checked leaders and flank; bears defend a territory and
+rear before a six-cell slam; bats commit to a dive and rest. Boars lock a charge
+lane and can shove/crush; snails withdraw into a hard shell with rear/dig bypass;
+moths seek emitters; toads puff sleep that also catches other creatures; mimics
+wake from a crate disguise and retreat. Preview and resolution share committed
+attack cells. Sixteen new sound cues and minimalist silhouettes are integrated
+with room pools. Boar meat and mimic supply drops are live; the planned regional
+drops for toads/moths/snails wait for their items. Strict builds and a static
+attack-preview render passed; behavior/balance playtesting remains with the user.
+
 - [ ] Design a full ice catalog to the same quotas and quality bar.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle

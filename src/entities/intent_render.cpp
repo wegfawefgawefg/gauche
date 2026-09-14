@@ -1,0 +1,34 @@
+#include "intent_render.hpp"
+#include "attacks.hpp"
+
+#include <algorithm>
+
+void draw_enemy_intents(SDL_Renderer* renderer, const Game& game,
+                        ViewCamera camera, float zoom, const LightingCache& lighting) {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    for (const Entity& enemy : game.entities) {
+        if (enemy.health <= 0 || enemy.sleep_ticks > 0 || enemy.stun_ticks > 0) continue;
+        const EnemyAttack attack = enemy_attack(enemy);
+        if (attack.count == 0) continue;
+        const LightColor seen = lit_sprite_color(lighting, enemy.cell);
+        if (std::max({seen.red, seen.green, seen.blue}) < .10F) continue;
+        for (int i = 0; i < attack.count; ++i) {
+            const Cell cell = attack.cells[static_cast<std::size_t>(i)];
+            if (!clear_sight(game, enemy.cell, cell)) continue;
+            SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (rect.x < -rect.w || rect.y < -rect.h || rect.x > 640 || rect.y > 360) continue;
+            const LightColor brightness = lit_sprite_color(lighting, cell);
+            const float level = std::clamp(std::max({brightness.red, brightness.green, brightness.blue}), 0.0F, 1.0F);
+            const auto alpha = static_cast<Uint8>(level * 170);
+            // INSET: Deliberate committed attacks stay legible beside tile seams and props.
+            rect.x += 1; rect.y += 1; rect.w -= 2; rect.h -= 2;
+            SDL_SetRenderDrawColor(renderer, attack.sleep ? 158 : 218, attack.sleep ? 152 : 100,
+                                   attack.sleep ? 209 : 78, static_cast<Uint8>(alpha / 4));
+            SDL_RenderFillRect(renderer, &rect);
+            SDL_SetRenderDrawColor(renderer, attack.sleep ? 158 : 218, attack.sleep ? 152 : 100,
+                                   attack.sleep ? 209 : 78, alpha);
+            SDL_RenderRect(renderer, &rect);
+        }
+    }
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}

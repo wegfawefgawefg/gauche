@@ -122,6 +122,8 @@ enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
+    Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic,
+    Count,
 };
 struct Handle {
     int slot = -1;

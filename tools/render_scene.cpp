@@ -1,5 +1,6 @@
 #include "../src/game.hpp"
 #include "floor_overview.hpp"
+#include "enemy_scene.hpp"
 #include "../src/world/encounter.hpp"
 #include "../src/world/loot.hpp"
 #include "../src/render.hpp"
@@ -92,6 +93,7 @@ int main(int argc, char** argv) {
     arrange_terrain(game, cosmetics);
     const std::string_view mode = argc >= 3 ? argv[2] : "terrain";
     InteractionUi interaction;
+    if (mode == "enemies") arrange_enemy_scene(game, cosmetics);
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};

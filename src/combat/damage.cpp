@@ -1,4 +1,6 @@
 #include "../game.hpp"
+#include "shove.hpp"
+#include "../entities/attacks.hpp"
 #include "../entities/dispatch.hpp"
 #include "../entities/behavior.hpp"
 #include "../item_pattern.hpp"
@@ -17,7 +19,10 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
-    if (entity.health == 0) emit_sound(game, SoundId::AnimalCrush1, entity.cell);
+    if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
+    if (entity.health == 0) emit_sound(game, entity.kind == EntityKind::CrateMimic ?
+        SoundId::WoodCrack : entity.kind == EntityKind::ThornSnail ?
+        SoundId::ShellKnock : SoundId::AnimalCrush1, entity.cell);
     if (entity.health == 0) drop_enemy_loot(game, entity);
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
@@ -42,13 +47,13 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
         entity.kind == EntityKind::Crusher ||
         damage <= 0) return;
     Item* held = entity.inventory.held();
-    if (blockable && entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
-        entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
+    if (blockable && blocks_facing(entity, attacker)) {
         held->durability -= std::max(1, damage);
         emit_sound(game, SoundId::SturdyBlockBouncedOn, entity.cell);
         if (held->durability <= 0) *held = {};
         return;
     }
+    damage = enemy_defense(game, slot, damage, attacker, blockable);
     apply_health_damage(game, slot, damage, attacker);
     if (blockable && entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
         random_u32(game) % 4 == 0) {

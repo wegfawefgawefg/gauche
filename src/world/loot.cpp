@@ -36,6 +36,15 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     case EntityKind::Chicken: case EntityKind::Bunny:
         if (random_u32(game) % 10 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
         break;
+    case EntityKind::Boar:
+        if (random_u32(game) % 100 < 35) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
+        break;
+    case EntityKind::CrateMimic:
+        if (random_u32(game) % 2 == 0) {
+            constexpr ItemKind stolen[]{ItemKind::Bandage, ItemKind::Ammo, ItemKind::Pickaxe, ItemKind::BearTrap};
+            place_ground_item(game, enemy.cell, stolen[random_u32(game) % std::size(stolen)]);
+        }
+        break;
     case EntityKind::Wolf:
         if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
         break;

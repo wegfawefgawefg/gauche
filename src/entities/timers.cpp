@@ -48,7 +48,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.burn_ticks > 0) {
         --entity.burn_ticks;
         if (game.tick % 30 == 0)
-            damage_entity(game, slot, 4, entity.cell + Cell{0, 1});
+            damage_entity(game, slot, 4, entity.cell, false);
     }
     entity.freeze_ticks = std::max(0, entity.freeze_ticks - 1);
     entity.sleep_ticks = std::max(0, entity.sleep_ticks - 1);
@@ -56,7 +56,7 @@ void step_entity_timers(Game& game, int slot) {
     const Tile* ground = game.stage.at(entity.cell);
     if (ground != nullptr && ground->kind == TileKind::Lava &&
         entity.kind != EntityKind::Ember && game.tick % 30 == 0)
-        damage_entity(game, slot, 5, entity.cell + Cell{0, 1});
+        damage_entity(game, slot, 5, entity.cell, false);
 
     // RESPAWN: A blocked entrance delays return instead of overlapping a fixture.
     if (entity.kind == EntityKind::Player && entity.health == 0 &&

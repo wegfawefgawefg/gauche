@@ -4,6 +4,11 @@
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::Boar: init_boar(entity); break;
+    case EntityKind::ThornSnail: init_thorn_snail(entity); break;
+    case EntityKind::LanternMoth: init_lantern_moth(entity); break;
+    case EntityKind::SporeToad: init_spore_toad(entity); break;
+    case EntityKind::CrateMimic: init_crate_mimic(entity); break;
     case EntityKind::Encounter: init_encounter(entity); break;
     case EntityKind::Player: init_player(entity); break;
     case EntityKind::ZombieStack: init_zombie_stack(game, entity); break;
@@ -23,12 +28,17 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Trap: case EntityKind::Switch: case EntityKind::Campfire:
     case EntityKind::Coins: case EntityKind::WaveVent: case EntityKind::EncounterGate:
     case EntityKind::Crusher: init_fixture(entity); break;
-    case EntityKind::GroundItem: case EntityKind::None: break;
+    case EntityKind::GroundItem: case EntityKind::None: case EntityKind::Count: break;
     }
 }
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::Boar: step_boar(game, slot); break;
+    case EntityKind::ThornSnail: step_thorn_snail(game, slot); break;
+    case EntityKind::LanternMoth: step_lantern_moth(game, slot); break;
+    case EntityKind::SporeToad: step_spore_toad(game, slot); break;
+    case EntityKind::CrateMimic: step_crate_mimic(game, slot); break;
     case EntityKind::Encounter: step_encounter(game, slot); break;
     case EntityKind::ZombieStack: step_zombie_stack(game, slot); break;
     case EntityKind::Zombie: step_zombie(game, slot); break;

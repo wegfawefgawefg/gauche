@@ -30,12 +30,8 @@ void init_player(Entity& entity) {
     entity.health = entity.max_health = 100;
     entity.move_interval = 7;
     entity.impassable = true;
-    insert_item(entity.inventory, make_item(ItemKind::Wall, 99));
     insert_item(entity.inventory, make_item(ItemKind::Fist));
-    insert_item(entity.inventory, make_item(ItemKind::Medkit, 10));
-    insert_item(entity.inventory, make_item(ItemKind::Bandage, 10));
-    insert_item(entity.inventory, make_item(ItemKind::Bandaid, 20));
-    insert_item(entity.inventory, make_item(ItemKind::ConductorHat));
+    insert_item(entity.inventory, make_item(ItemKind::Bandage, 2));
 }
 
 void drop_player_item(Game& game, Entity& player) {

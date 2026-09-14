@@ -3,8 +3,10 @@
 #include "menu/actions.hpp"
 
 #include <gubsy/lobby/config.hpp>
+#include <gubsy/lobby/state.hpp>
 
 #include <array>
+#include <algorithm>
 #include <cstring>
 #include <utility>
 
@@ -172,6 +174,16 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     menu.death_policy = policy;
     menu.identity_path = identity_path;
     register_game_bindings(runtime);
+    gubsy_lobby_ensure_ready(gubsy_runtime_engine(runtime));
+    // What if a gamepad was opened first? Keep keyboard and mouse assigned too.
+    for (InputSourceType type : {InputSourceType::Keyboard, InputSourceType::Mouse}) {
+        const auto& players = gubsy_get_lobby_state(runtime).local_players;
+        if (players.empty()) break;
+        const auto& devices = players.front().devices;
+        if (std::none_of(devices.begin(), devices.end(), [type](const auto& device) {
+                return device.type == type;
+            })) gubsy_toggle_lobby_player_device(runtime, 0, {type, 0});
+    }
     GubsyMainMenuCommands main_commands;
     main_commands.start_game = gubsy_register_menu_command(runtime, start_game, &menu);
     main_commands.quit = gubsy_register_menu_command(runtime, quit_game, &menu);

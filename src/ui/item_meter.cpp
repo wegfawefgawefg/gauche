@@ -29,11 +29,9 @@ std::string item_state_text(const Item& item, bool compact) {
         else
             std::snprintf(result, sizeof(result), "MAG %d/%d +%d",
                           item.loaded, item_meter_capacity(item), item.spare);
-    else if (item.max_count > 1)
+    else if (item_stackable(item))
         std::snprintf(result, sizeof(result), compact ? "x%d" : "STACK %d/%d",
                       item.count, item.max_count);
-    else if (item.kind != ItemKind::None)
-        std::snprintf(result, sizeof(result), "x%d", item.count);
     else return {};
     return result;
 }
@@ -49,7 +47,7 @@ int item_meter_capacity(const Item& item) {
     case ItemKind::SMG: return 30;
     case ItemKind::Musket: case ItemKind::Bow:
     case ItemKind::RocketLauncher: return 1;
-    default: return item.max_count;
+    default: return item_stackable(item) ? item.max_count : 0;
     }
 }
 
@@ -63,10 +61,10 @@ int item_meter_current(const Item& item) {
 void draw_item_meter(SDL_Renderer* renderer, float x, float y,
                      float width, float height, int current, int maximum,
                      SDL_Color color) {
+    if (maximum <= 0) return;
     SDL_FRect base{x, y, width, height};
     SDL_SetRenderDrawColor(renderer, 45, 49, 44, 230);
     SDL_RenderFillRect(renderer, &base);
-    if (maximum <= 0) return;
     const float amount = std::clamp(static_cast<float>(current) /
                                     static_cast<float>(maximum), 0.0F, 1.0F);
     base.w *= amount;

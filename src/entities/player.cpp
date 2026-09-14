@@ -11,10 +11,9 @@ void pickup_item(Game& game, Entity& player) {
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& ground = game.entities[static_cast<std::size_t>(slot)];
         if (ground.kind != EntityKind::GroundItem || ground.cell != player.cell) continue;
-        Inventory result = player.inventory;
-        if (!insert_item(result, ground.ground_item)) return;
-        player.inventory = result;
-        remove_entity(game, {slot, ground.generation});
+        if (transfer_item(player.inventory, ground.ground_item) == 0) return;
+        if (ground.ground_item.count == 0)
+            remove_entity(game, {slot, ground.generation});
         emit_sound(game, SoundId::Confirm, player.cell, false);
         return;
     }

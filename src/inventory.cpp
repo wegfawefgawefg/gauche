@@ -30,7 +30,7 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     item.count = count;
     item.max_count = kind == ItemKind::None ? 0 :
         kind == ItemKind::Wall ? 99 :
-        kind == ItemKind::Medkit || kind == ItemKind::Bandage ? 10 :
+        kind == ItemKind::Medkit || kind == ItemKind::Bandage || kind == ItemKind::Ammo ? 10 :
         kind == ItemKind::Bandaid || kind == ItemKind::Bomb ||
         kind == ItemKind::SleepMeds || kind == ItemKind::BearTrap ||
         kind == ItemKind::Mine || kind == ItemKind::RawMeat ||
@@ -134,31 +134,4 @@ const char* item_name(ItemKind kind) {
     default: break;
     }
     return "Unknown";
-}
-
-bool insert_item(Inventory& inventory, Item item) {
-    if (item.kind == ItemKind::None || item.count <= 0 || item.max_count <= 0) return false;
-    const Inventory original = inventory;
-    if (item.max_count > 1) {
-        for (Item& slot : inventory.slots) {
-            if (slot.kind != item.kind || slot.attribute != item.attribute ||
-                slot.opened != item.opened || slot.dig_power != item.dig_power || slot.max_count != item.max_count ||
-                slot.consume_on_use != item.consume_on_use ||
-                slot.count >= slot.max_count) continue;
-            const int transfer = std::min(slot.max_count - slot.count, item.count);
-            slot.count += transfer;
-            item.count -= transfer;
-            if (item.count == 0) return true;
-        }
-    }
-    for (Item& slot : inventory.slots) {
-        if (slot.kind == ItemKind::None) {
-            slot = item;
-            slot.count = std::min(item.count, item.max_count);
-            item.count -= slot.count;
-            if (item.count == 0) return true;
-        }
-    }
-    inventory = original;
-    return false;
 }

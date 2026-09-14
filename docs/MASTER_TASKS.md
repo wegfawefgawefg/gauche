@@ -430,17 +430,25 @@ captures checked. Controller handling and contact feel await user playtesting.
 
 ## Playtest feedback: stacks, uses and cooking
 
-- [ ] Make ammo packs stack and merge matching pickups into a carried partial
+- [x] Make ammo packs stack and merge matching pickups into a carried partial
   stack before taking another slot. Preserve independent ammo reserves per gun.
-- [ ] Stop showing `x1` on non-stackable equipment, including fists. Clearly
+- [x] Stop showing `x1` on non-stackable equipment, including fists. Clearly
   label stackability in item details; distinguish stack count/max, remaining
   uses, durability and magazine/reserve. A ten-use lighter is one tool, not a
   ten-object stack, and used tools must not merge or refill one another.
-- [ ] Inspect repeated campfire cooking on held use: cook one portion per beat,
+- [x] Inspect repeated campfire cooking on held use: cook one portion per beat,
   add a recognizable sizzle, preserve raw-to-cooked counts and inventory capacity.
   Keep discovery hidden for now per the user's later preference; an interaction
   popup (meat -> cooked meat/pan icon) is an optional future direction, not a
   requirement to add tutorial prompts everywhere.
+
+Stack/cooking implementation: ammo max stack is ten; partial pickup merges what
+fits and leaves excess on the ground. Shops/rewards/crafting remain all-or-none.
+Used tools cannot merge; stacks preserve the longer cooldown. Non-stackable gear
+has no fake quantity/quantity meter, and detail cards label stackability alongside
+uses/condition/ammo. Cooking processes one portion per 45 ticks with a new sizzle,
+without consuming raw meat if the result cannot fit. Static inventory capture
+and strict builds checked; user owns interaction/balance playtesting.
 
 ## Suggested order
 

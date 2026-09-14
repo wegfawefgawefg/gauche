@@ -119,6 +119,8 @@ Sprite item_sprite(ItemKind kind);
 Sprite item_sprite(const Item& item);
 const char* item_name(ItemKind kind);
 bool insert_item(Inventory& inventory, Item item);
+bool item_stackable(const Item& item);
+int transfer_item(Inventory& inventory, Item& item);
 
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,

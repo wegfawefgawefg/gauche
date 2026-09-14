@@ -131,13 +131,15 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             return true;
         }
         if (fixture.kind == EntityKind::Campfire && fixture.fire_tramples < 5) {
+            if (player->timer_b > 0) return true;
             Inventory cooked = player->inventory;
             for (Item& ingredient : cooked.slots) {
                 if (ingredient.kind != ItemKind::RawMeat || ingredient.count <= 0) continue;
                 if (--ingredient.count == 0) ingredient = {};
                 if (!insert_item(cooked, make_item(ItemKind::CookedMeat))) return false;
                 player->inventory = cooked;
-                emit_sound(game, SoundId::Confirm, fixture.cell);
+                player->timer_b = 45; // COOKING: Player timer_b is the per-portion beat.
+                emit_sound(game, SoundId::CookingSizzle, fixture.cell);
                 return true;
             }
         }

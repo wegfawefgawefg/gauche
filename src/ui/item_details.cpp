@@ -96,8 +96,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     text(renderer, x + 39.0F, y + 22.0F, item_name(item.kind));
     char line[80];
-    std::snprintf(line, sizeof(line), "x%d  %s", item.count,
-                  item.cooldown > 0 ? "COOLING" : "READY");
+    if (item_stackable(item))
+        std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
+    else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
              item_attribute_name(item.attribute), 218, 169, 94);
@@ -128,22 +129,23 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.max_uses > 0)
         std::snprintf(line, sizeof(line), "USES %d / %d",
                       item.uses, item.max_uses);
-    else if (item.max_count > 1)
+    else if (item_stackable(item))
         std::snprintf(line, sizeof(line), "STACK %d / %d   %s",
                       item.count, item.max_count,
                       item.consume_on_use ? "CONSUMES" : "PERSISTS");
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
+    text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
     if (item.dig_power > 0)
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    text(renderer, x + 10.0F, y + 129.0F, line, 194, 192, 180);
-    if (height >= 165.0F) {
-        text(renderer, x + 10.0F, y + 140.0F, "PATTERN", 185, 185, 172);
-        draw_pattern_diagram(renderer, item, x + 10.0F, y + 148.0F,
-                             width - 20.0F, height - 158.0F);
+    text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
+    if (height >= 176.0F) {
+        text(renderer, x + 10.0F, y + 151.0F, "PATTERN", 185, 185, 172);
+        draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
+                             width - 20.0F, height - 169.0F);
     }
 }
 

@@ -151,6 +151,12 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     case SoundId::WidowSnap: case SoundId::FishingSnap: case SoundId::FishingEmpty:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::RopeFiber, 3, seed, false);
         break;
+    case SoundId::EffigyThaw:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::SnowClump, 6, seed);
+        break;
+    case SoundId::EffigyDeath:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::Twig, 6, seed);
+        break;
     case SoundId::RamPlough:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::SnowClump, 4, seed);
         break;

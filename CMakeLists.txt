@@ -56,6 +56,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/lens_warden.cpp src/entities/lens_watch.cpp src/world/lens_watch.cpp
     src/items/alarms.cpp src/props/alarm_clock.cpp
     src/items/fishing_line.cpp src/projectiles/fishing.cpp
+    src/entities/snow_effigy.cpp
     src/entities/avalanche_ram.cpp
     src/entities/whiteout_drummer.cpp src/items/snow_globe.cpp src/surfaces/whiteout.cpp
     src/entities/death_sound.cpp

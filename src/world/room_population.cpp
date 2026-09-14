@@ -107,6 +107,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::MemorialCourt) {
+        enemy(game, room, EntityKind::SnowEffigy, 2, budget);
+        if (round >= 2) enemy(game, room, EntityKind::EchoHound, 2, budget);
+        return;
+    }
     if (ice_floor(game.run.floor) && room.role == RoomRole::CliffPath) {
         enemy(game, room, EntityKind::AvalancheRam, 2, budget);
         if (round >= 2) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
@@ -214,6 +219,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+        } else if (room.role == RoomRole::MemorialCourt) {
+            supply(game, room, ItemKind::HeatCapsule, 2, budget.equipment);
         } else if (room.role == RoomRole::CliffPath) {
             supply(game, room, ItemKind::WoolWrap, 1, budget.equipment);
         } else if (room.role == RoomRole::WeatherStation) {

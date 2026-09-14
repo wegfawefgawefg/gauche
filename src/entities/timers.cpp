@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "snow_effigy.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
@@ -48,6 +49,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::SteamLeech) entity.scorch_ticks = entity.burn_ticks = 0;
     step_vital_effects(game, slot);
     contact_surface(game, slot);
+    thaw_snow_effigy(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
     if (entity.scorch_ticks > 0 && entity.health > 0) {

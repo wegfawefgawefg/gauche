@@ -21,6 +21,7 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
         return ax > 2 && ay > 2 ? TileKind::ShallowWater : TileKind::Ruin;
     case RoomRole::FishingHut:
         return y < -2 ? TileKind::Ice : TileKind::Ruin;
+    case RoomRole::MemorialCourt: return ax > room.half_width-2 || ay > room.half_height-2 ? TileKind::Snow : TileKind::Ruin;
     case RoomRole::CliffPath: return ax > 2 || ay > 2 ? TileKind::Snow : TileKind::Empty;
     case RoomRole::WeatherStation: return ax > 2 || ay > 2 ? TileKind::Snow : TileKind::Ruin;
     case RoomRole::EchoTunnel: return ax > room.half_width - 2 ? TileKind::Ice : TileKind::Empty;

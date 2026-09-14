@@ -119,6 +119,25 @@ int main() {
     }
     if (!check(cloud_variants[0] && cloud_variants[1] && cloud_variants[2],
                "weather never selected all three cloud sprites")) return 1;
+
+    Game scratch_game;
+    scratch_game.stage.width = scratch_game.stage.height = 8;
+    scratch_game.stage.tiles.resize(64);
+    scratch_game.started = true;
+    const Handle scratch_zombie = spawn_entity(scratch_game, EntityKind::Zombie, {3, 3});
+    const Handle scratch_chicken = spawn_entity(scratch_game, EntityKind::Chicken, {4, 3});
+    get_entity(scratch_game, scratch_zombie)->move_wait = 100;
+    get_entity(scratch_game, scratch_chicken)->move_wait = 100;
+    get_entity(scratch_game, scratch_chicken)->health = 30;
+    Cosmetics scratch_cosmetics;
+    scratch_game.tick = 1;
+    update_cosmetics(scratch_cosmetics, scratch_game, {3, 3});
+    step_game(scratch_game, {});
+    update_cosmetics(scratch_cosmetics, scratch_game, {3, 3});
+    if (!check(get_entity(scratch_game, scratch_zombie)->sprite == Sprite::Zombie &&
+               has_sprite(scratch_cosmetics, Sprite::ZombieScratch1,
+                          ParticleLayer::Foreground),
+               "zombie scratch replaced the body instead of appearing beside it")) return 1;
     std::puts("presentation rules passed");
     return 0;
 }

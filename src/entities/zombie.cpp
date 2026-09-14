@@ -16,7 +16,6 @@ void scratch_neighbor(Game& game, int slot) {
         zombie.facing = target.cell - zombie.cell;
         damage_entity(game, other_slot, 5, zombie.cell);
         zombie.attack_wait = zombie.attack_interval;
-        zombie.sprite = Sprite::ZombieScratch1;
         emit_sound(game, SoundId::ZombieScratch1, zombie.cell);
         return;
     }
@@ -35,10 +34,7 @@ void init_zombie(Game& game, Entity& entity) {
 
 void step_zombie(Game& game, int slot) {
     Entity& zombie = game.entities[static_cast<std::size_t>(slot)];
-    const Cell before = zombie.cell;
-    // A scratch pose lingers until the zombie takes another step.
     wander(game, slot);
-    if (zombie.cell != before) zombie.sprite = Sprite::Zombie;
     scratch_neighbor(game, slot);
     maybe_growl(game, slot, (slot + static_cast<int>(zombie.generation)) % 2 == 0 ?
                         SoundId::ZombieGrowl1 : SoundId::ZombieGrowl2);

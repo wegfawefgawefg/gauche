@@ -110,6 +110,19 @@ void spawn_hit(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, int damage) 
     puddle(cosmetics, cell, seed ^ 0x6b6b6b6bU, std::clamp(damage / 4, 2, 5));
 }
 
+void spawn_zombie_scratch(Cosmetics& cosmetics, Cell cell, Cell facing,
+                          std::uint64_t seed) {
+    SpriteParticle scratch;
+    scratch.sprite = Sprite::ZombieScratch1;
+    scratch.layer = ParticleLayer::Foreground;
+    scratch.x = static_cast<float>(cell.x) + 0.5F + 0.7F * static_cast<float>(facing.x);
+    scratch.y = static_cast<float>(cell.y) + 0.5F + 0.7F * static_cast<float>(facing.y);
+    scratch.width = scratch.height = 0.9F;
+    scratch.angle = (unit(bits(seed)) - 0.5F) * 90.0F;
+    scratch.life = scratch.span = 12;
+    add(cosmetics, scratch);
+}
+
 void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
     spray(cosmetics, cell, seed, 8, Sprite::Ruin, 0.1F, 0.018F);
 }

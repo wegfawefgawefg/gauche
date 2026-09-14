@@ -104,6 +104,14 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
             rect.w = rect.h = pixels * 0.5F;
         }
+        if (entity.sprite == Sprite::Chick) {
+            rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
+            rect.w = rect.h = pixels * 0.5F;
+        }
+        if (entity.kind == EntityKind::Train) {
+            rect.x -= pixels * 0.5F; rect.y -= pixels * 0.5F;
+            rect.w = rect.h = pixels * 2.0F;
+        }
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         if (pose != nullptr && pose->seen && pose->generation == entity.generation &&
             pose->shake > 0.0F) {

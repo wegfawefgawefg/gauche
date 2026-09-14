@@ -58,6 +58,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/chicken.cpp
     src/entities/bat.cpp
     src/entities/wolf.cpp
+    src/entities/dog.cpp
     src/entities/bear.cpp
     src/entities/bunny.cpp
     src/entities/ember.cpp

@@ -35,7 +35,8 @@ float hit_angle(const Game& game, Cell target, float fallback) {
 bool bleeds(EntityKind kind) {
     switch (kind) {
     case EntityKind::Player: case EntityKind::Zombie: case EntityKind::Chicken:
-    case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Bear:
+    case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
+    case EntityKind::Bear:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;
@@ -70,8 +71,11 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         pose.angle = static_cast<float>(visual_bits(seed) % 31U) - 15.0F;
     }
     if (same && (entity.attack_wait > pose.attack_wait ||
-                 entity.use_flash > pose.use_flash))
+                 entity.use_flash > pose.use_flash)) {
         pose.angle = attack_angle(entity.facing);
+        if (entity.kind == EntityKind::Zombie && entity.attack_wait > pose.attack_wait)
+            spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
+    }
     if (same && entity.health < pose.health && entity.health >= 0) {
         if (bleeds(entity.kind))
             spawn_hit(cosmetics, entity.cell, seed, pose.health - entity.health);

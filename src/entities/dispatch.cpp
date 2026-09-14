@@ -8,6 +8,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Chicken: init_chicken(game, entity); break;
     case EntityKind::Bat: case EntityKind::FrostBat: init_bat(entity); break;
     case EntityKind::Wolf: init_wolf(entity); break;
+    case EntityKind::Dog: init_dog(entity); break;
     case EntityKind::Bear: init_bear(entity); break;
     case EntityKind::Bunny: init_bunny(entity); break;
     case EntityKind::Ember: init_ember(entity); break;
@@ -28,6 +29,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::Chicken: step_chicken(game, slot); break;
     case EntityKind::Bat: case EntityKind::FrostBat: step_bat(game, slot); break;
     case EntityKind::Wolf: step_wolf(game, slot); break;
+    case EntityKind::Dog: step_dog(game, slot); break;
     case EntityKind::Bear: step_bear(game, slot); break;
     case EntityKind::Bunny: step_bunny(game, slot); break;
     case EntityKind::Ember: step_ember(game, slot); break;

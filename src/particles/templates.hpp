@@ -5,6 +5,8 @@
 void spawn_footprint(Cosmetics& cosmetics, Cell cell, EntityKind kind,
                      bool right_foot, std::uint64_t seed);
 void spawn_hit(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, int damage);
+void spawn_zombie_scratch(Cosmetics& cosmetics, Cell cell, Cell facing,
+                          std::uint64_t seed);
 void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);
 void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
                  float angle, std::uint64_t seed);

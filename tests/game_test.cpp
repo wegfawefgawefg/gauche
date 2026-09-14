@@ -460,11 +460,11 @@ bool zombie_chicken_rules() {
     get_entity(game, zombie)->move_wait = 100;
     step_game(game, {});
     if (!check(bird->health == 25 &&
-               get_entity(game, zombie)->sprite == Sprite::ZombieScratch1,
-               "zombie did not scratch nearby chicken")) return false;
+               get_entity(game, zombie)->sprite == Sprite::Zombie,
+               "zombie vanished while scratching nearby chicken")) return false;
     step_game(game, {});
-    return check(get_entity(game, zombie)->sprite == Sprite::ZombieScratch1,
-                 "zombie scratch pose did not linger until movement");
+    return check(get_entity(game, zombie)->sprite == Sprite::Zombie,
+                 "zombie stopped using its body sprite after scratching");
 }
 
 bool footstep_rules() {

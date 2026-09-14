@@ -31,7 +31,7 @@ void populate_floor(Game& game, int columns, Cell branch, Cell extra) {
             if (entity_at(game, cell, true) >= 0) continue;
             const int roll = static_cast<int>(random_u32(game) % 4);
             const EntityKind kind = world == 0 ?
-                (roll == 0 ? EntityKind::Zombie :
+                (roll == 0 ? EntityKind::Dog :
                  roll == 1 ? EntityKind::Bat : EntityKind::Wolf) :
                 (world == 1 ? (roll == 0 ? EntityKind::Bat : EntityKind::Ember) :
                  (roll == 0 ? EntityKind::Wolf : EntityKind::FrostBat));

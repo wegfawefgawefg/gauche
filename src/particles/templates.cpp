@@ -154,6 +154,9 @@ void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
 void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
                         std::uint64_t seed) {
     switch (sound.sound) {
+    case SoundId::DiverRise: case SoundId::DiverDive:
+        shockwave(cosmetics, sound.cell, 95, 145, 159);
+        break;
     case SoundId::IceNeedleHit:
         spray(cosmetics, sound.cell, seed, 4, Sprite::IceNeedle, .06F, .007F);
         break;

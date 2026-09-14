@@ -1,4 +1,5 @@
 #include "attacks.hpp"
+#include "bell_diver.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -11,6 +12,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::BellDiver:
+        if (enemy.label_a == DiverSwing) add(enemy.point_b);
+        break;
     case EntityKind::BurrowWorm:
         if (enemy.label_a == 0 && enemy.label_b == 1) add(enemy.point_a);
         break;

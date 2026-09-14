@@ -100,3 +100,41 @@ decode to finite, non-silent samples below clipping. No live playtest or new tes
 suite was run. Existing fields already serialize/hash the projectile and AI state;
 snapshot layout remains 28, gameplay compatibility advances to DE. Ice now has
 two implemented catalog enemies and two items; other quotas remain open.
+
+## Bell Diver and air holes (2026-09-14)
+
+Bell Diver now has a bespoke phase machine: submerged swim, bell warning,
+emergence, hunting, swing, recovery and sinking. It has 72 HP, 18-tick swimming
+steps, a 36-tick bell tell, 24-tick emergence and a 30-tick windup before its
+18-damage adjacent strike. The strike holds its target cell; leaving that cell
+or displacing the diver out of reach avoids it. After 48 ticks of recovery it
+returns to a hole. Hunting is limited to 150 ticks and stays near its entrance.
+If every entrance becomes inaccessible it stays exposed and can fight on land.
+
+Underwater routes flood only connected ice/water, with a 256-node, 12-step local
+search. There is no teleport between pools. Bubbles render at the true cell below
+actors; swimmers do not obstruct walkers or trigger land contacts. A player or
+blocking prop over an entrance prevents emergence and sends the diver toward an
+available opening. Ordinary blockable attacks pass above a submerged diver;
+area damage still reaches it, and Thunder Acorn chains treat it as wet. It never
+attacks while submerged. Being shoved off a hole during sinking interrupts the
+dive and leaves it exposed. Shared phase/timer/point slots own all behavior.
+
+IceHole is a new shallow, walkable water tile with a pale rim and dark center.
+It uses existing wet contact and water-step rules. Reservoir/fishing-hut rooms
+place up to two openings in their northern ice, away from protected dry routes.
+Ordinary scenery avoids covering them at generation time. Fishing huts and
+alternating reservoir rounds select divers from reachable openings; other cold
+encounters keep their skater/bat selections. A diver drops 2–5 gold on a 25% roll.
+Its proposed Air Bladder equipment/drop remains unimplemented, explicitly recorded
+in the catalog rather than substituted with an unrelated item.
+
+Seven source-generated sprites cover the hole and all readable diver phases;
+seven new offline sound cues cover bubbles, brass warning, emergence, windup,
+strike, dive and death. Rise/dive emit local splash rings. The hole background
+matches native reservoir ice. Static phase and reservoir captures were inspected;
+strict game/render builds pass, and all seven OGGs decode to finite non-silent
+samples below clipping. No live playtest or new test suite ran. Existing enum,
+phase and position serialization covers these additions; snapshot layout remains
+28 and gameplay compatibility advances to DF. Ice now has three catalog enemies
+and two catalog items; the rest of its requirements remain open.

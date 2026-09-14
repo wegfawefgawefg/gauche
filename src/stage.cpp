@@ -40,7 +40,7 @@ bool walkable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass ||
            kind == TileKind::Ruin || kind == TileKind::Rail ||
            kind == TileKind::Lava || kind == TileKind::Ice ||
-           kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::Snow;
+           kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::Snow || kind == TileKind::IceHole;
 }
 
 bool buildable(TileKind kind) {

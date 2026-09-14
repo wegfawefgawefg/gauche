@@ -9,6 +9,7 @@ inline Sprite ice_tile_sprite(const Tile& tile, Cell cell, std::uint64_t tick) {
         return (cell.x * 17 + cell.y * 31) % 7 == 0 ? Sprite::IceFloorB : Sprite::IceFloorA;
     case TileKind::Wall: return Sprite::IceWall;
     case TileKind::Ruin: return Sprite::IceRuin;
+    case TileKind::IceHole: return Sprite::IceHole;
     case TileKind::Snow: return Sprite::Snow;
     case TileKind::Ice: return Sprite::ReservoirIce;
     case TileKind::ShallowWater:

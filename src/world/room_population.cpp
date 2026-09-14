@@ -12,7 +12,7 @@ namespace {
 
 struct Supplies { int threat, healing, ammunition, equipment, stashes; };
 
-std::optional<Cell> room_space(Game& game, const RoomPlan& room, bool ice = false) {
+std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind = EntityKind::None) {
     const int width = room.half_width * 2 + 1;
     std::vector<bool> seen(static_cast<std::size_t>(width * (room.half_height * 2 + 1)), false);
     std::vector<Cell> queue{room.center}, choices;
@@ -28,7 +28,8 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, bool ice = fals
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava) continue;
         if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0 &&
-            tile->kind != TileKind::Spring && (!ice || tile->kind == TileKind::Ice))
+            tile->kind != TileKind::Spring && (kind != EntityKind::RimeSkater || tile->kind == TileKind::Ice) &&
+            (kind != EntityKind::BellDiver || tile->kind == TileKind::IceHole))
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }
@@ -39,7 +40,7 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, bool ice = fals
 
 Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
     if (cost > budget.threat) return {};
-    if (const auto cell = room_space(game, room, kind == EntityKind::RimeSkater)) {
+    if (const auto cell = room_space(game, room, kind)) {
         const Handle spawned = kind == EntityKind::BurrowWorm ?
             spawn_burrow_worm(game, *cell) : spawn_entity(game, kind, *cell);
         if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
@@ -67,7 +68,9 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
-        enemy(game, room, EntityKind::RimeSkater, 2, budget);
+        if (room.role == RoomRole::FishingHut || (room.role == RoomRole::Reservoir && round % 2 == 1))
+            enemy(game, room, EntityKind::BellDiver, 2, budget);
+        else enemy(game, room, EntityKind::RimeSkater, 2, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }

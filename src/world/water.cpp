@@ -1,14 +1,15 @@
 #include "water.hpp"
+#include "../entities/bell_diver.hpp"
 #include "route.hpp"
 
 #include <cstdlib>
 
 bool shallow_water(TileKind kind) {
-    return kind == TileKind::ShallowWater || kind == TileKind::Spring;
+    return kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::IceHole;
 }
 
 bool wading_actor(const Entity& actor) {
-    if (actor.move_interval <= 0 || actor.health <= 0) return false;
+    if (actor.move_interval <= 0 || actor.health <= 0 || diver_submerged(actor)) return false;
     switch (actor.kind) {
     case EntityKind::Wasp: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:

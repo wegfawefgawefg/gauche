@@ -1,5 +1,6 @@
 #include "combat/parry.hpp"
 #include "render.hpp"
+#include "entities/bell_diver.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -55,6 +56,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     }
     switch (tile.kind) {
     case TileKind::Snow: return Sprite::Snow;
+    case TileKind::IceHole: return Sprite::IceHole;
     case TileKind::Grass: return Sprite::Grass;
     case TileKind::Wall: return Sprite::Wall;
     case TileKind::Ruin: return Sprite::Ruin;
@@ -158,7 +160,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             ((entity.kind == EntityKind::Door || entity.kind == EntityKind::EncounterGate) && entity.fixture_open)) continue;
-        const int entity_layer = entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
+        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
             entity.kind == EntityKind::WaveVent ? 0 :

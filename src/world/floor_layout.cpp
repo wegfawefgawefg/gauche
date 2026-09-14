@@ -1,5 +1,6 @@
 #include "route.hpp"
 #include "water.hpp"
+#include "ice_terrain.hpp"
 #include "encounter.hpp"
 #include "../props/interaction.hpp"
 #include "../items/pocket_door.hpp"
@@ -37,6 +38,7 @@ void generate_world_floor(Game& game) {
         carve_floor(game, plan);
         place_forest_terrain(game, plan);
         place_water_scenes(game, plan);
+        place_ice_holes(game, plan);
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         game.run.has_key = false;

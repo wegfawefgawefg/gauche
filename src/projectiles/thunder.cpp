@@ -1,4 +1,5 @@
 #include "thunder.hpp"
+#include "../entities/bell_diver.hpp"
 #include "projectile.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
@@ -15,8 +16,8 @@ bool conductive_actor(const Entity& actor) {
 }
 
 bool wet_actor(const Game& game, const Entity& actor) {
-    return surface_wet(game.stage.at_or_border(actor.cell)) &&
-        (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest);
+    return diver_submerged(actor) || (surface_wet(game.stage.at_or_border(actor.cell)) &&
+        (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest));
 }
 
 void arc_event(Game& game, Cell from, Cell to, bool husk) {

@@ -27,3 +27,24 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
     default: return ax + ay > room.half_width ? TileKind::Snow : TileKind::Empty;
     }
 }
+
+void place_ice_holes(Game& game, const FloorPlan& plan) {
+    if (!ice_floor(game.run.floor)) return;
+    for (const RoomPlan& room : plan.rooms) {
+        if (room.role != RoomRole::Reservoir && room.role != RoomRole::FishingHut) continue;
+        Cell first{};
+        int holes = 0;
+        // ACCESS: Two shallow openings on the same side of the reserved dry crossing.
+        // Holes never replace a mandatory path, a gate, a wall or the spawn area.
+        for (int y = -2; y >= -room.half_height + 1 && holes < 2; --y)
+            for (int x = -2; x >= -room.half_width + 1 && holes < 2; --x) {
+                const Cell cell = room.center + Cell{x, y};
+                Tile* tile = game.stage.at(cell);
+                if (tile == nullptr || tile->kind != TileKind::Ice || plan.protected_cell(cell)) continue;
+                if (holes > 0 && distance(first, cell) < 2) continue;
+                *tile = {TileKind::IceHole, 0, 0};
+                if (holes == 0) first = cell;
+                ++holes;
+            }
+    }
+}

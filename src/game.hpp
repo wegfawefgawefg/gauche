@@ -50,7 +50,7 @@ constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 Cell cardinal_toward(Cell from, Cell to, Cell fallback);
 
-enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, Count };
+enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, IceHole, Count };
 enum class TileMaterial : std::uint8_t { Stone, Timber, Tree, Count };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
 enum class TileImpact : std::uint8_t { Strike, Blast, Train };
@@ -150,7 +150,7 @@ enum class EntityKind : std::uint8_t {
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
-    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater,
+    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver,
     Count,
 };
 

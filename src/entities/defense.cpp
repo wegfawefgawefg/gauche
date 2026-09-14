@@ -1,4 +1,5 @@
 #include "attacks.hpp"
+#include "bell_diver.hpp"
 #include "../item_pattern.hpp"
 
 #include <algorithm>
@@ -6,6 +7,8 @@
 int enemy_defense(Game& game, int slot, int damage, Cell source, bool blockable) {
     Entity& enemy = game.entities[static_cast<std::size_t>(slot)];
     if (!blockable) return damage;
+    // DEPTH: Ordinary strikes pass above the swimmer. Area shocks still reach it.
+    if (diver_submerged(enemy)) return 0;
     if (enemy.kind == EntityKind::BurrowWorm && enemy.label_a == 1) {
         const int attacker = entity_at(game, source, true);
         const Entity* user = attacker < 0 ? nullptr : &game.entities[static_cast<std::size_t>(attacker)];

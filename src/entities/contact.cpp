@@ -1,4 +1,5 @@
 #include "../game.hpp"
+#include "pocket_door.hpp"
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../props/interaction.hpp"
@@ -36,4 +37,5 @@ void enter_actor_cell(Game& game, int slot) {
             emit_sound(game, SoundId::FireOut, fire.cell);
         }
     }
+    if (actor.health > 0) enter_pocket_door(game, slot);
 }

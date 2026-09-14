@@ -190,6 +190,9 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::SpringBreak:
         spray(cosmetics, sound.cell, seed, 9, Sprite::DebrisWoodChip, .08F, .008F);
         break;
+    case SoundId::PocketLink: case SoundId::PocketTravel:
+        shockwave(cosmetics, sound.cell, 145, 188, 233);
+        break;
     case SoundId::SwapFold:
         shockwave(cosmetics, sound.cell, 186, 137, 228);
         spray(cosmetics, sound.cell, seed, 6, Sprite::SwapSeed, .04F, 0.0F);

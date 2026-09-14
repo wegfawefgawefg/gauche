@@ -2,6 +2,7 @@
 #include "water.hpp"
 #include "encounter.hpp"
 #include "../props/interaction.hpp"
+#include "../items/pocket_door.hpp"
 
 #include <array>
 #include <utility>
@@ -61,7 +62,10 @@ void generate_world_floor(Game& game) {
         } else {
             player->inventory = previous[owner].inventory;
             // EXIT: Returning weapons rejoin their reserved slots as the old floor is discarded.
-            for (Item& item : player->inventory.slots) item.flight = {};
+            for (Item& item : player->inventory.slots) {
+                item.flight = {};
+                fold_unused_door(item);
+            }
             player->light = previous[owner].light;
             player->self_light = previous[owner].self_light;
             player->max_health = previous[owner].max_health;

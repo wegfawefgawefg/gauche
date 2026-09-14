@@ -14,7 +14,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.health <= 0 || damage <= 0 || entity.kind == EntityKind::Encounter ||
         entity.kind == EntityKind::EncounterGate || entity.kind == EntityKind::WaveVent ||
-        entity.kind == EntityKind::Coins) return;
+        entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;
@@ -45,7 +45,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
     if (entity.kind == EntityKind::Projectile || entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
         entity.kind == EntityKind::Door || entity.kind == EntityKind::Exit ||
-        entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire ||
+        entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
         entity.kind == EntityKind::Crusher ||
         damage <= 0) return;
     Item* held = entity.inventory.held();

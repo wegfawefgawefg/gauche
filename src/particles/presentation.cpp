@@ -89,7 +89,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         return;
     }
     const bool teleport = std::any_of(game.sounds.begin(), game.sounds.begin() + game.sound_count,
-        [&entity](const SoundEvent& sound) { return sound.sound == SoundId::SwapFold && sound.cell == entity.cell; });
+        [&entity](const SoundEvent& sound) { return (sound.sound == SoundId::SwapFold || sound.sound == SoundId::PocketTravel) && sound.cell == entity.cell; });
     if (same && !teleport && entity.cell != pose.cell) {
         if (entity.kind != EntityKind::GroundItem && entity.kind != EntityKind::RailLayer)
             push_debris(cosmetics.debris, entity.cell,

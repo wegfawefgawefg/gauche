@@ -154,6 +154,8 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(item.flame_ticks));
             mix(hash, static_cast<std::uint64_t>(item.flight.slot));
             mix(hash, item.flight.generation);
+            mix(hash, static_cast<std::uint64_t>(item.anchor.slot));
+            mix(hash, item.anchor.generation);
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
@@ -174,6 +176,8 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(ground.flame_ticks));
         mix(hash, static_cast<std::uint64_t>(ground.flight.slot));
         mix(hash, ground.flight.generation);
+        mix(hash, static_cast<std::uint64_t>(ground.anchor.slot));
+        mix(hash, ground.anchor.generation);
     }
     mix(hash, game.flight_contacts.size());
     for (const FlightContact& hit : game.flight_contacts)

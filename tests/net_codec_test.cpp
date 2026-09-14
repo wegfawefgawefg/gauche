@@ -1,4 +1,5 @@
 #include "../src/net_codec.hpp"
+#include "../src/projectiles/projectile.hpp"
 
 #include <cstdio>
 
@@ -27,6 +28,24 @@ int main() {
         player->self_light = {40, 60, 80};
         player->inventory.slots[2].light = {2, 500, {10, 200, 30}};
     }
+    // REFERENCES: A carried or dropped half keeps its placed threshold. A reflected
+    // boomerang still reserves its original owner's slot, not the new attacker's.
+    const Handle threshold = spawn_entity(original, EntityKind::PocketDoor, {8, 8});
+    Entity* owner = get_entity(original, original.players[0]);
+    owner->inventory.slots[4] = make_item(ItemKind::PocketDoor);
+    owner->inventory.slots[4].uses = 1;
+    owner->inventory.slots[4].anchor = threshold;
+    const Handle shot_handle = spawn_entity(original, EntityKind::Projectile, {9, 8});
+    Entity* shot = get_entity(original, shot_handle);
+    shot->label_a = static_cast<int>(ProjectileKind::Boomerang);
+    shot->entity_a = spawn_entity(original, EntityKind::Wolf, {10, 8});
+    shot->entity_b = original.players[0];
+    shot->ground_item = make_item(ItemKind::Boomerang);
+    owner->inventory.slots[3] = shot->ground_item;
+    owner->inventory.slots[3].flight = shot_handle;
+    Entity* dropped = get_entity(original, spawn_entity(original, EntityKind::GroundItem, {7, 8}));
+    dropped->ground_item = owner->inventory.slots[4];
+    dropped->ground_item.anchor = spawn_entity(original, EntityKind::PocketDoor, {7, 9});
     original.run.roof_lights[0].light = {6, 1400, {255, 140, 70}};
     for (Entity& fire : original.entities)
         if (fire.kind == EntityKind::Campfire) {

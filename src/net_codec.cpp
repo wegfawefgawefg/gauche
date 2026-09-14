@@ -108,6 +108,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     writer.i32(item.dig_power);
     writer.i32(item.flame_ticks);
     writer.i32(item.flight.slot); writer.u32(item.flight.generation);
+    writer.i32(item.anchor.slot); writer.u32(item.anchor.generation);
 }
 Item read_item(PacketReader& reader) {
     Item item;
@@ -125,6 +126,9 @@ Item read_item(PacketReader& reader) {
     item.dig_power = reader.i32();
     item.flame_ticks = reader.i32();
     item.flight = {reader.i32(), reader.u32()};
+    item.anchor = {reader.i32(), reader.u32()};
+    if (item.anchor.slot < -1 || item.anchor.slot >= max_entities ||
+        (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang)) reader.okay = false;
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
@@ -247,7 +251,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(26);
+    writer.u32(27);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -315,7 +319,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 26) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 27) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -440,7 +444,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             const Entity* shot = get_entity(result, item.flight);
             if (shot == nullptr || shot->kind != EntityKind::Projectile ||
                 shot->label_a != static_cast<int>(ProjectileKind::Boomerang) ||
-                shot->entity_a != Handle{slot, actor.generation}) reader.okay = false;
+                shot->entity_b != Handle{slot, actor.generation}) reader.okay = false;
         }
     }
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }

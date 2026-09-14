@@ -90,7 +90,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 38 | Root drill | Bores a committed line 1–5; six-tick bites, 24 body damage, double terrain damage and dig power 3. Three charges; 90-tick cooldown. | Rare / 38 |
 | 39 | Rope hook | Traveling line 1–6; reels an actor/loose item or the user toward a solid anchor, up to three steps. Sideways motion breaks the tether. 75-tick cooldown, 24 uses. | Uncommon / 25 |
 | 40 | Swap seed | Traveling line 1–5; swaps with the first movable actor if both landings remain legal. Hazards apply after the atomic swap. Stacks to three, 60-tick cooldown. | Rare / 32 |
-| 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
+| 41 | Pocket door | Two casts within 1–3 create linked floor thresholds, crossing ordinary walls/locks. Grounded actors can follow; blocked destinations and sealed arenas refuse travel. Pair lasts this floor; Durable supplies two pairs. | Rare / 45 |
 | 42 | Spring trap | Place facing next cell, arm in 20 ticks; launches a grounded actor two cells in that direction, with ordinary crush rules. Single trigger; stacks to two. | Uncommon / 20 |
 | 43 | Straw decoy | Place a blocking 40-HP body; attracts susceptible enemies within up to six visible cells (Big: seven). Tears and burns; two per stack. | Common / 12 |
 | 44 | Sticky boots | Four activations: resist shoves/oil slips for 6s, double ordinary step recovery; crushers still crush. | Uncommon / 18 |

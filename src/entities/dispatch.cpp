@@ -1,10 +1,12 @@
 #include "dispatch.hpp"
+#include "pocket_door.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::PocketDoor: init_pocket_door(entity); break;
     case EntityKind::WaspNest: init_wasp_nest(entity); break;
     case EntityKind::Wasp: init_wasp(entity); break;
     case EntityKind::ForagerGoblin: init_forager_goblin(game, entity); break;

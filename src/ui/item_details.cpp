@@ -126,6 +126,11 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
             (pattern.damage * 3 + 3) / 4, (pattern.damage * 2 + 3) / 4, (pattern.damage + 3) / 4);
     if (item.kind == ItemKind::Scarecrow)
         std::snprintf(line, sizeof(line), "WARD %d TILES | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::Scarecrow).health);
+    if (item.kind == ItemKind::PocketDoor) {
+        if (item.anchor.slot >= 0)
+            std::snprintf(line, sizeof(line), "FIRST SET | PLACE SECOND");
+        else std::snprintf(line, sizeof(line), "PLACE FIRST | THIS FLOOR");
+    }
     if (item.kind == ItemKind::StrawDecoy)
         std::snprintf(line, sizeof(line), "LURE UP TO %d | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::StrawDecoy).health);
     if (item.kind == ItemKind::ReflectingPan)
@@ -185,6 +190,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.max_durability > 0)
         std::snprintf(line, sizeof(line), "CONDITION %d / %d",
                       item.durability, item.max_durability);
+    else if (item.kind == ItemKind::PocketDoor)
+        std::snprintf(line, sizeof(line), "PLACEMENTS %d / %d", item.uses, item.max_uses);
     else if (item.max_uses > 0)
         std::snprintf(line, sizeof(line), "USES %d / %d",
                       item.uses, item.max_uses);

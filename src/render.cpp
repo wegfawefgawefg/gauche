@@ -153,7 +153,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             ((entity.kind == EntityKind::Door || entity.kind == EntityKind::EncounterGate) && entity.fixture_open)) continue;
-        const int entity_layer = entity.kind == EntityKind::Campfire ||
+        const int entity_layer = entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
             entity.kind == EntityKind::WaveVent ? 0 :
@@ -252,6 +252,13 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
         if (entity.kind == EntityKind::GroundItem)
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
+        // PAIRS: Both thresholds carry the same small letter beneath passing actors.
+        if (entity.kind == EntityKind::PocketDoor && entity.fixture_open) {
+            const int pair = std::min(static_cast<int>(slot), entity.entity_a.slot);
+            const char label[]{static_cast<char>('A' + std::max(0, pair) % 26), '\0'};
+            SDL_SetRenderDrawColorFloat(renderer, brightness.red * .8F, brightness.green * .9F, brightness.blue, 1);
+            SDL_RenderDebugText(renderer, rect.x + rect.w * .25F, rect.y + rect.h * .25F, label);
+        }
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);
         if (entity.vitals.rooted > 0 && entity.health > 0) {

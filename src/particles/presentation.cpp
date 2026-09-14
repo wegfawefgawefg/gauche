@@ -147,6 +147,14 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::AcornBurst:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::SeedHusk, 5, seed);
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 5, seed + 1);
+        push_debris(cosmetics.debris, sound.cell, 2.5F, .15F);
+        break;
+    case SoundId::SpringBreak:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 5, seed);
+        break;
     case SoundId::BottleBreak:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Pottery, 4, seed);
         break;

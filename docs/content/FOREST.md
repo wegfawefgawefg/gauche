@@ -80,9 +80,9 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 28 | Rotten fruit | Throw 1–4; splats a nauseating patch, useful as scavenger bait; eating it is a bad heal. | Common / 2 |
 | 29 | Firecracker | Place/throw 1–4; delayed bang wakes, startles and briefly stuns nearby small creatures. | Common / 7 |
 | 30 | Pitch bomb | Throw 2–6; delayed burning splash with sticky residue. Strong against growth, dangerous around friends. | Uncommon / 18 |
-| 31 | Acorn mine | Place next cell; actor contact bursts cardinal splinters. Three mines per stack. | Uncommon / 16 |
+| 31 | Acorn mine | Place next cell, arm in 20 ticks; contact or destruction bursts four 2-cell lanes for 22 damage. Big extends to three cells; three per stack. | Uncommon / 16 |
 | 32 | Thorn caltrops | Scatter over three facing cells; repeated small step damage, finite thorns. | Common / 10 |
-| 33 | Rope snare | Place next cell; traps movement without the bear trap's huge damage, recoverable after release. | Common / 9 |
+| 33 | Rope snare | Place next cell, arm in 20 ticks; roots a grounded actor for 3s without stopping attacks. Allies can cut or shove free; recoverable after release. Stacks to three. | Common / 9 |
 | 34 | Throwing net | Three-cell wide cast 1–3; briefly roots actors while leaving their attacks available. | Uncommon / 15 |
 | 35 | Shield lantern | Facing block with a light; 24 durability, weaker than a plain buckler but illuminates a fight. | Uncommon / 24 |
 | 36 | Reflecting pan | Short active parry window; returns a direct ranged hit, costs durability even on success. | Rare / 32 |
@@ -91,7 +91,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 39 | Rope hook | Traveling line 1–6; reels an actor/loose item or the user toward a solid anchor, up to three steps. Sideways motion breaks the tether. 75-tick cooldown, 24 uses. | Uncommon / 25 |
 | 40 | Swap seed | Traveling line 1–5; swaps with the first movable actor if both landings remain legal. Hazards apply after the atomic swap. Stacks to three, 60-tick cooldown. | Rare / 32 |
 | 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
-| 42 | Spring trap | Place facing next cell; launches the next actor two cells in that direction, with ordinary crush rules. | Uncommon / 20 |
+| 42 | Spring trap | Place facing next cell, arm in 20 ticks; launches a grounded actor two cells in that direction, with ordinary crush rules. Single trigger; stacks to two. | Uncommon / 20 |
 | 43 | Straw decoy | Place next cell; has HP and draws nearby enemy attention until destroyed. | Common / 12 |
 | 44 | Sticky boots | Activate self; temporarily resists pushes and slipping, but slows ordinary steps. | Uncommon / 18 |
 | 45 | Resin glue | Repairs the most damaged carried durable item; does not refill ammo or consumed charges. | Uncommon / 14 |

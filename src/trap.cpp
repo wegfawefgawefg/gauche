@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "traps/woodland.hpp"
 
 #include <algorithm>
 
@@ -68,6 +69,7 @@ void step_traps(Game& game) {
             continue;
         }
         if (trap.kind != EntityKind::Trap || trap.birth_tick == game.tick) continue;
+        if (woodland_trap(trap)) { step_woodland_trap(game, slot); continue; }
         const int victim = entity_at(game, trap.cell, true);
         if (victim < 0) continue;
         const Cell cell = trap.cell;

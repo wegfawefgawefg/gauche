@@ -156,7 +156,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.sleep_ticks); writer.i32(entity.stun_ticks);
     writer.u16(entity.vitals.healing_left); writer.u16(entity.vitals.healing_wait);
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
-    writer.u16(entity.vitals.haste);
+    writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
     write_cell(writer, entity.train_origin);
@@ -198,10 +198,10 @@ Entity read_entity(PacketReader& reader) {
     entity.sleep_ticks = reader.i32(); entity.stun_ticks = reader.i32();
     entity.vitals.healing_left = reader.u16(); entity.vitals.healing_wait = reader.u16();
     entity.vitals.sleep_guard = reader.u16(); entity.vitals.stun_guard = reader.u16();
-    entity.vitals.haste = reader.u16();
+    entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
     if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > 20 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
-        entity.vitals.haste > 240) reader.okay = false;
+        entity.vitals.haste > 240 || entity.vitals.rooted > 600) reader.okay = false;
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
     entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
     entity.train_origin = read_cell(reader);
@@ -238,7 +238,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(21);
+    writer.u32(22);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -306,7 +306,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 21) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 22) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

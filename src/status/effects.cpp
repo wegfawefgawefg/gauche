@@ -10,6 +10,12 @@ bool apply_sleep(Entity& actor, int ticks) {
     return true;
 }
 
+bool apply_root(Entity& actor, int ticks) {
+    if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0) return false;
+    actor.vitals.rooted = static_cast<std::uint16_t>(std::clamp(std::max(ticks, static_cast<int>(actor.vitals.rooted)), 0, 600));
+    return true;
+}
+
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
     actor.stun_ticks = std::max(actor.stun_ticks, ticks);
@@ -29,6 +35,7 @@ void step_vital_effects(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     VitalEffects& effects = actor.vitals;
     if (actor.health <= 0) { effects = {}; return; }
+    if (effects.rooted > 0) --effects.rooted;
     if (effects.sleep_guard > 0) --effects.sleep_guard;
     if (effects.stun_guard > 0) --effects.stun_guard;
 

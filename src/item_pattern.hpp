@@ -16,6 +16,7 @@ struct ItemPattern {
     int heal = 0;
     bool piercing = false;
     bool cone = false;
+    bool cross_blast = false;
 };
 
 int pattern_half_width(ItemPattern pattern, int reach);

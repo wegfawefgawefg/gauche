@@ -19,6 +19,7 @@
 #include "displacement_scene.hpp"
 #include "root_relics_scene.hpp"
 #include "recoverable_scene.hpp"
+#include "woodland_trap_scene.hpp"
 #include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
@@ -227,6 +228,8 @@ int main(int argc, char** argv) {
             insert_item(player.inventory, make_item(kind, kind == ItemKind::Egg ? 4 : 1));
         player.inventory.selected = 2;
     }
+    if (mode == "woodland-traps" || mode == "trap-items" || mode == "trap-big")
+        arrange_woodland_traps(game, cosmetics, player, mode == "trap-big");
     if (mode == "recoverables" || mode == "recoverable-items")
         arrange_recoverables(game, cosmetics, player);
     if (mode == "root-relics" || mode == "root-relic-items")
@@ -243,10 +246,10 @@ int main(int argc, char** argv) {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
-        interaction.slot_focus = mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
+        interaction.slot_focus = mode == "trap-items" || mode == "trap-big" ? 3 : mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;
     } else if (mode == "reward" || mode == "reward-focus") {
         interaction.offer_focus = mode == "reward-focus" ? 1 : 0;
         game.run.phase = RunPhase::Reward;
@@ -267,7 +270,7 @@ int main(int argc, char** argv) {
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {
-        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
     if (mode == "fps") draw_frame_rate(renderer, 60);

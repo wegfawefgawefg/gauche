@@ -79,7 +79,8 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
             colored_cell(renderer, layout, reach, 0, pattern.effect, true);
         for (int dy = -pattern.blast_radius; dy <= pattern.blast_radius; ++dy)
             for (int dx = -pattern.blast_radius; dx <= pattern.blast_radius; ++dx)
-                if (std::abs(dx) + std::abs(dy) <= pattern.blast_radius)
+                if (std::abs(dx) + std::abs(dy) <= pattern.blast_radius &&
+                    (!pattern.cross_blast || dx == 0 || dy == 0))
                     colored_cell(renderer, layout, pattern.maximum + dx, dy,
                                  pattern.effect, false);
     } else {

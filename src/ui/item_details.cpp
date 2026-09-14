@@ -176,6 +176,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
+    if (item.kind == ItemKind::AcornMine)
+        std::snprintf(line, sizeof(line), "PLACE 1 | SPLINTERS %d", pattern.blast_radius);
+    else if (item.kind == ItemKind::RopeSnare)
+        std::snprintf(line, sizeof(line), "PLACE 1 | ROOT 3.0s");
+    else if (item.kind == ItemKind::SpringTrap)
+        std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
     if (height >= 176.0F) {
         text(renderer, x + 10.0F, y + 151.0F, "PATTERN", 185, 185, 172);

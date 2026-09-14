@@ -6,6 +6,7 @@
 #include "items/ground_tools.hpp"
 #include "items/displacement.hpp"
 #include "items/root_relics.hpp"
+#include "items/woodland_traps.hpp"
 #include "projectiles/hook.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
@@ -71,6 +72,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::RopeSnare: case ItemKind::SpringTrap: case ItemKind::AcornMine:
+        used = place_woodland_trap(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::RootDrill: case ItemKind::SwapSeed:
         used = launch_root_relic(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;

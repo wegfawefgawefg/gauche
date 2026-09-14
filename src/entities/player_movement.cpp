@@ -29,7 +29,7 @@ void move_player(Game& game, int slot, Cell input) {
     if (diagonal && player.move_wait > 0) return;
     const Cell movement = movement_axis(game, player, input);
     player.facing = movement;
-    if (player.move_wait > 0) return;
+    if (player.move_wait > 0 || player.vitals.rooted > 0) return;
     const Cell destination = player.cell + movement;
     if (move_entity(game, slot, destination)) {
         player.label_a = 0;

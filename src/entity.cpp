@@ -63,7 +63,7 @@ bool move_entity(Game& game, int slot, Cell destination) {
     if (slot < 0 || slot >= max_entities) return false;
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     const Tile* tile = game.stage.at(destination);
-    if (entity.kind == EntityKind::None) return false;
+    if (entity.kind == EntityKind::None || entity.vitals.rooted > 0) return false;
     const int occupant = entity_at(game, destination, true);
     if (tile == nullptr || !walkable(*tile) || (occupant >= 0 && occupant != slot)) {
         // A blocked step still takes its beat, as it did in the Rust arena.
@@ -74,15 +74,19 @@ bool move_entity(Game& game, int slot, Cell destination) {
     entity.cell = destination;
     enter_actor_cell(game, slot);
     entity.move_wait = entity.move_interval;
+    // LANDING: A spring can move us again during contact; effects use the final cell.
+    if (entity.health <= 0) return true;
+    tile = game.stage.at(entity.cell);
+    if (tile == nullptr) return true;
     if (tile->kind == TileKind::Ice) entity.move_wait += 5;
     if (wading_actor(entity)) entity.move_wait += surface_step_delay(*tile);
     if (surface_wet(*tile) && wading_actor(entity))
-        emit_sound(game, ((destination.x + destination.y + slot) & 1) == 0 ?
-            SoundId::WaterStep1 : SoundId::WaterStep2, destination);
+        emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
+            SoundId::WaterStep1 : SoundId::WaterStep2, entity.cell);
     else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)
-        emit_sound(game, ((destination.x + destination.y + slot) & 1) == 0 ?
+        emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
                    SoundId::Step1 : SoundId::Step2,
-                   destination);
+                   entity.cell);
     return true;
 }

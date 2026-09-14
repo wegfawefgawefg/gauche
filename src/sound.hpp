@@ -32,6 +32,7 @@ enum class SoundId : std::size_t {
     HornBlast, HookCast, HookLatch, HookReel, HookRelease,
     DrillStart, DrillBite, DrillStop, SwapCast, SwapFold, SwapFade,
     BoomerangThrow, BoomerangHit, BoomerangCatch, BoomerangLand,
+    SnarePlace, SnareCatch, SnareRelease, SpringSet, SpringLaunch, SpringBreak, AcornSet, AcornBurst,
     Count,
 };
 
@@ -61,4 +62,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "horn_blast", "hook_cast", "hook_latch", "hook_reel", "hook_release",
     "drill_start", "drill_bite", "drill_stop", "swap_cast", "swap_fold", "swap_fade",
     "boomerang_throw", "boomerang_hit", "boomerang_catch", "boomerang_land",
+    "snare_place", "snare_catch", "snare_release", "spring_set", "spring_launch", "spring_break", "acorn_set", "acorn_burst",
 };

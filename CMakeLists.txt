@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/woodland_traps.cpp src/traps/woodland.cpp
     src/items/root_relics.cpp src/projectiles/root_drill.cpp src/projectiles/swap.cpp
     src/items/displacement.cpp src/projectiles/hook.cpp src/debris/air.cpp
     src/items/ground_tools.cpp src/entities/bird_feeding.cpp

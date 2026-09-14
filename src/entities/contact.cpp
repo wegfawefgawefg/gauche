@@ -2,6 +2,7 @@
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../props/interaction.hpp"
+#include "../traps/woodland.hpp"
 
 #include <algorithm>
 
@@ -13,6 +14,10 @@ void enter_actor_cell(Game& game, int slot) {
     if (!wading_actor(actor)) return; // Airborne actors do not stomp props or campfires.
     step_on_prop(game, slot);
     if (actor.health <= 0) return;
+
+    const Cell arrival = actor.cell;
+    enter_woodland_traps(game, slot);
+    if (actor.health <= 0 || actor.cell != arrival) return;
 
     // TRAMPLE: Only a successful step or shove calls this; standing still spends no fire life.
     for (Entity& fire : game.entities) {

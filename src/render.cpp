@@ -236,6 +236,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 angle += static_cast<double>(remaining * 270);
             }
             apply_flight_pose(entity, game.tick, body_rect, angle);
+            if (entity.kind == EntityKind::Trap && entity.ground_item.kind == ItemKind::SpringTrap)
+                angle = std::atan2(static_cast<double>(entity.facing.y), static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
             const bool worm = entity.kind == EntityKind::BurrowWorm;
             if (worm) angle = std::atan2(static_cast<double>(entity.facing.y),
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
@@ -249,6 +251,13 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::GroundItem)
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        if (entity.vitals.rooted > 0 && entity.health > 0) {
+            SDL_Texture* rope = texture_for(graphics, Sprite::SnareTight);
+            SDL_SetTextureColorModFloat(rope, brightness.red, brightness.green, brightness.blue);
+            SDL_FRect feet{rect.x, rect.y + rect.h * .55F, rect.w, rect.h * .45F};
+            SDL_RenderTexture(renderer, rope, nullptr, &feet);
+            SDL_SetTextureColorModFloat(rope, 1, 1, 1);
+        }
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && held->flight.slot < 0 && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;

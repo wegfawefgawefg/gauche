@@ -55,7 +55,19 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (pattern.cone) {
+    if (pattern.cross_blast) {
+        const Cell center = player.cell + facing;
+        mark(renderer, center, camera, zoom, pattern.effect);
+        for (Cell direction : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+            Cell cell = center;
+            for (int reach = 1; reach <= pattern.blast_radius; ++reach) {
+                cell = cell + direction;
+                if (projectile_blocked(game, cell)) break;
+                mark(renderer, cell, camera, zoom, pattern.effect);
+                if (entity_at(game, cell, true) >= 0) break;
+            }
+        }
+    } else if (pattern.cone) {
         const Cell side{-facing.y, facing.x};
         for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach)
             for (int lane = -pattern_half_width(pattern, reach); lane <= pattern_half_width(pattern, reach); ++lane) {

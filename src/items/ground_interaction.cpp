@@ -1,5 +1,6 @@
 #include "ground_interaction.hpp"
 #include "../props/candle.hpp"
+#include "../entities/candle_keeper.hpp"
 #include "../world/floating_items.hpp"
 #include "../world/ground_items.hpp"
 
@@ -54,6 +55,8 @@ bool pickup_or_drop(Game& game, Entity& player) {
         if (ground_action(game,player) == GroundAction::Blocked) return false;
         slot = release_candle(game,player.cell);
         if (slot < 0) return false;
+        const int player_slot = static_cast<int>(&player - game.entities.data());
+        keeper_candle_stolen(game,player.cell,{player_slot,player.generation});
     }
     if (slot < 0) {
         if (!item_can_drop(*player.inventory.held())) return false;

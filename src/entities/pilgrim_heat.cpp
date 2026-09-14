@@ -1,5 +1,6 @@
 #include "frozen_pilgrim.hpp"
 #include "steam_leech.hpp"
+#include "../props/candle.hpp"
 #include "../surfaces/temperature.hpp"
 
 #include <algorithm>
@@ -31,7 +32,7 @@ std::optional<Cell> pilgrim_warm_step(const Game& game, int slot) {
             const Cell cell{x,y};
             const Tile* tile = game.stage.at(cell);
             if (!tile) continue;
-            if (tile->surface.fire_ticks > 0 || tile->kind == TileKind::Lava) mark_flame(cell);
+            if (candle_lit(tile->prop) || tile->surface.fire_ticks > 0 || tile->kind == TileKind::Lava) mark_flame(cell);
             if (!inside(cell)) continue;
             blocked[index(cell)] = !walkable(*tile);
             if (tile->surface.warmth_ticks > 0 && !drained(cell)) warm[index(cell)] = true;

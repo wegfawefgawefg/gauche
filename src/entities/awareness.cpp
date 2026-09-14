@@ -12,6 +12,13 @@ void remember_attacker(Game& game, int slot, Cell from) {
     }
     if (eats_meat(victim.kind)) { victim.counter_b = 360; victim.label_b = 0; }
     if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; }
+    if (victim.kind == EntityKind::CandleKeeper) {
+        const int attacker = entity_at(game,from,true);
+        if (attacker >= 0 && attacker != slot) {
+            victim.entity_b = {attacker,game.entities[static_cast<std::size_t>(attacker)].generation};
+            victim.attack_wait = 300;
+        }
+    }
     if (victim.kind == EntityKind::ForagerGoblin) {
         const int attacker = entity_at(game, from, true);
         if (attacker >= 0 && attacker != slot)

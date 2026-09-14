@@ -7,7 +7,7 @@
 #include <cstdint>
 
 enum class PropKind : std::uint8_t { None, Leaves, Twigs, Fern, TallGrass,
-    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, Count };
+    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, CandleCabinet, Count };
 
 // STORAGE: One compact prop per tile, independent of actor slots and inventories.
 struct Prop {

@@ -84,7 +84,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
     constexpr RoomRole roles[]{RoomRole::Clearing, RoomRole::Thicket, RoomRole::Brook,
         RoomRole::Ruins, RoomRole::Den, RoomRole::Cache, RoomRole::Workshop, RoomRole::Orchard};
     constexpr RoomRole cold_roles[]{RoomRole::Reservoir, RoomRole::FishingHut, RoomRole::Bathhouse,
-        RoomRole::IceQuarry, RoomRole::Observatory, RoomRole::Shelter, RoomRole::EchoTunnel, RoomRole::Cache, RoomRole::WeatherStation, RoomRole::CliffPath, RoomRole::MemorialCourt};
+        RoomRole::IceQuarry, RoomRole::Observatory, RoomRole::Shelter, RoomRole::EchoTunnel, RoomRole::Cache, RoomRole::WeatherStation, RoomRole::CliffPath, RoomRole::MemorialCourt, RoomRole::Chapel};
     for (RoomPlan& room : plan.rooms) {
         room.center = {(room.grid.x - low.x) * pitch + pitch / 2 + 1,
                        (room.grid.y - low.y) * pitch + pitch / 2 + 1};
@@ -100,6 +100,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
         if (room.role == RoomRole::Reservoir) room.shape = RoomShape::Clearing;
         if (room.role == RoomRole::Bathhouse) room.shape = RoomShape::Courtyard;
         if (room.role == RoomRole::EchoTunnel) room.shape = RoomShape::BentHall;
+        if (room.role == RoomRole::Chapel) room.shape = RoomShape::Gallery;
         if (room.role == RoomRole::MemorialCourt) room.shape = RoomShape::Courtyard;
         if (room.role == RoomRole::CliffPath) room.shape = RoomShape::Steps;
         if (room.role == RoomRole::WeatherStation) room.shape = RoomShape::Courtyard;
@@ -141,7 +142,7 @@ bool FloorPlan::protected_cell(Cell cell) const {
 const char* room_name(RoomRole role) {
     constexpr const char* names[]{"Trailhead", "Way out", "Clearing", "Thicket", "Brook",
         "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache",
-        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court"};
-    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::MemorialCourt) + 1);
+        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel"};
+    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::Chapel) + 1);
     return names[static_cast<std::size_t>(role)];
 }

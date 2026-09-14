@@ -30,6 +30,12 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::CandleKeeper: {
+        const auto roll = random_u32(game) % 100;
+        if (roll < 30) place_ground_item(game,enemy.cell,ItemKind::CandleStub);
+        else if (roll < 45) place_ground_item(game,enemy.cell,ItemKind::WickSpool);
+        break;
+    }
     case EntityKind::SnowEffigy:
         if (random_u32(game) % 100 < 20) place_ground_item(game, enemy.cell, ItemKind::CandleStub);
         break;

@@ -17,12 +17,14 @@
 #include "whiteout_drummer.hpp"
 #include "avalanche_ram.hpp"
 #include "snow_effigy.hpp"
+#include "candle_keeper.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
     case EntityKind::SnowEffigy: init_snow_effigy(entity); break;
     case EntityKind::AvalancheRam: init_avalanche_ram(entity); break;
     case EntityKind::WhiteoutDrummer: init_whiteout_drummer(entity); break;
@@ -82,6 +84,7 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;
     case EntityKind::SnowEffigy: step_snow_effigy(game, slot); break;
     case EntityKind::AvalancheRam: step_avalanche_ram(game, slot); break;
     case EntityKind::WhiteoutDrummer: step_whiteout_drummer(game, slot); break;

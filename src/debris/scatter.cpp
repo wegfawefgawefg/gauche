@@ -67,7 +67,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
         scatter_material(debris, cell, DebrisKind::FishingFloat, 1, seed + 63, settled);
     if (kind == PropKind::LensCase)
         scatter_material(debris, cell, DebrisKind::Felt, 2, seed + 59, settled);
-    if (kind == PropKind::Crate)
+    if (kind == PropKind::Crate || kind == PropKind::CandleCabinet)
         scatter_material(debris, cell, DebrisKind::Cloth, 1, seed + 47, settled);
 }
 

@@ -43,6 +43,6 @@ Strict game/render/codec builds and existing codec roundtrip with damaged,
 part-used carried and placed candles. Static `candles` and `candle-items` captures;
 asset dimensions and finite audio checks. No live playtest or new test suite.
 
-Ice now has sixteen enemy behaviors, twenty-seven items and seventeen debris
-materials. Candle Keeper, chapel encounters, candle cabinets, Effigy Mask, other
-remaining content and player balance feedback remain open in the master list.
+This slice reached sixteen enemy behaviors, twenty-seven items and seventeen
+debris materials. [Candle Keepers and chapels](ICE_KEEPERS.md) subsequently add
+the seventeenth enemy and cabinets. Effigy Mask and other content remain open.

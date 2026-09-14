@@ -397,3 +397,30 @@ root. Healing room budgets choose actual healing supplies; splints use equipment
 budgets. Five minimalist sprites and five distinct eating/binding sounds include
 offline Python sources. Strict game/render builds and static inventory/root/
 status captures pass. No live playtest or new gameplay test suite was run.
+
+
+## Bird bait and finite thorn patches
+
+Bird seed and thorn caltrops bring the regional item count to 29. Both place
+compact six-byte props on clear dry ground, without allocating actor slots.
+Bird seed stacks to five; one use puts down twelve beakfuls. Owls, woodpeckers
+and empty-handed crows investigate reachable visible piles within eight cells
+before starting a new attack/theft. Committed attacks and recovery continue.
+Calm adult chickens gather while chicks retain their following chain; family
+defense and flight take priority. Birds feed from adjacent cells every 45 ticks,
+spending one beakful. Full or unreachable feeding positions do not attract a
+permanently stuck bird. No animals spawn from using bait.
+
+Thorn caltrops stack to three. Each handful scatters three facing patches, each
+with three contacts at six damage per grounded entry; standing still is safe.
+Friends are susceptible, airborne actors pass over, and cutting/burning clears
+the patches. Big expands to five facing cells; Long extends placement by one
+cell. Damage modifiers persist in the prop's variant byte, which is already
+hashed and serialized. A blocked scatter consumes nothing if no patch lands.
+Seed husks and snapped thorn debris are local cosmetics.
+
+Owls drop bird seed and thorn snails drop caltrops at their catalog's 15% rates.
+Room, reward and shop pools include both. Four PNG sprites and four synthesized
+OGG cues include offline Python sources. Gameplay compatibility advances to CD;
+the snapshot layout remains 20. Strict game/render builds and static world/
+comparison captures pass. No live playtest or new gameplay test suite was run.

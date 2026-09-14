@@ -1,6 +1,7 @@
 #include "behavior.hpp"
 #include "dispatch.hpp"
 #include "following.hpp"
+#include "bird_feeding.hpp"
 
 #include <algorithm>
 
@@ -58,6 +59,8 @@ void step_chicken(Game& game, int slot) {
         flee(game, slot, {chicken.counter_a, chicken.counter_b});
     } else if (chicken.timer_a > 0) {
         defend_family(game, slot, chicken);
+    } else if (chicken.label_a != 0 && feed_on_bird_seed(game, slot)) {
+        // Chicks follow the feeding adult instead of abandoning their chain.
     } else {
         const Entity* leader = get_entity(game, chicken.entity_a);
         if (chicken.label_a == 0 && (leader == nullptr || leader->kind != EntityKind::Chicken || leader->health <= 0)) {

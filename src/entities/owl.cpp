@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
+#include "bird_feeding.hpp"
 
 namespace {
 
@@ -57,6 +58,7 @@ void step_owl(Game& game, int slot) {
         else pursue(game, slot, owl.point_a);
         return;
     }
+    if (feed_on_bird_seed(game, slot)) return;
     if (owl.timer_a > 0) return;
     const int target = nearest_player(game, owl.point_a, 6);
     if (target < 0) return;

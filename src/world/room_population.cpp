@@ -174,7 +174,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         break;
     case RoomRole::Thicket: {
         constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar,
-            ItemKind::SeedBag, ItemKind::LanternSeed, ItemKind::BitterRoot, ItemKind::Chili};
+            ItemKind::SeedBag, ItemKind::LanternSeed, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::ThornCaltrops};
         supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment);
         break;
     }
@@ -182,7 +182,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         supply(game, room, ItemKind::Medkit, 1, budget.healing);
         break;
     case RoomRole::Orchard: case RoomRole::Clearing:
-        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::ThrowingRock : ItemKind::Rake, 1, budget.equipment);
+        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::BirdSeed : ItemKind::Rake, 1, budget.equipment);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
             const ItemKind remedy = healing[random_u32(game) % std::size(healing)];

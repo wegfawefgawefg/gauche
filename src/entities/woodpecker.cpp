@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
+#include "bird_feeding.hpp"
 #include "../props/interaction.hpp"
 
 namespace {
@@ -61,6 +62,7 @@ void step_woodpecker(Game& game, int slot) {
         if (bird.timer_a == 0) bird.label_a = 0;
         return;
     }
+    if (feed_on_bird_seed(game, slot)) return;
     const int target = nearest_player(game, bird.cell, 6);
     if (target < 0) {
         if (distance(bird.cell, bird.point_a) > 4) pursue(game, slot, bird.point_a);

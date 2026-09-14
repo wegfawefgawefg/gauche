@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/ground_tools.cpp src/entities/bird_feeding.cpp
     src/status/effects.cpp src/items/remedies.cpp
     src/items/woodland_tools.cpp src/props/growth.cpp
     src/surfaces/interaction.cpp

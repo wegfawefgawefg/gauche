@@ -69,13 +69,22 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
-    else emit_sound(game, SoundId::WoodCrack, cell);
+    else if (prop.kind != PropKind::BirdSeed && prop.kind != PropKind::Thorns)
+        emit_sound(game, SoundId::WoodCrack, cell);
     return true;
 }
 
 void step_on_prop(Game& game, int actor_slot) {
     const Entity& actor = game.entities[static_cast<std::size_t>(actor_slot)];
     Tile* tile = game.stage.at(actor.cell);
+    if (tile != nullptr && tile->prop.kind == PropKind::Thorns && !tile->prop.broken) {
+        const int damage = tile->prop.variant == 0 ? 6 : tile->prop.variant;
+        const Cell cell = actor.cell;
+        hit_prop(game, cell, 1, cell);
+        damage_entity(game, actor_slot, damage, cell, false);
+        emit_sound(game, SoundId::ThornPrick, cell);
+        return;
+    }
     if (tile != nullptr && !tile->prop.broken &&
         prop_spec(tile->prop.kind).breaks_on_step)
         break_prop(game, actor.cell, actor.cell, tile->prop);

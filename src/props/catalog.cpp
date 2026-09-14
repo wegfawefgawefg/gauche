@@ -2,6 +2,8 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::BirdSeed: return {Sprite::BirdSeedPile, SoundId::SeedScatter, 12, false, false};
+    case PropKind::Thorns: return {Sprite::ThornPatch, SoundId::ThornScatter, 3, false, false};
     case PropKind::Shoot: return {Sprite::Shoot, SoundId::PlantCut, 8, false, false};
     case PropKind::RootCover: return {Sprite::RootCover, SoundId::WoodCrack, 40, true, false};
     case PropKind::LanternPlant: return {Sprite::LanternPlant, SoundId::PlantCut, 12, false, false,

@@ -2,6 +2,7 @@
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "scavenging.hpp"
+#include "bird_feeding.hpp"
 #include "../item_pattern.hpp"
 
 #include <algorithm>
@@ -85,6 +86,7 @@ void step_carrion_crow(Game& game, int slot) {
         }
         return;
     }
+    if (feed_on_bird_seed(game, slot)) return;
     if (crow.timer_a == 0) {
         crow.entity_a = find_scavenge(game, slot, true, 8);
         crow.timer_a = 45;

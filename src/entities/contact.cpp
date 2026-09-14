@@ -12,6 +12,7 @@ void enter_actor_cell(Game& game, int slot) {
     contact_surface(game, slot);
     if (!wading_actor(actor)) return; // Airborne actors do not stomp props or campfires.
     step_on_prop(game, slot);
+    if (actor.health <= 0) return;
 
     // TRAMPLE: Only a successful step or shove calls this; standing still spends no fire life.
     for (Entity& fire : game.entities) {

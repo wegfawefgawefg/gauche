@@ -70,15 +70,36 @@ rectangle over damaged walls.
 - [ ] Audit generated roof lights against room geometry with a temporary
   diagnostic view or capture. Generation currently adds a light to each main
   room and branch without a visible skylight or lamp. Give each retained source
-  a visible cause, such as an opening above the forest cave; remove or move
-  sources that make an apparently empty room glow. Check neighboring rooms and
-  border tiles after changing fixture positions.
+  a visible canopy gap or cave opening; remove or move sources that make an
+  apparently empty room glow. Check neighboring rooms and border tiles after
+  changing fixture positions.
+- [ ] Shape forest sunlight into dappled, irregular patches rather than plain
+  circular pools. Use small authored grayscale canopy silhouettes as masks at
+  the game's pixel scale, with gentle, slow movement. The same projected light
+  pattern must affect floor, walls, and actors standing within it; keep dark
+  negative space between patches.
+- [ ] Add a few translucent shafts above the world where sunlight enters.
+  Their bright ends should meet the projected ground patches, and foliage or
+  haze should make their shape readable without obscuring actors. Broad,
+  slower cloud shadows can cross outdoor rooms separately. Existing drifting
+  cloud sprites are weather visuals; they do not currently cast shadows.
 - [ ] Remove the separate 12-tile distance fade from non-player entities.
   Lighting should determine whether an actor is visible. Preserve deliberate
   invisibility or fog effects only where a game rule asks for them.
 - [ ] Compare dark and lit rooms in the same capture: an unlit room stays dark,
-  a roof opening or campfire has a clear local pool, and actors/particles use
-  the same light field as the surrounding tiles.
+  a canopy opening or campfire has a clear local pool, shafts align with their
+  ground patches, and actors/particles use the same light field as the tiles.
+
+## Forest ground art
+
+- [ ] Simplify the three forest floor textures and grass. Use broad, calm
+  color areas with sparse, purposeful marks; remove the repeated high-frequency
+  speckles that make every tile equally busy. Preserve negative space around
+  players, items, footprints, and attack previews.
+- [ ] Put visual variety at room scale with occasional tufts, roots, paths, and
+  larger patches rather than random detail in every 16-pixel tile. Check tiled
+  repetition, cave/outdoor distinction, and readability under both deep shade
+  and canopy light. Keep the source art native to Gauche's simple pixel style.
 
 ## UI and pointer
 
@@ -103,7 +124,8 @@ rectangle over damaged walls.
 
 1. Tile rules and deterministic tests, then tile impact visuals.
 2. Campfire state/contact rules and tests, then rendering, particles, and audio.
-3. Roof-light audit, distance-fade removal, and footprint visibility.
+3. Forest ground simplification, canopy lighting, cloud shadows, distance-fade
+   removal, and footprint visibility.
 4. Compact UI default, UI sizing, pointer device switching, and captures.
 
 Use the Rust tile behavior as a parity reference and the current C++ lighting

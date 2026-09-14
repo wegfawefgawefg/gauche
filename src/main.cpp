@@ -30,6 +30,7 @@ bool wants_smoke(int argc, char** argv) {
         if (std::string_view{argv[index]} == "--smoke" ||
             std::string_view{argv[index]} == "--smoke-game" ||
             std::string_view{argv[index]} == "--smoke-run" ||
+            std::string_view{argv[index]} == "--smoke-border" ||
             std::string_view{argv[index]} == "--smoke-reward" ||
             std::string_view{argv[index]} == "--smoke-inventory" ||
             std::string_view{argv[index]} == "--smoke-menu" ||
@@ -113,6 +114,7 @@ GubsyAppConfig app_config() {
 
 int main(int argc, char** argv) {
     const bool smoke = wants_smoke(argc, argv);
+    const bool border_smoke = has_arg(argc, argv, "--smoke-border");
     GubsyRuntime host;
     if (!init_gubsy_runtime(host, app_config()) || !gubsy_init_sdl_renderer(host)) {
         std::fprintf(stderr, "Gubsy host failed: %s\n", SDL_GetError());
@@ -180,9 +182,14 @@ int main(int argc, char** argv) {
     } else {
         if (has_arg(argc, argv, "--smoke-game")) start_test_arena(game, 12345);
         if (has_arg(argc, argv, "--smoke-run") ||
+            border_smoke ||
             has_arg(argc, argv, "--smoke-reward") ||
             has_arg(argc, argv, "--smoke-inventory")) start_run(game, 12345);
         if (has_arg(argc, argv, "--smoke-reward")) finish_floor(game);
+        if (border_smoke) {
+            game.run.roof_lights[0] = {game.stage.width - 2, game.stage.height / 2};
+            game.run.roof_light_count = 1;
+        }
     }
     MenuShell menu;
     init_menu_shell(menu, host, game, network, requested_death_policy(argc, argv),
@@ -397,6 +404,7 @@ int main(int argc, char** argv) {
         SDL_RenderClear(frame.renderer);
         SDL_SetRenderDrawColor(frame.renderer, 175, 206, 164, 255);
         const Game& active = networked ? network.rollback.game : game;
+        if (border_smoke) { cosmetics.camera = active.run.roof_lights[0]; cosmetics.camera_ready = true; }
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
@@ -406,7 +414,7 @@ int main(int argc, char** argv) {
                         read_pointer(frame, active, networked ? network.local_owner : 0,
                                      zoom, camera_for(cosmetics, active,
                                                       networked ? network.local_owner : 0)),
-                        !interaction.inventory_open &&
+                        !interaction.inventory_open && !border_smoke &&
                         !has_reward_offer(active, networked ? network.local_owner : 0) &&
                         active.run.phase != RunPhase::Shop);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,

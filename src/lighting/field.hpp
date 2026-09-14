@@ -1,0 +1,45 @@
+#pragma once
+
+#include "../game.hpp"
+#include "../view.hpp"
+
+#include <span>
+#include <vector>
+
+struct LightColor {
+    float red = 0.0F;
+    float green = 0.0F;
+    float blue = 0.0F;
+};
+
+struct LightSource {
+    Cell cell{};
+    int radius = 0;
+    float power = 0.0F;
+    LightColor color{1.0F, 1.0F, 1.0F};
+};
+
+struct LightFlash {
+    LightSource source{};
+    int life = 0;
+    int span = 0;
+};
+
+struct LightingCache {
+    Cell origin{};
+    int width = 0;
+    int height = 0;
+    bool active = false;
+    std::vector<float> ambient;
+    std::vector<LightColor> cast;
+
+    bool contains(Cell cell) const;
+    std::size_t index(Cell cell) const;
+};
+
+std::vector<LightSource> collect_light_sources(const Game& game,
+    const LightingCache& cache, std::span<const LightFlash> flashes);
+void build_lighting(LightingCache& cache, const Game& game,
+    ViewCamera camera, float zoom, std::span<const LightFlash> flashes = {});
+LightColor light_at_cell(const LightingCache& cache, Cell cell);
+LightColor light_at_corner(const LightingCache& cache, Cell corner);

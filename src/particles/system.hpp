@@ -2,6 +2,7 @@
 
 #include "../game.hpp"
 #include "../view.hpp"
+#include "../lighting/field.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -84,6 +85,8 @@ struct Cosmetics {
     std::vector<RibbonParticle> ribbons;
     std::vector<RingParticle> rings;
     std::vector<TileShake> tile_shakes;
+    std::vector<LightFlash> flashes;
+    mutable LightingCache lighting;
     std::array<EntityPose, max_entities> poses{};
     std::array<std::uint64_t, 256> seen_events{};
     std::size_t next_event = 0;
@@ -99,4 +102,5 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus,
                       float zoom = 2.0F);
 ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner);
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
-                    const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera, float zoom);
+                    const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
+                    float zoom, const LightingCache* lighting = nullptr);

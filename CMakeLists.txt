@@ -72,7 +72,8 @@ set(GAUCHE_ENTITY_SOURCES
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
-    src/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/render.cpp src/lighting/field.cpp src/lighting/sources.cpp
+    src/lighting/render.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/particles/system.cpp src/particles/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/menu_shell.cpp src/rollback.cpp src/net_codec.cpp src/net_socket.cpp
@@ -166,6 +167,15 @@ if(BUILD_TESTING)
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME presentation_rules COMMAND gauche_presentation_tests)
+    add_executable(gauche_lighting_tests
+        tests/lighting_test.cpp src/lighting/field.cpp
+        src/lighting/sources.cpp src/stage.cpp)
+    target_link_libraries(gauche_lighting_tests PRIVATE SDL3::SDL3)
+    target_compile_options(gauche_lighting_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME lighting_rules COMMAND gauche_lighting_tests)
+    add_test(NAME border_lighting COMMAND gauche --smoke-border --frames 3)
+    set_tests_properties(border_lighting PROPERTIES ENVIRONMENT
+        "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     add_test(NAME menu_shell COMMAND gauche --smoke-menu --frames 8)
     set_tests_properties(menu_shell PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")

@@ -1,10 +1,11 @@
 #include "render.hpp"
 #include "particles/system.hpp"
+#include "lighting/field.hpp"
+#include "lighting/render.hpp"
 #include "ui/presentation.hpp"
 #include "view.hpp"
 
 #include <algorithm>
-#include <array>
 #include <cstdio>
 #include <cmath>
 
@@ -38,23 +39,18 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
 }
 
 void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
-                const Game& game, ViewCamera camera, float zoom, const Cosmetics* cosmetics) {
+                const Game& game, ViewCamera camera, float zoom,
+                const Cosmetics* cosmetics, const LightingCache& lighting) {
     const float pixels = tile_pixels(zoom);
-    const SDL_FRect area = tile_rect({0, 0}, camera, zoom);
-    SDL_FRect bounds{area.x, area.y, static_cast<float>(game.stage.width) * pixels,
-                     static_cast<float>(game.stage.height) * pixels};
-    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
-    SDL_RenderFillRect(renderer, &bounds);
     const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
     const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
-    for (int y = std::max(0, static_cast<int>(camera.y) - rows);
-         y <= std::min(game.stage.height - 1, static_cast<int>(camera.y) + rows); ++y) {
-        for (int x = std::max(0, static_cast<int>(camera.x) - columns);
-             x <= std::min(game.stage.width - 1, static_cast<int>(camera.x) + columns); ++x) {
+    for (int y = static_cast<int>(std::floor(camera.y)) - rows;
+         y <= static_cast<int>(std::ceil(camera.y)) + rows; ++y) {
+        for (int x = static_cast<int>(std::floor(camera.x)) - columns;
+             x <= static_cast<int>(std::ceil(camera.x)) + columns; ++x) {
             const Cell cell{x, y};
-            const Tile* tile = game.stage.at(cell);
-            if (tile == nullptr ||
-                (tile->kind == TileKind::Empty && game.run.phase == RunPhase::Arena)) continue;
+            const Tile& tile = game.stage.at_or_border(cell);
+            if (tile.kind == TileKind::Empty && game.run.phase == RunPhase::Arena) continue;
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             if (cosmetics != nullptr) {
                 float strength = 0.0F;
@@ -73,15 +69,20 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
             const int world = game.run.phase == RunPhase::Arena ? -1 :
                               (game.run.floor - 1) / 4;
-            const Sprite id = tile_sprite(*tile, game.tick, cell, world);
+            const Sprite id = tile_sprite(tile, game.tick, cell, world);
             SDL_Texture* texture = texture_for(graphics, id);
-            if (world == 1 && tile->kind != TileKind::Lava)
-                SDL_SetTextureColorMod(texture, 225, 133, 105);
-            if (world == 2 && tile->kind != TileKind::Ice)
-                SDL_SetTextureColorMod(texture, 149, 201, 229);
-            SDL_RenderTexture(renderer, texture, nullptr, &rect);
-            SDL_SetTextureColorMod(texture, 255, 255, 255);
-            if (tile->kind == TileKind::Wall && tile->hp < 100) {
+            const LightColor tint = world == 1 && tile.kind != TileKind::Lava ?
+                LightColor{225.0F / 255.0F, 133.0F / 255.0F, 105.0F / 255.0F} :
+                world == 2 && tile.kind != TileKind::Ice ?
+                LightColor{149.0F / 255.0F, 201.0F / 255.0F, 229.0F / 255.0F} :
+                LightColor{1.0F, 1.0F, 1.0F};
+            if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
+            else {
+                SDL_SetTextureColorModFloat(texture, tint.red, tint.green, tint.blue);
+                SDL_RenderTexture(renderer, texture, nullptr, &rect);
+                SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
+            }
+            if (tile.kind == TileKind::Wall && tile.hp < 100) {
                 SDL_SetRenderDrawColor(renderer, 30, 15, 15, 115);
                 SDL_RenderFillRect(renderer, &rect);
             }
@@ -91,7 +92,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
 
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, Cell focus, float zoom,
-                   const Cosmetics* cosmetics) {
+                   const Cosmetics* cosmetics, const LightingCache& lighting) {
     const float pixels = tile_pixels(zoom);
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
         const Entity& entity = game.entities[slot];
@@ -127,12 +128,20 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const float view_alpha = entity.kind == EntityKind::Player ? 1.0F :
             std::clamp(1.0F - std::sqrt(dx * dx + dy * dy) / 12.0F, 0.0F, 1.0F);
         SDL_Texture* texture = texture_for(graphics, entity.sprite);
+        const LightColor self = entity.kind == EntityKind::Campfire ?
+            LightColor{1.0F, 0.82F, 0.60F} : entity.kind == EntityKind::Ember ?
+            LightColor{1.0F, 0.45F, 0.30F} : entity.kind == EntityKind::Key ?
+            LightColor{0.95F, 0.82F, 0.38F} : LightColor{};
+        const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);
+        SDL_SetTextureColorModFloat(texture, brightness.red,
+                                    brightness.green, brightness.blue);
         SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(view_alpha * 255.0F));
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
             pose != nullptr && pose->seen ? pose->angle : 0.0,
             nullptr, pose != nullptr && pose->horizontal_flip ?
                      SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         SDL_SetTextureAlphaMod(texture, 255);
+        SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
         const Item* held = entity.inventory.held();
         if (held->kind != ItemKind::None && entity.kind != EntityKind::GroundItem) {
             const float forward = entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
@@ -144,8 +153,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const double angle = std::atan2(static_cast<double>(entity.facing.y),
                                             static_cast<double>(entity.facing.x)) *
                                  180.0 / 3.141592653589793;
-            SDL_RenderTextureRotated(renderer, texture_for(graphics, item_sprite(held->kind)),
-                                     nullptr, &held_rect, angle, nullptr, SDL_FLIP_NONE);
+            SDL_Texture* held_texture = texture_for(graphics, item_sprite(held->kind));
+            SDL_SetTextureColorModFloat(held_texture, brightness.red,
+                                        brightness.green, brightness.blue);
+            SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,
+                                     angle, nullptr, SDL_FLIP_NONE);
+            SDL_SetTextureColorModFloat(held_texture, 1.0F, 1.0F, 1.0F);
             if (held->kind == ItemKind::Buckler) {
                 SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
                 SDL_RenderRect(renderer, &held_rect);
@@ -162,76 +175,6 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
 }
 
-bool clear_light_path(const Stage& stage, Cell from, Cell to) {
-    int x = from.x;
-    int y = from.y;
-    const int dx = std::abs(to.x - from.x);
-    const int dy = std::abs(to.y - from.y);
-    const int sx = from.x < to.x ? 1 : -1;
-    const int sy = from.y < to.y ? 1 : -1;
-    int error = dx - dy;
-    while (x != to.x || y != to.y) {
-        const int twice = error * 2;
-        if (twice > -dy) { error -= dy; x += sx; }
-        if (twice < dx) { error += dx; y += sy; }
-        if (x == to.x && y == to.y) break;
-        const Tile* tile = stage.at({x, y});
-        if (tile != nullptr && tile->kind == TileKind::Wall) return false;
-    }
-    return true;
-}
-
-float light_from(const Stage& stage, Cell source, Cell cell, float radius) {
-    const float dx = static_cast<float>(source.x - cell.x);
-    const float dy = static_cast<float>(source.y - cell.y);
-    const float distance_to_light = std::sqrt(dx * dx + dy * dy);
-    if (distance_to_light >= radius || !clear_light_path(stage, source, cell)) return 0.0F;
-    return 1.0F - distance_to_light / radius;
-}
-
-void draw_lighting(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
-                   int local_owner, float zoom) {
-    if (game.run.phase == RunPhase::Arena) return;
-    const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
-    std::array<Cell, 24> fires{};
-    int fire_count = 0;
-    for (const Entity& entity : game.entities) {
-        if ((entity.kind == EntityKind::Campfire || entity.kind == EntityKind::Ember) &&
-            fire_count < static_cast<int>(fires.size()))
-            fires[static_cast<std::size_t>(fire_count++)] = entity.cell;
-    }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    const float pixels = tile_pixels(zoom);
-    const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
-    const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;
-    for (int y = std::max(0, static_cast<int>(camera.y) - rows);
-         y <= std::min(game.stage.height - 1, static_cast<int>(camera.y) + rows); ++y) {
-        for (int x = std::max(0, static_cast<int>(camera.x) - columns);
-             x <= std::min(game.stage.width - 1, static_cast<int>(camera.x) + columns); ++x) {
-            const Cell cell{x, y};
-            if (!game.stage.in_bounds(cell)) continue;
-            float light = 0.34F;
-            if (player != nullptr) light = std::max(light,
-                light_from(game.stage, player->cell, cell, 7.0F));
-            for (int index = 0; index < game.run.roof_light_count; ++index)
-                light = std::max(light, light_from(game.stage,
-                    game.run.roof_lights[static_cast<std::size_t>(index)], cell, 5.0F));
-            light = std::max(light, light_from(game.stage, game.run.exit, cell, 4.0F));
-            for (int index = 0; index < fire_count; ++index)
-                light = std::max(light, light_from(game.stage,
-                    fires[static_cast<std::size_t>(index)], cell, 5.5F));
-            if (const Tile* tile = game.stage.at(cell);
-                tile != nullptr && tile->kind == TileKind::Lava)
-                light = std::max(light, 0.78F);
-            const auto darkness = static_cast<std::uint8_t>((1.0F - light) * 160.0F);
-            SDL_SetRenderDrawColor(renderer, 3, 6, 8, darkness);
-            SDL_FRect rect = tile_rect(cell, camera, zoom);
-            SDL_RenderFillRect(renderer, &rect);
-        }
-    }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-}
-
 } // namespace
 
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
@@ -242,14 +185,21 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ViewCamera camera = cosmetics != nullptr ?
         camera_for(*cosmetics, game, local_owner) :
         ViewCamera{player == nullptr ? Cell{32, 32} : player->cell};
-    draw_tiles(renderer, graphics, game, camera, zoom, cosmetics);
+    LightingCache local_lighting;
+    LightingCache& lighting = cosmetics != nullptr ? cosmetics->lighting : local_lighting;
+    build_lighting(lighting, game, camera, zoom,
+                   cosmetics != nullptr ? std::span<const LightFlash>{cosmetics->flashes} :
+                                          std::span<const LightFlash>{});
+    draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     if (cosmetics != nullptr)
-        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground, camera, zoom);
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
+                       camera, zoom, &lighting);
     draw_entities(renderer, graphics, game, camera,
-                  player == nullptr ? Cell{32, 32} : player->cell, zoom, cosmetics);
+                  player == nullptr ? Cell{32, 32} : player->cell,
+                  zoom, cosmetics, lighting);
     if (cosmetics != nullptr)
-        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground, camera, zoom);
-    draw_lighting(renderer, game, camera, local_owner, zoom);
+        draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
+                       camera, zoom, &lighting);
     if (player != nullptr)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)
@@ -275,10 +225,11 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
 void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
                            const Game& scene) {
     const ViewCamera camera = scene.run.spawn + Cell{2, 0};
-    draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr);
+    LightingCache lighting;
+    build_lighting(lighting, scene, camera, 2.0F);
+    draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
     draw_entities(renderer, graphics, scene, camera,
-                  scene.run.spawn + Cell{2, 0}, 2.0F, nullptr);
-    draw_lighting(renderer, scene, camera, 0, 2.0F);
+                  scene.run.spawn + Cell{2, 0}, 2.0F, nullptr, lighting);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

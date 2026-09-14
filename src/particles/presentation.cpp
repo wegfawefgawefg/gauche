@@ -111,6 +111,22 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     if (already_seen(cosmetics, sound) || distance(sound.cell, focus) > 18) return;
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
+    switch (sound.sound) {
+    case SoundId::Explosion: case SoundId::Explosion1:
+    case SoundId::Explosion2: case SoundId::Explosion3:
+        cosmetics.flashes.push_back({{sound.cell, 8, 1.45F,
+                                      {1.0F, 0.51F, 0.20F}}, 18, 18});
+        break;
+    case SoundId::SmallLaser:
+        cosmetics.flashes.push_back({{sound.cell, 4, 0.80F,
+                                      {1.0F, 0.82F, 0.46F}}, 5, 5});
+        break;
+    case SoundId::HitBlock1: case SoundId::SturdyBlockBouncedOn:
+        cosmetics.flashes.push_back({{sound.cell, 3, 0.58F,
+                                      {0.78F, 0.88F, 1.0F}}, 4, 4});
+        break;
+    default: break;
+    }
     if (sound.sound != SoundId::ZombieGrowl1 && sound.sound != SoundId::ZombieGrowl2 &&
         sound.sound != SoundId::Chick && sound.sound != SoundId::Hen &&
         sound.sound != SoundId::Rooster) return;

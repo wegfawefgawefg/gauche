@@ -19,6 +19,12 @@ const Tile* Stage::at(Cell cell) const {
     return &tiles[static_cast<std::size_t>(cell.y * width + cell.x)];
 }
 
+const Tile& Stage::at_or_border(Cell cell) const {
+    static constexpr Tile border{TileKind::Wall, 100, 0};
+    const Tile* tile = at(cell);
+    return tile == nullptr ? border : *tile;
+}
+
 bool walkable(TileKind kind) {
     return kind == TileKind::Empty || kind == TileKind::Grass ||
            kind == TileKind::Ruin || kind == TileKind::Rail ||

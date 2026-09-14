@@ -39,6 +39,7 @@ struct Stage {
     bool in_bounds(Cell cell) const;
     Tile* at(Cell cell);
     const Tile* at(Cell cell) const;
+    const Tile& at_or_border(Cell cell) const;
 };
 
 bool walkable(TileKind kind);

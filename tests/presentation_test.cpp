@@ -96,6 +96,15 @@ int main() {
         arcs |= particle.motion == ParticleMotion::Arc;
     if (!check(!cosmetics.rings.empty() && !cosmetics.tile_shakes.empty() && arcs,
                "explosion lost its shockwave, tile shake, or arc debris")) return 1;
+    game.sounds[0] = blast;
+    game.sound_count = 1;
+    const std::uint64_t before_flash = game_hash(game);
+    update_cosmetics(cosmetics, game, {3, 2});
+    if (!check(!cosmetics.flashes.empty() && game_hash(game) == before_flash,
+               "explosion flash changed gameplay state")) return 1;
+    for (int index = 0; index < 18; ++index) step_particles(cosmetics);
+    if (!check(cosmetics.flashes.empty(), "explosion flash did not expire")) return 1;
+    game.sound_count = 0;
     spawn_campfire_smoke(cosmetics, {2, 2}, 4);
     bool animated = false;
     for (const SpriteParticle& particle : cosmetics.sprites)

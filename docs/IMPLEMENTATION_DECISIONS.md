@@ -448,3 +448,21 @@ objective is reachable while blocking the door makes the exit unreachable. Stati
 layouts 1, 2, 7 and 41 pass both checks. Seed 41 caught the approach-bend issue during
 the change and passes with the explicit outside join. Strict builds pass; no live
 playtest. Geometry changes apply to newly generated floors; gameplay version C8.
+
+
+## Diagonal camera comfort
+
+Actor positions and footprints remain tile-exact. The camera now averages two
+movement beats of actual player cells before following with a critically damped
+spring. Averaging the pair turns steady alternating cardinal input into a straight
+diagonal camera path. A spring alone retained noticeable side-to-side sway, so it
+was insufficient. The sampling window follows the movement beat, including the
+step delay on sticky/wet terrain and frozen movement; only presentation owns it.
+Teleports and new generations reset the history. Rendering interpolates camera
+samples at the display frame rate; there is no body-position interpolation.
+
+A recorded-pose camera plot (straight, diagonal, stop; no gameplay stepping) went
+from 0.247 tiles of cross-path sway with the spring alone to below 0.001 with the
+paired average, and settled at the player's true cell. Static footprints were
+also checked. Strict game/render builds pass. Comfort remains for user playtesting;
+the tradeoff is a little more camera follow delay, not delayed controls or hits.

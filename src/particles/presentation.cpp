@@ -118,7 +118,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_death(cosmetics, entity.cell, EntityKind::None, pose.angle, seed);
     }
     if (!same) pose = {};
-    step_camera_guide(pose, entity, same);
+    if (entity.kind == EntityKind::Player) step_camera_guide(pose, entity, same);
     pose.seen = true;
     pose.generation = entity.generation;
     pose.kind = entity.kind;

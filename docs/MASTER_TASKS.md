@@ -431,7 +431,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [x] Smooth the camera guide while actors snap to their authoritative tiles;
   keep camera motion continuous across simulation ticks, frame rates, stops
   and direction changes without delaying bodies, held items or attack origins.
-- [ ] Smooth the camera staircase during alternating diagonal input; preserve actor tile truth.
+- [x] Smooth the camera staircase during alternating diagonal input; preserve actor tile truth.
 - [x] Alternate cardinal steps while diagonal movement is held, as in Adventures
   with Chickens; preserve explicit aim overrides and deterministic movement.
 - [x] Lower campfire flame anchors slightly so their bottom overlaps the upper

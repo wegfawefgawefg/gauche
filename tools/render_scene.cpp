@@ -10,6 +10,7 @@
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
 #include "motion_scene.hpp"
+#include "camera_path.hpp"
 #include "../src/scenery/overhead.hpp"
 #include "../src/debug/panels.hpp"
 #include "../src/world/encounter.hpp"
@@ -238,7 +239,8 @@ int main(int argc, char** argv) {
         SDL_RenderClear(renderer);
         for (Tile& tile : game.stage.tiles) tile.kind = TileKind::Wall;
         draw_overhead(renderer, graphics, game, &cosmetics, cosmetics.camera, 2, {});
-    } else if (mode == "layout") render_floor_overview(renderer,
+    } else if (mode == "camera-path") render_camera_path(renderer);
+    else if (mode == "layout") render_floor_overview(renderer,
         argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     else if (mode == "mansion-map") render_floor_overview(renderer, 1, &game);
     else {

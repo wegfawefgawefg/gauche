@@ -82,7 +82,9 @@ struct EntityPose {
     bool seen = false;
     std::uint32_t steps = 0;
     ViewCamera previous_camera{}, camera_position{};
-    int camera_steps_remaining = 0;
+    ViewCamera camera_velocity{};
+    std::array<ViewCamera, 60> camera_samples{};
+    int camera_sample_index = 0, camera_stride = 7;
     bool camera_guide_ready = false;
 };
 

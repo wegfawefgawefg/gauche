@@ -12,6 +12,7 @@
 #include "../items/air_bladder.hpp"
 #include "../items/cold_flask.hpp"
 #include "../items/brine.hpp"
+#include "../items/kettle.hpp"
 #include "../items/heat_capsule.hpp"
 #include "../items/quarry_tools.hpp"
 #include "../props/ice_cover.hpp"
@@ -200,6 +201,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 if (entity_at(game, cell, true) >= 0) break;
             }
         }
+    } else if (held.kind == ItemKind::SteamKettle) {
+        for (Cell cell : kettle_cells(game,held,player.cell,facing))
+            mark(renderer,cell,camera,zoom,pattern.effect);
     } else if (pattern.cone) {
         const Cell side{-facing.y, facing.x};
         for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach)

@@ -107,6 +107,8 @@ Sprite item_sprite(ItemKind kind) {
 }
 
 Sprite item_sprite(const Item& item) {
+    if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? Sprite::KettleHot :
+        item.loaded == 1 ? Sprite::KettleFull : Sprite::SteamKettle;
     return item.kind == ItemKind::BearTrap && item.opened ?
         Sprite::BearTrapOpen : item_sprite(item.kind);
 }

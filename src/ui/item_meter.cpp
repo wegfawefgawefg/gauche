@@ -19,7 +19,12 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind == ItemKind::CandleStub) {
+    if (item.kind == ItemKind::SteamKettle) {
+        if (item.loaded == 0) return "EMPTY";
+        if (item.loaded == 2) std::snprintf(result,sizeof(result),compact ? "HOT %ds" : "HOT | COOLS IN %ds",(item.spare+59)/60);
+        else if (item.spare > 0) std::snprintf(result,sizeof(result),compact ? "H %d%%" : "HEATING %d%%",item.spare*100/90);
+        else return compact ? "COLD" : "COLD WATER";
+    } else if (item.kind == ItemKind::CandleStub) {
         if (item_stackable(item)) std::snprintf(result, sizeof(result), "x%d %ds", item.count, (item.loaded+59)/60);
         else std::snprintf(result, sizeof(result), "%ds %d/%d", (item.loaded+59)/60, item.durability, item.max_durability);
     } else if (item.kind == ItemKind::SnowScoop)
@@ -51,6 +56,7 @@ std::string item_state_text(const Item& item, bool compact) {
 }
 
 int item_meter_capacity(const Item& item) {
+    if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? 1800 : 90;
     if (item.max_durability > 0) return item.max_durability;
     if (item.max_uses > 0) return item.max_uses;
     if (const RegionalItem* spec = regional_item(item.kind); spec != nullptr && spec->magazine > 0)
@@ -67,6 +73,7 @@ int item_meter_capacity(const Item& item) {
 }
 
 int item_meter_current(const Item& item) {
+    if (item.kind == ItemKind::SteamKettle) return item.spare;
     if (item.max_durability > 0) return item.durability;
     if (item.max_uses > 0) return item.uses;
     if (item_is_gun(item.kind)) return item.loaded;

@@ -94,7 +94,7 @@ same effective item definition as attacks, including rare attributes.
 | 19 | Fishing line | Implemented: visible hook to 6, reels the actual loose item to your feet at four ticks/cell. Stay still; cover, actors or displaced cargo cut the line. 20 casts. Long reaches 10; Durable gives 40. No damage or actor pulling. | Common; 8 |
 | 20 | Pressure valve | Attach to an adjacent vent to redirect its next bursts toward the aimed direction; recoverable while cool. | Uncommon; 18 |
 | 21 | Sealant | Patch a leaking tank or temporarily plug a water/steam outlet for 10s. Three portions; pressure remains a hazard on reopening. | Common; 9 |
-| 22 | Steam kettle | Fill in shallow water; heat beside fire, then release a short scalding cone for 12 damage and wetting. One carried water charge. | Uncommon; 22 |
+| 22 | Steam kettle | Implemented: fill at fresh water; heat for 1.5s near warmth. Hot for 30s away from heat; wading cools. One-charge cone deals 12 damage including friends and wets for 5s; cold water douses. Reusable. | Uncommon; 22 |
 | 23 | Eel battery | Implemented: adjacent 14-damage contact, weakening along four connected wet steps; 0.75s cooldown, three charges. Hits friends and the user through water. Eels are immune. Big reaches five wet steps; Durable has six charges. | Uncommon; 24 |
 | 24 | Copper wire | Lay up to six linked conductive cells; transfers a received shock, consumes a segment per cell. No idle damage or free power. | Common; 11 |
 | 25 | Grounding spike | Plant to absorb one nearby conducted shock and leave a hot spent spike; recover when cool. Stack 3. | Uncommon; 15 |

@@ -228,7 +228,10 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, ItemKind::SmokedFish, 2, budget.healing);
             supply(game, room, round % 2 == 0 ? ItemKind::FishingLine : ItemKind::AirBladder, 1, budget.equipment);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
-            if (room.role == RoomRole::Bathhouse) supply(game,room,ItemKind::CoalLump,4,budget.ammunition);
+            if (room.role == RoomRole::Bathhouse) {
+                supply(game,room,ItemKind::CoalLump,4,budget.ammunition);
+                supply(game,room,ItemKind::SteamKettle,1,budget.equipment);
+            }
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);

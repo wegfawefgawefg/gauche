@@ -58,7 +58,9 @@ ItemPattern item_pattern(const Item& item) {
         pattern.cooldown = (pattern.cooldown * 3 + 1) / 2;
         break;
     case ItemAttribute::Big:
-        if (item.kind == ItemKind::SnowScoop || item.kind == ItemKind::GritPouch || item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
+        if (item.kind == ItemKind::SteamKettle) {
+            ++pattern.half_width; ++pattern.maximum;
+        } else if (item.kind == ItemKind::SnowScoop || item.kind == ItemKind::GritPouch || item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
         else if (pattern.blast_radius > 0) ++pattern.blast_radius;
         else if (pattern.effect == PatternEffect::Damage && !pattern.ray) {
             pattern.maximum = std::max(2, pattern.maximum);
@@ -75,6 +77,11 @@ ItemPattern item_pattern(const Item& item) {
         pattern.heal = (pattern.heal * 3 + 1) / 2;
         pattern.cooldown = (pattern.cooldown * 5 + 3) / 4;
         break;
+    }
+    // CONTENTS: Empty kettles fill one cell; cold water keeps the hot spray's footprint.
+    if (item.kind == ItemKind::SteamKettle) {
+        if (item.loaded == 0) { pattern.minimum = pattern.maximum = 1; pattern.half_width = 0; }
+        if (item.loaded != 2) { pattern.damage = 0; pattern.effect = PatternEffect::Utility; }
     }
     return pattern;
 }

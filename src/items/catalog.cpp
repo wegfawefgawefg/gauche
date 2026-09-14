@@ -1,6 +1,7 @@
 #include "catalog.hpp"
 #include "candles.hpp"
 #include "coal.hpp"
+#include "kettle.hpp"
 #include "brine.hpp"
 #include "alarms.hpp"
 #include "fishing_line.hpp"
@@ -19,6 +20,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* kettle = kettle_item(kind)) return kettle;
     if (const RegionalItem* coal = coal_item(kind)) return coal;
     if (const RegionalItem* candle = candle_supply(kind)) return candle;
     if (const RegionalItem* brine = brine_item(kind)) return brine;

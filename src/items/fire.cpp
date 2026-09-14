@@ -1,4 +1,5 @@
 #include "fire.hpp"
+#include "kettle.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
 
@@ -19,6 +20,7 @@ bool light_stick(Game& game, Item& item, Cell source) {
 // the remaining stick condition intact; water puts it out early.
 void step_item_state(Game& game, Item& item, Cell cell, bool wet) {
     item.cooldown = std::max(0, item.cooldown - 1);
+    step_kettle(game,item,cell,wet);
     if (item.flame_ticks <= 0) return;
     --item.flame_ticks;
     if (wet) {

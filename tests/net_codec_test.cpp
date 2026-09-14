@@ -75,6 +75,9 @@ int main() {
     original.stage.tiles[13].prop = {PropKind::Stove,23,1,false,7011};
     Entity* coal = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{22,8}));
     coal->ground_item = make_item(ItemKind::CoalLump,7,ItemAttribute::Long);
+    Entity* kettle = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{8,8}));
+    kettle->ground_item = make_item(ItemKind::SteamKettle);
+    kettle->ground_item.loaded = 2; kettle->ground_item.spare = 731;
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
     owner->inventory.slots[5] = make_item(ItemKind::CandleStub, 1, ItemAttribute::Durable);

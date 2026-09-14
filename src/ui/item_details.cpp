@@ -193,6 +193,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     if (item.kind == ItemKind::CandleStub)
         std::snprintf(line, sizeof(line), "FUEL %.1fs | PLACED HP %d", static_cast<double>(item.loaded)/60, item.durability);
+    if (item.kind == ItemKind::SteamKettle)
+        std::snprintf(line,sizeof(line),item.loaded == 0 ? "FILL AT WATER | HEAT 1.5s" :
+            item.loaded == 1 ? "COLD: DOUSE | WATER 5s" : "SCALD %d | WATER 5s",pattern.damage);
     if (item.kind == ItemKind::WickSpool)
         std::snprintf(line, sizeof(line), "CANDLE +30s | CAPACITY 80s");
     if (item.kind == ItemKind::FishingLine)
@@ -246,7 +249,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
-    if (item.kind == ItemKind::Bow)
+    if (item.kind == ItemKind::SteamKettle)
+        std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
+    else if (item.kind == ItemKind::Bow)
         std::snprintf(line, sizeof(line), "QUIVER %d ARROWS", item.loaded);
     else if (item_is_gun(item.kind))
         std::snprintf(line, sizeof(line), "MAG %d / %d   SPARE %d",
@@ -266,7 +271,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::CandleStub) {
+    if (item.kind == ItemKind::SteamKettle) {
+        text(renderer,x + 10,y + 129,item_state_text(item,false),167,197,199);
+    } else if (item.kind == ItemKind::CandleStub) {
         text(renderer, x + 10, y + 129, item_stackable(item) ? "UNUSED: STACKS UP TO 4" : "USED: DOES NOT STACK", 167, 197, 199);
     } else if (item.kind == ItemKind::FishingLine) {
         text(renderer, x + 10, y + 129, "STAY STILL | BLOCKERS CUT LINE", 167, 197, 199);

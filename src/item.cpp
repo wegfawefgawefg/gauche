@@ -1,4 +1,6 @@
 #include "game.hpp"
+#include "entities/dispatch.hpp"
+#include "entities/behavior.hpp"
 #include "item_pattern.hpp"
 #include "world/ground_items.hpp"
 #include "props/interaction.hpp"
@@ -180,6 +182,7 @@ namespace {
 void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.health <= 0 || damage <= 0) return;
+    remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
@@ -210,6 +213,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
             }
         }
     }
+    if (entity.health == 0) topple_zombie_stack(game, slot);
 }
 
 } // namespace

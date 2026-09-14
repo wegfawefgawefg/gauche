@@ -253,6 +253,16 @@ special member array on every entity. Define what happens in crowded cells so
 toppling preserves survivors without overlapping impassable actors or silently
 deleting zombies. This belongs in a fitting haunted/undead encounter pool.
 
+Shared behavior slots are now in the entity struct, gameplay hash and snapshot
+codec: two generation-checked handles, two cells, counters, labels and countdowns.
+Chicks seek an adult leader; flockmates flee a remembered attacker and retain its
+last known position. The zombie stack now has bespoke init/step code, stacked
+rendering, a generated falling groan/thump sound, and surviving zombies that tumble
+out one at a time. Blocked neighbors or a full entity pool retain unsplit bodies.
+It currently appears in late forest undead side rooms; the haunted-house pool will
+reuse it. Strict build, existing snapshot codec check and a static stacked/falling
+sprite capture pass; behavior balance awaits user playtesting.
+
 The minimum target is **20 genuinely distinct enemies, 20 loose-debris types,
 and 50 biome-specific items per biome**. Across four biomes this is at least
 80 enemies, 80 debris types, and 200 items, plus a small shared item pool.

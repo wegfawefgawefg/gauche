@@ -136,7 +136,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ? 1 : 2;
         if (entity_layer != layer) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
-        if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F)
+        if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key) {
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;
@@ -166,10 +166,30 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);
         SDL_SetTextureColorModFloat(texture, brightness.red,
                                     brightness.green, brightness.blue);
-        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
-            pose != nullptr && pose->seen ? pose->angle : 0.0,
-            nullptr, pose != nullptr && pose->horizontal_flip ?
-                     SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+        const int bodies = entity.kind == EntityKind::ZombieStack ?
+                           std::clamp(entity.counter_a, 1, 5) : 1;
+        for (int body = 0; body < bodies; ++body) {
+            SDL_FRect body_rect = rect;
+            double angle = pose != nullptr && pose->seen ? pose->angle : 0.0;
+            if (body > 0) {
+                const float sway = std::sin(static_cast<float>(game.tick % 6000) * .05F +
+                                           static_cast<float>(body)) * .08F;
+                body_rect.x += pixels * sway * static_cast<float>(body);
+                body_rect.y -= pixels * .58F * static_cast<float>(body);
+                angle += static_cast<double>(sway * 80);
+                if (entity.label_a != 0) angle += body % 2 == 0 ? 35 : -35;
+            }
+            // FALL: New survivors tumble out from the old stack's cell during their stun.
+            if (entity.kind == EntityKind::Zombie && entity.label_b == 1 && entity.timer_b > 0) {
+                const float remaining = static_cast<float>(entity.timer_b) / 24.0F;
+                body_rect.x += static_cast<float>(entity.point_a.x - entity.cell.x) * pixels * remaining;
+                body_rect.y += (static_cast<float>(entity.point_a.y - entity.cell.y) - .6F) * pixels * remaining;
+                angle += static_cast<double>(remaining * 270);
+            }
+            SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
+                nullptr, pose != nullptr && pose->horizontal_flip ?
+                         SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+        }
         SDL_SetTextureAlphaMod(texture, 255);
         SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
         const Item* held = entity.inventory.held();

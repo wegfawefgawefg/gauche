@@ -4,6 +4,7 @@ void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
     case EntityKind::Player: init_player(entity); break;
+    case EntityKind::ZombieStack: init_zombie_stack(game, entity); break;
     case EntityKind::Zombie: init_zombie(game, entity); break;
     case EntityKind::Chicken: init_chicken(game, entity); break;
     case EntityKind::Bat: case EntityKind::FrostBat: init_bat(entity); break;
@@ -25,6 +26,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::ZombieStack: step_zombie_stack(game, slot); break;
     case EntityKind::Zombie: step_zombie(game, slot); break;
     case EntityKind::Chicken: step_chicken(game, slot); break;
     case EntityKind::Bat: case EntityKind::FrostBat: step_bat(game, slot); break;

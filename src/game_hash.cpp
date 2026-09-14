@@ -111,6 +111,16 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.x));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.y));
         mix(hash, static_cast<std::uint64_t>(entity.spawn_wait));
+        for (Handle handle : {entity.entity_a, entity.entity_b}) {
+            mix(hash, static_cast<std::uint64_t>(handle.slot));
+            mix(hash, handle.generation);
+        }
+        for (Cell cell : {entity.point_a, entity.point_b}) {
+            mix(hash, static_cast<std::uint64_t>(cell.x));
+            mix(hash, static_cast<std::uint64_t>(cell.y));
+        }
+        for (int value : {entity.counter_a, entity.counter_b, entity.label_a, entity.label_b,
+                          entity.timer_a, entity.timer_b}) mix(hash, static_cast<std::uint64_t>(value));
         mix(hash, static_cast<std::uint64_t>(entity.birth_tick));
         mix(hash, static_cast<std::uint64_t>(entity.impassable));
         mix(hash, static_cast<std::uint64_t>(entity.hard_blocker));

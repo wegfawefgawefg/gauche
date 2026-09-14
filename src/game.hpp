@@ -120,13 +120,25 @@ bool insert_item(Inventory& inventory, Item item);
 enum class EntityKind : std::uint8_t {
     None, Player, Zombie, Chicken, RailLayer, Train, GroundItem,
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
-    Switch, Campfire, Den, Crusher, Dog,
+    Switch, Campfire, Den, Crusher, Dog, ZombieStack,
 };
+struct Handle {
+    int slot = -1;
+    std::uint32_t generation = 0;
+    friend bool operator==(Handle, Handle) = default;
+};
+
 struct Entity {
     EntityKind kind = EntityKind::None;
     std::uint32_t generation = 0;
     Cell cell{};
     Cell facing{0, 1};
+    // BEHAVIOR: Each kind names its slots beside its own init/step code.
+    Handle entity_a{}, entity_b{};
+    Cell point_a{}, point_b{};
+    int counter_a = 0, counter_b = 0;
+    int label_a = 0, label_b = 0;
+    int timer_a = 0, timer_b = 0; // Shared countdowns; decremented even during stun/sleep.
     Sprite sprite = Sprite::Player;
     LightEmitter light{};
     LightTint self_light{0, 0, 0};
@@ -157,12 +169,6 @@ struct Entity {
     bool fixture_open = false;
     Inventory inventory{};
     Item ground_item{};
-};
-
-struct Handle {
-    int slot = -1;
-    std::uint32_t generation = 0;
-    friend bool operator==(Handle, Handle) = default;
 };
 
 constexpr int max_entities = 512;

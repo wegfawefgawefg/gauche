@@ -35,7 +35,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
 
 bool bleeds(EntityKind kind) {
     switch (kind) {
-    case EntityKind::Player: case EntityKind::Zombie: case EntityKind::Chicken:
+    case EntityKind::Player: case EntityKind::ZombieStack: case EntityKind::Zombie: case EntityKind::Chicken:
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
@@ -87,7 +87,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             held == ItemKind::Musket || held == ItemKind::Shotgun || held == ItemKind::SMG))
             scatter_material(cosmetics.debris, entity.cell, DebrisKind::BrassCase, 1, seed);
         pose.angle = attack_angle(entity.facing);
-        if (entity.kind == EntityKind::Zombie && entity.attack_wait > pose.attack_wait)
+        if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
+            entity.attack_wait > pose.attack_wait)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
     }
     if (same && entity.health < pose.health && entity.health >= 0) {
@@ -125,6 +126,10 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::ZombieTopple:
+        spawn_death(cosmetics, sound.cell, EntityKind::Zombie, 85.0F, seed);
+        push_debris(cosmetics.debris, sound.cell, 1.6F, .07F);
+        break;
     case SoundId::Explosion: case SoundId::Explosion1:
     case SoundId::Explosion2: case SoundId::Explosion3:
         push_debris(cosmetics.debris, sound.cell, 4.0F, .24F);

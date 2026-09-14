@@ -32,6 +32,7 @@ void init_zombie(Game& game, Entity& entity) {
     entity.impassable = true;
 }
 
+// SLOTS: label_b/timer_b and point_a retain the brief fall from a toppled stack.
 void step_zombie(Game& game, int slot) {
     Entity& zombie = game.entities[static_cast<std::size_t>(slot)];
     wander(game, slot);

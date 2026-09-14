@@ -132,7 +132,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u32(entity.generation);
     if (entity.kind == EntityKind::None) return;
     write_cell(writer, entity.cell); write_cell(writer, entity.facing);
-    writer.u8(static_cast<std::uint8_t>(entity.sprite));
+    writer.u16(static_cast<std::uint16_t>(entity.sprite));
     write_light(writer, entity.light);
     writer.u8(entity.self_light.red); writer.u8(entity.self_light.green);
     writer.u8(entity.self_light.blue);
@@ -147,6 +147,12 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
     write_cell(writer, entity.train_origin);
+    for (Handle handle : {entity.entity_a, entity.entity_b}) {
+        writer.i32(handle.slot); writer.u32(handle.generation);
+    }
+    write_cell(writer, entity.point_a); write_cell(writer, entity.point_b);
+    for (int value : {entity.counter_a, entity.counter_b, entity.label_a, entity.label_b,
+                      entity.timer_a, entity.timer_b}) writer.i32(value);
     writer.u64(entity.birth_tick);
     writer.u8(static_cast<std::uint8_t>(entity.impassable));
     writer.u8(static_cast<std::uint8_t>(entity.hard_blocker));
@@ -159,13 +165,13 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
 Entity read_entity(PacketReader& reader) {
     Entity entity;
     const std::uint8_t kind = reader.u8();
-    if (kind > static_cast<std::uint8_t>(EntityKind::Dog)) reader.okay = false;
+    if (kind > static_cast<std::uint8_t>(EntityKind::ZombieStack)) reader.okay = false;
     entity.kind = static_cast<EntityKind>(kind);
     entity.generation = reader.u32();
     if (entity.kind == EntityKind::None) return entity;
     entity.cell = read_cell(reader); entity.facing = read_cell(reader);
-    const std::uint8_t sprite = reader.u8();
-    if (sprite >= static_cast<std::uint8_t>(Sprite::Count)) reader.okay = false;
+    const std::uint16_t sprite = reader.u16();
+    if (sprite >= static_cast<std::uint16_t>(Sprite::Count)) reader.okay = false;
     entity.sprite = static_cast<Sprite>(sprite);
     entity.light = read_light(reader);
     entity.self_light = {reader.u8(), reader.u8(), reader.u8()};
@@ -180,6 +186,15 @@ Entity read_entity(PacketReader& reader) {
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
     entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
     entity.train_origin = read_cell(reader);
+    entity.entity_a = {reader.i32(), reader.u32()};
+    entity.entity_b = {reader.i32(), reader.u32()};
+    for (Handle handle : {entity.entity_a, entity.entity_b})
+        if (handle.slot < -1 || handle.slot >= max_entities) reader.okay = false;
+    entity.point_a = read_cell(reader); entity.point_b = read_cell(reader);
+    entity.counter_a = reader.i32(); entity.counter_b = reader.i32();
+    entity.label_a = reader.i32(); entity.label_b = reader.i32();
+    entity.timer_a = reader.i32(); entity.timer_b = reader.i32();
+    if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     entity.birth_tick = reader.u64();
     entity.impassable = reader.u8() != 0;
     entity.hard_blocker = reader.u8() != 0;
@@ -203,7 +218,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(11);
+    writer.u32(12);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -262,7 +277,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 11) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 12) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

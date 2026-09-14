@@ -54,6 +54,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/world/arena.cpp
     src/entities/dispatch.cpp
     src/entities/player.cpp
+    src/entities/zombie_stack.cpp src/entities/awareness.cpp
     src/entities/zombie.cpp
     src/entities/chicken.cpp
     src/entities/bat.cpp

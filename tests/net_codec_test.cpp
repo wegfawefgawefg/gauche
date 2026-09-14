@@ -7,6 +7,12 @@ int main() {
     start_run(original, 22991);
     for (int tick = 0; tick < 120; ++tick) step_game(original, {});
     if (Entity* player = get_entity(original, original.players[0])) {
+        player->entity_a = original.players[0];
+        player->entity_b = {400, 91}; // A stale reference is valid saved behavior state.
+        player->point_a = {13, 27}; player->point_b = {19, 8};
+        player->counter_a = 4; player->counter_b = -8;
+        player->label_a = 2; player->label_b = 3;
+        player->timer_a = 75; player->timer_b = 109;
         player->burn_ticks = 17;
         player->scorch_ticks = 239;
         player->freeze_ticks = 23;

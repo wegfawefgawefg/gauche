@@ -67,7 +67,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy]\n");
+        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -91,6 +91,14 @@ int main(int argc, char** argv) {
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};
+    }
+    if (mode == "stack") {
+        Entity* stack = get_entity(game, spawn_entity(game, EntityKind::ZombieStack, {14, 10}));
+        stack->counter_a = 4;
+        Entity* falling = get_entity(game, spawn_entity(game, EntityKind::Zombie, {15, 12}));
+        falling->point_a = {14, 12};
+        falling->label_b = 1;
+        falling->timer_b = 12;
     }
     Entity& player = *get_entity(game, game.players[0]);
     player.inventory = {};

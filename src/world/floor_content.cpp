@@ -86,4 +86,6 @@ void populate_floor(Game& game, int columns, Cell branch, Cell extra) {
     }
     if (game.run.floor == 1) place_ground_item(game, {8, 15}, ItemKind::Stick);
     spawn_entity(game, EntityKind::Spawner, {branch_x + 3, 25});
+    if (world == 0 && local_floor >= 2)
+        spawn_entity(game, EntityKind::ZombieStack, {branch_x - 3, 26});
 }

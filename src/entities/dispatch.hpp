@@ -35,3 +35,7 @@ void step_spawner(Game& game, int slot);
 void step_den(Game& game, int slot);
 void step_rail(Game& game, int slot);
 void step_train(Game& game, int slot);
+
+void init_zombie_stack(Game& game, Entity& entity);
+void step_zombie_stack(Game& game, int slot);
+bool topple_zombie_stack(Game& game, int slot);

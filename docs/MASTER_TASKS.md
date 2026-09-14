@@ -394,7 +394,7 @@ the available art reference; new source scripts keep a small explicit palette.
 - [ ] Author small environmental scenes inside room/prefab pools: wall-fed
   stream/waterfall into shallow pools, wind through a broken wall, creaking
   ruin, etc. Combine terrain/decor, local audio and local visual effects.
-- [ ] Shallow-water steps produce expanding puddle rings and splashes, with
+- [x] Shallow-water steps produce expanding puddle rings and splashes, with
   appropriate water footsteps; streams/ripples stay restrained and readable.
 - [ ] Keep ambient playback, random schedules, trigger-consumed flags and
   ripples in local presentation state, outside snapshots/gameplay hashes.
@@ -419,15 +419,6 @@ the available art reference; new source scripts keep a small explicit palette.
 - [x] Inspect and follow Splonks' F1 global ImGui visibility and F2 debug-window
   selector behavior. Local debug state must not alter gameplay/network state.
 
-Feedback implementation: the puffball causes 75 ticks of sleep, now explicitly
-shown. Status badges show countdowns/effects; burning shows current rate and
-remaining damage. Blocked walking uses a latched wood/stone bonk with no debris;
-movement turns before explicit aim. Fire wisps render between fixtures and actors
-and originate higher. F1 hides/restores debug windows; F2 toggles the categorized
-selector while visible. Combat has independent player/enemy world-grid gates,
-both off by default; inventory patterns remain. Builds and static status/debug
-captures checked. Controller handling and contact feel await user playtesting.
-
 ## Playtest feedback: stacks, uses and cooking
 
 - [x] Make ammo packs stack and merge matching pickups into a carried partial
@@ -442,14 +433,6 @@ captures checked. Controller handling and contact feel await user playtesting.
   popup (meat -> cooked meat/pan icon) is an optional future direction, not a
   requirement to add tutorial prompts everywhere.
 
-Stack/cooking implementation: ammo max stack is ten; partial pickup merges what
-fits and leaves excess on the ground. Shops/rewards/crafting remain all-or-none.
-Used tools cannot merge; stacks preserve the longer cooldown. Non-stackable gear
-has no fake quantity/quantity meter, and detail cards label stackability alongside
-uses/condition/ammo. Cooking processes one portion per 45 ticks with a new sizzle,
-without consuming raw meat if the result cannot fit. Static inventory capture
-and strict builds checked; user owns interaction/balance playtesting.
-
 ## Playtest feedback: creatures, melee and forest visibility
 
 - [ ] Give cooked meat a distinct munch/chew cue, separate from bandages.
@@ -463,8 +446,9 @@ and strict builds checked; user owns interaction/balance playtesting.
 - [ ] Give mothers a protective response when their chicks are attacked;
   survivors remember the attacker and do not immediately wander back to danger.
   Reuse the chain-following helpers for suitable later creatures.
-- [ ] Walkable puddles/streams extinguish burning. Define which water also
-  washes off poison/residue when those statuses/materials are implemented.
+- [x] Walkable puddles/streams extinguish burning.
+- [ ] Define which water washes off poison/residue when those statuses and
+  materials are implemented.
 - [ ] Replace forest's washed-out overhead cloud veil with fixed world-anchored
   canopy silhouettes and camera parallax. Retain slow cloud effects where they
   fit (especially industry/lava); use a large soft/dithered central cutout so
@@ -472,6 +456,13 @@ and strict builds checked; user owns interaction/balance playtesting.
 - [ ] Improve creature identity/readability; the user could not identify a
   round pursuing creature with a delayed attack/vocalization. Verify the sprite
   and behavior before identifying it; preserve that dodgeable attack timing.
+- [ ] Redesign bow input around hold-to-draw/release-to-fire, taking Splonks'
+  bow feel as reference. Eliminate the manual magazine-style bow reload; add
+  audible draw, tension/release and impact, with visible traveling arrows.
+- [ ] Separate instant-hit cosmetic tracers from deterministic traveling or
+  persistent projectiles (arrows, grenades, spells). Travel/hit timing must match
+  damage timing; arrows splinter into local debris on impact. Retain explicit
+  ammo use, charge cancellation and safe behavior on switching/death/reconnect.
 - [ ] Add brief item-specific melee windups and swing/exertion sounds: fists
   very quick, sticks/heavier tools longer. Ordinary guns fire immediately;
   launchers/throws may have a deliberate preparation beat where appropriate.

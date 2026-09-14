@@ -35,7 +35,8 @@ void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
 } // namespace
 
 void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
-              const Game& game, const Entity& player) {
+              const Game& game, const Entity& player,
+              const PointerState& pointer, bool compact_details) {
     const bool quiet = (SDL_GetModState() & SDL_KMOD_ALT) != 0;
     // The inventory stays clear of the player, with the selected row protruding.
     for (int index = 0; index < quick_slots; ++index) {
@@ -90,16 +91,28 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     ui_text(renderer, 20.0F, 335.0F, health);
 
     const Item& held = *player.inventory.held();
-    if (!quiet && held.kind != ItemKind::None)
-        draw_item_details(renderer, graphics, player, held,
-                          446.0F, 164.0F, 180.0F, 172.0F, "SELECTED");
     if (quiet) return;
-    for (const Entity& entity : game.entities) {
-        if (entity.kind == EntityKind::GroundItem && entity.cell == player.cell &&
-            entity.ground_item.kind != ItemKind::None) {
-            draw_item_details(renderer, graphics, player, entity.ground_item,
-                              255.0F, 164.0F, 180.0F, 172.0F, "E PICK UP");
-            break;
-        }
+    if (held.kind != ItemKind::None) {
+        if (compact_details)
+            draw_compact_item_details(renderer, graphics, held,
+                                      446.0F, 307.0F, 180.0F, "SELECTED");
+        else
+            draw_item_details(renderer, graphics, player, held,
+                              446.0F, 128.0F, 180.0F, 208.0F, "SELECTED");
     }
+    const Entity* ground = nullptr;
+    for (const Entity& entity : game.entities) {
+        if (entity.kind != EntityKind::GroundItem ||
+            entity.ground_item.kind == ItemKind::None) continue;
+        if (pointer.inside && entity.cell == pointer.cell) { ground = &entity; break; }
+        if (ground == nullptr && entity.cell == player.cell) ground = &entity;
+    }
+    if (ground == nullptr) return;
+    const char* label = ground->cell == player.cell ? "E PICK UP" : "GROUND";
+    if (compact_details)
+        draw_compact_item_details(renderer, graphics, ground->ground_item,
+                                  255.0F, 307.0F, 180.0F, label);
+    else
+        draw_item_details(renderer, graphics, player, ground->ground_item,
+                          255.0F, 128.0F, 180.0F, 208.0F, label);
 }

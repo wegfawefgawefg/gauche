@@ -180,7 +180,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                  const Game& game, int local_owner, float zoom,
                  const Cosmetics* cosmetics, const PointerState& pointer,
-                 bool show_hud) {
+                 bool show_hud, bool compact_details) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
     const ViewCamera camera = cosmetics != nullptr ?
         camera_for(*cosmetics, game, local_owner) :
@@ -204,7 +204,8 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
-    if (player != nullptr && show_hud) draw_hud(renderer, graphics, game, *player);
+    if (player != nullptr && show_hud)
+        draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];

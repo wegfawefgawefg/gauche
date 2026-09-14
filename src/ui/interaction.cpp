@@ -138,6 +138,9 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool open_down = inventory_button_down(runtime);
     const bool compare_down = compare_button_down(runtime);
+    const bool compact_down = compact_details_button_down(runtime);
+    if (compact_down && !ui.compact_latch) ui.compact_details = !ui.compact_details;
+    ui.compact_latch = compact_down;
     if (open_down && !ui.inventory_latch) {
         ui.inventory_open = !ui.inventory_open;
         ui.compare_ground = false;

@@ -136,6 +136,27 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     text(renderer, x + 10.0F, y + 129.0F, line, 194, 192, 180);
     if (height >= 165.0F) {
         text(renderer, x + 10.0F, y + 140.0F, "PATTERN", 185, 185, 172);
-        draw_pattern_diagram(renderer, item, x + 10.0F, y + 148.0F, width);
+        draw_pattern_diagram(renderer, item, x + 10.0F, y + 148.0F,
+                             width - 20.0F, height - 158.0F);
     }
+}
+
+void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
+                               const Item& item, float x, float y,
+                               float width, const char* label) {
+    if (item.kind == ItemKind::None) return;
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    plate(renderer, x + 4.0F, y + 4.0F, width, 31.0F,
+          {0.01F, 0.01F, 0.01F, 0.72F});
+    plate(renderer, x, y, width, 31.0F,
+          {0.075F, 0.085F, 0.09F, 0.96F});
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
+    SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
+    text(renderer, x + 28.0F, y + 3.0F, label, 178, 164, 151);
+    text(renderer, x + 28.0F, y + 14.0F, item_name(item.kind));
+    text(renderer, x + width - 54.0F, y + 14.0F,
+         item_state_text(item, true), 200, 207, 189);
+    text(renderer, x + width - 54.0F, y + 23.0F,
+         item_cooldown_text(item), 217, 183, 128);
 }

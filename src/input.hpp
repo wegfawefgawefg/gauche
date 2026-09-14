@@ -7,6 +7,7 @@
 void register_game_bindings(GubsyRuntime& runtime);
 bool inventory_button_down(GubsyRuntime& runtime);
 bool compare_button_down(GubsyRuntime& runtime);
+bool compact_details_button_down(GubsyRuntime& runtime);
 struct PointerState {
     float x = 0.0F;
     float y = 0.0F;

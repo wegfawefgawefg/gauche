@@ -1,5 +1,6 @@
 #include "../src/game.hpp"
 #include "../src/item_pattern.hpp"
+#include "../src/ui/pattern_diagram.hpp"
 
 #include <cstdio>
 
@@ -160,11 +161,30 @@ bool item_stack_rules() {
                  player->inventory.held()->count == 1,
                  "persistent fist consumed its stack on use");
 }
+
+bool pattern_layout_rules() {
+    const PatternDiagramLayout fist = pattern_diagram_layout(
+        item_pattern(ItemKind::Fist), 10.0F, 20.0F, 160.0F, 50.0F);
+    if (!check(fist.min_x == -1 && fist.max_x == 2 &&
+               fist.min_y == -1 && fist.max_y == 1 &&
+               fist.columns == 4 && fist.rows == 3,
+               "short pattern was not padded by one cell")) return false;
+    ItemPattern large;
+    large.maximum = 49;
+    large.half_width = 24;
+    const PatternDiagramLayout fitted = pattern_diagram_layout(
+        large, 10.0F, 20.0F, 160.0F, 50.0F);
+    return check(fitted.x >= 10.0F && fitted.y >= 20.0F &&
+                 fitted.x + static_cast<float>(fitted.columns) * fitted.cell_size <= 170.01F &&
+                 fitted.y + static_cast<float>(fitted.rows) * fitted.cell_size <= 70.01F,
+                 "large pattern escaped its allotted card area");
+}
 } // namespace
 
 int main() {
     if (!buckler_rules() || !equipment_rules() ||
-        !item_attribute_rules() || !item_stack_rules()) return 1;
+        !item_attribute_rules() || !item_stack_rules() ||
+        !pattern_layout_rules()) return 1;
     std::puts("item rules passed");
     return 0;
 }

@@ -416,7 +416,7 @@ int main(int argc, char** argv) {
                                                       networked ? network.local_owner : 0)),
                         !interaction.inventory_open && !border_smoke &&
                         !has_reward_offer(active, networked ? network.local_owner : 0) &&
-                        active.run.phase != RunPhase::Shop);
+                        active.run.phase != RunPhase::Shop, interaction.compact_details);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
             draw_interaction(frame.renderer, graphics, active,

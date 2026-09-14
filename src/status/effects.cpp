@@ -12,6 +12,7 @@
 #include "../entities/avalanche_ram.hpp"
 #include "../entities/snow_effigy.hpp"
 #include "../entities/candle_keeper.hpp"
+#include "../entities/shard_colony.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../game.hpp"
 #include "../surfaces/interaction.hpp"
@@ -44,6 +45,7 @@ bool apply_sleep(Entity& actor, int ticks) {
     interrupt_avalanche_ram(actor);
     interrupt_snow_effigy(actor);
     interrupt_candle_keeper(actor);
+    interrupt_shard_node(actor);
     interrupt_seal_thief(actor);
     interrupt_fishing_widow(actor);
     interrupt_frozen_pilgrim(actor);
@@ -71,6 +73,7 @@ bool apply_stun(Entity& actor, int ticks) {
     interrupt_avalanche_ram(actor);
     interrupt_snow_effigy(actor);
     interrupt_candle_keeper(actor);
+    interrupt_shard_node(actor);
     interrupt_seal_thief(actor);
     interrupt_fishing_widow(actor);
     interrupt_frozen_pilgrim(actor);

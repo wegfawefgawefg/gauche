@@ -8,6 +8,7 @@
 #include "entities/knight_render.hpp"
 #include "entities/drummer_render.hpp"
 #include "entities/warden_render.hpp"
+#include "entities/shard_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -380,6 +381,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting, &game.stage);
     draw_owl_landing(renderer, graphics, game, camera, zoom, lighting);
+    draw_shard_links(renderer,game,camera,zoom,lighting);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
     if (cosmetics != nullptr)

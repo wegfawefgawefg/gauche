@@ -37,6 +37,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::DrumBeat1: case SoundId::DrumBeat2: case SoundId::DrumBeat3:
     case SoundId::VaneBreak: case SoundId::GlobeBreak: case SoundId::SealBark: case SoundId::CreelBreak:
     case SoundId::RockImpact: case SoundId::ArrowImpact: case SoundId::IceNeedleHit:
+    case SoundId::ShardCharge: case SoundId::ShardPulse: case SoundId::ShardBreak:
     case SoundId::KeeperScold: case SoundId::KeeperWarn: case SoundId::KeeperCast:
     case SoundId::KeeperDeath: case SoundId::CabinetOpen:
     case SoundId::EffigyCreak: case SoundId::EffigyWarn: case SoundId::EffigyHit: case SoundId::EffigyDeath:

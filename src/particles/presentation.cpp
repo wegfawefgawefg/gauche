@@ -155,6 +155,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         spawn_flame(cosmetics,sound.cell,seed,false);
         spawn_flame(cosmetics,sound.cell,seed+23,false);
         break;
+    case SoundId::ShardBreak:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::CrystalSplinter,6,seed);
+        break;
     case SoundId::KeeperDeath:
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::Wax,5,seed);
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::WoolTuft,3,seed+31);

@@ -12,6 +12,7 @@
 #include "../entities/avalanche_ram.hpp"
 #include "../entities/snow_effigy.hpp"
 #include "../entities/candle_keeper.hpp"
+#include "../entities/shard_colony.hpp"
 #include "../entities/death_sound.hpp"
 #include "shove.hpp"
 #include "../entities/attacks.hpp"
@@ -35,6 +36,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_avalanche_ram(entity);
     interrupt_snow_effigy(entity);
     interrupt_candle_keeper(entity);
+    interrupt_shard_node(entity);
     interrupt_seal_thief(entity);
     interrupt_fishing_widow(entity);
     interrupt_frozen_pilgrim(entity);

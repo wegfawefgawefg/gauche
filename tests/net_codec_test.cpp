@@ -1,5 +1,6 @@
 #include "../src/net_codec.hpp"
 #include "../src/projectiles/projectile.hpp"
+#include "../src/entities/shard_colony.hpp"
 
 #include <cstdio>
 
@@ -93,6 +94,14 @@ int main() {
     original.run.pending_offers[0][0][0] =
         {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,
          1, ItemAttribute::Big};
+    // COLONY: Surviving nodes keep the old generation as their grouping identity.
+    const Handle colony = spawn_entity(original,EntityKind::ShardColony,{17,8});
+    for (Cell cell : {Cell{19,8},Cell{19,10}}) {
+        Entity* node = get_entity(original,spawn_entity(original,EntityKind::ShardColony,cell));
+        node->entity_a = colony; node->label_a = ShardCharge; node->timer_a = 23;
+        node->timer_b = 71; node->point_a = cell;
+    }
+    remove_entity(original,colony);
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

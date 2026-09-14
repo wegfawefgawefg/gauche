@@ -1,5 +1,6 @@
 #include "loot.hpp"
 #include "../entities/scavenging.hpp"
+#include "../entities/shard_colony.hpp"
 #include "ground_items.hpp"
 
 #include <algorithm>
@@ -30,6 +31,7 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::ShardColony: drop_shard_colony(game,enemy); break;
     case EntityKind::CandleKeeper: {
         const auto roll = random_u32(game) % 100;
         if (roll < 30) place_ground_item(game,enemy.cell,ItemKind::CandleStub);

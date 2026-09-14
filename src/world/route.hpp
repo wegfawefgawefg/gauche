@@ -6,7 +6,7 @@
 
 enum class RoomRole { Entrance, Exit, Clearing, Thicket, Brook, Ruins,
                       Den, Cache, Shrine, Workshop, Orchard, Secret,
-                      Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel };
+                      Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel, CrystalGallery };
 enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps };
 
 struct RoomPlan {

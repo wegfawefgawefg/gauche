@@ -3,6 +3,7 @@
 #include "loot.hpp"
 #include "ice_terrain.hpp"
 #include "lens_watch.hpp"
+#include "crystal_gallery.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
 #include "../entities/seal_thief.hpp"
@@ -70,7 +71,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
     }
 }
 
-void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
+void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
@@ -105,6 +106,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         }
         if (!warden) enemy(game, room, EntityKind::MirrorKnight, 3, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        return;
+    }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::CrystalGallery) {
+        if (budget.threat >= 3 && get_entity(game,populate_crystal_gallery(game,plan,room))) budget.threat -= 3;
+        if (round >= 2) enemy(game,room,EntityKind::FrostBat,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::Chapel) {
@@ -225,6 +231,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+        } else if (room.role == RoomRole::CrystalGallery) {
+            supply(game,room,ItemKind::IceBrick,2,budget.equipment);
         } else if (room.role == RoomRole::Chapel) {
             supply(game,room,ItemKind::BrineFlask,2,budget.equipment);
         } else if (room.role == RoomRole::MemorialCourt) {
@@ -342,7 +350,7 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;
-        encounter(game, room, budget);
+        encounter(game, plan, room, budget);
         room_loot(game, room, budget);
     }
     // SUPPLIES: A sparse role roll must not accidentally remove all healing or new equipment.

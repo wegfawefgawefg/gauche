@@ -431,3 +431,20 @@ workshop, ruin and den placement accompany the behavior. Forest roster is now
 nineteen; the linked burrow worm remains. Game and static-render targets build
 strictly, and a static pose/held-loot sheet was inspected. No gameplay playtest.
 Gameplay version C7 rejects peers missing these entity kinds and rules.
+
+
+## Door bypass at offset room joins
+
+A door was placed at one endpoint of a narrow bent corridor. With jittered room
+centers, other cells along that bend could connect both rooms, bypassing the lock.
+Exit and secret leaf rooms now get a one-tile boundary wall with exactly one
+opening facing their graph neighbor. The outside approach is explicitly rejoined
+because the old bend may lie on the boundary. The boundary remains ordinary
+diggable terrain; only free walking around the lock is prevented. Secret entrances
+keep their chipped barrier and optional nature.
+
+The layout diagnostic now checks both a solvable key-to-exit route and that the
+objective is reachable while blocking the door makes the exit unreachable. Static
+layouts 1, 2, 7 and 41 pass both checks. Seed 41 caught the approach-bend issue during
+the change and passes with the explicit outside join. Strict builds pass; no live
+playtest. Geometry changes apply to newly generated floors; gameplay version C8.

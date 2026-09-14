@@ -87,8 +87,6 @@ void connect_rooms(Game& game, FloorPlan& plan, RouteEdge edge) {
     corridor(game, plan, a.center, first, half_width);
     corridor(game, plan, first, second, half_width);
     corridor(game, plan, second, b.center, half_width);
-    if (exit) plan.door = second;
-    if (secret) plan.secret_door = second;
 }
 
 } // namespace
@@ -101,9 +99,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     plan.protected_cells.assign(game.stage.tiles.size(), 0);
     for (const RoomPlan& room : plan.rooms) carve_room(game, plan, room);
     for (RouteEdge edge : plan.edges) connect_rooms(game, plan, edge);
-    // SECRET: A chipped barrier is optional and can be opened with ordinary attacks.
-    if (plan.secret_room >= 0)
-        *game.stage.at(plan.secret_door) = {TileKind::Wall, 25, 0, 30, BreakRule::Damageable, 0};
+    place_room_gates(game, plan);
     for (int y = 0; y < plan.height; ++y)
         for (int x = 0; x < plan.width; ++x)
             if (x == 0 || y == 0 || x == plan.width - 1 || y == plan.height - 1)

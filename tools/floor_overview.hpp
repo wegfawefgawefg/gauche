@@ -61,9 +61,9 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
                       top + static_cast<float>(room.center.y - room.half_height - 2) * scale,
                       room_name(room.role));
     char header[160];
-    std::snprintf(header, sizeof(header), "SEED %llu   %zu ROOMS   %zu LINKS   %dx%d   ROUTE %s",
+    std::snprintf(header, sizeof(header), "SEED %llu   %zu ROOMS   %zu LINKS   %dx%d   ROUTE %s   LOCK %s",
         static_cast<unsigned long long>(seed), plan.rooms.size(), plan.edges.size(),
-        plan.width, plan.height, floor_reachable(game) ? "VALID" : "BLOCKED");
+        plan.width, plan.height, floor_reachable(game) ? "VALID" : "BLOCKED", floor_lock_required(game) ? "SEALED" : "BYPASS");
     if (supplied != nullptr) std::snprintf(header, sizeof(header), "HAUNTED HOUSE   %dx%d   LEVER ROUTE %s",
         plan.width, plan.height, floor_reachable(game) ? "VALID" : "BLOCKED");
     small_ui_text(renderer, 15, 8, header);

@@ -12,7 +12,6 @@ this implementation pass uses builds and focused render/asset inspection, withou
 adding a large test suite. Validation/playtest bullets below describe desired
 coverage, not a requirement to run autonomous playthroughs. Unchecked work stays
 visible until implemented; visual changes awaiting inspection are noted explicitly.
-
 ## Tile rules and damage feedback
 
 - [x] Give tiles one explicit break rule: **unbreakable**, **damageable**, or
@@ -427,11 +426,12 @@ Forest ambience: 20 generated cues, dedicated loop/event voices and local
 schedules. Build checked; shallow-water scenes and later biomes remain.
 ## Playtest feedback: camera, controls, menus and world detail
 
-- [ ] Fix locks bypassed by ordinary walking; verify locked door separates entry from exit.
+- [x] Fix locks bypassed by ordinary walking; verify locked door separates entry from exit.
 
 - [x] Smooth the camera guide while actors snap to their authoritative tiles;
   keep camera motion continuous across simulation ticks, frame rates, stops
   and direction changes without delaying bodies, held items or attack origins.
+- [ ] Smooth the camera staircase during alternating diagonal input; preserve actor tile truth.
 - [x] Alternate cardinal steps while diagonal movement is held, as in Adventures
   with Chickens; preserve explicit aim overrides and deterministic movement.
 - [x] Lower campfire flame anchors slightly so their bottom overlaps the upper

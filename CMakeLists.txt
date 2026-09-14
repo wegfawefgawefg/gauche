@@ -81,7 +81,7 @@ set(GAUCHE_ENTITY_SOURCES
 )
 
 set(GAUCHE_WORLD_SOURCES src/world/floor_layout.cpp src/world/floor_reachability.cpp
-    src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp
+    src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp
     src/world/room_population.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/loot.cpp)
 

@@ -11,7 +11,7 @@
 namespace {
 
 bool conductive_actor(const Entity& actor) {
-    return actor.health > 0 && !actor.hard_blocker &&
+    return actor.health > 0 && !actor.hard_blocker && actor.kind != EntityKind::GlassEel &&
         (actor.move_interval > 0 || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest);
 }
 

@@ -3,6 +3,7 @@
 #include "world/floating_render.hpp"
 #include "entities/bell_diver.hpp"
 #include "entities/leech_render.hpp"
+#include "entities/eel_render.hpp"
 #include "entities/mason_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
@@ -255,6 +256,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
             apply_flight_pose(entity, game.tick, body_rect, angle);
             apply_leech_pose(entity, game.tick, body_rect, angle);
+            apply_eel_pose(entity, game.tick, body_rect, angle);
             if (entity.kind == EntityKind::Trap && entity.ground_item.kind == ItemKind::SpringTrap)
                 angle = std::atan2(static_cast<double>(entity.facing.y), static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
             const bool worm = entity.kind == EntityKind::BurrowWorm;
@@ -262,7 +264,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, !worm && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip ?
+                nullptr, !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
         SDL_SetTextureAlphaMod(texture, 255);

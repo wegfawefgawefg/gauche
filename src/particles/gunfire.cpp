@@ -14,7 +14,8 @@ void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
         const ShotEvent& shot = game.shots[static_cast<std::size_t>(index)];
         if (distance(shot.source, focus) > 24 && distance(shot.end, focus) > 24) continue;
         if (shot.electric) {
-            spawn_electric_arc(cosmetics, shot.source, shot.end, key);
+            if (shot.impact) spawn_electric_arc(cosmetics, shot.source, shot.end, key);
+            else spawn_water_arc(cosmetics, shot.source, shot.end, key);
             if (shot.casing) scatter_material(cosmetics.debris, shot.end, DebrisKind::Acorn, 2, key);
             continue;
         }

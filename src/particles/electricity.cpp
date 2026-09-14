@@ -1,5 +1,23 @@
 #include "electricity.hpp"
 
+void spawn_water_arc(Cosmetics& cosmetics, Cell from, Cell to, std::uint64_t seed) {
+    // SURFACE: A thin traveling branch; no repeated impact forks or a light per wet tile.
+    RibbonParticle bolt;
+    bolt.count = 5; bolt.life = bolt.span = 7;
+    bolt.red = 117; bolt.green = 191; bolt.blue = 218;
+    const float dx = static_cast<float>(to.x - from.x), dy = static_cast<float>(to.y - from.y);
+    for (int i = 0; i < bolt.count; ++i) {
+        seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17;
+        const float along = static_cast<float>(i) / 4;
+        const float wobble = i == 0 || i == 4 ? 0 :
+            static_cast<float>(static_cast<int>((seed >> 24) & 7U) - 3) * .035F;
+        bolt.points[static_cast<std::size_t>(i)] = {
+            static_cast<float>(from.x) + .5F + dx * along - dy * wobble,
+            static_cast<float>(from.y) + .5F + dy * along + dx * wobble};
+    }
+    if (cosmetics.ribbons.size() < 256) cosmetics.ribbons.push_back(bolt);
+}
+
 void spawn_electric_arc(Cosmetics& cosmetics, Cell from, Cell to, std::uint64_t seed) {
     // PRESENTATION: Jaggedness is local; the simulation already chose both endpoints.
     RibbonParticle bolt;

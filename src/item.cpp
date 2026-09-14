@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
+#include "items/eel_battery.hpp"
 #include "items/air_bladder.hpp"
 #include "items/heat_capsule.hpp"
 #include "items/cold_remedies.hpp"
@@ -183,6 +184,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             cooldown = pattern.cooldown;
         }
         break;
+    case ItemKind::EelBattery:
+        used = use_eel_battery(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
@@ -306,7 +311,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
+            if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
+            else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
             else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
             else if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);
             item = {};

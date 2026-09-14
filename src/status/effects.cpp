@@ -1,5 +1,6 @@
 #include "effects.hpp"
 #include "../entities/ice_mason.hpp"
+#include "../entities/glass_eel.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../game.hpp"
 #include "../surfaces/interaction.hpp"
@@ -12,6 +13,7 @@ bool apply_chill(Entity& actor, int ticks) {
         actor.burn_ticks > 0 || actor.scorch_ticks > 0 || actor.kind == EntityKind::Ember ||
         actor.kind == EntityKind::FrostBat || actor.vitals.chill_guard > 0) return false;
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, ticks);
+    interrupt_glass_eel(actor);
     actor.freeze_ticks = std::clamp(std::max(actor.freeze_ticks, ticks), 0, 600);
     return true;
 }
@@ -27,6 +29,7 @@ bool apply_nausea(Entity& actor, int ticks) {
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
     interrupt_ice_mason(actor);
+    interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
     actor.sleep_ticks = std::max(actor.sleep_ticks, ticks);
     return true;
@@ -42,6 +45,7 @@ bool apply_root(Entity& actor, int ticks, RootKind kind) {
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
     interrupt_ice_mason(actor);
+    interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
     actor.stun_ticks = std::max(actor.stun_ticks, ticks);
     return true;

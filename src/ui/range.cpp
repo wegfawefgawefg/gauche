@@ -16,6 +16,7 @@
 #include "../items/pocket_door.hpp"
 #include "../items/mixtures.hpp"
 #include "../surfaces/interaction.hpp"
+#include "../surfaces/conduction.hpp"
 #include "../entities/attacks.hpp"
 #include "../entities/hearing.hpp"
 #include "../view.hpp"
@@ -68,7 +69,11 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::IceBrick && player.counter_a < brick_throw_hold_ticks) {
+    if (pattern.conduction) {
+        const WetWave wave = wet_wave(game, player.cell + facing, pattern.blast_radius);
+        for (int i = 0; i < wave.count; ++i)
+            mark(renderer, wave.nodes[static_cast<std::size_t>(i)].cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::IceBrick && player.counter_a < brick_throw_hold_ticks) {
         const Cell cell = player.cell + facing;
         if (ice_cover_space(game, cell)) mark(renderer, cell, camera, zoom, PatternEffect::Utility);
     } else if (held.kind == ItemKind::AirBladder) {

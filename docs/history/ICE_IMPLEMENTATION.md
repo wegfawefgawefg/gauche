@@ -421,3 +421,44 @@ renders were inspected. New source assets pass native-size and decoded-audio
 headroom checks. No live playtest or new suite ran. Snapshot layout remains 31;
 gameplay compatibility is E6. Ice totals are five enemies, ten items and one
 local debris material. Remaining biome tasks stay open.
+
+
+## Glass Eels and conducted water shocks
+
+- Added a 42-HP aquatic enemy with 0.25s steps, a bright 0.8s charge and a 1.5s
+  recovery. It swims only connected wet cells and stays visible/hittable on the
+  actual tile. The bounded local route search avoids occupied cells; stranded
+  eels can flop into adjacent water but cannot cross dry ground.
+- Charging commits the origin. Damage, chill, sleep, stun, a shove or drying/
+  freezing that tile interrupts it. The pulse resamples water at discharge, so
+  freezing a connecting tile can cut off a victim during the tell.
+- Water conduction uses cardinal BFS, capped at six steps/85 cells. Dry or frozen
+  ground, walls, blocking props and closed gates break the circuit. Actors do
+  not block it. Capture victim handles and path distances before resolving any
+  damage; fallen enemies and dropped items cannot extend that pulse.
+- Eel damage falls from 18 at the source to 15/11/8/4 along four wet steps.
+  Flying actors avoid propagated water shocks; submerged Bell Divers do not.
+  Eels resist this circuit and Thunder Acorn arcs. Ordinary physical attacks
+  still hurt them. Shock damage bypasses a frontal shield.
+- Added the Eel Battery: adjacent contact for 14 damage, weakening over four wet
+  steps (12/9/6/3), three uses, 0.75s cooldown, price 24. A dry contact still hits;
+  a connected puddle can return current to the user or allies. Solid obstruction
+  rejects use without a charge. Strong/Heavy/Agile/Fragile alter the usual combat
+  values; Durable doubles charges, Big extends conduction to five, Long is
+  excluded because contact remains adjacent.
+- Reservoirs now have a connected shallow bank beside their deep water. Eels
+  join reservoir encounters and alternate with leeches in later bathhouses.
+  One death roll gives 20% battery, 15% raw meat. Batteries enter cold reward and
+  shop pools. They retain independent charge counts and do not stack.
+- Added four sparse eel poses, the battery icon and six original offline sounds:
+  rising charge, wet discharge, flop, death, contact zap and empty battery.
+  Charge brightness belongs to the actor. Thin local water branches share one
+  source impact flash instead of spawning a bright impact at every wet tile.
+- Item diagrams distinguish solid adjacent contact from conditional outlined
+  water paths. World debug previews use the actual circuit. Static eel/arcs and
+  battery comparison captures were inspected; the description fits its panel.
+- Strict game/render/codec builds and the existing snapshot codec check passed.
+  Existing entity slots and item charges carry all state; no snapshot fields
+  added. Gameplay compatibility E7 prevents older peers joining these rules.
+  No live playtest or new test suite. Six enemies and eleven items are now
+  implemented from this catalog; remaining content and final balance stay open.

@@ -18,6 +18,7 @@
 #include "heat_scene.hpp"
 #include "leech_scene.hpp"
 #include "mason_scene.hpp"
+#include "eel_scene.hpp"
 #include "quarry_tools_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -152,7 +153,7 @@ int main(int argc, char** argv) {
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);
-    if (mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
+    if (mode == "eels" || mode == "eel-arcs" || mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw" || mode == "masons" || mode == "ice-terrain" || mode == "ice-floor" || mode == "skaters" || mode == "grit-items" || mode == "frost-bats" || mode == "ice-needles" || mode == "divers" || mode == "air-float" || mode == "air-items" || mode == "cold-pool" || mode == "cold-items" || mode == "heat-patch" || mode == "heat-items" || mode == "leeches" || mode == "leech-release" || mode == "leech-poses")
         arrange_ice_scene(game, cosmetics, mode == "ice-floor",
             argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
@@ -260,6 +261,8 @@ int main(int argc, char** argv) {
             player.light = {12, 1700, {255, 239, 214}};
         }
     }
+    if (mode == "eels" || mode == "eel-arcs" || mode == "eel-items")
+        arrange_eel_scene(game, cosmetics, player, mode == "eel-arcs");
     if (mode == "masons") arrange_mason_scene(game, cosmetics, player);
     if (mode == "quarry-tools" || mode == "quarry-bricks" || mode == "brick-place" || mode == "brick-throw")
         arrange_quarry_tools(game, cosmetics, player, mode == "quarry-bricks" || mode == "brick-throw",
@@ -308,7 +311,7 @@ int main(int argc, char** argv) {
         player.artifacts = (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4);
         player.move_interval = 6;
     }
-    if (mode == "quarry-tools" || mode == "quarry-bricks" || mode == "cold-remedies" || mode == "cold-poultice" || mode == "heat-items" || mode == "cold-items" || mode == "air-items" || mode == "ice-needles" || mode == "grit-items" || mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
+    if (mode == "eel-items" || mode == "quarry-tools" || mode == "quarry-bricks" || mode == "cold-remedies" || mode == "cold-poultice" || mode == "heat-items" || mode == "cold-items" || mode == "air-items" || mode == "ice-needles" || mode == "grit-items" || mode == "pocket-items" || mode == "thunder-items" || mode == "whistle-items" || mode == "decoy-items" || mode == "ward-items" || mode == "parry-items" || mode == "shield-items" || mode == "mixture-items" || mode == "mixture-big" || mode == "fruit-item" || mode == "noise-items" || mode == "noise-big" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item" || mode == "trap-items" || mode == "trap-big" || mode == "recoverable-items" || mode == "root-relic-items" || mode == "displacement-items" || mode == "ground-tool-items" || mode == "remedies" || mode == "remedy-root" || mode == "wood-tool-items" || mode == "lit-stick-inventory" || mode == "food" || mode == "inventory" || mode == "artifacts" || mode == "items" || mode == "stacks" || mode == "bow" || mode == "material-items") {
         interaction.inventory_open = true;
         interaction.slide = 1;
         interaction.slot_focus = mode == "quarry-tools" ? 0 : mode == "quarry-bricks" ? 2 : mode == "cold-remedies" ? 0 : mode == "cold-poultice" ? 2 : mode == "fruit-item" ? 2 : mode == "mixture-items" || mode == "mixture-big" ? 1 : mode == "noise-items" || mode == "noise-big" ? 1 : mode == "rabbit-item" ? 3 : mode == "movement-items" || mode == "movement-big" ? 1 : mode == "trap-items" || mode == "trap-big" ? 3 : mode == "recoverable-items" ? 1 : mode == "remedies" ? 1 : mode == "remedy-root" ? 3 : mode == "lit-stick-inventory" ? 0 : mode == "food" || mode == "stacks" || mode == "bow" ? 1 : 2;

@@ -74,7 +74,14 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     // EFFECT: Dashed travel has no hit; the destination and nearby lanes do.
     if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
         colored_cell(renderer, layout, 0, 0, pattern.effect, false);
-    else if (pattern.chain) {
+    else if (pattern.conduction) {
+        // WATER: Outlines are conditional paths, not a solid blast through dry ground.
+        for (int dy = -pattern.blast_radius; dy <= pattern.blast_radius; ++dy)
+            for (int dx = -pattern.blast_radius; dx <= pattern.blast_radius; ++dx)
+                if (std::abs(dx) + std::abs(dy) <= pattern.blast_radius)
+                    colored_cell(renderer, layout, 1 + dx, dy, pattern.effect, true);
+        colored_cell(renderer, layout, 1, 0, pattern.effect, false);
+    } else if (pattern.chain) {
         // CHAIN: Solid cells are the first hit lane; outlines show a possible wet jump.
         const int reach = pattern.blast_radius + 2;
         for (int dy = -reach; dy <= reach; ++dy)

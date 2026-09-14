@@ -167,6 +167,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "DMG %d | CHILL 1s", pattern.damage);
     else if (item.kind == ItemKind::GritPouch)
         std::snprintf(line, sizeof(line), "TRACTION | %d ICE CELLS", pattern.half_width * 2 + 1);
+    if (item.kind == ItemKind::EelBattery)
+        std::snprintf(line, sizeof(line), "DMG %d | WET PATH %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::Chisel)
         std::snprintf(line, sizeof(line), "DMG %d | ICE %d | DIG 1", pattern.damage, pattern.damage * 2);
     if (item.kind == ItemKind::IceBrick)
@@ -264,7 +266,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
     if (height >= 176.0F) {
-        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : "PATTERN", 185, 185, 172);
+        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + WET PATH" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
                              width - 20.0F, height - 169.0F);
     }

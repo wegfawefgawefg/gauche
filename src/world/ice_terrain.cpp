@@ -13,6 +13,7 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
             ax + ay > room.half_width + room.half_height - 4) return TileKind::Snow;
         if (y < -3 && x > 2 && x + ay < room.half_width + room.half_height - 6)
             return TileKind::Water;
+        if (y < -1 && x > 2) return TileKind::ShallowWater;
         return y == -2 && x < -2 ? TileKind::ShallowWater : TileKind::Ice;
     case RoomRole::IceQuarry:
         return (room.mirrored ? x > 2 : x < -2) ? TileKind::Ice : TileKind::Snow;

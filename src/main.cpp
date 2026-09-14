@@ -324,6 +324,13 @@ int main(int argc, char** argv) {
         SDL_SetRenderDrawColor(frame.renderer, 175, 206, 164, 255);
         const Game& active = networked ? network.rollback.game : game;
         if (border_smoke) { cosmetics.camera = active.run.roof_lights[0].cell; cosmetics.camera_ready = true; }
+        const int ambient_owner = networked ? network.local_owner : 0;
+        const Entity* ambient_listener = ambient_owner >= 0 && ambient_owner < static_cast<int>(active.players.size()) ?
+            get_entity(active, active.players[static_cast<std::size_t>(ambient_owner)]) : nullptr;
+        update_ambience(audio.ambience, active, ambient_listener == nullptr ? active.run.spawn : ambient_listener->cell,
+            static_cast<float>(elapsed), audio.master_level * audio.sound_level,
+            menu.playing && !menu.visible && active.run.phase == RunPhase::Playing &&
+            ambient_listener != nullptr && ambient_listener->health > 0);
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);

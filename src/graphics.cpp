@@ -1,5 +1,6 @@
 #include "graphics.hpp"
 #include "sound.hpp"
+#include "ambience/catalog.hpp"
 
 #include <SDL3_image/SDL_image.h>
 
@@ -82,6 +83,9 @@ bool validate_assets(const std::filesystem::path& root, std::string& error) {
         if (!require_file(named_asset(root, "sounds", name, ".ogg"), error)) {
             return false;
         }
+    }
+    for (const AmbientSpec& spec : ambient_specs) {
+        if (!require_file(named_asset(root, "ambience", spec.name, ".ogg"), error)) return false;
     }
     for (std::string_view name : {"title", "playing"}) {
         if (!require_file(named_asset(root, "music", name, ".ogg"), error)) {

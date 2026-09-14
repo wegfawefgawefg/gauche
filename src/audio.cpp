@@ -48,6 +48,10 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
         shutdown_audio(audio);
         return false;
     }
+    if (!init_ambience(audio.ambience, audio.mixer, root, error)) {
+        shutdown_audio(audio);
+        return false;
+    }
     audio.music_track = MIX_CreateTrack(audio.mixer);
     if (audio.music_track == nullptr) {
         error = std::string{"Unable to create music track: "} + SDL_GetError();
@@ -82,6 +86,7 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
 
 void shutdown_audio(GameAudio& audio) {
     if (!audio.initialized) return;
+    shutdown_ambience(audio.ambience);
     if (audio.music_track != nullptr) MIX_StopTrack(audio.music_track, 0);
     for (MIX_Track* track : audio.tracks)
         if (track != nullptr) MIX_StopTrack(track, 0);

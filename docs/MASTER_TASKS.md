@@ -376,7 +376,7 @@ the available art reference; new source scripts keep a small explicit palette.
 
 ## Ambient sound and environmental scenes
 
-- [ ] Inspect Splonks' ambient audio and reuse suitable loading/mixing pieces;
+- [x] Inspect Splonks' ambient audio and reuse suitable loading/mixing pieces;
   give Gauche separate, simple ownership for persistent loops, area triggers,
   and occasional level-wide ambience rather than stuffing them into enemy AI.
 - [ ] Author **at least 20 distinct ambient sound sources/cues per biome**
@@ -384,11 +384,11 @@ the available art reference; new source scripts keep a small explicit palette.
   Include continuous water/wind/machinery, occasional wildlife/distant events,
   and unsettling one-shot creaks, screams or other discoveries. This is an
   additional quota, separate from combat and item sound effects.
-- [ ] Add positional looping sources with per-source gain, near/far falloff,
+- [x] Add positional looping sources with per-source gain, near/far falloff,
   smooth enter/exit fades, sensible voice limits and listener-aware mixing.
-- [ ] Add point/area triggers: enter once, optionally rearm after leaving or a
+- [x] Add point/area triggers: enter once, optionally rearm after leaving or a
   cooldown; allow delayed/distant responses such as a creak or scream.
-- [ ] Add a per-level list of occasional ambient events, each with a local
+- [x] Add a per-level list of occasional ambient events, each with a local
   random chance, cooldown and sound variations. Frame-rate-independent timing;
   avoid replay bursts, immediate repetition and overlapping loud cues.
 - [ ] Author small environmental scenes inside room/prefab pools: wall-fed
@@ -479,10 +479,12 @@ and strict builds checked; user owns interaction/balance playtesting.
   consume resources once, and handle interrupts/item switches/death explicitly.
   Show windup alongside cooldown in descriptions; keep combat responsive.
 
+Forest ambience: 20 generated cues, dedicated loop/event voices and local
+schedules. Build checked; shallow-water scenes and later biomes remain.
 ## Suggested order
 
-1. Tile rules and deterministic tests, then tile impact visuals.
-2. Campfire state/contact rules and tests, then rendering, particles, and audio.
+1. Tile rules, then tile impact visuals.
+2. Campfire state/contact rules, then rendering, particles, and audio.
 3. Forest ground simplification, reactive props and loose debris, then canopy
    lighting, cloud shadows, distance-fade removal, and footprint visibility.
 4. Compact UI default, UI sizing, pointer device switching, and captures.

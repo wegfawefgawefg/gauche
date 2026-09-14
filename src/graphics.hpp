@@ -38,6 +38,8 @@ enum class Sprite : std::size_t {
     Mosquito, MosquitoFed, Owl, OwlFlying, Woodpecker, WoodpeckerDrilling,
     WaspNest, WaspNestStirring, WaspNestEmpty, Wasp, WaspSting,
     ForagerGoblin, ForagerGoblinKnife, CarrionCrow, CarrionCrowSnatch,
+    BurrowWormHead, BurrowWormBody, BurrowWormBite,
+    ForestTree, ForestTimber, TreeStump, TimberBroken,
     Count,
 };
 

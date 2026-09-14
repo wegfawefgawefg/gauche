@@ -27,6 +27,10 @@
 namespace {
 
 Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
+    if (tile.material == TileMaterial::Tree)
+        return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
+    if (tile.material == TileMaterial::Timber)
+        return tile.kind == TileKind::Wall ? Sprite::ForestTimber : Sprite::TimberBroken;
     if (world >= 0) {
         switch (tile.kind) {
         case TileKind::Empty: {
@@ -232,8 +236,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 angle += static_cast<double>(remaining * 270);
             }
             apply_flight_pose(entity, game.tick, body_rect, angle);
+            const bool worm = entity.kind == EntityKind::BurrowWorm;
+            if (worm) angle = std::atan2(static_cast<double>(entity.facing.y),
+                static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
+
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, pose != nullptr && pose->horizontal_flip ?
+                nullptr, !worm && pose != nullptr && pose->horizontal_flip ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
         SDL_SetTextureAlphaMod(texture, 255);

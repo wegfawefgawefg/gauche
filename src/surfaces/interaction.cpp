@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../world/terrain_material.hpp"
 #include "../world/water.hpp"
 #include "../props/interaction.hpp"
 
@@ -38,12 +39,15 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
 
 bool ignite_surface(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || tile->kind == TileKind::Wall || surface_wet(*tile)) return false;
+    if (tile == nullptr || surface_wet(*tile)) return false;
+    const bool wood = tile->kind == TileKind::Wall && wooden_terrain(*tile) &&
+        tile->break_rule != BreakRule::Unbreakable;
+    if (tile->kind == TileKind::Wall && !wood) return false;
     Surface& surface = tile->surface;
     if (surface.fire_ticks > 0) return false;
     const bool fuel = surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap;
-    if (!fuel && !dry_growth(tile->prop)) return false;
-    surface.fire_ticks = static_cast<std::uint16_t>(surface.liquid == LiquidKind::Sap ? 360 : 240);
+    if (!wood && !fuel && !dry_growth(tile->prop)) return false;
+    surface.fire_ticks = static_cast<std::uint16_t>(wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);
     surface.smoke_ticks = std::max<std::uint16_t>(surface.smoke_ticks, 100);
     if (surface.liquid == LiquidKind::Oil) surface.liquid_ticks = 240;
     if (surface.liquid == LiquidKind::Sap) surface.liquid_ticks = 360;
@@ -92,6 +96,7 @@ void step_surfaces(Game& game) {
             if (surface.fire_ticks == 0 || game.tick % 30 != 0) continue;
             surface.smoke_ticks = 100;
             hit_prop(game, cell, 5, cell);
+            if (tile.kind == TileKind::Wall && wooden_terrain(tile)) hit_terrain(game, cell, cell, 6, 0);
             for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) spread.push_back(cell + side);
         }
     // PROPAGATION: Newly ignited neighbors cannot cascade across a floor in this tick.

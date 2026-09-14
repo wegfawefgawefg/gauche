@@ -68,6 +68,7 @@ std::uint64_t game_hash(const Game& game) {
     mix(hash, static_cast<std::uint64_t>(game.stage.width));
     mix(hash, static_cast<std::uint64_t>(game.stage.height));
     for (const Tile& tile : game.stage.tiles) {
+        mix(hash, static_cast<std::uint64_t>(tile.material));
         mix(hash, static_cast<std::uint64_t>(tile.kind));
         mix(hash, tile.hp);
         mix(hash, tile.max_hp);

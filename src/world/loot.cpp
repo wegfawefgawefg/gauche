@@ -37,6 +37,10 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     case EntityKind::CarrionCrow:
         drop_scavenged_items(game, enemy);
         break;
+    case EntityKind::BurrowWorm:
+        if (enemy.label_a == 0 && random_u32(game) % 5 == 0)
+            place_ground_item(game, enemy.cell, ItemKind::RawMeat);
+        break;
     case EntityKind::WaspNest:
         if (random_u32(game) % 100 < 40) place_ground_item(game, enemy.cell, ItemKind::HoneyPot);
         break;

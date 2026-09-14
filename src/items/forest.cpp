@@ -7,7 +7,7 @@ namespace {
 constexpr RegionalItem rock{"Throwing Rock", "Throw itself along a line. Recover it at the impact; 8 damage.",
     Sprite::ThrowingRock, {1, 6, 0, 8, 30, PatternEffect::Damage, true},
     ItemAction::Throw, 3, 6, true, 0, 0, 0, 60, 0, SoundId::RockThrow};
-constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Splinters wooden props; cannot dig stone.",
+constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Triple damage to timber, trees, crates and logs; cannot dig stone.",
     Sprite::Hatchet, {1, 1, 0, 16, 35, PatternEffect::Damage, false, 1},
     ItemAction::Melee, 14, 1, false, 35, 0, 0, 60, 0, SoundId::AxeSwing};
 constexpr RegionalItem spear{"Hunting Spear", "Thrust through two cells, piercing actors along the shaft.",

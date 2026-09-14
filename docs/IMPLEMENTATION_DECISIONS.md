@@ -466,3 +466,27 @@ from 0.247 tiles of cross-path sway with the spring alone to below 0.001 with th
 paired average, and settled at the player's true cell. Static footprints were
 also checked. Strict game/render builds pass. Comfort remains for user playtesting;
 the tradeoff is a little more camera follow delay, not delayed controls or hits.
+
+
+## Burrow worm and forest wood
+
+The twentieth forest adversary is a head (55 HP) and up to three linked segments
+(26 HP each). Bodies follow departed cells, keep the chain together, and halve
+ordinary blockable damage; piercing bypasses this armor. Severed followers become
+heads without healing and pause fifty ticks while exposed. Heads warn for 24 ticks
+before a 12-damage committed bite, recover for 32, and visibly dig eligible terrain
+for 16 per digging beat after a rumble. Actual tunnels are usable by everyone.
+Three sprites/four cues and later thicket/den placement are integrated. Heads
+currently roll 20% raw meat; the planned bitter-root drop awaits that item.
+
+Wall tiles now carry Stone/Timber/Tree material, preserving ordinary collision and
+corner lighting. Timber has 60 HP and trees 90; both take ordinary damage and triple
+hatchet damage, burn down to splinters/stumps, and emit wood/bark debris. Generated
+workshops have timber partitions; forest edges/clumps have trees. Reserved routes
+and the stone boundaries of gated rooms are preserved. Burning wood lasts up to
+ten seconds and takes six damage each half-second; a source in a burning wall can
+light its surroundings without relaying light through neighboring walls.
+
+Strict builds and a static woodland render pass. Layout seeds 1, 7 and 41 retain
+solvable routes and sealed locks with wood placement. Material is hashed and saved
+in snapshot 18; gameplay compatibility is CA. No gameplay or networking playtest.

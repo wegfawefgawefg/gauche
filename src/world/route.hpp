@@ -31,6 +31,7 @@ struct FloorPlan {
 
 FloorPlan plan_floor(Game& game);
 void carve_floor(Game& game, FloorPlan& plan);
+void place_forest_terrain(Game& game, const FloorPlan& plan);
 void place_room_gates(Game& game, FloorPlan& plan);
 bool floor_lock_required(const Game& game);
 void populate_rooms(Game& game, const FloorPlan& plan);

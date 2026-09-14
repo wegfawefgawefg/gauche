@@ -1,8 +1,19 @@
 #include "attacks.hpp"
+#include "../item_pattern.hpp"
+
+#include <algorithm>
 
 int enemy_defense(Game& game, int slot, int damage, Cell source, bool blockable) {
     Entity& enemy = game.entities[static_cast<std::size_t>(slot)];
-    if (enemy.kind != EntityKind::ThornSnail || !blockable) return damage;
+    if (!blockable) return damage;
+    if (enemy.kind == EntityKind::BurrowWorm && enemy.label_a == 1) {
+        const int attacker = entity_at(game, source, true);
+        const Entity* user = attacker < 0 ? nullptr : &game.entities[static_cast<std::size_t>(attacker)];
+        const bool pierces = user != nullptr && (item_pattern(*user->inventory.held()).piercing ||
+            has_artifact(*user, ArtifactKind::AllPiercing));
+        return pierces ? damage : std::max(1, damage / 2);
+    }
+    if (enemy.kind != EntityKind::ThornSnail) return damage;
     const int attacker_slot = entity_at(game, source, true);
     const Entity* attacker = attacker_slot >= 0 ? &game.entities[static_cast<std::size_t>(attacker_slot)] : nullptr;
     const bool penetrates = attacker != nullptr &&

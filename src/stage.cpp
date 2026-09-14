@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "world/terrain_material.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -76,12 +77,15 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr || tile->kind != TileKind::Wall) return false;
     const int previous = tile->hp;
+    const bool wood = wooden_terrain(*tile);
+    const Sprite material = tile->material == TileMaterial::Tree ? Sprite::ForestTree :
+        tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
+        game.run.phase == RunPhase::Arena ? Sprite::Wall : Sprite::ForestWall;
     const bool hit = damage_tile(game.stage, cell, damage, dig_power, impact);
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =
-            {cell, source, game.run.phase == RunPhase::Arena ? Sprite::Wall :
-                Sprite::ForestWall, hit ? previous - tile->hp : 0, hit && tile->hp == 0};
-    emit_sound(game, hit ? (tile->hp == 0 ? SoundId::BoxBreak : SoundId::HitBlock1) :
+            {cell, source, material, hit ? previous - tile->hp : 0, hit && tile->hp == 0};
+    emit_sound(game, hit ? (wood ? SoundId::WoodCrack : tile->hp == 0 ? SoundId::BoxBreak : SoundId::HitBlock1) :
                SoundId::SturdyBlockBouncedOn, cell);
     return hit;
 }

@@ -1,4 +1,5 @@
 #include "player_movement.hpp"
+#include "../world/terrain_material.hpp"
 
 namespace {
 
@@ -38,7 +39,7 @@ void move_player(Game& game, int slot, Cell input) {
     if ((player.label_a == 0 || player.point_a != destination) && player.timer_a == 0) {
         const Tile* tile = game.stage.at(destination);
         const bool wood = tile != nullptr &&
-            (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog);
+            (wooden_terrain(*tile) || tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog);
         emit_sound(game, wood ? SoundId::BumpWood : SoundId::BumpStone, destination);
         player.timer_a = 15;
     }

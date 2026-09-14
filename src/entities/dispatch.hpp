@@ -75,3 +75,7 @@ void init_forager_goblin(Game& game, Entity& entity);
 void step_forager_goblin(Game& game, int slot);
 void init_carrion_crow(Entity& entity);
 void step_carrion_crow(Game& game, int slot);
+
+void init_burrow_worm(Entity& entity);
+void step_burrow_worm(Game& game, int slot);
+Handle spawn_burrow_worm(Game& game, Cell cell, int links = 3);

@@ -1,4 +1,5 @@
 #include "../items/catalog.hpp"
+#include "../world/terrain_material.hpp"
 #include "../props/interaction.hpp"
 #include "shove.hpp"
 #include "../items/fire.hpp"
@@ -51,7 +52,9 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 struck = true;
                 if (!pattern.piercing) break;
             }
-            struck |= hit_terrain(game, cell, origin, pattern.damage, item.dig_power);
+            const int terrain_damage = item.kind == ItemKind::Hatchet && wooden_terrain(*tile) ?
+                pattern.damage * 3 : pattern.damage;
+            struck |= hit_terrain(game, cell, origin, terrain_damage, item.dig_power);
             // CONTACT: An unsuccessful wall blow still costs its attack beat.
             struck |= blocked;
             if (blocked) break;

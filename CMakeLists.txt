@@ -56,6 +56,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/combat/melee.cpp src/items/forest.cpp src/items/food.cpp src/items/campfire.cpp src/items/fire.cpp src/items/throw.cpp src/items/stacking.cpp src/items/ground_interaction.cpp
     src/entities/attacks.cpp src/entities/defense.cpp
     src/entities/boar.cpp src/entities/thorn_snail.cpp src/entities/lantern_moth.cpp
+    src/entities/burrow_worm.cpp
     src/entities/wasp_nest.cpp src/entities/wasp.cpp src/entities/scavenging.cpp
     src/entities/forager_goblin.cpp src/entities/carrion_crow.cpp
     src/entities/mosquito.cpp src/entities/owl.cpp src/entities/woodpecker.cpp src/entities/root_turret.cpp src/entities/bramble_guard.cpp src/entities/spore_toad.cpp src/entities/crate_mimic.cpp
@@ -81,7 +82,7 @@ set(GAUCHE_ENTITY_SOURCES
 )
 
 set(GAUCHE_WORLD_SOURCES src/world/floor_layout.cpp src/world/floor_reachability.cpp
-    src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp
+    src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp
     src/world/room_population.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/loot.cpp)
 

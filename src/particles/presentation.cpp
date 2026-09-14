@@ -45,6 +45,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
 bool bleeds(EntityKind kind) {
     switch (kind) {
     case EntityKind::Player: case EntityKind::ZombieStack: case EntityKind::Zombie: case EntityKind::Chicken:
+    case EntityKind::BurrowWorm:
     case EntityKind::Wasp: case EntityKind::ForagerGoblin: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
@@ -219,7 +220,9 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         if (impact.prop != PropKind::None && !fresh_debris)
             scatter_prop_debris(cosmetics.debris, impact.cell, impact.prop, key);
         else if (impact.prop == PropKind::None && impact.damage > 0)
-            scatter_material(cosmetics.debris, impact.cell, DebrisKind::StoneChip,
+            scatter_material(cosmetics.debris, impact.cell,
+                impact.material == Sprite::ForestTree ? DebrisKind::Bark :
+                impact.material == Sprite::ForestTimber ? DebrisKind::WoodChip : DebrisKind::StoneChip,
                              impact.broken ? 6 : 2, key);
     }
     if (game.tick % 6 == 0)

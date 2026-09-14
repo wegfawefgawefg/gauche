@@ -39,7 +39,7 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
         target.green = std::max(target.green, source.color.green * current.power);
         target.blue = std::max(target.blue, source.color.blue * current.power);
         // What if a wall receives light? Its face glows, but it cannot relay light behind it.
-        if (current.distance >= source.radius || solid(stage, current.cell)) continue;
+        if (current.distance >= source.radius || (current.distance > 0 && solid(stage, current.cell))) continue;
         for (Cell direction : neighbors) {
             const Cell next = current.cell + direction;
             if (!cache.contains(next)) continue;

@@ -263,16 +263,16 @@ and honey now share burning/wetting/concealment/bait rules, including wasp bait.
 Oil slipping and natural sap sources remain; toads drop spores. Nests now yield stackable
 eggs, fried at campfires (eighteen regional item types). Other drops await items.
 
-Forest implementation slice: nineteen adversaries exist: wolf, bear, bat, zombie,
+Forest implementation slice: twenty adversaries exist: wolf, bear, bat, zombie,
 zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret,
-bramble guard, mosquito, owl, woodpecker, wasp nest, wasp, forager goblin and crow.
-Worms remain. Wolves flank; bears defend territory; boars crush; snails deflect;
+bramble guard, mosquito, owl, woodpecker, wasp nest, wasp, goblin, crow and burrow worm.
+Worm links split into exposed heads and dig tunnels. Wolves flank; bears defend territory; boars crush; snails deflect;
 moths seek lamps; toads puff sleep; mimics disguise; roots lash and guards interpose.
 Mosquitoes drain/retreat; owls swoop; woodpeckers drill. Finite nests react to smoke;
 wasps warn/sting and scatter when orphaned. Goblins carry off equipment; crows
 steal food, call nearby crows and return to a perch. Stolen instances drop intact.
-Thirty-nine new enemy cues and distinct silhouettes are integrated into room pools.
-Some planned seed/glue, bird-seed/digging-claw and moth/snail drops await their items.
+Forty-three new enemy cues and distinct silhouettes are integrated into room pools.
+Planned seed/glue, bird-seed/digging-claw, bitter-root and moth/snail drops await items.
 Strict builds and static captures passed; behavior/balance playtesting is the user's.
 
 - [ ] Design a full ice catalog to the same quotas and quality bar.
@@ -442,7 +442,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   fist artwork clockwise so neutral/right-facing use reads as a forward punch.
 - [x] Fix left-facing held art without upside-down weapons: mirror around the
   appropriate sprite axis/center. Verify all four directions and held enemy items.
-- [ ] Add wood/tree terrain with recognizable material and break rules; forest
+- [x] Add wood/tree terrain with recognizable material and break rules; forest
   obstacles should include actual trees/wood, not only nondescript green walls.
 - [x] Make the rake sweep loose leaves/debris into useful-looking piles locally;
   greatly increase its available uses. Keep its current recognizable silhouette.

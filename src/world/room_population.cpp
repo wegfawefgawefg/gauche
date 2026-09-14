@@ -39,7 +39,8 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room) {
 Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
     if (cost > budget.threat) return {};
     if (const auto cell = room_space(game, room)) {
-        const Handle spawned = spawn_entity(game, kind, *cell);
+        const Handle spawned = kind == EntityKind::BurrowWorm ?
+            spawn_burrow_worm(game, *cell) : spawn_entity(game, kind, *cell);
         if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
         return spawned;
     }
@@ -71,6 +72,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
     }
     switch (room.role) {
     case RoomRole::Thicket:
+        if (round > 0 && random_u32(game) % 3 == 0) { enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
         if (random_u32(game) % 3 == 0) rooted_watch(game, room, budget, round > 0);
         else enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
         if (round > 0) enemy(game, room, EntityKind::ThornSnail, 2, budget);
@@ -86,6 +88,7 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
               round >= 2 ? 3 : 1, budget);
         break;
     case RoomRole::Den:
+        if (round > 0 && random_u32(game) % 3 == 0) { enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
         if (random_u32(game) % 3 == 0) enemy(game, room, EntityKind::CarrionCrow, 1, budget);
         enemy(game, room, EntityKind::Wolf, 2, budget);
         if (round > 0) enemy(game, room, EntityKind::Den, 4, budget);

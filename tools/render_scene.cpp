@@ -5,6 +5,7 @@
 #include "plant_scene.hpp"
 #include "flier_scene.hpp"
 #include "scavenger_scene.hpp"
+#include "woodland_scene.hpp"
 #include "footprint_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
@@ -118,6 +119,7 @@ int main(int argc, char** argv) {
         debug_panels().world_enemies = true;
     }
     if (mode == "footprints") arrange_footprint_scene(game, cosmetics);
+    if (mode == "woodland") arrange_woodland_scene(game, cosmetics);
     if (mode == "scavengers") arrange_scavenger_scene(game, cosmetics);
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);

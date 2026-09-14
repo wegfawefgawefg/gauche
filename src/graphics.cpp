@@ -41,6 +41,8 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "mosquito", "mosquito_fed", "owl", "owl_flying", "woodpecker", "woodpecker_drilling",
     "wasp_nest", "wasp_nest_stirring", "wasp_nest_empty", "wasp", "wasp_sting",
     "forager_goblin", "forager_goblin_knife", "carrion_crow", "carrion_crow_snatch",
+    "burrow_worm_head", "burrow_worm_body", "burrow_worm_bite",
+    "forest_tree", "forest_timber", "tree_stump", "timber_broken",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

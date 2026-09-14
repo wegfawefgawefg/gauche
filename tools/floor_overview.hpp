@@ -19,6 +19,7 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
     } else {
         plan = plan_floor(game);
         carve_floor(game, plan);
+        place_forest_terrain(game, plan);
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         const Handle player = spawn_entity(game, EntityKind::Player, game.run.spawn);
@@ -38,6 +39,8 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
             if (tile.kind == TileKind::Grass) color = {55, 90, 51, 255};
             if (tile.kind == TileKind::Water) color = {41, 69, 111, 255};
             if (tile.kind == TileKind::Ruin) color = {102, 93, 73, 255};
+            if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Tree) color = {71, 65, 37, 255};
+            if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Timber) color = {111, 80, 45, 255};
             if (tile.prop.kind != PropKind::None) color = {133, 112, 65, 255};
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             const SDL_FRect rect{left + static_cast<float>(x) * scale,

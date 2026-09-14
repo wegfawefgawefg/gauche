@@ -1,4 +1,5 @@
 #include "temperature.hpp"
+#include "../props/lunch_tin.hpp"
 #include "../world/snow.hpp"
 #include "../props/ice_cover.hpp"
 #include "interaction.hpp"
@@ -63,6 +64,7 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
     if (leech_drains_cell(game, cell)) return true;
     clear_snow(game, cell);
     melt_ice_cover(game, cell);
+    thaw_lunch_tin(game, cell);
     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
     ignite_surface(game, cell);
     for (Entity& actor : game.entities)
@@ -73,6 +75,7 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
 bool freeze_water(Game& game, Cell cell, int ticks) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || ticks <= 0 || warm_cell(game, cell)) return false;
+    if (tile->surface.liquid == LiquidKind::Brine && tile->surface.liquid_ticks > 0) return false;
     // MEMORY: Refresh temporary ice without forgetting the pool or diver hole beneath it.
     if (tile->kind != TileKind::Ice || tile->freeze_ticks == 0) {
         if (!shallow_water(tile->kind)) return false;
@@ -143,6 +146,7 @@ void step_temperature(Game& game) {
                 if (tile.surface.warmth_ticks > 0 && !drained(cell)) {
                     clear_snow(game, cell);
                     melt_ice_cover(game, cell);
+                    thaw_lunch_tin(game, cell);
                     if (thaw_water(game, cell)) emit_sound(game, SoundId::IceThaw, cell);
                     ignite_surface(game, cell);
                 }
@@ -164,6 +168,7 @@ void step_temperature(Game& game) {
         for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
             clear_snow(game, flame + offset);
             melt_ice_cover(game, flame + offset);
+            thaw_lunch_tin(game, flame + offset);
             thawed |= thaw_water(game, flame + offset);
         }
         if (thawed) emit_sound(game, SoundId::IceThaw, flame);

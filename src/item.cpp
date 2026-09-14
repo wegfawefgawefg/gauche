@@ -132,7 +132,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = use_heat_capsule(game, user_slot);
         cooldown = item_pattern(item).cooldown;
         break;
-    case ItemKind::ColdFlask:
+    case ItemKind::BrineFlask: case ItemKind::ColdFlask:
         used = launch_projectile(game, user_slot, item, direction, item_pattern(item).maximum);
         cooldown = item_pattern(item).cooldown;
         break;

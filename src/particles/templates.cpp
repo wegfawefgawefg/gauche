@@ -164,6 +164,9 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::HeatCrack:
         shockwave(cosmetics, sound.cell, 207, 152, 86);
         break;
+    case SoundId::BrineSplash:
+        shockwave(cosmetics, sound.cell, 154, 174, 132);
+        break;
     case SoundId::ColdBurst:
         spray(cosmetics, sound.cell, seed, 10, Sprite::FrostPuff, .08F, -.002F);
         shockwave(cosmetics, sound.cell, 138, 192, 215);

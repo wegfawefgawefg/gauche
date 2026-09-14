@@ -25,13 +25,49 @@
   wet scraps use heavy-piece friction and do not affect gameplay.
 - Gameplay protocol advances to F6. No snapshot field/layout change is needed.
 
-## Remaining salt work
+## Implemented: brine flasks
 
-Brine flasks and frozen lunch tins remain unimplemented catalog entries.
-This slice does not mark the Ice biome or master goal complete.
+- Item 25/50: stack three, price 9, 0.75-second cooldown. Travels visibly at
+  eight ticks per cell to range five using the existing flask arc. It flies
+  over bodies and lands short of solid cover; no instant distant splash.
+- Radius-one diamond splash. Big gives radius two; Long reaches nine cells.
+  Strong/Heavy affect the four base wound damage and Agile the cooldown.
+  Damage requires an actor to be alive and below maximum health before this
+  splash; it can hurt the thrower or friends, bypasses guard and is not a DOT.
+- Capture affected cells before melting cover, with the existing corner-safe
+  line checks. Exposed ice blocks melt, but do not expose new splash targets
+  in the same action. Ordinary walls/props are not damaged by the brine.
+- Salt water lasts eight seconds in the saved surface liquid state. It melts
+  native ice to shallow water and temporary ice to its recorded pool type.
+  New freezing fails while brine is active; washing with plain water replaces
+  brine and removes that protection. Brine itself does not grant chill immunity.
+- Inherits water's washing, fire dousing, conduction, puddle footsteps and
+  floating-item behavior. Water cooling lava also applies. No extra unsaved
+  timer or rendering-only gameplay state. Ice masons cannot build into wet brine.
+- Ice regional shops/rewards include the flask. Salt-green flask and puddles,
+  original slosh/splash audio, a small splash ring and local broken glass.
+  Splash is audible to investigating enemies at radius seven.
+
+## Implemented: frozen lunch tins
+
+- Compact 16-HP blocking props placed in Ice shelters, preserving protected
+  paths and existing clutter spacing. Metal is not fire fuel and does not break
+  from footsteps. Regular damage opens it; capsule warmth or a nearby exposed
+  flame can thaw it open. Steam leech heat suppression still applies.
+- Exactly one ordinary break/loot path: 30% broth, 20% kelp, 20% poultice,
+  30% empty. A broken tin cannot reroll when warmed or struck again.
+- Original tin/lid sprites, metallic impact and opening sounds. One local
+  metal lid plus ice chips scatter on opening; saved broken-prop state allows
+  settled cosmetic litter to be reconstructed on rejoin. Opening is heard at
+  radius seven. This is regional debris type 15/20.
+- Protocol advances to F7 for these rules. Snapshot layout remains 34; the
+  existing codec fixture now includes active brine and a damaged lunch tin.
+
+Neither this slice nor the previous kelp slice completes the Ice biome or
+master goal. Additional enemies, items, ambience, rooms and other biomes remain.
 
 ## Verification
 
 Strict game/render/codec builds, the existing codec checks and a static item
-comparison capture. No live playtest or new test suite. The player remains
+comparison capture, plus a static pool/tin scene. No live playtest or new test suite. The player remains
 responsible for feel and balance feedback.

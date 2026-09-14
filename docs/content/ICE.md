@@ -111,7 +111,7 @@ same effective item definition as attacks, including rare attributes.
 | 36 | Smoked fish | Implemented: 14 immediate HP (21 Restorative), stack 6. Dropped fish lures eels within six connected water steps and land meat-eaters within nine tiles. Does not cancel a committed shock. Seals prefer it within eight reachable steps. | Common; 6 |
 | 37 | Salted kelp | Implemented: clears nausea for 3 HP (can kill). No use without nausea. Stack 5; eels and seals eat dropped kelp, paying the same cost. | Common; 4 |
 | 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
-| 39 | Flask of brine | Throw a small puddle that melts fragile ice and resists refreezing for 8s. Causes 4 damage on an open wound; stack 3. | Common; 9 |
+| 39 | Flask of brine | Implemented: visible throw to 5, radius-1 splash. Melts floor/prop ice, leaves 8s wet antifreeze; stings already-wounded actors for 4. Stack 3. Big widens; Long throws farther. | Common; 9 |
 | 40 | Snow shelter | Place a two-cell breakable windbreak, only if both cells are free; blocks wind/snow attacks, not overhead shots. Two uses. | Uncommon; 18 |
 | 41 | Crampons | Activate for 5s of traction: no ice slide, slower ordinary steps, still vulnerable to deliberate shoves. Six activations. | Uncommon; 17 |
 | 42 | Sled | Deploy facing forward; step onto it to slide until stopped, taking one carried loose item along. Steer only while stopped. 45 HP. | Uncommon; 25 |
@@ -171,7 +171,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | Container | Initial weighted pool | Placement |
 | --- | --- | --- |
 | Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
-| Frozen lunch tin | 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; heat or ordinary damage opens |
+| Frozen lunch tin | Implemented: 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; 16 HP, blocking, not fuel. Warmth or ordinary damage opens once. |
 | Maintenance locker | 20 coal, 20 sealant, 15 valve, 15 ammo, 30 empty | Boiler gallery |
 | Candle cabinet | 35 stub, 20 wick, 15 wool, 30 empty | Chapel/shelter |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
@@ -191,10 +191,10 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Fourteen regional debris types are implemented: ice chips, snow clumps, mirror
+Fifteen regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips, fishing floats, globe glass, copper curls and kelp scraps. Kelp chewing leaves wet scraps; globes leave glass;
-weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
+wicker strips, fishing floats, globe glass, copper curls, kelp scraps and tin lids. Kelp chewing leaves wet scraps; globes leave glass;
+Each opened lunch tin leaves one metal lid and ice chips; weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
 Bones scatter when fish is eaten; fibers from snapped line and exhausted spools. Tufts come
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers

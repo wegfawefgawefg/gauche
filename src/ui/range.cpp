@@ -11,6 +11,7 @@
 #include "../items/materials.hpp"
 #include "../items/air_bladder.hpp"
 #include "../items/cold_flask.hpp"
+#include "../items/brine.hpp"
 #include "../items/heat_capsule.hpp"
 #include "../items/quarry_tools.hpp"
 #include "../props/ice_cover.hpp"
@@ -123,6 +124,10 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     } else if (held.kind == ItemKind::HeatCapsule) {
         for (Cell cell : heat_capsule_cells(game, held, player.cell))
+            mark(renderer, cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::BrineFlask) {
+        const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
+        for (Cell cell : brine_cells(game, held, center))
             mark(renderer, cell, camera, zoom, pattern.effect);
     } else if (held.kind == ItemKind::ColdFlask) {
         const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);

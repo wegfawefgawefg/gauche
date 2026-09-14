@@ -8,6 +8,7 @@ namespace {
 
 PropKind room_prop(Game& game, RoomRole role) {
     const unsigned int roll = random_u32(game);
+    if (ice_floor(game.run.floor) && role == RoomRole::Shelter) return PropKind::FrozenLunchTin;
     if (ice_floor(game.run.floor) && role == RoomRole::WeatherStation) return PropKind::WeatherVane;
     if (ice_floor(game.run.floor) && role == RoomRole::FishingHut) return PropKind::FishingCreel;
     if (ice_floor(game.run.floor) && role == RoomRole::Observatory)

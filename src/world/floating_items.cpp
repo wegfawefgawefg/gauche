@@ -8,7 +8,7 @@ bool floating_item(const Entity& item) {
 
 bool float_water(const Tile& tile) {
     return shallow_water(tile.kind) || (walkable(tile) && tile.kind != TileKind::Water &&
-        tile.surface.liquid == LiquidKind::Water && tile.surface.liquid_ticks > 0);
+        water_liquid(tile.surface.liquid) && tile.surface.liquid_ticks > 0);
 }
 
 bool float_cell_free(const Game& game, Cell cell, int cargo_slot) {

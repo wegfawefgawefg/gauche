@@ -130,6 +130,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                 std::max(0, player.health - kelp_health_cost));
         else std::snprintf(line, sizeof(line), "NO NAUSEA | COST %d HP", kelp_health_cost);
     }
+    if (item.kind == ItemKind::BrineFlask)
+        std::snprintf(line, sizeof(line), "WOUNDED DMG %d | BRINE 8s", pattern.damage);
     if (pattern.chain)
         std::snprintf(line, sizeof(line), "HITS %d / %d / %d / %d", pattern.damage,
             (pattern.damage * 3 + 3) / 4, (pattern.damage * 2 + 3) / 4, (pattern.damage + 3) / 4);

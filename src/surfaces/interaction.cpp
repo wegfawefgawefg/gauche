@@ -13,14 +13,14 @@ namespace {
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
     if (prop.covered) return true;
-    return prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
+    return prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
 } // namespace
 
 bool surface_wet(const Tile& tile) {
     return shallow_water(tile.kind) || tile.kind == TileKind::Water ||
-        (tile.surface.liquid == LiquidKind::Water && tile.surface.liquid_ticks > 0);
+        (water_liquid(tile.surface.liquid) && tile.surface.liquid_ticks > 0);
 }
 
 bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
@@ -28,7 +28,7 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     if (tile == nullptr || tile->kind == TileKind::Wall || !walkable(tile->kind)) return false;
     Surface& surface = tile->surface;
     if (kind == LiquidKind::Rot && surface.fire_ticks > 0) return false;
-    if (kind == LiquidKind::Water) {
+    if (water_liquid(kind)) {
         if (surface.fire_ticks > 0) emit_sound(game, SoundId::WaterDouse, cell);
         surface.fire_ticks = 0;
         surface.gritted = false;

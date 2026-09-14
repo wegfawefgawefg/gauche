@@ -215,9 +215,12 @@ draw.ellipse((6, 9, 10, 12), fill=GOLD)
 save("switch", image)
 
 image, draw = canvas()
-draw.line((3, 13, 11, 4), fill=WOOD, width=2)
-draw.line((8, 3, 14, 8), fill=IRON, width=3)
-draw.point((12, 5), fill=LIGHT)
+draw.line((3, 14, 10, 4), fill=WOOD, width=2)
+draw.line((3, 13, 8, 6), fill="#b48a51", width=1)
+draw.polygon([(2, 5), (4, 2), (7, 1), (10, 2), (13, 5), (14, 9),
+              (11, 6), (8, 4), (5, 3)], fill=IRON)
+draw.line([(4, 2), (7, 1), (10, 2), (12, 4)], fill=LIGHT, width=1)
+draw.point((9, 4), fill=INK)
 save("pickaxe", image)
 
 image, draw = canvas()

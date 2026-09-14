@@ -436,7 +436,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
   half of the wood sprite. Preserve the flame/base/actor ordering deliberately.
 - [x] Give rockets real travel; apply delayed impact to future weapons that need
   flight. Keep deliberate instant-hit guns, with visible muzzle flashes/tracers.
-- [ ] Replace the axe-like pickaxe icon with a recognizable pickaxe. Rotate the
+- [x] Replace the axe-like pickaxe icon with a recognizable pickaxe. Rotate the
   fist artwork clockwise so neutral/right-facing use reads as a forward punch.
 - [x] Fix left-facing held art without upside-down weapons: mirror around the
   appropriate sprite axis/center. Verify all four directions and held enemy items.

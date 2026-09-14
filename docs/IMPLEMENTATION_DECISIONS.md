@@ -328,3 +328,11 @@ moth attraction. Held, ground and UI flames share the wood-tip anchor, and HUD,
 inventory and details show remaining fire time alongside uses/cooldown. Snapshot
 format is 16; gameplay compatibility advanced. Strict game/render builds and
 static world, HUD and inventory captures checked; no playtest performed.
+
+
+## Held tool silhouettes
+
+The pickaxe has a narrow curved double-ended metal head rather than an axe-like
+slab; its placeholder generator matches the asset. The original Rust fist sprite
+is rotated clockwise so right-facing use punches forward. Enlarged nearest-neighbor
+asset inspection checked both silhouettes; held left-facing mirroring is unchanged.

@@ -1,4 +1,5 @@
 #include "recoverable.hpp"
+#include "../surfaces/temperature.hpp"
 #include "../item_pattern.hpp"
 #include "../combat/parry.hpp"
 #include "../props/interaction.hpp"
@@ -20,21 +21,23 @@ Item* reservation(Game& game, const Entity& shot, Handle handle) {
     return nullptr;
 }
 
-void land(Game& game, int slot) {
+void land(Game& game, int slot, bool hot_impact = false) {
     const Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     const Handle handle{slot, shot.generation};
     Item item = shot.ground_item;
     item.flight = {};
-    const Cell cell = nearby_ground_item_cell(game, shot.cell);
+    const bool melted = item.kind == ItemKind::IceNeedle && (hot_impact || hot_cell(game, shot.cell));
+    const Cell cell = melted ? shot.cell : nearby_ground_item_cell(game, shot.cell);
     if (Item* held = reservation(game, shot, handle)) *held = {};
     forget_hits(game, handle);
     remove_entity(game, handle);
+    if (melted) { emit_sound(game, SoundId::IceMelt, cell); return; }
     // CAPACITY: Converting a projectile frees a slot before its physical item is restored.
     if (Entity* loose = get_entity(game, spawn_entity(game, EntityKind::GroundItem, cell))) {
         loose->ground_item = item;
         loose->sprite = item_sprite(item);
     }
-    emit_sound(game, item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : SoundId::RockImpact, cell);
+    emit_sound(game, item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : SoundId::RockImpact, cell);
 }
 
 bool catch_boomerang(Game& game, int slot) {
@@ -124,7 +127,7 @@ void step_recoverable(Game& game, int slot) {
     if (blocked) {
         if (!boomerang) hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);
         if (boomerang && shot.label_b == 0) turn_back(game, slot);
-        else land(game, slot);
+        else land(game, slot, hot_cell(game, next));
         return;
     }
     shot.cell = next;
@@ -142,9 +145,12 @@ void step_recoverable(Game& game, int slot) {
             forget_hits(game, {slot, shot.generation});
             return;
         }
+        const int health = actor.health;
         damage_entity(game, index, shot.counter_b, next - shot.facing);
+        if (shot.ground_item.kind == ItemKind::IceNeedle && actor.health < health && !hot_cell(game, next))
+            apply_chill(game.entities[static_cast<std::size_t>(index)], 60);
         if ((boomerang && shot.label_b == 2) || (!boomerang && shot.counter_c == 0)) { land(game, slot); return; }
-        emit_sound(game, boomerang ? SoundId::BoomerangHit : SoundId::RockImpact, next);
+        emit_sound(game, boomerang ? SoundId::BoomerangHit : shot.ground_item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : SoundId::RockImpact, next);
     }
     if (shot.counter_a == 0) {
         if (boomerang && shot.label_b == 0) turn_back(game, slot);

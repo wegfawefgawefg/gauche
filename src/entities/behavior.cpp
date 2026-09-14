@@ -104,8 +104,6 @@ void bite(Game& game, int slot, int damage, int range) {
     const int prior_health = target.health;
     damage_entity(game, target_slot, damage, enemy.cell);
     if (target.health < prior_health && target.health > 0) {
-        if (enemy.kind == EntityKind::FrostBat)
-            target.freeze_ticks = std::max(target.freeze_ticks, 90);
         if (enemy.kind == EntityKind::Bear)
             apply_stun(target, 20);
     }

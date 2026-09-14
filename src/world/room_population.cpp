@@ -150,14 +150,15 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             room.role == RoomRole::Secret || room.role == RoomRole::Shrine) stash(game, room, budget);
         if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
             supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
+            if (room.role == RoomRole::IceQuarry) supply(game, room, ItemKind::Pickaxe, 1, budget.equipment);
         } else if (room.role == RoomRole::FishingHut) {
             supply(game, room, ItemKind::CookedMeat, 2, budget.healing);
             supply(game, room, ItemKind::RopeHook, 1, budget.equipment);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
             supply(game, room, ItemKind::Bandage, 2, budget.healing);
             supply(game, room, ItemKind::Torch, 1, budget.equipment);
-        } else if (room.role == RoomRole::IceQuarry) {
-            supply(game, room, ItemKind::Pickaxe, 1, budget.equipment);
+        } else if (room.role == RoomRole::EchoTunnel) {
+            supply(game, room, ItemKind::IceNeedle, 3, budget.equipment);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {
             constexpr ItemKind supplies[]{ItemKind::Shotgun, ItemKind::Musket,
                 ItemKind::Bomb, ItemKind::Buckler};

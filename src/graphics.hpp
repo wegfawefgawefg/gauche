@@ -46,6 +46,7 @@ enum class Sprite : std::size_t {
     IceFloorA, IceFloorB, IceWall, IceRuin, Snow, ReservoirIce,
     ColdShallowA, ColdShallowB, ColdWaterA, ColdWaterB,
     RimeSkater, RimeSkaterPush, RimeSkaterGlide, GritPouch,
+    FrostBatInhale, FrostBatFlying, FrostPuff, IceNeedle,
     Count,
 };
 

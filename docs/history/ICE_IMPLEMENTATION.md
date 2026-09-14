@@ -58,3 +58,45 @@ Strict game/render builds pass. Static normal/Big comparison cards, the grit
 strip and idle/push/glide poses were inspected. Seven new OGG cues decode to
 finite non-silent samples. No live playtest or new test suite ran. Ice catalog
 completion remains open: this is one of twenty enemies and one of fifty items.
+
+## Frost Bat and Ice Needle (2026-09-14)
+
+Frost Bat has its own entity module and no longer dives or bites using the forest
+bat's code. It hangs, inhales for 30 ticks along a committed cardinal lane,
+exhales a six-cell frost puff, then relocates toward a nearby wall perch and
+rests for 50 ticks. Health is 24. A bounded perch search prefers clear approaches
+and firing lanes; route steps remain authoritative cells. Blocked approaches
+fall back to rest instead of retrying forever. Hearing still makes it flee.
+Displacement during inhale cancels the tell. Three new bat poses include a
+pale swollen throat; wing animation never interpolates the entity position.
+The old arbitrary bright blue bat light is removed.
+
+Frost puffs are saved projectile entities, moving one cell every six ticks.
+They strike the first non-owner actor for 6 damage and two seconds of chill;
+shields block both. Walls, closed fixtures and solid props stop the puff, including
+when that hit breaks a prop. Exposed fire dissolves it. The existing CHILLED HUD
+reports duration and half-speed movement recovery; inventory use stays available.
+The shared chill helper rejects dead/anchored actors, flames and Frost Bats.
+
+Ice Needle is a stack-eight recoverable throw: 8 damage, range 7, 30-tick cooldown,
+60-tick chill and price 4. A throw removes one from the stack; its real projectile
+carries the exact modifier-bearing item until landing. Strong, Agile, Heavy and
+Long work through the shared effective pattern. All Piercing can carry it through
+actors; parries preserve the existing finite flight deadline. Shielded hits do
+not chill. Hot landings melt it before a nearby item cell can relocate it away
+from the heat. Other landings restore the physical needle. Heat means lava,
+burning surfaces/actors, live campfires and exposed torches/lit sticks, not the
+color or brightness of an arbitrary lamp. This is not yet general biome thawing.
+
+Echo tunnels supply needles; Frost Bats drop one on a 15% roll. Ice rewards and
+shops can select needles or grit. The formerly unreachable quarry pickaxe supply
+now runs inside the quarry branch. Cards show effective damage, chill duration,
+stack capacity and pattern; three modifier cards have static capture support.
+Eight new offline cues cover inhale, exhale, wings, death, frost dispersal,
+melting, needle throw and needle hit, with small local impact particles.
+
+Strict game/render builds and static frost/needle captures pass. All eight OGGs
+decode to finite, non-silent samples below clipping. No live playtest or new test
+suite was run. Existing fields already serialize/hash the projectile and AI state;
+snapshot layout remains 28, gameplay compatibility advances to DE. Ice now has
+two implemented catalog enemies and two items; other quotas remain open.

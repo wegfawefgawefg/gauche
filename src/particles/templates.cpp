@@ -154,6 +154,15 @@ void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
 void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
                         std::uint64_t seed) {
     switch (sound.sound) {
+    case SoundId::IceNeedleHit:
+        spray(cosmetics, sound.cell, seed, 4, Sprite::IceNeedle, .06F, .007F);
+        break;
+    case SoundId::FrostPuffHit:
+        spray(cosmetics, sound.cell, seed, 7, Sprite::FrostPuff, .05F, -.002F);
+        break;
+    case SoundId::IceMelt:
+        shockwave(cosmetics, sound.cell, 135, 175, 190);
+        break;
     case SoundId::PanReflect:
         shockwave(cosmetics, sound.cell, 222, 239, 240);
         break;

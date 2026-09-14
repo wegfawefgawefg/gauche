@@ -13,6 +13,9 @@ void apply_flight_pose(const Entity& bird, std::uint64_t tick, SDL_FRect& rect, 
         const float wing = .86F+.14F*std::sin(beat*1.4F);
         rect.x += rect.w*(1-wing)*.5F; rect.w *= wing;
         if (bird.label_a == 1) angle += std::sin(static_cast<double>(beat))*6;
+    } else if (bird.kind == EntityKind::FrostBat && bird.sprite == Sprite::FrostBatFlying) {
+        const float wing = .8F + .2F*std::cos(beat*.65F);
+        rect.x += rect.w*(1-wing)*.5F; rect.w *= wing;
     } else if (bird.kind == EntityKind::CarrionCrow) {
         const float wing = bird.move_wait > 0 ? .84F + .16F*std::cos(beat*.65F) : 1.0F;
         rect.x += rect.w*(1-wing)*.5F; rect.w *= wing;

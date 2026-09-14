@@ -21,11 +21,7 @@ void dive(Game& game, int slot) {
         emit_sound(game, SoundId::BatBite, bat.cell);
         bat.counter_a = 0;
     } else if (target_slot >= 0) {
-        Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
-        const int health = target.health;
         damage_entity(game, target_slot, 7, bat.cell);
-        if (bat.kind == EntityKind::FrostBat && target.health < health && target.health > 0)
-            target.freeze_ticks = std::max(target.freeze_ticks, 90);
         emit_sound(game, SoundId::BatBite, bat.cell);
         bat.counter_a = 0;
     } else if (!move_entity(game, slot, next)) bat.counter_a = 0;
@@ -40,8 +36,7 @@ void dive(Game& game, int slot) {
 } // namespace
 
 void init_bat(Entity& bat) {
-    bat.sprite = bat.kind == EntityKind::FrostBat ? Sprite::FrostBat : Sprite::Bat;
-    if (bat.kind == EntityKind::FrostBat) bat.light = {4, 580, {92, 179, 255}};
+    bat.sprite = Sprite::Bat;
     bat.health = bat.max_health = 18;
     bat.move_interval = 18;
     bat.impassable = true;

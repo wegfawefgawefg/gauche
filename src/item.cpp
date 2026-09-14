@@ -199,7 +199,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = fire_weapon(game, user_slot, direction, item);
         return used;
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
-    case ItemKind::Boomerang: case ItemKind::ThrowingRock:
+    case ItemKind::IceNeedle: case ItemKind::Boomerang: case ItemKind::ThrowingRock:
         used = launch_recoverable(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
         break;

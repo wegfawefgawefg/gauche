@@ -64,7 +64,12 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     case EntityKind::BrambleGuard: case EntityKind::Wolf: case EntityKind::CrateMimic:
         if (enemy.label_a == 1) add(enemy.point_b);
         break;
-    case EntityKind::Bat: case EntityKind::FrostBat:
+    case EntityKind::FrostBat:
+        if (enemy.label_a == 1)
+            for (int i = 1; i <= enemy.counter_a; ++i)
+                add(enemy.cell + Cell{enemy.facing.x * i, enemy.facing.y * i});
+        break;
+    case EntityKind::Bat:
         if (enemy.label_a == 1 || enemy.label_a == 2)
             for (int i = 1; i <= enemy.counter_a; ++i)
                 add(enemy.cell + Cell{enemy.facing.x * i, enemy.facing.y * i});

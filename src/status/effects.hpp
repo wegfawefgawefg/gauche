@@ -19,6 +19,7 @@ struct VitalEffects {
 
 struct Entity;
 struct Game;
+bool apply_chill(Entity& actor, int ticks);
 bool apply_sleep(Entity& actor, int ticks);
 bool apply_nausea(Entity& actor, int ticks);
 bool apply_root(Entity& actor, int ticks, RootKind kind = RootKind::Rope);

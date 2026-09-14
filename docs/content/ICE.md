@@ -44,7 +44,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 6 | Steam leech | Crawls toward heat, latches adjacent to an emitter and temporarily suppresses its light/fuel output. Swells before a scalding burst; cold or a shove detaches it. | Boiler rooms; 20% heat capsule, 10% sealant. |
 | 7 | Glass eel | Lives in connected water, charges visibly, then shocks a short wet path. Leave the water, interrupt charging or break connectivity; dry tiles stop propagation. | Reservoir; 20% eel battery, 15% raw meat. |
 | 8 | Avalanche ram | Pawing marks a short lane; a headbutt shoves an actor and breaks fragile snow banks. A wall collision stuns the ram. Short attack range distinguishes it from the forest boar. | Cliff paths; 35% two raw meat, 10% wool wrap. |
-| 9 | Frost bat | Hangs still, exhales a narrow traveling frost puff, then relocates to another perch. Puff chills instead of doing an invisible instant hit. | Ice caves; 15% cold flask. Existing placeholder needs this behavior. |
+| 9 | Frost bat | Hangs still, exhales a narrow traveling frost puff, then relocates to another perch. Implemented: 24 HP, 0.5s inhale, six-cell traveling puff for 6 damage and 2s chill; flames dissolve it and shields block it. | Ice caves; 15% ice needle. |
 | 10 | Snow effigy | Inert unless watched from nearby; turns and takes a step only after observers look away. Its twig face lights before an adjacent strike. Fire exposes a frail frame. | Memorial court; 20% candle stub, 10% effigy mask. |
 | 11 | Fishing widow | Casts a visible hook, reels the first hooked actor toward her, then pauses to untangle line. Crossing behind cover severs the tether; hook can catch an ally of hers. | Fishing huts; 20% fishing line, 20% smoked fish. |
 | 12 | Candle keeper | Relights a bounded set of nearby candles and protects the nearest one. Its flame strike dims its own lamp; stealing or wetting a candle redirects its attention. | Chapel; 30% candle stub, 15% wick spool. |
@@ -73,7 +73,7 @@ same effective item definition as attacks, including rare attributes.
 
 | # | Item | Distinct use and initial state | Rarity; price |
 | --- | --- | --- | --- |
-| 1 | Ice needle | Recoverable straight throw to 7, 8 damage and 1s chill; melts on a hot landing. Stack 8. | Common; 4 |
+| 1 | Ice needle | Implemented: recoverable straight throw to 7, 8 damage and 1s chill; melts on a hot landing. Stack 8. Strong/Agile/Heavy/Long keep their effects after recovery. | Common; 4 |
 | 2 | Chisel | Adjacent 9-damage jab, dig power 1, 0.3s cooldown; double tile damage to ice. 40 durability. | Common; 12 |
 | 3 | Skate blade | Three-cell lateral slash, 12 damage; striking while slipping extends the slash one cell ahead. 36 durability. | Common; 16 |
 | 4 | Harpoon gun | One shot loaded, 28 damage to range 10; leaves a tether. Holding use reels the victim until blocked; reload releases it. | Uncommon; 32 |

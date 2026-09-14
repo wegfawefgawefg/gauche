@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "pocket_door.hpp"
 #include "rime_skater.hpp"
+#include "frost_bat.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
@@ -30,7 +31,8 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::ZombieStack: init_zombie_stack(game, entity); break;
     case EntityKind::Zombie: init_zombie(game, entity); break;
     case EntityKind::Chicken: init_chicken(game, entity); break;
-    case EntityKind::Bat: case EntityKind::FrostBat: init_bat(entity); break;
+    case EntityKind::Bat: init_bat(entity); break;
+    case EntityKind::FrostBat: init_frost_bat(entity); break;
     case EntityKind::Wolf: init_wolf(entity); break;
     case EntityKind::Dog: init_dog(entity); break;
     case EntityKind::Bear: init_bear(entity); break;
@@ -71,7 +73,8 @@ void step_entity(Game& game, int slot) {
     case EntityKind::ZombieStack: step_zombie_stack(game, slot); break;
     case EntityKind::Zombie: step_zombie(game, slot); break;
     case EntityKind::Chicken: step_chicken(game, slot); break;
-    case EntityKind::Bat: case EntityKind::FrostBat: step_bat(game, slot); break;
+    case EntityKind::Bat: step_bat(game, slot); break;
+    case EntityKind::FrostBat: step_frost_bat(game, slot); break;
     case EntityKind::Wolf: step_wolf(game, slot); break;
     case EntityKind::Dog: step_dog(game, slot); break;
     case EntityKind::Bear: step_bear(game, slot); break;

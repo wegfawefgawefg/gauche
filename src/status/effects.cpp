@@ -4,6 +4,15 @@
 
 #include <algorithm>
 
+// CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
+bool apply_chill(Entity& actor, int ticks) {
+    if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0 ||
+        actor.burn_ticks > 0 || actor.scorch_ticks > 0 || actor.kind == EntityKind::Ember ||
+        actor.kind == EntityKind::FrostBat) return false;
+    actor.freeze_ticks = std::clamp(std::max(actor.freeze_ticks, ticks), 0, 600);
+    return true;
+}
+
 bool apply_nausea(Entity& actor, int ticks) {
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Ember || ticks <= 0) return false;

@@ -31,6 +31,11 @@ struct ImpactEvent {
     PropKind prop = PropKind::None;
 };
 
+struct ShotEvent {
+    Cell source{}, end{};
+    bool impact = false, muzzle = false, casing = false;
+};
+
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
 constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
@@ -252,6 +257,8 @@ struct Game {
     // PRESENTATION: Impacts are regenerated on replay and never enter snapshots or hashes.
     std::array<ImpactEvent, 128> impacts{};
     int impact_count = 0;
+    std::array<ShotEvent, 128> shots{};
+    int shot_count = 0;
 };
 
 bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power = 0,

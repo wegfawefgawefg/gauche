@@ -127,3 +127,21 @@ Strict builds and static world/item-card captures checked, with joined puddle
 silhouettes and softer smoke after visual inspection. This is not a gameplay or
 network playtest. Oil slipping, honey/wasp interaction and natural sap-bearing
 scenes remain follow-up work in the forest catalog.
+
+## Gunfire and projectile aftermath
+
+Crossbows launch a real bolt at three ticks per cell; rockets fly at two ticks
+per cell and explode on collision or maximum range. Ammunition is spent only
+after allocation succeeds. The launcher has a distinct report, exhaust, smoke
+and light; bolts splinter using the arrow's local impact debris. Bombs retain
+their landing/fuse behavior. Gameplay version changed; shared projectile slots
+already serialize flight and survive owner loss.
+
+Pistol, musket, shotgun, SMG and blunderbuss remain immediate shots. Their local
+shot events draw four-tick tracers, muzzle light and impulses, with one brass
+case for cartridge guns. Source/endpoint events never enter snapshots or hashes
+and are deduplicated during presentation. Projectile/shot paths cross deep water
+and stop at physical obstacles. Ten new offline-generated reports/reloads replace
+generic cues for these weapons; empty magazines retain the restrained dry click.
+Strict builds and a static ballistic scene checked; no combat/network playthrough.
+Persistent spells and other regional throws remain catalog work.

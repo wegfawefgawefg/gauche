@@ -352,7 +352,7 @@ attack-preview render passed; behavior/balance playtesting remains with the user
   actual new audio files for enemies, weapons, props, tile hits, drops,
   hazards, doors, unique rooms, and UI feedback; use variations for repeated
   cues and positional playback for world sounds.
-- [ ] Add gun-specific firing aftermath: ejected casings, impact fragments,
+- [x] Add gun-specific firing aftermath: ejected casings, impact fragments,
   impulses on nearby loose debris, distinct reload sounds, and clear dry-fire
   feedback when a magazine is empty. Casings and scraps are local cosmetics.
 - [ ] Put tangible gold/currency finds into rooms, containers, and fitting
@@ -469,6 +469,8 @@ the available art reference; new source scripts keep a small explicit palette.
   persistent projectiles (arrows, grenades, spells). Travel/hit timing must match
   damage timing; arrows splinter into local debris on impact. Retain explicit
   ammo use, charge cancellation and safe behavior on switching/death/reconnect.
+  Arrows, bolts, rockets and fused bombs now travel; gun tracers are local.
+  Persistent spells and the remaining regional throws still belong to their content slices.
 - [x] Add brief item-specific melee windups and swing/exertion sounds: fists
   very quick, sticks/heavier tools longer. Ordinary guns fire immediately;
   launchers/throws may have a deliberate preparation beat where appropriate.

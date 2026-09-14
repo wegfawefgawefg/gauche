@@ -8,7 +8,8 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
-    const bool thrown = shot.label_a != static_cast<int>(ProjectileKind::Arrow);
+    const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
+    const bool thrown = bomb || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 ?
         1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)) : 0;
     const float pixels = tile_pixels(zoom);
@@ -29,6 +30,14 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
     SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+    if (rocket) {
+        SDL_SetRenderDrawColor(renderer, 255, 181, 76, 255);
+        const float x = rect.x + rect.w * .5F, y = rect.y + rect.h * .5F;
+        SDL_RenderLine(renderer, x - static_cast<float>(shot.facing.x) * pixels * .35F,
+            y - static_cast<float>(shot.facing.y) * pixels * .35F,
+            x - static_cast<float>(shot.facing.x) * pixels * .65F,
+            y - static_cast<float>(shot.facing.y) * pixels * .65F);
+    }
     if (bomb) {
         // FUSE: A few local sparks communicate danger without a debug attack grid.
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

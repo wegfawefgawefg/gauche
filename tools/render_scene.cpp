@@ -113,6 +113,7 @@ int main(int argc, char** argv) {
     if (mode == "water") arrange_water_scene(game, cosmetics);
     if (mode == "materials" || mode == "material-items") arrange_material_scene(game, cosmetics);
     if (mode == "projectiles" || mode == "bow") arrange_projectile_scene(game, cosmetics);
+    if (mode == "ballistics") arrange_ballistics_scene(game, cosmetics);
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
         game.run.roof_lights[0] = {{17, 6}};

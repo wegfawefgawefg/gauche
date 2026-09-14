@@ -13,7 +13,7 @@ constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Splinter
 constexpr RegionalItem spear{"Hunting Spear", "Thrust through two cells, piercing actors along the shaft.",
     Sprite::HuntingSpear, {1, 2, 0, 12, 28, PatternEffect::Damage, false, 0, 0, true},
     ItemAction::Melee, 15, 1, false, 45, 0, 0, 60, 0, SoundId::SpearThrust};
-constexpr RegionalItem crossbow{"Crossbow", "One bolt, 32 damage. An accurate line with a deliberate reload.",
+constexpr RegionalItem crossbow{"Crossbow", "One traveling bolt, 32 damage on impact. Deliberate mechanical reload.",
     Sprite::Crossbow, {1, 14, 0, 32, 40, PatternEffect::Damage, true},
     ItemAction::Gun, 30, 1, false, 0, 1, 16, 75, 0, SoundId::CrossbowShot};
 constexpr RegionalItem blunderbuss{"Blunderbuss", "Three short lanes, 10 damage each. Two shots; recoil steps you back.",

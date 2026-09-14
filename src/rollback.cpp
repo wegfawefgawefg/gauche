@@ -147,6 +147,8 @@ void apply_correction_batch(RollbackSession& session,
 void apply_host_snapshot(RollbackSession& session, const Game& snapshot) {
     session.game = snapshot;
     session.game.sound_count = 0;
+    session.game.impact_count = 0;
+    session.game.shot_count = 0;
     session.frames.clear();
     session.pending.clear();
     session.confirmed_through = snapshot.tick;

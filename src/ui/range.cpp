@@ -63,7 +63,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
                 has_artifact(player, ArtifactKind::AllPiercing);
-            const bool impact = (held.kind == ItemKind::Bow ? projectile_blocked(game, cell) : !walkable(*tile)) ||
+            const bool impact = projectile_blocked(game, cell) ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||
                 step == pattern.maximum;

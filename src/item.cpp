@@ -2,6 +2,7 @@
 #include "projectiles/projectile.hpp"
 #include "items/catalog.hpp"
 #include "items/materials.hpp"
+#include "items/firearms.hpp"
 #include "item_attribute.hpp"
 #include "combat/shove.hpp"
 #include "entities/dispatch.hpp"
@@ -45,71 +46,6 @@ void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
     }
 }
 
-bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
-    if (item.loaded <= 0) {
-        item.cooldown = 15;
-        emit_sound(game, SoundId::WeaponEmpty, game.entities[static_cast<std::size_t>(user_slot)].cell);
-        return false;
-    }
-    Entity& user = game.entities[static_cast<std::size_t>(user_slot)];
-    const ItemPattern pattern = item_pattern(item);
-    const bool piercing = pattern.piercing ||
-        (has_artifact(user, ArtifactKind::AllPiercing) &&
-         item.kind != ItemKind::RocketLauncher);
-    const int range = pattern.maximum;
-    const int damage = pattern.damage;
-    const int cooldown = pattern.cooldown;
-    const Cell origin = user.cell;
-    const Cell sideways{-direction.y, direction.x};
-    for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
-    Cell cell = origin + Cell{sideways.x * lane, sideways.y * lane};
-    for (int step = 0; step < range; ++step) {
-        cell = cell + direction;
-        const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr) break;
-        const bool blocked_prop = prop_blocks(tile->prop);
-        hit_prop(game, cell, damage, user.cell);
-        if (blocked_prop) {
-            if (item.kind == ItemKind::RocketLauncher)
-                blast(game, cell, pattern.blast_radius, damage, user.cell);
-            if (!piercing) break;
-        }
-        if (!walkable(*tile)) {
-            if (item.kind == ItemKind::RocketLauncher)
-                blast(game, cell, pattern.blast_radius, damage, user.cell);
-            else hit_terrain(game, cell, user.cell, damage, item.dig_power);
-            break;
-        }
-        const int target = entity_at(game, cell, true);
-        if (target >= 0 && target != user_slot) {
-            if (item.kind == ItemKind::RocketLauncher)
-                blast(game, cell, pattern.blast_radius, damage, user.cell);
-            else {
-                const int prior_health = game.entities[static_cast<std::size_t>(target)].health;
-                damage_entity(game, target, damage, user.cell);
-                if (user.kind == EntityKind::Ember &&
-                    game.entities[static_cast<std::size_t>(target)].health < prior_health)
-                    game.entities[static_cast<std::size_t>(target)].burn_ticks = 120;
-            }
-            if (!piercing) break;
-        }
-        if (step == range - 1 && item.kind == ItemKind::RocketLauncher)
-            blast(game, cell, pattern.blast_radius, damage, user.cell);
-    }
-    }
-    --item.loaded;
-    item.cooldown = cooldown;
-    user.use_flash = 6;
-    const RegionalItem* spec = regional_item(item.kind);
-    emit_sound(game, spec != nullptr ? spec->sound :
-        item.kind == ItemKind::RocketLauncher ? SoundId::Explosion1 : SoundId::SmallLaser, origin);
-    if (item.kind == ItemKind::Blunderbuss) {
-        const Cell facing = user.facing;
-        move_entity(game, user_slot, origin - direction);
-        user.facing = facing;
-    }
-    return true;
-}
 
 } // namespace
 
@@ -283,6 +219,6 @@ bool reload_held_item(Game& game, int user_slot) {
     item.spare -= transfer;
     const RegionalItem* spec = regional_item(item.kind);
     item.cooldown = spec != nullptr ? spec->reload : item.kind == ItemKind::Pistol ? 45 : 60;
-    emit_sound(game, SoundId::WeaponReload, game.entities[static_cast<std::size_t>(user_slot)].cell);
+    emit_sound(game, firearm_reload_sound(item.kind), game.entities[static_cast<std::size_t>(user_slot)].cell);
     return true;
 }

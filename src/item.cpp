@@ -85,7 +85,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = throw_mixture(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
         break;
-    case ItemKind::HandBell: case ItemKind::Firecracker:
+    case ItemKind::WolfWhistle: case ItemKind::HandBell: case ItemKind::Firecracker:
         used = use_noisemaker(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
         break;

@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "wolf_call.hpp"
 #include "hearing.hpp"
 #include "../surfaces/interaction.hpp"
 #include "foraging.hpp"
@@ -9,6 +10,7 @@ namespace {
 
 // SLOTS: entity_a pack leader, entity_b prey; point_a home, point_b locked bite;
 // label_a hunt/bite/recover; timer_a bite/recover; timer_b pack/howl beat.
+// WhistleHunt uses c attention time and entity_b prey; food retains its b slots.
 void find_pack(Game& game, int slot) {
     Entity& wolf = game.entities[static_cast<std::size_t>(slot)];
     wolf.entity_a = {};
@@ -35,7 +37,8 @@ void init_wolf(Entity& wolf) {
 
 void step_wolf(Game& game, int slot) {
     Entity& wolf = game.entities[static_cast<std::size_t>(slot)];
-    if (step_foraging(game, slot, wolf.label_a != 0)) return;
+    const Entity* called_prey = called_wolf_prey(game, wolf);
+    if (!called_prey && step_foraging(game, slot, wolf.label_a != 0)) return;
     if (wolf.label_a == 1) {
         if (wolf.timer_a == 0) {
             resolve_enemy_attack(game, slot, 11, SoundId::WolfBite);
@@ -48,11 +51,12 @@ void step_wolf(Game& game, int slot) {
         if (wolf.timer_a == 0) wolf.label_a = 0;
         return;
     }
-    if (step_hearing(game, slot)) return;
-    if (wolf.timer_b == 0) find_pack(game, slot);
+    if (!called_prey && step_hearing(game, slot)) return;
+    if (!called_prey && wolf.timer_b == 0) find_pack(game, slot);
     const Entity* leader = get_entity(game, wolf.entity_a);
-    auto target = enemy_target(game, wolf.cell, 8);
-    if (leader != nullptr && leader->health > 0 && (!target || target->actor.slot >= 0)) {
+    auto target = called_prey ? std::optional<EnemyTarget>{{called_prey->cell, wolf.entity_b}} :
+        enemy_target(game, wolf.cell, 8);
+    if (!called_prey && leader != nullptr && leader->health > 0 && (!target || target->actor.slot >= 0)) {
         const Entity* prey = get_entity(game, leader->entity_b);
         if (prey != nullptr && prey->health > 0 && prey->owner >= 0 && prey->owner < 4 &&
             game.run.online[static_cast<std::size_t>(prey->owner)] && distance(wolf.cell, prey->cell) < 12 &&

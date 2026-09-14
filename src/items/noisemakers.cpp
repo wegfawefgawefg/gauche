@@ -1,8 +1,13 @@
 #include "noisemakers.hpp"
 #include "../entities/hearing.hpp"
+#include "../entities/wolf_call.hpp"
 #include "../projectiles/projectile.hpp"
 
 namespace {
+
+constexpr RegionalItem whistle{"Wolf Whistle", "Aim at a lone wolf. It hunts a nearby enemy for 5s. Packs and committed attacks resist. Harm breaks the call.",
+    Sprite::WolfWhistle, {1, 6, 0, 0, 90, PatternEffect::Utility, true},
+    ItemAction::Material, 20, 1, false, 8, 0, 0, 0, 0, SoundId::WolfWhistle};
 
 constexpr RegionalItem bell{"Hand Bell", "Wake sleepers and draw curious creatures to this spot. Sound travels around corners, not through walls.",
     Sprite::HandBell, {0, 0, 10, 0, 90, PatternEffect::Utility},
@@ -14,6 +19,7 @@ constexpr RegionalItem cracker{"Firecracker", "Throw, then bang after 1.5s. Smal
 } // namespace
 
 const RegionalItem* forest_noisemaker(ItemKind kind) {
+    if (kind == ItemKind::WolfWhistle) return &whistle;
     if (kind == ItemKind::HandBell) return &bell;
     if (kind == ItemKind::Firecracker) return &cracker;
     return nullptr;
@@ -23,6 +29,8 @@ bool use_noisemaker(Game& game, int slot, Cell direction) {
     const Entity& user = game.entities[static_cast<std::size_t>(slot)];
     const Item item = *user.inventory.held();
     const ItemPattern pattern = item_pattern(item);
+    if (item.kind == ItemKind::WolfWhistle)
+        return call_wolf(game, slot, direction, pattern.maximum);
     if (item.kind == ItemKind::HandBell) {
         make_noise(game, user.cell, pattern.blast_radius);
         return true;

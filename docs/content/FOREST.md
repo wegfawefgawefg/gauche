@@ -71,7 +71,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 19 | Honey pot | Place bait; draws bears and wasps, sticky to walk through. A deliberate trap ingredient. | Common / 8 |
 | 20 | Hand bell | 80 rings, 90-tick cooldown. Wakes sleepers along a wall-blocked 10-cell sound path; curious creatures investigate that location for up to 5s. No damage. | Common / 5 |
 | 21 | Hunting horn | Facing cone 1–3 (one/three/five cells wide); shoves each target once and wakes it. Walls crush, friends count. 100-tick cooldown, eight uses. | Uncommon / 22 |
-| 22 | Wolf whistle | Narrow call 1–6; briefly redirects an unattached wolf toward another hostile actor. Limited uses. | Uncommon / 20 |
+| 22 | Wolf whistle | Call 1–6 redirects a lone wolf toward the nearest visible enemy for up to 5s. Packs/committed attacks resist; harm or lost sight ends it. Eight uses; Long extends to ten cells. | Uncommon / 20 |
 | 23 | Bird seed | Place a small bait pile; nearby birds/flocks gather rather than creating endless free animals. | Common / 4 |
 | 24 | Herb bag | Self heal over time, 18 HP total; cannot stack its own regeneration. Four portions. | Common / 7 |
 | 25 | Splint | Self; removes movement stun and briefly protects against another root/stun. Two uses. | Common / 6 |

@@ -134,6 +134,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "SCENT 10s | NO DAMAGE");
     if (item.kind == ItemKind::RottenFruit)
         std::snprintf(line, sizeof(line), "NAUSEA 1 HP/s | WATER CURES");
+    if (item.kind == ItemKind::WolfWhistle)
+        std::snprintf(line, sizeof(line), "DISTRACT 5s | LONE WOLVES ONLY");
     if (item.kind == ItemKind::HandBell)
         std::snprintf(line, sizeof(line), "WAKE + INVESTIGATE 5s");
     if (item.kind == ItemKind::Firecracker)

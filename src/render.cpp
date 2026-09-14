@@ -2,6 +2,7 @@
 #include "render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
+#include "entities/wolf_render.hpp"
 #include "items/fire_render.hpp"
 #include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
@@ -252,6 +253,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::GroundItem)
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        draw_wolf_call(renderer, graphics, entity, rect, brightness);
         if (entity.vitals.rooted > 0 && entity.health > 0) {
             const bool netted = entity.vitals.root_kind == RootKind::Net;
             SDL_Texture* rope = texture_for(graphics, netted ? Sprite::NetCaught : Sprite::SnareTight);

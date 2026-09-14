@@ -2,15 +2,26 @@
 
 #include "woodland_tools_scene.hpp"
 #include "../src/projectiles/projectile.hpp"
+#include "../src/entities/hearing.hpp"
 
 // Static cards and lit fuse; no simulation steps or creature behavior run here.
-inline void arrange_noisemakers(Game& game, Cosmetics& cosmetics, Entity& player, bool big) {
+inline void arrange_noisemakers(Game& game, Cosmetics& cosmetics, Entity& player, bool big, bool whistle = false) {
     arrange_woodland_tools(game, cosmetics, player);
     for (Entity& entity : game.entities)
         if (&entity != &player) entity.kind = EntityKind::None;
     for (Tile& tile : game.stage.tiles) tile.prop = {};
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));
+    if (whistle) {
+        insert_item(player.inventory, make_item(ItemKind::WolfWhistle));
+        insert_item(player.inventory, make_item(ItemKind::WolfWhistle, 1, ItemAttribute::Long));
+        player.inventory.selected = 1;
+        Entity* wolf = get_entity(game, spawn_entity(game, EntityKind::Wolf, {16, 11}));
+        wolf->entity_b = spawn_entity(game, EntityKind::Boar, {19, 11});
+        wolf->label_c = WhistleHunt; wolf->timer_c = 220;
+        wolf->facing = {1, 0};
+        return;
+    }
     insert_item(player.inventory, make_item(ItemKind::Firecracker, 5, big ? ItemAttribute::Big : ItemAttribute::None));
     insert_item(player.inventory, make_item(ItemKind::HandBell));
     player.inventory.selected = 2;

@@ -289,3 +289,76 @@ Scent/rot rendering is local, while liquid kind/lifetime, scent lifetime, nausea
 and its damage beat are hashed and saved (snapshot 25, compatibility D4). Debug
 footprints use the same bounded wall/cover-aware splash cells as gameplay.
 Strict game/render builds pass. No live playtest or new gameplay test suite ran.
+
+## Scarecrow wards and straw debris
+
+The forty-eighth regional find is a stackable pair of scarecrows, priced at 16
+gold, with a 45-tick placement cooldown. Each plants a blocking 28-HP prop on an
+empty dry buildable cell. It uses the existing six-byte Prop; no actor slots or
+new simulation structures are allocated. The prop can be attacked, burned and
+broken. New bundle/standing sprites and offline stake/cloth-tear sounds accompany
+it. Breakage leaves local straw and cloth. Straw is a new pale, wind-sensitive
+loose material (21 forest debris types), and debris sprites now have an explicit
+lookup table instead of assuming contiguous sprite enum indices.
+
+Chickens, crows, owls, woodpeckers and rabbits avoid the ward. Its four-tile
+Manhattan radius requires clear sight: walls, cover, closed hard fixtures and
+thick smoke interrupt it. Big extends the radius to five. Inside a ward, creatures
+choose a free neighbor with lower pressure or an equal-pressure escape step;
+a penned creature hesitates until a route opens. Existing flock, threat, carrier
+and perch state stays intact. Chicken retreats still record their follower trail.
+
+Ordinary AI steps refuse increasing pressure, and bird/rabbit path searches mark
+covered cells once in their occupancy mask. The physical movement function stays
+unchanged, so a shove, tether, slip or teleport can force an animal into danger.
+Larger predators and insects ignore wards. Already committed owl dives, beak
+charges and crow thefts finish before fear applies; new attacks into a covered
+cell are refused. The ward is useful shelter, not protection from attacks already
+in motion. Breaking or obscuring it immediately removes its influence.
+
+Cards show radius, prop HP, stack/consumption and cooldown, with the ordinary/Big
+pattern comparison. The debug footprint uses the same sight-aware coverage as
+AI. The general Big attribute label now says wider effect area, since utility
+wards and noise are neither strikes nor explosions. Cache/reward/shop pools
+include the item. Existing prop serialization/hashing covers all ward data;
+snapshot layout remains 26 and gameplay compatibility is D7.
+
+Strict builds and static card/world captures pass; no live playtest or new test
+suite was run. Straw Decoy, Wolf Whistle, Pocket Door and Thunder Acorn remain
+unfinished forest catalog work; the other biome catalogs remain separate work.
+
+
+## Straw decoys and attacks on cover
+
+The forty-ninth regional find is a stackable pair of straw bodies, priced at 12
+with a 45-tick placement cooldown. A body is a blocking 40-HP Prop placed on an
+empty dry buildable neighbor. Its stored variant holds attention radius six;
+Big extends it to seven. Placement, hits and destruction have separate generated
+sounds. Standing/bundled sprites and local straw/cloth breakage distinguish it
+from the scarecrow ward. It has no loot or entity allocation.
+
+Target acquisition can return a living actor handle or a dummy cell. Susceptible
+predators, undead, root/guard enemies, owls, woodpeckers and Ember use this chooser.
+A visible dummy scores as two tiles nearer than a player, within both its lure
+radius and the creature's own detection range. Walls, cover, fixtures and thick
+smoke interrupt attention; player ties and dummy scan order are deterministic.
+Insects, passive animals and food-stealing crows retain their existing targets.
+The spore toad can waste a sleep puff on straw without inventing damage for it.
+Pack references, territory, hearing, foraging and committed windups remain in
+those enemies' existing functions. Dummies never rewrite another actor's state.
+
+Attack sight permits a blocking prop only at the ray endpoint. Committed attack
+coverage is captured before damage, so breaking front cover does not expose
+cells behind it to the rest of that attack. Bites, boar charges, bat dives and
+owl swoops damage props they actually reach; pathfinding allows a live dummy as
+a solid goal without allowing travel through it. Zombie stacks stop approaching
+once adjacent instead of stepping away from their bite target.
+
+Cards show lure range, prop HP, stack and cooldown. Debug coverage follows the
+same sight ray; ordinary and Big inspection patterns scale to fit. Room caches,
+rewards and shops include the item. Prop state already hashes and serializes;
+snapshot layout stays 26 and gameplay compatibility is D8.
+
+Strict game/render builds pass. Static normal/Big cards and placed/broken prop
+captures were inspected. No live playtest or new test suite ran. Wolf Whistle,
+Pocket Door and Thunder Acorn remain unfinished forest catalog work.

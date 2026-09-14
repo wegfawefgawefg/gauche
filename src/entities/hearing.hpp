@@ -3,7 +3,7 @@
 #include "../game.hpp"
 #include <vector>
 
-enum AttentionMode { NoAttention, InvestigateNoise, StartleNoise, FollowScent, SniffScent };
+enum AttentionMode { NoAttention, InvestigateNoise, StartleNoise, FollowScent, SniffScent, WhistleHunt };
 
 // SHARED SLOTS: point_c origin, label_c attention mode, timer_c memory.
 // Each species calls step_hearing at an interruptible point in its own step.

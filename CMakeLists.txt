@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/entities/targeting.cpp
     src/items/decoys.cpp src/props/scarecrow.cpp
     src/combat/parry.cpp src/combat/ranged.cpp
     src/items/shields.cpp

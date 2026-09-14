@@ -78,14 +78,14 @@ void step_bramble_guard(Game& game, int slot) {
         choose_ward(game, guard);
         ally = get_entity(game, guard.entity_a);
     }
-    const int target = nearest_player(game, guard.cell, 7);
-    if (target < 0 || distance(guard.cell, guard.point_a) > 10) {
+    const auto target = enemy_target(game, guard.cell, 7);
+    if (!target || distance(guard.cell, guard.point_a) > 10) {
         const Cell home = ally != nullptr && ally->health > 0 ? ally->cell : guard.point_a;
         if (distance(guard.cell, home) > 1) pursue(game, slot, home);
         return;
     }
-    const Cell threat = game.entities[static_cast<std::size_t>(target)].cell;
-    if (!clear_sight(game, guard.cell, threat)) return;
+    const Cell threat = target->cell;
+    if (!clear_attack_sight(game, guard.cell, threat)) return;
     guard.facing = cardinal_toward(guard.cell, threat, guard.facing);
     if (distance(guard.cell, threat) == 1) {
         guard.block_ticks = 0;

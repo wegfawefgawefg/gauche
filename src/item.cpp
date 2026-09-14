@@ -77,8 +77,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
-    case ItemKind::Scarecrow:
-        used = place_scarecrow(game, user_slot, direction);
+    case ItemKind::StrawDecoy: case ItemKind::Scarecrow:
+        used = place_decoy(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::StinkBomb: case ItemKind::RottenFruit: case ItemKind::PitchBomb:

@@ -67,6 +67,15 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 if (scarecrow_covers(game, ward, cell, pattern.blast_radius))
                     mark(renderer, cell, camera, zoom, pattern.effect);
             }
+    } else if (held.kind == ItemKind::StrawDecoy) {
+        const Cell dummy = player.cell + facing;
+        for (int y = -pattern.blast_radius; y <= pattern.blast_radius; ++y)
+            for (int x = -pattern.blast_radius; x <= pattern.blast_radius; ++x) {
+                const Cell cell = dummy + Cell{x, y};
+                if (distance(cell, dummy) <= pattern.blast_radius &&
+                    clear_attack_sight(game, cell, dummy))
+                    mark(renderer, cell, camera, zoom, pattern.effect);
+            }
     } else if (forest_mixture(held.kind) != nullptr) {
         const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
         for (Cell cell : mixture_cells(game, held, center))

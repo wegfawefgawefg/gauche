@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.hpp"
+#include "targeting.hpp"
 #include <optional>
 
 int nearest_player(const Game& game, Cell from, int radius);

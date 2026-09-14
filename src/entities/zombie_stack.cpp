@@ -56,11 +56,13 @@ void step_zombie_stack(Game& game, int slot) {
     Entity& stack = game.entities[static_cast<std::size_t>(slot)];
     if (stack.label_a == 0) {
         if (step_hearing(game, slot)) return;
-        const int target = nearest_player(game, stack.cell, stack.encounter.slot >= 0 ? 60 : 8);
-        if (target >= 0) {
-            const Cell destination = game.entities[static_cast<std::size_t>(target)].cell;
-            if (stack.encounter.slot >= 0) pursue(game, slot, destination);
-            else approach(game, slot, destination);
+        const auto target = enemy_target(game, stack.cell, stack.encounter.slot >= 0 ? 60 : 8);
+        if (target.has_value()) {
+            const Cell destination = target->cell;
+            if (distance(stack.cell, destination) > 1) {
+                if (stack.encounter.slot >= 0) pursue(game, slot, destination);
+                else approach(game, slot, destination);
+            }
         }
         else wander(game, slot);
         bite(game, slot, 8);

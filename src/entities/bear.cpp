@@ -29,14 +29,14 @@ void step_bear(Game& game, int slot) {
         return;
     }
     if (step_hearing(game, slot)) return;
-    const int target = nearest_player(game, bear.cell, bear.timer_b > 0 ? 8 : 3);
-    if (target < 0 || distance(bear.cell, bear.point_a) > 8) {
+    const auto target = enemy_target(game, bear.cell, bear.timer_b > 0 ? 8 : 3);
+    if (!target || distance(bear.cell, bear.point_a) > 8) {
         if (distance(bear.cell, bear.point_a) > 1) pursue(game, slot, bear.point_a);
         else if (game.tick % 60 == 0) wander(game, slot);
         return;
     }
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
-    if (!clear_sight(game, bear.cell, cell)) return;
+    const Cell cell = target->cell;
+    if (!clear_attack_sight(game, bear.cell, cell)) return;
     bear.point_b = cell;
     bear.timer_b = 300;
     if (distance(bear.cell, cell) <= 2) {

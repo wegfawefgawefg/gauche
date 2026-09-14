@@ -14,7 +14,7 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
     Entity& animal = game.entities[static_cast<std::size_t>(slot)];
     // SHARED SLOTS: counter_b = satiety, label_b = idle/eating/approaching food.
     animal.counter_b = std::max(0, animal.counter_b - 1);
-    if (committed_attack || nearest_player(game, animal.cell, 1) >= 0) {
+    if (committed_attack || enemy_target(game, animal.cell, 1).has_value()) {
         animal.label_b = 0;
         return false;
     }

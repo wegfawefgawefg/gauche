@@ -1,3 +1,4 @@
+#include "../props/interaction.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "foraging.hpp"
@@ -22,6 +23,13 @@ void charge(Game& game, int slot) {
     Entity& boar = game.entities[static_cast<std::size_t>(slot)];
     if (boar.move_wait > 0) return;
     const Cell next = boar.cell + boar.facing;
+    const Tile* tile = game.stage.at(next);
+    if (tile != nullptr && prop_blocks(tile->prop)) {
+        hit_prop(game, next, 18, boar.cell);
+        emit_sound(game, SoundId::BoarHit, boar.cell);
+        stop_charge(boar);
+        return;
+    }
     const int victim_slot = entity_at(game, next, true);
     if (victim_slot >= 0) {
         Entity& victim = game.entities[static_cast<std::size_t>(victim_slot)];
@@ -61,15 +69,15 @@ void step_boar(Game& game, int slot) {
     }
     if (boar.label_a == Charge) { charge(game, slot); return; }
     if (step_hearing(game, slot)) return;
-    const int target = nearest_player(game, boar.cell, 7);
-    if (target < 0) {
+    const auto target = enemy_target(game, boar.cell, 7);
+    if (!target) {
         if (distance(boar.cell, boar.point_a) > 4) pursue(game, slot, boar.point_a);
         else wander(game, slot);
         return;
     }
-    const Cell target_cell = game.entities[static_cast<std::size_t>(target)].cell;
+    const Cell target_cell = target->cell;
     if ((target_cell.x == boar.cell.x || target_cell.y == boar.cell.y) &&
-        clear_sight(game, boar.cell, target_cell)) {
+        clear_attack_sight(game, boar.cell, target_cell)) {
         boar.facing = cardinal_toward(boar.cell, target_cell, boar.facing);
         boar.label_a = Windup;
         boar.timer_a = 36;

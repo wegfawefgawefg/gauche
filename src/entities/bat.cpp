@@ -1,3 +1,4 @@
+#include "../props/interaction.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "dispatch.hpp"
@@ -14,7 +15,12 @@ void dive(Game& game, int slot) {
     if (bat.move_wait > 0) return;
     const Cell next = bat.cell + bat.facing;
     const int target_slot = entity_at(game, next, true);
-    if (target_slot >= 0) {
+    const Tile* tile = game.stage.at(next);
+    if (tile != nullptr && prop_blocks(tile->prop)) {
+        hit_prop(game, next, 7, bat.cell);
+        emit_sound(game, SoundId::BatBite, bat.cell);
+        bat.counter_a = 0;
+    } else if (target_slot >= 0) {
         Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
         const int health = target.health;
         damage_entity(game, target_slot, 7, bat.cell);
@@ -54,15 +60,15 @@ void step_bat(Game& game, int slot) {
         return;
     }
     if (step_hearing(game, slot)) return;
-    const int target = nearest_player(game, bat.cell, 7);
-    if (target < 0) {
+    const auto target = enemy_target(game, bat.cell, 7);
+    if (!target) {
         if (distance(bat.cell, bat.point_a) > 2) pursue(game, slot, bat.point_a);
         else if (game.tick % 45 == 0) wander(game, slot);
         return;
     }
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    const Cell cell = target->cell;
     if (distance(bat.cell, cell) <= 4 && (cell.x == bat.cell.x || cell.y == bat.cell.y) &&
-        clear_sight(game, bat.cell, cell)) {
+        clear_attack_sight(game, bat.cell, cell)) {
         bat.facing = cardinal_toward(bat.cell, cell, bat.facing);
         bat.label_a = 1;
         bat.timer_a = 24;

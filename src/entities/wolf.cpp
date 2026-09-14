@@ -51,36 +51,36 @@ void step_wolf(Game& game, int slot) {
     if (step_hearing(game, slot)) return;
     if (wolf.timer_b == 0) find_pack(game, slot);
     const Entity* leader = get_entity(game, wolf.entity_a);
-    int target = nearest_player(game, wolf.cell, 8);
-    if (leader != nullptr && leader->health > 0) {
+    auto target = enemy_target(game, wolf.cell, 8);
+    if (leader != nullptr && leader->health > 0 && (!target || target->actor.slot >= 0)) {
         const Entity* prey = get_entity(game, leader->entity_b);
         if (prey != nullptr && prey->health > 0 && prey->owner >= 0 && prey->owner < 4 &&
             game.run.online[static_cast<std::size_t>(prey->owner)] && distance(wolf.cell, prey->cell) < 12 &&
             !smoke_hides(game.stage, wolf.cell, prey->cell))
-            target = leader->entity_b.slot;
+            target = EnemyTarget{prey->cell, leader->entity_b};
     }
-    if (target < 0) {
+    if (!target) {
         wolf.entity_b = {};
         if (distance(wolf.cell, wolf.point_a) > 5) pursue(game, slot, wolf.point_a);
         else if (game.tick % 12 == 0) wander(game, slot);
         return;
     }
-    const Entity& prey = game.entities[static_cast<std::size_t>(target)];
-    const bool acquired = get_entity(game, wolf.entity_b) == nullptr;
-    wolf.entity_b = {target, prey.generation};
+    const Cell prey = target->cell;
+    const bool acquired = target->actor.slot >= 0 && get_entity(game, wolf.entity_b) == nullptr;
+    wolf.entity_b = target->actor;
     if (acquired && leader == nullptr) emit_sound(game, SoundId::WolfHowl, wolf.cell);
-    if (distance(wolf.cell, prey.cell) == 1 && clear_sight(game, wolf.cell, prey.cell)) {
-        wolf.point_b = prey.cell;
-        wolf.facing = cardinal_toward(wolf.cell, prey.cell, wolf.facing);
+    if (distance(wolf.cell, prey) == 1 && clear_attack_sight(game, wolf.cell, prey)) {
+        wolf.point_b = prey;
+        wolf.facing = cardinal_toward(wolf.cell, prey, wolf.facing);
         wolf.label_a = 1;
         wolf.timer_a = 18;
         return;
     }
-    Cell destination = prey.cell;
-    if (leader != nullptr && distance(wolf.cell, prey.cell) > 2) {
-        const Cell line = cardinal_toward(leader->cell, prey.cell, leader->facing);
+    Cell destination = prey;
+    if (leader != nullptr && distance(wolf.cell, prey) > 2) {
+        const Cell line = cardinal_toward(leader->cell, prey, leader->facing);
         const int flank = (slot & 1) == 0 ? 1 : -1;
-        const Cell candidate = prey.cell + Cell{-line.y * flank, line.x * flank};
+        const Cell candidate = prey + Cell{-line.y * flank, line.x * flank};
         const Tile* tile = game.stage.at(candidate);
         if (tile != nullptr && walkable(*tile) && entity_at(game, candidate, true) < 0)
             destination = candidate;

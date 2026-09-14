@@ -1,3 +1,4 @@
+#include "../props/interaction.hpp"
 #include "behavior.hpp"
 #include "../props/scarecrow.hpp"
 #include "../surfaces/interaction.hpp"
@@ -85,8 +86,16 @@ void approach(Game& game, int slot, Cell target) {
 void bite(Game& game, int slot, int damage, int range) {
     Entity& enemy = game.entities[static_cast<std::size_t>(slot)];
     if (enemy.attack_wait > 0) return;
-    const int target_slot = nearest_player(game, enemy.cell, range);
-    if (target_slot < 0) return;
+    const auto chosen = enemy_target(game, enemy.cell, range);
+    if (!chosen) return;
+    if (chosen->actor.slot < 0) {
+        enemy.facing = cardinal_toward(enemy.cell, chosen->cell, enemy.facing);
+        hit_prop(game, chosen->cell, damage, enemy.cell);
+        enemy.attack_wait = enemy.attack_interval;
+        emit_sound(game, SoundId::ZombieScratch1, enemy.cell);
+        return;
+    }
+    const int target_slot = chosen->actor.slot;
     Entity& target = game.entities[static_cast<std::size_t>(target_slot)];
     const Cell delta = target.cell - enemy.cell;
     enemy.facing = std::abs(delta.x) > std::abs(delta.y) ?

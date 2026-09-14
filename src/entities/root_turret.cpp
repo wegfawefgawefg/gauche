@@ -25,10 +25,10 @@ void step_root_turret(Game& game, int slot) {
         if (root.timer_a == 0) root.label_a = 0;
         return;
     }
-    const int target = nearest_player(game, root.cell, 6);
-    if (target < 0) return;
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
-    if (!clear_sight(game, root.cell, cell)) return;
+    const auto target = enemy_target(game, root.cell, 6);
+    if (!target) return;
+    const Cell cell = target->cell;
+    if (!clear_attack_sight(game, root.cell, cell)) return;
     const Cell desired = cardinal_toward(root.cell, cell, root.facing);
     if (root.facing != desired) {
         if (root.timer_b > 0) return;

@@ -92,7 +92,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 40 | Swap seed | Traveling line 1–5; swaps with the first movable actor if both landings remain legal. Hazards apply after the atomic swap. Stacks to three, 60-tick cooldown. | Rare / 32 |
 | 41 | Pocket door | Two placements create linked personal passages; finite pair, may bypass a normal lock. | Rare / 45 |
 | 42 | Spring trap | Place facing next cell, arm in 20 ticks; launches a grounded actor two cells in that direction, with ordinary crush rules. Single trigger; stacks to two. | Uncommon / 20 |
-| 43 | Straw decoy | Place next cell; has HP and draws nearby enemy attention until destroyed. | Common / 12 |
+| 43 | Straw decoy | Place a blocking 40-HP body; attracts susceptible enemies within up to six visible cells (Big: seven). Tears and burns; two per stack. | Common / 12 |
 | 44 | Sticky boots | Four activations: resist shoves/oil slips for 6s, double ordinary step recovery; crushers still crush. | Uncommon / 18 |
 | 45 | Resin glue | Repairs the most damaged carried durable item; does not refill ammo or consumed charges. | Uncommon / 14 |
 | 46 | Scarecrow | Place a 28-HP straw ward; chickens, crows, owls, woodpeckers and rabbits avoid its visible radius four (Big: five). Committed attacks finish; larger predators ignore it. Two per stack. | Uncommon / 16 |

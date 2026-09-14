@@ -33,9 +33,9 @@ void step_crate_mimic(Game& game, int slot) {
         emit_sound(game, SoundId::MimicWake, mimic.cell);
     }
     if (step_hearing(game, slot)) { mimic.timer_b = 240; return; }
-    const int target = nearest_player(game, mimic.cell, mimic.label_a == 0 ? 2 : 7);
-    const bool visible = target >= 0 && clear_sight(game, mimic.cell,
-        game.entities[static_cast<std::size_t>(target)].cell);
+    const auto target = enemy_target(game, mimic.cell, mimic.label_a == 0 ? 2 : 7);
+    const bool visible = target.has_value() && clear_attack_sight(game, mimic.cell,
+        target->cell);
     if (mimic.label_a == 0) {
         if (!visible && (mimic.health == mimic.max_health || mimic.counter_a != 0)) return;
         mimic.sprite = Sprite::CrateMimic;
@@ -56,7 +56,7 @@ void step_crate_mimic(Game& game, int slot) {
         return;
     }
     mimic.timer_b = 240;
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    const Cell cell = target->cell;
     if (distance(mimic.cell, cell) == 1 && mimic.move_wait == 0) {
         mimic.point_b = cell;
         mimic.facing = cardinal_toward(mimic.cell, cell, mimic.facing);

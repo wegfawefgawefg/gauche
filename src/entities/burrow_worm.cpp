@@ -33,12 +33,12 @@ void step_head(Game& game, int slot, Entity& worm) {
         if (worm.timer_a == 0) worm.label_b = 0;
         return;
     }
-    const int target = nearest_player(game, worm.cell, 8);
-    if (target < 0) {
+    const auto target = enemy_target(game, worm.cell, 8);
+    if (!target) {
         if (tail_ready(game, worm)) wander(game, slot);
         return;
     }
-    const Cell destination = game.entities[static_cast<std::size_t>(target)].cell;
+    const Cell destination = target->cell;
     if (distance(worm.cell, destination) == 1) {
         worm.point_a = destination; worm.facing = destination - worm.cell;
         worm.label_b = 1; worm.timer_a = 24; worm.sprite = Sprite::BurrowWormBite;

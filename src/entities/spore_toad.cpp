@@ -27,10 +27,10 @@ void step_spore_toad(Game& game, int slot) {
         return;
     }
     if (step_hearing(game, slot)) return;
-    const int target = nearest_player(game, toad.cell, 3);
-    if (target < 0) { if (game.tick % 30 == 0) wander(game, slot); return; }
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
-    if (!clear_sight(game, toad.cell, cell)) return;
+    const auto target = enemy_target(game, toad.cell, 3);
+    if (!target) { if (game.tick % 30 == 0) wander(game, slot); return; }
+    const Cell cell = target->cell;
+    if (!clear_attack_sight(game, toad.cell, cell)) return;
     toad.point_a = cell;
     toad.label_a = 1;
     toad.timer_a = 48;

@@ -1,3 +1,4 @@
+#include "../props/interaction.hpp"
 #include "../props/scarecrow.hpp"
 #include "dispatch.hpp"
 #include "behavior.hpp"
@@ -20,6 +21,13 @@ void swoop(Game& game, int slot) {
     if (owl.timer_a == 0 || owl.cell == owl.point_b) { settle(owl); return; }
     const auto next = next_route_cell(game, slot, owl.point_b, 256);
     if (!next) { settle(owl); return; }
+    const Tile* tile = game.stage.at(*next);
+    if (tile != nullptr && prop_blocks(tile->prop)) {
+        hit_prop(game, *next, 18, owl.cell);
+        emit_sound(game, SoundId::OwlClaw, owl.cell);
+        settle(owl);
+        return;
+    }
     const int victim = entity_at(game, *next, true);
     if (victim >= 0) {
         damage_entity(game, victim, 18, owl.cell);
@@ -64,11 +72,11 @@ void step_owl(Game& game, int slot) {
     }
     if (feed_on_bird_seed(game, slot)) return;
     if (owl.timer_a > 0) return;
-    const int target = nearest_player(game, owl.point_a, 6);
-    if (target < 0) return;
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    const auto target = enemy_target(game, owl.point_a, 6);
+    if (!target) return;
+    const Cell cell = target->cell;
     if (scarecrow_pressure(game, cell) > 0) return;
-    if (!clear_sight(game, owl.cell, cell)) return;
+    if (!clear_attack_sight(game, owl.cell, cell)) return;
     owl.point_b = cell;
     owl.facing = cardinal_toward(owl.cell, cell, owl.facing);
     owl.label_a = 1; owl.timer_a = 40;

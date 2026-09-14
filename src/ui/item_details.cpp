@@ -123,6 +123,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
     if (item.kind == ItemKind::Scarecrow)
         std::snprintf(line, sizeof(line), "WARD %d TILES | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::Scarecrow).health);
+    if (item.kind == ItemKind::StrawDecoy)
+        std::snprintf(line, sizeof(line), "LURE UP TO %d | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::StrawDecoy).health);
     if (item.kind == ItemKind::ReflectingPan)
         std::snprintf(line, sizeof(line), "PARRY %.2fs | COST %d CONDITION",
             static_cast<double>(parry_ticks) / 60, parry_wear);

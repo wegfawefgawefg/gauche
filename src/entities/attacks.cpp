@@ -69,7 +69,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     return attack;
 }
 
-bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
+static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target) {
     if (smoke_blocks && game.stage.at_or_border(from).surface.smoke_ticks >= 60) return false;
     // GRID RAY: Corner gaps must not leak dust or a creature's line of sight.
     const int dx = to.x - from.x, dy = to.y - from.y;
@@ -77,9 +77,11 @@ bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
     const Cell sx{dx > 0 ? 1 : -1, 0}, sy{0, dy > 0 ? 1 : -1};
     int ix = 0, iy = 0;
     Cell cell = from;
-    const auto open = [&game, smoke_blocks, to](Cell at) {
+    const auto open = [&game, smoke_blocks, solid_target, to](Cell at) {
         const Tile* tile = game.stage.at(at);
-        if (tile == nullptr || !walkable(*tile) || (smoke_blocks && tile->surface.smoke_ticks >= 60)) return false;
+        if (tile == nullptr || !walkable(tile->kind) ||
+            (prop_blocks(tile->prop) && !(solid_target && at == to)) ||
+            (smoke_blocks && tile->surface.smoke_ticks >= 60)) return false;
         // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.
         if (at != to) {
             const int actor = entity_at(game, at, true);
@@ -99,14 +101,28 @@ bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
     return true;
 }
 
+bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
+    return trace_sight(game, from, to, smoke_blocks, false);
+}
+
+bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
+    return trace_sight(game, from, to, smoke_blocks, true);
+}
+
 void resolve_enemy_attack(Game& game, int slot, int damage, SoundId sound, int sleep) {
     Entity& enemy = game.entities[static_cast<std::size_t>(slot)];
     const EnemyAttack attack = enemy_attack(enemy);
     emit_sound(game, sound, enemy.cell);
     enemy.use_flash = 10;
+    // COVER: Decide visibility before damage. A broken front prop still shelters
+    // cells behind it from the remainder of this same committed attack.
+    std::array<bool, 64> exposed{};
+    for (int i = 0; i < attack.count; ++i)
+        exposed[static_cast<std::size_t>(i)] = clear_attack_sight(game, enemy.cell,
+            attack.cells[static_cast<std::size_t>(i)], false);
     for (int i = 0; i < attack.count; ++i) {
         const Cell cell = attack.cells[static_cast<std::size_t>(i)];
-        if (!clear_sight(game, enemy.cell, cell, false)) continue;
+        if (!exposed[static_cast<std::size_t>(i)]) continue;
         if (damage > 0) hit_prop(game, cell, damage, enemy.cell);
         for (int target_slot = 0; target_slot < max_entities; ++target_slot) {
             Entity& target = game.entities[static_cast<std::size_t>(target_slot)];

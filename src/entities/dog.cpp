@@ -15,9 +15,9 @@ void step_dog(Game& game, int slot) {
     Entity& dog = game.entities[static_cast<std::size_t>(slot)];
     if (step_hearing(game, slot)) return;
     if (step_foraging(game, slot, false)) return;
-    const int target = nearest_player(game, dog.cell, 7);
-    if (target < 0) wander(game, slot);
-    else if (distance(dog.cell, game.entities[static_cast<std::size_t>(target)].cell) > 1)
-        approach(game, slot, game.entities[static_cast<std::size_t>(target)].cell);
+    const auto target = enemy_target(game, dog.cell, 7);
+    if (!target) wander(game, slot);
+    else if (distance(dog.cell, target->cell) > 1)
+        approach(game, slot, target->cell);
     bite(game, slot, 6);
 }

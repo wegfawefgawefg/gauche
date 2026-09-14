@@ -29,3 +29,25 @@ d.line([(4, 11), (7, 7), (9, 3)], fill='#b8a166')
 d.line((6, 12, 10, 6), fill='#89784d')
 d.point((8, 5), fill='#d1bd83')
 im.save(OUT / 'debris_straw.png')
+
+# A tied sack figure differs from the broad-armed, hat-wearing scarecrow.
+for standing in [False, True]:
+    im = Image.new('RGBA', (16, 16)); d = ImageDraw.Draw(im)
+    if standing:
+        d.rectangle((5, 1, 10, 5), fill='#c7b787')
+        d.line((6, 1, 9, 1), fill='#e0cca0')
+        d.point((6, 3), fill='#554e3b'); d.point((9, 3), fill='#554e3b')
+        d.polygon([(5, 6), (10, 6), (12, 10), (10, 11), (5, 11), (3, 10)], fill='#ab9566')
+        d.line((5, 7, 10, 7), fill='#a55240')
+        d.line((6, 8, 6, 10), fill='#d2bd89')
+        d.rectangle((5, 11, 6, 14), fill='#8d794d')
+        d.rectangle((9, 11, 10, 14), fill='#8d794d')
+        d.point((4, 14), fill='#baa371'); d.point((11, 14), fill='#baa371')
+    else:
+        d.ellipse((3, 3, 12, 12), fill='#a28c5d')
+        d.line((5, 4, 9, 4), fill='#d4c08d')
+        d.line((6, 6, 6, 11), fill='#c4ad79')
+        d.line((3, 8, 12, 8), fill='#9d5341')
+        d.line((6, 2, 9, 2), fill='#c6b17b')
+        d.line((5, 13, 10, 13), fill='#8e7a50')
+    im.save(OUT / ('straw_decoy.png' if standing else 'straw_decoy_bundle.png'))

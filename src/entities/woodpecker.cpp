@@ -67,18 +67,18 @@ void step_woodpecker(Game& game, int slot) {
     if (step_scarecrow_fear(game, slot)) return;
     if (step_hearing(game, slot)) return;
     if (feed_on_bird_seed(game, slot)) return;
-    const int target = nearest_player(game, bird.cell, 6);
-    if (target < 0) {
+    const auto target = enemy_target(game, bird.cell, 6);
+    if (!target) {
         if (distance(bird.cell, bird.point_a) > 4) pursue(game, slot, bird.point_a);
         else if (game.tick % 30 == 0) wander(game, slot);
         return;
     }
-    const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    const Cell cell = target->cell;
     if (cell.x != bird.cell.x && cell.y != bird.cell.y) { approach(game, slot, cell); return; }
     // TARGETING: The beak can chip ordinary obstacles along a seen lane. After
     // commitment, newly placed cover does not magically change its direction.
     if (scarecrow_pressure(game, cell) > 0) return;
-    if (!clear_sight(game, bird.cell, cell)) return;
+    if (!clear_attack_sight(game, bird.cell, cell)) return;
     bird.facing = cardinal_toward(bird.cell, cell, bird.facing);
     bird.label_a = 1; bird.timer_a = 30;
     bird.counter_a = 6; bird.counter_b = 0;

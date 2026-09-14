@@ -101,6 +101,36 @@ rectangle over damaged walls.
   repetition, cave/outdoor distinction, and readability under both deep shade
   and canopy light. Keep the source art native to Gauche's simple pixel style.
 
+## Reactive forest props
+
+- [ ] Add a light **prop** layer for small world objects over the floor. Props
+  are not entities: use compact per-instance state such as cell, kind, HP, and
+  broken state, rather than one of the 512 full actor slots. A prop can be
+  passable or blocking, with an explicit response to hit, step, or both. Keep
+  ordinary visual scatter separate from props that change collision, drop
+  loot, or have persistent state.
+- [ ] Start with a few distinct interactions: dry leaves crunch and scatter
+  when stepped on; twigs snap underfoot; ferns or tall grass bend/trample and
+  can be cut; mushrooms burst into spores when struck or stepped on; a rotten
+  log or crate blocks a tile until attacked. A rare nest or supply crate may
+  drop something, but most props should leave only a broken sprite or debris.
+- [ ] Place props by room role and small clusters, leaving clear paths and calm
+  ground between them. Make their silhouette, material, sound, and one-hit or
+  low-HP response readable at the 16-pixel scale. Resolve contact once on
+  entry, and route weapon hits and blasts through the prop before or alongside
+  the underlying tile according to an explicit rule.
+- [ ] Let broken props leave a small, bounded scatter of material-specific
+  trash: leaves, sticks, wood chips, or mushroom bits. Walking through it
+  nudges the pieces aside and gives the floor a little life. This is local
+  presentation while it has no collision, damage, loot, or AI effect; do not
+  spend lockstep state or full entities on each scrap.
+- [ ] Save persistent breakage, collision, and loot rolls in deterministic
+  floor state; keep flying leaves, nudged trash, dust, spores, and sound playback
+  cosmetic. If a future scrap can block a tile or be picked up, promote that
+  particular rule to synchronized state.
+  Check co-op rollback/reconnect and ensure props cannot hide critical loot,
+  objectives, players, or attack previews.
+
 ## UI and pointer
 
 - [ ] Start each session with selected and ground item detail cards collapsed.
@@ -124,8 +154,8 @@ rectangle over damaged walls.
 
 1. Tile rules and deterministic tests, then tile impact visuals.
 2. Campfire state/contact rules and tests, then rendering, particles, and audio.
-3. Forest ground simplification, canopy lighting, cloud shadows, distance-fade
-   removal, and footprint visibility.
+3. Forest ground simplification and reactive props, then canopy lighting,
+   cloud shadows, distance-fade removal, and footprint visibility.
 4. Compact UI default, UI sizing, pointer device switching, and captures.
 
 Use the Rust tile behavior as a parity reference and the current C++ lighting

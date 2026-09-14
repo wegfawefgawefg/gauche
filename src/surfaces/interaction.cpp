@@ -53,10 +53,10 @@ bool ignite_surface(Game& game, Cell cell) {
 
 void contact_surface(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-    if (actor.health <= 0 || (actor.move_interval <= 0 && actor.kind != EntityKind::RootTurret) || actor.kind == EntityKind::Train) return;
+    if (actor.health <= 0 || (actor.move_interval <= 0 && actor.kind != EntityKind::RootTurret && actor.kind != EntityKind::WaspNest) || actor.kind == EntityKind::Train) return;
     Tile* tile = game.stage.at(actor.cell);
     if (tile == nullptr) return;
-    if (wading_actor(actor) || actor.kind == EntityKind::RootTurret) {
+    if (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest) {
         if (surface_wet(*tile)) {
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) emit_sound(game, SoundId::WaterDouse, actor.cell);
             actor.burn_ticks = actor.scorch_ticks = 0;

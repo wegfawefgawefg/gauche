@@ -105,7 +105,6 @@ visible until implemented; visual changes awaiting inspection are noted explicit
   corner-lit contour on all exposed sides. Strict build and static normal-camera,
   canopy and damaged-wall captures checked (2026-09-14).
 
-
 - [x] Simplify the three forest floor textures and grass. Use broad, calm
   color areas with sparse, purposeful marks; remove the repeated high-frequency
   speckles that make every tile equally busy. Preserve negative space around
@@ -261,21 +260,21 @@ Rock recovers at impact; hatchet cleaves wood; spear pierces; crossbow reloads
 one bolt; blunderbuss spreads across three lanes and recoils; maul shoves;
 rake sweeps growth; flint knife doubles sleeping/rear damage. Fifty regional
 items remains the forest target. Torch, lighter, oil, sap, water, spores, smoke
-and honey now share burning/wetting/concealment/bait rules. Oil slipping, wasp
-bait and natural sap sources remain; toads drop spores. Nests now yield stackable
+and honey now share burning/wetting/concealment/bait rules, including wasp bait.
+Oil slipping and natural sap sources remain; toads drop spores. Nests now yield stackable
 eggs, fried at campfires (eighteen regional item types). Other drops await items.
 
-Forest implementation slice: fifteen adversaries exist: wolf, bear, bat, zombie,
+Forest implementation slice: nineteen adversaries exist: wolf, bear, bat, zombie,
 zombie stack, boar, thorn snail, lantern moth, spore toad, crate mimic, root turret,
-bramble guard, mosquito, owl and woodpecker. Wolves flank; bears defend territory;
-boars crush; snails deflect; moths seek lamps; toads puff sleep; mimics disguise.
-Roots lash lanes; guards screen allies with breakable shields. Mosquitoes drain
-and retreat; owls swoop to old positions; woodpeckers drill and get their beak stuck.
-Twenty-eight new enemy cues and distinct silhouettes are integrated into room pools.
-Current drops use existing themed finds; planned seed/glue, bird-seed/digging-claw
-and moth/snail drops await their items. Attack resolution and debug previews share
-committed cells. Strict builds and static captures passed; behavior and balance
-playtesting remain with the user.
+bramble guard, mosquito, owl, woodpecker, wasp nest, wasp, forager goblin and crow.
+Worms remain. Wolves flank; bears defend territory; boars crush; snails deflect;
+moths seek lamps; toads puff sleep; mimics disguise; roots lash and guards interpose.
+Mosquitoes drain/retreat; owls swoop; woodpeckers drill. Finite nests react to smoke;
+wasps warn/sting and scatter when orphaned. Goblins carry off equipment; crows
+steal food, call nearby crows and return to a perch. Stolen instances drop intact.
+Thirty-nine new enemy cues and distinct silhouettes are integrated into room pools.
+Some planned seed/glue, bird-seed/digging-claw and moth/snail drops await their items.
+Strict builds and static captures passed; behavior/balance playtesting is the user's.
 
 - [ ] Design a full ice catalog to the same quotas and quality bar.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
@@ -427,6 +426,8 @@ the available art reference; new source scripts keep a small explicit palette.
 Forest ambience: 20 generated cues, dedicated loop/event voices and local
 schedules. Build checked; shallow-water scenes and later biomes remain.
 ## Playtest feedback: camera, controls, menus and world detail
+
+- [ ] Fix locks bypassed by ordinary walking; verify locked door separates entry from exit.
 
 - [x] Smooth the camera guide while actors snap to their authoritative tiles;
   keep camera motion continuous across simulation ticks, frame rates, stops

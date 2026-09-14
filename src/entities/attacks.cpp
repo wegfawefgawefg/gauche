@@ -11,6 +11,12 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Wasp:
+        if (enemy.label_a == 1) add(enemy.point_a);
+        break;
+    case EntityKind::ForagerGoblin:
+        if (enemy.label_b == 1) add({enemy.counter_a, enemy.counter_b});
+        break;
     case EntityKind::RootTurret:
         if (enemy.label_a == 1)
             for (int i = 1; i <= enemy.counter_a; ++i)

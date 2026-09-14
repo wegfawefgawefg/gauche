@@ -23,6 +23,8 @@ enum class SoundId : std::size_t {
     PistolShot, MusketShot, ShotgunShot, SmgShot, RocketLaunch,
     PistolReload, ShellReload, PowderReload, CrossbowReload, RocketReload, EggEat, RootCoil, RootLash, BrambleRustle, BrambleStrike,
     MosquitoBuzz, MosquitoBite, OwlHoot, OwlSwoop, OwlClaw, WoodpeckerRattle, WoodpeckerDrill, BeakStuck,
+    NestBuzz, WaspRelease, WaspWarning, WaspSting, NestBreak,
+    GoblinHiss, GoblinChuckle, ScavengeTake, CrowCall, CrowRattle, CrowSnatch,
     Count,
 };
 
@@ -43,4 +45,6 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "pistol_shot", "musket_shot", "shotgun_shot", "smg_shot", "rocket_launch",
     "pistol_reload", "shell_reload", "powder_reload", "crossbow_reload", "rocket_reload", "egg_eat", "root_coil", "root_lash", "bramble_rustle", "bramble_strike",
     "mosquito_buzz", "mosquito_bite", "owl_hoot", "owl_swoop", "owl_claw", "woodpecker_rattle", "woodpecker_drill", "beak_stuck",
+    "nest_buzz", "wasp_release", "wasp_warning", "wasp_sting", "nest_break",
+    "goblin_hiss", "goblin_chuckle", "scavenge_take", "crow_call", "crow_rattle", "crow_snatch",
 };

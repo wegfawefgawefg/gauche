@@ -405,3 +405,29 @@ C6; the existing snapshot already includes counter_c.
 
 The corrected actor/footprint rendering passes strict game/render builds and a
 static recorded-position capture. Flock behavior has not been playtested.
+
+
+## Finite brood and forest scavengers
+
+Wasp nests (70 HP) hold six births and cap their living brood at three. An awake
+150-tick release beat warns for forty ticks; smoke/spores restart it at ninety.
+Sleep pauses brood progression. Nests burn and leave an empty papery hive when
+spent. Linked wasps (16 HP) have staggered 18–26 tick committed stings for eight
+damage, then 36 ticks of recovery. Unalarmed wasps can be diverted with honey;
+orphaned wasps scatter for two seconds before becoming short-range nuisances.
+Nest drops: 40% honey pot; wasps: 5%, otherwise nothing.
+
+Forager goblins (34 HP) patrol between saved endpoints, take reachable loose
+items and carry the actual instance home. They flee nearby players, but a boxed-in
+goblin warns for 22 ticks before a six-damage knife strike at its committed cell.
+Crows (24 HP) seek meat/eggs, call nearby crows toward a food carrier, and warn for
+24 ticks before stealing one portion from a still-adjacent carrier. They visibly
+carry it back to their perch and eat it after three seconds; death before eating
+returns the food. Goblins return their carried gear and roll 50% for 3–7 coins.
+Both use ordinary held-item rendering, preserving ammo, wear and attributes.
+
+Nine sprites, eleven offline synthesized cues, brood/wing poses and orchard,
+workshop, ruin and den placement accompany the behavior. Forest roster is now
+nineteen; the linked burrow worm remains. Game and static-render targets build
+strictly, and a static pose/held-loot sheet was inspected. No gameplay playtest.
+Gameplay version C7 rejects peers missing these entity kinds and rules.

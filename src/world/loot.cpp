@@ -1,4 +1,5 @@
 #include "loot.hpp"
+#include "../entities/scavenging.hpp"
 #include "ground_items.hpp"
 
 #include <algorithm>
@@ -29,6 +30,19 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::ForagerGoblin:
+        drop_scavenged_items(game, enemy);
+        if (random_u32(game) % 2 == 0) place_coins(game, enemy.cell, 3 + static_cast<int>(random_u32(game) % 5));
+        break;
+    case EntityKind::CarrionCrow:
+        drop_scavenged_items(game, enemy);
+        break;
+    case EntityKind::WaspNest:
+        if (random_u32(game) % 100 < 40) place_ground_item(game, enemy.cell, ItemKind::HoneyPot);
+        break;
+    case EntityKind::Wasp:
+        if (random_u32(game) % 20 == 0) place_ground_item(game, enemy.cell, ItemKind::HoneyPot);
+        break;
     case EntityKind::Zombie: case EntityKind::ZombieStack:
         if (random_u32(game) % 3 == 0)
             place_coins(game, enemy.cell, 2 + static_cast<int>(random_u32(game) % 5));

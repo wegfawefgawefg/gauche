@@ -45,6 +45,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
 bool bleeds(EntityKind kind) {
     switch (kind) {
     case EntityKind::Player: case EntityKind::ZombieStack: case EntityKind::Zombie: case EntityKind::Chicken:
+    case EntityKind::Wasp: case EntityKind::ForagerGoblin: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
@@ -74,12 +75,12 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_death(cosmetics, pose.cell, pose.kind,
                         hit_angle(game, pose.cell, pose.angle), seed);
             scatter_material(cosmetics.debris, pose.cell,
-                pose.kind == EntityKind::Chicken || pose.kind == EntityKind::Owl || pose.kind == EntityKind::Woodpecker ?
-                    DebrisKind::Feather : pose.kind == EntityKind::Mosquito ? DebrisKind::SeedHusk : DebrisKind::BoneChip,
+                pose.kind == EntityKind::CarrionCrow || pose.kind == EntityKind::Chicken || pose.kind == EntityKind::Owl || pose.kind == EntityKind::Woodpecker ?
+                    DebrisKind::Feather : (pose.kind == EntityKind::Mosquito || pose.kind == EntityKind::Wasp) ? DebrisKind::SeedHusk : DebrisKind::BoneChip,
                 3, seed);
         }
         if (pose.seen && pose.health > 0 &&
-            (pose.kind == EntityKind::RootTurret || pose.kind == EntityKind::BrambleGuard)) {
+            (pose.kind == EntityKind::WaspNest || pose.kind == EntityKind::RootTurret || pose.kind == EntityKind::BrambleGuard)) {
             scatter_material(cosmetics.debris, pose.cell, DebrisKind::WoodChip, 5, seed);
             scatter_material(cosmetics.debris, pose.cell, DebrisKind::OakLeaf, 3, seed+1);
         }

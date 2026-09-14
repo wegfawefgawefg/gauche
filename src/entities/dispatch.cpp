@@ -5,6 +5,10 @@
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::WaspNest: init_wasp_nest(entity); break;
+    case EntityKind::Wasp: init_wasp(entity); break;
+    case EntityKind::ForagerGoblin: init_forager_goblin(game, entity); break;
+    case EntityKind::CarrionCrow: init_carrion_crow(entity); break;
     case EntityKind::Projectile: init_projectile(entity); break;
     case EntityKind::Boar: init_boar(entity); break;
     case EntityKind::ThornSnail: init_thorn_snail(entity); break;
@@ -41,6 +45,10 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::WaspNest: step_wasp_nest(game, slot); break;
+    case EntityKind::Wasp: step_wasp(game, slot); break;
+    case EntityKind::ForagerGoblin: step_forager_goblin(game, slot); break;
+    case EntityKind::CarrionCrow: step_carrion_crow(game, slot); break;
     case EntityKind::Projectile: step_projectile(game, slot); break;
     case EntityKind::Boar: step_boar(game, slot); break;
     case EntityKind::ThornSnail: step_thorn_snail(game, slot); break;

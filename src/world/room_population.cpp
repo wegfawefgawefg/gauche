@@ -81,10 +81,12 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Bunny, *cell);
         break;
     case RoomRole::Ruins:
+        if (random_u32(game) % 3 == 0) enemy(game, room, EntityKind::CarrionCrow, 1, budget);
         enemy(game, room, round >= 2 ? EntityKind::ZombieStack : EntityKind::Zombie,
               round >= 2 ? 3 : 1, budget);
         break;
     case RoomRole::Den:
+        if (random_u32(game) % 3 == 0) enemy(game, room, EntityKind::CarrionCrow, 1, budget);
         enemy(game, room, EntityKind::Wolf, 2, budget);
         if (round > 0) enemy(game, room, EntityKind::Den, 4, budget);
         break;
@@ -98,9 +100,11 @@ void encounter(Game& game, const RoomPlan& room, Supplies& budget) {
               round > 0 ? 3 : 2, budget);
         break;
     case RoomRole::Orchard:
+        if (round > 0 || random_u32(game) % 2 == 0) enemy(game, room, EntityKind::WaspNest, 3, budget);
         if (const auto cell = room_space(game, room)) spawn_chicken_family(game, *cell);
         break;
     case RoomRole::Workshop:
+        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::ForagerGoblin, 1, budget);
         if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Woodpecker, 2, budget);
         if (round > 0 && random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Dog, *cell);

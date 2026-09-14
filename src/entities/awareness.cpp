@@ -7,6 +7,27 @@ void remember_attacker(Game& game, int slot, Cell from) {
     Entity& victim = game.entities[static_cast<std::size_t>(slot)];
     if (eats_meat(victim.kind)) { victim.counter_b = 360; victim.label_b = 0; }
     if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; }
+    if (victim.kind == EntityKind::ForagerGoblin) {
+        const int attacker = entity_at(game, from, true);
+        if (attacker >= 0 && attacker != slot)
+            victim.entity_b = {attacker, game.entities[static_cast<std::size_t>(attacker)].generation};
+        victim.counter_c = 180;
+    }
+    if (victim.kind == EntityKind::Wasp || victim.kind == EntityKind::WaspNest) {
+        for (Entity& bug : game.entities) {
+            if (bug.kind != EntityKind::Wasp || bug.health <= 0 || distance(victim.cell, bug.cell) > 7) continue;
+            // Never retarget a sting which is already winding up.
+            if (bug.label_a != 1) bug.point_a = from;
+            bug.counter_b = 300;
+        }
+    }
+    if (victim.kind == EntityKind::CarrionCrow) {
+        const int attacker = entity_at(game, from, true);
+        if (attacker >= 0 && attacker != slot)
+            victim.entity_b = {attacker, game.entities[static_cast<std::size_t>(attacker)].generation};
+        victim.label_a = 3; victim.timer_a = 90;
+        victim.sprite = Sprite::CarrionCrow;
+    }
     if (victim.kind != EntityKind::Chicken) return;
     const int attacker = entity_at(game, from, true);
     const Handle threat = attacker < 0 || attacker == slot ? Handle{} :

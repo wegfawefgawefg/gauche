@@ -6,13 +6,19 @@
 void apply_flight_pose(const Entity& bird, std::uint64_t tick, SDL_FRect& rect, double& angle) {
     if (bird.health <= 0 || bird.sleep_ticks > 0 || bird.stun_ticks > 0) return;
     const float beat = static_cast<float>(tick % 600);
-    if (bird.kind == EntityKind::Mosquito) {
+    if (bird.kind == EntityKind::Mosquito || bird.kind == EntityKind::Wasp) {
         rect.x += rect.w*.15F; rect.y += rect.h*.15F;
         rect.w *= .7F; rect.h *= .7F;
         rect.y -= rect.h*.08F*std::sin(beat*.8F);
         const float wing = .86F+.14F*std::sin(beat*1.4F);
         rect.x += rect.w*(1-wing)*.5F; rect.w *= wing;
         if (bird.label_a == 1) angle += std::sin(static_cast<double>(beat))*6;
+    } else if (bird.kind == EntityKind::CarrionCrow) {
+        const float wing = bird.move_wait > 0 ? .84F + .16F*std::cos(beat*.65F) : 1.0F;
+        rect.x += rect.w*(1-wing)*.5F; rect.w *= wing;
+        if (bird.label_a == 1) angle += std::sin(static_cast<double>(beat)*.8)*5;
+    } else if (bird.kind == EntityKind::WaspNest && bird.counter_b <= 40 && bird.counter_a > 0) {
+        angle += std::sin(static_cast<double>(beat)*.9)*3;
     } else if (bird.kind == EntityKind::Owl) {
         if (bird.label_a == 1) { rect.h *= .90F; rect.y += rect.h*.10F; }
         if (bird.label_a == 2) {

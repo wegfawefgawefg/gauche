@@ -66,3 +66,12 @@ void step_owl(Game& game, int slot);
 
 void init_woodpecker(Entity& entity);
 void step_woodpecker(Game& game, int slot);
+
+void init_wasp_nest(Entity& entity);
+void step_wasp_nest(Game& game, int slot);
+void init_wasp(Entity& entity);
+void step_wasp(Game& game, int slot);
+void init_forager_goblin(Game& game, Entity& entity);
+void step_forager_goblin(Game& game, int slot);
+void init_carrion_crow(Entity& entity);
+void step_carrion_crow(Game& game, int slot);

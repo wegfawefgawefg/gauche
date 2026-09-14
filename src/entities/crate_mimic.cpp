@@ -6,8 +6,8 @@
 // point_a home; point_b committed bite cell. Sprite is presentation, not state.
 void init_crate_mimic(Entity& mimic) {
     mimic.sprite = Sprite::Crate;
-    mimic.health = mimic.max_health = 55;
-    mimic.move_interval = 15;
+    mimic.health = mimic.max_health = 160;
+    mimic.move_interval = 12;
     mimic.impassable = true;
     mimic.point_a = mimic.cell;
 }

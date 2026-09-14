@@ -13,7 +13,7 @@ void init_chicken(Game& game, Entity& entity) {
     entity.point_a = entity.point_b = entity.cell;
     entity.sprite = variant < 2 ? Sprite::Chick :
                     (variant == 2 ? Sprite::Hen : Sprite::Rooster);
-    entity.health = entity.max_health = variant < 2 ? 1 : (variant == 2 ? 3 : 30);
+    entity.health = entity.max_health = variant < 2 ? 1 : 45;
     entity.move_interval = variant < 2 ? 9 : (variant == 2 ? 30 : 42);
     entity.move_wait = static_cast<int>(random_u32(game) %
                                         static_cast<std::uint32_t>(entity.move_interval));
@@ -66,7 +66,7 @@ void step_chicken(Game& game, int slot) {
         }
         if (leader != nullptr && leader->kind == EntityKind::Chicken && leader->health > 0)
             follow_trail(game, slot, *leader);
-        else if (distance(chicken.cell, chicken.point_a) > 7) approach(game, slot, chicken.point_a);
+        else if (distance(chicken.cell, chicken.point_a) > 7) pursue(game, slot, chicken.point_a);
         else wander(game, slot);
     }
     record_trail(chicken, previous, scared ? 2 : 5);
@@ -81,7 +81,7 @@ void spawn_chicken_family(Game& game, Cell cell) {
     if (hen == nullptr) return;
     hen->label_a = 1;
     hen->sprite = Sprite::Hen;
-    hen->health = hen->max_health = 3;
+    hen->health = hen->max_health = 45;
     hen->move_interval = 30;
     Handle preceding = mother;
     Cell tail = cell;

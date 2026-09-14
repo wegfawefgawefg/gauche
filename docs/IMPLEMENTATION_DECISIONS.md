@@ -262,3 +262,16 @@ master/effects volume, deduplicates rapid hovering and never enters gameplay sta
 Strict executable/render-target builds and isolated-data, dummy-SDL static menu
 captures checked defaults, new-profile presentation and keyboard/controller
 legends. These are render checks, not hardware input or gameplay playtests.
+
+
+## Wildlife movement and mimic threat
+
+Wander now chooses only unoccupied walkable neighbors, with an explicit short
+rest choice. Previously each failed random direction consumed an entire movement
+beat. Approach also tried blocked moves before its wander fallback, setting
+move_wait and suppressing that fallback. It now checks neighbors first; mothers
+returning toward home use the existing route search to negotiate corners.
+Adult hens/roosters have 45 HP (survive four ordinary 10-damage punches), chicks
+remain fragile. Mimics have 160 HP and a twelve-tick movement beat; their existing
+committed bite cue and escape opportunity remain. Gameplay compatibility version
+advanced. Strict build checked; movement feel and threat balance await user playtesting.

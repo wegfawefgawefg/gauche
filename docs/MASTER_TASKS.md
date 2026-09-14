@@ -482,9 +482,9 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [ ] Clarify pick-three selection: the angled red banner must consistently mark
   the focused choice, with stronger focus animation and a clear choose prompt.
 - [ ] Expose owned artifacts and their effects in the HUD/inventory.
-- [ ] Let adult chickens survive about four ordinary punches; investigate mothers
+- [x] Let adult chickens survive about four ordinary punches; investigate mothers
   getting stuck despite an open route, including repeated blocked direction choices.
-- [ ] Make mimics substantially tougher and frightening when revealed. Preserve
+- [x] Make mimics substantially tougher and frightening when revealed. Preserve
   enemies worth avoiding until prepared, alongside nuisance/flavor enemies.
 
 ## Suggested order

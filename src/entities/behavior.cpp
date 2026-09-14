@@ -9,6 +9,11 @@ namespace {
 
 constexpr std::array<Cell, 4> neighbors{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
 
+bool open_neighbor(const Game& game, Cell cell) {
+    const Tile* tile = game.stage.at(cell);
+    return tile != nullptr && walkable(*tile) && entity_at(game, cell, true) < 0;
+}
+
 std::uint64_t sound_roll(std::uint64_t value) {
     value ^= value >> 30;
     value *= 0xbf58476d1ce4e5b9ULL;
@@ -36,13 +41,20 @@ int nearest_player(const Game& game, Cell from, int radius) {
 void wander(Game& game, int slot) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.move_wait > 0) return;
-    const std::uint32_t choice = random_u32(game) % 5;
-    if (choice < 4) move_entity(game, slot, entity.cell + neighbors[choice]);
+    // WANDER: Pick among free neighbors before spending the movement beat.
+    std::array<Cell, 4> choices{};
+    std::uint32_t count = 0;
+    for (Cell side : neighbors)
+        if (open_neighbor(game, entity.cell + side)) choices[count++] = entity.cell + side;
+    if (count == 0) { entity.move_wait = std::max(1, entity.move_interval); return; }
+    const std::uint32_t choice = random_u32(game) % (count + 1);
+    if (choice == count) entity.move_wait = std::max(1, entity.move_interval / 2);
+    else move_entity(game, slot, choices[choice]);
 }
 
 void approach(Game& game, int slot, Cell target) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-    if (entity.move_wait > 0) return;
+    if (entity.move_wait > 0 || entity.cell == target) return;
     const Cell difference = target - entity.cell;
     const Cell first = std::abs(difference.x) >= std::abs(difference.y) ?
                        Cell{difference.x > 0 ? 1 : -1, 0} :
@@ -50,8 +62,14 @@ void approach(Game& game, int slot, Cell target) {
     const Cell second = first.x != 0 ?
                         Cell{0, difference.y > 0 ? 1 : -1} :
                         Cell{difference.x > 0 ? 1 : -1, 0};
-    if (!move_entity(game, slot, entity.cell + first) &&
-        !move_entity(game, slot, entity.cell + second)) wander(game, slot);
+    // DETOUR: Failed move_entity calls set move_wait; never call one just to probe.
+    const Cell choices[]{first, second, {-second.x, -second.y}, {-first.x, -first.y}};
+    for (Cell side : choices) {
+        if (!open_neighbor(game, entity.cell + side)) continue;
+        move_entity(game, slot, entity.cell + side);
+        return;
+    }
+    entity.move_wait = std::max(1, entity.move_interval);
 }
 
 void bite(Game& game, int slot, int damage, int range) {

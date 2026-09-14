@@ -375,3 +375,49 @@ adjusted to preserve visible faces. Asset format/audio headroom checks pass.
 No live playtest or new suite ran. Snapshot layout stays 31; gameplay is E5.
 Ice totals: five enemies, eight items, one dedicated debris material; the rest
 of the catalog and biome integration remain open.
+
+## Chisel and throwable Ice Brick (2026-09-14)
+
+Chisel is a 9-damage melee tool with dig power 1, a three-tick windup and an
+18-tick cooldown. It does double damage to ice-material walls and mason blocks.
+Ice floors now assign an explicit Ice wall material during terrain setup; the
+bonus does not inspect sprites or infer material from the current biome at hit
+time. Dig thresholds and unbreakable walls still apply. Forty condition points
+wear by one per completed swing, including misses. Resin Glue can repair it.
+Durable gives 80 condition, Fragile gives 20 and increased damage; Fragile now
+halves whichever condition pool exists without inventing one use on HP-based
+weapons. Other melee modifiers keep the existing pattern/windup behavior.
+
+Ice Brick uses the same held-use input on keyboard/mouse and controller. Release
+before eighteen held ticks to place adjacent cover; hold at least eighteen ticks
+and release to throw. A small PLACE/THROW bar and a single threshold sound
+communicate the choice. Aim follows the current cardinal direction during the
+hold. Switching slots/kinds/attributes, opening UI, dropping, picking up,
+interacting, reloading or cancelling prevents an old prepared action from firing.
+A rejected placement keeps the brick. Both successful actions consume one from
+a stack of three and start a thirty-tick base cooldown.
+
+Placed bricks share the mason's 35-HP, ten-second prop with heat melting and
+blocking rules. Thrown bricks travel at eight ticks per cell with a visible arc,
+for fourteen base damage to range three. Strong and Heavy increase thrown damage;
+Long extends travel to seven, without moving the adjacent placement farther away.
+Contact shatters the brick into local ice debris; terrain cover stops the throw
+even when destroyed. Heat melts an airborne brick without shatter debris. Pans
+can reflect it under the same finite lifetime limit as other reflected shots.
+All Piercing lets it continue through actors; walls still stop it. No instant
+remote hit or free recoverable brick remains after the throw.
+
+Quarries stock chisels or brick stacks, with grit retained in reservoir supplies.
+Both tools enter ice shops and rewards. Mason loot now makes one roll for 20%
+brick, 15% chisel, 25% 2–4 gold, otherwise empty. One new chisel icon and four
+offline sounds accompany the items; bricks reuse their actual cover sprite and
+shatter sounds. Descriptions expose damage, ice bonus, dig power, condition,
+cover HP and the explicitly labeled throw pattern. Debug world previews show
+adjacent placement before the hold threshold and the throw lane afterward.
+
+Strict game/render/codec builds pass. The existing snapshot check passed with
+Ice material and a worn Fragile Chisel; static comparison and preparation/flight
+renders were inspected. New source assets pass native-size and decoded-audio
+headroom checks. No live playtest or new suite ran. Snapshot layout remains 31;
+gameplay compatibility is E6. Ice totals are five enemies, ten items and one
+local debris material. Remaining biome tasks stay open.

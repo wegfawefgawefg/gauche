@@ -36,7 +36,7 @@ const char* item_attribute_effect(ItemAttribute attribute) {
     case ItemAttribute::Strong: return "DMG +25%";
     case ItemAttribute::Agile: return "COOLDOWN -25%";
     case ItemAttribute::Durable: return "CONDITION X2";
-    case ItemAttribute::Fragile: return "DMG +40%, HALF USES";
+    case ItemAttribute::Fragile: return "DMG +40%, HALF CONDITION";
     case ItemAttribute::Heavy: return "DMG +33%, CD +50%";
     case ItemAttribute::Big: return "WIDER EFFECT AREA";
     case ItemAttribute::Long: return "LONGER REACH";
@@ -57,7 +57,7 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     const bool weapon = item_is_gun(kind) || item_is_melee(kind) ||
         (spec != nullptr && spec->pattern.damage > 0);
     const bool condition = kind == ItemKind::Stick || kind == ItemKind::Pickaxe ||
-        (spec != nullptr && spec->uses > 0);
+        (spec != nullptr && (spec->uses > 0 || spec->durability > 0));
     switch (attribute) {
     case ItemAttribute::None: return true;
     case ItemAttribute::Strong: case ItemAttribute::Agile:

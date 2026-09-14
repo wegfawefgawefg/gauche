@@ -47,7 +47,7 @@ enum class Sprite : std::size_t {
     ColdShallowA, ColdShallowB, ColdWaterA, ColdWaterB,
     RimeSkater, RimeSkaterPush, RimeSkaterGlide, GritPouch,
     FrostBatInhale, FrostBatFlying, FrostPuff, IceNeedle,
-    IceHole, BellDiver, DiverBubbles, DiverBell, DiverRise, DiverSwing, DiverSink, AirBladder, ItemFloat, ColdFlask, FrozenWater, ThawingWater, HeatCapsule, SteamLeech, LeechLatch, LeechFeed, LeechSwell, LeechSpent, SteamPuff, WoolWrap, HotBroth, IcePoultice, IceMason, MasonCarry, MasonCut, MasonBuild, MasonJab, IceBlock, IceBlockThaw, DebrisIceChip,
+    IceHole, BellDiver, DiverBubbles, DiverBell, DiverRise, DiverSwing, DiverSink, AirBladder, ItemFloat, ColdFlask, FrozenWater, ThawingWater, HeatCapsule, SteamLeech, LeechLatch, LeechFeed, LeechSwell, LeechSpent, SteamPuff, WoolWrap, HotBroth, IcePoultice, IceMason, MasonCarry, MasonCut, MasonBuild, MasonJab, IceBlock, IceBlockThaw, DebrisIceChip, Chisel,
     Count,
 };
 

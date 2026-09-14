@@ -1,5 +1,6 @@
 #include "projectile.hpp"
 #include "frost.hpp"
+#include "ice_brick.hpp"
 #include "hook.hpp"
 #include "root_drill.hpp"
 #include "swap.hpp"
@@ -106,6 +107,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::IceBrick)) { step_ice_brick_flight(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::FrostPuff)) { step_frost_puff(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::ThunderAcorn)) { step_thunder_acorn(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Mixture)) { step_mixture(game, slot); return; }

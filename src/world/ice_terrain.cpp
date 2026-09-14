@@ -28,8 +28,11 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
     }
 }
 
-void place_ice_holes(Game& game, const FloorPlan& plan) {
+void place_ice_terrain(Game& game, const FloorPlan& plan) {
     if (!ice_floor(game.run.floor)) return;
+    // MATERIAL: Ice walls carry a gameplay material, independent of their displayed sprite.
+    for (Tile& tile : game.stage.tiles)
+        if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Stone) tile.material = TileMaterial::Ice;
     for (const RoomPlan& room : plan.rooms) {
         if (room.role != RoomRole::Reservoir && room.role != RoomRole::FishingHut) continue;
         Cell first{};

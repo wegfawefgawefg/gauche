@@ -81,6 +81,7 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     const bool wood = wooden_terrain(*tile);
     const Sprite material = tile->material == TileMaterial::Tree ? Sprite::ForestTree :
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
+        tile->material == TileMaterial::Ice ? Sprite::IceWall :
         game.run.phase == RunPhase::Arena ? Sprite::Wall :
         ice_floor(game.run.floor) ? Sprite::IceWall : Sprite::ForestWall;
     const bool hit = damage_tile(game.stage, cell, damage, dig_power, impact);

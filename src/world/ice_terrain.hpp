@@ -7,4 +7,4 @@ inline bool ice_floor(int floor) { return floor >= 9 && floor <= 12; }
 
 TileKind ice_room_floor(const RoomPlan& room, int x, int y);
 
-void place_ice_holes(Game& game, const FloorPlan& plan);
+void place_ice_terrain(Game& game, const FloorPlan& plan);

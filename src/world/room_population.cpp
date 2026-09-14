@@ -153,13 +153,15 @@ void stash(Game& game, const RoomPlan& room, Supplies& budget) {
 }
 
 void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
+    const int round = (game.run.floor - 1) % 4;
     // RESERVOIR: Shared supplies bridge the regional catalog as its items arrive.
     if (ice_floor(game.run.floor)) {
         if (room.role == RoomRole::Cache || room.role == RoomRole::Observatory ||
             room.role == RoomRole::Secret || room.role == RoomRole::Shrine) stash(game, room, budget);
         if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
-            supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
-            if (room.role == RoomRole::IceQuarry) supply(game, room, ItemKind::Pickaxe, 1, budget.equipment);
+            if (room.role == RoomRole::IceQuarry) supply(game, room, round % 2 == 0 ? ItemKind::Chisel : ItemKind::IceBrick,
+                round % 2 == 0 ? 1 : 2, budget.equipment);
+            else supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
         } else if (room.role == RoomRole::FishingHut) {
             supply(game, room, ItemKind::CookedMeat, 2, budget.healing);
             supply(game, room, ItemKind::AirBladder, 1, budget.equipment);

@@ -39,7 +39,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; 20% grit pouch, 10% skate blade. |
 | 2 | Bell diver | Implemented: 72 HP; swims between visible air holes, rings its brass helmet for 0.6s, emerges for 0.4s, then winds up an 18-damage swing for 0.5s. Blocking a hole redirects it; never attacks submerged. | Reservoir/fishing huts; 20% air bladder, 25% 2–5 gold implemented. |
 | 3 | Snow burrower | A moving mound exposes its route; bursts at its committed destination and remains exposed while digging back in. Cleared ground prevents reburrowing there. | Snow banks; 25% raw meat, 15% snow scoop. |
-| 4 | Ice mason | Implemented: 60 HP; places carried 35-HP cover after 0.5s, cuts replacement ice for 1.5s, and defends with a 0.4s jab for 12 damage. Damage, sleep, stun or displacement interrupts work. | Quarry; 25% 2–4 gold. Ice brick/chisel drops await those items. |
+| 4 | Ice mason | Implemented: 60 HP; places carried 35-HP cover after 0.5s, cuts replacement ice for 1.5s, and defends with a 0.4s jab for 12 damage. Damage, sleep, stun or displacement interrupts work. | Quarry; 20% ice brick, 15% chisel, 25% 2–4 gold, one roll. |
 | 5 | Mirror knight | A shield reflects frontal projectiles during a visible raised stance; attacks require lowering it. Flank, shove or strike during recovery. Reflection has the existing finite flight lifetime. | Observatory; 20% mirror shard, 20% gold. |
 | 6 | Steam leech | Implemented: 38 HP; seeks exposed flame or warm terrain, latches for 0.3s, feeds for 2s, then swells for 0.6s before a 12-damage cross. Drains light/heat output; cold, sleep, stun or displacement releases it. | Bathhouse/shelter; 20% heat capsule. Boiler rooms and 10% sealant await that content. |
 | 7 | Glass eel | Lives in connected water, charges visibly, then shocks a short wet path. Leave the water, interrupt charging or break connectivity; dry tiles stop propagation. | Reservoir; 20% eel battery, 15% raw meat. |
@@ -74,12 +74,12 @@ same effective item definition as attacks, including rare attributes.
 | # | Item | Distinct use and initial state | Rarity; price |
 | --- | --- | --- | --- |
 | 1 | Ice needle | Implemented: recoverable straight throw to 7, 8 damage and 1s chill; melts on a hot landing. Stack 8. Strong/Agile/Heavy/Long keep their effects after recovery. | Common; 4 |
-| 2 | Chisel | Adjacent 9-damage jab, dig power 1, 0.3s cooldown; double tile damage to ice. 40 durability. | Common; 12 |
+| 2 | Chisel | Implemented: 9-damage jab with 0.05s windup, dig power 1, 0.3s cooldown; double damage to ice-material walls and ice blocks. 40 condition, wears per swing and accepts glue. | Common; 12 |
 | 3 | Skate blade | Three-cell lateral slash, 12 damage; striking while slipping extends the slash one cell ahead. 36 durability. | Common; 16 |
 | 4 | Harpoon gun | One shot loaded, 28 damage to range 10; leaves a tether. Holding use reels the victim until blocked; reload releases it. | Uncommon; 32 |
 | 5 | Lens carbine | Instant 18-damage line to 12, three charges per magazine; crosses clear crystal but stops at opaque cover. Mirrors redirect cardinally. | Rare; 40 |
 | 6 | Snowball | Thrown to 5, 1 damage; wets the target and interrupts a fragile charging action. Stack 12. | Common; 2 |
-| 7 | Ice brick | Place blocking 35-HP cover or throw to 3 for 14 damage; thrown bricks shatter, heat melts placed ones. Stack 3. | Common; 8 |
+| 7 | Ice brick | Implemented: tap-release places adjacent 35-HP cover for 10s; hold 0.3s-release throws to 3 for 14 damage. Heat melts it; impact shatters it. Stack 3. Long throws to 7; Strong/Heavy increase thrown damage. | Common; 8 |
 | 8 | Cold flask | Implemented: traveling throw to 5, 3s chill in a cross, 8s shallow-water ice, douses small fires. Stack 3; Big extends each arm, Long throws to 9. | Common; 10 |
 | 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Clears a three-cell fan of snow, revealing covered loot/props; secondary packs collected snow into a snowball if space permits. 60 durability. | Common; 9 |

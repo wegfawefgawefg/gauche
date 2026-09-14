@@ -46,7 +46,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);

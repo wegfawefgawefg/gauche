@@ -34,6 +34,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if (tile == nullptr) break;
             const bool blocked = !walkable(*tile);
             int prop_damage = pattern.damage;
+            if (item.kind == ItemKind::Chisel && tile->prop.kind == PropKind::IceBlock) prop_damage *= 2;
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog))
                 prop_damage *= 3;
@@ -54,7 +55,8 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 struck = true;
                 if (!pattern.piercing) break;
             }
-            const int terrain_damage = item.kind == ItemKind::Hatchet && wooden_terrain(*tile) ?
+            const int terrain_damage = item.kind == ItemKind::Chisel && tile->material == TileMaterial::Ice ?
+                pattern.damage * 2 : item.kind == ItemKind::Hatchet && wooden_terrain(*tile) ?
                 pattern.damage * 3 : pattern.damage;
             struck |= hit_terrain(game, cell, origin, terrain_damage, item.dig_power);
             // CONTACT: An unsuccessful wall blow still costs its attack beat.

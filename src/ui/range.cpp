@@ -10,6 +10,8 @@
 #include "../items/air_bladder.hpp"
 #include "../items/cold_flask.hpp"
 #include "../items/heat_capsule.hpp"
+#include "../items/quarry_tools.hpp"
+#include "../props/ice_cover.hpp"
 #include "../world/floating_items.hpp"
 #include "../items/pocket_door.hpp"
 #include "../items/mixtures.hpp"
@@ -66,7 +68,10 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::AirBladder) {
+    if (held.kind == ItemKind::IceBrick && player.counter_a < brick_throw_hold_ticks) {
+        const Cell cell = player.cell + facing;
+        if (ice_cover_space(game, cell)) mark(renderer, cell, camera, zoom, PatternEffect::Utility);
+    } else if (held.kind == ItemKind::AirBladder) {
         const int cargo = floating_cargo_in_front(game, player, facing);
         if (cargo >= 0) {
             Cell cell = game.entities[static_cast<std::size_t>(cargo)].cell;

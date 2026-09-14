@@ -66,8 +66,10 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     if (item.attribute == ItemAttribute::Durable) {
         item.max_durability *= 2;
         item.max_uses *= 2;
-    } else if (item.attribute == ItemAttribute::Fragile)
-        item.max_uses = std::max(1, item.max_uses / 2);
+    } else if (item.attribute == ItemAttribute::Fragile) {
+        if (item.max_uses > 0) item.max_uses = std::max(1, item.max_uses / 2);
+        if (item.max_durability > 0) item.max_durability = std::max(1, item.max_durability / 2);
+    }
     if (kind == ItemKind::Pickaxe) item.dig_power = 2;
     item.durability = item.max_durability;
     item.uses = item.max_uses;

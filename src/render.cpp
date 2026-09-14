@@ -8,6 +8,7 @@
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
 #include "items/fire_render.hpp"
+#include "items/quarry_render.hpp"
 #include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
 #include "scenery/overhead.hpp"
@@ -36,6 +37,7 @@ namespace {
 Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
     if (tile.kind == TileKind::Ice && tile.freeze_ticks > 0)
         return tile.freeze_ticks <= 120 ? Sprite::ThawingWater : Sprite::FrozenWater;
+    if (tile.material == TileMaterial::Ice && tile.kind == TileKind::Wall) return Sprite::IceWall;
     if (tile.material == TileMaterial::Tree)
         return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
     if (tile.material == TileMaterial::Timber)
@@ -315,6 +317,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderRect(renderer, &held_rect);
             }
         }
+        draw_brick_prepare(renderer, entity, rect, brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&
             entity.health < entity.max_health && entity.max_health < 1000000) {
             SDL_FRect bar{rect.x + 2.0F, rect.y - 4.0F,

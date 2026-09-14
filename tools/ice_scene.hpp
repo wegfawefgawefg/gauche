@@ -30,7 +30,7 @@ inline void arrange_ice_scene(Game& game, Cosmetics& cosmetics, bool generated,
     room.role = RoomRole::Reservoir;
     plan.rooms.push_back(room);
     carve_floor(game, plan);
-    place_ice_holes(game, plan);
+    place_ice_terrain(game, plan);
     game.run.spawn = {19, 13};
     game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
     spawn_entity(game, EntityKind::Campfire, {14, 12});

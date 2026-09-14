@@ -183,6 +183,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             cooldown = pattern.cooldown;
         }
         break;
+    case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
@@ -217,6 +218,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
         used = fire_weapon(game, user_slot, direction, item);
         return used;
+    case ItemKind::IceBrick: return false; // Tap/hold release is owned by the player action step.
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
     case ItemKind::IceNeedle: case ItemKind::Boomerang: case ItemKind::ThrowingRock:
         used = launch_recoverable(game, user_slot, item, direction);
@@ -297,6 +299,11 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         case ItemKind::BearTrap: case ItemKind::Mine:
             emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
+        }
+        if (used_kind == ItemKind::Chisel && --item.durability <= 0) {
+            emit_sound(game, SoundId::ChiselBreak, user.cell);
+            item = {};
+            return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
             if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);

@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "player_movement.hpp"
 #include "../items/bow.hpp"
+#include "../items/quarry_tools.hpp"
 #include "../items/action.hpp"
 #include "../items/ground_interaction.hpp"
 #include "../item_pattern.hpp"
@@ -52,6 +53,7 @@ void step_player(Game& game, int slot, const Input& input) {
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
     if (step_melee_action(game, slot, input)) return;
+    if (step_ice_brick(game, slot, input)) return;
     if (step_bow(game, slot, input)) return;
     if (input.cancel_use) return;
     if (input.reload) reload_held_item(game, slot);

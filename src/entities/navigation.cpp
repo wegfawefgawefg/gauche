@@ -3,9 +3,7 @@
 #include <optional>
 #include <vector>
 
-namespace {
-
-std::optional<Cell> route_step(const Game& game, int slot, Cell target) {
+std::optional<Cell> next_route_cell(const Game& game, int slot, Cell target, int budget) {
     const Cell origin = game.entities[static_cast<std::size_t>(slot)].cell;
     if (!game.stage.in_bounds(target) || origin == target) return std::nullopt;
     std::vector<std::uint8_t> visited(game.stage.tiles.size(), 0);
@@ -24,7 +22,7 @@ std::optional<Cell> route_step(const Game& game, int slot, Cell target) {
     const Cell horizontal{delta.x >= 0 ? 1 : -1, 0};
     const Cell vertical{0, delta.y >= 0 ? 1 : -1};
     const Cell sides[]{horizontal, vertical, Cell{-horizontal.x, 0}, Cell{0, -vertical.y}};
-    for (std::size_t next = 0; next < queue.size() && next < 4096; ++next) {
+    for (std::size_t next = 0; next < queue.size() && next < static_cast<std::size_t>(budget); ++next) {
         const Node node = queue[next];
         for (Cell side : sides) {
             const Cell cell = node.cell + side;
@@ -39,11 +37,9 @@ std::optional<Cell> route_step(const Game& game, int slot, Cell target) {
     return std::nullopt;
 }
 
-} // namespace
-
 void pursue(Game& game, int slot, Cell target) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.move_wait > 0 || actor.cell == target) return;
-    if (const auto next = route_step(game, slot, target)) move_entity(game, slot, *next);
+    if (const auto next = next_route_cell(game, slot, target)) move_entity(game, slot, *next);
     else wander(game, slot);
 }

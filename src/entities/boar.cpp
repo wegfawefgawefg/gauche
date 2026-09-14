@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 #include "../combat/shove.hpp"
@@ -48,6 +49,7 @@ void init_boar(Entity& boar) {
 
 void step_boar(Game& game, int slot) {
     Entity& boar = game.entities[static_cast<std::size_t>(slot)];
+    if (step_foraging(game, slot, boar.label_a != Idle)) return;
     if (boar.label_a == Recover) {
         if (boar.timer_a == 0) boar.label_a = Idle;
         return;

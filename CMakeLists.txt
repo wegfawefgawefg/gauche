@@ -61,7 +61,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/player.cpp
     src/entities/zombie_stack.cpp src/entities/awareness.cpp
     src/entities/zombie.cpp
-    src/entities/chicken.cpp src/entities/following.cpp
+    src/entities/chicken.cpp src/entities/following.cpp src/entities/foraging.cpp
     src/entities/bat.cpp
     src/entities/wolf.cpp
     src/entities/dog.cpp

@@ -1,9 +1,11 @@
 #include "behavior.hpp"
+#include "foraging.hpp"
 
 #include <algorithm>
 
 void remember_attacker(Game& game, int slot, Cell from) {
     Entity& victim = game.entities[static_cast<std::size_t>(slot)];
+    if (eats_meat(victim.kind)) { victim.counter_b = 360; victim.label_b = 0; }
     if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; }
     if (victim.kind != EntityKind::Chicken) return;
     const int attacker = entity_at(game, from, true);

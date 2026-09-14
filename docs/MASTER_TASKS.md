@@ -436,7 +436,7 @@ the available art reference; new source scripts keep a small explicit palette.
 ## Playtest feedback: creatures, melee and forest visibility
 
 - [x] Give cooked meat a distinct munch/chew cue, separate from bandages.
-- [ ] Add dropped meat as bait for appropriate hungry animals: bounded scent
+- [x] Add dropped meat as bait for appropriate hungry animals: bounded scent
   range, reachable targets, competing threats and consumption. Avoid every
   animal magically knowing about every piece of meat across the floor.
 - [x] Rework chicken families into generation-checked follow chains: first

@@ -97,3 +97,13 @@ light rather than making dark areas glow. A flat-background static capture
 caught software rendering discarding transparent geometry; cached unblended
 rectangle fills now clear the alpha correctly. Scene/inspection captures and
 strict builds checked, without gameplay runs.
+
+## Meat as bait
+
+Wolves, dogs, boars and calm bears investigate reachable raw/cooked meat within
+six/nine tiles. Bounded path checks reject sealed-away bait; occupied food cells
+are not valid destinations. They eat one portion, recover a little HP, chew
+briefly, then remain sated. A player directly beside them or an incoming hit
+interrupts feeding; committed attacks and an angry bear take priority. Satiety
+and feeding use documented shared slots, with deterministic resource consumption.
+Strict build checked; user owns attraction and encounter-balance playtesting.

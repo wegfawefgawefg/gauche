@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.hpp"
+#include <optional>
 
 int nearest_player(const Game& game, Cell from, int radius);
 void wander(Game& game, int slot);
@@ -12,3 +13,5 @@ void remember_attacker(Game& game, int slot, Cell from);
 void flee(Game& game, int slot, Cell threat);
 
 void pursue(Game& game, int slot, Cell target);
+
+std::optional<Cell> next_route_cell(const Game& game, int slot, Cell target, int budget = 4096);

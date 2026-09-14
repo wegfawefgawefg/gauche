@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -32,6 +33,7 @@ void init_wolf(Entity& wolf) {
 
 void step_wolf(Game& game, int slot) {
     Entity& wolf = game.entities[static_cast<std::size_t>(slot)];
+    if (step_foraging(game, slot, wolf.label_a != 0)) return;
     if (wolf.label_a == 1) {
         if (wolf.timer_a == 0) {
             resolve_enemy_attack(game, slot, 11, SoundId::WolfBite);

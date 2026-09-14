@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -14,6 +15,7 @@ void init_bear(Entity& bear) {
 
 void step_bear(Game& game, int slot) {
     Entity& bear = game.entities[static_cast<std::size_t>(slot)];
+    if (step_foraging(game, slot, bear.label_a != 0 || bear.timer_b > 0)) return;
     if (bear.label_a == 1) {
         if (bear.timer_a > 0) return;
         resolve_enemy_attack(game, slot, 24, SoundId::BearSlam);

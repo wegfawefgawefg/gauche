@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "entities/foraging.hpp"
 #include "scenery/overhead.hpp"
 #include "projectiles/render.hpp"
 #include "debug/panels.hpp"
@@ -189,6 +190,10 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         for (int body = 0; body < bodies; ++body) {
             SDL_FRect body_rect = rect;
             double angle = pose != nullptr && pose->seen ? pose->angle : 0.0;
+            if (eats_meat(entity.kind) && entity.label_b == 1) {
+                body_rect.h *= .88F; body_rect.y += pixels * .12F;
+                angle += std::sin(static_cast<double>(game.tick % 60) * .65) * 7;
+            }
             // TELLS: Keep the creature visible while its committed attack winds up.
             if (entity.kind == EntityKind::Bear && entity.label_a == 1) {
                 body_rect.y -= pixels * .18F;

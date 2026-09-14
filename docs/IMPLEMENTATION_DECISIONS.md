@@ -356,14 +356,20 @@ poses and wood/leaf death scraps are integrated. Strict builds and static sprite
 encounter renders checked, with no gameplay playtest. Gameplay version advanced.
 
 
-## Latest camera/canopy playtest follow-up (pending)
+## Camera/canopy playtest follow-up
 
-The user likes the new smooth camera. Footprints now appear about one tile ahead
-of the rendered player and should trail the presented feet. Diagonal movement
-should alternate cardinal steps like Adventures with Chickens, without overriding
-explicit aim. The stronger green canopies are now distracting: reduce their
-brightness to roughly one fifth of the current result, preserving their shapes,
-anchoring and center mask. These are added tasks, not yet implemented.
+The user likes the smooth camera, but footsteps were placed at the authoritative
+next tile before the displayed body arrived. They now spawn at the previous
+presented feet position, preserving a local trail without changing gameplay.
+Canopy RGB modulation is one fifth of the previous result; opacity, green source
+art, anchored parallax and center mask remain. A presentation-only capture feeds
+recorded cardinal cells into the cosmetic observer and shows the trailing prints.
+Diagonal input now alternates cardinal axes from the last successful move, like
+Chickens' successful-axis selection. A blocked preferred axis falls back to the
+other before spending its beat. This preserves speed, bump latching and explicit
+aim overrides. Shared counter_c stores the last axis in snapshots/hashes; snapshot
+format is 17 and gameplay compatibility advances. Strict game/render builds pass;
+no gameplay playtest or new test suite was run.
 
 
 ## Mosquitoes, owls and woodpeckers

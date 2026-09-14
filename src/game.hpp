@@ -159,7 +159,7 @@ struct Entity {
     Handle entity_a{}, entity_b{};
     Handle encounter{}; // Room ownership must not overwrite an enemy's behavior references.
     Cell point_a{}, point_b{};
-    int counter_a = 0, counter_b = 0;
+    int counter_a = 0, counter_b = 0, counter_c = 0;
     int label_a = 0, label_b = 0;
     int timer_a = 0, timer_b = 0; // Shared countdowns; decremented even during stun/sleep.
     Sprite sprite = Sprite::Player;

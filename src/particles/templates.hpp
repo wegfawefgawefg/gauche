@@ -2,7 +2,7 @@
 
 #include "system.hpp"
 
-void spawn_footprint(Cosmetics& cosmetics, Cell cell, EntityKind kind,
+void spawn_footprint(Cosmetics& cosmetics, ViewCamera feet, EntityKind kind,
                      bool right_foot, std::uint64_t seed);
 void spawn_hit(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, int damage);
 void spawn_zombie_scratch(Cosmetics& cosmetics, Cell cell, Cell facing,

@@ -59,7 +59,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/mosquito.cpp src/entities/owl.cpp src/entities/woodpecker.cpp src/entities/root_turret.cpp src/entities/bramble_guard.cpp src/entities/spore_toad.cpp src/entities/crate_mimic.cpp
     src/world/arena.cpp src/world/water.cpp
     src/entities/dispatch.cpp
-    src/entities/player.cpp
+    src/entities/player.cpp src/entities/player_movement.cpp
     src/entities/zombie_stack.cpp src/entities/awareness.cpp
     src/entities/zombie.cpp
     src/entities/chicken.cpp src/entities/following.cpp src/entities/foraging.cpp

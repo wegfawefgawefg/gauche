@@ -4,6 +4,7 @@
 #include "enemy_scene.hpp"
 #include "plant_scene.hpp"
 #include "flier_scene.hpp"
+#include "footprint_scene.hpp"
 #include "water_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -66,7 +67,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
         scatter_prop_debris(cosmetics.debris, {9 + i, 12}, props[i],
                            static_cast<std::uint64_t>(i + 1), true);
     for (int i = 0; i < 5; ++i)
-        spawn_footprint(cosmetics, {8 + i, 11}, EntityKind::Player, i % 2 == 0,
+        spawn_footprint(cosmetics, Cell{8 + i, 11}, EntityKind::Player, i % 2 == 0,
                         static_cast<std::uint64_t>(i + 10));
     for (int age = 0; age < 36; ++age) {
         step_particles(cosmetics);
@@ -114,6 +115,7 @@ int main(int argc, char** argv) {
         arrange_enemy_scene(game, cosmetics);
         debug_panels().world_enemies = true;
     }
+    if (mode == "footprints") arrange_footprint_scene(game, cosmetics);
     if (mode == "fliers") arrange_flier_scene(game, cosmetics);
     if (mode == "plants") arrange_plant_scene(game, cosmetics);
     if (mode == "water") arrange_water_scene(game, cosmetics);

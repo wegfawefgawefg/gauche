@@ -96,7 +96,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_water_rings(cosmetics, entity.cell, true);
         else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
             entity.kind == EntityKind::ZombieStack)
-            spawn_footprint(cosmetics, entity.cell, entity.kind,
+            spawn_footprint(cosmetics, pose.motion_ready ?
+                presented_position(pose, cosmetics.frame_alpha) : ViewCamera{pose.cell}, entity.kind,
                             (pose.steps & 1U) != 0, seed);
         pose.angle = static_cast<float>(visual_bits(seed) % 31U) - 15.0F;
     }

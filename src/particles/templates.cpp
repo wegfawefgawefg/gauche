@@ -88,15 +88,15 @@ void shake_tiles(Cosmetics& cosmetics, Cell cell, float strength, int radius) {
 
 } // namespace
 
-void spawn_footprint(Cosmetics& cosmetics, Cell cell, EntityKind kind,
+void spawn_footprint(Cosmetics& cosmetics, ViewCamera feet, EntityKind kind,
                      bool right_foot, std::uint64_t seed) {
     const Sprite sprite = kind == EntityKind::Player ? Sprite::PlayerFootprint :
                           Sprite::ZombieFootprint;
     SpriteParticle particle;
     particle.sprite = sprite;
     particle.layer = ParticleLayer::Ground;
-    particle.x = static_cast<float>(cell.x) + (right_foot ? 0.7F : 0.3F);
-    particle.y = static_cast<float>(cell.y) + 0.84F;
+    particle.x = feet.x + (right_foot ? 0.7F : 0.3F);
+    particle.y = feet.y + 0.84F;
     particle.width = particle.height = 0.5F;
     particle.angle = (unit(bits(seed)) - 0.5F) * 20.0F;
     particle.alpha = 0.48F;

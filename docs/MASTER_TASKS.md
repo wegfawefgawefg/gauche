@@ -29,7 +29,7 @@ visible until implemented; visual changes awaiting inspection are noted explicit
 - [ ] Route melee, shots, blasts, and train impacts through the same tile-rule
   decision. A rejected hit must leave tile HP unchanged and give clear hard-hit
   feedback. Keep objective rooms and exits reachable with available tools.
-- [ ] Replace the C++ wall's flat red damage rectangle with the Rust feel:
+- [x] Replace the C++ wall's flat red damage rectangle with the Rust feel:
   impact shake, material debris, hit/break sound, a small HP bar while damaged,
   and a final ruin tile. Add a shared crack or chip overlay that grows with lost
   HP and is tinted per material, if the bar alone is too subtle. Do not require
@@ -39,37 +39,41 @@ visible until implemented; visual changes awaiting inspection are noted explicit
 
 Rust Gauche did not have a sequence of cracked wall sprites: damaged breakable
 tiles had a health bar and shake, hits threw debris, and a destroyed wall became
-Ruin. The C++ port currently lets any damage lower wall HP and draws a dark red
+Ruin. Before this pass the C++ port let any damage lower wall HP and drew a dark red
 rectangle over damaged walls. The new implementation replaces this with shared
 branching cracks, a lit HP bar, and explicit impact events for shake/fragments.
-Strict release build passes; visual inspection and reconnect checks remain open.
+Strict release build and the existing snapshot codec check pass, including nondefault
+wall HP/dig thresholds and fire state. A static 1080p terrain/fire scene was inspected
+with shared cracks, damage bars, ash, smoke, flames and footprints. Reconnect and
+gameplay feedback remain with the user; the master goal remains in progress.
 
 ## Campfires and movement effects
 
-- [ ] Add distinct small flame and smoke particles above an active campfire.
+- [x] Add distinct small flame and smoke particles above an active campfire.
   C++ already emits smoke every 12 ticks, but it is faint; tune its opacity and
   scale. Let flame particles read brightly in a dark room without turning the
   entire room into a uniform glow.
-- [ ] Resolve campfire contact **once when an actor enters its cell**, not each
+- [x] Resolve campfire contact **once when an actor enters its cell**, not each
   stationary simulation tick. A susceptible actor catches fire for about five
   seconds and takes about 20 damage over that duration. Keep this deterministic
   and separate its strength from existing Ember and lava burns so their balance
   does not change by accident. Decide refresh behavior when entering another
   fire; repeated contact should not multiply damage unpredictably.
-- [ ] On ignition, play an appropriately panicked scream in short, controlled
+- [x] On ignition, play an appropriately panicked scream in short, controlled
   bursts and attach flame/smoke particles to the burning actor as it moves.
   Audition the existing `ape_scream.ogg` before using it; provide a fitting
   source sound if it does not work. Particle timing remains local cosmetics;
   burn duration, damage, and fire state belong in deterministic game state.
-- [ ] Count one trample per entry into a lit campfire. Each trample plays a
+- [x] Count one trample per entry into a lit campfire. Each trample plays a
   distinct sound and briefly lowers the fire's own light strength; it recovers
   unless the fifth trample extinguishes it. Show an extinguished state, stop
   flame/smoke and light emission, and stop campfire cooking once it is out.
-- [ ] Draw the campfire base below actors and its flame effects above them, so
-  a player on the same tile stays visible. Use intentional world layers rather
+- [x] Draw the campfire base below actors and its flame effects above them, so
+  a player on the same tile stays visible. Fire cores render under actors; small attached
+  burning flames and smoke render above them. Use intentional world layers rather
   than entity-slot order. Check items, traps, fire, actors, and held items when
   they overlap.
-- [ ] Restore visible left/right footstep sprites behind walking actors.
+- [x] Restore visible left/right footstep sprites behind walking actors.
   Footsteps already spawn for players and zombies, but at 12% opacity and then
   get darkened by tile lighting. Tune size, fade, and brightness for the forest
   floor, keeping them subtle and cosmetic.
@@ -95,7 +99,7 @@ Strict release build passes; visual inspection and reconnect checks remain open.
   haze should make their shape readable without obscuring actors. Broad,
   slower cloud shadows can cross outdoor rooms separately. Existing drifting
   cloud sprites are weather visuals; they do not currently cast shadows.
-- [ ] Remove the separate 12-tile distance fade from non-player entities.
+- [x] Remove the separate 12-tile distance fade from non-player entities.
   Lighting should determine whether an actor is visible. Preserve deliberate
   invisibility or fog effects only where a game rule asks for them.
 - [ ] Compare dark and lit rooms in the same capture: an unlit room stays dark,
@@ -104,7 +108,7 @@ Strict release build passes; visual inspection and reconnect checks remain open.
 
 ## Forest ground art
 
-- [ ] Simplify the three forest floor textures and grass. Use broad, calm
+- [x] Simplify the three forest floor textures and grass. Use broad, calm
   color areas with sparse, purposeful marks; remove the repeated high-frequency
   speckles that make every tile equally busy. Preserve negative space around
   players, items, footprints, and attack previews.

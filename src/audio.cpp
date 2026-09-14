@@ -13,17 +13,6 @@
 
 namespace {
 
-constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::Count)> names{
-    "ape_scream", "ball_bounce1", "ball_bounce2", "ball_bounce3", "ball_bounce4",
-    "ball_drop", "ball_hit_paddle", "ball_hit_paddle_er", "ball_wall_bounce",
-    "confirm", "death", "explosion", "explosion1", "explosion2", "explosion3",
-    "animal_crush1", "animal_crush2", "hit_block1", "level_loss", "level_start",
-    "level_win", "small_laser", "sturdy_block_bounced_on", "super_confirm",
-    "step1", "step2", "box_break", "block_land", "zombie_growl1", "zombie_growl2",
-    "zombie_scratch1", "punch1", "cloth_rip", "cant_use", "chick", "hen", "rooster",
-    "distant_train_sound", "rail_place", "train_passing", "drop",
-};
-
 bool load_audio_asset(GameAudio& audio, MIX_Audio*& destination,
                       const std::filesystem::path& path, bool preload, std::string& error) {
     destination = MIX_LoadAudio(audio.mixer, path.string().c_str(), preload);
@@ -73,8 +62,8 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
             return false;
         }
     }
-    for (std::size_t index = 0; index < names.size(); ++index) {
-        const auto path = root / "sounds" / (std::string{names[index]} + ".ogg");
+    for (std::size_t index = 0; index < sound_names.size(); ++index) {
+        const auto path = root / "sounds" / (std::string{sound_names[index]} + ".ogg");
         if (!load_audio_asset(audio, audio.sounds[index], path, true, error)) {
             shutdown_audio(audio);
             return false;

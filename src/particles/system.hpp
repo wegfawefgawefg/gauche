@@ -32,6 +32,7 @@ struct SpriteParticle {
     float spin = 0.0F;
     int depth_height = 0;
     float alpha = 1.0F;
+    LightColor self_glow{};
     int life = 0;
     int span = 0;
 };

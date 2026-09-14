@@ -8,6 +8,7 @@ int main() {
     for (int tick = 0; tick < 120; ++tick) step_game(original, {});
     if (Entity* player = get_entity(original, original.players[0])) {
         player->burn_ticks = 17;
+        player->scorch_ticks = 239;
         player->freeze_ticks = 23;
         player->sleep_ticks = 31;
         player->stun_ticks = 3;
@@ -20,6 +21,12 @@ int main() {
         player->inventory.slots[2].light = {2, 500, {10, 200, 30}};
     }
     original.run.roof_lights[0].light = {6, 1400, {255, 140, 70}};
+    for (Entity& fire : original.entities)
+        if (fire.kind == EntityKind::Campfire) {
+            fire.fire_tramples = 3;
+            fire.fire_dim_ticks = 47;
+        }
+    original.stage.tiles[0] = {TileKind::Wall, 37, 0, 125, BreakRule::DigRequired, 3};
     original.run.pending_count[0] = 1;
     original.run.pending_offers[0][0][0] =
         {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,

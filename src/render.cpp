@@ -118,13 +118,20 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
 }
 
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
-                   const Game& game, ViewCamera camera, Cell focus, float zoom,
+                   const Game& game, ViewCamera camera, float zoom,
                    const Cosmetics* cosmetics, const LightingCache& lighting) {
     const float pixels = tile_pixels(zoom);
+    // LAYERS: Fixtures sit on the ground, pickups above them, then actors with held items.
+    for (int layer = 0; layer < 3; ++layer)
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
+        const int entity_layer = entity.kind == EntityKind::Campfire ||
+            entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
+            entity.kind == EntityKind::Switch ? 0 :
+            entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ? 1 : 2;
+        if (entity_layer != layer) continue;
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F)
             continue;
@@ -150,17 +157,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
                       pose->shake * pixels;
         }
-        const float dx = static_cast<float>(entity.cell.x - focus.x);
-        const float dy = static_cast<float>(entity.cell.y - focus.y);
-        const float view_alpha = entity.kind == EntityKind::Player ? 1.0F :
-            std::clamp(1.0F - std::sqrt(dx * dx + dy * dy) / 12.0F, 0.0F, 1.0F);
         SDL_Texture* texture = texture_for(graphics, entity.sprite);
         const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
             LightColor{} : light_color(entity.self_light);
         const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);
         SDL_SetTextureColorModFloat(texture, brightness.red,
                                     brightness.green, brightness.blue);
-        SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(view_alpha * 255.0F));
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
             pose != nullptr && pose->seen ? pose->angle : 0.0,
             nullptr, pose != nullptr && pose->horizontal_flip ?
@@ -219,9 +221,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Ground,
                        camera, zoom, &lighting);
-    draw_entities(renderer, graphics, game, camera,
-                  player == nullptr ? Cell{32, 32} : player->cell,
-                  zoom, cosmetics, lighting);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
                        camera, zoom, &lighting);
@@ -254,8 +254,7 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     LightingCache lighting;
     build_lighting(lighting, scene, camera, 2.0F);
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
-    draw_entities(renderer, graphics, scene, camera,
-                  scene.run.spawn + Cell{2, 0}, 2.0F, nullptr, lighting);
+    draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

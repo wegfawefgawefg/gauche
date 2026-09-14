@@ -96,6 +96,10 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.attack_interval));
         mix(hash, static_cast<std::uint64_t>(entity.block_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.burn_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.scorch_ticks));
+        mix(hash, static_cast<std::uint64_t>(entity.fire_dim_ticks));
+        mix(hash, entity.fire_tramples);
+        mix(hash, static_cast<std::uint64_t>(entity.script_tick));
         mix(hash, static_cast<std::uint64_t>(entity.freeze_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.sleep_ticks));
         mix(hash, static_cast<std::uint64_t>(entity.stun_ticks));

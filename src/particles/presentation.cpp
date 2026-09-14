@@ -171,11 +171,18 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         if (distance(impact.cell, focus) <= 18)
             spawn_terrain_impact(cosmetics, impact, key);
     }
-    if (game.tick % 12 == 0)
+    if (game.tick % 6 == 0)
         for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
             const Entity& entity = game.entities[slot];
-            if (entity.kind == EntityKind::Campfire && distance(entity.cell, focus) <= 12)
-                spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
+            if (entity.kind == EntityKind::None || entity.health <= 0 ||
+                distance(entity.cell, focus) > 18) continue;
+            const bool fire = entity.kind == EntityKind::Campfire && entity.fire_tramples < 5;
+            const bool burning = entity.scorch_ticks > 0 || entity.burn_ticks > 0;
+            if (fire || burning) {
+                spawn_flame(cosmetics, entity.cell, game.tick + slot * 17U, burning);
+                if (game.tick % 18 == 0)
+                    spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
+            }
         }
     if (game.run.phase == RunPhase::Arena || game.run.floor <= 4)
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);

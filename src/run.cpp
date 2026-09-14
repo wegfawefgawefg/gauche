@@ -118,7 +118,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
             return true;
         }
-        if (fixture.kind == EntityKind::Campfire) {
+        if (fixture.kind == EntityKind::Campfire && fixture.fire_tramples < 5) {
             Inventory cooked = player->inventory;
             for (Item& ingredient : cooked.slots) {
                 if (ingredient.kind != ItemKind::RawMeat || ingredient.count <= 0) continue;

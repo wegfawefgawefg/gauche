@@ -99,8 +99,8 @@ void spawn_footprint(Cosmetics& cosmetics, Cell cell, EntityKind kind,
     particle.y = static_cast<float>(cell.y) + 0.84F;
     particle.width = particle.height = 0.5F;
     particle.angle = (unit(bits(seed)) - 0.5F) * 20.0F;
-    particle.alpha = 0.12F;
-    particle.life = particle.span = 60;
+    particle.alpha = 0.48F;
+    particle.life = particle.span = 150;
     add(cosmetics, particle);
 }
 
@@ -230,8 +230,26 @@ void spawn_campfire_smoke(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
     smoke.y = static_cast<float>(cell.y) + 0.15F;
     smoke.vx = (unit(roll >> 8) - 0.5F) * 0.01F;
     smoke.vy = -0.025F;
-    smoke.width = smoke.height = 0.7F;
-    smoke.alpha = 0.2F;
+    smoke.width = smoke.height = 0.45F;
+    smoke.alpha = 0.38F;
     smoke.life = smoke.span = 72;
     add(cosmetics, smoke);
+}
+
+void spawn_flame(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, bool on_actor) {
+    const std::uint32_t roll = bits(seed);
+    SpriteParticle flame;
+    flame.sprite = Sprite::FlameA;
+    flame.next_sprite = Sprite::FlameB;
+    flame.layer = on_actor ? ParticleLayer::Foreground : ParticleLayer::Ground;
+    flame.motion = ParticleMotion::Animated;
+    flame.x = static_cast<float>(cell.x) + 0.5F + (unit(roll) - 0.5F) * 0.36F;
+    flame.y = static_cast<float>(cell.y) + (on_actor ? 0.82F : 0.52F);
+    flame.vx = (unit(roll >> 8) - 0.5F) * 0.007F;
+    flame.vy = -0.012F;
+    flame.width = on_actor ? 0.22F : 0.42F;
+    flame.height = on_actor ? 0.32F : 0.65F;
+    flame.self_glow = {1.0F, 0.82F, 0.55F};
+    flame.life = flame.span = 24;
+    add(cosmetics, flame);
 }

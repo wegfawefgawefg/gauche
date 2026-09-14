@@ -43,6 +43,7 @@ void step_crusher(Game& game, int slot) {
         else {
             Entity& actor = game.entities[static_cast<std::size_t>(victim)];
             actor.cell = pushed;
+            enter_actor_cell(game, victim);
             actor.move_wait = std::max(actor.move_wait, 6);
         }
     }

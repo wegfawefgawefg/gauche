@@ -127,6 +127,7 @@ bool shove(Game& game, int user_slot, Cell direction) {
                 other.cell == destination) return false;
     }
     target.cell = destination;
+    enter_actor_cell(game, target_slot);
     target.move_wait = target.move_interval;
     return true;
 }
@@ -207,7 +208,7 @@ void crush_entity(Game& game, int slot, Cell attacker) {
     apply_health_damage(game, slot, 1000000, attacker);
 }
 
-void damage_entity(Game& game, int slot, int damage, Cell attacker) {
+void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
@@ -216,7 +217,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Crusher ||
         damage <= 0) return;
     Item* held = entity.inventory.held();
-    if (entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
+    if (blockable && entity.block_ticks > 0 && held->kind == ItemKind::Buckler &&
         entity.facing == cardinal_toward(entity.cell, attacker, entity.facing)) {
         held->durability -= std::max(1, damage);
         emit_sound(game, SoundId::SturdyBlockBouncedOn, entity.cell);
@@ -224,7 +225,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker) {
         return;
     }
     apply_health_damage(game, slot, damage, attacker);
-    if (entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
+    if (blockable && entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
         random_u32(game) % 4 == 0) {
         const int reflected = entity_at(game, attacker, true);
         if (reflected >= 0 && reflected != slot)

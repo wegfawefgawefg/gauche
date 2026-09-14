@@ -31,8 +31,16 @@ void step_entity_timers(Game& game, int slot) {
     entity.attack_wait = std::max(0, entity.attack_wait - 1);
     entity.block_ticks = std::max(0, entity.block_ticks - 1);
     entity.use_flash = std::max(0, entity.use_flash - 1);
+    entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.
+    if (entity.scorch_ticks > 0 && entity.health > 0) {
+        --entity.scorch_ticks;
+        if (entity.scorch_ticks % 30 == 0)
+            damage_entity(game, slot, 2, entity.cell, false);
+        if (entity.health > 0 && entity.scorch_ticks > 0 && entity.scorch_ticks % 90 == 0)
+            emit_sound(game, SoundId::FirePanic, entity.cell);
+    }
     if (entity.burn_ticks > 0) {
         --entity.burn_ticks;
         if (game.tick % 30 == 0)
@@ -58,6 +66,7 @@ void step_entity_timers(Game& game, int slot) {
                 entity.impassable = entity.owner < 0 || entity.owner >= 4 ||
                     game.run.online[static_cast<std::size_t>(entity.owner)];
                 entity.sprite = Sprite::Player;
+                entity.scorch_ticks = entity.burn_ticks = 0;
             } else entity.spawn_wait = 1;
         }
     }

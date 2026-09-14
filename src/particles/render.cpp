@@ -39,7 +39,9 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
         const LightColor light = light_at_cell(*lighting,
             {static_cast<int>(std::floor(particle.x)),
              static_cast<int>(std::floor(particle.y))});
-        SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
+        SDL_SetTextureColorModFloat(texture, std::max(light.red, particle.self_glow.red),
+            std::max(light.green, particle.self_glow.green),
+            std::max(light.blue, particle.self_glow.blue));
     }
     const float fade = particle.layer == ParticleLayer::Weather ?
         static_cast<float>(particle.life) / static_cast<float>(particle.span) :

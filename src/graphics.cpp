@@ -1,4 +1,5 @@
 #include "graphics.hpp"
+#include "sound.hpp"
 
 #include <SDL3_image/SDL_image.h>
 
@@ -24,18 +25,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "bat", "wolf", "bear", "bunny", "ember", "frost_bat", "sleep_meds",
     "stick", "shotgun", "smg", "bear_trap", "mine", "switch",
     "pickaxe", "raw_meat", "cooked_meat", "campfire", "den", "crusher", "dog",
-    "bear_trap_open",
-};
-
-constexpr std::array<std::string_view, 41> sound_names{
-    "ape_scream", "ball_bounce1", "ball_bounce2", "ball_bounce3", "ball_bounce4",
-    "ball_drop", "ball_hit_paddle", "ball_hit_paddle_er", "ball_wall_bounce",
-    "confirm", "death", "explosion", "explosion1", "explosion2", "explosion3",
-    "animal_crush1", "animal_crush2", "hit_block1", "level_loss", "level_start",
-    "level_win", "small_laser", "sturdy_block_bounced_on", "super_confirm",
-    "step1", "step2", "box_break", "block_land", "zombie_growl1", "zombie_growl2",
-    "zombie_scratch1", "punch1", "cloth_rip", "cant_use", "chick", "hen", "rooster",
-    "distant_train_sound", "rail_place", "train_passing", "drop",
+    "bear_trap_open", "campfire_ash", "flame_a", "flame_b",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

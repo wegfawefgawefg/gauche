@@ -40,7 +40,11 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     for (const Entity& entity : game.entities) {
         if (entity.kind == EntityKind::None || !cache.contains(entity.cell)) continue;
         if (entity.max_health > 0 && entity.health <= 0) continue;
-        add_emitter(sources, cache, entity.cell, entity.light);
+        const float source_scale = entity.kind == EntityKind::Campfire ?
+            1.0F - 0.8F * static_cast<float>(entity.fire_dim_ticks) / 60.0F : 1.0F;
+        add_emitter(sources, cache, entity.cell, entity.light, source_scale);
+        if (entity.scorch_ticks > 0 || entity.burn_ticks > 0)
+            add(sources, cache, entity.cell, 3, 0.55F, {1.0F, 0.36F, 0.09F});
         if (entity.kind == EntityKind::GroundItem)
             add_emitter(sources, cache, entity.cell, entity.ground_item.light);
         if (entity.kind != EntityKind::GroundItem &&

@@ -67,6 +67,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/fixtures.cpp
     src/entities/behavior.cpp
     src/entities/timers.cpp
+    src/entities/contact.cpp
 )
 
 add_executable(gauche
@@ -112,6 +113,20 @@ add_custom_command(TARGET gauche POST_BUILD
         "${GAUCHE_GUBSY_DIR}/src/assets" "$<TARGET_FILE_DIR:gauche>/assets/gubsy-engine")
 
 include(CTest)
+
+# ART REVIEW: Static arrangements render without input, AI, networking, or playthroughs.
+get_target_property(GAUCHE_CAPTURE_SOURCES gauche SOURCES)
+list(REMOVE_ITEM GAUCHE_CAPTURE_SOURCES src/main.cpp)
+add_executable(gauche_render_scene EXCLUDE_FROM_ALL
+    tools/render_scene.cpp ${GAUCHE_CAPTURE_SOURCES})
+target_link_libraries(gauche_render_scene PRIVATE gubsy::engine SDL3::SDL3
+    SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
+target_include_directories(gauche_render_scene PRIVATE "${GAUCHE_GUBSY_DIR}")
+target_compile_definitions(gauche_render_scene PRIVATE GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+if(WIN32)
+    target_link_libraries(gauche_render_scene PRIVATE ws2_32)
+endif()
+
 if(BUILD_TESTING)
     set(GAUCHE_TEST_GAME_SOURCES
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} src/inventory.cpp

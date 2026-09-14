@@ -38,7 +38,7 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     for (int index = 0; index < std::min(game.run.roof_light_count,
                                         static_cast<int>(game.run.roof_lights.size())); ++index)
         add(sources, cache, game.run.roof_lights[static_cast<std::size_t>(index)],
-            7, 1.20F, {0.94F, 0.88F, 0.69F});
+            7, 1.35F, {0.94F, 0.88F, 0.69F});
     add(sources, cache, game.run.exit, 6, 0.95F,
         game.run.has_key ? LightColor{0.33F, 1.0F, 0.53F} :
                            LightColor{0.24F, 0.73F, 0.91F});
@@ -53,10 +53,10 @@ std::vector<LightSource> collect_light_sources(const Game& game,
         if (entity.kind == EntityKind::None || !cache.contains(entity.cell)) continue;
         switch (entity.kind) {
         case EntityKind::Player:
-            add(sources, cache, entity.cell, 8, 1.15F, {1.0F, 0.97F, 0.88F});
+            add(sources, cache, entity.cell, 8, 1.35F, {1.0F, 0.97F, 0.88F});
             break;
         case EntityKind::Campfire:
-            add(sources, cache, entity.cell, 8, 1.25F, {1.0F, 0.55F, 0.23F});
+            add(sources, cache, entity.cell, 8, 1.40F, {1.0F, 0.55F, 0.23F});
             break;
         case EntityKind::Ember:
             add(sources, cache, entity.cell, 5, 0.96F, {1.0F, 0.29F, 0.14F});

@@ -30,6 +30,8 @@ int main() {
     LightingCache cache;
     build_lighting(cache, game, {4, 4}, 2.0F);
     const float closed = cache.ambient[cache.index({3, 3})];
+    const float unlit = light_at_cell(cache, {7, 7}).red;
+    if (!check(unlit < 0.25F, "unlit tiles are too bright")) return 1;
     game.stage.at({2, 2})->kind = TileKind::Empty;
     build_lighting(cache, game, {4, 4}, 2.0F);
     if (!check(cache.ambient[cache.index({3, 3})] > closed,
@@ -47,7 +49,8 @@ int main() {
     if (!check(game.stage.at({-1, 1}) == nullptr &&
                game.stage.at_or_border({-1, 1}).kind == TileKind::Wall,
                "exterior material changed gameplay bounds") ||
-        !check(edge.red > far.red && inside.red > far.red &&
+        !check(inside.red > 0.8F && edge.red > far.red + 0.2F &&
+               inside.red > far.red &&
                edge.red > edge.blue,
                "colored light failed to cross or fade along the border")) return 1;
     const LightColor joint = light_at_corner(cache, {0, 1});

@@ -41,8 +41,8 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
         for (Cell direction : neighbors) {
             const Cell next = current.cell + direction;
             if (!cache.contains(next)) continue;
-            const float decay = solid(stage, next) ? 0.18F :
-                stage.at_or_border(next).kind == TileKind::Water ? 0.11F : 0.075F;
+            const float decay = solid(stage, next) ? 0.24F :
+                stage.at_or_border(next).kind == TileKind::Water ? 0.17F : 0.13F;
             const float power = current.power - decay;
             if (power <= 0.02F) continue;
             float& prior = best[cache.index(next)];
@@ -55,9 +55,9 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
 
 LightColor display_color(float ambient, LightColor cast) {
     return {
-        0.32F + 0.68F * std::clamp(ambient + cast.red, 0.0F, 1.0F),
-        0.32F + 0.68F * std::clamp(ambient + cast.green, 0.0F, 1.0F),
-        0.32F + 0.68F * std::clamp(ambient + cast.blue, 0.0F, 1.0F),
+        0.10F + 0.90F * std::clamp(ambient + cast.red, 0.0F, 1.0F),
+        0.10F + 0.90F * std::clamp(ambient + cast.green, 0.0F, 1.0F),
+        0.10F + 0.90F * std::clamp(ambient + cast.blue, 0.0F, 1.0F),
     };
 }
 

@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "../item_pattern.hpp"
+#include "../world/ground_items.hpp"
 
 #include <cstdlib>
 
@@ -38,9 +39,8 @@ void init_player(Entity& entity) {
 void drop_player_item(Game& game, Entity& player) {
     Item& item = *player.inventory.held();
     if (item.kind == ItemKind::None || item.kind == ItemKind::Fist) return;
-    // What if several slots are dropped here? Ground items can share a tile;
-    // pickup takes them one at a time.
-    const Handle dropped = spawn_entity(game, EntityKind::GroundItem, player.cell);
+    const Cell destination = nearby_ground_item_cell(game, player.cell);
+    const Handle dropped = spawn_entity(game, EntityKind::GroundItem, destination);
     if (Entity* entity = get_entity(game, dropped)) {
         entity->ground_item = item;
         entity->sprite = item_sprite(item);

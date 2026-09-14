@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "item_pattern.hpp"
+#include "world/ground_items.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -174,7 +175,8 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.health == 0 &&
         (entity.kind == EntityKind::Chicken || entity.kind == EntityKind::Bunny) &&
         random_u32(game) % 10 == 0) {
-        const Handle meat = spawn_entity(game, EntityKind::GroundItem, entity.cell);
+        const Handle meat = spawn_entity(game, EntityKind::GroundItem,
+                                         nearby_ground_item_cell(game, entity.cell));
         if (Entity* drop = get_entity(game, meat)) {
             drop->ground_item = make_item(ItemKind::RawMeat);
             drop->sprite = Sprite::RawMeat;

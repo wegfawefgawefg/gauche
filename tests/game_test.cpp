@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdio>
+#include <cstdlib>
 
 namespace {
 
@@ -212,12 +213,20 @@ bool repeated_inventory_drops() {
     input[0].select = 3;
     step_game(game, input);
     int drops = 0;
+    bool at_feet = false;
+    bool nearby = false;
     for (const Entity& entity : game.entities)
-        if (entity.kind == EntityKind::GroundItem && entity.cell == player->cell) ++drops;
-    return check(drops == 2 &&
+        if (entity.kind == EntityKind::GroundItem) {
+            ++drops;
+            at_feet |= entity.cell == player->cell;
+            nearby |= entity.cell != player->cell &&
+                std::abs(entity.cell.x - player->cell.x) +
+                std::abs(entity.cell.y - player->cell.y) == 1;
+        }
+    return check(drops == 2 && at_feet && nearby &&
                  player->inventory.slots[2].kind == ItemKind::None &&
                  player->inventory.slots[3].kind == ItemKind::None,
-                 "inventory could not drop two different slots on one tile");
+                 "repeated drops did not spread to nearby free tiles");
 }
 
 bool switch_route() {

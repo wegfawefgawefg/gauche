@@ -1,6 +1,7 @@
 #include "overhead.hpp"
 
 #include <cmath>
+#include <algorithm>
 #include <vector>
 
 namespace {
@@ -57,8 +58,11 @@ void forest_canopies(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (rect.x + size < 0 || rect.y + size < 0 || rect.x > 640 || rect.y > 360) continue;
             SDL_Texture* texture = texture_for(graphics, bits % 2 == 0 ? Sprite::CanopyOak : Sprite::CanopyPine);
             const LightColor light = light_at_cell(lighting, anchor);
-            SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-            SDL_SetTextureAlphaMod(texture, 148);
+            // CANOPY: These leaves sit above the dark floor and receive skylight.
+            // A wall-cell light sample alone turns the entire crown into black smoke.
+            SDL_SetTextureColorModFloat(texture, std::max(.80F, light.red),
+                std::max(.88F, light.green), std::max(.72F, light.blue));
+            SDL_SetTextureAlphaMod(texture, 225);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
                 static_cast<double>((bits >> 22) % 4) * 90, nullptr, SDL_FLIP_NONE);
             SDL_SetTextureAlphaMod(texture, 255);

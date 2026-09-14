@@ -275,3 +275,14 @@ Adult hens/roosters have 45 HP (survive four ordinary 10-damage punches), chicks
 remain fragile. Mimics have 160 HP and a twelve-tick movement beat; their existing
 committed bite cue and escape opportunity remain. Gameplay compatibility version
 advanced. Strict build checked; movement feel and threat balance await user playtesting.
+
+
+## Canopy color and campfire anchor
+
+Oak/pine overhead art now uses clearer greens and 225/255 opacity instead of
+148/255. A subdued canopy daylight floor prevents unlit wall samples from turning
+leaves black; this affects only overhead art, not ground illumination or visibility.
+Anchored parallax and the broad dithered center cutout are unchanged. Campfire
+flames start 0.18 tiles lower so their base overlaps the wood's upper portion;
+actors still render above the campfire flame layer. Strict builds plus static
+canopy-only and campfire/world captures checked.

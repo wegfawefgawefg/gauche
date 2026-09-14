@@ -431,7 +431,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [x] Rework the camera using Adventures with Chickens' rectilinear presentation
   as reference. Remove the current headache-inducing jumps; smooth movement and
   rendering across simulation ticks, frame rates, stops and direction changes.
-- [ ] Lower campfire flame anchors slightly so their bottom overlaps the upper
+- [x] Lower campfire flame anchors slightly so their bottom overlaps the upper
   half of the wood sprite. Preserve the flame/base/actor ordering deliberately.
 - [x] Give rockets real travel; apply delayed impact to future weapons that need
   flight. Keep deliberate instant-hit guns, with visible muzzle flashes/tracers.
@@ -477,7 +477,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 
 ## Playtest feedback: canopy, choices and enemy presence
 
-- [ ] Make forest canopies greener and more opaque while keeping the large
+- [x] Make forest canopies greener and more opaque while keeping the large
   dithered viewing mask and anchored parallax. Avoid dark smoke-like foliage.
 - [ ] Clarify pick-three selection: the angled red banner must consistently mark
   the focused choice, with stronger focus animation and a clear choose prompt.

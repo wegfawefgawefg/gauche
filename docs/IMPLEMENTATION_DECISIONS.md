@@ -145,3 +145,59 @@ and stop at physical obstacles. Ten new offline-generated reports/reloads replac
 generic cues for these weapons; empty magazines retain the restrained dry click.
 Strict builds and a static ballistic scene checked; no combat/network playthrough.
 Persistent spells and other regional throws remain catalog work.
+
+## Earlier completed slice notes
+
+Rust Gauche did not have a sequence of cracked wall sprites: damaged breakable
+tiles had a health bar and shake, hits threw debris, and a destroyed wall became
+Ruin. Before this pass the C++ port let any damage lower wall HP and drew a dark red
+rectangle over damaged walls. The new implementation replaces this with shared
+branching cracks, a lit HP bar, and explicit impact events for shake/fragments.
+Strict release build and the existing snapshot codec check pass, including nondefault
+wall HP/dig thresholds and fire state. A static 1080p terrain/fire scene was inspected
+with shared cracks, damage bars, ash, smoke, flames and footprints. Reconnect and
+gameplay feedback remain with the user; the master goal remains in progress.
+
+Canopy implementation: an authored 16-pixel grayscale mask projects slow-moving
+leaf gaps into the shared light field, including walls and actors. Broad cloud
+shadows dim only that sunlight. Soft diagonal shafts land on the patches. The
+interim generator now retains fewer forest openings and removes them from later
+biomes. Static 1080p capture inspected; semantic opening placement remains part
+of the room-role generator work below.
+
+Current implementation: nine forest prop kinds, twenty forest scrap silhouettes,
+local spatial buckets, step/blast/train/wind impulses, axis-wise terrain collision,
+4096-piece budget, per-cell cap and settled piles that scatter on contact. Broken
+props and partial HP round-trip in snapshots; reconnect reconstructs settled litter.
+Static 1080p prop/debris capture inspected. Placement now uses role-specific clusters around reserved paths and objective
+clearance; room content has floor-wide supply and threat budgets.
+
+UI implementation: 0.72 scale for HUD and all modal/menu geometry. Inventory and
+rewards render to a larger intermediate canvas so the smaller text keeps its strokes;
+click regions use the inverse modal transform. Static 1080p HUD/inventory/reward
+and a one-frame lobby capture inspected. Controller cursor switching is implemented;
+physical controller feel and click feedback await user playtesting.
+
+Generator implementation: a seeded 10–18-room route tree with optional loops,
+an accessible objective detour, a gated exit leaf and occasional weak-wall secret
+cache. Eight authored shape rules produce varied sizes, courts, galleries, twin
+caves and bent halls; twelve room roles select current enemies, loot, props and
+lighting. A protected dry route excludes blocking props and water/lava. Supplies
+roll on connected interior floor, and healing/equipment have a floor budget.
+Four static seed overviews (1, 72, 22991, 90731) and a normal camera capture were
+inspected, with valid objective/exit route summaries. New starts under NoRespawn
+now correctly spawn their first player. The first authored unique and wave gates are implemented below; richer biome pools
+and user playtesting remain open.
+
+Haunted house implementation: a rare Forest 3 replacement with an outdoor approach,
+two ponds and a central 76x68 mansion layout. Its lever gathers living connected
+players, gives a 1.5-second warning and closes the gates. Three waves emerge from
+announced grave openings; later waves include toppling stacks. Ammo and bandages
+arrive between waves, and clearing every linked survivor releases the gates and
+exit. Empty-room recovery opens the gates without deleting remaining enemies;
+joining/respawning players get a free interior cell during an active encounter.
+Linked ownership is separate from AI target slots and included in snapshots/hashes.
+Room navigation, four new sounds and gate/grave art are integrated. Strict build,
+the existing codec check, a mansion overview and a normal camera capture pass.
+The static route check establishes lever access; co-op timing, combat difficulty
+and complete wave playthroughs await the user's playtesting.

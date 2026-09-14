@@ -37,16 +37,6 @@ visible until implemented; visual changes awaiting inspection are noted explicit
 - [ ] Cover all three break rules, dig thresholds, explosions/train exceptions,
   tile HP, and tile state through rollback, snapshot, and reconnect checks.
 
-Rust Gauche did not have a sequence of cracked wall sprites: damaged breakable
-tiles had a health bar and shake, hits threw debris, and a destroyed wall became
-Ruin. Before this pass the C++ port let any damage lower wall HP and drew a dark red
-rectangle over damaged walls. The new implementation replaces this with shared
-branching cracks, a lit HP bar, and explicit impact events for shake/fragments.
-Strict release build and the existing snapshot codec check pass, including nondefault
-wall HP/dig thresholds and fire state. A static 1080p terrain/fire scene was inspected
-with shared cracks, damage bars, ash, smoke, flames and footprints. Reconnect and
-gameplay feedback remain with the user; the master goal remains in progress.
-
 ## Campfires and movement effects
 
 - [x] Add distinct small flame and smoke particles above an active campfire.
@@ -105,13 +95,6 @@ gameplay feedback remain with the user; the master goal remains in progress.
 - [x] Compare dark and lit rooms in the same capture: an unlit room stays dark,
   a canopy opening or campfire has a clear local pool, shafts align with their
   ground patches, and actors/particles use the same light field as the tiles.
-
-Canopy implementation: an authored 16-pixel grayscale mask projects slow-moving
-leaf gaps into the shared light field, including walls and actors. Broad cloud
-shadows dim only that sunlight. Soft diagonal shafts land on the patches. The
-interim generator now retains fewer forest openings and removes them from later
-biomes. Static 1080p capture inspected; semantic opening placement remains part
-of the room-role generator work below.
 
 ## Forest ground art
 
@@ -178,13 +161,6 @@ of the room-role generator work below.
   saved broken-prop state on reconnect. If a future scrap becomes an actual
   pickup or obstacle, synchronize that specific gameplay object.
 
-Current implementation: nine forest prop kinds, twenty forest scrap silhouettes,
-local spatial buckets, step/blast/train/wind impulses, axis-wise terrain collision,
-4096-piece budget, per-cell cap and settled piles that scatter on contact. Broken
-props and partial HP round-trip in snapshots; reconnect reconstructs settled litter.
-Static 1080p prop/debris capture inspected. Placement now uses role-specific clusters around reserved paths and objective
-clearance; room content has floor-wide supply and threat budgets.
-
 ## UI and pointer
 
 - [x] Start each session with selected and ground item detail cards collapsed.
@@ -203,12 +179,6 @@ clearance; room content has floor-wide supply and threat budgets.
   from making it flicker; this state must not enter lockstep input or hashes.
 - [ ] Exercise the compact default, expanded detail toggle, inventory/reward
   comparison, and controller-to-mouse switching in menu and gameplay captures.
-
-UI implementation: 0.72 scale for HUD and all modal/menu geometry. Inventory and
-rewards render to a larger intermediate canvas so the smaller text keeps its strokes;
-click regions use the inverse modal transform. Static 1080p HUD/inventory/reward
-and a one-frame lobby capture inspected. Controller cursor switching is implemented;
-physical controller feel and click feedback await user playtesting.
 
 ## Level generation and unique floors
 
@@ -239,30 +209,6 @@ physical controller feel and click feedback await user playtesting.
   seals the exit and starts classic Call of Duty Zombies-inspired survival
   waves; a defined completion condition releases the party. Author its layout
   and co-op entry/reconnect behavior deliberately.
-
-Generator implementation: a seeded 10–18-room route tree with optional loops,
-an accessible objective detour, a gated exit leaf and occasional weak-wall secret
-cache. Eight authored shape rules produce varied sizes, courts, galleries, twin
-caves and bent halls; twelve room roles select current enemies, loot, props and
-lighting. A protected dry route excludes blocking props and water/lava. Supplies
-roll on connected interior floor, and healing/equipment have a floor budget.
-Four static seed overviews (1, 72, 22991, 90731) and a normal camera capture were
-inspected, with valid objective/exit route summaries. New starts under NoRespawn
-now correctly spawn their first player. The first authored unique and wave gates are implemented below; richer biome pools
-and user playtesting remain open.
-
-Haunted house implementation: a rare Forest 3 replacement with an outdoor approach,
-two ponds and a central 76x68 mansion layout. Its lever gathers living connected
-players, gives a 1.5-second warning and closes the gates. Three waves emerge from
-announced grave openings; later waves include toppling stacks. Ammo and bandages
-arrive between waves, and clearing every linked survivor releases the gates and
-exit. Empty-room recovery opens the gates without deleting remaining enemies;
-joining/respawning players get a free interior cell during an active encounter.
-Linked ownership is separate from AI target slots and included in snapshots/hashes.
-Room navigation, four new sounds and gate/grave art are integrated. Strict build,
-the existing codec check, a mansion overview and a normal camera capture pass.
-The static route check establishes lever access; co-op timing, combat difficulty
-and complete wave playthroughs await the user's playtesting.
 
 ## Biome content farm
 
@@ -480,6 +426,55 @@ the available art reference; new source scripts keep a small explicit palette.
 
 Forest ambience: 20 generated cues, dedicated loop/event voices and local
 schedules. Build checked; shallow-water scenes and later biomes remain.
+## Playtest feedback: camera, controls, menus and world detail
+
+- [ ] Rework the camera using Adventures with Chickens' rectilinear presentation
+  as reference. Remove the current headache-inducing jumps; smooth movement and
+  rendering across simulation ticks, frame rates, stops and direction changes.
+- [ ] Lower campfire flame anchors slightly so their bottom overlaps the upper
+  half of the wood sprite. Preserve the flame/base/actor ordering deliberately.
+- [x] Give rockets real travel; apply delayed impact to future weapons that need
+  flight. Keep deliberate instant-hit guns, with visible muzzle flashes/tracers.
+- [ ] Replace the axe-like pickaxe icon with a recognizable pickaxe. Rotate the
+  fist artwork clockwise so neutral/right-facing use reads as a forward punch.
+- [ ] Fix left-facing held art without upside-down weapons: mirror around the
+  appropriate sprite axis/center. Verify all four directions and held enemy items.
+- [ ] Add wood/tree terrain with recognizable material and break rules; forest
+  obstacles should include actual trees/wood, not only nondescript green walls.
+- [ ] Make the rake sweep loose leaves/debris into useful-looking piles locally;
+  greatly increase its available uses. Keep its current recognizable silhouette.
+- [ ] Make chicken nests drop eggs rather than raw meat; integrate eggs as finds
+  with sensible stack/use/cooking rules and fitting art/sound.
+- [ ] Support igniting a held stick into a temporary burning weapon, initially
+  about 30 seconds; spread fire to susceptible actors/materials and communicate
+  its remaining burn time. Keep item state deterministic through drop/swap.
+- [ ] Diagnose visible tile-center/vertex bias in lighting using canopy-on/off
+  captures against Splonks. Preserve intentional dappled patterns; fix unwanted
+  interpolation seams/facets without flattening the dramatic contrast.
+- [ ] Contextual pickup/drop on the configured interact button (Xbox X by default):
+  empty ground drops the selected droppable item; a pickup merges/fills a free
+  slot; full inventory swaps with selected equipment if legal. Preserve counts,
+  cooldowns, uses and attributes atomically; blocked/cursed drops must fail safely.
+- [ ] Sweep every HUD, inventory, interlude and menu hint for active-device input:
+  keyboard keycaps only in keyboard mode; controller glyphs only in pad mode.
+  Resolve prompts from actual bindings, not hardcoded default letters.
+- [ ] Detect SDL controller layout (Xbox, PlayStation, Nintendo), including the
+  active mode reported by third-party pads. Show recognizable button glyphs and
+  Xbox colors; keyboard letters sit on small offset keycaps. Handle device changes.
+- [ ] Hide the OS mouse whenever Gauche draws its own pointer. Render the custom
+  pointer above menus/configuration panels as well as gameplay; preserve pad hiding.
+- [ ] Give all menus a usability/layout pass: consistent small bottom-left Back,
+  primary actions apart from lists, Create Profile above/right of the profile list,
+  Quickplay above Play, readable controller settings with relevant help text.
+- [ ] Default bindings are read-only. Create editable profiles from defaults;
+  save profile-name edits automatically on blur. Show the active assigned profile
+  and allow assigning/selecting it from the profile list, with clear local-player scope.
+- [ ] Preview bindings beside profile selection/editing, preferably a labeled pad
+  or keyboard diagram; include a compact controls reference beside the pause menu.
+- [ ] Add restrained menu focus/hover, activate, change and back sounds; avoid
+  repeated hover spam and ensure keyboard/controller changes receive feedback too.
+- [ ] Fix the enabled FPS display reporting zero and its overlap with the floor HUD.
+
 ## Suggested order
 
 1. Tile rules, then tile impact visuals.

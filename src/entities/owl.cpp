@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "attacks.hpp"
 #include "bird_feeding.hpp"
 
@@ -53,6 +54,7 @@ void step_owl(Game& game, int slot) {
         if (owl.timer_a == 0) owl.label_a = 4;
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (owl.label_a == 4) {
         if (distance(owl.cell, owl.point_a) <= 1) { owl.label_a = 0; owl.timer_a = 150; }
         else pursue(game, slot, owl.point_a);

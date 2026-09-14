@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
 
@@ -12,6 +13,7 @@ void init_dog(Entity& dog) {
 
 void step_dog(Game& game, int slot) {
     Entity& dog = game.entities[static_cast<std::size_t>(slot)];
+    if (step_hearing(game, slot)) return;
     if (step_foraging(game, slot, false)) return;
     const int target = nearest_player(game, dog.cell, 7);
     if (target < 0) wander(game, slot);

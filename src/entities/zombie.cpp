@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 
 namespace {
@@ -36,6 +37,10 @@ void init_zombie(Game& game, Entity& entity) {
 void step_zombie(Game& game, int slot) {
     Entity& zombie = game.entities[static_cast<std::size_t>(slot)];
     const int target = zombie.encounter.slot >= 0 ? nearest_player(game, zombie.cell, 60) : -1;
+    if (step_hearing(game, slot)) {
+        maybe_growl(game, slot, SoundId::ZombieGrowl1);
+        return;
+    }
     if (target >= 0) pursue(game, slot, game.entities[static_cast<std::size_t>(target)].cell);
     else wander(game, slot);
     scratch_neighbor(game, slot);

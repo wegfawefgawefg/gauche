@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -52,6 +53,7 @@ void step_bat(Game& game, int slot) {
         if (bat.timer_a == 0) bat.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     const int target = nearest_player(game, bat.cell, 7);
     if (target < 0) {
         if (distance(bat.cell, bat.point_a) > 2) pursue(game, slot, bat.point_a);

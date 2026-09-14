@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
@@ -59,6 +60,7 @@ void step_boar(Game& game, int slot) {
         return;
     }
     if (boar.label_a == Charge) { charge(game, slot); return; }
+    if (step_hearing(game, slot)) return;
     const int target = nearest_player(game, boar.cell, 7);
     if (target < 0) {
         if (distance(boar.cell, boar.point_a) > 4) pursue(game, slot, boar.point_a);

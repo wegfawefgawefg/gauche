@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
@@ -27,6 +28,7 @@ void step_bear(Game& game, int slot) {
         if (bear.timer_a == 0) bear.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     const int target = nearest_player(game, bear.cell, bear.timer_b > 0 ? 8 : 3);
     if (target < 0 || distance(bear.cell, bear.point_a) > 8) {
         if (distance(bear.cell, bear.point_a) > 1) pursue(game, slot, bear.point_a);

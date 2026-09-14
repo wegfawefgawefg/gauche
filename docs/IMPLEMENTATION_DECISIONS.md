@@ -415,3 +415,43 @@ Net payload, lanes and timers reuse existing saved projectile fields. Strict gam
 and render builds pass. Static item comparisons and world captures were inspected,
 including Big Net, step deltas, charge counts and status overlays. No live
 playtest, network session or new gameplay test suite was run for this slice.
+
+
+## Bells, firecrackers and creature hearing
+
+Two more finds bring the regional forest item count to 42. They enter room,
+reward and shop pools with three generated sprites and five new offline sounds.
+The bell uses an inharmonic brass ring; crackers have paper toss/landing, quiet
+fizz and a sharp bang. Local rings, sparks and loose scraps do not affect state.
+
+Hand Bell has 80 uses and a 90-tick cooldown. Each ring wakes living sleepers,
+including teammates and stationary creatures, and calls curious species to its
+current cell. Memory lasts at most 300 ticks. Wolves, bears, boars, dogs, zombies,
+stacks, unladen goblins and mimics can investigate. A hidden mimic reveals itself.
+An adjacent visible player, arriving at the location, losing a route or being hit
+ends investigation. Species-specific food/carrying/defense priorities remain.
+
+Firecrackers stack to five and throw four cells at eight ticks per cell. The
+90-tick fuse starts on throwing, continues after landing, and does not depend on
+the owner's survival. Walls stop the throw at the previous cell. The bang wakes
+sleepers and draws investigators along ten cells of open path. Within three cells
+of open path, small species receive 30 ticks of stun and 150 ticks of startle
+memory, including that stun time. Birds, bats, small insects, toads and rabbits
+flee once their current committed behavior allows it; players are not stunned.
+Big expands startle to four cells, Long throws five. Neither version deals damage.
+
+Gameplay hearing uses an explicit bounded cardinal flood around the noise, with
+walls, blocking props and closed doors/gates stopping propagation. Bodies and
+smoke do not stop it. The same footprint feeds debug pattern rendering. Ordinary
+ambient and audio playback events never invoke hearing: mute settings and local
+cosmetic sound randomness cannot change an enemy's behavior.
+
+Shared point_c/label_c/timer_c retain origin, investigate/startle mode and memory.
+Each participating species calls the helper at an interruptible point instead
+of applying one stepper to all actors. Existing bite/dive/charge tells and chicken/
+wasp trail recording remain in their own steppers. These fields enter snapshots
+(layout 24, compatibility D3) and hashes; spawned actors initialize them empty.
+
+Strict game/render builds and static world/item captures pass, including the Big
+startle footprint and the bell's centered radius diagram. No live playtest,
+network session or added gameplay test suite was run for this slice.

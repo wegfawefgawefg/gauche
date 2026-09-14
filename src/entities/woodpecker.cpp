@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "attacks.hpp"
 #include "bird_feeding.hpp"
 #include "../props/interaction.hpp"
@@ -62,6 +63,7 @@ void step_woodpecker(Game& game, int slot) {
         if (bird.timer_a == 0) bird.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (feed_on_bird_seed(game, slot)) return;
     const int target = nearest_player(game, bird.cell, 6);
     if (target < 0) {

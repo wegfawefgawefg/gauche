@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 
 #include <array>
@@ -54,6 +55,7 @@ void release_survivor(Game& game, Entity& stack) {
 void step_zombie_stack(Game& game, int slot) {
     Entity& stack = game.entities[static_cast<std::size_t>(slot)];
     if (stack.label_a == 0) {
+        if (step_hearing(game, slot)) return;
         const int target = nearest_player(game, stack.cell, stack.encounter.slot >= 0 ? 60 : 8);
         if (target >= 0) {
             const Cell destination = game.entities[static_cast<std::size_t>(target)].cell;

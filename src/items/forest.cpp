@@ -7,6 +7,7 @@
 #include "root_relics.hpp"
 #include "woodland_traps.hpp"
 #include "movement_tools.hpp"
+#include "noisemakers.hpp"
 
 namespace {
 
@@ -42,6 +43,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* noise = forest_noisemaker(kind)) return noise;
     if (const RegionalItem* movement = forest_movement_item(kind)) return movement;
     if (const RegionalItem* trap = forest_trap_item(kind)) return trap;
     if (const RegionalItem* relic = forest_root_relic(kind)) return relic;

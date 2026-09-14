@@ -122,12 +122,12 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(handle.slot));
             mix(hash, handle.generation);
         }
-        for (Cell cell : {entity.point_a, entity.point_b}) {
+        for (Cell cell : {entity.point_a, entity.point_b, entity.point_c}) {
             mix(hash, static_cast<std::uint64_t>(cell.x));
             mix(hash, static_cast<std::uint64_t>(cell.y));
         }
-        for (int value : {entity.counter_a, entity.counter_b, entity.counter_c, entity.label_a, entity.label_b,
-                          entity.timer_a, entity.timer_b}) mix(hash, static_cast<std::uint64_t>(value));
+        for (int value : {entity.counter_a, entity.counter_b, entity.counter_c, entity.label_a, entity.label_b, entity.label_c,
+                          entity.timer_a, entity.timer_b, entity.timer_c}) mix(hash, static_cast<std::uint64_t>(value));
         mix(hash, static_cast<std::uint64_t>(entity.birth_tick));
         mix(hash, static_cast<std::uint64_t>(entity.impassable));
         mix(hash, static_cast<std::uint64_t>(entity.hard_blocker));

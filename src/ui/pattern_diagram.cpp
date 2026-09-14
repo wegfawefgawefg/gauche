@@ -72,7 +72,7 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         }
 
     // EFFECT: Dashed travel has no hit; the destination and nearby lanes do.
-    if (pattern.minimum == 0 && pattern.maximum == 0)
+    if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
         colored_cell(renderer, layout, 0, 0, pattern.effect, false);
     else if (pattern.blast_radius > 0) {
         for (int reach = 1; reach < pattern.maximum; ++reach)

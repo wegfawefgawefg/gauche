@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -26,6 +27,12 @@ void step_crate_mimic(Game& game, int slot) {
         if (mimic.timer_a == 0) mimic.label_a = 3;
         return;
     }
+    if (mimic.timer_c > 0 && mimic.label_a == 0) {
+        mimic.label_a = 3; mimic.sprite = Sprite::CrateMimic;
+        mimic.timer_b = 240; mimic.move_wait = 30;
+        emit_sound(game, SoundId::MimicWake, mimic.cell);
+    }
+    if (step_hearing(game, slot)) { mimic.timer_b = 240; return; }
     const int target = nearest_player(game, mimic.cell, mimic.label_a == 0 ? 2 : 7);
     const bool visible = target >= 0 && clear_sight(game, mimic.cell,
         game.entities[static_cast<std::size_t>(target)].cell);

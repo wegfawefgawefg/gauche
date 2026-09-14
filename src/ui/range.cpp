@@ -6,6 +6,7 @@
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
 #include "../entities/attacks.hpp"
+#include "../entities/hearing.hpp"
 #include "../view.hpp"
 
 #include <algorithm>
@@ -56,7 +57,12 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::ThrowingNet) {
+    if (held.kind == ItemKind::HandBell || held.kind == ItemKind::Firecracker) {
+        const Cell center = held.kind == ItemKind::HandBell ? player.cell :
+            bomb_landing(game, player.cell, facing, pattern.maximum);
+        for (Cell cell : audible_cells(game, center, pattern.blast_radius))
+            mark(renderer, cell, camera, zoom, pattern.effect);
+    } else if (held.kind == ItemKind::ThrowingNet) {
         const Cell side{-facing.y, facing.x};
         int lanes = (1 << (pattern.half_width * 2 + 1)) - 1;
         for (int reach = 1; reach <= pattern.maximum; ++reach) {

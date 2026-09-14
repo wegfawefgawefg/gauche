@@ -147,6 +147,10 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     const std::uint64_t seed = (sound.tick << 8) | sound.sequence;
     spawn_sound_effect(cosmetics, sound, seed);
     switch (sound.sound) {
+    case SoundId::CrackerBang:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::Cloth, 5, seed);
+        push_debris(cosmetics.debris, sound.cell, 2.0F, .07F);
+        break;
     case SoundId::NetCatch: case SoundId::NetFall:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Cloth, 3, seed);
         break;

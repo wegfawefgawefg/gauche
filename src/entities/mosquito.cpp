@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "attacks.hpp"
 
 #include <algorithm>
@@ -60,6 +61,7 @@ void step_mosquito(Game& game, int slot) {
         if (bug.timer_a == 0) { bug.label_a = 0; bug.move_interval = 12; bug.sprite = Sprite::Mosquito; }
         return;
     }
+    if (step_hearing(game, slot)) return;
     const int target = nearest_player(game, bug.cell, 6);
     if (target < 0) { if (game.tick % 45 == 0) wander(game, slot); return; }
     const Entity& victim = game.entities[static_cast<std::size_t>(target)];

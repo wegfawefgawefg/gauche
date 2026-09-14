@@ -35,6 +35,8 @@ void step_entity_timers(Game& game, int slot) {
         entity.move_wait = std::max(0, entity.move_wait - movement_recovery_rate(entity));
     entity.timer_a = std::max(0, entity.timer_a - 1);
     entity.timer_b = std::max(0, entity.timer_b - 1);
+    entity.timer_c = std::max(0, entity.timer_c - 1);
+    if (entity.timer_c == 0) { entity.label_c = 0; entity.point_c = {}; }
     entity.attack_wait = std::max(0, entity.attack_wait - 1);
     entity.block_ticks = std::max(0, entity.block_ticks - 1);
     entity.use_flash = std::max(0, entity.use_flash - 1);

@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "../items/fire.hpp"
 #include "../props/growth.hpp"
 #include "dispatch.hpp"
@@ -62,6 +63,7 @@ void step_lantern_moth(Game& game, int slot) {
         moth.attack_wait = 120;
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (moth.timer_b == 0) find_lamp(game, moth);
     if (const Entity* source = get_entity(game, moth.entity_a); source != nullptr && source->health > 0)
         moth.point_a = source->cell;

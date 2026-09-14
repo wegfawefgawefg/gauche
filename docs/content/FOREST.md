@@ -69,7 +69,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 17 | Smoke pot | Throw 1–5; obscures creature targeting in a small area without changing authoritative lighting math. | Common / 10 |
 | 18 | Stink bomb | Throw 1–4; a lingering scent draws scavengers and distracts hunting animals. | Common / 7 |
 | 19 | Honey pot | Place bait; draws bears and wasps, sticky to walk through. A deliberate trap ingredient. | Common / 8 |
-| 20 | Hand bell | Audible radius 10; wakes sleepers and pulls investigation toward the user. Durable, no damage. | Common / 5 |
+| 20 | Hand bell | 80 rings, 90-tick cooldown. Wakes sleepers along a wall-blocked 10-cell sound path; curious creatures investigate that location for up to 5s. No damage. | Common / 5 |
 | 21 | Hunting horn | Facing cone 1–3 (one/three/five cells wide); shoves each target once and wakes it. Walls crush, friends count. 100-tick cooldown, eight uses. | Uncommon / 22 |
 | 22 | Wolf whistle | Narrow call 1–6; briefly redirects an unattached wolf toward another hostile actor. Limited uses. | Uncommon / 20 |
 | 23 | Bird seed | Place a small bait pile; nearby birds/flocks gather rather than creating endless free animals. | Common / 4 |
@@ -78,7 +78,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 26 | Bitter root | Self; wakes the user and gives short sleep resistance, with a small immediate HP cost. | Common / 5 |
 | 27 | Chili | Self; faster steps for a short burst, followed by a brief weak burn. Three peppers. | Common / 7 |
 | 28 | Rotten fruit | Throw 1–4; splats a nauseating patch, useful as scavenger bait; eating it is a bad heal. | Common / 2 |
-| 29 | Firecracker | Place/throw 1–4; delayed bang wakes, startles and briefly stuns nearby small creatures. | Common / 7 |
+| 29 | Firecracker | Throws 1–4, 90-tick fuse. Bang is heard along 10 cells of open path; small creatures within 3 are stunned for 30 ticks then flee. Big widens startle; Long extends throw. Five per stack. | Common / 7 |
 | 30 | Pitch bomb | Throw 2–6; delayed burning splash with sticky residue. Strong against growth, dangerous around friends. | Uncommon / 18 |
 | 31 | Acorn mine | Place next cell, arm in 20 ticks; contact or destruction bursts four 2-cell lanes for 22 damage. Big extends to three cells; three per stack. | Uncommon / 16 |
 | 32 | Thorn caltrops | Scatter over three facing cells; repeated small step damage, finite thorns. | Common / 10 |

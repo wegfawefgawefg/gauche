@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "following.hpp"
 #include "attacks.hpp"
 
@@ -58,6 +59,7 @@ void step_brood(Game& game, int slot, Entity& bug, const Entity* nest) {
         if (bug.timer_a == 0) bug.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (feed_honey(game, slot, bug)) return;
     const int target = nearest_player(game, bug.cell, nest != nullptr ? 6 : 2);
     if (target >= 0) {

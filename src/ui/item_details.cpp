@@ -119,6 +119,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::HandBell)
+        std::snprintf(line, sizeof(line), "WAKE + INVESTIGATE 5s");
+    if (item.kind == ItemKind::Firecracker)
+        std::snprintf(line, sizeof(line), "STUN 0.5s | HEARD 10");
     if (item.kind == ItemKind::ResinGlue) {
         const int repair = resin_repair_slot(player.inventory);
         if (repair < 0) std::snprintf(line, sizeof(line), "NOTHING NEEDS REPAIR");
@@ -182,7 +186,11 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "RANGE %d-%d   DIG %d", pattern.minimum,
                       pattern.maximum, item.dig_power);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    if (item.kind == ItemKind::ThrowingNet)
+    if (item.kind == ItemKind::HandBell)
+        std::snprintf(line, sizeof(line), "HEARD UP TO %d CELLS", pattern.blast_radius);
+    else if (item.kind == ItemKind::Firecracker)
+        std::snprintf(line, sizeof(line), "FUSE 1.5s | STARTLE %d", pattern.blast_radius);
+    else if (item.kind == ItemKind::ThrowingNet)
         std::snprintf(line, sizeof(line), "RANGE %d | ROOT 2.0s", pattern.maximum);
     else if (item.kind == ItemKind::StickyBoots)
         std::snprintf(line, sizeof(line), "GRIP 6.0s | SLOW STEPS");

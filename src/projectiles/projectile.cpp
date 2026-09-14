@@ -4,6 +4,7 @@
 #include "swap.hpp"
 #include "recoverable.hpp"
 #include "net.hpp"
+#include "../items/noisemakers.hpp"
 #include "../items/materials.hpp"
 #include "../item_pattern.hpp"
 #include "../props/interaction.hpp"
@@ -97,6 +98,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Firecracker)) { step_firecracker(game, slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Net)) { step_net(game, slot); return; }
     Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     if (shot.label_a == static_cast<int>(ProjectileKind::Hook)) { step_hook(game, slot); return; }

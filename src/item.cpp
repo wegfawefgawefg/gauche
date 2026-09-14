@@ -8,6 +8,7 @@
 #include "items/root_relics.hpp"
 #include "items/woodland_traps.hpp"
 #include "items/movement_tools.hpp"
+#include "items/noisemakers.hpp"
 #include "projectiles/hook.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
@@ -73,6 +74,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HandBell: case ItemKind::Firecracker:
+        used = use_noisemaker(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::ThrowingNet: case ItemKind::StickyBoots: case ItemKind::RabbitCharm:
         used = use_movement_tool(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

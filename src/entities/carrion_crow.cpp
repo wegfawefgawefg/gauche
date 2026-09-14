@@ -1,5 +1,6 @@
 #include "dispatch.hpp"
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "attacks.hpp"
 #include "scavenging.hpp"
 #include "bird_feeding.hpp"
@@ -72,6 +73,7 @@ void step_carrion_crow(Game& game, int slot) {
         }
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (crow.inventory.held()->count > 0) {
         crow.label_a = 2;
         if (crow.cell != crow.point_a) { pursue(game, slot, crow.point_a); crow.timer_a = 180; }

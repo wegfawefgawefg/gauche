@@ -89,7 +89,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker,
     Count,
 };
 
@@ -160,10 +160,11 @@ struct Entity {
     // BEHAVIOR: Each kind names its slots beside its own init/step code.
     Handle entity_a{}, entity_b{};
     Handle encounter{}; // Room ownership must not overwrite an enemy's behavior references.
-    Cell point_a{}, point_b{};
+    // HEARING: c point/label/timer hold the last noise; a/b remain species-owned.
+    Cell point_a{}, point_b{}, point_c{};
     int counter_a = 0, counter_b = 0, counter_c = 0;
-    int label_a = 0, label_b = 0;
-    int timer_a = 0, timer_b = 0; // Shared countdowns; decremented even during stun/sleep.
+    int label_a = 0, label_b = 0, label_c = 0;
+    int timer_a = 0, timer_b = 0, timer_c = 0; // Shared countdowns; decremented even during stun/sleep.
     Sprite sprite = Sprite::Player;
     LightEmitter light{};
     LightTint self_light{0, 0, 0};

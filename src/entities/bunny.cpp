@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 
 void init_bunny(Entity& bunny) {
@@ -8,4 +9,6 @@ void init_bunny(Entity& bunny) {
     bunny.impassable = true;
 }
 
-void step_bunny(Game& game, int slot) { wander(game, slot); }
+void step_bunny(Game& game, int slot) {
+    if (!step_hearing(game, slot)) wander(game, slot);
+}

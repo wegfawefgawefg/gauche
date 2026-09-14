@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 #include "following.hpp"
 #include "bird_feeding.hpp"
@@ -55,7 +56,9 @@ void step_chicken(Game& game, int slot) {
     chicken.move_interval = scared ? 5 : chicken.timer_a > 0 ? 10 :
         chicken.label_a == 0 ? 9 : chicken.label_a == 1 ? 30 : 42;
     const Cell previous = chicken.cell;
-    if (scared) {
+    if (step_hearing(game, slot)) {
+        // Preserve the trail even when a bang scatters the family.
+    } else if (scared) {
         flee(game, slot, {chicken.counter_a, chicken.counter_b});
     } else if (chicken.timer_a > 0) {
         defend_family(game, slot, chicken);

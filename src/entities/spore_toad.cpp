@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
 
@@ -25,6 +26,7 @@ void step_spore_toad(Game& game, int slot) {
         if (toad.timer_a == 0) toad.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     const int target = nearest_player(game, toad.cell, 3);
     if (target < 0) { if (game.tick % 30 == 0) wander(game, slot); return; }
     const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;

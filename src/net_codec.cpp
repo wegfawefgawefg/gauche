@@ -164,9 +164,9 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     for (Handle handle : {entity.entity_a, entity.entity_b, entity.encounter}) {
         writer.i32(handle.slot); writer.u32(handle.generation);
     }
-    write_cell(writer, entity.point_a); write_cell(writer, entity.point_b);
-    for (int value : {entity.counter_a, entity.counter_b, entity.counter_c, entity.label_a, entity.label_b,
-                      entity.timer_a, entity.timer_b}) writer.i32(value);
+    write_cell(writer, entity.point_a); write_cell(writer, entity.point_b); write_cell(writer, entity.point_c);
+    for (int value : {entity.counter_a, entity.counter_b, entity.counter_c, entity.label_a, entity.label_b, entity.label_c,
+                      entity.timer_a, entity.timer_b, entity.timer_c}) writer.i32(value);
     writer.u64(entity.birth_tick);
     writer.u8(static_cast<std::uint8_t>(entity.impassable));
     writer.u8(static_cast<std::uint8_t>(entity.hard_blocker));
@@ -212,10 +212,11 @@ Entity read_entity(PacketReader& reader) {
     entity.encounter = {reader.i32(), reader.u32()};
     for (Handle handle : {entity.entity_a, entity.entity_b, entity.encounter})
         if (handle.slot < -1 || handle.slot >= max_entities) reader.okay = false;
-    entity.point_a = read_cell(reader); entity.point_b = read_cell(reader);
+    entity.point_a = read_cell(reader); entity.point_b = read_cell(reader); entity.point_c = read_cell(reader);
     entity.counter_a = reader.i32(); entity.counter_b = reader.i32(); entity.counter_c = reader.i32();
-    entity.label_a = reader.i32(); entity.label_b = reader.i32();
-    entity.timer_a = reader.i32(); entity.timer_b = reader.i32();
+    entity.label_a = reader.i32(); entity.label_b = reader.i32(); entity.label_c = reader.i32();
+    entity.timer_a = reader.i32(); entity.timer_b = reader.i32(); entity.timer_c = reader.i32();
+    if (entity.label_c < 0 || entity.label_c > 2 || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     entity.birth_tick = reader.u64();
     entity.impassable = reader.u8() != 0;
@@ -240,7 +241,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(23);
+    writer.u32(24);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -308,7 +309,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 23) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 24) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

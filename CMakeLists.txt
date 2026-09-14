@@ -50,6 +50,7 @@ else()
 endif()
 
 set(GAUCHE_ENTITY_SOURCES
+    src/entities/hearing.cpp src/items/noisemakers.cpp
     src/items/movement_tools.cpp src/projectiles/net.cpp src/surfaces/slip.cpp
     src/items/woodland_traps.cpp src/traps/woodland.cpp
     src/items/root_relics.cpp src/projectiles/root_drill.cpp src/projectiles/swap.cpp

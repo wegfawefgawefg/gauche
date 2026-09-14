@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "hearing.hpp"
 #include "../surfaces/interaction.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
@@ -47,6 +48,7 @@ void step_wolf(Game& game, int slot) {
         if (wolf.timer_a == 0) wolf.label_a = 0;
         return;
     }
+    if (step_hearing(game, slot)) return;
     if (wolf.timer_b == 0) find_pack(game, slot);
     const Entity* leader = get_entity(game, wolf.entity_a);
     int target = nearest_player(game, wolf.cell, 8);

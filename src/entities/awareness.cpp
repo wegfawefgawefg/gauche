@@ -5,6 +5,7 @@
 
 void remember_attacker(Game& game, int slot, Cell from) {
     Entity& victim = game.entities[static_cast<std::size_t>(slot)];
+    victim.timer_c = victim.label_c = 0; // Real harm ends a noise distraction.
     if (eats_meat(victim.kind)) { victim.counter_b = 360; victim.label_b = 0; }
     if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; }
     if (victim.kind == EntityKind::ForagerGoblin) {

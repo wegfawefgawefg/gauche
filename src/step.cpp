@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "entities/echo_hound.hpp"
 #include "surfaces/interaction.hpp"
 #include "surfaces/temperature.hpp"
 #include "items/action.hpp"
@@ -110,6 +111,7 @@ void sweep_dead(Game& game) {
 } // namespace
 
 void emit_sound(Game& game, SoundId sound, Cell cell, bool positional) {
+    if (positional) hear_world_action(game, sound, cell);
     if (game.sound_count >= static_cast<int>(game.sounds.size())) return;
     const auto sequence = static_cast<std::uint8_t>(game.sound_count);
     game.sounds[static_cast<std::size_t>(game.sound_count++)] =

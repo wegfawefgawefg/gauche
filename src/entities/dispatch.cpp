@@ -10,12 +10,14 @@
 #include "snow_burrower.hpp"
 #include "mirror_knight.hpp"
 #include "lens_warden.hpp"
+#include "echo_hound.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::EchoHound: init_echo_hound(entity); break;
     case EntityKind::LensWarden: init_lens_warden(entity); break;
     case EntityKind::MirrorKnight: init_mirror_knight(entity); break;
     case EntityKind::SnowBurrower: init_snow_burrower(entity); break;
@@ -68,6 +70,7 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::EchoHound: step_echo_hound(game, slot); break;
     case EntityKind::LensWarden: step_lens_warden(game, slot); break;
     case EntityKind::MirrorKnight: step_mirror_knight(game, slot); break;
     case EntityKind::SnowBurrower: step_snow_burrower(game, slot); break;

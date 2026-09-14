@@ -1,0 +1,51 @@
+#include "echo_hound.hpp"
+#include "hearing.hpp"
+
+#include <algorithm>
+
+void hear_echo_hounds(Game& game, Cell origin, int radius) {
+    // CULL: Most footsteps have no listener; avoid a flood in that common case.
+    const auto nearby = [origin, radius](const Entity& actor) {
+        return actor.kind == EntityKind::EchoHound && actor.health > 0 &&
+            actor.cell != origin && distance(actor.cell, origin) <= radius;
+    };
+    if (std::none_of(game.entities.begin(), game.entities.end(), nearby)) return;
+    const auto heard = audible_cells(game, origin, radius);
+    for (Entity& actor : game.entities) {
+        if (!nearby(actor) || std::find(heard.begin(), heard.end(), actor.cell) == heard.end()) continue;
+        actor.point_c = origin;
+        actor.label_c = InvestigateNoise;
+        actor.timer_c = 300;
+        actor.sleep_ticks = 0;
+    }
+}
+
+void hear_world_action(Game& game, SoundId sound, Cell origin) {
+    // ACTIONS: Deterministic emitted events, before the cosmetic sound buffer cap.
+    // Audio volume, local ambience and hounds' own calls cannot steer their hearing.
+    int radius = 0;
+    switch (sound) {
+    case SoundId::Explosion: case SoundId::Explosion1: case SoundId::Explosion2:
+    case SoundId::Explosion3: case SoundId::ThunderCrack: case SoundId::PrismBurst:
+        radius = 12; break;
+    case SoundId::PistolShot: case SoundId::MusketShot: case SoundId::ShotgunShot:
+    case SoundId::SmgShot: case SoundId::BlunderShot: case SoundId::RocketLaunch:
+    case SoundId::LensFire: case SoundId::WardenFire: case SoundId::SmallLaser:
+    case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
+    case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
+        radius = 10; break;
+    case SoundId::RockImpact: case SoundId::ArrowImpact: case SoundId::IceNeedleHit:
+    case SoundId::BottleBreak: case SoundId::BombLand: case SoundId::IceBrickThrow:
+    case SoundId::SnowSplat: case SoundId::CrossbowShot: case SoundId::BowRelease:
+    case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
+        radius = 7; break;
+    case SoundId::FistWindup: case SoundId::StickWindup: case SoundId::PickaxeWindup:
+    case SoundId::AxeSwing: case SoundId::SpearThrust: case SoundId::MaulSwing:
+    case SoundId::RakeSweep: case SoundId::KnifeStab: case SoundId::TorchSwing:
+    case SoundId::Punch1: case SoundId::ChiselJab: case SoundId::BlockLand:
+    case SoundId::BumpWood: case SoundId::BumpStone:
+        radius = 4; break;
+    default: return;
+    }
+    hear_echo_hounds(game, origin, radius);
+}

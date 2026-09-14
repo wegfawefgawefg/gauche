@@ -8,6 +8,7 @@
 #include "../item_attribute.hpp"
 #include "../items/materials.hpp"
 #include "../items/air_bladder.hpp"
+#include "../items/cold_flask.hpp"
 #include "../world/floating_items.hpp"
 #include "../items/pocket_door.hpp"
 #include "../items/mixtures.hpp"
@@ -83,6 +84,10 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                     mark(renderer, cell, camera, zoom, pattern.effect);
                 }
         }
+    } else if (held.kind == ItemKind::ColdFlask) {
+        const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
+        for (Cell cell : cold_flask_cells(game, held, center))
+            mark(renderer, cell, camera, zoom, pattern.effect);
     } else if (held.kind == ItemKind::PocketDoor) {
         if (const auto cell = pocket_door_landing(game, player.cell, facing, pattern.maximum))
             mark(renderer, *cell, camera, zoom, pattern.effect);

@@ -80,7 +80,7 @@ same effective item definition as attacks, including rare attributes.
 | 5 | Lens carbine | Instant 18-damage line to 12, three charges per magazine; crosses clear crystal but stops at opaque cover. Mirrors redirect cardinally. | Rare; 40 |
 | 6 | Snowball | Thrown to 5, 1 damage; wets the target and interrupts a fragile charging action. Stack 12. | Common; 2 |
 | 7 | Ice brick | Place blocking 35-HP cover or throw to 3 for 14 damage; thrown bricks shatter, heat melts placed ones. Stack 3. | Common; 8 |
-| 8 | Cold flask | Throw to 5; chills actors in a cross, freezes shallow water for 8s, extinguishes small fires. Stack 3. | Common; 10 |
+| 8 | Cold flask | Implemented: traveling throw to 5, 3s chill in a cross, 8s shallow-water ice, douses small fires. Stack 3; Big extends each arm, Long throws to 9. | Common; 10 |
 | 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Clears a three-cell fan of snow, revealing covered loot/props; secondary packs collected snow into a snowball if space permits. 60 durability. | Common; 9 |
 | 11 | Heat capsule | Break next to the user for a 4s warm patch; thaws nearby ice and removes chill, but ignites oil. Stack 4. | Common; 8 |

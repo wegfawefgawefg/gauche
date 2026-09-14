@@ -159,6 +159,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     if (item.kind == ItemKind::AirBladder)
         std::snprintf(line, sizeof(line), "SHOVE 1 | FLOAT UP TO 16");
+    if (item.kind == ItemKind::ColdFlask)
+        std::snprintf(line, sizeof(line), "CHILL 3s | FREEZE WATER 8s");
     if (item.kind == ItemKind::IceNeedle)
         std::snprintf(line, sizeof(line), "DMG %d | CHILL 1s", pattern.damage);
     else if (item.kind == ItemKind::GritPouch)

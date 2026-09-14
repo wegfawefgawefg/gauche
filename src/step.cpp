@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "surfaces/interaction.hpp"
+#include "surfaces/temperature.hpp"
 #include "items/action.hpp"
 #include "items/remedies.hpp"
 #include "entities/dispatch.hpp"
@@ -124,6 +125,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.sweep_count = 0;
     if (step_interlude(game, inputs)) return;
 
+    step_temperature(game);
     step_surfaces(game);
     step_prop_growth(game);
 

@@ -251,7 +251,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(28);
+    writer.u32(29);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -263,6 +263,8 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u8(static_cast<std::uint8_t>(tile.break_rule));
         writer.u8(tile.required_dig_power);
         writer.u8(static_cast<std::uint8_t>(tile.material));
+        writer.u8(static_cast<std::uint8_t>(tile.thaw_kind));
+        writer.u16(tile.freeze_ticks);
         writer.u8(static_cast<std::uint8_t>(tile.surface.liquid));
         writer.u8(tile.surface.gritted ? 1 : 0);
         for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks}) writer.u16(ticks);
@@ -320,7 +322,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 28) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 29) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -344,6 +346,11 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.required_dig_power = reader.u8();
         tile.material = static_cast<TileMaterial>(reader.u8());
         if (tile.material >= TileMaterial::Count) reader.okay = false;
+        tile.thaw_kind = static_cast<TileKind>(reader.u8());
+        tile.freeze_ticks = reader.u16();
+        if (tile.freeze_ticks > 480 || (tile.freeze_ticks == 0 ? tile.thaw_kind != TileKind::Empty :
+            (tile.thaw_kind != TileKind::ShallowWater && tile.thaw_kind != TileKind::Spring &&
+             tile.thaw_kind != TileKind::IceHole))) reader.okay = false;
         tile.surface.liquid = static_cast<LiquidKind>(reader.u8());
         const auto gritted = reader.u8();
         if (gritted > 1) reader.okay = false;

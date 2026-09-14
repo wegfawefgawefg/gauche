@@ -1,4 +1,5 @@
 #include "materials.hpp"
+#include "cold_flask.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/ground_items.hpp"
@@ -8,6 +9,7 @@
 #include <cstdlib>
 
 void material_impact(Game& game, const Item& item, Cell center) {
+    if (item.kind == ItemKind::ColdFlask) { cold_flask_impact(game, item, center); return; }
     const ItemPattern pattern = item_pattern(item);
     emit_sound(game, item.kind == ItemKind::MushroomSpores ? SoundId::ToadPuff : SoundId::BottleBreak, center);
     for (int dy = -pattern.blast_radius; dy <= pattern.blast_radius; ++dy)

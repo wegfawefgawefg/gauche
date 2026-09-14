@@ -2,6 +2,7 @@
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
+#include "../surfaces/temperature.hpp"
 #include "../world/encounter.hpp"
 
 #include <algorithm>
@@ -59,7 +60,8 @@ void step_entity_timers(Game& game, int slot) {
         if (game.tick % 30 == 0)
             damage_entity(game, slot, 4, entity.cell, false);
     }
-    entity.freeze_ticks = std::max(0, entity.freeze_ticks - 1);
+    entity.freeze_ticks = entity.freeze_ticks > 0 && warm_cell(game, entity.cell) ?
+        0 : std::max(0, entity.freeze_ticks - 1);
     entity.sleep_ticks = std::max(0, entity.sleep_ticks - 1);
     entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
     const Tile* ground = game.stage.at(entity.cell);

@@ -64,6 +64,8 @@ struct Tile {
     Prop prop{};
     Surface surface{};
     TileMaterial material = TileMaterial::Stone;
+    TileKind thaw_kind = TileKind::Empty;
+    std::uint16_t freeze_ticks = 0;
 };
 
 struct Stage {
@@ -90,7 +92,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask,
     Count,
 };
 

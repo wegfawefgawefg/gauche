@@ -168,6 +168,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, supplies[random_u32(game) % std::size(supplies)], 1, budget.equipment);
             supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
         } else if (room.role == RoomRole::Observatory || room.role == RoomRole::Shrine) {
+            supply(game, room, ItemKind::ColdFlask, 2, budget.equipment);
             supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
         }
         return;

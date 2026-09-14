@@ -174,3 +174,46 @@ decode without non-finite samples or clipping. No live playtest or new test suit
 ran. Existing shared fields already serialize/hash the float; snapshot layout
 stays 28, gameplay compatibility advances to E0. Ice totals are three enemies
 and three items; its remaining catalog and all broader master work stay open.
+
+
+## Cold Flask and shared thawing (2026-09-14)
+
+Cold Flask throws a visible arcing bottle to five cells, stopping short of hard
+cover. Its impact chills exposed actors for three seconds in a cardinal cross,
+without direct damage. Shields do not block environmental cold; frost bats and
+living embers resist it. It consumes one from a stack of three, costs 10 gold,
+and has a 45-tick cooldown. Big extends each arm to two cells; Long throws to
+nine. Observatory/shrine equipment, ice rewards and shops now supply it.
+
+The impact captures exposed cells before changing terrain, then quenches the
+whole exposed cross before checking remaining heat. Campfires become cold ash,
+stop cooking and lose their light. Burning actors and exposed burning sticks go
+out. Permanent torches and living embers keep producing heat; light color alone
+does not imply heat. Nearby heat also clears chill during actor timers.
+
+Shallow water, springs and diver holes freeze for 480 ticks. Each tile remembers
+its original kind; repeated freezing refreshes the timer without losing that
+memory. Frozen cells are dry and slippery, so cargo stops floating on them and
+grit can be applied. The final two seconds show cracks. Expiry restores the
+original water, including a diver opening. Deep water is deliberately excluded.
+Terrain replacement cancels a stale freeze instead of restoring water over it.
+
+A shared temperature pass collects actual flames once, then thaws their own
+cell and cardinal neighbors. Campfires, exposed torches/lit sticks, burning
+actors, embers, surface fire and lava produce heat. Native ice melts to shallow
+water; temporary ice restores its remembered source. There is no per-tile scan
+through every entity. General heat-fragile walls, snow tools, heat capsules and
+stove fuel remain later catalog work.
+
+Three generated sprites cover the bottle, frozen sheet and thawing cracks. Four
+new offline cues cover the throw, cold glass burst, quenching hiss and quiet thaw.
+Impact frost/rings are local cosmetics. The debug preview uses the same exposed
+cells as the actual impact, and inventory cards show the modified cross, travel,
+chill duration, freezing duration and stack rules.
+
+Strict game/render builds and the existing snapshot codec check pass. The codec
+fixture now includes frozen spring and diver-hole tiles with different remaining
+timers; both source kind and timer are serialized and hashed. Snapshot layout
+is 29, gameplay compatibility E1. Static pool/card renders were inspected; no
+live playtest or new test suite ran. Ice has three enemies and four items; the
+remaining catalog and broader master list stay open.

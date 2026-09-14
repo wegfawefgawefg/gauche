@@ -67,7 +67,7 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     case ItemAttribute::Big:
         return kind == ItemKind::GritPouch || kind == ItemKind::ThrowingNet || kind == ItemKind::ThornCaltrops || item_is_melee(kind) || (spec != nullptr && spec->pattern.blast_radius > 0) || kind == ItemKind::Bomb ||
                kind == ItemKind::RocketLauncher;
-    case ItemAttribute::Long: return kind == ItemKind::WolfWhistle || kind == ItemKind::Firecracker || kind == ItemKind::StinkBomb || kind == ItemKind::RottenFruit || (weapon && kind != ItemKind::AcornMine) || kind == ItemKind::RopeHook || kind == ItemKind::SwapSeed || kind == ItemKind::ThrowingNet;
+    case ItemAttribute::Long: return kind == ItemKind::ColdFlask || kind == ItemKind::WolfWhistle || kind == ItemKind::Firecracker || kind == ItemKind::StinkBomb || kind == ItemKind::RottenFruit || (weapon && kind != ItemKind::AcornMine) || kind == ItemKind::RopeHook || kind == ItemKind::SwapSeed || kind == ItemKind::ThrowingNet;
     case ItemAttribute::Piercing:
         return item_is_gun(kind) && kind != ItemKind::RocketLauncher;
     case ItemAttribute::Restorative:

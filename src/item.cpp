@@ -81,6 +81,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::ColdFlask:
+        used = launch_projectile(game, user_slot, item, direction, item_pattern(item).maximum);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::AirBladder:
         used = use_air_bladder(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

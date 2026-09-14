@@ -450,6 +450,35 @@ uses/condition/ammo. Cooking processes one portion per 45 ticks with a new sizzl
 without consuming raw meat if the result cannot fit. Static inventory capture
 and strict builds checked; user owns interaction/balance playtesting.
 
+## Playtest feedback: creatures, melee and forest visibility
+
+- [ ] Give cooked meat a distinct munch/chew cue, separate from bandages.
+- [ ] Add dropped meat as bait for appropriate hungry animals: bounded scent
+  range, reachable targets, competing threats and consumption. Avoid every
+  animal magically knowing about every piece of meat across the floor.
+- [ ] Rework chicken families into generation-checked follow chains: first
+  chick follows mother, others follow the preceding chick. Follow previous
+  positions with a small delay; avoid surrounding/blocking the mother. Make
+  frightened chicks visibly scurry with fast little steps and animation.
+- [ ] Give mothers a protective response when their chicks are attacked;
+  survivors remember the attacker and do not immediately wander back to danger.
+  Reuse the chain-following helpers for suitable later creatures.
+- [ ] Walkable puddles/streams extinguish burning. Define which water also
+  washes off poison/residue when those statuses/materials are implemented.
+- [ ] Replace forest's washed-out overhead cloud veil with fixed world-anchored
+  canopy silhouettes and camera parallax. Retain slow cloud effects where they
+  fit (especially industry/lava); use a large soft/dithered central cutout so
+  overhead foliage/clouds preserve the play area. Keep ground shadows separate.
+- [ ] Improve creature identity/readability; the user could not identify a
+  round pursuing creature with a delayed attack/vocalization. Verify the sprite
+  and behavior before identifying it; preserve that dodgeable attack timing.
+- [ ] Add brief item-specific melee windups and swing/exertion sounds: fists
+  very quick, sticks/heavier tools longer. Ordinary guns fire immediately;
+  launchers/throws may have a deliberate preparation beat where appropriate.
+  Store pending attacks deterministically, commit aim/pattern for resolution,
+  consume resources once, and handle interrupts/item switches/death explicitly.
+  Show windup alongside cooldown in descriptions; keep combat responsive.
+
 ## Suggested order
 
 1. Tile rules and deterministic tests, then tile impact visuals.

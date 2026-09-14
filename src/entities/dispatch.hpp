@@ -39,3 +39,5 @@ void step_train(Game& game, int slot);
 void init_zombie_stack(Game& game, Entity& entity);
 void step_zombie_stack(Game& game, int slot);
 bool topple_zombie_stack(Game& game, int slot);
+
+void spawn_chicken_family(Game& game, Cell cell);

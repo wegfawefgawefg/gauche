@@ -71,13 +71,17 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
+set(GAUCHE_WORLD_SOURCES src/world/floor_layout.cpp src/world/floor_reachability.cpp
+    src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp
+    src/world/room_population.cpp)
+
 set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)
 
 set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
     src/main.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp src/input.cpp
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp
     src/render.cpp src/props/render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
@@ -137,9 +141,7 @@ if(BUILD_TESTING)
     set(GAUCHE_TEST_GAME_SOURCES
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp
         src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp
-        src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp
-        src/world/floor_layout.cpp src/world/floor_content.cpp
-        src/world/floor_reachability.cpp)
+        src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     add_executable(gauche_tests
         tests/game_test.cpp ${GAUCHE_TEST_GAME_SOURCES})
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
@@ -152,13 +154,13 @@ if(BUILD_TESTING)
     add_test(NAME item_rules COMMAND gauche_item_tests)
     add_executable(gauche_rollback_tests
         tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
     add_executable(gauche_codec_tests
         tests/net_codec_test.cpp src/net_codec.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
@@ -172,7 +174,7 @@ if(BUILD_TESTING)
         tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -183,7 +185,7 @@ if(BUILD_TESTING)
         tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp src/net_codec.cpp src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -195,7 +197,7 @@ if(BUILD_TESTING)
         tests/presentation_test.cpp src/particles/system.cpp
         src/particles/templates.cpp src/particles/presentation.cpp
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
-        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/world/room_stamps.cpp src/world/floor_layout.cpp src/world/floor_content.cpp src/world/floor_reachability.cpp)
+        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME presentation_rules COMMAND gauche_presentation_tests)

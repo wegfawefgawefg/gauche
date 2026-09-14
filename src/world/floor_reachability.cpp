@@ -29,7 +29,7 @@ bool floor_reachable(const Game& game) {
         const int index = (cell.y * game.stage.width + cell.x) * 2 + (has_key ? 1 : 0);
         if (visited[static_cast<std::size_t>(index)]) continue;
         visited[static_cast<std::size_t>(index)] = true;
-        if (cell == game.run.exit) return true;
+        if (cell == game.run.exit && (has_key || game.run.has_key)) return true;
         for (Cell direction : directions) pending.push_back({cell + direction, has_key});
     }
     return false;

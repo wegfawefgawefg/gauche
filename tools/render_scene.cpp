@@ -1,4 +1,5 @@
 #include "../src/game.hpp"
+#include "floor_overview.hpp"
 #include "../src/render.hpp"
 #include "../src/input.hpp"
 #include "../src/particles/templates.hpp"
@@ -8,6 +9,7 @@
 #include <SDL3_image/SDL_image.h>
 
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <string_view>
 
@@ -66,8 +68,8 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc < 2 || argc > 3) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack]\n");
+    if (argc < 2 || argc > 4) {
+        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack|layout|floor] [seed]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -86,7 +88,7 @@ int main(int argc, char** argv) {
     Game game;
     Cosmetics cosmetics;
     arrange_terrain(game, cosmetics);
-    const std::string_view mode = argc == 3 ? argv[2] : "terrain";
+    const std::string_view mode = argc >= 3 ? argv[2] : "terrain";
     InteractionUi interaction;
     if (mode == "canopy") {
         game.run.roof_light_count = 1;
@@ -99,6 +101,10 @@ int main(int argc, char** argv) {
         falling->point_a = {14, 12};
         falling->label_b = 1;
         falling->timer_b = 12;
+    }
+    if (mode == "floor") {
+        start_run(game, argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
+        cosmetics = {};
     }
     Entity& player = *get_entity(game, game.players[0]);
     player.inventory = {};
@@ -118,8 +124,12 @@ int main(int argc, char** argv) {
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, mode == "hud", true);
-    draw_interaction(renderer, graphics, game, 0, interaction);
+    if (mode == "layout") render_floor_overview(renderer,
+        argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
+    else {
+        render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, mode == "hud", true);
+        draw_interaction(renderer, graphics, game, 0, interaction);
+    }
     SDL_RenderPresent(renderer);
     const bool saved = IMG_SavePNG(surface, argv[1]);
     unload_graphics(graphics);

@@ -47,3 +47,26 @@ void step_chicken(Game& game, int slot) {
                          (chicken.label_a == 1 ? SoundId::Hen : SoundId::Rooster);
     maybe_growl(game, slot, call);
 }
+
+void spawn_chicken_family(Game& game, Cell cell) {
+    const Handle mother = spawn_entity(game, EntityKind::Chicken, cell);
+    Entity* hen = get_entity(game, mother);
+    if (hen == nullptr) return;
+    hen->label_a = 1;
+    hen->sprite = Sprite::Hen;
+    hen->health = hen->max_health = 3;
+    hen->move_interval = 30;
+    constexpr Cell sides[]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    for (Cell side : sides) {
+        const Cell nest = cell + side;
+        const Tile* tile = game.stage.at(nest);
+        if (tile == nullptr || !walkable(*tile) || entity_at(game, nest, false) >= 0) continue;
+        Entity* chick = get_entity(game, spawn_entity(game, EntityKind::Chicken, nest));
+        if (chick == nullptr) break;
+        chick->label_a = 0;
+        chick->sprite = Sprite::Chick;
+        chick->health = chick->max_health = 1;
+        chick->move_interval = 18;
+        chick->entity_a = mother;
+    }
+}

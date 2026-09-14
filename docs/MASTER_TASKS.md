@@ -137,7 +137,7 @@ of the room-role generator work below.
   can be cut; mushrooms burst into spores when struck or stepped on; a rotten
   log or crate blocks a tile until attacked. A rare nest or supply crate may
   drop something, but most props should leave only a broken sprite or debris.
-- [ ] Place props by room role and small clusters, leaving clear paths and calm
+- [x] Place props by room role and small clusters, leaving clear paths and calm
   ground between them. Make their silhouette, material, sound, and one-hit or
   low-HP response readable at the 16-pixel scale. Resolve contact once on
   entry, and route weapon hits and blasts through the prop before or alongside
@@ -173,8 +173,8 @@ Current implementation: nine forest prop kinds, twenty forest scrap silhouettes,
 local spatial buckets, step/blast/train/wind impulses, axis-wise terrain collision,
 4096-piece budget, per-cell cap and settled piles that scatter on contact. Broken
 props and partial HP round-trip in snapshots; reconnect reconstructs settled litter.
-Static 1080p prop/debris capture inspected. Placement is still the interim room-edge
-pass; room-role pools and supply budgets belong to the generator milestone.
+Static 1080p prop/debris capture inspected. Placement now uses role-specific clusters around reserved paths and objective
+clearance; room content has floor-wide supply and threat budgets.
 
 ## UI and pointer
 
@@ -203,7 +203,7 @@ physical controller feel and click feedback await user playtesting.
 
 ## Level generation and unique floors
 
-- [ ] Replace the fixed five- or six-room corridor and three side rooms with a
+- [x] Replace the fixed five- or six-room corridor and three side rooms with a
   seeded route graph: spawn, exit, required objectives, optional branches,
   occasional loops, secrets, and guarded detours. Use Zelda / Binding of Isaac
   as route-structure inspirations without forcing every node into one box.
@@ -230,6 +230,17 @@ physical controller feel and click feedback await user playtesting.
   seals the exit and starts classic Call of Duty Zombies-inspired survival
   waves; a defined completion condition releases the party. Author its layout
   and co-op entry/reconnect behavior deliberately.
+
+Generator implementation: a seeded 10–18-room route tree with optional loops,
+an accessible objective detour, a gated exit leaf and occasional weak-wall secret
+cache. Eight authored shape rules produce varied sizes, courts, galleries, twin
+caves and bent halls; twelve room roles select current enemies, loot, props and
+lighting. A protected dry route excludes blocking props and water/lava. Supplies
+roll on connected interior floor, and healing/equipment have a floor budget.
+Four static seed overviews (1, 72, 22991, 90731) and a normal camera capture were
+inspected, with valid objective/exit route summaries. New starts under NoRespawn
+now correctly spawn their first player. Full authored uniques, encounter gates,
+richer biome pools and user playtesting remain open.
 
 ## Biome content farm
 

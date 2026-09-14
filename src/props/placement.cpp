@@ -1,44 +1,64 @@
 #include "interaction.hpp"
+#include "../world/route.hpp"
 
-#include <array>
+#include <cstdlib>
 
-void scatter_forest_props(Game& game) {
+namespace {
+
+PropKind room_prop(Game& game, RoomRole role) {
+    const unsigned int roll = random_u32(game);
+    switch (role) {
+    case RoomRole::Thicket: return roll % 3 == 0 ? PropKind::Puffball : PropKind::TallGrass;
+    case RoomRole::Brook: return roll % 2 == 0 ? PropKind::Fern : PropKind::Twigs;
+    case RoomRole::Ruins: case RoomRole::Shrine:
+        return roll % 3 == 0 ? PropKind::ClayPot : PropKind::Leaves;
+    case RoomRole::Den: return roll % 3 == 0 ? PropKind::RottenLog : PropKind::Twigs;
+    case RoomRole::Secret: case RoomRole::Cache: case RoomRole::Workshop:
+        return roll % 3 == 0 ? PropKind::Crate : PropKind::Twigs;
+    case RoomRole::Orchard: return roll % 5 == 0 ? PropKind::Nest : PropKind::Leaves;
+    default: return roll % 3 == 0 ? PropKind::Fern : PropKind::Leaves;
+    }
+}
+
+bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking) {
+    const Tile* tile = game.stage.at(cell);
+    if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava ||
+        tile->prop.kind != PropKind::None || plan.protected_cell(cell)) return false;
+    for (const Entity& entity : game.entities) {
+        if (entity.kind == EntityKind::None) continue;
+        if (entity.cell == cell) return false;
+        if ((entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
+             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Exit ||
+             entity.kind == EntityKind::Door || entity.kind == EntityKind::Player) &&
+            distance(cell, entity.cell) <= 2) return false;
+    }
+    // CLUTTER: Blocking scraps get breathing room; plants can form loose clusters.
+    if (blocking)
+        for (int y = -1; y <= 1; ++y)
+            for (int x = -1; x <= 1; ++x)
+                if (prop_blocks(game.stage.at_or_border(cell + Cell{x, y}).prop)) return false;
+    return true;
+}
+
+} // namespace
+
+void scatter_room_props(Game& game, const FloorPlan& plan) {
     if (game.run.floor > 4) return;
-    constexpr std::array<Cell, 4> directions{{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}};
-    for (int y = 2; y < game.stage.height - 2; ++y) {
-        for (int x = 2; x < game.stage.width - 2; ++x) {
-            const Cell cell{x, y};
-            const Tile& tile = *game.stage.at(cell);
-            if (!walkable(tile.kind) || tile.kind == TileKind::Lava ||
-                distance(cell, game.run.spawn) < 3 || distance(cell, game.run.exit) < 3 ||
-                entity_at(game, cell, false) >= 0) continue;
-            int walls = 0;
-            for (Cell direction : directions)
-                if (!walkable(game.stage.at_or_border(cell + direction).kind)) ++walls;
-            const auto roll = random_u32(game);
-            // CLUSTERS: Growth hugs room edges; the central route remains mostly calm.
-            if (roll % 100 >= (walls > 0 ? 23U : 3U)) continue;
-            constexpr PropKind plants[]{PropKind::Leaves, PropKind::Twigs, PropKind::Fern,
-                PropKind::TallGrass, PropKind::Puffball, PropKind::Nest};
-            PropKind kind = plants[(roll >> 8) % 6];
-            if (walls == 1 && (roll >> 16) % 4 == 0) {
-                // PASSAGE: Leave gaps between blocking decorations and space around objectives.
-                bool open = true;
-                for (int dy = -1; dy <= 1; ++dy)
-                    for (int dx = -1; dx <= 1; ++dx)
-                        if (prop_blocks(game.stage.at_or_border(cell + Cell{dx, dy}).prop))
-                            open = false;
-                for (const Entity& fixture : game.entities)
-                    if ((fixture.kind == EntityKind::Door || fixture.kind == EntityKind::Key ||
-                         fixture.kind == EntityKind::Switch || fixture.kind == EntityKind::Exit) &&
-                        distance(cell, fixture.cell) < 3) open = false;
-                if (open) {
-                    constexpr PropKind containers[]{PropKind::RottenLog, PropKind::Crate,
-                                                     PropKind::ClayPot};
-                    kind = containers[(roll >> 20) % 3];
-                }
+    for (const RoomPlan& room : plan.rooms) {
+        const int patches = room.role == RoomRole::Thicket ? 7 : 3;
+        for (int patch = 0; patch < patches; ++patch) {
+            const Cell anchor = room.center + Cell{
+                static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_width * 2)) - room.half_width,
+                static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_height * 2)) - room.half_height};
+            for (int piece = 0; piece < 5; ++piece) {
+                const Cell cell = anchor + Cell{static_cast<int>(random_u32(game) % 5) - 2,
+                                                static_cast<int>(random_u32(game) % 5) - 2};
+                if (std::abs(cell.x - room.center.x) > room.half_width ||
+                    std::abs(cell.y - room.center.y) > room.half_height) continue;
+                const PropKind kind = room_prop(game, room.role);
+                if (suitable(game, plan, cell, prop_spec(kind).blocking))
+                    place_prop(game.stage, cell, kind, static_cast<std::uint8_t>(random_u32(game)));
             }
-            place_prop(game.stage, cell, kind, static_cast<std::uint8_t>(roll >> 24));
         }
     }
 }

@@ -128,10 +128,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const float view_alpha = entity.kind == EntityKind::Player ? 1.0F :
             std::clamp(1.0F - std::sqrt(dx * dx + dy * dy) / 12.0F, 0.0F, 1.0F);
         SDL_Texture* texture = texture_for(graphics, entity.sprite);
-        const LightColor self = entity.kind == EntityKind::Campfire ?
-            LightColor{1.0F, 0.82F, 0.60F} : entity.kind == EntityKind::Ember ?
-            LightColor{1.0F, 0.45F, 0.30F} : entity.kind == EntityKind::Key ?
-            LightColor{0.95F, 0.82F, 0.38F} : LightColor{};
+        const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
+            LightColor{} : light_color(entity.self_light);
         const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);
         SDL_SetTextureColorModFloat(texture, brightness.red,
                                     brightness.green, brightness.blue);

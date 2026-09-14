@@ -12,6 +12,13 @@ struct LightColor {
     float blue = 0.0F;
 };
 
+inline LightColor light_color(LightTint tint) {
+    constexpr float unit = 1.0F / 255.0F;
+    return {static_cast<float>(tint.red) * unit,
+            static_cast<float>(tint.green) * unit,
+            static_cast<float>(tint.blue) * unit};
+}
+
 struct LightSource {
     Cell cell{};
     int radius = 0;

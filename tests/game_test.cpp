@@ -249,6 +249,10 @@ bool switch_route() {
     player->cell = switch_cell + Cell{1, 0};
     if (!check(interact_with_fixture(game, 0, switch_cell) && game.run.has_key,
                "switch did not unlock route")) return false;
+    for (const Entity& entity : game.entities)
+        if (entity.kind == EntityKind::Exit &&
+            !check(entity.light.color.green == 255 && entity.light.color.red == 84,
+                   "unlock did not change the exit entity's light")) return false;
     player->cell = door_cell + Cell{-1, 0};
     if (!check(interact_with_fixture(game, 0, door_cell),
                "unlocked door did not open")) return false;

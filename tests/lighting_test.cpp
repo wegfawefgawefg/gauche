@@ -40,7 +40,7 @@ int main() {
                "openness leaked beyond adjacent tiles")) return 1;
 
     // BORDER: Game collision remains bounded while its visible wall is lit.
-    game.run.roof_lights[0] = {1, 1};
+    game.run.roof_lights[0].cell = {1, 1};
     game.run.roof_light_count = 1;
     build_lighting(cache, game, {0, 1}, 2.0F);
     const LightColor inside = light_at_cell(cache, {0, 1});
@@ -61,6 +61,11 @@ int main() {
     if (!check(near(joint.red, (expected_a.red + expected_b.red +
                                 expected_c.red + expected_d.red) * 0.25F),
                "shared tile corner did not use adjacent world samples")) return 1;
+    game.run.roof_lights[0].light = {4, 1200, {20, 255, 20}};
+    build_lighting(cache, game, {0, 1}, 2.0F);
+    const LightColor fixture_green = light_at_cell(cache, {1, 1});
+    if (!check(fixture_green.green > fixture_green.red + 0.5F,
+               "roof fixture's own light color was ignored")) return 1;
 
     // EFFECTS: A local flash changes presentation but leaves stage state alone.
     game.run.roof_light_count = 0;
@@ -71,6 +76,29 @@ int main() {
     if (!check(after.red > before.red && after.red > after.blue &&
                game.stage.at({4, 4})->hp == 100,
                "transient light altered rules or failed to color the field")) return 1;
+
+    // EMITTERS: The instance's light values work regardless of entity kind.
+    Entity& lamp = game.entities[0];
+    lamp.kind = EntityKind::Zombie;
+    lamp.cell = {4, 4};
+    lamp.health = lamp.max_health = 10;
+    lamp.light = {4, 1500, {25, 90, 255}};
+    build_lighting(cache, game, {4, 4}, 2.0F);
+    const LightColor blue = light_at_cell(cache, lamp.cell);
+    if (!check(blue.blue > 0.9F && blue.blue > blue.red + 0.5F,
+               "entity instance light was ignored")) return 1;
+    lamp.health = 0;
+    build_lighting(cache, game, {4, 4}, 2.0F);
+    if (!check(light_at_cell(cache, lamp.cell).blue < 0.25F,
+               "dead actor kept casting its light")) return 1;
+    Entity& ground = game.entities[1];
+    ground.kind = EntityKind::GroundItem;
+    ground.cell = {4, 4};
+    ground.ground_item.light = {3, 1200, {25, 255, 25}};
+    build_lighting(cache, game, {4, 4}, 2.0F);
+    const LightColor green = light_at_cell(cache, ground.cell);
+    if (!check(green.green > 0.9F && green.green > green.red + 0.5F,
+               "ground item instance light was ignored")) return 1;
     std::puts("lighting rules passed");
     return 0;
 }

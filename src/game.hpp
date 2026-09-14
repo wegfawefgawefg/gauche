@@ -57,6 +57,16 @@ enum class ItemAttribute : std::uint8_t {
     Long, Piercing, Restorative,
 };
 
+struct LightTint {
+    std::uint8_t red = 255, green = 255, blue = 255;
+};
+
+struct LightEmitter {
+    int radius = 0;
+    int strength = 0; // Thousandths of one source unit.
+    LightTint color{};
+};
+
 struct Item {
     ItemKind kind = ItemKind::None;
     ItemAttribute attribute = ItemAttribute::None;
@@ -71,6 +81,7 @@ struct Item {
     int uses = 0;
     int max_uses = 0;
     bool opened = false;
+    LightEmitter light{};
 };
 
 constexpr int quick_slots = 6;
@@ -99,6 +110,8 @@ struct Entity {
     Cell cell{};
     Cell facing{0, 1};
     Sprite sprite = Sprite::Player;
+    LightEmitter light{};
+    LightTint self_light{0, 0, 0};
     int owner = -1;
     int health = 0;
     int max_health = 0;
@@ -161,6 +174,10 @@ struct Reward {
     ItemAttribute attribute = ItemAttribute::None;
 };
 Item reward_item(Reward reward);
+struct StageLight {
+    Cell cell{};
+    LightEmitter light{7, 1350, {240, 224, 176}};
+};
 struct Run {
     RunPhase phase = RunPhase::Arena;
     int floor = 0;
@@ -178,7 +195,7 @@ struct Run {
     DeathPolicy death_policy = DeathPolicy::NextFloor;
     Cell spawn{};
     Cell exit{};
-    std::array<Cell, 16> roof_lights{};
+    std::array<StageLight, 16> roof_lights{};
     int roof_light_count = 0;
 };
 

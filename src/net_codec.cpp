@@ -77,6 +77,21 @@ void write_cell(PacketWriter& writer, Cell cell) {
 }
 Cell read_cell(PacketReader& reader) { return {reader.i32(), reader.i32()}; }
 
+void write_light(PacketWriter& writer, LightEmitter light) {
+    writer.i32(light.radius);
+    writer.i32(light.strength);
+    writer.u8(light.color.red); writer.u8(light.color.green); writer.u8(light.color.blue);
+}
+LightEmitter read_light(PacketReader& reader) {
+    LightEmitter light;
+    light.radius = reader.i32();
+    light.strength = reader.i32();
+    light.color = {reader.u8(), reader.u8(), reader.u8()};
+    if (light.radius < 0 || light.radius > 128 ||
+        light.strength < 0 || light.strength > 10000) reader.okay = false;
+    return light;
+}
+
 void write_item(PacketWriter& writer, const Item& item) {
     writer.u8(static_cast<std::uint8_t>(item.kind));
     writer.u8(static_cast<std::uint8_t>(item.attribute));
@@ -86,6 +101,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     writer.i32(item.spare); writer.i32(item.durability);
     writer.i32(item.max_durability); writer.i32(item.uses); writer.i32(item.max_uses);
     writer.u8(static_cast<std::uint8_t>(item.opened));
+    write_light(writer, item.light);
 }
 Item read_item(PacketReader& reader) {
     Item item;
@@ -99,6 +115,7 @@ Item read_item(PacketReader& reader) {
     item.spare = reader.i32(); item.durability = reader.i32();
     item.max_durability = reader.i32(); item.uses = reader.i32();
     item.max_uses = reader.i32(); item.opened = reader.u8() != 0;
+    item.light = read_light(reader);
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
         item.loaded < 0 || item.spare < 0 ||
         item.durability < 0 || item.max_durability < item.durability ||
@@ -113,6 +130,9 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     if (entity.kind == EntityKind::None) return;
     write_cell(writer, entity.cell); write_cell(writer, entity.facing);
     writer.u8(static_cast<std::uint8_t>(entity.sprite));
+    write_light(writer, entity.light);
+    writer.u8(entity.self_light.red); writer.u8(entity.self_light.green);
+    writer.u8(entity.self_light.blue);
     writer.i32(entity.owner); writer.i32(entity.health); writer.i32(entity.max_health);
     writer.i32(entity.move_wait); writer.i32(entity.move_interval);
     writer.i32(entity.attack_wait); writer.i32(entity.attack_interval);
@@ -142,6 +162,8 @@ Entity read_entity(PacketReader& reader) {
     const std::uint8_t sprite = reader.u8();
     if (sprite >= static_cast<std::uint8_t>(Sprite::Count)) reader.okay = false;
     entity.sprite = static_cast<Sprite>(sprite);
+    entity.light = read_light(reader);
+    entity.self_light = {reader.u8(), reader.u8(), reader.u8()};
     entity.owner = reader.i32(); entity.health = reader.i32(); entity.max_health = reader.i32();
     entity.move_wait = reader.i32(); entity.move_interval = reader.i32();
     entity.attack_wait = reader.i32(); entity.attack_interval = reader.i32();
@@ -172,7 +194,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(7);
+    writer.u32(8);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -189,7 +211,10 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     writer.u8(static_cast<std::uint8_t>(run.objective));
     write_cell(writer, run.spawn); write_cell(writer, run.exit);
     writer.i32(run.roof_light_count);
-    for (Cell light : run.roof_lights) write_cell(writer, light);
+    for (const StageLight& light : run.roof_lights) {
+        write_cell(writer, light.cell);
+        write_light(writer, light.light);
+    }
     for (std::size_t owner = 0; owner < 4; ++owner) {
         writer.i32(game.players[owner].slot);
         writer.u32(game.players[owner].generation);
@@ -222,7 +247,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 7) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 8) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -257,7 +282,10 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     run.spawn = read_cell(reader); run.exit = read_cell(reader);
     run.roof_light_count = reader.i32();
     if (run.roof_light_count < 0 || run.roof_light_count > 16) reader.okay = false;
-    for (Cell& light : run.roof_lights) light = read_cell(reader);
+    for (StageLight& light : run.roof_lights) {
+        light.cell = read_cell(reader);
+        light.light = read_light(reader);
+    }
     for (std::size_t owner = 0; owner < 4; ++owner) {
         result.players[owner].slot = reader.i32();
         result.players[owner].generation = reader.u32();

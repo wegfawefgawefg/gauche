@@ -3,12 +3,27 @@
 
 #include <algorithm>
 
+namespace {
+
+LightEmitter initial_item_light(ItemKind kind) {
+    switch (kind) {
+    case ItemKind::Medkit: return {3, 420, {71, 255, 92}};
+    case ItemKind::ConductorHat: return {3, 460, {255, 184, 69}};
+    case ItemKind::RocketLauncher: case ItemKind::Mine:
+        return {3, 350, {255, 94, 51}};
+    default: return {};
+    }
+}
+
+} // namespace
+
 Item* Inventory::held() { return &slots[static_cast<std::size_t>(selected)]; }
 const Item* Inventory::held() const { return &slots[static_cast<std::size_t>(selected)]; }
 
 Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     Item item;
     item.kind = kind;
+    item.light = initial_item_light(kind);
     item.attribute = item_accepts_attribute(kind, attribute) ?
         attribute : ItemAttribute::None;
     item.count = count;

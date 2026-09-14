@@ -7,6 +7,14 @@ void mix(std::uint64_t& hash, std::uint64_t value) {
     hash *= 1099511628211ULL;
 }
 
+void mix_light(std::uint64_t& hash, LightEmitter light) {
+    mix(hash, static_cast<std::uint64_t>(light.radius));
+    mix(hash, static_cast<std::uint64_t>(light.strength));
+    mix(hash, light.color.red);
+    mix(hash, light.color.green);
+    mix(hash, light.color.blue);
+}
+
 } // namespace
 
 std::uint64_t game_hash(const Game& game) {
@@ -25,6 +33,12 @@ std::uint64_t game_hash(const Game& game) {
     mix(hash, static_cast<std::uint64_t>(game.run.spawn.y));
     mix(hash, static_cast<std::uint64_t>(game.run.exit.x));
     mix(hash, static_cast<std::uint64_t>(game.run.exit.y));
+    mix(hash, static_cast<std::uint64_t>(game.run.roof_light_count));
+    for (const StageLight& light : game.run.roof_lights) {
+        mix(hash, static_cast<std::uint64_t>(light.cell.x));
+        mix(hash, static_cast<std::uint64_t>(light.cell.y));
+        mix_light(hash, light.light);
+    }
     for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
         mix(hash, static_cast<std::uint64_t>(game.players[owner].slot));
         mix(hash, game.players[owner].generation);
@@ -66,6 +80,10 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.facing.x));
         mix(hash, static_cast<std::uint64_t>(entity.facing.y));
         mix(hash, static_cast<std::uint64_t>(entity.sprite));
+        mix_light(hash, entity.light);
+        mix(hash, entity.self_light.red);
+        mix(hash, entity.self_light.green);
+        mix(hash, entity.self_light.blue);
         mix(hash, static_cast<std::uint64_t>(entity.owner));
         mix(hash, static_cast<std::uint64_t>(entity.health));
         mix(hash, static_cast<std::uint64_t>(entity.max_health));
@@ -102,6 +120,7 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(item.uses));
             mix(hash, static_cast<std::uint64_t>(item.max_uses));
             mix(hash, static_cast<std::uint64_t>(item.opened));
+            mix_light(hash, item.light);
         }
         const Item& ground = entity.ground_item;
         mix(hash, static_cast<std::uint64_t>(ground.kind));
@@ -117,6 +136,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(ground.uses));
         mix(hash, static_cast<std::uint64_t>(ground.max_uses));
         mix(hash, static_cast<std::uint64_t>(ground.opened));
+        mix_light(hash, ground.light);
     }
     return hash;
 }

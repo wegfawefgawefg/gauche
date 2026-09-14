@@ -29,6 +29,7 @@ Cell facing_from_aim(Cell aim, Cell fallback) {
 
 void init_player(Entity& entity) {
     entity.sprite = Sprite::Player;
+    entity.light = {8, 1350, {255, 247, 224}};
     entity.health = entity.max_health = 100;
     entity.move_interval = 7;
     entity.impassable = true;

@@ -52,13 +52,14 @@ void generate_world_floor(Game& game) {
     game.run.has_key = false;
     game.run.objective = (game.run.floor - 1) % 2 == 0 ?
         ObjectiveKind::Key : ObjectiveKind::Switch;
+    game.run.roof_lights = {};
     game.run.roof_light_count = 0;
     for (int column = 0; column < columns; ++column)
         game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
-            {column * room_width + 6, 13};
-    game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] = {branch_x, 5};
+            {{column * room_width + 6, 13}};
+    game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] = {{branch_x, 5}};
     game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)] =
-        {extra_x, extra_y};
+        {{extra_x, extra_y}};
     // Objective: the key or switch must sit off the main route.
     spawn_entity(game, game.run.objective == ObjectiveKind::Key ?
                  EntityKind::Key : EntityKind::Switch, {branch_x, 5});
@@ -82,6 +83,8 @@ void generate_world_floor(Game& game) {
             insert_item(player->inventory, make_item(ItemKind::Bandage, 3));
         } else {
             player->inventory = previous[owner].inventory;
+            player->light = previous[owner].light;
+            player->self_light = previous[owner].self_light;
             player->max_health = previous[owner].max_health;
             player->health = previous[owner].health > 0 ? previous[owner].health : player->max_health;
             player->move_interval = previous[owner].move_interval;

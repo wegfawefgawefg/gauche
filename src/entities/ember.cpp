@@ -3,6 +3,8 @@
 
 void init_ember(Entity& ember) {
     ember.sprite = Sprite::Ember;
+    ember.light = {5, 960, {255, 74, 36}};
+    ember.self_light = {255, 115, 77};
     ember.health = ember.max_health = 65;
     ember.move_interval = 20;
     ember.attack_interval = 55;

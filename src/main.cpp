@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
             has_arg(argc, argv, "--smoke-inventory")) start_run(game, 12345);
         if (has_arg(argc, argv, "--smoke-reward")) finish_floor(game);
         if (border_smoke) {
-            game.run.roof_lights[0] = {game.stage.width - 2, game.stage.height / 2};
+            game.run.roof_lights[0].cell = {game.stage.width - 2, game.stage.height / 2};
             game.run.roof_light_count = 1;
         }
     }
@@ -404,7 +404,7 @@ int main(int argc, char** argv) {
         SDL_RenderClear(frame.renderer);
         SDL_SetRenderDrawColor(frame.renderer, 175, 206, 164, 255);
         const Game& active = networked ? network.rollback.game : game;
-        if (border_smoke) { cosmetics.camera = active.run.roof_lights[0]; cosmetics.camera_ready = true; }
+        if (border_smoke) { cosmetics.camera = active.run.roof_lights[0].cell; cosmetics.camera_ready = true; }
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);

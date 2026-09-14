@@ -3,6 +3,8 @@
 
 void init_bat(Entity& bat) {
     bat.sprite = bat.kind == EntityKind::FrostBat ? Sprite::FrostBat : Sprite::Bat;
+    if (bat.kind == EntityKind::FrostBat)
+        bat.light = {4, 580, {92, 179, 255}};
     bat.health = bat.max_health = 18;
     bat.move_interval = 15;
     bat.attack_interval = 45;

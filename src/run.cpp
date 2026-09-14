@@ -9,6 +9,12 @@
 
 namespace {
 
+void unlock_exit_light(Game& game) {
+    for (Entity& entity : game.entities)
+        if (entity.kind == EntityKind::Exit)
+            entity.light.color = {84, 255, 135};
+}
+
 ItemAttribute rare_attribute(Game& game, ItemKind kind) {
     if (random_u32(game) % 7 != 0) return ItemAttribute::None;
     constexpr ItemAttribute choices[]{ItemAttribute::Strong, ItemAttribute::Agile,
@@ -99,6 +105,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
         if (fixture.cell != target) continue;
         if (fixture.kind == EntityKind::Key && player->cell == target) {
             game.run.has_key = true;
+            unlock_exit_light(game);
             emit_sound(game, SoundId::Confirm, fixture.cell, false);
             remove_entity(game, {static_cast<int>(&fixture - game.entities.data()),
                                  fixture.generation});
@@ -107,6 +114,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
         if (fixture.kind == EntityKind::Switch && !fixture.fixture_open) {
             fixture.fixture_open = true;
             game.run.has_key = true;
+            unlock_exit_light(game);
             emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
             return true;
         }

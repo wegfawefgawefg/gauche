@@ -15,7 +15,11 @@ int main() {
         player->inventory.slots[2] =
             make_item(ItemKind::Pickaxe, 1, ItemAttribute::Durable);
         player->inventory.slots[2].uses = 7;
+        player->light = {9, 1700, {180, 210, 255}};
+        player->self_light = {40, 60, 80};
+        player->inventory.slots[2].light = {2, 500, {10, 200, 30}};
     }
+    original.run.roof_lights[0].light = {6, 1400, {255, 140, 70}};
     original.run.pending_count[0] = 1;
     original.run.pending_offers[0][0][0] =
         {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,

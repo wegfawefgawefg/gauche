@@ -38,7 +38,7 @@ const char* item_attribute_effect(ItemAttribute attribute) {
     case ItemAttribute::Durable: return "CONDITION X2";
     case ItemAttribute::Fragile: return "DMG +40%, HALF USES";
     case ItemAttribute::Heavy: return "DMG +33%, CD +50%";
-    case ItemAttribute::Big: return "WIDER STRIKE / BLAST";
+    case ItemAttribute::Big: return "WIDER EFFECT AREA";
     case ItemAttribute::Long: return "LONGER REACH";
     case ItemAttribute::Piercing: return "SHOTS PIERCE ACTORS";
     case ItemAttribute::Restorative: return "HEAL +50%, CD +25%";

@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
@@ -63,6 +64,7 @@ void step_woodpecker(Game& game, int slot) {
         if (bird.timer_a == 0) bird.label_a = 0;
         return;
     }
+    if (step_scarecrow_fear(game, slot)) return;
     if (step_hearing(game, slot)) return;
     if (feed_on_bird_seed(game, slot)) return;
     const int target = nearest_player(game, bird.cell, 6);
@@ -75,6 +77,7 @@ void step_woodpecker(Game& game, int slot) {
     if (cell.x != bird.cell.x && cell.y != bird.cell.y) { approach(game, slot, cell); return; }
     // TARGETING: The beak can chip ordinary obstacles along a seen lane. After
     // commitment, newly placed cover does not magically change its direction.
+    if (scarecrow_pressure(game, cell) > 0) return;
     if (!clear_sight(game, bird.cell, cell)) return;
     bird.facing = cardinal_toward(bird.cell, cell, bird.facing);
     bird.label_a = 1; bird.timer_a = 30;

@@ -410,3 +410,40 @@ Strict game/render builds pass. Static worn/Durable comparison and four-directio
 pan/flight captures were inspected, including description fit. No live combat,
 networking playtest or new behavior test suite ran. Five forest catalog ideas
 remain: Wolf Whistle, Pocket Door, Straw Decoy, Scarecrow and Thunder Acorn.
+
+## Scarecrow wards and straw debris
+
+The forty-eighth regional find is a stackable pair of scarecrows, priced at 16
+gold, with a 45-tick placement cooldown. Each plants a blocking 28-HP prop on an
+empty dry buildable cell. It uses the existing six-byte Prop; no actor slots or
+new simulation structures are allocated. The prop can be attacked, burned and
+broken. New bundle/standing sprites and offline stake/cloth-tear sounds accompany
+it. Breakage leaves local straw and cloth. Straw is a new pale, wind-sensitive
+loose material (21 forest debris types), and debris sprites now have an explicit
+lookup table instead of assuming contiguous sprite enum indices.
+
+Chickens, crows, owls, woodpeckers and rabbits avoid the ward. Its four-tile
+Manhattan radius requires clear sight: walls, cover, closed hard fixtures and
+thick smoke interrupt it. Big extends the radius to five. Inside a ward, creatures
+choose a free neighbor with lower pressure or an equal-pressure escape step;
+a penned creature hesitates until a route opens. Existing flock, threat, carrier
+and perch state stays intact. Chicken retreats still record their follower trail.
+
+Ordinary AI steps refuse increasing pressure, and bird/rabbit path searches mark
+covered cells once in their occupancy mask. The physical movement function stays
+unchanged, so a shove, tether, slip or teleport can force an animal into danger.
+Larger predators and insects ignore wards. Already committed owl dives, beak
+charges and crow thefts finish before fear applies; new attacks into a covered
+cell are refused. The ward is useful shelter, not protection from attacks already
+in motion. Breaking or obscuring it immediately removes its influence.
+
+Cards show radius, prop HP, stack/consumption and cooldown, with the ordinary/Big
+pattern comparison. The debug footprint uses the same sight-aware coverage as
+AI. The general Big attribute label now says wider effect area, since utility
+wards and noise are neither strikes nor explosions. Cache/reward/shop pools
+include the item. Existing prop serialization/hashing covers all ward data;
+snapshot layout remains 26 and gameplay compatibility is D7.
+
+Strict builds and static card/world captures pass; no live playtest or new test
+suite was run. Straw Decoy, Wolf Whistle, Pocket Door and Thunder Acorn remain
+unfinished forest catalog work; the other biome catalogs remain separate work.

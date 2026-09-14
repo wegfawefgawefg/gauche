@@ -10,6 +10,7 @@
 #include "items/movement_tools.hpp"
 #include "items/noisemakers.hpp"
 #include "items/mixtures.hpp"
+#include "items/decoys.hpp"
 #include "projectiles/hook.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/materials.hpp"
@@ -76,6 +77,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::Scarecrow:
+        used = place_scarecrow(game, user_slot, direction);
+        cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::StinkBomb: case ItemKind::RottenFruit: case ItemKind::PitchBomb:
         used = throw_mixture(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;

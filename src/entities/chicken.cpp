@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "dispatch.hpp"
@@ -29,6 +30,7 @@ void defend_family(Game& game, int slot, Entity& chicken) {
     const Cell target{chicken.counter_a, chicken.counter_b};
     if (distance(chicken.cell, target) > 10) return;
     if (threat == nullptr || threat->health <= 0) { chicken.timer_a = 0; return; }
+    if (scarecrow_pressure(game, threat->cell) > 0) return;
     chicken.facing = cardinal_toward(chicken.cell, threat->cell, chicken.facing);
     if (distance(chicken.cell, threat->cell) > 1) pursue(game, slot, threat->cell);
     else if (chicken.attack_wait == 0) {
@@ -56,7 +58,9 @@ void step_chicken(Game& game, int slot) {
     chicken.move_interval = scared ? 5 : chicken.timer_a > 0 ? 10 :
         chicken.label_a == 0 ? 9 : chicken.label_a == 1 ? 30 : 42;
     const Cell previous = chicken.cell;
-    if (step_hearing(game, slot)) {
+    if (step_scarecrow_fear(game, slot)) {
+        // The family still records the retreat in its normal trail.
+    } else if (step_hearing(game, slot)) {
         // Preserve the trail even when a bang scatters the family.
     } else if (scared) {
         flee(game, slot, {chicken.counter_a, chicken.counter_b});

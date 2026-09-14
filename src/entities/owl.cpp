@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
@@ -54,6 +55,7 @@ void step_owl(Game& game, int slot) {
         if (owl.timer_a == 0) owl.label_a = 4;
         return;
     }
+    if (step_scarecrow_fear(game, slot)) return;
     if (step_hearing(game, slot)) return;
     if (owl.label_a == 4) {
         if (distance(owl.cell, owl.point_a) <= 1) { owl.label_a = 0; owl.timer_a = 150; }
@@ -65,6 +67,7 @@ void step_owl(Game& game, int slot) {
     const int target = nearest_player(game, owl.point_a, 6);
     if (target < 0) return;
     const Cell cell = game.entities[static_cast<std::size_t>(target)].cell;
+    if (scarecrow_pressure(game, cell) > 0) return;
     if (!clear_sight(game, owl.cell, cell)) return;
     owl.point_b = cell;
     owl.facing = cardinal_toward(owl.cell, cell, owl.facing);

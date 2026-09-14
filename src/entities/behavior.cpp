@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../props/scarecrow.hpp"
 #include "../surfaces/interaction.hpp"
 
 #include <algorithm>
@@ -38,6 +39,15 @@ int nearest_player(const Game& game, Cell from, int radius) {
     return nearest;
 }
 
+bool willing_step(Game& game, int slot, Cell destination) {
+    Entity& actor = game.entities[static_cast<std::size_t>(slot)];
+    if (!scarecrow_allows_step(game, actor, destination)) {
+        actor.move_wait = std::max(1, actor.move_interval);
+        return false;
+    }
+    return move_entity(game, slot, destination);
+}
+
 void wander(Game& game, int slot) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.move_wait > 0) return;
@@ -49,7 +59,7 @@ void wander(Game& game, int slot) {
     if (count == 0) { entity.move_wait = std::max(1, entity.move_interval); return; }
     const std::uint32_t choice = random_u32(game) % (count + 1);
     if (choice == count) entity.move_wait = std::max(1, entity.move_interval / 2);
-    else move_entity(game, slot, choices[choice]);
+    else willing_step(game, slot, choices[choice]);
 }
 
 void approach(Game& game, int slot, Cell target) {
@@ -66,7 +76,7 @@ void approach(Game& game, int slot, Cell target) {
     const Cell choices[]{first, second, {-second.x, -second.y}, {-first.x, -first.y}};
     for (Cell side : choices) {
         if (!open_neighbor(game, entity.cell + side)) continue;
-        move_entity(game, slot, entity.cell + side);
+        willing_step(game, slot, entity.cell + side);
         return;
     }
     entity.move_wait = std::max(1, entity.move_interval);

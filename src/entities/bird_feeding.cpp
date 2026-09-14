@@ -41,7 +41,7 @@ bool feed_on_bird_seed(Game& game, int slot) {
         }
     if (!chosen) return false;
     if (bird.move_wait > 0) return true;
-    if (approach) move_entity(game, slot, *approach);
+    if (approach) willing_step(game, slot, *approach);
     else {
         bird.facing = cardinal_toward(bird.cell, *chosen, bird.facing);
         if (bird.attack_wait == 0) {

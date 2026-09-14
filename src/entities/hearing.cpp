@@ -94,7 +94,7 @@ bool step_hearing(Game& game, int slot) {
         return false;
     }
     if (actor.move_wait > 0) return true;
-    if (const auto next = next_route_cell(game, slot, actor.point_c, 512)) move_entity(game, slot, *next);
+    if (const auto next = next_route_cell(game, slot, actor.point_c, 512)) willing_step(game, slot, *next);
     else { actor.timer_c = actor.label_c = 0; return false; }
     return true;
 }

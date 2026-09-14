@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../props/scarecrow.hpp"
 
 #include <optional>
 #include <vector>
@@ -15,6 +16,7 @@ std::optional<Cell> next_route_cell(const Game& game, int slot, Cell target, int
         if (blocker.kind != EntityKind::None && blocker.impassable &&
             blocker.cell != target && blocker.cell != origin && game.stage.in_bounds(blocker.cell))
             visited[index(blocker.cell)] = 1;
+    mark_scarecrow_wards(game, game.entities[static_cast<std::size_t>(slot)], visited);
     struct Node { Cell cell, first; };
     std::vector<Node> queue{{origin, origin}};
     visited[index(origin)] = 1;
@@ -40,6 +42,6 @@ std::optional<Cell> next_route_cell(const Game& game, int slot, Cell target, int
 void pursue(Game& game, int slot, Cell target) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.move_wait > 0 || actor.cell == target) return;
-    if (const auto next = next_route_cell(game, slot, target)) move_entity(game, slot, *next);
+    if (const auto next = next_route_cell(game, slot, target)) willing_step(game, slot, *next);
     else wander(game, slot);
 }

@@ -44,7 +44,7 @@ bool yield_trail(Game& game, int slot, const Entity& leader) {
     for (int offset = 0; offset < 4; ++offset) {
         const Cell destination = follower.cell + neighbors[(start + offset) % 4];
         if (distance(destination, leader.cell) <= 1 || !free_cell(game, destination)) continue;
-        if (move_entity(game, slot, destination)) follower.counter_c = 0;
+        if (willing_step(game, slot, destination)) follower.counter_c = 0;
         return true;
     }
     follower.move_wait = 2;

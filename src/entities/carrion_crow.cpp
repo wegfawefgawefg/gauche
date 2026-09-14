@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "dispatch.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
@@ -74,6 +75,7 @@ void step_carrion_crow(Game& game, int slot) {
         }
         return;
     }
+    if (step_scarecrow_fear(game, slot)) return;
     if (step_hearing(game, slot)) return;
     if (crow.inventory.held()->count > 0) {
         crow.label_a = 2;
@@ -115,6 +117,7 @@ void step_carrion_crow(Game& game, int slot) {
             if (crow.timer_b == 0) call_murder(game, slot, crow.entity_b);
         } else carrier = nullptr;
     }
+    if (carrier != nullptr && scarecrow_pressure(game, carrier->cell) > 0) carrier = nullptr;
     if (carrier != nullptr && clear_sight(game, crow.cell, carrier->cell)) {
         if (distance(crow.cell, carrier->cell) == 1) {
             crow.point_b = carrier->cell; crow.facing = carrier->cell - crow.cell;

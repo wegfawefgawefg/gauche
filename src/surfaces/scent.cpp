@@ -55,7 +55,7 @@ bool step_scent(Game& game, int slot) {
         // ROUTES: A sealed room cannot monopolize the animal's attention.
         if (const auto next = next_route_cell(game, slot, cell, 256)) {
             actor.point_c = cell; actor.label_c = FollowScent; actor.timer_c = 60;
-            move_entity(game, slot, *next);
+            willing_step(game, slot, *next);
             return true;
         }
     }

@@ -10,6 +10,7 @@
 #include "noisemakers.hpp"
 #include "mixtures.hpp"
 #include "shields.hpp"
+#include "decoys.hpp"
 
 namespace {
 
@@ -45,6 +46,7 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* decoy = forest_decoy(kind)) return decoy;
     if (const RegionalItem* shield = forest_shield(kind)) return shield;
     if (const RegionalItem* mixture = forest_mixture(kind)) return mixture;
     if (const RegionalItem* noise = forest_noisemaker(kind)) return noise;

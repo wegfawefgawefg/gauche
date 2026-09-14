@@ -121,6 +121,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::Scarecrow)
+        std::snprintf(line, sizeof(line), "WARD %d TILES | PROP HP %d", pattern.blast_radius, prop_spec(PropKind::Scarecrow).health);
     if (item.kind == ItemKind::ReflectingPan)
         std::snprintf(line, sizeof(line), "PARRY %.2fs | COST %d CONDITION",
             static_cast<double>(parry_ticks) / 60, parry_wear);

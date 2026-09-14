@@ -42,7 +42,7 @@ enum class Sprite : std::size_t {
     ForestTree, ForestTimber, TreeStump, TimberBroken,
     DiggingClaws, ResinGlue, SeedBag, LanternSeed, Shoot, ShootTall, RootCover, LanternPlant,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, BirdSeedPile, ThornPatch, HuntingHorn, RopeHook, HookHead, RootDrill, DrillRoot, SwapSeed, Boomerang, RopeSnare, SnareSet, SnareTight, SpringTrap, SpringReady, AcornMine, AcornReady, ThrowingNet, NetFlight, NetCaught, StickyBoots, RabbitCharm, HandBell, Firecracker, FirecrackerLit, StinkBomb, RottenFruit, PitchBomb, PitchBombLit, StatusNausea, ShieldLantern, ReflectingPan, PanReady,
+    BirdSeed, ThornCaltrops, BirdSeedPile, ThornPatch, HuntingHorn, RopeHook, HookHead, RootDrill, DrillRoot, SwapSeed, Boomerang, RopeSnare, SnareSet, SnareTight, SpringTrap, SpringReady, AcornMine, AcornReady, ThrowingNet, NetFlight, NetCaught, StickyBoots, RabbitCharm, HandBell, Firecracker, FirecrackerLit, StinkBomb, RottenFruit, PitchBomb, PitchBombLit, StatusNausea, ShieldLantern, ReflectingPan, PanReady, ScarecrowBundle, Scarecrow, DebrisStraw,
     Count,
 };
 

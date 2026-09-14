@@ -95,7 +95,7 @@ rare reward/shop rolls. Failure should not silently consume the item.
 | 43 | Straw decoy | Place next cell; has HP and draws nearby enemy attention until destroyed. | Common / 12 |
 | 44 | Sticky boots | Four activations: resist shoves/oil slips for 6s, double ordinary step recovery; crushers still crush. | Uncommon / 18 |
 | 45 | Resin glue | Repairs the most damaged carried durable item; does not refill ammo or consumed charges. | Uncommon / 14 |
-| 46 | Scarecrow | Place a destructible ward; birds and small animals hesitate around it, larger predators do not. | Uncommon / 16 |
+| 46 | Scarecrow | Place a 28-HP straw ward; chickens, crows, owls, woodpeckers and rabbits avoid its visible radius four (Big: five). Committed attacks finish; larger predators ignore it. Two per stack. | Uncommon / 16 |
 | 47 | Lantern seed | Plant a stationary dim lamp; useful for seeing and drawing moths away. Four seeds. | Common / 8 |
 | 48 | Thunder acorn | Line 1–5 to first target, then a short adjacent chain; wet targets conduct farther. | Rare / 30 |
 | 49 | Fungal bread | Immediate 25 HP heal followed by a short sleep; someone else should guard the eater. | Common / 9 |

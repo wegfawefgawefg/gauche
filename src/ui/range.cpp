@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "presentation.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../projectiles/net.hpp"
@@ -58,7 +59,15 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = item_pattern(held);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (forest_mixture(held.kind) != nullptr) {
+    if (held.kind == ItemKind::Scarecrow) {
+        const Cell ward = player.cell + facing;
+        for (int y = -pattern.blast_radius; y <= pattern.blast_radius; ++y)
+            for (int x = -pattern.blast_radius; x <= pattern.blast_radius; ++x) {
+                const Cell cell = ward + Cell{x, y};
+                if (scarecrow_covers(game, ward, cell, pattern.blast_radius))
+                    mark(renderer, cell, camera, zoom, pattern.effect);
+            }
+    } else if (forest_mixture(held.kind) != nullptr) {
         const Cell center = bomb_landing(game, player.cell, facing, pattern.maximum);
         for (Cell cell : mixture_cells(game, held, center))
             mark(renderer, cell, camera, zoom, pattern.effect);

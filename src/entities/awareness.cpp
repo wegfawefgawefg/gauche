@@ -57,6 +57,6 @@ void flee(Game& game, int slot, Cell threat) {
         if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, true) >= 0) continue;
         if (distance(cell, threat) > score) { best = cell; score = distance(cell, threat); }
     }
-    if (best != entity.cell) move_entity(game, slot, best);
+    if (best != entity.cell) willing_step(game, slot, best);
     else entity.move_wait = std::max(1, entity.move_interval);
 }

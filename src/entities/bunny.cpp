@@ -1,3 +1,4 @@
+#include "../props/scarecrow.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "dispatch.hpp"
@@ -10,5 +11,6 @@ void init_bunny(Entity& bunny) {
 }
 
 void step_bunny(Game& game, int slot) {
+    if (step_scarecrow_fear(game, slot)) return;
     if (!step_hearing(game, slot)) wander(game, slot);
 }

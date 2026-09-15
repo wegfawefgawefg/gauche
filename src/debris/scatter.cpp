@@ -70,6 +70,8 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     }
     scatter_material(debris, cell, first, kind == PropKind::FrozenLunchTin ? 1 : settled ? 2 : 5, seed, settled);
     scatter_material(debris, cell, second, settled ? 1 : 3, seed ^ 0x529ec831ULL, settled);
+    if (kind == PropKind::Crate)
+        scatter_material(debris, cell, DebrisKind::BentNail, settled ? 1 : 2, seed + 71, settled);
     if (kind == PropKind::Puffball)
         scatter_material(debris, cell, DebrisKind::MushroomStem, 1, seed + 17, settled);
     if (kind == PropKind::Nest)

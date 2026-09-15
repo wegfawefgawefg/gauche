@@ -4,7 +4,7 @@ Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
 Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, twelve regional items, metal cover/bins,
-assembly-room conveyors, wet repair bays, cooling works, scrap-yard sorting lanes, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
+assembly-room conveyors, wet repair bays, cooling works, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -222,7 +222,7 @@ only thematic stock. Healing/ammo budgets remain separate from bonus caches.
 | Coolant locker | 35-HP cabinet; bullets can puncture its cosmetic casing | 30% coolant can, 20% solvent rag, 15% refractory paste, 15% emergency foam. No unrolled free liquid on break. |
 | Fuse crate | 12-HP wood; fire ignites only after a fuse tell | 25% quarry charge, 20% bolt pouch, 20% ammo, 10% tension spring. Fire destruction trades safe loot for a warned burst. |
 | Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 0–19: horseshoe magnet; 40–59: copper wire. Planned glow-slag and chain-hook ranges remain empty until those items exist. |
-| Ore bin | Implemented 30-HP mining bin; local ore/basalt fragments | 25% two coal lumps, next 15% 2–4 gold, otherwise empty. |
+| Ore bin | Implemented 30-HP mining bin; local ore/basalt fragments | 25% two coal lumps, next 15% 2–4 gold, next 15% Coolant Can, otherwise empty. |
 | Pay cage | Locked optional 60-HP bars, shoot-through cover | 60% 8–14 gold, 20% punch card, 10% inspector stamp. Clerk-carried gold returns separately. |
 | Ceramic chest | 20-HP brittle shell, ordinary opening | 30% two ceramic plates, 20% refractory paste, 15% furnace seed, 15% coal biscuit. |
 | Machine spares | 25-HP crate | 20% nozzle elbow, 20% rubber hose, 15% brake shoe, 15% belt crank, 10% overtime clock. |
@@ -230,7 +230,8 @@ only thematic stock. Healing/ammo budgets remain separate from bonus caches.
 
 ## Twenty debris materials
 
-All are local, with varied rotation and a few silhouettes each. Use short-lived
+Ten rows are integrated; other rows remain candidates. Current solids are local,
+with varied rotation and small stack-dependent sizes. Use short-lived
 sparks in addition to settled solids; no fragment-to-fragment simulation.
 
 | # | Material | Source; movement character |
@@ -240,15 +241,15 @@ sparks in addition to settled solids; no fragment-to-fragment simulation.
 | 3 | Brick corner | Furnace wall; angular tumble, fast stop. |
 | 4 | Mortar dust | Brick damage; fine short puff, settles/fades. |
 | 5 | Timber splinter | Supports/crates; elongated skitter, burns only visually. |
-| 6 | Bent nail | Wooden stock; one hard bounce then flat. |
+| 6 | Bent nail | Implemented: crate impacts/destruction leave one or two nails; short high-friction skid. No vertical bounce yet. |
 | 7 | Rivet casing | Implemented: one local casing per discharge, small rolling brass piece; no ammo, loot or gameplay collision. |
 | 8 | Steel washer | Implemented: grate destruction; longer roll before settling. |
-| 9 | Chain link | Broken hoist; heavy localized tumble. |
-| 10 | Copper strand | Cut cable; curled light drag. |
+| 9 | Chain link | Implemented: destroyed Magnet Cranes leave three links alongside washers; short heavy skid. |
+| 10 | Copper strand | Implemented shared copper curls: cut wire, scrap bins and boiler breakage; ordinary solid-fragment drag. |
 | 11 | Rubber scrap | Implemented for broken conveyor strips; high friction and short skid. Hose/boot sources remain pending. |
 | 12 | Ceramic shard | Plates/kiln; bright brief shard then muted rest. |
 | 13 | Slag glass | Snail/crust; broad dark reflective chip. |
-| 14 | Coal crumb | Fuel sack; brittle black pieces, little roll. |
+| 14 | Coal crumb | Implemented shared coal crumbs: thrown coal landings, spent/broken stoves. Fuel-sack props remain pending. |
 | 15 | Ash tuft | Sleeper/sack; light wind response, quick fade. |
 | 16 | Tar fleck | Choir; soft sticky-looking short landing, no actual surface. |
 | 17 | Paper slip | Clerk/cards; flutters, easily stirred by feet. |
@@ -266,24 +267,24 @@ emit both a gameplay noise event and a matching local sound.
 
 | # | Source | Placement and schedule |
 | --- | --- | --- |
-| 1 | Furnace breath | Low uneven loop at fueled furnace mouths. |
-| 2 | Distant picks | Sparse room-area taps beyond a work front. |
-| 3 | Chain sway | Hoist anchor loop, quiet and slow. |
+| 1 | Furnace breath | Implemented: low uneven loop follows loaded, undamped Stokers and fueled boiler tanks; frozen/empty sources fall silent. |
+| 2 | Distant picks | Implemented: sparse taps follow a living, peaceful foreman with a linked worker cutting; suppressed within six tiles of the foreman. Minimum 12s after playback. |
+| 3 | Chain sway | Implemented: quiet loose-chain loop follows active crane travel, grab and return; idle/frozen/stunned/sleeping cranes go quiet. |
 | 4 | Belt rollers | Implemented: quiet local loop near visible powered rollers; fades out when the nearby drives are braked/broken. Falls off by distance, never produces gameplay noise. |
 | 5 | Coolant trickle | Wall tap into an actual shallow pool; footsteps make rings. |
 | 6 | Pipe drip | Positional irregular drops, 1–4s local cooldown. |
 | 7 | Exhaust hiss | Short periodic vent loop, matches fixture duty cycle. |
 | 8 | Timber creak | Rearmed area entry at a support passage, at least 20s apart. |
 | 9 | Distant ore fall | Rare level event, at least 45s apart; no unseen damage. |
-| 10 | Cooling metal ticks | Quiet series beside cooled machinery. |
-| 11 | Slag bubbling | Low loop near a hot basin, distinct from water. |
+| 10 | Cooling metal ticks | Implemented: sparse ticks at frozen cranes/tanks or low-pressure tanks standing in cooling liquid; minimum 10s after playback. |
+| 11 | Slag bubbling | Implemented: low glugging loop on actual lava; stops when its source tile cools into stone. |
 | 12 | Air shaft draft | Directional soft loop at wall gaps. |
 | 13 | Loose sign rattle | Trigger at a hanging warning sign, wind-themed local variation. |
 | 14 | Office clock | Gentle sparse loop within the pay office. |
-| 15 | Shift bell | Rare distant level cue, at least 60s apart; not a foreman order. |
+| 15 | Shift bell | Implemented: rare distant level cue, at least 60s between repeats; not a foreman order. |
 | 16 | Muffled work song | Very quiet, nonverbal tonal texture beyond occupied workrooms. |
 | 17 | Electrical cabinet hum | Local hum at a powered cabinet, stops when disabled. |
-| 18 | Water hammer | Occasional pipe knock around cooling works, at least 15s apart. |
+| 18 | Water hammer | Implemented: occasional pipe knock at fueled, pressurized, unfrozen boiler tanks; at least 18s between repeats. |
 | 19 | Freight rumble | Distant short pass near rail rooms, not a damaging invisible train. |
 | 20 | Kiln roof grit | Brief ceramic patter on entering a quiet furnace alcove. |
 

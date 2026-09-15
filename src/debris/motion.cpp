@@ -37,6 +37,8 @@ float debris_friction(DebrisKind kind) {
     case DebrisKind::SteelWasher: return .91F;
     case DebrisKind::TinCurl: return .88F;
     case DebrisKind::BeltRubber: return .66F;
+    case DebrisKind::BentNail: return .75F;
+    case DebrisKind::ChainLink: return .70F;
     case DebrisKind::RivetCasing: return .90F;
     default: return light_material(kind) ? .92F : .83F;
     }

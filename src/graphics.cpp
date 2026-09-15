@@ -71,6 +71,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "rivet_gun", "rivet", "rivet_gunner", "gunner_brace", "gunner_fire", "gunner_reload", "debris_rivet_casing",
     "conveyor", "conveyor_moving", "conveyor_off", "conveyor_brake", "belt_crank", "brake_shoe", "debris_belt_rubber",
     "yeti", "arc_torch", "arc_welder", "welder_mask", "horseshoe_magnet", "magnet_crane", "crane_head", "folding_barricade", "barricade_section", "pressure_rat", "rat_inflate", "rat_dash", "coolant_can",
+    "debris_bent_nail", "debris_chain_link",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

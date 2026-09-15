@@ -1,6 +1,7 @@
 #include "../props/conveyor.hpp"
 #include "../entities/attacks.hpp"
 #include "system.hpp"
+#include "industrial.hpp"
 #include "../world/water.hpp"
 #include "../props/stove.hpp"
 #include <algorithm>
@@ -20,8 +21,8 @@ void add_ambient_source(AmbientAudio& audio, const Game& game, Cell listener,
         if (!global && distance(ambient_source_cell(source,game),cell)<12) return;
         ++siblings;
     }
-    if (siblings>=4) return;
     const auto& spec=ambient_specs[static_cast<std::size_t>(cue)];
+    if (siblings>=spec.maximum_sources) return;
     audio.sources.push_back({cue,cell,owner,prop,spec.cooldown*.5F,global,
         static_cast<float>(distance(cell,listener))<=spec.trigger_radius,false});
 }
@@ -30,6 +31,7 @@ float ambient_source_gain(const AmbientSource& source, const Game& game, Cell li
     const Entity* owner=get_entity(game,source.owner);
     if (source.owner.slot>=0 && (!owner || owner->health<=0)) return 0;
     if (source.has_scene && !ice_scene_alive(source.scene,game)) return 0;
+    if (!industrial_ambient_active(source,game,listener)) return 0;
     const Cell cell=ambient_source_cell(source,game);
     const Tile* tile=game.stage.at(cell);
     if (source.prop!=PropKind::None && (!tile || tile->prop.kind!=source.prop || tile->prop.broken)) return 0;

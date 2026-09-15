@@ -1,4 +1,4 @@
-#include "../props/conveyor.hpp"
+#include "industrial.hpp"
 #include "system.hpp"
 #include "../world/water.hpp"
 #include "../world/ice_terrain.hpp"
@@ -8,12 +8,7 @@
 void place_ambience(AmbientAudio& audio, const Game& game, Cell listener) {
     audio.sources.clear();
     if (ice_floor(game.run.floor)) { place_ice_ambience(audio,game,listener); return; }
-    if (industrial_floor(game.run.floor)) {
-        for (int y=0;y<game.stage.height;++y) for (int x=0;x<game.stage.width;++x)
-            if (live_belt(game.stage.at({x,y})->prop))
-                add_ambient_source(audio,game,listener,AmbientCue::BeltRollers,{x,y});
-        return;
-    }
+    if (industrial_floor(game.run.floor)) { place_industrial_ambience(audio,game,listener); return; }
     if (!forest_floor(game.run.floor)) return;
     const auto add = [&](AmbientCue cue, Cell cell, bool global = false,
                          Handle owner = {}, PropKind prop = PropKind::None) {

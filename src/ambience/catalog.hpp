@@ -11,7 +11,8 @@ enum class AmbientCue : std::size_t {
     IceGroan, UnderIce, ThawDrip, ThinWind, WindowWhistle, HangingChain,
     DistantBell, TimberCreak, SnowSettling, BoilerIdle, PressureHiss, PipeKnock,
     Waterwheel, SlushLap, GlassTinkle, ObservatoryMotor, ClothFlutter, FarIceCall,
-    ChimneyDraft, SubmergedKnock, BeltRollers, Count,
+    ChimneyDraft, SubmergedKnock, BeltRollers, FurnaceBreath, DistantPicks, ChainSway,
+    CoolingTicks, SlagBubbling, WaterHammer, ShiftBell, Count,
 };
 enum class AmbientMode { Loop, Enter, Occasional };
 struct AmbientSpec {
@@ -22,6 +23,7 @@ struct AmbientSpec {
     float cooldown = 0;
     float trigger_radius = 3;
     bool rearm = false;
+    int maximum_sources = 4;
 };
 
 inline constexpr std::array<AmbientSpec, static_cast<std::size_t>(AmbientCue::Count)> ambient_specs{{
@@ -66,4 +68,11 @@ inline constexpr std::array<AmbientSpec, static_cast<std::size_t>(AmbientCue::Co
     {"chimney_draft", AmbientMode::Loop, .10F, 1, 9},
     {"submerged_knock", AmbientMode::Occasional, .14F, 1, 12, .020F, 40},
     {"belt_rollers", AmbientMode::Loop, .11F, 1, 12},
+    {"furnace_breath", AmbientMode::Loop, .10F, 1, 10, 0, 0, 3, false, 16},
+    {"distant_picks", AmbientMode::Occasional, .19F, 2, 24, .08F, 15},
+    {"chain_sway", AmbientMode::Loop, .09F, 1, 9, 0, 0, 3, false, 8},
+    {"cooling_ticks", AmbientMode::Occasional, .14F, 1, 10, .10F, 12.5F, 3, false, 16},
+    {"slag_bubbling", AmbientMode::Loop, .09F, 1, 12, 0, 0, 3, false, 16},
+    {"water_hammer", AmbientMode::Occasional, .15F, 1, 14, .04F, 22.5F, 3, false, 8},
+    {"shift_bell", AmbientMode::Occasional, .09F, 0, 30, .008F, 75},
 }};

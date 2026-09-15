@@ -1,3 +1,4 @@
+#include "items/barricade.hpp"
 #include "items/magnet.hpp"
 #include "items/belt_tools.hpp"
 #include "artifacts/hearth.hpp"
@@ -106,6 +107,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::FoldingBarricade:
+        used=place_barricade(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::HorseshoeMagnet:
         used=pull_magnetic_item(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::BeltCrank: case ItemKind::BrakeShoe:

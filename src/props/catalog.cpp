@@ -4,6 +4,7 @@
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
     case PropKind::Conveyor: return {Sprite::Conveyor,SoundId::BeltBreak,48,false,false};
+    case PropKind::Barricade: return {Sprite::BarricadeSection,SoundId::GrateBreak,20,true,false};
     case PropKind::Grate: return {Sprite::GrateH,SoundId::GrateBreak,60,true,false};
     case PropKind::ScrapBin: return {Sprite::ScrapBin,SoundId::ScrapBreak,18,true,false};
     case PropKind::OreBin: return {Sprite::OreBin,SoundId::OreBreak,30,true,false};
@@ -55,6 +56,7 @@ bool prop_blocks(const Prop& prop) {
 
 int prop_max_health(const Prop& prop) {
     const int base = prop_spec(prop.kind).health;
+    if (prop.kind==PropKind::Barricade && (prop.variant&2U)) return base*2;
     if (prop.kind == PropKind::BridgePlank && (prop.variant&32U)) return base*2;
     if (prop.kind == PropKind::Doorstop && prop.variant == 1) return base * 2;
     if (prop.kind == PropKind::Candle && (prop.variant & candle_durable_bit)) return base * 2;
@@ -62,9 +64,14 @@ int prop_max_health(const Prop& prop) {
 }
 
 bool prop_low_cover(const Prop& prop) {
-    return prop.kind==PropKind::SnowWindbreak && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
 }
 
 bool prop_shoot_through(const Prop& prop) {
-    return (prop.kind==PropKind::Grate || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
+}
+
+bool prop_cuttable_metal(const Prop& prop) {
+    return !prop.broken && (prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+        prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

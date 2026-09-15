@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, ten regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, eleven regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, scrap-yard sorting lanes, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -153,7 +153,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 41 | Punch card | Insert into a marked service reader for one optional access/maintenance cycle. Stack 3, consumed; main route never requires a randomly found card. Paper punch. | C / 7 |
 | 42 | Inspector stamp | Mark one idle worker/machine for inspection: it pauses one work cycle unless already fighting. Five stamps; foreman notices repeated misuse. Official thump. | U / 13 |
 | 43 | Counterweight bag | Place a heavy 30-HP bag on a pressure plate, or throw to 3 for a 10-damage shove. Recoverable; belts carry it, flying cannot trigger plates. Sand thud. | U / 17 |
-| 44 | Folding barricade | Place three linked low grate sections across a lane, 20 HP each. Walkers stop, shots pass. One kit; break individual sections to open gaps. Hinges clatter. | U / 23 |
+| 44 | Folding barricade | Implemented: one kit unfolds three independent low steel sections across the adjacent lane. All cells must be clear. 20 HP each, Durable 40. Walkers stop, narrow shots pass, lobbed objects pass overhead. Torch/welder cutting and worker smashing reopen gaps. Metal survives fire; folded kit is magnetic. Hinges/latches clatter. | U / 23; native stock from regional stage 2 |
 | 45 | Warning cone | Place a bright recoverable marker; idle crews route around it, angry crews kick it aside. No physical immunity or invisible wall. Stack 3 unused cones. Rubber bonk. | C / 4 |
 | 46 | Glow slag | Recoverable throw to 6, 4 damage; lights its landing cell for 20s. Cold turns it dark, furnace reheats it. Carries remaining heat through trading. Stack only identical cold pieces. Glassy clink. | C / 6 |
 | 47 | Tension spring | Place a directional one-use launch pad; next grounded actor/cart gets a three-cell shove with normal collisions. Stack 3; fire weakens it before trigger. Compressed squeal, sproing. | U / 15 |

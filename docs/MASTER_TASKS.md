@@ -365,7 +365,8 @@ behavior and balance playtesting remain the user's.
   [Arc Welders and repair bays](history/ARC_WELDER.md) add a visor-down warning, committed electrical lane sweep, metal cutting and wet/dry/grounding encounter choices.
   [Horseshoe Magnets](history/HORSESHOE_MAGNET.md) pull real loose steel gear while moving, preserve item state, and connect native scrap-bin drops to hot salvage pockets.
   [Magnet Cranes and scrap yards](history/MAGNET_CRANE.md) add overhead committed grabs, metal-gear targeting, magnet bait, cold/heavy-hit interruption and optional hot sorting lanes.
-  Eight catalog enemy behaviors and ten of fifty regional items implemented;
+  [Folding Barricades](history/FOLDING_BARRICADE.md) add atomic three-section lane blocking, narrow-shot/overhead passage, independent panel damage and shared metal-cutting counters.
+  Eight catalog enemy behaviors and eleven of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

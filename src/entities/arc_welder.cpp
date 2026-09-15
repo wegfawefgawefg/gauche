@@ -12,9 +12,6 @@ void recover(Entity& actor) {
     actor.label_a=WelderRecover;actor.timer_a=72;actor.counter_a=0;
     actor.sprite=Sprite::ArcWelder;
 }
-bool metal(const Prop& p) {
-    return !p.broken && (p.kind==PropKind::Grate || p.kind==PropKind::ScrapBin || p.kind==PropKind::OreBin);
-}
 void sweep_lane(Game& game,Entity& actor) {
     const Cell source=actor.cell,forward=actor.point_b,side{-forward.y,forward.x};
     const int lane=actor.counter_a-1;
@@ -26,7 +23,7 @@ void sweep_lane(Game& game,Entity& actor) {
         // Side lanes cannot reach around a solid corner. Current cover also
         // stops the far cell, even when this pass will cut the near grate.
         const Tile* tile=game.stage.at(contact);
-        if (tile && metal(tile->prop)) {
+        if (tile && prop_cuttable_metal(tile->prop)) {
             if (clear_attack_sight(game,source,contact)) cuts[static_cast<std::size_t>(cut_count++)]=contact;
             break;
         }
@@ -94,7 +91,7 @@ void step_arc_welder(Game& game,int slot) {
     if (!target) {if (!step_hearing(game,slot)) wander(game,slot);return;}
     const Cell facing=cardinal_toward(actor.cell,target->cell,actor.facing);
     const bool close=in_fan(target->cell-actor.cell,facing) && clear_attack_sight(game,actor.cell,target->cell);
-    const bool cut=metal(game.stage.at_or_border(actor.cell+facing).prop) && clear_shot_sight(game,actor.cell,target->cell);
+    const bool cut=prop_cuttable_metal(game.stage.at_or_border(actor.cell+facing).prop) && clear_shot_sight(game,actor.cell,target->cell);
     if (close || cut) {
         actor.point_a=actor.cell;actor.point_b=actor.facing=facing;
         actor.label_a=WelderMask;actor.timer_a=42;actor.counter_a=0;

@@ -16,8 +16,7 @@ void pulse(Game& game,int slot) {
     const ItemPattern pattern=item_pattern(held);
     const ConductedShock shock=trace_conducted_shock(game,contact,pattern.blast_radius);
     const Tile* tile=game.stage.at(contact);
-    const bool metal=tile && !tile->prop.broken && (tile->prop.kind==PropKind::Grate ||
-        tile->prop.kind==PropKind::ScrapBin || tile->prop.kind==PropKind::OreBin);
+    const bool metal=tile && prop_cuttable_metal(tile->prop);
     // Capture the circuit before cutting cover; this pulse cannot pass newly
     // destroyed bars. Ready grounding spikes sink the complete electrical pulse.
     if (metal && shock.wave.ground_node<0) hit_prop(game,contact,pattern.damage*2,source);

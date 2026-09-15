@@ -1,3 +1,4 @@
+#include "barricade.hpp"
 #include "magnet.hpp"
 #include "arc_torch.hpp"
 #include "foreman_whistle.hpp"
@@ -47,6 +48,7 @@
 #include "belt_tools.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=barricade_item(kind)) return item;
     if (const auto* item=magnet_item(kind)) return item;
     if (const auto* item=arc_torch_item(kind)) return item;
     if (const auto* item=belt_tool_item(kind)) return item;

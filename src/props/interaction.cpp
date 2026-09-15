@@ -127,6 +127,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind == PropKind::Conveyor) tile->prop.variant &= 7U;
     if (kind == PropKind::Grate) tile->prop.variant &= 1U;
+    if (kind == PropKind::Barricade) {tile->prop.variant &= 3U;tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));}
     if (kind == PropKind::Stove) {
         tile->prop.variant = 1; tile->prop.growth_ticks = 3600;
     }
@@ -147,7 +148,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
     else if (prop.kind == PropKind::Conveyor) emit_sound(game,SoundId::BeltHit,cell);
-    else if (prop.kind == PropKind::Grate) emit_sound(game,SoundId::GrateHit,cell);
+    else if (prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade) emit_sound(game,SoundId::GrateHit,cell);
     else if (prop.kind == PropKind::ScrapBin) emit_sound(game,SoundId::ScrapHit,cell);
     else if (prop.kind == PropKind::OreBin) emit_sound(game,SoundId::OreHit,cell);
     else if (prop.kind == PropKind::Doorstop) emit_sound(game,SoundId::WedgeHit,cell);

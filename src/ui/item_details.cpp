@@ -298,6 +298,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
     else if (item.kind == ItemKind::PressureValve)
         std::snprintf(line,sizeof(line),"ATTACHES | RECOVERABLE");
+    else if (item.kind==ItemKind::FoldingBarricade)
+        std::snprintf(line,sizeof(line),"3 SECTIONS | HP %d EACH",item.durability);
     else if (item.kind == ItemKind::FoldedBridge)
         std::snprintf(line,sizeof(line),"PLANK HP %d EACH | ONE KIT",item.durability);
     else if (item.kind == ItemKind::Bow)

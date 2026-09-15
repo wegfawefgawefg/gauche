@@ -129,9 +129,9 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupp
         return;
     }
     if (!forest_floor(game.run.floor)) {
-        const auto roll=ice_floor(game.run.floor) ? 0U : random_u32(game)%8;
+        const auto roll=ice_floor(game.run.floor) ? 0U : random_u32(game)%9;
         const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat :
-            roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : roll==2 ? EntityKind::CableCrawler : roll==3 ? EntityKind::WalkingKiln : roll==4 ? EntityKind::FurnaceMoth : roll==5 ? EntityKind::SlagSnail : roll==6 ? EntityKind::AshSleeper : EntityKind::Ember;
+            roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : roll==2 ? EntityKind::CableCrawler : roll==3 ? EntityKind::WalkingKiln : roll==4 ? EntityKind::FurnaceMoth : roll==5 ? EntityKind::SlagSnail : roll==6 ? EntityKind::AshSleeper : roll==7 ? EntityKind::EmergencyPump : EntityKind::Ember;
         const int cost=(hazard==EntityKind::PressureRat || hazard==EntityKind::FurnaceMoth) ? 1 : hazard==EntityKind::WalkingKiln ? 3 : 2;
         spawn_room_enemy(game, room, hazard, cost, budget);
         if (round >= 2) spawn_room_enemy(game, room, hazard, cost, budget);
@@ -393,8 +393,8 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
         if (populate_cable_trench(game,plan,room)) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-1);}
         else spawn_room_enemy(game,room,EntityKind::CableCrawler,2,budget);
     }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CoolingWorks && budget.threat>=2) {
-        if (populate_cooling_works(game,plan,room)) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-1);}
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CoolingWorks && budget.threat>=3) {
+        if (populate_cooling_works(game,plan,room)) {budget.threat-=3;budget.equipment=std::max(0,budget.equipment-1);}
         else spawn_room_enemy(game,room,EntityKind::PressureRat,1,budget);
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::RepairBay && budget.threat>=2) {

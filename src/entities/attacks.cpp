@@ -1,3 +1,4 @@
+#include "emergency_pump.hpp"
 #include "counterweight.hpp"
 #include "ash_sleeper.hpp"
 #include "slag_snail.hpp"
@@ -41,6 +42,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::EmergencyPump:
+        if (enemy.label_a==PumpWarn && enemy.cell==enemy.point_a)
+            for (int i=1;i<=std::min(3,(enemy.counter_b+599)/600);++i)
+                add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::Counterweight:
         if ((enemy.label_a==WeightWarn || enemy.label_a==WeightDrop) && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;

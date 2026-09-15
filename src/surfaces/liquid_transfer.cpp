@@ -8,13 +8,16 @@ bool pumpable_liquid(LiquidKind kind) {
     return kind==LiquidKind::Water || kind==LiquidKind::Oil || kind==LiquidKind::Sap ||
         kind==LiquidKind::Honey || kind==LiquidKind::Rot || kind==LiquidKind::Brine || kind==LiquidKind::Coolant;
 }
+bool pumpable_spill(const Tile& tile) {
+    return walkable(tile.kind) && tile.kind!=TileKind::Lava && tile.kind!=TileKind::Ice &&
+        tile.kind!=TileKind::Water && !shallow_water(tile.kind) && !tile.freeze_ticks &&
+        !tile.surface.fire_ticks && tile.surface.liquid_ticks>0 && pumpable_liquid(tile.surface.liquid);
+}
 LiquidLoad collect_spill(Game& game,Cell cell,LiquidKind accepted,int capacity) {
     Tile* tile=game.stage.at(cell);
-    if (!tile || capacity<=0 || !walkable(tile->kind) || tile->kind==TileKind::Lava ||
-        tile->kind==TileKind::Ice || tile->kind==TileKind::Water || shallow_water(tile->kind) || tile->freeze_ticks>0) return {};
+    if (!tile || capacity<=0 || !pumpable_spill(*tile)) return {};
     Surface& surface=tile->surface;
-    if (surface.fire_ticks>0 || surface.liquid_ticks==0 || !pumpable_liquid(surface.liquid) ||
-        (accepted!=LiquidKind::None && accepted!=surface.liquid)) return {};
+    if (accepted!=LiquidKind::None && accepted!=surface.liquid) return {};
     const LiquidLoad collected{surface.liquid,std::min(capacity,static_cast<int>(surface.liquid_ticks))};
     surface.liquid_ticks=static_cast<std::uint16_t>(surface.liquid_ticks-collected.amount);
     if (surface.liquid_ticks==0) surface.liquid=LiquidKind::None;

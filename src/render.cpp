@@ -1,3 +1,4 @@
+#include "entities/pump_render.hpp"
 #include "entities/counterweight_render.hpp"
 #include "entities/ash_sleeper.hpp"
 #include "entities/furnace_moth.hpp"
@@ -263,7 +264,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.h*=1+.18F*reach; body_rect.y-=pixels*.18F*reach;
                 angle+=entity.facing.x<0 ? 15*reach : -15*reach;
             }
-            if (entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) {
+            if (entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) {
                 if (entity.facing.y!=0) angle=entity.facing.y<0 ? -90 : 90;
                 if (entity.kind==EntityKind::PressureRat && entity.label_a==RatInflate) {
                     const float inset=.14F*static_cast<float>(entity.timer_a)/36;
@@ -306,6 +307,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y += (static_cast<float>(entity.point_a.y - entity.cell.y) - .6F) * pixels * remaining;
                 angle += static_cast<double>(remaining * 270);
             }
+            apply_pump_pose(entity,body_rect);
             apply_flight_pose(entity, game.tick, body_rect, angle);
             if (entity.kind==EntityKind::AshSleeper) {
                 if (entity.label_a==AshRising || entity.label_a==AshSwipe) angle+=entity.timer_a/3%2==0 ? -7 : 7;
@@ -320,7 +322,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, ((entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
+                nullptr, ((entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
                     !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
@@ -339,6 +341,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::IceMason) draw_mason_block(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        draw_pump_nozzle(renderer,entity,rect,brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::SteamLeech)
             draw_leech_tether(renderer, game, entity, camera, zoom, lighting);

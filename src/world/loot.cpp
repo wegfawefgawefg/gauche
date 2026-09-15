@@ -1,3 +1,4 @@
+#include "../entities/emergency_pump.hpp"
 #include "loot.hpp"
 #include "../entities/scavenging.hpp"
 #include "../entities/shard_colony.hpp"
@@ -31,6 +32,7 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::EmergencyPump: drop_emergency_pump(game,enemy);break;
     case EntityKind::Counterweight:
         if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::ChainHook);
         break; // Counterweight bag remains an unimplemented drop slot.

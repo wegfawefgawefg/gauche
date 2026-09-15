@@ -34,6 +34,37 @@ void draw_net(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
 
 } // namespace
 
+ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera camera,float zoom) {
+    const bool drill=shot.label_a==static_cast<int>(ProjectileKind::Drill);
+    const bool harpoon=shot.label_a==static_cast<int>(ProjectileKind::Harpoon);
+    const bool hook=harpoon || shot.label_a==static_cast<int>(ProjectileKind::Hook) ||
+        shot.label_a==static_cast<int>(ProjectileKind::WidowHook) || shot.label_a==static_cast<int>(ProjectileKind::FishingHook);
+    const bool thrown=shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
+        shot.label_a==static_cast<int>(ProjectileKind::EchoPebble) || shot.label_a==static_cast<int>(ProjectileKind::PrismBomb) ||
+        shot.label_a==static_cast<int>(ProjectileKind::Snowball) || shot.label_a==static_cast<int>(ProjectileKind::IceBrick) ||
+        shot.label_a==static_cast<int>(ProjectileKind::Mixture) || shot.label_a==static_cast<int>(ProjectileKind::Bomb) ||
+        shot.label_a==static_cast<int>(ProjectileKind::Firecracker) || shot.label_a==static_cast<int>(ProjectileKind::Flask);
+    const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
+        std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
+    const float pixels = tile_pixels(zoom);
+    Cell render_cell = shot.cell;
+    // TETHER: The victim may have stepped later in entity order. Attach to its real cell.
+    if (harpoon && shot.label_b == 1)
+        if (const Entity* victim = get_entity(game,shot.entity_b)) render_cell = victim->cell;
+    SDL_FRect rect = tile_rect(render_cell, camera, zoom);
+    const float offset = drill && shot.label_b == 1 ? .25F : travel;
+    rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
+    rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
+    ProjectilePose pose{rect,rect,0};
+    if (thrown && shot.counter_a > 0) {
+        const float progress = (static_cast<float>(shot.attack_interval - shot.counter_a) + travel) /
+            static_cast<float>(std::max(1, shot.attack_interval));
+        pose.height = .85F * std::sin(progress * 3.14159265F);
+        pose.body.y -= pixels * pose.height;
+    }
+    return pose;
+}
+
 void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
@@ -55,22 +86,12 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
     const bool thrown = blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
-    const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
-        std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
-    const float pixels = tile_pixels(zoom);
-    Cell render_cell = shot.cell;
-    // TETHER: The victim may have stepped later in entity order. Attach to its real cell.
-    if (harpoon && shot.label_b == 1)
-        if (const Entity* victim = get_entity(game,shot.entity_b)) render_cell = victim->cell;
-    SDL_FRect rect = tile_rect(render_cell, camera, zoom);
-    const float offset = drill && shot.label_b == 1 ? .25F : travel;
-    rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
-    rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
-    if (thrown && shot.counter_a > 0) {
-        const float progress = (static_cast<float>(shot.attack_interval - shot.counter_a) + travel) /
-            static_cast<float>(std::max(1, shot.attack_interval));
-        rect.y -= pixels * .85F * std::sin(progress * 3.14159265F);
-    }
+    const float pixels=tile_pixels(zoom);
+    const ProjectilePose pose=projectile_pose(shot,game,camera,zoom);
+    SDL_FRect rect=pose.body;
+    Cell render_cell=shot.cell;
+    if (harpoon && shot.label_b==1)
+        if (const Entity* victim=get_entity(game,shot.entity_b)) render_cell=victim->cell;
     rect.x += pixels * .17F; rect.y += pixels * .17F;
     rect.w = rect.h = pixels * .66F;
     SDL_Texture* texture = texture_for(graphics, shot.sprite);

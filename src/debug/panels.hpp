@@ -7,6 +7,10 @@ struct DebugPanels {
     bool selector = true;
     bool combat = false;
     bool status = false;
+    bool contact_shadows = true;
+    bool shadow_entities = true;
+    bool shadow_props = true;
+    bool shadow_debris = true;
     bool world_items = false;
     bool world_enemies = false;
 };

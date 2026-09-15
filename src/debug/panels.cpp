@@ -55,6 +55,13 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
                 ImGui::Checkbox("Loadout / spawn override", &playtest_tools().loadouts);
                 ImGui::Checkbox("Pause offline world while F1 is open", &playtest_tools().pause);
             }
+            if (ImGui::CollapsingHeader("Presentation", ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
+                ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
+                ImGui::Checkbox("Prop shadows", &panels.shadow_props);
+                ImGui::Checkbox("Loose debris shadows", &panels.shadow_debris);
+                ImGui::TextUnformatted("Ground anchors only; independent of lights.");
+            }
         }
         ImGui::End();
     }

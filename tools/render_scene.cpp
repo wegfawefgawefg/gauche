@@ -88,6 +88,7 @@
 #include "recoverable_scene.hpp"
 #include "woodland_trap_scene.hpp"
 #include "movement_scene.hpp"
+#include "shadows_scene.hpp"
 #include "noisemakers_scene.hpp"
 #include "mixtures_scene.hpp"
 #include "shield_scene.hpp"
@@ -420,6 +421,7 @@ int main(int argc, char** argv) {
         arrange_noisemakers(game, cosmetics, player, false, true);
     if (mode == "noisemakers" || mode == "noise-items" || mode == "noise-big")
         arrange_noisemakers(game, cosmetics, player, mode == "noise-big");
+    if (mode == "shadows" || mode == "shadows-off") arrange_shadows(game,cosmetics,player,mode == "shadows");
     if (mode == "movement-tools" || mode == "movement-items" || mode == "movement-big" || mode == "rabbit-item")
         arrange_movement_tools(game, cosmetics, player, mode == "movement-tools", mode == "movement-big");
     if (mode == "woodland-traps" || mode == "trap-items" || mode == "trap-big")

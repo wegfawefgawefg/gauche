@@ -24,6 +24,7 @@
 #include "surfaces/render.hpp"
 #include "entities/foraging.hpp"
 #include "scenery/overhead.hpp"
+#include "scenery/shadows.hpp"
 #include "projectiles/render.hpp"
 #include "debug/panels.hpp"
 #include "entities/intent_render.hpp"
@@ -395,6 +396,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     draw_surfaces(renderer, game, camera, zoom, lighting, false);
+    draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting,game.tick);
     for (const Entity& actor : game.entities)

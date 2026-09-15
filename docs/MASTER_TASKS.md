@@ -27,6 +27,8 @@ Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW
 
 All counts are starting baselines, never content ceilings. Newer proposed per-biome targets: eight tall prop families, eight small-life types and six multi-room landmarks. Boss/unique-floor quotas were previously unset; provisional planning proposal is three boss encounter designs and two unique whole-floor designs per biome, with final counts/rosters open. Boss alternatives need not all appear in one run; multi-room landmarks are distinct from whole-floor uniques.
 
+Layering follow-up adds **six proposed cross-room feature families per biome**, separate from rooms/landmarks: rare post-geometry formations crossing existing room boundaries, such as burnable buried logs opening shortcuts. Usually absent; initially at most one major feature per ordinary floor, with run-level rarity rather than independent per-tile rolls.
+
 - [ ] Rework haunted-house pressure: weaker/simpler ordinary zombies in larger crowds, readable delayed swipes, spawn/crowd budgets and solo/co-op pacing coordinated with the Fist nerf. Preserve the mode's promising foundation.
 - [ ] Give haunted houses crowd-control tools: build/repair barriers, blockable routes, zombie breach behavior and marked lever fire/spike lanes with costs/cooldowns, friendly-fire rules and no stranded-wave softlocks.
 - [ ] Add distinct haunted-house layouts, meaningful internal rooms, outside hut/outbuildings and compound candidates; define encounter boundaries, placement/supply budgets and debug variant/repeat access. See the [house follow-up](WORLD_INTERACTION_REVIEW.md#haunted-house-follow-up-2026-09-15).
@@ -46,6 +48,7 @@ All counts are starting baselines, never content ceilings. Newer proposed per-bi
 - [ ] Expand fruit/berry sources, bushes and seed-pile stack yields; design contact-popping Snap Seeds and implement shared burning-arrow/fire/water interactions.
 - [ ] Build compact source/condition-based small life, proposed eight types per biome; local cosmetics versus authoritative gameplay follows effects, not struct size.
 - [ ] Add multi-room landmark reservation, sockets, internal population/loot and debug selection; proposed six per biome, including legal 1x2/1x3/2x2 regions and overhead groups.
+- [ ] Design/implement rare cross-room feature placement after base geometry and before ordinary population: six proposed families per biome in [scene candidates](content/SCENE_CANDIDATES.md#cross-room-features-six-proposed-families-per-area). Use actual material/terrain edits, useful conditional links, deterministic floor/run budgets, explicit overlap/lock-bypass rules, final solvability checks and forced-feature debug inspection.
 - [ ] Add frozen loot/creatures and fragile-ice crack propagation, bounded deterministic updates, release-once contents, falls/rescue and melting effects; distinguish IceFlag from pickups.
 - [ ] Revisit Ice threat compositions and readable archetypes: throwing yeti, king yeti, mammoth and penguin candidates; beam/boiler enemies must also function outside authored sets.
 - [ ] Choose/implement biome-fourth-floor boss areas/minibosses, world interactions, digging escape policy, co-op entry/release and meaningful rewards; giant bear/spider mother/wolf leader candidates.

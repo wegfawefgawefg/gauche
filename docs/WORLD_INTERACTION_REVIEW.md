@@ -184,6 +184,56 @@ and a bear swatting fish from a stream and eating them. Noise and danger wake
 nearby sleepers. Catchable/edible/bait fish are gameplay; decorative minnows can
 use cheap local presentation.
 
+## Cross-room features and layered generation
+
+User follow-up: rare root/log formations should cut across the existing arrangement
+of rooms and walls, allowing burning/chopping to reveal unexpected connections.
+Treat this as a distinct category of cross-room features, not another rectangular
+room or merely cosmetic scatter. Six proposed families per biome are listed in
+the scene candidates, separately from six reserved multi-room landmarks.
+
+Placement order: build the route/objective plan and room/landmark geometry; fit
+rare cross-room features to that geometry; then place compatible encounters,
+loot and ordinary decoration; finally validate the resulting floor. This is a
+post-pass over base geometry, not an unvalidated final overwrite after every
+other placement. It adds another layer of geography to an existing plan.
+
+A fallen trunk can intersect two or three rooms and replace a narrow strip of
+intervening eligible wall with actual timber/root obstruction over floor. Burn
+or cut that obstruction and the strip becomes a real corridor. Give its ends
+and branches readable clues; keep the surrounding stone/earth intact. Preserve
+whatever overhead art is appropriate, with shared fade groups for enterable
+sections. Burning the art alone must not leave the original wall invisibly solid.
+
+Use bounded candidate paths and explicit footprints, legal entrance cells and
+material replacements. Cache affected room connections as ordinary or conditional
+links for generation validation, without requiring every monster to know a hidden
+passage before it opens. Resolve intersections with water, existing props, fire,
+landmarks and other features deliberately; an unsupported overlap rejects or
+shortens the candidate. Place ordinary loot/actors afterward so they are not
+silently erased. Real burning/digging/fire spread continues through shared rules.
+
+Rarity belongs to the whole floor/run: start with usually zero and at most one
+major cross-room feature per ordinary floor, plus a run budget. Do not roll a
+small chance independently on every wall tile and accidentally create dozens.
+No final percentage has been selected. Vary span, branching and cost without
+forcing every feature to be a mandatory puzzle. Timber Forest or authored scenes
+can deliberately request denser connected material using a separate policy.
+
+Keep the normal generated solution available without a rare tool. These features
+should buy shorter routes, access to optional caches or clever ways around fights.
+Some may explicitly allow a rare objective bypass; make that a visible intentional
+design exception, not an accidental side effect hidden by a blanket “lock required”
+check. Ordinary placements must respect protected encounter/objective boundaries
+unless that feature's rule permits bypass. Unbreakable map edges remain intact.
+Validate base reachability and each intended conditional opening, including
+destruction that could remove bridges or change access. Softlocks are different
+from the desired pleasure of breaking the intended route with a fitting tool.
+
+Generation RNG and resulting tiles/props are deterministic and saved normally.
+Expose feature identity/footprint in debug views and provide forced-feature
+generation for inspection; do not rely on waiting for a rare roll to verify one.
+
 ## Items: identity, useful toys and connected rules
 
 Replace Swap Seed with Blink Seed in behavior, name, art, descriptions and pools.

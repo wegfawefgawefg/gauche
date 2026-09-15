@@ -20,6 +20,31 @@ Do not double-count a landmark embedded in an ordinary floor as an authored uniq
 whole floor, or count variants of one boss as separate encounter designs without
 meaningfully different behavior.
 
+## Cross-room features: six proposed families per area
+
+New category from the user's layering follow-up. These cross existing room/wall
+boundaries; they do not reserve a standalone room or replace a whole floor.
+Propose **6 families per biome**, separate from the six multi-room landmarks.
+Placement is rare: normally absent, at most one major feature in a regular floor
+initially, with a per-run budget. Family count does not mean six features per floor.
+Chances remain tuning choices. Feature-specific scenes may deliberately relax this.
+
+| Forest | Ice | Industrial / mine / lava | Fourth area, provisional |
+| --- | --- | --- | --- |
+| Buried fallen trunk: burn/chop timber through intervening walls | Frozen watercourse: melt ice plugs linking rooms | Disused service duct: break thin grates along a wall-crossing route | Cable service trench: break access panels between rooms |
+| Spreading root seam: cut/burn winding branches into neighboring chambers | Snow-filled fissure: shovel a winding route through banks | Soft spoil seam: shovel through wall-spanning backfill | Collapsed maintenance crawlway: clear weak rubble |
+| Abandoned burrow: open packed-earth plugs into several rooms | Glacial crack: break thin ice partitions instead of thick stone | Ore fault: picks reveal a useful shortcut and ore | Damaged partition line: breach weak wall sections |
+| Web-filled crevice: burn/cut strands to open an alternate route | Ice-choked drainage channel: thaw and manage released water | Blocked drain: clear grates/plugs, leaving a wet alternative route | Coolant spill path: freeze/bracket crossings into service areas |
+| Connected brush/log tangle: sparse fire-resistant breaks, spreading fire can open several links | Fallen frozen timber: chop a path or burn/thaw the obstruction | Fallen timber supports: cut/burn them with warned local roof consequences | Scorched wooden construction passage: burn temporary hoarding |
+| Dry streambed: clear debris at old culverts through room boundaries | Chain of thaw pockets: connect narrow ice necks between warm cavities | Slag-filled pipe route: cool then break accessible plugs | Disused freight chute: force shutters open along a cross-room route |
+
+Features need recognizable entrances/material clues in rooms they intersect,
+meaningful traversable cells after clearing, and defined interactions at crossings.
+A trunk simply drawn over unchanged stone is not a burnable shortcut. Similar
+materials may also occur inside a landmark, but this quota counts separate
+cross-room placement rules, not a second count for the same room prefab.
+See [placement and solvability rules](../WORLD_INTERACTION_REVIEW.md#cross-room-features-and-layered-generation).
+
 ## Tall props: eight families per area
 
 | Forest | Ice | Industrial / mine / lava | Fourth area, provisional |

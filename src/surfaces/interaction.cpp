@@ -87,7 +87,7 @@ void contact_surface(Game& game, int slot) {
                 apply_nausea(actor, 180);
             }
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) ignite_surface(game, actor.cell);
-            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SteamLeech && actor.kind != EntityKind::Ember) {
+            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SteamLeech && actor.kind != EntityKind::WalkingKiln && actor.kind != EntityKind::Ember) {
                 if (actor.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, actor.cell);
                 actor.scorch_ticks = 300;
             }

@@ -31,6 +31,13 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::WalkingKiln: {
+        const auto roll=random_u32(game)%100;
+        // Plate/biscuit catalog entries are still candidates, not substitute loot.
+        if (roll>=45 && roll<60 && enemy.counter_a>0)
+            place_ground_item(game,enemy.cell,ItemKind::CoalLump,std::min(2,enemy.counter_a));
+        break;
+    }
     case EntityKind::CableCrawler:
         if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::CopperWire);
         break; // Insulated boots await their actual item implementation.

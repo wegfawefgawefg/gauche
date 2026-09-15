@@ -1,3 +1,4 @@
+#include "walking_kiln.hpp"
 #include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
 #include "magnet_crane.hpp"
@@ -71,6 +72,12 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::WalkingKiln:
+        if ((enemy.label_a==KilnDoor || enemy.label_a==KilnBreath) && enemy.cell==enemy.point_a)
+            for (int row=enemy.label_a==KilnDoor ? 1 : enemy.counter_b;row<=3;++row)
+                for (int side=-1;side<=1;++side)
+                    add(enemy.cell+Cell{enemy.point_b.x*row-enemy.point_b.y*side,enemy.point_b.y*row+enemy.point_b.x*side});
         break;
     case EntityKind::CableCrawler:
         if (enemy.label_a==CrawlerCharge && enemy.cell==enemy.point_a) add(enemy.point_b);
@@ -195,7 +202,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     return attack;
 }
 
-static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target,bool through_grates=false) {
+static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target,bool through_grates=false,bool solid_terrain_target=false) {
     if (smoke_blocks && obscures_sight(game.stage.at_or_border(from).surface)) return false;
     // GRID RAY: Corner gaps must not leak dust or a creature's line of sight.
     const int dx = to.x - from.x, dy = to.y - from.y;
@@ -203,9 +210,9 @@ static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks,
     const Cell sx{dx > 0 ? 1 : -1, 0}, sy{0, dy > 0 ? 1 : -1};
     int ix = 0, iy = 0;
     Cell cell = from;
-    const auto open = [&game, smoke_blocks, solid_target, through_grates, to](Cell at) {
+    const auto open = [&game, smoke_blocks, solid_target, through_grates, solid_terrain_target, to](Cell at) {
         const Tile* tile = game.stage.at(at);
-        if (tile == nullptr || !walkable(tile->kind) ||
+        if (tile == nullptr || (!walkable(tile->kind) && !(solid_terrain_target && at==to)) ||
             (prop_blocks(tile->prop) && !(through_grates && prop_shoot_through(tile->prop)) && !(solid_target && at == to)) ||
             (smoke_blocks && obscures_sight(tile->surface))) return false;
         // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.
@@ -237,6 +244,10 @@ bool clear_shot_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
 
 bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
     return trace_sight(game, from, to, smoke_blocks, true);
+}
+
+bool clear_heat_sight(const Game& game, Cell from, Cell to) {
+    return trace_sight(game,from,to,false,true,false,true);
 }
 
 void resolve_enemy_attack(Game& game, int slot, int damage, SoundId sound, int sleep) {

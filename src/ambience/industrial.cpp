@@ -1,3 +1,4 @@
+#include "../entities/walking_kiln.hpp"
 #include "industrial.hpp"
 #include "../entities/ember.hpp"
 #include "../entities/magnet_crane.hpp"
@@ -17,6 +18,7 @@ bool industrial_ambient_active(const AmbientSource& source,const Game& game,Cell
     switch (source.cue) {
     case AmbientCue::FurnaceBreath:
         if (!owner || owner->freeze_ticks>0) return false;
+        if (owner->kind==EntityKind::WalkingKiln) return kiln_hot(*owner);
         return owner->kind==EntityKind::Ember ? stoker_hot(*owner) :
             owner->kind==EntityKind::BoilerTank && owner->counter_b>0;
     case AmbientCue::DistantPicks:
@@ -49,7 +51,7 @@ void place_industrial_ambience(AmbientAudio& audio,const Game& game,Cell listene
         const auto add=[&](AmbientCue cue) {
             add_ambient_source(audio,game,listener,cue,actor.cell,false,{slot,actor.generation});
         };
-        if (actor.kind==EntityKind::Ember || actor.kind==EntityKind::BoilerTank) add(AmbientCue::FurnaceBreath);
+        if (actor.kind==EntityKind::WalkingKiln || actor.kind==EntityKind::Ember || actor.kind==EntityKind::BoilerTank) add(AmbientCue::FurnaceBreath);
         if (actor.kind==EntityKind::ShiftForeman) add(AmbientCue::DistantPicks);
         if (actor.kind==EntityKind::MagnetCrane) add(AmbientCue::ChainSway);
         if (actor.kind==EntityKind::MagnetCrane || actor.kind==EntityKind::BoilerTank) add(AmbientCue::CoolingTicks);

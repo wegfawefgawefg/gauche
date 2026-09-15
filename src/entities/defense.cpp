@@ -1,3 +1,4 @@
+#include "walking_kiln.hpp"
 #include "attacks.hpp"
 #include "bell_diver.hpp"
 #include "frozen_pilgrim.hpp"
@@ -8,6 +9,7 @@
 int enemy_defense(Game& game, int slot, int damage, Cell source, bool blockable) {
     Entity& enemy = game.entities[static_cast<std::size_t>(slot)];
     if (!blockable) return damage;
+    if (kiln_open(enemy)) return std::min(damage,1000000)*2;
     // DEPTH: Ordinary strikes pass above the swimmer. Area shocks still reach it.
     if (diver_submerged(enemy)) return 0;
     // CRUST: Thawing sheds protection. Heat and unblocked damage bypass the ice.

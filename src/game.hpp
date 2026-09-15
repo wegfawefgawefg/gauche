@@ -44,7 +44,7 @@ struct SweepEvent {
 struct ShotEvent {
     Cell source{}, end{};
     bool impact = false, muzzle = false, casing = false;
-    bool electric = false, beam = false, magnetic = false;
+    bool electric = false, beam = false, magnetic = false, flame = false;
 };
 
 constexpr Cell operator+(Cell a, Cell b) { return {a.x + b.x, a.y + b.y}; }
@@ -157,7 +157,7 @@ enum class EntityKind : std::uint8_t {
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
-    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey, Strikebreaker, RivetGunner, Yeti, ArcWelder, MagnetCrane, PressureRat, CableCrawler,
+    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey, Strikebreaker, RivetGunner, Yeti, ArcWelder, MagnetCrane, PressureRat, CableCrawler, WalkingKiln,
     Count,
 };
 

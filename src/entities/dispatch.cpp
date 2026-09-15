@@ -1,3 +1,4 @@
+#include "walking_kiln.hpp"
 #include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
 #include "magnet_crane.hpp"
@@ -50,6 +51,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
     case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
     case EntityKind::SnowEffigy: init_snow_effigy(entity); break;
+    case EntityKind::WalkingKiln: init_walking_kiln(entity); break;
     case EntityKind::CableCrawler: init_cable_crawler(entity); break;
     case EntityKind::PressureRat: init_pressure_rat(entity); break;
     case EntityKind::MagnetCrane: init_magnet_crane(entity); break;
@@ -127,6 +129,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;
     case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;
     case EntityKind::SnowEffigy: step_snow_effigy(game, slot); break;
+    case EntityKind::WalkingKiln: step_walking_kiln(game,slot); break;
     case EntityKind::CableCrawler: step_cable_crawler(game,slot); break;
     case EntityKind::PressureRat: step_pressure_rat(game,slot); break;
     case EntityKind::MagnetCrane: step_magnet_crane(game,slot); break;

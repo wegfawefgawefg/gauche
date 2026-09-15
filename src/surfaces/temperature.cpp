@@ -1,3 +1,4 @@
+#include "../entities/walking_kiln.hpp"
 #include "../entities/pressure_rat.hpp"
 #include "../items/flare.hpp"
 #include "temperature.hpp"
@@ -33,7 +34,7 @@ bool entity_has_flame(const Entity& actor) {
     if (burning_flare(actor)) return true;
     if (actor.kind == EntityKind::CandleKeeper && actor.timer_b == 0) return true;
     if ((actor.kind == EntityKind::Campfire && actor.fire_tramples < 5) ||
-        stoker_hot(actor) || actor.burn_ticks > 0 || actor.scorch_ticks > 0) return true;
+        kiln_hot(actor) || stoker_hot(actor) || actor.burn_ticks > 0 || actor.scorch_ticks > 0) return true;
     const Item* held = actor.inventory.held();
     return held && hot_item(*held);
 }
@@ -125,6 +126,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
         if (quench_exposed_fuse(actor,sound==SoundId::ColdQuench)) quenched=true;
+        if (cool_walking_kiln(actor)) quenched=true;
         if (cool_pressure_rat(actor)) quenched=true;
         if (damp_stoker(actor) || douse_coal_spit(actor)) quenched = true;
         if (douse_flare(game,actor)) quenched = true;

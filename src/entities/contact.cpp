@@ -23,7 +23,7 @@ void enter_actor_cell(Game& game, int slot) {
     // TRAMPLE: Only a successful step or shove calls this; standing still spends no fire life.
     for (Entity& fire : game.entities) {
         if (fire.kind != EntityKind::Campfire || fire.cell != actor.cell ||
-            fire.fire_tramples >= 5 || actor.kind == EntityKind::SteamLeech || actor.kind == EntityKind::Ember) continue;
+            fire.fire_tramples >= 5 || actor.kind == EntityKind::WalkingKiln || actor.kind == EntityKind::SteamLeech || actor.kind == EntityKind::Ember) continue;
         if (actor.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, actor.cell);
         // REIGNITION: Extend the same weak burn, never stack its damage rate.
         actor.scorch_ticks = std::max(actor.scorch_ticks, 300);

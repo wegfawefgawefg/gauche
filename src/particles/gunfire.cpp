@@ -13,6 +13,10 @@ void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
         cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
         const ShotEvent& shot = game.shots[static_cast<std::size_t>(index)];
         if (distance(shot.source, focus) > 24 && distance(shot.end, focus) > 24) continue;
+        if (shot.flame) {
+            for (std::uint64_t i=0;i<3;++i) spawn_flame(cosmetics,shot.end,key+i*17,false);
+            continue;
+        }
         if (shot.magnetic) {
             RibbonParticle trail;trail.life=trail.span=8;trail.count=2;
             trail.red=151;trail.green=171;trail.blue=175;

@@ -1,3 +1,4 @@
+#include "walking_kiln.hpp"
 #include "../items/pocket_drill.hpp"
 #include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
@@ -68,7 +69,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
     // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
-    if (entity.kind == EntityKind::SteamLeech) entity.scorch_ticks = entity.burn_ticks = 0;
+    if (entity.kind == EntityKind::SteamLeech || entity.kind==EntityKind::WalkingKiln) entity.scorch_ticks = entity.burn_ticks = 0;
     step_thaw_charge(game,slot);
     step_quarry_charge(game,slot);
     step_flare(game,slot);
@@ -82,7 +83,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
-        interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
+        interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
         cool_pressure_rat(entity);interrupt_cable_crawler(entity);interrupt_pocket_drill(entity);
     }
     step_shard_state(entity);

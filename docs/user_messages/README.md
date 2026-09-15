@@ -1,9 +1,13 @@
 # Original user messages
 
-Preserve user wording here independently of design interpretations and task lists.
+Occasionally archive substantial messages worth keeping, or messages the user
+explicitly asks to preserve. Do not archive every message or routine clarification.
+For selected messages, preserve wording independently of design interpretations
+and task lists.
 The `.txt` files contain message bodies without spelling corrections, reflow or
 editorial annotations. Whitespace within the original messages is intentional.
-Do not rewrite an old message when a later decision supersedes it; add a new entry.
+Do not rewrite an archived message when a later decision supersedes it; update
+the design/task documents. Archive the follow-up only if it also merits keeping.
 This archive is source material, not a second live checklist.
 
 ## 2026-09-15

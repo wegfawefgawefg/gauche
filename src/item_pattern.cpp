@@ -13,7 +13,7 @@ int pattern_half_width(ItemPattern pattern, int reach) {
 ItemPattern item_pattern(ItemKind kind) {
     if (const RegionalItem* spec = regional_item(kind)) return spec->pattern;
     switch (kind) {
-    case ItemKind::Fist: return {1, 1, 0, 10, 12, PatternEffect::Damage};
+    case ItemKind::Fist: return {1, 1, 0, 4, 12, PatternEffect::Damage};
     case ItemKind::Stick: return {1, 1, 0, 17, 16, PatternEffect::Damage};
     case ItemKind::Pickaxe: return {1, 1, 0, 22, 24, PatternEffect::Damage};
     case ItemKind::Pistol: return {1, 9, 0, 16, 12, PatternEffect::Damage, true};

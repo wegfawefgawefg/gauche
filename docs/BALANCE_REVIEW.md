@@ -4,6 +4,11 @@
 Execution status lives in [MASTER_TASKS.md](MASTER_TASKS.md). This specification
 extends the [world interaction review](WORLD_INTERACTION_REVIEW.md).
 
+First implementation pass: [native supply/ammo/fist changes](history/SUPPLY_BALANCE.md).
+The starting-point findings below describe the pre-change behavior. Availability,
+SMG reserves/refills, general consumable bundles and baseline Fist are now changed;
+Hearth, offer-value matching, augments and broader balance remain pending.
+
 ## Preserve what is working
 
 The user's brother enjoyed roughly an hour in Forest. Preserve abundant toys,

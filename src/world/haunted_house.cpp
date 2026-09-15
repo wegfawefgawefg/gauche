@@ -82,7 +82,7 @@ void populate_haunted_house(Game& game) {
     }
     place_coins(game, {22, 17}, 14);
     place_coins(game, {52, 17}, 14);
-    place_ground_item(game, {23, 45}, ItemKind::Shotgun);
+    place_ground_item(game, {23, 45}, ItemKind::Blunderbuss);
     place_ground_item(game, {52, 45}, ItemKind::Buckler);
     place_ground_item(game, {35, 33}, ItemKind::Ammo);
     place_ground_item(game, {39, 33}, ItemKind::Bandage, 3);

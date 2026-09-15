@@ -1,4 +1,5 @@
 #include "items/belt_tools.hpp"
+#include "items/ammunition.hpp"
 #include "items/foreman_whistle.hpp"
 #include "items/quarry_charge.hpp"
 #include "items/fuse_scissors.hpp"
@@ -410,14 +411,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         break;
     case ItemKind::Ammo:
-        for (Item& weapon : user.inventory.slots) {
-            if (item_is_gun(weapon.kind)) {
-                if (weapon.kind == ItemKind::Bow) weapon.loaded += 24;
-                else weapon.spare += weapon.kind == ItemKind::RocketLauncher ? 2 :
-                                std::max(12, magazine_size(weapon.kind) * 3);
-                used = true;
-            }
-        }
+        used = supply_ammunition(user.inventory);
         break;
     case ItemKind::Count: case ItemKind::None:
         break;

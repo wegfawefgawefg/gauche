@@ -1,4 +1,4 @@
-#include "items/industrial_catalog.hpp"
+#include "items/supply.hpp"
 #include "game.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/campfire.hpp"
@@ -37,39 +37,9 @@ ItemAttribute rare_attribute(Game& game, ItemKind kind) {
 }
 
 Reward random_reward(Game& game, int category) {
-    if (category==0 && industrial_floor(game.run.floor) && random_u32(game)%4==0) {
-        const ItemKind kind=industrial_finds[random_u32(game)%industrial_finds.size()];
-        return {RewardKind::Item,kind,ArtifactKind::None,1,rare_attribute(game,kind)};
-    }
-    if (category == 0 && ice_floor(game.run.floor) && random_u32(game) % 4 == 0) {
-        constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish, ItemKind::SnowGlobe, ItemKind::SaltedKelp, ItemKind::BrineFlask, ItemKind::CandleStub, ItemKind::WickSpool, ItemKind::CoalLump, ItemKind::SteamKettle, ItemKind::PressureValve, ItemKind::Sealant, ItemKind::SkateBlade, ItemKind::Crampons, ItemKind::SignalFlare, ItemKind::CopperWire, ItemKind::GroundingSpike, ItemKind::StormLantern, ItemKind::EchoPebble, ItemKind::HarpoonGun, ItemKind::EmergencyDoorstop, ItemKind::BorrowedSummer, ItemKind::HeatSiphon, ItemKind::ThawCharge, ItemKind::FoldedBridge, ItemKind::TuningFork, ItemKind::StillwaterBell, ItemKind::EffigyMask, ItemKind::IceAnchor, ItemKind::SnowShelter, ItemKind::Sled};
-        const ItemKind kind = cold_tools[random_u32(game) % std::size(cold_tools)];
-        return {RewardKind::Item, kind, ArtifactKind::None,
-                kind == ItemKind::IceNeedle ? 3 : 1, rare_attribute(game, kind)};
-    }
-    if (category == 0 && forest_floor(game.run.floor) && random_u32(game) % 2 == 0) {
-        constexpr ItemKind finds[]{ItemKind::Hatchet, ItemKind::HuntingSpear,
-            ItemKind::Crossbow, ItemKind::Blunderbuss, ItemKind::WoodenMaul,
-            ItemKind::Rake, ItemKind::FlintKnife, ItemKind::ThrowingRock, ItemKind::Torch,
-            ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask,
-            ItemKind::SmokePot, ItemKind::MushroomSpores, ItemKind::HoneyPot, ItemKind::DiggingClaws,
-            ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
-            ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::Boomerang, ItemKind::RopeSnare, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::StinkBomb, ItemKind::RottenFruit, ItemKind::PitchBomb, ItemKind::ShieldLantern, ItemKind::ReflectingPan, ItemKind::Scarecrow, ItemKind::StrawDecoy, ItemKind::WolfWhistle, ItemKind::ThunderAcorn, ItemKind::PocketDoor, ItemKind::HandBell, ItemKind::Firecracker, ItemKind::ThrowingNet, ItemKind::StickyBoots, ItemKind::RabbitCharm};
-        const ItemKind kind = finds[random_u32(game) % std::size(finds)];
-        return {RewardKind::Item, kind, ArtifactKind::None,
-                kind == ItemKind::ThrowingRock ? 3 : 1, rare_attribute(game, kind)};
-    }
     if (category == 0) {
-        constexpr std::array<ItemKind, 11> items{
-            ItemKind::Pistol, ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
-            ItemKind::Bomb, ItemKind::Medkit, ItemKind::RocketLauncher,
-            ItemKind::SleepMeds, ItemKind::Shotgun, ItemKind::SMG,
-            ItemKind::Pickaxe};
-        const ItemKind kind = items[random_u32(game) % items.size()];
-        return {RewardKind::Item, kind, ArtifactKind::None,
-                kind == ItemKind::Bomb ? 3 :
-                (kind == ItemKind::Medkit || kind == ItemKind::SleepMeds ? 2 : 1),
-                rare_attribute(game, kind)};
+        const ItemKind kind=roll_item_supply(game,LootSource::Reward);
+        return {RewardKind::Item,kind,ArtifactKind::None,supply_count(kind),rare_attribute(game,kind)};
     }
     if (category == 1) {
         constexpr std::array<ArtifactKind, 4> artifacts{
@@ -255,7 +225,7 @@ void buy_shop_item(Game& game, int owner, int choice) {
     if (kind == ItemKind::None || game.run.coins[static_cast<std::size_t>(owner)] < price(kind))
         return;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr || !insert_item(player->inventory, make_item(kind))) return;
+    if (player == nullptr || !insert_item(player->inventory, supply_item(kind))) return;
     game.run.coins[static_cast<std::size_t>(owner)] -= price(kind);
     game.run.shop_stock[static_cast<std::size_t>(choice)] = ItemKind::None;
 }
@@ -274,27 +244,9 @@ void advance_run(Game& game) {
         if (game.run.floor % 2 == 0) {
             game.run.phase = RunPhase::Shop;
             game.run.shop_ready.fill(false);
-            game.run.shop_stock = {ItemKind::Bandage,
-                                   !forest_floor(game.run.floor) ? ItemKind::Mine : ItemKind::Buckler,
-                                   industrial_floor(game.run.floor) ? ItemKind::RocketLauncher :
-                                   (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
-            if (industrial_floor(game.run.floor) && random_u32(game)%4==0)
-                game.run.shop_stock[1]=industrial_finds[random_u32(game)%industrial_finds.size()];
-            if (ice_floor(game.run.floor)) {
-                constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish, ItemKind::SnowGlobe, ItemKind::SaltedKelp, ItemKind::BrineFlask, ItemKind::CandleStub, ItemKind::WickSpool, ItemKind::CoalLump, ItemKind::SteamKettle, ItemKind::PressureValve, ItemKind::Sealant, ItemKind::SkateBlade, ItemKind::Crampons, ItemKind::SignalFlare, ItemKind::CopperWire, ItemKind::GroundingSpike, ItemKind::StormLantern, ItemKind::EchoPebble, ItemKind::HarpoonGun, ItemKind::EmergencyDoorstop, ItemKind::BorrowedSummer, ItemKind::HeatSiphon, ItemKind::ThawCharge, ItemKind::FoldedBridge, ItemKind::TuningFork, ItemKind::StillwaterBell, ItemKind::EffigyMask, ItemKind::IceAnchor, ItemKind::SnowShelter, ItemKind::Sled};
-                game.run.shop_stock[1] = cold_tools[random_u32(game) % std::size(cold_tools)];
-            }
-            if (forest_floor(game.run.floor)) {
-                constexpr ItemKind tools[]{ItemKind::Hatchet, ItemKind::WoodenMaul,
-                    ItemKind::HuntingSpear, ItemKind::FlintKnife, ItemKind::Torch, ItemKind::Lighter,
-                    ItemKind::OilFlask, ItemKind::SapJar, ItemKind::WaterFlask, ItemKind::SmokePot,
-                    ItemKind::HoneyPot, ItemKind::MushroomSpores, ItemKind::DiggingClaws,
-                    ItemKind::ResinGlue, ItemKind::SeedBag, ItemKind::LanternSeed,
-                    ItemKind::HerbBag, ItemKind::Splint, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::FungalBread, ItemKind::BirdSeed, ItemKind::ThornCaltrops, ItemKind::HuntingHorn, ItemKind::RopeHook, ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::Boomerang, ItemKind::RopeSnare, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::StinkBomb, ItemKind::RottenFruit, ItemKind::PitchBomb, ItemKind::ShieldLantern, ItemKind::ReflectingPan, ItemKind::Scarecrow, ItemKind::StrawDecoy, ItemKind::WolfWhistle, ItemKind::ThunderAcorn, ItemKind::PocketDoor, ItemKind::HandBell, ItemKind::Firecracker, ItemKind::ThrowingNet, ItemKind::StickyBoots, ItemKind::RabbitCharm};
-                game.run.shop_stock[1] = tools[random_u32(game) % std::size(tools)];
-                game.run.shop_stock[2] = random_u32(game) % 2 == 0 ?
-                    ItemKind::Crossbow : ItemKind::Blunderbuss;
-            }
+            game.run.shop_stock[0]=ItemKind::Bandage;
+            game.run.shop_stock[1]=roll_item_supply(game,LootSource::Shop,true,ItemKind::Bandage);
+            game.run.shop_stock[2]=roll_item_supply(game,LootSource::Weapon,true,game.run.shop_stock[1]);
             return;
         }
         ready_next_floor(game);

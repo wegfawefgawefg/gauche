@@ -1,3 +1,4 @@
+#include "../items/supply.hpp"
 #include "panel.hpp"
 #include "../items/fire_render.hpp"
 #include "interaction.hpp"
@@ -220,7 +221,7 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
             ground->kind, ArtifactKind::None, ground->count, ground->attribute} :
             shop_offer ? Reward{RewardKind::Item,
             game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)],
-            ArtifactKind::None, 1} : reward_offer(game, owner, ui.offer_focus);
+            ArtifactKind::None, supply_count(game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)])} : reward_offer(game, owner, ui.offer_focus);
         if (ground != nullptr)
             draw_item_details(renderer, graphics, *player, *ground,
                               204.0F + shift, 77.0F, 194.0F, 214.0F, "GROUND");
@@ -279,7 +280,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                 text(renderer, x + 62.0F, 185.0F, "SOLD");
             } else {
                 reward_card(renderer, graphics, *player,
-                            {RewardKind::Item, kind, ArtifactKind::None, 1},
+                            {RewardKind::Item, kind, ArtifactKind::None, supply_count(kind)},
                             x, y, 187.0F, index == ui.offer_focus, label.c_str());
                 char price[40];
                 std::snprintf(price, sizeof(price), "%d COINS", shop_price(kind));

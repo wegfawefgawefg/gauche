@@ -1,3 +1,4 @@
+#include "../items/supply.hpp"
 #include "interaction.hpp"
 #include "../items/ground_interaction.hpp"
 #include "../input.hpp"
@@ -27,7 +28,7 @@ bool shop_fits(const Game& game, int owner, int index) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
     if (player == nullptr) return false;
     Inventory trial = player->inventory;
-    return insert_item(trial, make_item(game.run.shop_stock[static_cast<std::size_t>(index)]));
+    return insert_item(trial, supply_item(game.run.shop_stock[static_cast<std::size_t>(index)]));
 }
 
 void reset_if_run_changed(InteractionUi& ui, const Game& game) {

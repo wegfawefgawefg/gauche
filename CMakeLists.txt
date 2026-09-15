@@ -147,6 +147,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/woodland_tools.cpp src/props/growth.cpp
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp
+    src/items/supply.cpp src/items/supply_catalog.cpp src/items/ammunition.cpp
     src/entity.cpp src/combat/damage.cpp src/combat/shove.cpp
     src/combat/melee.cpp src/items/forest.cpp src/items/food.cpp src/items/campfire.cpp src/items/fire.cpp src/projectiles/recoverable.cpp src/items/stacking.cpp src/items/ground_interaction.cpp
     src/entities/attacks.cpp src/entities/defense.cpp

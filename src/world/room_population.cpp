@@ -1,4 +1,5 @@
 #include "workfront.hpp"
+#include "../items/supply.hpp"
 #include "rivet_post.hpp"
 #include "assembly.hpp"
 #include "route.hpp"
@@ -279,14 +280,26 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             constexpr ItemKind quiet_tools[]{ItemKind::IceNeedle, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::EchoPebble};
             supply(game, room, quiet_tools[round % 4], round % 4 == 0 ? 3 : 1, budget.equipment);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {
-            constexpr ItemKind supplies[]{ItemKind::Shotgun, ItemKind::Musket,
-                ItemKind::Bomb, ItemKind::Buckler};
-            supply(game, room, supplies[random_u32(game) % std::size(supplies)], 1, budget.equipment);
+            const ItemKind kind=roll_item_supply(game,room.role==RoomRole::Secret ? LootSource::Secret : LootSource::Cache);
+            supply(game,room,kind,supply_count(kind),budget.equipment);
             supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
         } else if (room.role == RoomRole::Observatory || room.role == RoomRole::Shrine) {
             supply(game, room, room.role == RoomRole::Observatory ? (round % 2 == 0 ? ItemKind::LensCarbine : ItemKind::PrismBomb) : ItemKind::ColdFlask,
                 room.role == RoomRole::Observatory ? 1 : 2, budget.equipment);
             supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
+        }
+        return;
+    }
+    if (industrial_floor(game.run.floor)) {
+        if (room.role==RoomRole::Cache || room.role==RoomRole::Secret ||
+            room.role==RoomRole::Workshop || room.role==RoomRole::Shrine) {
+            stash(game,room,budget);
+            const LootSource source=room.role==RoomRole::Secret ? LootSource::Secret :
+                room.role==RoomRole::Workshop ? LootSource::Workshop : LootSource::Cache;
+            const ItemKind kind=roll_item_supply(game,source);
+            supply(game,room,kind,supply_count(kind),budget.equipment);
+            supply(game,room,ItemKind::Ammo,1,budget.ammunition);
+            supply(game,room,ItemKind::Bandage,2,budget.healing);
         }
         return;
     }
@@ -296,25 +309,20 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
     case RoomRole::Secret:
         if (const auto cell = room_space(game, room))
         {
-            constexpr ItemKind relics[]{ItemKind::ConductorHat, ItemKind::RocketLauncher,
-                ItemKind::Musket, ItemKind::Pickaxe, ItemKind::Blunderbuss, ItemKind::Crossbow,
-                ItemKind::RootDrill, ItemKind::SwapSeed, ItemKind::RabbitCharm};
-            place_ground_item(game, *cell, relics[random_u32(game) % std::size(relics)]);
+            const ItemKind kind=roll_item_supply(game,LootSource::Secret);
+            place_ground_item(game,*cell,kind,supply_count(kind));
         }
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
     case RoomRole::Workshop: {
-        constexpr ItemKind tools[]{ItemKind::Pickaxe, ItemKind::BearTrap, ItemKind::ResinGlue, ItemKind::DiggingClaws, ItemKind::Splint, ItemKind::RopeHook, ItemKind::RopeSnare};
-        supply(game, room, tools[random_u32(game) % std::size(tools)], 1, budget.equipment);
+        const ItemKind kind=roll_item_supply(game,LootSource::Workshop,false);
+        supply(game,room,kind,supply_count(kind),budget.equipment);
         supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
         break;
     }
     case RoomRole::Cache: {
-        constexpr ItemKind equipment[]{ItemKind::Bow, ItemKind::Musket, ItemKind::Buckler,
-            ItemKind::Bomb, ItemKind::Pistol, ItemKind::SleepMeds,
-            ItemKind::Hatchet, ItemKind::HuntingSpear, ItemKind::WoodenMaul, ItemKind::FlintKnife,
-            ItemKind::SmokePot, ItemKind::HoneyPot, ItemKind::HuntingHorn, ItemKind::Boomerang, ItemKind::SpringTrap, ItemKind::AcornMine, ItemKind::StinkBomb, ItemKind::RottenFruit, ItemKind::PitchBomb, ItemKind::ShieldLantern, ItemKind::ReflectingPan, ItemKind::Scarecrow, ItemKind::StrawDecoy, ItemKind::WolfWhistle, ItemKind::ThunderAcorn, ItemKind::PocketDoor, ItemKind::HandBell, ItemKind::Firecracker, ItemKind::ThrowingNet, ItemKind::StickyBoots};
-        supply(game, room, equipment[random_u32(game) % std::size(equipment)], 1, budget.equipment);
+        const ItemKind kind=roll_item_supply(game,LootSource::Cache);
+        supply(game,room,kind,supply_count(kind),budget.equipment);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
             const ItemKind remedy = healing[random_u32(game) % std::size(healing)];

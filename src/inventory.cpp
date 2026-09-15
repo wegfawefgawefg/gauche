@@ -50,9 +50,9 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
     case ItemKind::Pistol: item.loaded = 12; item.spare = 48; break;
     case ItemKind::Musket: item.loaded = 1; item.spare = 12; break;
     case ItemKind::Bow: item.loaded = 20; item.spare = 0; break;
-    case ItemKind::RocketLauncher: item.loaded = 1; item.spare = 4; break;
-    case ItemKind::Shotgun: item.loaded = 6; item.spare = 30; break;
-    case ItemKind::SMG: item.loaded = 30; item.spare = 120; break;
+    case ItemKind::RocketLauncher: item.loaded = 1; item.spare = 1; break;
+    case ItemKind::Shotgun: item.loaded = 6; item.spare = 6; break;
+    case ItemKind::SMG: item.loaded = 30; item.spare = 18; break;
     default: break;
     }
     if (const RegionalItem* spec = regional_item(kind)) {

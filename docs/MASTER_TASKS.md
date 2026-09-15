@@ -9,9 +9,9 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 [Verbatim user-message archive](user_messages/README.md) preserves the full 1–13 message, IDEA/A–C interludes, preceding screenshot notes and latest balance feedback. Keep originals intact; this file alone tracks execution. [Balance review](BALANCE_REVIEW.md) specifies the work below. Balance proceeds alongside content, preserving abundant toys and the enjoyable Forest experimentation.
 
 - [ ] Audit every normal loot source for biome identity/power/availability: SMG, machine guns and rockets must be exceptionally rare Forest imports; bows, blowguns and fitting woodland tools lead native pools. Evaluate aggregate biome/run chances and starting ammo, not just per-roll rates; exempt explicit debug loadouts.
-- [ ] Substantially reduce SMG Ammo refills (currently ninety spare rounds/use); set sensible per-weapon budgets, audit all-carried-gun/duplicate resupply and show actual quantities in item details.
+- [x] Substantially reduce SMG Ammo refills: now eighteen spare rounds/use, reduced starting reserves, per-weapon budgets, explicit all-carried-gun/duplicate behavior and actual quantities in details. See [first supply balance pass](history/SUPPLY_BALANCE.md); human tuning remains ongoing.
 - [ ] Audit underpowered throwables: tune actual damage/utility and useful acquisition stack sizes together with recoverability, timing, price and slot value; apply quantities consistently across drops/containers/rewards/shops and preserve stack merging.
-- [ ] Heavily nerf baseline Fist against acquired melee options while preserving crisp handling and a usable fallback; compare real attack cycles, safety and unlimited durability, not damage alone.
+- [x] Heavily nerf baseline Fist: damage 10→4 with its three-tick windup/twelve-tick cooldown preserved. Real damage/timing checked; live feel and encounter balance remain human feedback work.
 - [ ] Design earned punching equipment/augments (heavy glove, lightning/light/heavy/fire/poison candidates), with explicit acquisition, slot/permanence, stacking, material interactions and counters.
 - [ ] Rebalance Hearth and existing artifacts/attributes/buffs for absolute strength, co-op/stacking, price and earliest availability; expand creative conditional augments and plan growth across the intended sixteen-floor run.
 - [ ] Rework shop/three-choice reward valuation so same-stage offers are meaningfully competitive; bundle/replace weak toy offers appropriately without making every toy overpowered. Review loot, ammo, melee and permanent-power balance during each content slice using focused calculations and human feedback.
@@ -19,7 +19,7 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 ## Content architecture maintenance
 
 - [ ] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. Keep ordinary C++ structs/free functions and clear ownership.
-- [ ] Replace duplicated native/shared item memberships across loot consumers with referenced catalog pools. Room drops, enemy drops, containers, shops and rewards still own distinct eligibility, weights, quantities and guarantees; do not flatten them into one universal random table.
+- [x] Replace duplicated general loot memberships with one explicit item-supply catalog, referenced by rewards/shops/caches/secrets/workshops; keep themed room, enemy and container sources explicit. Native stage/weight rules, rare imports and shared bundle previews/purchases are integrated; see [supply balance](history/SUPPLY_BALANCE.md).
 - [ ] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Keep small init/update dispatch switches; do not replace straightforward registries merely because they have many entries.
 
 ## World interaction review (2026-09-15)

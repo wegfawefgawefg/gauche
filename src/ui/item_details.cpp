@@ -1,4 +1,5 @@
 #include "../items/echo_pebble.hpp"
+#include "../items/ammunition.hpp"
 #include "../combat/parry.hpp"
 #include "../items/fire_render.hpp"
 #include "item_details.hpp"
@@ -63,14 +64,14 @@ const char* item_description(ItemKind kind) {
     case ItemKind::Medkit: return "Restore up to 100 health. One use consumes one kit.";
     case ItemKind::Bandage: return "Restore 10 health. Quick, modest field medicine.";
     case ItemKind::Bandaid: return "Restore 1 health when there is time to spare.";
-    case ItemKind::Fist: return "A direct punch into the next tile. Always available.";
+    case ItemKind::Fist: return "A weak emergency punch. Always available; real weapons hit harder.";
     case ItemKind::ConductorHat: return "Lay track and call a train that tears through walls.";
     case ItemKind::Buckler: return "Block a hit, then shove the actor in front of you.";
     case ItemKind::Pistol: return "A reliable short-cooldown shot along a straight line.";
     case ItemKind::Musket: return "A loud, powerful single shot. Slow to reload.";
     case ItemKind::Bow: return "Hold to draw; release an arrow. No reload. Damage arrives with the arrow.";
     case ItemKind::RocketLauncher: return "A rocket travels straight, then blasts the impact area.";
-    case ItemKind::Ammo: return "Supply each gun and bow separately, including the held weapon.";
+    case ItemKind::Ammo: return "Refill every carried gun and bow. Amount varies by weapon; one box is consumed.";
     case ItemKind::Bomb: return "Throw forward. A 2.5s fuse starts on use, then it explodes. Get clear!";
     case ItemKind::SleepMeds: return "Put a nearby target to sleep for a short time.";
     case ItemKind::Stick: return "Hit harder than a fist. Light at a campfire for 30s of fire strikes; water puts it out.";
@@ -395,7 +396,20 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | ROOT 3.0s");
     else if (item.kind == ItemKind::SpringTrap)
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
+    if (item_is_gun(item.kind))
+        std::snprintf(line,sizeof(line),"RANGE %d-%d | AMMO +%d",pattern.minimum,pattern.maximum,ammunition_refill(item.kind));
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
+    if (item.kind==ItemKind::Ammo && height>=176) {
+        text(renderer,x+10,y+151,"REFILLS CARRIED WEAPONS",185,185,172);
+        int row=0;
+        for (const Item& weapon:player.inventory.slots) {
+            if (!item_is_gun(weapon.kind) || static_cast<float>(167+row*9)>height-6) continue;
+            std::snprintf(line,sizeof(line),"%s +%d",item_name(weapon.kind),ammunition_refill(weapon.kind));
+            text(renderer,x+10,y+160+static_cast<float>(row++)*9,line,194,192,180);
+        }
+        if (row==0) text(renderer,x+10,y+160,"NO GUNS TO SUPPLY",162,171,159);
+        return;
+    }
     if (height >= 176.0F) {
         text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::SnowShelter ? "PLACE BOTH / FRONT + RIGHT" : item.kind == ItemKind::IceAnchor ? "CLEAR TETHER / EXAMPLE" : item.kind == ItemKind::EffigyMask ? "REAR SOLID / FRONT OUTLINE" : item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,

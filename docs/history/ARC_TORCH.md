@@ -42,7 +42,7 @@ The master supply row is Industrial, weight 3, stage 2, price 38. Available in
 native combat stock, rewards, shops, caches, workshops and secrets. Existing
 salvage/secret rules may preview it one stage earlier. Foreign-biome imports use
 the existing exceptionally rare import roll; there is no common Forest override.
-The future Arc Welder enemy and repair-bay composition remain unimplemented.
+The later [Arc Welder and repair-bay milestone](ARC_WELDER.md) adds a native enemy drop and a setting for these interactions.
 
 New offline cues cover transformer prime, normal pulse, metal cutting and spent
 battery. Prime and pulse/cutting sounds also register existing deterministic AI

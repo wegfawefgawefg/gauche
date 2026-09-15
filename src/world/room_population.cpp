@@ -1,3 +1,4 @@
+#include "repair_bay.hpp"
 #include "workfront.hpp"
 #include "../items/supply.hpp"
 #include "rivet_post.hpp"
@@ -82,7 +83,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -399,6 +400,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
             --budget.equipment;
         }
+    }
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::RepairBay && budget.threat>=2) {
+        if (get_entity(game,populate_repair_bay(game,plan,room))) budget.threat-=2;
+        else enemy(game,room,EntityKind::ArcWelder,2,budget);
     }
     // Reserve crew budget before incidental encounters consume it.
     for (const RoomPlan& room:plan.rooms)

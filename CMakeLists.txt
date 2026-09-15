@@ -114,6 +114,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/boiler_porter.cpp src/entities/boiler_tank.cpp src/entities/boiler_splash.cpp src/items/pressure.cpp src/world/boiler_room.cpp
     src/entities/candle_keeper.cpp src/entities/keeper_tending.cpp src/world/chapel.cpp
     src/entities/snow_effigy.cpp
+    src/entities/arc_welder.cpp
     src/entities/yeti.cpp
     src/combat/toss.cpp
     src/entities/avalanche_ram.cpp
@@ -181,7 +182,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
-set(GAUCHE_WORLD_SOURCES src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp
+set(GAUCHE_WORLD_SOURCES src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp
     src/world/room_population.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/loot.cpp)

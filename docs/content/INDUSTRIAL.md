@@ -3,8 +3,8 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, nine regional items, metal cover/bins,
-assembly-room conveyors, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
+Strikebreaker escorts, Rivet Gunners, Arc Welders, nine regional items, metal cover/bins,
+assembly-room conveyors, wet repair bays, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -76,7 +76,7 @@ assets to make, not substitutes using the current generic sounds.
 | 10 | Tar choir | Three 32-HP bodies sway together before coughing sticky, flammable tar at a fixed gap. Break line of sight between singers to stagger their rhythm. Cold clots the patch; fire ignites friends too. Low bubbling thirds, separate coughs. | Settling tanks; final body only: 30% tar flask, 15% solvent rag. |
 | 11 | Walking kiln | 160 HP; four slow steps, door clanks open for 1s, then a wide short flame breath. Eats adjacent wood/coal between attacks to refuel. Open door takes extra damage; cool the mouth or feed it junk to occupy it. Hinge groan, ceramic roar. | Kiln court; 25% ceramic plate, 20% coal biscuit, 15% two coal lumps. |
 | 12 | Audit clerk | 38 HP, normally neutral; follows loose gold, stamps it, then carries it toward a locked pay cage. Recover actual stolen coins on death. Its alarm calls nearby workers, never summons an infinite army. Stamp thump, paper shuffle, shrill bell. | Pay office; 25% punch card, 15% inspector stamp, 25% 3–7 gold. |
-| 13 | Arc welder | 70 HP; lowers visor for 0.7s, then sweeps a two-cell electric arc across three facing lanes. Water/wire carries the received shock; grounding spikes absorb it. Blind side is open. Mask click, crackling arc, cooling tick. | Repair bay; 25% arc torch, 15% welding visor. |
+| 13 | Arc welder | Implemented: 70 HP; lowers visor for 0.7s, then sweeps three fixed lanes, two cells deep, 0.15s apart. Each lane deals at most 7 electrical damage per victim; shared water/wire paths can hit allies and the welder. Ready grounding sinks one entire lane pulse. Hits of at least 10 damage, control effects and displacement interrupt; 1.2s recovery. Cuts grates/metal bins for 14. Mask hinge/clunks, shared arc/cutting cues, death grunt. | Optional repair bay with a wet work area, dry margins and a grounding spike; ordinary room fallback if the authored footprint is occupied. One roll: 25% Arc Torch, next 15% Copper Wire, otherwise nothing. Welding visor remains pending. |
 | 14 | Ash sleeper | 44 HP; a flat ash mound wakes to nearby loud work, shakes for 0.5s and rises into a fragile swirling body. Calm air or wetness settles it; a fan can shove it into a furnace. Dust inhale, hollow sandy rattle. | Quiet ash loft; 25% ash sack, 15% filter mask. |
 | 15 | Mold thief | 58 HP; steals one loose metal item and runs to a casting mold. Takes 3s to seal the lid; interrupt to recover it unchanged. Sealed molds remain breakable and contain that same item, not a rerolled replacement. Tongs clank, lid slap. | Casting floor; 20% foundry tongs, 20% mold key. |
 | 16 | Cable crawler | 50 HP; advances along wall edges and lays a short wire tail. An exposed charging segment flashes for 0.8s before a pulse. Cut/ground the tail; it cannot shock through a deleted segment. Insulation creak, ticking relay. | Cable trench; 25% copper wire, 15% insulated boots. |
@@ -186,7 +186,7 @@ foundry exit. Special layouts replace a floor only once their full route works.
 | Settling tanks | Paired rectangular pits with dry central bridge | Tar choir with broken sightlines, solvent shelf. Fire clears tar but endangers the bridge approach. |
 | Kiln court | Wide U around one furnace | Walking kiln and burnable stock, alcoves to bait a breath, ceramic chest. |
 | Pay office | Quiet side room with window grates | Clerk, pay cage and ledger; optional theft alarms existing nearby crew, no infinite respawn. |
-| Repair bay | Offset benches framing two short lanes | Welder, drain, grounding point, toolbox. Water is useful cooling and dangerous conduction. |
+| Repair bay | Implemented: broad dry clearing with an offset 3×3 wet work area and two grate benches opposite | One welder on the dry bank, one ready grounding spike beside the water. Entire footprint is checked before placement and avoids protected routes. Up to one eligible bay per floor, two-thirds selection chance. Drain/toolbox remain pending. |
 | Ash loft | Broad quiet shelf with a single noisy floor strip | Sleepers, bagged ash, fan outlet; acoustic choice before combat. |
 | Casting floor | Two connected yards and a mold recess | Mold thief, breakable molds, tongs rack; stolen loot stays recoverable. |
 | Hoist shaft | Ring around a marked lifting rectangle | Counterweight, chain target reachable from both sides, pressure plate holding an optional cache. |

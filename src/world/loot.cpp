@@ -99,6 +99,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll<30) place_ground_item(game,enemy.cell,ItemKind::EffigyMask);
         break;
     }
+    case EntityKind::ArcWelder: {
+        const auto roll=random_u32(game)%100;
+        if (roll<25) place_ground_item(game,enemy.cell,ItemKind::ArcTorch);
+        else if (roll<40) place_ground_item(game,enemy.cell,ItemKind::CopperWire);
+        break;
+    }
     case EntityKind::Yeti:
         place_ground_item(game,enemy.cell,ItemKind::RawMeat,2);
         if (random_u32(game)%4==0) place_ground_item(game,enemy.cell,ItemKind::Crampons);

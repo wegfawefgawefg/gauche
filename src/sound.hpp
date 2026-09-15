@@ -60,7 +60,7 @@ enum class SoundId : std::size_t {
     RivetFire, RivetImpact, RivetReload, GunnerBrace, GunnerDeath,
     BeltCarry, BeltCrank, BrakeFit, BrakeSnap, BeltHit, BeltBreak,
     YetiWarn, YetiThrow, YetiMiss, YetiDeath, TossLand, TossImpact,
-    ArcPrime, ArcPulse, ArcCut, ArcEmpty,
+    ArcPrime, ArcPulse, ArcCut, ArcEmpty, WelderMask, WelderDeath,
     Count,
 };
 
@@ -118,5 +118,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "rivet_fire", "rivet_impact", "rivet_reload", "gunner_brace", "gunner_death",
     "belt_carry", "belt_crank", "brake_fit", "brake_snap", "belt_hit", "belt_break",
     "yeti_warn", "yeti_throw", "yeti_miss", "yeti_death", "toss_land", "toss_impact",
-    "arc_prime", "arc_pulse", "arc_cut", "arc_empty",
+    "arc_prime", "arc_pulse", "arc_cut", "arc_empty", "welder_mask", "welder_death",
 };

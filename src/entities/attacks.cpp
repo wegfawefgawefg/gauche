@@ -1,3 +1,4 @@
+#include "arc_welder.hpp"
 #include "yeti.hpp"
 #include "strikebreaker.hpp"
 #include "rivet_gunner.hpp"
@@ -67,6 +68,13 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::ArcWelder:
+        if ((enemy.label_a==WelderMask || enemy.label_a==WelderSweep) && enemy.cell==enemy.point_a) {
+            const Cell side{-enemy.point_b.y,enemy.point_b.x};
+            for (int lane=enemy.counter_a-1;lane<=1;++lane) for (int reach=1;reach<=2;++reach)
+                add(enemy.cell+Cell{enemy.point_b.x*reach+side.x*lane,enemy.point_b.y*reach+side.y*lane});
+        }
         break;
     case EntityKind::Yeti:
         if (enemy.label_a==YetiGrab && enemy.cell==Cell{enemy.counter_a,enemy.counter_b}) add(enemy.point_b);

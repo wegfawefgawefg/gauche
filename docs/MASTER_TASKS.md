@@ -362,7 +362,8 @@ behavior and balance playtesting remain the user's.
   [Rivet Guns and Gunners](history/RIVET_GUNNERS.md) add committed three-round traveling bursts, a braced enemy with a long reload, safe side firing posts, finite player magazines and local ejected casings.
   [Arc Torches](history/ARC_TORCH.md) add finite sustained electrical attacks, metal cutting and shared water/wire/grounding interactions; available through the master Industrial supply table.
   [Conveyors and assembly rooms](history/CONVEYORS.md) add deterministic roller transport, safe stationary crossings, hand-cranked runs, six-second brakes, powered-belt debris drag and positional roller ambience.
-  Six catalog enemy behaviors and nine of fifty regional items implemented;
+  [Arc Welders and repair bays](history/ARC_WELDER.md) add a visor-down warning, committed electrical lane sweep, metal cutting and wet/dry/grounding encounter choices.
+  Seven catalog enemy behaviors and nine of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

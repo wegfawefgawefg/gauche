@@ -329,7 +329,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         Item displayed_gun;
         const Item* held = entity.inventory.held();
-        if (entity.kind==EntityKind::RivetGunner) { displayed_gun=make_item(ItemKind::RivetGun); held=&displayed_gun; }
+        if (entity.kind==EntityKind::RivetGunner || entity.kind==EntityKind::ArcWelder) {
+            displayed_gun=make_item(entity.kind==EntityKind::ArcWelder ? ItemKind::ArcTorch : ItemKind::RivetGun); held=&displayed_gun;
+        }
         if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun) && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
             const Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;

@@ -1,3 +1,4 @@
+#include "ash_sleeper.hpp"
 #include "../items/echo_pebble.hpp"
 #include "echo_hound.hpp"
 #include "hearing.hpp"
@@ -108,4 +109,5 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     }
     record_echo_pebbles(game,sound,origin);
     hear_echo_hounds(game, origin, radius);
+    hear_ash_sleepers(game,origin,radius);
 }

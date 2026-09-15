@@ -1,3 +1,4 @@
+#include "../entities/ash_sleeper.hpp"
 #include "../traps/nail_board.hpp"
 #include "../projectiles/chain_hook.hpp"
 #include "../entities/slag_snail.hpp"
@@ -226,6 +227,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_ash_sleeper(entity)) reader.okay=false;
     if (!valid_slag_snail(entity)) reader.okay=false;
     if (!valid_furnace_moth(entity)) reader.okay=false;
     if (!valid_audit_clerk(entity)) reader.okay=false;

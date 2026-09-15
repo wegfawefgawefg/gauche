@@ -1,3 +1,4 @@
+#include "ash_sleeper.hpp"
 #include "hearing.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
@@ -70,6 +71,7 @@ void make_noise(Game& game, Cell origin, int radius, int startle_radius) {
         if (actor.health <= 0 ||
             std::find(heard.begin(), heard.end(), actor.cell) == heard.end()) continue;
         actor.sleep_ticks = 0;
+        if (radius>=7) rouse_ash_sleeper(game,actor,origin);
         if (skittish(actor.kind) && std::find(startled.begin(), startled.end(), actor.cell) != startled.end()) {
             actor.point_c = origin; actor.label_c = StartleNoise; actor.timer_c = 150;
             apply_stun(actor, 30);

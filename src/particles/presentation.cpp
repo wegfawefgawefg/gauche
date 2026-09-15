@@ -259,6 +259,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 5, seed + 1);
         push_debris(cosmetics.debris, sound.cell, 2.5F, .15F);
         break;
+    case SoundId::AshDeath:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::CoalCrumb,5,seed);
+        break;
     case SoundId::NailBreak:
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::BentNail,2,seed);
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::WoodChip,4,seed+1);

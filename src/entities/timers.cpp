@@ -1,3 +1,4 @@
+#include "ash_sleeper.hpp"
 #include "slag_snail.hpp"
 #include "../items/emergency_foam.hpp"
 #include "furnace_moth.hpp"
@@ -88,7 +89,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
-        interrupt_slag_snail(entity);interrupt_furnace_moth(entity);interrupt_audit_clerk(entity);interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
+        interrupt_ash_sleeper(entity);interrupt_slag_snail(entity);interrupt_furnace_moth(entity);interrupt_audit_clerk(entity);interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
         cool_pressure_rat(entity);interrupt_cable_crawler(entity);interrupt_pocket_drill(entity);
     }
     step_shard_state(entity);

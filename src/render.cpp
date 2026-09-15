@@ -1,3 +1,4 @@
+#include "entities/ash_sleeper.hpp"
 #include "entities/furnace_moth.hpp"
 #include "items/pocket_drill.hpp"
 #include "entities/pressure_rat.hpp"
@@ -305,6 +306,10 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 angle += static_cast<double>(remaining * 270);
             }
             apply_flight_pose(entity, game.tick, body_rect, angle);
+            if (entity.kind==EntityKind::AshSleeper) {
+                if (entity.label_a==AshRising || entity.label_a==AshSwipe) angle+=entity.timer_a/3%2==0 ? -7 : 7;
+                if (entity.label_a==AshSettling) {const float size=.4F+.6F*static_cast<float>(entity.timer_a)/30;body_rect.y+=body_rect.h*(1-size);body_rect.h*=size;}
+            }
             apply_leech_pose(entity, game.tick, body_rect, angle);
             apply_eel_pose(entity, game.tick, body_rect, angle);
             if (entity.kind == EntityKind::Trap && entity.ground_item.kind == ItemKind::SpringTrap)

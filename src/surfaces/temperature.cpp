@@ -1,3 +1,4 @@
+#include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
 #include "../entities/walking_kiln.hpp"
@@ -128,6 +129,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
         if (quench_exposed_fuse(actor,sound==SoundId::ColdQuench)) quenched=true;
+        if (damp_ash_sleeper(actor)) {quenched=true;emit_sound(game,SoundId::AshSettle,cell);}
         if (cool_slag_snail(actor)) {quenched=true;emit_sound(game,SoundId::SlagCool,cell);}
         if (cool_furnace_moth(actor)) quenched=true;
         if (cool_walking_kiln(actor)) quenched=true;

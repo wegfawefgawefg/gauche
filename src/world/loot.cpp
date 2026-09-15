@@ -31,6 +31,9 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::AshSleeper:
+        (void)random_u32(game); // Ash sack / filter-mask slots remain unimplemented; no substitute loot.
+        break;
     case EntityKind::SlagSnail:
         if (random_u32(game)%100<30) place_ground_item(game,enemy.cell,ItemKind::CookedMeat);
         break; // Shared cooked flesh; refractory paste remains a planned item.

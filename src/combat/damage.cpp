@@ -1,3 +1,4 @@
+#include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
 #include "../entities/audit_clerk.hpp"
@@ -49,6 +50,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    hurt_ash_sleeper(game,entity,attacker);
     interrupt_pocket_drill(entity);
     // The overhead press swing is deliberately vulnerable; a blocked hit never
     // reaches this path. An interrupted windup spends no tool condition.

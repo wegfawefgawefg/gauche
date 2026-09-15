@@ -380,7 +380,8 @@ behavior and balance playtesting remain the user's.
   [Slag Snails and slag banks](history/SLAG_SNAIL.md) add armored crawlers, fixed warned lunges, exposed recovery/cold states, short hot trails and crackable cooled crust beside optional lava-bank supplies.
   [Chain Hooks](history/CHAIN_HOOK.md) add held cargo/prop hauling, safe fixed-anchor pulls, loaded sled transport and scrap-yard supplies.
   [Nail Boards](history/NAIL_BOARD.md) add melee/ground-trap conversion with shared condition, safe recovery, heat/destruction and assembly-belt acquisition.
-  Fourteen catalog enemy behaviors and eighteen of fifty regional items implemented;
+  [Ash Sleepers and ash lofts](history/ASH_SLEEPER.md) add noise-triggered waking, warned swipes, quiet/wet settling and manual-belt encounters with useful cargo.
+  Fifteen catalog enemy behaviors and eighteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

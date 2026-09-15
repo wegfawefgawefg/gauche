@@ -254,6 +254,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
         } else if (room.role == RoomRole::BoilerGallery) {
+            if (random_u32(game)%4==0) supply(game,room,ItemKind::HeatSiphon,1,budget.equipment);
             supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment);
         } else if (room.role == RoomRole::ServicePassage) {
             supply(game,room,round%2==0 ? ItemKind::CopperWire : ItemKind::GroundingSpike,1,budget.equipment);

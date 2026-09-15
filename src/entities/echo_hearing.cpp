@@ -39,6 +39,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
+    case SoundId::SiphonFire:
     case SoundId::PorterHeave: case SoundId::PorterWarn: case SoundId::PorterHit: case SoundId::PorterDeath:
     case SoundId::BoilerRoll: case SoundId::LockerOpen: case SoundId::KettleReady:
     case SoundId::SpiderCatch: case SoundId::SpiderDeath:
@@ -59,7 +60,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SnowSplat: case SoundId::CrossbowShot: case SoundId::BowRelease:
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
-    case SoundId::SummerOpen:
+    case SoundId::SiphonDraw: case SoundId::SummerOpen:
     case SoundId::WireLay: case SoundId::WireCut: case SoundId::SpikePlant: case SoundId::SpikeBreak:
     case SoundId::FlareLand:
     case SoundId::SkateSlash: case SoundId::SkateCut: case SoundId::CramponsFit:

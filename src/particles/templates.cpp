@@ -170,6 +170,12 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::BoilerScald:
         spray(cosmetics,sound.cell,seed,7,Sprite::SteamPuff,.06F,-.001F);
         break;
+    case SoundId::SiphonDraw:
+        spray(cosmetics,sound.cell,seed,3,Sprite::SummerMote,.02F,-.001F);
+        break;
+    case SoundId::SiphonFlame:
+        spawn_flame(cosmetics,sound.cell,seed,false);
+        break;
     case SoundId::KettleScald:
         spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
         break;

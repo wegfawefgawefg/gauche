@@ -50,6 +50,7 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun)) reader.okay = false;
+    if (item.kind==ItemKind::HeatSiphon && (item.loaded>1800 || item.spare!=0)) reader.okay=false;
     if (item.kind == ItemKind::HarpoonGun && item.loaded > 1) reader.okay = false;
     if (item.kind == ItemKind::EchoPebble) {
         const EchoVoice* voice = echo_voice(item);

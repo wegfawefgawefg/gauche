@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../items/heat_siphon.hpp"
 #include "../items/harpoon.hpp"
 #include "player_movement.hpp"
 #include "../items/bow.hpp"
@@ -56,6 +57,7 @@ void step_player(Game& game, int slot, const Input& input) {
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
     if (step_harpoon_action(game,slot,input)) return;
+    if (step_siphon_action(game,slot,input)) return;
     if (step_lantern_action(game,slot,input)) return;
     if (step_melee_action(game, slot, input)) return;
     if (step_ice_brick(game, slot, input)) return;

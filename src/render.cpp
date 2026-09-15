@@ -221,7 +221,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                       pose->shake * pixels;
         }
         SDL_Texture* texture = texture_for(graphics, entity.kind == EntityKind::GroundItem &&
-            entity.ground_item.kind == ItemKind::SteamKettle ? item_sprite(entity.ground_item) : entity.sprite);
+            (entity.ground_item.kind == ItemKind::SteamKettle || entity.ground_item.kind == ItemKind::HeatSiphon) ? item_sprite(entity.ground_item) : entity.sprite);
         const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
             LightColor{} : light_color(entity.self_light);
         const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);

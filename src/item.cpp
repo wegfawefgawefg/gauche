@@ -5,6 +5,7 @@
 #include "items/flare.hpp"
 #include "items/ice_equipment.hpp"
 #include "game.hpp"
+#include "items/heat_siphon.hpp"
 #include "props/candle.hpp"
 #include "items/coal.hpp"
 #include "items/kettle.hpp"
@@ -104,6 +105,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HeatSiphon: return draw_siphon_heat(game,user_slot);
     case ItemKind::BorrowedSummer:
         used = use_borrowed_summer(game,user_slot); cooldown = item_pattern(item).cooldown;
         break;
@@ -433,6 +435,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::HeatSiphon)
+        return discharge_siphon(game,user_slot);
     if (uncover_optic(game, user_slot)) return true;
     if (rotate_mirror(game, user_slot)) return true;
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::SnowScoop)

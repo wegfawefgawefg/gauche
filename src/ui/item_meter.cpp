@@ -19,7 +19,9 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::StormLantern) {
+    if (item.kind==ItemKind::HeatSiphon) {
+        std::snprintf(result,sizeof(result),compact ? "%.1f/6" : "HEAT %.1f / 6 CHARGES",static_cast<double>(item.loaded)/300.0);
+    } else if (item.kind==ItemKind::StormLantern) {
         std::snprintf(result,sizeof(result),"%ds %s",(item.loaded+59)/60,item.opened ? "LIT" : "SHUT");
     } else if (item.kind == ItemKind::SteamKettle) {
         if (item.loaded == 0) return "EMPTY";
@@ -61,6 +63,7 @@ std::string item_state_text(const Item& item, bool compact) {
 }
 
 int item_meter_capacity(const Item& item) {
+    if (item.kind==ItemKind::HeatSiphon) return 1800;
     if (item.kind==ItemKind::StormLantern) return 7200;
     if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? 1800 : 90;
     if (item.max_durability > 0) return item.max_durability;
@@ -79,6 +82,7 @@ int item_meter_capacity(const Item& item) {
 }
 
 int item_meter_current(const Item& item) {
+    if (item.kind==ItemKind::HeatSiphon) return item.loaded;
     if (item.kind==ItemKind::StormLantern) return item.loaded;
     if (item.kind == ItemKind::SteamKettle) return item.spare;
     if (item.max_durability > 0) return item.durability;

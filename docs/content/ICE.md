@@ -89,7 +89,7 @@ same effective item definition as attacks, including rare attributes.
 | 14 | Wick spool | Implemented: add up to 30s fuel to an adjacent candle, capped at 80s. Four portions (Durable eight); no repair or automatic relight. No electrical or living emitter refill. | Common; 7 |
 | 15 | Signal flare | Implemented: travels to 8 at four ticks/cell; stops at cover/bodies, burns red for 15s on landing. Hot contact gives a 5s weak burn; water quenches. Stack 3; Long reaches 12. | Common; 10 |
 | 16 | Storm lantern | Implemented: aim wide cone, hold Use for a longer focused beam; Secondary toggles shutter. No damage; 120s fuel, conserved while shut or stowed. Dropped lamps retain aim/fuel. | Uncommon; 20; weather station, cabinet, rewards/shops. |
-| 17 | Heat siphon | Transfer up to 5s of burn/fuel from an adjacent source into a carried charge, then discharge a short flame cone. Six charge capacity. | Rare; 34 |
+| 17 | Heat siphon | Implemented: Use draws up to 5s of adjacent burn/fuel, storing 30s (six charges). Secondary spends up to 5s on a range-2 cone: 8 damage plus a weak burn, including friends; partial charges scale both. Big widens to 3, Long reaches 3. Campfires yield five portions, other sources lose exact time. | Rare; 34 |
 | 18 | Air bladder | Implemented: shove adjacent actors one cell outward, or aim at loose shallow-water loot to attach a float. Travels straight up to 16 cells, stopping at shore or obstruction. Three uses; Big widens pulse, Durable doubles uses. | Common; 10 |
 | 19 | Fishing line | Implemented: visible hook to 6, reels the actual loose item to your feet at four ticks/cell. Stay still; cover, actors or displaced cargo cut the line. 20 casts. Long reaches 10; Durable gives 40. No damage or actor pulling. | Common; 8 |
 | 20 | Pressure valve | Implemented: fit an adjacent tank, locking future vents away from the installer. Existing warning keeps its aim. Recover with pickup while facing a cool idle tank below 25 pressure. | Uncommon; 18 |
@@ -172,7 +172,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | --- | --- | --- |
 | Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
 | Frozen lunch tin | Implemented: 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; 16 HP, blocking, not fuel. Warmth or ordinary damage opens once. |
-| Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 10 wire, 10 grounding spike, 10 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
+| Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 10 wire, 10 grounding spike, 5 doorstop, 3 heat siphon, 2 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
 | Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 10 storm lantern, 5 borrowed summer, 15 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
 | Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 20 empty | Guarded observatory; 16 HP, blocking, breakable wood |

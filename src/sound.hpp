@@ -48,7 +48,7 @@ enum class SoundId : std::size_t {
     LanternOpen, LanternClose, LanternFocus, LanternWide, LanternEmpty,
     PebbleThrow, PebbleLand, PebbleTone, PebbleSpent,
     HarpoonFire, HarpoonImpact, HarpoonLatch, HarpoonReel, HarpoonRelease, HarpoonReload,
-    WedgeFit, WedgeLift, WedgeHit, WedgeBreak, WedgeStrain, SluiceOpen, SluiceClose, SluiceWarning, SummerOpen, SummerFade,
+    WedgeFit, WedgeLift, WedgeHit, WedgeBreak, WedgeStrain, SluiceOpen, SluiceClose, SluiceWarning, SummerOpen, SummerFade, SiphonDraw, SiphonFire, SiphonFlame,
     Count,
 };
 
@@ -94,5 +94,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "lantern_open", "lantern_close", "lantern_focus", "lantern_wide", "lantern_empty",
     "pebble_throw", "pebble_land", "pebble_tone", "pebble_spent",
     "harpoon_fire", "harpoon_impact", "harpoon_latch", "harpoon_reel", "harpoon_release", "harpoon_reload",
-    "wedge_fit", "wedge_lift", "wedge_hit", "wedge_break", "wedge_strain", "sluice_open", "sluice_close", "sluice_warning", "summer_open", "summer_fade",
+    "wedge_fit", "wedge_lift", "wedge_hit", "wedge_break", "wedge_strain", "sluice_open", "sluice_close", "sluice_warning", "summer_open", "summer_fade", "siphon_draw", "siphon_fire", "siphon_flame",
 };

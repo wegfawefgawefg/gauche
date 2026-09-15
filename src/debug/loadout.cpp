@@ -21,6 +21,7 @@ void normalize_test_item(Item& item) {
         fresh.loaded = std::clamp(item.loaded, 0, make_item(item.kind).loaded);
         fresh.spare = std::clamp(item.spare, 0, 999);
     }
+    if (item.kind == ItemKind::HeatSiphon) fresh.loaded=std::clamp(item.loaded,0,1800);
     if (item.kind == ItemKind::StormLantern) {
         fresh.loaded = std::clamp(item.loaded, 0, lantern_fuel_ticks);
         fresh.opened = item.opened && fresh.loaded > 0;

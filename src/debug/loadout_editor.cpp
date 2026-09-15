@@ -45,6 +45,10 @@ bool edit_item(Item& item) {
         changed |= ImGui::SliderInt(item.kind == ItemKind::Bow ? "Arrows" : "Loaded", &item.loaded, 0, make_item(item.kind).loaded);
         if (item.kind != ItemKind::Bow) changed |= ImGui::SliderInt("Reserve (this weapon)", &item.spare, 0, 999);
     }
+    if (item.kind == ItemKind::HeatSiphon) {
+        int heat=item.loaded/60;
+        if (ImGui::SliderInt("Stored heat (seconds)",&heat,0,30)) { item.loaded=heat*60; changed=true; }
+    }
     if (item.kind == ItemKind::StormLantern) {
         int seconds = (item.loaded+59)/60;
         if (ImGui::SliderInt("Fuel seconds", &seconds, 0, 120)) { item.loaded = seconds*60; changed = true; }

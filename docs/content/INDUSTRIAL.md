@@ -1,7 +1,7 @@
 # Industrial catalog: the underworks
 
 Design specification, not a claim of implemented content. The runtime currently
-has lava terrain and Ember enemies. Track implementation in `../MASTER_TASKS.md`.
+has lava terrain, Ember enemies and native charcoal/molten terrain art. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules

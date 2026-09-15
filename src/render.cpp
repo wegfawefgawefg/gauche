@@ -36,6 +36,7 @@
 #include "view.hpp"
 #include "world/wall_render.hpp"
 #include "world/ice_render.hpp"
+#include "world/industrial_render.hpp"
 #include "world/encounter.hpp"
 
 #include <algorithm>
@@ -56,6 +57,10 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
     if (!arena && biome==Biome::Ice) {
         const Sprite native = ice_tile_sprite(tile, cell, tick);
         if (native != Sprite::Count) return native;
+    }
+    if (!arena && biome==Biome::Industrial) {
+        const Sprite native=industrial_tile_sprite(tile,cell,tick);
+        if (native!=Sprite::Count) return native;
     }
     if (!arena) {
         switch (tile.kind) {
@@ -153,9 +158,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             const Biome biome=floor_biome(game.run.floor);
             const Sprite id = tile_sprite(tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
-            const LightColor tint = !arena && biome==Biome::Industrial && tile.kind != TileKind::Lava ?
-                LightColor{225.0F / 255.0F, 133.0F / 255.0F, 105.0F / 255.0F} :
-                LightColor{1.0F, 1.0F, 1.0F};
+            const LightColor tint{1.0F, 1.0F, 1.0F};
             if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
             else {
                 SDL_SetTextureColorModFloat(texture, tint.red, tint.green, tint.blue);
@@ -164,7 +167,8 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
             if (!arena && tile.kind == TileKind::Wall)
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
-                    biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} : tint);
+                    biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} :
+                    biome==Biome::Industrial ? LightColor{1.05F,.88F,1.08F} : tint);
             draw_tile_damage(renderer, tile, cell, rect, lighting);
         }
     }

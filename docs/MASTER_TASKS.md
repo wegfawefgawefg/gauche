@@ -276,7 +276,8 @@ behavior and balance playtesting remain the user's.
   twenty debris materials and twenty ambient sources. These are design targets;
   implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava
-  catalog.
+  catalog. [Native terrain art](history/INDUSTRIAL_TERRAIN.md) replaces the tinted
+  Forest tiles and repeating lava waves; enemies/rooms/items remain to implement.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.
 - [ ] Implement, asset, sound, test, and playtest the fourth biome catalog.

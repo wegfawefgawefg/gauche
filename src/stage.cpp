@@ -83,7 +83,8 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
         tile->material == TileMaterial::Ice ? Sprite::IceWall :
         game.run.phase == RunPhase::Arena ? Sprite::Wall :
-        ice_floor(game.run.floor) ? Sprite::IceWall : Sprite::ForestWall;
+        ice_floor(game.run.floor) ? Sprite::IceWall :
+        industrial_floor(game.run.floor) ? Sprite::IndustrialWall : Sprite::ForestWall;
     const bool hit = damage_tile(game.stage, cell, damage, dig_power, impact);
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =

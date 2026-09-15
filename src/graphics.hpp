@@ -53,6 +53,8 @@ enum class Sprite : std::size_t {
     SignalFlare, FlareBurning, DebrisFlareCinder,
     CopperWire, WireJunction, GroundingSpike, SpikeHot, SpikeSpent,
     StormLantern, LanternOpen, LanternFocused, EchoPebble, EchoPebbleReady, HarpoonGun, HarpoonHead, EmergencyDoorstop, SluiceGate, SluiceOpen, BorrowedSummer, SummerMote, HeatSiphon, SiphonCharged, ThawCharge, ThawChargeLit, ThawChargeReady, FoldedBridge, BridgePlankH, BridgePlankV, TuningFork, CrystalGrowth, StillwaterBell, EffigyMask, MaskWatching, IceAnchor, AnchorPoint, SnowShelter, SnowWallH, SnowWallV, Sled,
+    IndustrialFloorA, IndustrialFloorB, IndustrialWall, IndustrialRuin,
+    IndustrialLava, IndustrialLavaA, IndustrialLavaB,
     Count,
 };
 

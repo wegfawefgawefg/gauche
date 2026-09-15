@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "pump_render.hpp"
 #include "emergency_pump.hpp"
 #include <algorithm>
@@ -22,7 +23,7 @@ void draw_pump_nozzle(SDL_Renderer* renderer,const Entity& actor,SDL_FRect rect,
     if (actor.kind!=EntityKind::EmergencyPump || actor.health<=0) return;
     const auto color=liquid_color(static_cast<LiquidKind>(actor.counter_a));
     const float size=rect.w,cx=rect.x+size*.5F,cy=rect.y+rect.h*.5F;
-    Cell direction=actor.facing;
+    Cell direction=outlet_direction(actor,actor.facing);
     const bool jet=actor.label_a==PumpRecover && actor.label_b>0 && actor.timer_a>60 && actor.cell==actor.point_a;
     if (actor.label_a==PumpWarn || jet) direction=actor.point_b;
     const float dx=static_cast<float>(direction.x),dy=static_cast<float>(direction.y);

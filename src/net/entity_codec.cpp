@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "../items/pocket_pump.hpp"
 #include "../entities/counterweight.hpp"
@@ -81,6 +82,7 @@ Item read_item(PacketReader& reader) {
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
+    if (!valid_nozzle_elbow(item)) reader.okay=false;
     if (!valid_pocket_pump(item)) reader.okay=false;
     if (item.kind==ItemKind::HeatSiphon && (item.loaded>1800 || item.spare!=0)) reader.okay=false;
     if (item.kind == ItemKind::HarpoonGun && item.loaded > 1) reader.okay = false;
@@ -231,6 +233,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_machine_fitting(entity)) reader.okay=false;
     if (!valid_emergency_pump(entity)) reader.okay=false;
     if (!valid_counterweight(entity)) reader.okay=false;
     if (!valid_ash_sleeper(entity)) reader.okay=false;

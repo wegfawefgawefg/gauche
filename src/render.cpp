@@ -1,3 +1,4 @@
+#include "items/machine_fitting_render.hpp"
 #include "entities/pump_render.hpp"
 #include "entities/counterweight_render.hpp"
 #include "entities/ash_sleeper.hpp"
@@ -341,6 +342,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::IceMason) draw_mason_block(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        draw_machine_fitting(renderer,graphics,entity,rect,brightness);
         draw_pump_nozzle(renderer,entity,rect,brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::SteamLeech)

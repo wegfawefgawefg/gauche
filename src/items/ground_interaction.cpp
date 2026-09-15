@@ -2,7 +2,7 @@
 #include "sled.hpp"
 #include "ground_interaction.hpp"
 #include "../props/doorstop.hpp"
-#include "pressure.hpp"
+#include "machine_fittings.hpp"
 #include "../props/circuits.hpp"
 #include "../props/candle.hpp"
 #include "../entities/candle_keeper.hpp"
@@ -32,8 +32,8 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
     if (wedge.kind != ItemKind::None) return wedge;
     const Item spike = recoverable_spike(prop);
     if (spike.kind != ItemKind::None) return spike;
-    const Item valve=removable_valve(game,cell);
-    return valve.kind!=ItemKind::None ? valve : recoverable_sled(game,cell);
+    const Item fitting=removable_machine_fitting(game,cell);
+    return fitting.kind!=ItemKind::None ? fitting : recoverable_sled(game,cell);
 }
 
 int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
@@ -41,7 +41,7 @@ int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
     if (kind == ItemKind::Sled) return release_sled(game,cell);
     if (kind == ItemKind::GroundingSpike) return release_grounding_spike(game,cell,player.cell);
     if (kind == ItemKind::EmergencyDoorstop) return release_doorstop(game,cell,player.cell);
-    if (kind == ItemKind::PressureValve) return release_valve(game,cell,player.cell);
+    if (kind==ItemKind::PressureValve || kind==ItemKind::NozzleElbow) return release_machine_fitting(game,cell,player.cell);
     if (kind != ItemKind::CandleStub) return -1;
     const int slot = release_candle(game,cell);
     if (slot >= 0) keeper_candle_stolen(game,cell,

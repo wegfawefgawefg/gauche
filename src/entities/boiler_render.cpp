@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "boiler_render.hpp"
 #include "boiler_tank.hpp"
 
@@ -8,7 +9,7 @@
 void draw_boiler_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                         const Entity& tank, SDL_FRect rect, LightColor light) {
     if (tank.kind != EntityKind::BoilerTank || tank.health <= 0) return;
-    const Cell direction = tank.label_a == BoilerTell ? tank.point_b : tank.facing;
+    const Cell direction = tank.label_a == BoilerTell ? tank.point_b : outlet_direction(tank,tank.facing);
     SDL_Texture* nozzle = texture_for(graphics,Sprite::BoilerNozzle);
     SDL_SetTextureColorModFloat(nozzle,light.red,light.green,light.blue);
     const double angle = std::atan2(static_cast<double>(direction.y),static_cast<double>(direction.x))*180.0/3.141592653589793;

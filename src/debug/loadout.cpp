@@ -22,6 +22,7 @@ void normalize_test_item(Item& item) {
         fresh.loaded = std::clamp(item.loaded, 0, make_item(item.kind).loaded);
         fresh.spare = std::clamp(item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::NozzleElbow) fresh.loaded=std::clamp(item.loaded,0,1);
     if (item.kind==ItemKind::PocketPump) {
         fresh.loaded=valid_pocket_pump(item) ? item.loaded : 0;
         fresh.spare=valid_pocket_pump(item) ? item.spare : 0;

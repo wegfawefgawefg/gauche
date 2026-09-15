@@ -34,25 +34,3 @@ bool use_pressure_item(Game& game, int slot, Cell direction) {
     tank.sprite = Sprite::BoilerPlugged;
     return true;
 }
-
-Item removable_valve(const Game& game, Cell cell) {
-    const int slot = boiler_at(game,cell);
-    if (slot < 0) return {};
-    const Entity& tank = game.entities[static_cast<std::size_t>(slot)];
-    return tank.counter_a < 25 && tank.label_a == BoilerIdle &&
-        tank.ground_item.kind == ItemKind::PressureValve ? tank.ground_item : Item{};
-}
-
-int release_valve(Game& game, Cell source, Cell destination) {
-    const Item item = removable_valve(game,source);
-    if (item.kind == ItemKind::None) return -1;
-    const int slot = boiler_at(game,source);
-    const Handle handle = spawn_entity(game,EntityKind::GroundItem,destination);
-    Entity* loose = get_entity(game,handle);
-    // POOL: Keep hardware attached until the replacement loose item exists.
-    if (!loose) return -1;
-    loose->ground_item = item; loose->sprite = item_sprite(item);
-    game.entities[static_cast<std::size_t>(slot)].ground_item = {};
-    emit_sound(game,SoundId::ValveRemove,source);
-    return handle.slot;
-}

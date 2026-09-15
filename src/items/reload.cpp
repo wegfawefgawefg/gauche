@@ -1,3 +1,4 @@
+#include "machine_fittings.hpp"
 #include "pocket_pump.hpp"
 #include "../game.hpp"
 #include "catalog.hpp"
@@ -23,6 +24,8 @@ int magazine_size(ItemKind kind) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::NozzleElbow)
+        return reverse_nozzle_elbow(game,user_slot);
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::PocketPump)
         return discharge_pocket_pump(game,user_slot);
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::HeatSiphon)

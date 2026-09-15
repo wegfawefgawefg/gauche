@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "boiler_tank.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
@@ -15,7 +16,8 @@ int boiler_at(const Game& game, Cell cell) {
 // SLOTS: counter_a pressure 0..100, counter_b fuel ticks, counter_c leaking flag.
 // label_a phase, label_b already ruptured; timer_a tell/vent, timer_b sealed outlet.
 // point_a committed origin, point_b committed vent direction. facing is the next
-// nozzle direction, fixed by ground_item when a real Pressure Valve is attached.
+// straight nozzle direction, fixed by an attached Pressure Valve. Nozzle Elbows
+// bend it when arming; neither fitting rewrites an already committed point_b.
 void init_boiler_tank(Entity& tank) {
     tank.health = tank.max_health = 60;
     tank.impassable = tank.hard_blocker = true;
@@ -25,7 +27,7 @@ void init_boiler_tank(Entity& tank) {
 
 bool arm_boiler(Game& game, Entity& tank) {
     if (tank.health <= 0 || tank.label_a != BoilerIdle || tank.timer_b > 0 || tank.counter_a < 60) return false;
-    tank.point_a = tank.cell; tank.point_b = tank.facing;
+    tank.point_a = tank.cell; tank.point_b = outlet_direction(tank,tank.facing);
     tank.label_a = BoilerTell; tank.timer_a = 45;
     tank.sprite = Sprite::BoilerTell;
     emit_sound(game,SoundId::BoilerWarn,tank.cell);
@@ -102,5 +104,5 @@ bool valid_boiler_state(const Entity& actor) {
         actor.label_a >= BoilerIdle && actor.label_a <= BoilerVent &&
         actor.timer_a >= 0 && actor.timer_a <= 45 && actor.timer_b >= 0 && actor.timer_b <= 600 &&
         distance({},actor.facing) == 1 && (actor.label_a != BoilerTell || distance({},actor.point_b) == 1) &&
-        (actor.ground_item.kind == ItemKind::None || actor.ground_item.kind == ItemKind::PressureValve);
+        valid_machine_fitting(actor);
 }

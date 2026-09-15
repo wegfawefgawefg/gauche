@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "loot.hpp"
 #include "../entities/scavenging.hpp"
@@ -30,6 +31,7 @@ void collect_coins(Game& game, Entity& player) {
 }
 
 void drop_enemy_loot(Game& game, const Entity& enemy) {
+    drop_machine_fitting(game,enemy);
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
     case EntityKind::EmergencyPump: drop_emergency_pump(game,enemy);break;
@@ -111,10 +113,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll < 45) place_ground_item(game,enemy.cell,ItemKind::CoalLump,2);
         break;
     }
-    case EntityKind::BoilerTank:
-        if (enemy.ground_item.kind == ItemKind::PressureValve)
-            place_ground_item(game,enemy.cell,ItemKind::PressureValve);
-        break;
+    case EntityKind::BoilerTank: break; // The actual fitting was salvaged above.
     case EntityKind::IcicleSpider: {
         const auto roll = random_u32(game)%100;
         if (roll < 20) place_ground_item(game,enemy.cell,ItemKind::FishingLine);

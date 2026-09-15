@@ -79,6 +79,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
     case SoundId::BarricadeUnfold:
+    case SoundId::NozzleFit: case SoundId::NozzleRemove: case SoundId::NozzleTurn: case SoundId::NozzleBreak:
     case SoundId::PumpSlurp: case SoundId::PumpPressure: case SoundId::PumpJet:
     case SoundId::WeightTravel: case SoundId::WeightWarn: case SoundId::WeightReel:
     case SoundId::CraneSlew: case SoundId::CraneCoil: case SoundId::CraneTug: case SoundId::CraneDeath:

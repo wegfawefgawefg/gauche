@@ -385,7 +385,8 @@ behavior and balance playtesting remain the user's.
   [Counterweights and hoist shafts](history/COUNTERWEIGHT.md) add warned overhead impacts, baitable prop/creature crushing, cold/heavy-hit interruption and persistent cuttable wrecks.
   [Pocket Pumps](history/POCKET_PUMP.md) add finite spill transport, exact partial quantities, shared water/coolant interactions, tank UI and cooling-works supplies.
   [Emergency Pumps](history/EMERGENCY_PUMP.md) add mobile finite-liquid pressure jets, refillable spill collection, warned lane attacks, retained tank salvage and water/oil cooling-works variants.
-  Seventeen catalog enemy behaviors and twenty of fifty regional items implemented;
+  [Nozzle Elbows](history/NOZZLE_ELBOW.md) redirect future boiler/pump jets, preserve warned aim, share removable fittings with Pressure Valves, and retain handedness/condition through pickup and salvage.
+  Seventeen catalog enemy behaviors and twenty-one of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

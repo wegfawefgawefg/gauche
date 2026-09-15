@@ -47,6 +47,10 @@ bool edit_item(Item& item) {
         changed |= ImGui::SliderInt(item.kind == ItemKind::Bow ? "Arrows" : "Loaded", &item.loaded, 0, make_item(item.kind).loaded);
         if (item.kind != ItemKind::Bow) changed |= ImGui::SliderInt("Reserve (this weapon)", &item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::NozzleElbow) {
+        const char* bends[]{"Clockwise / right","Counterclockwise / left"};
+        changed |= ImGui::Combo("Nozzle bend",&item.loaded,bends,2);
+    }
     if (item.kind==ItemKind::PocketPump) {
         if (ImGui::BeginCombo("Tank liquid",pump_contents(item))) {
             if (ImGui::Selectable("Empty",item.spare==0)) {item.loaded=item.spare=0;changed=true;}

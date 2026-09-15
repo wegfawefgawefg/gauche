@@ -21,7 +21,10 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::PocketPump) {
+    if (item.kind==ItemKind::NozzleElbow) {
+        if (compact) std::snprintf(result,sizeof(result),"%dHP %s",item.durability,item.loaded ? "L" : "R");
+        else std::snprintf(result,sizeof(result),"FITTING %d/%d HP",item.durability,item.max_durability);
+    } else if (item.kind==ItemKind::PocketPump) {
         if (item.spare==0) return "EMPTY";
         const int percent=(item.spare*100+pump_capacity-1)/pump_capacity;
         if (compact) std::snprintf(result,sizeof(result),"%c%d%%",pump_contents(item)[0],percent);

@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "../entities/counterweight.hpp"
 #include "../entities/ash_sleeper.hpp"
@@ -52,6 +53,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    damage_machine_fitting(game,entity,damage);
     hurt_ash_sleeper(game,entity,attacker);
     interrupt_pocket_drill(entity);
     // The overhead press swing is deliberately vulnerable; a blocked hit never

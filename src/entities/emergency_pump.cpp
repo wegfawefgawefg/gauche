@@ -1,3 +1,4 @@
+#include "../items/machine_fittings.hpp"
 #include "emergency_pump.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
@@ -127,8 +128,8 @@ void step_emergency_pump(Game& game,int slot) {
     }
     const Cell delta=target->cell-actor.cell;const int range=distance(actor.cell,target->cell);
     if (range>0 && range<=3 && (delta.x==0 || delta.y==0) && open_nozzle(game,actor.cell,target->cell)) {
-        actor.point_a=actor.cell;actor.point_b=cardinal_toward(actor.cell,target->cell,actor.facing);
-        actor.facing=actor.point_b;actor.label_a=PumpWarn;actor.timer_a=36;
+        actor.point_a=actor.cell;actor.facing=cardinal_toward(actor.cell,target->cell,actor.facing);
+        actor.point_b=outlet_direction(actor,actor.facing);actor.label_a=PumpWarn;actor.timer_a=36;
         emit_sound(game,SoundId::PumpPressure,actor.cell);return;
     }
     approach(game,slot,target->cell);
@@ -154,6 +155,6 @@ void drop_emergency_pump(Game& game,const Entity& actor) {
         loot->ground_item=make_item(ItemKind::PocketPump);
         loot->ground_item.loaded=actor.counter_b ? actor.counter_a : 0;
         loot->ground_item.spare=actor.counter_b;loot->sprite=Sprite::PocketPump;
-    } else if (roll>=40 && roll<55) place_ground_item(game,actor.cell,ItemKind::CoolantCan);
-    // Nozzle Elbow's 15% slot stays empty until that item is implemented.
+    } else if (roll<40) place_ground_item(game,actor.cell,ItemKind::NozzleElbow);
+    else if (roll<55) place_ground_item(game,actor.cell,ItemKind::CoolantCan);
 }

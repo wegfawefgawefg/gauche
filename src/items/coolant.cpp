@@ -1,7 +1,7 @@
+#include "../surfaces/liquid_transfer.hpp"
 #include "coolant.hpp"
 #include "kettle.hpp"
 #include "../surfaces/interaction.hpp"
-#include "../entities/boiler_tank.hpp"
 #include <algorithm>
 
 namespace {
@@ -18,14 +18,7 @@ bool pour_coolant(Game& game,int slot,Cell direction) {
     for (Cell cell:cells) {
         if (!pour_surface(game,cell,LiquidKind::Coolant,600)) continue;
         used=true;
-        for (Entity& actor:game.entities) {
-            if (actor.kind==EntityKind::None || actor.cell!=cell || actor.health<=0) continue;
-            apply_chill(actor,180);
-            if (actor.kind!=EntityKind::BoilerTank) continue;
-            // Forced cooling reaches the vessel even with a sealed outlet.
-            // It removes pressure, never remaining fuel or an attached valve.
-            reduce_boiler_pressure(actor,80);
-        }
+        splash_coolant(game,cell,600);
     }
     return used;
 }

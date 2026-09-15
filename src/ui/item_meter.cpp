@@ -1,3 +1,4 @@
+#include "../items/pocket_pump.hpp"
 #include "item_meter.hpp"
 #include "../items/effigy_mask.hpp"
 #include "text.hpp"
@@ -20,7 +21,12 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::IceAnchor) {
+    if (item.kind==ItemKind::PocketPump) {
+        if (item.spare==0) return "EMPTY";
+        const int percent=(item.spare*100+pump_capacity-1)/pump_capacity;
+        if (compact) std::snprintf(result,sizeof(result),"%c%d%%",pump_contents(item)[0],percent);
+        else std::snprintf(result,sizeof(result),"TANK %s %d%%",pump_contents(item),percent);
+    } else if (item.kind==ItemKind::IceAnchor) {
         if (compact) std::snprintf(result,sizeof(result),"%dHP %s",item.durability,item.anchor.slot>=0 ? "SET" : "");
         else std::snprintf(result,sizeof(result),"POINT %d/%d HP",item.durability,item.max_durability);
     } else if (item.kind==ItemKind::EffigyMask) {
@@ -69,6 +75,7 @@ std::string item_state_text(const Item& item, bool compact) {
 }
 
 int item_meter_capacity(const Item& item) {
+    if (item.kind==ItemKind::PocketPump) return pump_capacity;
     if (item.kind==ItemKind::EffigyMask) return item.max_uses*60;
     if (item.kind==ItemKind::HeatSiphon) return 1800;
     if (item.kind==ItemKind::StormLantern) return 7200;
@@ -89,6 +96,7 @@ int item_meter_capacity(const Item& item) {
 }
 
 int item_meter_current(const Item& item) {
+    if (item.kind==ItemKind::PocketPump) return item.spare;
     if (item.kind==ItemKind::EffigyMask) return effigy_mask_ticks(item);
     if (item.kind==ItemKind::HeatSiphon) return item.loaded;
     if (item.kind==ItemKind::StormLantern) return item.loaded;

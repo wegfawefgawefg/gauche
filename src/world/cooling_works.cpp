@@ -26,7 +26,7 @@ bool populate_cooling_works(Game& game,const FloorPlan& plan,const RoomPlan& roo
         if (!tank) return false;
         tank->facing={-sign,0};tank->counter_a=45;tank->counter_b=1800;
         spawn_entity(game,EntityKind::PressureRat,at({5,-4}));
-        place_ground_item(game,at({-3,2}),ItemKind::CoolantCan);
+        place_ground_item(game,at({-3,2}),random_u32(game)%2==0 ? ItemKind::CoolantCan : ItemKind::PocketPump);
         for (Cell offset:{Cell{4,-4},Cell{4,-3},Cell{4,-2}}) *game.stage.at(at(offset))={TileKind::Lava,0,0};
         pour_surface(game,at({5,-2}),LiquidKind::Coolant,600);
         place_prop(game.stage,at({-4,-3}),PropKind::OreBin);

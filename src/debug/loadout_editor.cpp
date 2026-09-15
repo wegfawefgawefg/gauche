@@ -1,3 +1,5 @@
+#include "../surfaces/liquid_transfer.hpp"
+#include "../items/pocket_pump.hpp"
 #include "../items/muffling.hpp"
 #include "../items/echo_pebble.hpp"
 #include "playtest.hpp"
@@ -44,6 +46,21 @@ bool edit_item(Item& item) {
     if (item_is_gun(item.kind)) {
         changed |= ImGui::SliderInt(item.kind == ItemKind::Bow ? "Arrows" : "Loaded", &item.loaded, 0, make_item(item.kind).loaded);
         if (item.kind != ItemKind::Bow) changed |= ImGui::SliderInt("Reserve (this weapon)", &item.spare, 0, 999);
+    }
+    if (item.kind==ItemKind::PocketPump) {
+        if (ImGui::BeginCombo("Tank liquid",pump_contents(item))) {
+            if (ImGui::Selectable("Empty",item.spare==0)) {item.loaded=item.spare=0;changed=true;}
+            for (int k=1;k<static_cast<int>(LiquidKind::Count);++k) {
+                if (!pumpable_liquid(static_cast<LiquidKind>(k))) continue;
+                Item label=item;label.loaded=k;
+                if (ImGui::Selectable(pump_contents(label),item.loaded==k)) {item.loaded=k;item.spare=pump_capacity;changed=true;}
+            }
+            ImGui::EndCombo();
+        }
+        if (item.loaded>0) {
+            int percent=(item.spare*100+pump_capacity-1)/pump_capacity;
+            if (ImGui::SliderInt("Tank percent",&percent,1,100)) {item.spare=percent*pump_capacity/100;changed=true;}
+        }
     }
     if (item.kind == ItemKind::HeatSiphon) {
         int heat=item.loaded/60;

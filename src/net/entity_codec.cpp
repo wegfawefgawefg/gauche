@@ -1,3 +1,4 @@
+#include "../items/pocket_pump.hpp"
 #include "../entities/counterweight.hpp"
 #include "../entities/ash_sleeper.hpp"
 #include "../traps/nail_board.hpp"
@@ -79,6 +80,7 @@ Item read_item(PacketReader& reader) {
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
+    if (!valid_pocket_pump(item)) reader.okay=false;
     if (item.kind==ItemKind::HeatSiphon && (item.loaded>1800 || item.spare!=0)) reader.okay=false;
     if (item.kind == ItemKind::HarpoonGun && item.loaded > 1) reader.okay = false;
     if (item.kind == ItemKind::EchoPebble) {

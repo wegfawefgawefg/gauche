@@ -1,3 +1,4 @@
+#include "items/pocket_pump.hpp"
 #include "projectiles/chain_hook.hpp"
 #include "items/use_completion.hpp"
 #include "items/industrial_use.hpp"
@@ -104,6 +105,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::PocketPump: return collect_pocket_pump(game,user_slot,direction);
     case ItemKind::ChainHook: return launch_chain_hook(game,user_slot,direction);
     case ItemKind::HandBellows:
     case ItemKind::BoltPouch:

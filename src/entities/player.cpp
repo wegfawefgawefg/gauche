@@ -1,3 +1,4 @@
+#include "../items/pocket_pump.hpp"
 #include "../items/nail_board.hpp"
 #include "../items/chain_hook.hpp"
 #include "../items/pocket_drill.hpp"
@@ -78,6 +79,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (step_effigy_mask(game,slot,input)) return;
     if (step_chain_action(game,slot,input)) return;
     if (step_harpoon_action(game,slot,input)) return;
+    if (step_pump_action(game,slot,input)) return;
     if (step_siphon_action(game,slot,input)) return;
     if (step_lantern_action(game,slot,input)) return;
     if (step_nail_board_action(game,slot,input)) return;

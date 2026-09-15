@@ -1,3 +1,4 @@
+#include "pocket_pump.hpp"
 #include "../game.hpp"
 #include "catalog.hpp"
 #include "heat_siphon.hpp"
@@ -22,6 +23,8 @@ int magazine_size(ItemKind kind) {
 }
 
 bool reload_held_item(Game& game, int user_slot) {
+    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::PocketPump)
+        return discharge_pocket_pump(game,user_slot);
     if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::HeatSiphon)
         return discharge_siphon(game,user_slot);
     if (uncover_optic(game, user_slot)) return true;

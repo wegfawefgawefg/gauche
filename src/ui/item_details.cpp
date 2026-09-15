@@ -109,7 +109,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item_stackable(item))
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
     else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
-    if (item.kind==ItemKind::HeatSiphon || item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
+    if (item.kind==ItemKind::PocketPump || item.kind==ItemKind::HeatSiphon || item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), item.kind == ItemKind::HarpoonGun ? "LINE OUT" : "IN FLIGHT");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
@@ -294,7 +294,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
-    if (item.kind == ItemKind::SteamKettle)
+    if (item.kind == ItemKind::SteamKettle || item.kind==ItemKind::PocketPump)
         std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
     else if (item.kind == ItemKind::PressureValve)
         std::snprintf(line,sizeof(line),"ATTACHES | RECOVERABLE");
@@ -338,6 +338,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         text(renderer,x+10,y+129,"3 CELLS | BANKS AT BOTH ENDS",216,186,117);
     } else if (item.kind == ItemKind::ThawCharge) {
         text(renderer,x+10,y+129,"2s FUSE | OPENS 2 ICE WALLS",216,186,117);
+    } else if (item.kind==ItemKind::PocketPump) {
+        draw_action_hint(renderer,x+10,y+127,Action::Reload,"DISCHARGE AHEAD");
     } else if (item.kind == ItemKind::HeatSiphon) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"FLAME CONE");
     } else if (item.kind == ItemKind::BorrowedSummer) {

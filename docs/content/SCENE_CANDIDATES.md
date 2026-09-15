@@ -9,6 +9,17 @@ These supplement the 20 enemies/20 debris/20 ambient sources/50 items quotas.
 The fourth area's military/robot identity remains provisional. Complete useful
 families and placements before filling counts with recolors.
 
+These are starting baselines, not ceilings; add more when ideas and playtesting
+justify them. Bosses and unique whole floors were requested but previously had no
+numeric quota. Provisional planning proposal: **3 boss encounter designs and 2
+unique whole-floor designs per biome** (12 and 8 across four), not an agreed final
+roster or a requirement to place three bosses on each floor. Forest boss candidates
+remain giant bear, spider mother and wolf leader; Haunted House is the existing
+unique-floor foundation. Expand the other rosters in their biome design passes.
+Do not double-count a landmark embedded in an ordinary floor as an authored unique
+whole floor, or count variants of one boss as separate encounter designs without
+meaningfully different behavior.
+
 ## Tall props: eight families per area
 
 | Forest | Ice | Industrial / mine / lava | Fourth area, provisional |

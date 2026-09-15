@@ -15,9 +15,17 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 - [ ] Rebalance Hearth and existing artifacts/attributes/buffs for absolute strength, co-op/stacking, price and earliest availability; expand creative conditional augments and plan growth across the intended sixteen-floor run.
 - [ ] Rework shop/three-choice reward valuation so same-stage offers are meaningfully competitive; bundle/replace weak toy offers appropriately without making every toy overpowered. Review loot, ammo, melee and permanent-power balance during each content slice using focused calculations and human feedback.
 
+## Content architecture maintenance
+
+- [ ] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. Keep ordinary C++ structs/free functions and clear ownership.
+- [ ] Replace duplicated native/shared item memberships across loot consumers with referenced catalog pools. Room drops, enemy drops, containers, shops and rewards still own distinct eligibility, weights, quantities and guarantees; do not flatten them into one universal random table.
+- [ ] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Keep small init/update dispatch switches; do not replace straightforward registries merely because they have many entries.
+
 ## World interaction review (2026-09-15)
 
 Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.
+
+All counts are starting baselines, never content ceilings. Newer proposed per-biome targets: eight tall prop families, eight small-life types and six multi-room landmarks. Boss/unique-floor quotas were previously unset; provisional planning proposal is three boss encounter designs and two unique whole-floor designs per biome, with final counts/rosters open. Boss alternatives need not all appear in one run; multi-room landmarks are distinct from whole-floor uniques.
 
 - [ ] Rework haunted-house pressure: weaker/simpler ordinary zombies in larger crowds, readable delayed swipes, spawn/crowd budgets and solo/co-op pacing coordinated with the Fist nerf. Preserve the mode's promising foundation.
 - [ ] Give haunted houses crowd-control tools: build/repair barriers, blockable routes, zombie breach behavior and marked lever fire/spike lanes with costs/cooldowns, friendly-fire rules and no stranded-wave softlocks.

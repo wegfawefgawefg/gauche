@@ -1,3 +1,4 @@
+#include "magnet_crane.hpp"
 #include "arc_welder.hpp"
 #include "yeti.hpp"
 #include "../items/sled.hpp"
@@ -78,7 +79,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
-        interrupt_yeti(entity); interrupt_arc_welder(entity);
+        interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
     }
     step_shard_state(entity);
     step_spider_strand(game,entity);

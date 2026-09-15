@@ -1,3 +1,4 @@
+#include "../entities/magnet_crane.hpp"
 #include "../entities/rivet_gunner.hpp"
 #include "../entities/strikebreaker.hpp"
 #include "../entities/mine_crew.hpp"
@@ -27,6 +28,11 @@
 // CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
 bool apply_chill(Entity& actor, int ticks) {
     if (ticks>0) damp_stoker(actor);
+    // Cold stalls this motor even though anchored machinery cannot be slowed.
+    if (actor.kind==EntityKind::MagnetCrane && actor.health>0 && ticks>0) {
+        actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);
+        interrupt_magnet_crane(actor);return true;
+    }
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0 ||
         actor.burn_ticks > 0 || actor.scorch_ticks > 0 ||
         actor.kind == EntityKind::FrostBat || actor.vitals.chill_guard > 0) return false;

@@ -44,8 +44,8 @@ hearing. A brief grey displacement trail and contracting ring mark the actual
 item movement. This is local presentation, with no damage or extra light.
 The sprite uses the ordinary held-item and inventory renderers.
 
-Crane-head attraction is still pending with the planned Magnet Crane enemy.
-This milestone does not claim that enemy or its scrap-yard room is implemented.
+The later [Magnet Crane milestone](MAGNET_CRANE.md) adds head attraction for
+held and dropped magnets, plus a scrap-yard encounter.
 Industrial now has seven catalog enemies and ten of fifty regional items.
 
 ## State and validation

@@ -6,7 +6,7 @@
 
 namespace {
 constexpr RegionalItem magnet{"Horseshoe Magnet",
-    "Hold to pull loose steel gear one tile per 0.2s, up to 5 away. You can move. 75 pulls; blocked/empty lanes cost nothing. Wood, food and copper ignore it.",
+    "Hold to reel steel. Carrying it lures cranes. Move freely; 75 pulls, one tile per 0.2s. Copper/wood ignore it.",
     Sprite::HorseshoeMagnet,{1,5,0,0,12,PatternEffect::Utility,true},
     ItemAction::Material,18,1,false,75,0,0,0,0,SoundId::MagnetPull};
 

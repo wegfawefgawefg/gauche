@@ -16,6 +16,7 @@ SoundId entity_death_sound(EntityKind kind) {
     case EntityKind::ShardColony: return SoundId::ShardBreak;
     case EntityKind::CandleKeeper: return SoundId::KeeperDeath;
     case EntityKind::SnowEffigy: return SoundId::EffigyDeath;
+    case EntityKind::MagnetCrane: return SoundId::CraneDeath;
     case EntityKind::ArcWelder: return SoundId::WelderDeath;
     case EntityKind::Yeti: return SoundId::YetiDeath;
     case EntityKind::AvalancheRam: return SoundId::RamDeath;

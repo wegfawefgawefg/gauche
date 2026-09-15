@@ -1,3 +1,4 @@
+#include "magnet_crane.hpp"
 #include "arc_welder.hpp"
 #include "yeti.hpp"
 #include "strikebreaker.hpp"
@@ -68,6 +69,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::MagnetCrane:
+        if (enemy.label_a==CraneLock && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;
     case EntityKind::ArcWelder:
         if ((enemy.label_a==WelderMask || enemy.label_a==WelderSweep) && enemy.cell==enemy.point_a) {

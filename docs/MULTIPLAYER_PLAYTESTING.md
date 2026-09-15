@@ -13,10 +13,17 @@ it does not claim that the missing integration is complete.
 - Same-machine session, rollback, codec and lossy transport checks exist under
   `tests/`. Their existence is not proof of current internet playtest stability.
   No live multiplayer test was run for this audit.
-- GView menus currently expose direct host address/port. No Gauche room browser,
-  room-code integration, NAT punching or relayed game transport is wired in.
-- No persistent desync input/snapshot capture comparable to Splonks' `.sdrp`
-  dumps. Current recovery can overwrite useful evidence of the first divergence.
+- GView now exposes Online Rooms, named hosting, public discovery, code joining,
+  party membership and ready/start controls. HTTPS defaults to the deployed
+  Los Angeles service at `https://45.77.123.14`; direct address/port remains available.
+- Native authenticated punch and relay transport is wired through the game's
+  UDP socket. A forced-relay connection check through the actual VPS completed
+  snapshot transfer, room membership and party start. Automatic mode fell back
+  to relay successfully on this local network; direct punching across different
+  home networks remains unverified.
+- Bounded session logs and `.grpl` recovery captures now preserve the oldest
+  retained snapshot, input history and local/host hashes before resync. An offline
+  replay reader, richer ImGui diagnostics and cross-machine validation remain.
 - Networking retry/timeout counters now use monotonic elapsed time. Snapshot
   transfers are paced and retain progress on retries. See the implemented
   [foundation milestone](history/NETWORK_FOUNDATION.md) and its validation limits.
@@ -24,7 +31,25 @@ it does not claim that the missing integration is complete.
   exclude teammates. There is no lobby disable setting. Requested rule is ON
   by default, with a host-controlled pre-run option to disable it.
 
-## Immediate route for friends
+## Native room playtesting route
+
+Both players build the same revision (`libcurl4-openssl-dev` is now required on
+Debian/Ubuntu). Open **Play → Online Rooms**. Enter your name, host a room, and
+share its six-character code. The friend can refresh the room list or enter the
+code, then join and ready up; the host starts the run. Automatic connection tries
+punching before relay. Force Relay is available for connection diagnosis.
+
+The [public dashboard](https://45.77.123.14/) lists public rooms and refreshes every
+two seconds. The service setup, private credential locations and operation are
+recorded in [services/roomd/README.md](../services/roomd/README.md).
+
+Existing direct/lossy session checks pass, and the native relay handshake was
+checked without running a gameplay session. This is the first internet-room
+integration, not a claim of completed multiplayer hardening. Pending work includes
+fresh traversal after NAT changes, per-member ready labels, host-agreed friendly
+fire/pause rules, replay reader/diagnostic UI and friend-machine gameplay feedback.
+
+## Direct-address alternative
 
 Reachable LAN or publicly reachable friend host can use the current direct path.
 An overlay network such as Tailscale can supply reachability without router port

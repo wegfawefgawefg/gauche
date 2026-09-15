@@ -5,6 +5,7 @@
 #include "control_pages.hpp"
 #include "control_reference.hpp"
 #include "profiles.hpp"
+#include "rooms.hpp"
 
 #include <gubsy/input/binds_profile.hpp>
 #include <gubsy/lobby/state.hpp>
@@ -28,7 +29,7 @@ void main_page(ViewBuilder& ui) {
 
 void lobby_page(ViewBuilder& ui, const FrontPage& page, int death_policy) {
     const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
-    frame(ui, "Custom Game", 840.0F, 558.0F);
+    frame(ui, "Custom Game", 840.0F, 615.0F);
     const std::string status = lobby.last_error.empty() ?
         (lobby.online ? (lobby.is_host ? "Hosting · " + lobby.advertised_endpoint :
                         "Joined · " + lobby.status_message) : "Offline lobby") :
@@ -39,11 +40,13 @@ void lobby_page(ViewBuilder& ui, const FrontPage& page, int death_policy) {
     constexpr const char* policies[]{"Next Floor", "Entrance", "No Respawn"};
     button(ui, "rules", std::string{"Game Rules  ·  "} +
            policies[std::clamp(death_policy, 0, 2)], "rules");
-    if (!lobby.online || lobby.is_host)
+    button(ui, "online-rooms", page.room_active ? "Return to Party" : "Online Rooms",
+           page.room_active ? "party" : "rooms");
+    if ((!lobby.online || lobby.is_host) && !page.room_active)
         button(ui, "host", lobby.online ? "Host Details" : "Host Game", "host");
     if (!lobby.online) button(ui, "join", "Join Game", "join");
     if (lobby.online) button(ui, "leave", "Leave Session", "leave");
-    button(ui, "start", lobby.online ? "Start Hosted Run" : "Start Local Game", "start");
+    if (!page.room_active) button(ui, "start", lobby.online ? "Start Hosted Run" : "Start Local Game", "start");
     footer(ui, "players");
 }
 
@@ -197,6 +200,8 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
     case MenuScreen::Main: main_page(ui); break;
     case MenuScreen::Lobby: lobby_page(ui, page, death_policy); break;
     case MenuScreen::Rules: rules_page(ui, death_policy); break;
+    case MenuScreen::Rooms: rooms_page(ui, page); break;
+    case MenuScreen::Party: party_page(ui, page); break;
     case MenuScreen::Host: host_page(ui, page); break;
     case MenuScreen::Join: join_page(ui, page); break;
     case MenuScreen::Players: players_page(ui, page); break;

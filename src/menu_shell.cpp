@@ -37,6 +37,7 @@ int policy_index(DeathPolicy policy) {
 
 void start_game(void* data, std::int32_t) {
     auto& menu = *static_cast<MenuShell*>(data);
+    if (menu.network->role != NetRole::Solo && !menu.network->match_started) return;
     if (menu.network->role == NetRole::Client && !menu.network->ready) return;
     if (menu.network->role == NetRole::Solo) {
         start_solo_run(*menu.solo_game, SDL_GetTicks() + 1, menu.death_policy);
@@ -174,6 +175,7 @@ void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,
     menu.network = &network;
     menu.death_policy = policy;
     menu.identity_path = identity_path;
+    load_room_preferences(menu);
     register_game_bindings(runtime);
     gubsy_lobby_ensure_ready(gubsy_runtime_engine(runtime));
     // What if a gamepad was opened first? Keep keyboard and mouse assigned too.
@@ -235,12 +237,13 @@ void open_end_menu(MenuShell& menu, bool victory) {
 
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height) {
+    update_room_session(menu);
     sync_direct_members(menu);
     if (menu.network->role == NetRole::Client && menu.network->ready && menu.visible) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*menu.runtime);
         if (lobby.direct_join_pending)
             gubsy_confirm_lobby_direct_join(*menu.runtime, "Joined Gauche host");
-        if (menu.network->host_tick > 0)
+        if (menu.network->match_started && menu.network->host_tick > 0)
             gubsy_set_lobby_session_phase(*menu.runtime, "in_game");
     }
     if (menu.network->role == NetRole::Client && !menu.network->ready &&
@@ -276,5 +279,6 @@ bool process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
 }
 
 void shutdown_menu_shell(MenuShell& menu) {
+    shutdown_room_session(menu);
     shutdown_front_page(menu.front);
 }

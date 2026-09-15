@@ -24,6 +24,7 @@ void queue_snapshot(NetSession& session, int owner) {
     peer.snapshot.tick = session.rollback.game.tick;
     peer.snapshot.checksum = bytes_hash(peer.snapshot.bytes);
     peer.snapshot.id = session.next_transfer_id++;
+    network_event(session, "snapshot_queued", owner, peer.snapshot.bytes.size());
     send_snapshot_chunks(session, owner);
 }
 
@@ -106,6 +107,8 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
         transfer = {};
         return;
     }
+    capture_network_recovery(session);
+    network_event(session, "snapshot_applied", session.local_owner, tick);
     apply_host_snapshot(session.rollback, restored);
     session.sent_inputs.clear();
     session.host_tick = std::max(session.host_tick, tick);

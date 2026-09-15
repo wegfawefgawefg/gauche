@@ -1,0 +1,237 @@
+// ROOM CONTRACT: Adapted from the pinned Gubsy room_matchmaking.cpp.
+#include "matchmaking.hpp"
+#include "http.hpp"
+
+#include <gubsy/lobby/session_contract.hpp>
+#include <algorithm>
+#include <cctype>
+
+namespace {
+
+std::string normalized_room_code(std::string room_code) {
+    room_code.erase(std::remove_if(room_code.begin(),
+                                   room_code.end(),
+                                   [](unsigned char c) { return std::isspace(c) != 0; }),
+                    room_code.end());
+    std::transform(room_code.begin(), room_code.end(), room_code.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+    return room_code;
+}
+
+nlohmann::json room_to_json(const MatchmakingRoom& room) {
+    nlohmann::json body;
+    body["session_name"] = room.session_name;
+    body["host_name"] = room.host_name;
+    body["privacy"] = room.privacy;
+    body["max_players"] = room.max_players;
+    nlohmann::json contract_json = session_contract_to_json(room.contract);
+    for (auto it = contract_json.begin(); it != contract_json.end(); ++it)
+        body[it.key()] = it.value();
+    body["in_game"] = session_contract_is_in_game(room.contract);
+    return body;
+}
+
+void member_from_json(const nlohmann::json& json, MatchmakingMember& out) {
+    out.member_id = json.value("member_id", "");
+    out.display_name = json.value("display_name", "");
+    out.client_label = json.value("client_label", "");
+    out.last_seen_seconds_ago = json.value("last_seen_seconds_ago", 0);
+    out.is_host = json.value("is_host", false);
+}
+
+bool room_from_json(const nlohmann::json& json, MatchmakingRoom& out) {
+    if (!json.is_object())
+        return false;
+    out = MatchmakingRoom{};
+    out.room_code = json.value("room_code", "");
+    out.session_name = json.value("session_name", "");
+    out.host_name = json.value("host_name", "");
+    out.privacy = json.value("privacy", 0);
+    out.max_players = json.value("max_players", 1);
+    out.current_players = json.value("current_players", 0);
+    if (!session_contract_from_json(json, out.contract))
+        return false;
+    auto members_it = json.find("members");
+    if (members_it != json.end() && members_it->is_array()) {
+        for (const auto& member_json : *members_it) {
+            if (!member_json.is_object())
+                continue;
+            MatchmakingMember member;
+            member_from_json(member_json, member);
+            if (!member.member_id.empty())
+                out.members.push_back(std::move(member));
+        }
+    }
+    return true;
+}
+
+} // namespace
+
+bool GaucheMatchmaking::fetch_capabilities(const std::string& server_url,
+                                               RoomServerCapabilities& out,
+                                               std::string& err) {
+    auto json = get_json(server_url, "/health", err);
+    if (!json)
+        return false;
+    out = RoomServerCapabilities{};
+    out.ok = (*json).value("ok", false);
+    const auto realnet_it = json->find("realnet");
+    if (realnet_it != json->end() && realnet_it->is_object()) {
+        const auto room_directory_it = realnet_it->find("room_directory");
+        if (room_directory_it != realnet_it->end() && room_directory_it->is_object()) {
+            out.room_directory.enabled = room_directory_it->value("enabled", false);
+            out.room_directory.protocol = room_directory_it->value("protocol", "");
+        }
+        const auto punch_it = realnet_it->find("punch_udp");
+        if (punch_it != realnet_it->end() && punch_it->is_object()) {
+            out.punch_udp.enabled = punch_it->value("enabled", false);
+            out.punch_udp.host = punch_it->value("host", "");
+            out.punch_udp.port = punch_it->value("port", 0);
+            out.punch_udp.protocol = punch_it->value("protocol", "");
+        }
+        const auto relay_it = realnet_it->find("relay_udp");
+        if (relay_it != realnet_it->end() && relay_it->is_object()) {
+            out.relay_udp.enabled = relay_it->value("enabled", false);
+            out.relay_udp.host = relay_it->value("host", "");
+            out.relay_udp.port = relay_it->value("port", 0);
+            out.relay_udp.protocol = relay_it->value("protocol", "");
+        }
+    }
+    return out.ok;
+}
+
+bool GaucheMatchmaking::create_room(const std::string& server_url,
+                                        const MatchmakingRoom& room,
+                                        MatchmakingCreateResult& out,
+                                        std::string& err) {
+    auto json = post_json(server_url, "/rooms/create", room_to_json(room), err);
+    if (!json)
+        return false;
+    out.room_code = (*json).value("room_code", "");
+    out.host_secret = (*json).value("host_secret", "");
+    out.member_id = (*json).value("member_id", "");
+    return true;
+}
+
+bool GaucheMatchmaking::join_room(const std::string& server_url,
+                                      const std::string& room_code,
+                                      const std::string& display_name,
+                                      const std::string& join_token,
+                                      std::string& member_id_out,
+                                      std::string& err) {
+    nlohmann::json body{{"display_name", display_name}};
+    if (!join_token.empty())
+        body["join_token"] = join_token;
+    auto json = post_json(server_url,
+                          "/rooms/" + normalized_room_code(room_code) + "/join",
+                          body,
+                          err);
+    if (!json)
+        return false;
+    member_id_out = (*json).value("member_id", "");
+    return true;
+}
+
+bool GaucheMatchmaking::create_join_attempt(const std::string& server_url,
+                                                const std::string& room_code,
+                                                const std::string& display_name,
+                                                MatchmakingJoinAttemptResult& out,
+                                                std::string& err) {
+    auto json = post_json(server_url,
+                          "/rooms/" + normalized_room_code(room_code) + "/join_attempt",
+                          {{"display_name", display_name}},
+                          err);
+    if (!json)
+        return false;
+    out = MatchmakingJoinAttemptResult{};
+    out.join_attempt_id = (*json).value("join_attempt_id", "");
+    out.join_token = (*json).value("join_token", "");
+    out.punch_secret = (*json).value("punch_secret", "");
+    out.relay_allocation_id = (*json).value("relay_allocation_id", "");
+    out.relay_secret = (*json).value("relay_secret", "");
+    auto room_it = json->find("room");
+    if (room_it != json->end())
+        (void)room_from_json(*room_it, out.room);
+    return true;
+}
+
+bool GaucheMatchmaking::leave_room(const std::string& server_url,
+                                       const std::string& room_code,
+                                       const std::string& member_id,
+                                       const std::string& host_secret,
+                                       std::string& err) {
+    nlohmann::json body{{"member_id", member_id}};
+    if (!host_secret.empty())
+        body["host_secret"] = host_secret;
+    return post_json(server_url,
+                     "/rooms/" + normalized_room_code(room_code) + "/leave",
+                     body,
+                     err).has_value();
+}
+
+bool GaucheMatchmaking::remove_member(const std::string& server_url,
+                                          const std::string& room_code,
+                                          const std::string& host_secret,
+                                          const std::string& target_member_id,
+                                          std::string& err) {
+    nlohmann::json body{
+        {"host_secret", host_secret},
+        {"member_id", target_member_id},
+    };
+    return post_json(server_url,
+                     "/rooms/" + normalized_room_code(room_code) + "/remove_member",
+                     body,
+                     err).has_value();
+}
+
+bool GaucheMatchmaking::heartbeat_room(const std::string& server_url,
+                                           const std::string& room_code,
+                                           const std::string& member_id,
+                                           const std::string& display_name,
+                                           const std::string& host_secret,
+                                           const MatchmakingRoom* room_update,
+                                           std::string& err) {
+    nlohmann::json body{
+        {"member_id", member_id},
+        {"display_name", display_name},
+    };
+    if (!host_secret.empty())
+        body["host_secret"] = host_secret;
+    if (room_update)
+        body["room"] = room_to_json(*room_update);
+    return post_json(server_url,
+                     "/rooms/" + normalized_room_code(room_code) + "/heartbeat",
+                     body,
+                     err).has_value();
+}
+
+bool GaucheMatchmaking::fetch_room(const std::string& server_url,
+                                       const std::string& room_code,
+                                       MatchmakingRoom& out,
+                                       std::string& err) {
+    auto json = get_json(server_url,
+                         "/rooms/" + normalized_room_code(room_code),
+                         err);
+    if (!json)
+        return false;
+    return room_from_json((*json)["room"], out);
+}
+
+bool GaucheMatchmaking::list_rooms(const std::string& server_url,
+                                       std::vector<MatchmakingRoom>& out,
+                                       std::string& err) {
+    auto json = get_json(server_url, "/rooms", err);
+    if (!json)
+        return false;
+    out.clear();
+    auto rooms_it = json->find("rooms");
+    if (rooms_it == json->end() || !rooms_it->is_array())
+        return true;
+    out.reserve(rooms_it->size());
+    for (const auto& room_json : *rooms_it) {
+        MatchmakingRoom room;
+        if (room_from_json(room_json, room))
+            out.push_back(std::move(room));
+    }
+    return true;
+}

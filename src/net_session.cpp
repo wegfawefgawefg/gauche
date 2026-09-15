@@ -1,4 +1,5 @@
 #include "net_session_internal.hpp"
+#include "net/party.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -9,7 +10,13 @@
 
 void send_wire(NetSession& session, NetEndpoint to, const PacketWriter& packet) {
     std::string error;
-    if (!session.socket.send(to, packet.bytes, error)) session.status = error;
+    if (!send_traversal(session, to, packet.bytes, error)) {
+        session.status = error;
+        network_event(session, "send_failed");
+    } else {
+        ++session.diagnostics.sent_packets;
+        session.diagnostics.sent_bytes += packet.bytes.size();
+    }
 }
 
 bool host_game(NetSession& session, std::uint16_t port, std::uint64_t seed,
@@ -22,6 +29,7 @@ bool host_game(NetSession& session, std::uint16_t port, std::uint64_t seed,
     session.role = NetRole::Host;
     session.local_owner = 0;
     session.ready = true;
+    begin_network_log(session);
     session.status = "Hosting on port " + std::to_string(session.socket.bound_port());
     return true;
 }
@@ -34,6 +42,7 @@ bool join_game(NetSession& session, const std::string& host, std::uint16_t port,
     session.local_identity = identity;
     session.local_owner = -1;
     session.role = NetRole::Client;
+    begin_network_log(session);
     session.status = "Connecting to " + endpoint_text(session.host_endpoint);
     return true;
 }
@@ -52,6 +61,7 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
         session.clock_started = true;
         session.started_ms = session.now_ms;
     }
+    step_traversal(session);
     const bool heartbeat_due = session.now_ms >= session.next_heartbeat_ms;
     if (heartbeat_due) session.next_heartbeat_ms = session.now_ms + 500;
     for (int count = 0; count < 256; ++count) {
@@ -61,21 +71,29 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             if (!error.empty()) session.status = error;
             break;
         }
+        ++session.diagnostics.received_packets;
+        session.diagnostics.received_bytes += datagram.bytes.size();
+        if (receive_traversal(session, datagram)) continue;
+        if (!authorized_route(session, datagram.from)) continue;
         PacketReader reader{datagram.bytes};
         WireKind kind{};
         if (!read_packet_header(reader, kind)) continue;
+        if (receive_party_state(session, datagram, reader, kind)) continue;
         if (session.role == NetRole::Host)
             host_receive(session, datagram, reader, kind);
         else if (datagram.from == session.host_endpoint) {
             session.last_host_packet_ms = session.now_ms;
             client_receive(session, datagram, reader, kind);
+            capture_network_recovery(session);
         }
     }
+    if (heartbeat_due) send_party_state(session);
     if (session.role == NetRole::Host) {
         for (int owner = 1; owner < 4; ++owner) {
             NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
             if (!peer.connected) continue;
             if (session.now_ms - peer.last_heard_ms > 6000) {
+                network_event(session, "peer_timeout", owner);
                 peer.connected = false;
                 peer.pending_inputs.clear();
                 Game& game = session.rollback.game;
@@ -98,10 +116,13 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
         }
     } else {
         if (session.ready && session.now_ms - session.last_host_packet_ms > 6000) {
+            network_event(session, "host_timeout");
             session.ready = false;
             session.status = "Connection lost; rejoining the same player slot";
         }
-        if (!session.ready && session.now_ms >= session.next_hello_ms) {
+        if (!session.ready && session.now_ms >= session.next_hello_ms &&
+            (session.traversal.phase == TraversalPhase::Off ||
+             session.traversal.phase == TraversalPhase::Connected)) {
             session.next_hello_ms = session.now_ms + 500;
             PacketWriter hello = begin_packet(WireKind::Hello);
             hello.u64(session.local_identity);
@@ -125,13 +146,15 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
 }
 
 void step_network_game(NetSession& session, Input local_input) {
-    if (!session.ready) return;
+    if (!session.ready || !session.match_started) return;
     if (session.role == NetRole::Host) host_step(session, local_input);
     if (session.role == NetRole::Client) client_step(session, local_input);
 }
 
 void leave_network_game(NetSession& session) {
+    network_event(session, "session_leave", session.local_owner);
     session.socket.close();
+    session.traversal = {};
     session.role = NetRole::Solo;
     session.rollback = {};
     session.peers = {};
@@ -150,6 +173,8 @@ void leave_network_game(NetSession& session) {
     session.receiving_correction = {};
     session.sent_inputs.clear();
     session.ready = false;
+    session.match_started = session.party_ready = true;
+    session.party_ready_mask = 1;
     session.status.clear();
 }
 

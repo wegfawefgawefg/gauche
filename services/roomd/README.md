@@ -61,6 +61,7 @@ API keys, SSH private keys or room authorization secrets in this repository.
 
 - URL: **https://45.77.123.14** (Vultr Los Angeles, `gauche-roomd-lax`).
 - Ubuntu 24.04; plan `vc2-1c-2gb`, $10/month at creation on 2026-09-15.
+- `/` serves Gubsy's live public-room dashboard, refreshing every two seconds.
 - `/health` and `/rooms` are reachable over verified HTTPS. `/debug/*` is not
   proxied; TCP 8788 is blocked externally. UDP 8789/8790 serve punch/relay.
 - `gauche-roomd.service` runs as an unprivileged account with automatic restart.

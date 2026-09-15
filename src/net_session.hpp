@@ -2,6 +2,8 @@
 
 #include "net_protocol.hpp"
 #include "net_socket.hpp"
+#include "net/diagnostics.hpp"
+#include "net/traversal.hpp"
 
 #include <array>
 #include <cstdint>
@@ -24,6 +26,7 @@ struct NetPeer {
     std::uint64_t identity = 0;
     NetEndpoint endpoint{};
     bool connected = false;
+    bool party_ready = false;
     std::uint64_t last_heard_ms = 0;
     std::map<std::uint64_t, Input> pending_inputs;
     SnapshotSend snapshot{};
@@ -45,6 +48,8 @@ struct CorrectionReceive {
 };
 
 struct NetSession {
+    NetDiagnostics diagnostics;
+    Traversal traversal;
     NetRole role = NetRole::Solo;
     UdpSocket socket;
     RollbackSession rollback;
@@ -67,6 +72,8 @@ struct NetSession {
     CorrectionReceive receiving_correction{};
     std::map<std::uint64_t, Input> sent_inputs;
     bool ready = false;
+    bool match_started = true, party_ready = true;
+    std::uint8_t party_ready_mask = 1;
     std::string status;
 };
 

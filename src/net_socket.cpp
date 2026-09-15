@@ -106,7 +106,7 @@ void UdpSocket::close() {
 
 bool UdpSocket::send(NetEndpoint to, std::span<const std::uint8_t> bytes,
                      std::string& error) {
-    if (handle_ == 0 || bytes.size() > 1200) { error = "Socket closed or packet too large"; return false; }
+    if (handle_ == 0 || to.relayed || bytes.size() > 1400) { error = "Socket closed or packet too large"; return false; }
     const sockaddr_in address = address_of(to);
 #ifdef _WIN32
     const int sent = sendto(native(handle_), reinterpret_cast<const char*>(bytes.data()),
@@ -124,7 +124,7 @@ bool UdpSocket::send(NetEndpoint to, std::span<const std::uint8_t> bytes,
 
 bool UdpSocket::poll(Datagram& packet, std::string& error) {
     if (handle_ == 0) { error = "Socket closed"; return false; }
-    std::array<std::uint8_t, 1200> buffer{};
+    std::array<std::uint8_t, 1401> buffer{};
     sockaddr_in from{};
 #ifdef _WIN32
     int length = sizeof(from);
@@ -139,6 +139,7 @@ bool UdpSocket::poll(Datagram& packet, std::string& error) {
     if (received < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return false;
 #endif
     if (received < 0) { error = "recvfrom: " + socket_error(); return false; }
+    if (received > 1400) return false;
     packet.from = endpoint_of(from);
     packet.bytes.assign(buffer.begin(), buffer.begin() + received);
     return true;
@@ -163,6 +164,7 @@ bool resolve_endpoint(const std::string& host, std::uint16_t port,
 }
 
 std::string endpoint_text(NetEndpoint endpoint) {
+    if (endpoint.relayed) return "relay:" + std::to_string(endpoint.port);
     const sockaddr_in address = address_of(endpoint);
     std::array<char, INET_ADDRSTRLEN> buffer{};
     if (inet_ntop(AF_INET, &address.sin_addr, buffer.data(),

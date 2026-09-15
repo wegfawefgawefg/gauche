@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
     Game title_scene;
     start_run(title_scene, 380161);
     NetSession network;
+    network.diagnostics.directory = (user_data_root() / "netlogs").string();
     const std::string identity_path = (user_data_root() / "player_id").string();
     const std::string_view host_port = value_arg(argc, argv, "--host");
     const std::string_view join_address = value_arg(argc, argv, "--join");
@@ -89,12 +90,12 @@ int main(int argc, char** argv) {
         }
     } else if (!join_address.empty()) {
         const std::size_t colon = join_address.rfind(':');
-        const auto port = colon == std::string_view::npos ? std::nullopt :
-            number_arg(join_address.substr(colon + 1));
+        const int port = colon == std::string_view::npos ? 0 :
+            number_arg(join_address.substr(colon + 1)).value_or(0);
         const std::string hostname = colon == std::string_view::npos ? "" :
             std::string{join_address.substr(0, colon)};
-        if (hostname.empty() || !port || *port <= 0 || *port > 65535 ||
-            !join_game(network, hostname, static_cast<std::uint16_t>(*port),
+        if (hostname.empty() || port <= 0 || port > 65535 ||
+            !join_game(network, hostname, static_cast<std::uint16_t>(port),
                        load_or_create_identity(identity_path), network_error)) {
             std::fprintf(stderr, "Join failed: %s\n", network_error.c_str());
             shutdown_audio(audio); unload_graphics(graphics); cleanup_gubsy_runtime(host);
@@ -270,7 +271,7 @@ int main(int argc, char** argv) {
             menu_input.select |= frames == 11;
         }
         if (network.role != NetRole::Solo) pump_network(network);
-        if (!join_address.empty() && network.role == NetRole::Client && network.ready)
+        if (!join_address.empty() && network.role == NetRole::Client && network.ready && network.match_started)
             menu.playing = true;
         const GubsyFrame menu_frame = gubsy_get_frame(host);
         update_menu_shell(menu, menu_input, smoke ? 1.0F / 60.0F : static_cast<float>(std::min(elapsed, .1)),
@@ -279,7 +280,7 @@ int main(int argc, char** argv) {
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
         const bool networked = network.role != NetRole::Solo;
-        if (network.role == NetRole::Client && network.ready &&
+        if (network.role == NetRole::Client && network.ready && network.match_started &&
             !network.rollback.needs_snapshot) {
             for (int catchup = 0; catchup < 8 &&
                  !network.rollback.game.game_over &&
@@ -296,7 +297,7 @@ int main(int argc, char** argv) {
             const bool ready = !networked || network.ready;
             const bool simulating = (menu.playing && (!menu.visible || networked) &&
                  (networked || !debug_panels().visible || !playtest_tools().pause)) ||
-                (network.role == NetRole::Client && network.ready && network.host_tick > 0);
+                (network.role == NetRole::Client && network.ready && network.match_started && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
                 for (Input& idle : inputs) idle.cancel_use = true;

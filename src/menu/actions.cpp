@@ -55,6 +55,7 @@ void save_audio(MenuShell& menu) {
 
 
 void leave_session(MenuShell& menu) {
+    if (menu.rooms.active || menu.rooms.busy) { leave_room_session(menu); return; }
     if (gubsy_get_lobby_state(*menu.runtime).online) {
         std::string message;
         if (!gubsy_leave_lobby_room(*menu.runtime, message))
@@ -67,6 +68,10 @@ void back(MenuShell& menu) {
     FrontPage& page = menu.front;
     switch (page.screen) {
     case MenuScreen::Main: break;
+    case MenuScreen::Rooms:
+        if (menu.rooms.active || menu.rooms.busy) leave_room_session(menu);
+        show_menu_screen(page, MenuScreen::Lobby); break;
+    case MenuScreen::Party: leave_room_session(menu); break;
     case MenuScreen::Lobby:
         if (gubsy_get_lobby_state(*menu.runtime).online) leave_session(menu);
         show_menu_screen(page, MenuScreen::Main); break;
@@ -212,6 +217,7 @@ void initialize_menu_settings(MenuShell& menu) {
 
 void apply_menu_action(MenuShell& menu, std::string_view action) {
     if (action.empty()) return;
+    if (room_action(menu, action)) { menu.front.dirty = true; return; }
     FrontPage& page = menu.front;
     if (page.screen == MenuScreen::ProfileEditor && !save_profile_name(page)) return;
     if (action == "back") { menu_back_sound(page); back(menu); return; }
@@ -232,6 +238,7 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
     }
     constexpr struct { std::string_view action; MenuScreen screen; } screens[]{
         {"players", MenuScreen::Players}, {"rules", MenuScreen::Rules},
+        {"rooms", MenuScreen::Rooms}, {"party", MenuScreen::Party},
         {"host", MenuScreen::Host}, {"join", MenuScreen::Join},
         {"display", MenuScreen::Display}, {"audio", MenuScreen::Audio},
         {"controls", MenuScreen::Controls},
@@ -246,6 +253,9 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
         page.dirty = true; return;
     }
     if (action == "start") {
+        if (menu.rooms.active && !menu.network->match_started) {
+            show_menu_screen(page, MenuScreen::Party); return;
+        }
         std::string message;
         if (!gubsy_start_lobby_game(*menu.runtime, message))
             page.toast = message.empty() ? "Could not start run" : message;

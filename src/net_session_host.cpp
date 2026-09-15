@@ -1,4 +1,5 @@
 #include "net_session_internal.hpp"
+#include "net/party.hpp"
 #include "world/encounter.hpp"
 
 #include <algorithm>
@@ -116,7 +117,9 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
         }
         changed = true;
     }
+    network_event(session, new_player ? "peer_join" : "peer_rejoin", owner);
     welcome(session, datagram.from, identity, owner);
+    send_party_state(session);
     if (changed) publish_host_state(session);
     else if (peer.snapshot.id == 0) queue_snapshot(session, owner);
     else send_snapshot_chunks(session, owner);
@@ -167,6 +170,7 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (peer.endpoint != datagram.from || peer.snapshot.id != id) return;
     const std::uint64_t snapshot_tick = peer.snapshot.tick;
+    network_event(session, "snapshot_ack", owner, snapshot_tick);
     peer.snapshot = {};
     peer.last_heard_ms = session.now_ms;
     send_history_since(session, owner, snapshot_tick);
@@ -186,6 +190,7 @@ void publish_host_state(NetSession& session) {
 
 void restart_host_run(NetSession& session, std::uint64_t seed) {
     if (session.role != NetRole::Host) return;
+    network_event(session, "host_restart", 0, seed);
     const DeathPolicy policy = session.rollback.game.run.death_policy;
     Game fresh;
     start_run(fresh, seed);

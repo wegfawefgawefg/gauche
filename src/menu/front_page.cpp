@@ -108,6 +108,9 @@ std::string projection(const FrontPage& page, int death_policy) {
         std::to_string(page.render_resolution) + ":" +
         std::to_string(page.window_resolution) + ":" +
         std::to_string(page.frame_cap) + ":" + std::to_string(page.show_fps);
+    result += ":" + page.room_status + ":" + page.connection_status + ":" +
+        std::to_string(page.party_ready_mask) + ":" + std::to_string(page.party_ready) +
+        ":" + std::to_string(page.room_busy);
     if (page.backend != nullptr) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
         result += ":" + std::to_string(lobby.online) + ":" +
@@ -237,6 +240,10 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
     }
     gview::Host host;
     host.read = [&page](std::string_view key) -> gview::Value {
+        if (key == "room-url") return page.room_url;
+        if (key == "room-name") return page.room_name;
+        if (key == "player-name") return page.player_name;
+        if (key == "room-code") return page.room_code;
         if (key == "join-host") return page.join_host;
         if (key == "join-port") return page.join_port;
         if (key == "host-port") return page.host_port;
@@ -255,6 +262,10 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
     host.write = [&page](std::string_view key, const gview::Value& value) {
         const std::string* text = std::get_if<std::string>(&value);
         if (text != nullptr) {
+            if (key == "room-url") page.room_url = text->substr(0, 256);
+            if (key == "room-name") page.room_name = text->substr(0, 256);
+            if (key == "player-name") page.player_name = text->substr(0, 256);
+            if (key == "room-code") page.room_code = text->substr(0, 256);
             if (key == "join-host") page.join_host = *text;
             if (key == "join-port") page.join_port = *text;
             if (key == "host-port") page.host_port = *text;

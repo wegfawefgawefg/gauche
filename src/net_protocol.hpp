@@ -8,11 +8,11 @@
 
 enum class WireKind : std::uint8_t {
     Hello = 1, Welcome, Input, Canonical, Correction,
-    SnapshotChunk, SnapshotRequest, SnapshotAck, Heartbeat,
+    SnapshotChunk, SnapshotRequest, SnapshotAck, Heartbeat, PartyState, PartyReady,
 };
 
 constexpr std::uint32_t wire_magic = 0x47415543U;
-constexpr std::uint16_t wire_version = 11;
+constexpr std::uint16_t wire_version = 12;
 constexpr std::uint64_t gameplay_version = 0x2026091508ULL;
 
 PacketWriter begin_packet(WireKind kind);

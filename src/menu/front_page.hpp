@@ -12,7 +12,7 @@
 struct GameAudio;
 
 enum class MenuScreen {
-    Main, Lobby, Rules, Host, Join, Players, Player, Settings, Display, Audio,
+    Main, Lobby, Rules, Host, Join, Rooms, Party, Players, Player, Settings, Display, Audio,
     Controls, ProfileEditor, Bindings, BindDetail, BindChoices, InputOptions,
     Pause, Death, Victory,
 };
@@ -32,6 +32,15 @@ struct FrontPage {
     std::string join_host = "127.0.0.1";
     std::string join_port = "35355";
     std::string host_port = "35355";
+    std::string room_url = "https://45.77.123.14";
+    std::string player_name = "Player", room_name = "Gauche", room_code;
+    std::string room_status, party_code, connection_status;
+    std::vector<MatchmakingRoom> rooms;
+    std::vector<MatchmakingMember> room_members;
+    int room_page = 0;
+    unsigned party_ready_mask = 0;
+    bool room_active = false, room_busy = false, party_host = false;
+    bool party_ready = false, force_relay = false;
     std::string profile_name;
     std::string projection;
     int selected_player = 0;

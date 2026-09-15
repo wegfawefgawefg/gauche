@@ -152,8 +152,9 @@ add_executable(gauche
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
-    src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
+    src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
+    src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
     src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp
     src/menu/actions.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
@@ -235,7 +236,7 @@ if(BUILD_TESTING)
     target_compile_options(gauche_socket_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME udp_loopback COMMAND gauche_socket_tests)
     add_executable(gauche_session_tests
-        tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp
+        tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
         ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
@@ -246,7 +247,7 @@ if(BUILD_TESTING)
     endif()
     add_test(NAME direct_session COMMAND gauche_session_tests)
     add_executable(gauche_loss_tests
-        tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp
+        tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_session_client.cpp
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
         ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES})
@@ -294,3 +295,22 @@ if(BUILD_TESTING)
             "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     endforeach()
 endif()
+
+# TRANSPORT: Reuse Gubsy's wire protocols without requiring its game runtime in net tools.
+add_library(gauche_realnet STATIC
+    "${GAUCHE_GUBSY_DIR}/src/realnet/config.cpp"
+    "${GAUCHE_GUBSY_DIR}/src/realnet/crypto.cpp"
+    "${GAUCHE_GUBSY_DIR}/src/realnet/rendezvous.cpp"
+    "${GAUCHE_GUBSY_DIR}/src/realnet/relay.cpp")
+target_include_directories(gauche_realnet SYSTEM PUBLIC
+    "${GAUCHE_GUBSY_DIR}/include" "${GAUCHE_GUBSY_DIR}/third_party")
+foreach(target gauche gauche_render_scene gauche_session_tests gauche_loss_tests)
+    if(TARGET ${target})
+        target_link_libraries(${target} PRIVATE gauche_realnet)
+    endif()
+endforeach()
+
+find_package(CURL REQUIRED)
+foreach(target gauche gauche_render_scene)
+    target_link_libraries(${target} PRIVATE CURL::libcurl)
+endforeach()

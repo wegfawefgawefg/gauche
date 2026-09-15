@@ -9,6 +9,7 @@
 struct NetEndpoint {
     std::uint32_t address = 0;
     std::uint16_t port = 0;
+    bool relayed = false;
     friend bool operator==(NetEndpoint, NetEndpoint) = default;
 };
 

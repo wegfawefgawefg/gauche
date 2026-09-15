@@ -19,7 +19,7 @@ font, window and audio dependencies once:
 ```sh
 sudo apt update
 sudo apt install -y build-essential cmake ninja-build pkg-config git \
-  libglm-dev libfreetype-dev libharfbuzz-dev \
+  libglm-dev libfreetype-dev libharfbuzz-dev libcurl4-openssl-dev \
   libx11-dev libxext-dev libxcursor-dev libxi-dev libxfixes-dev \
   libxrandr-dev libxrender-dev libxss-dev \
   libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev \

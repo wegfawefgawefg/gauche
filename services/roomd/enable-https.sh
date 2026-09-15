@@ -26,6 +26,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/gauche-roomd/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     client_max_body_size 32k;
+    location = / { proxy_pass http://$roomd_ip:8788; }
     location = /health { proxy_pass http://$roomd_ip:8788; }
     location ~ ^/rooms(?:/[A-Z0-9]+(?:/(?:join_attempt|join|heartbeat|leave|remove_member))?|/create)?\$ {
         limit_req zone=room_api burst=40 nodelay;

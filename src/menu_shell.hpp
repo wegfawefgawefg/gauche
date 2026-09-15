@@ -2,6 +2,7 @@
 
 #include "game.hpp"
 #include "net_session.hpp"
+#include "net/rooms/runtime.hpp"
 #include "menu/front_page.hpp"
 
 #include <gubsy/runtime.hpp>
@@ -20,6 +21,7 @@ struct MenuShell {
     bool lobby_configured = false;
     bool front_visible = false;
     FrontPage front{};
+    RoomRuntime rooms{};
 };
 
 void init_menu_shell(MenuShell& menu, GubsyRuntime& runtime, Game& game,

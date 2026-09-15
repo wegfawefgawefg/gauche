@@ -1,4 +1,5 @@
 #include "kettle.hpp"
+#include "heated_water.hpp"
 #include "../entities/attacks.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
@@ -11,39 +12,9 @@ constexpr RegionalItem kettle{"Steam Kettle", "Fill at water; heat nearby for 1.
     Sprite::SteamKettle,{1,2,0,12,45,PatternEffect::Damage,false,1,0,false,true},
     ItemAction::Material,22,1,false,0,0,0,0,0,SoundId::KettlePour};
 
-bool fresh_water(const Game& game, Cell cell) {
-    const Tile* tile = game.stage.at(cell);
-    if (!tile) return false;
-    const Surface& surface = tile->surface;
-    // CONTENTS: Oil and brine do not become fresh water by passing through a kettle.
-    if (surface.liquid_ticks > 0 && surface.liquid != LiquidKind::None &&
-        surface.liquid != LiquidKind::Water) return false;
-    return shallow_water(tile->kind) || tile->kind == TileKind::Water ||
-        (surface.liquid == LiquidKind::Water && surface.liquid_ticks > 0);
-}
 }
 
 const RegionalItem* kettle_item(ItemKind kind) { return kind == ItemKind::SteamKettle ? &kettle : nullptr; }
-
-// STORAGE: loaded is empty/cold/hot (0/1/2); spare is heating progress or remaining heat.
-// Every carried and loose item ages, so swapping slots never preserves boiling water.
-void step_kettle(Game& game, Item& item, Cell cell, bool wet) {
-    if (item.kind != ItemKind::SteamKettle || item.loaded == 0) return;
-    if (wet) { item.loaded = 1; item.spare = 0; return; }
-    const bool heated = warm_cell(game,cell);
-    if (item.loaded == 2) {
-        if (heated) item.spare = kettle_cool_ticks;
-        else if (--item.spare <= 0) {
-            item.loaded = 1; item.spare = 0;
-            emit_sound(game,SoundId::KettleCool,cell);
-        }
-        return;
-    }
-    item.spare = heated ? item.spare+1 : std::max(0,item.spare-1);
-    if (item.spare < kettle_heat_ticks) return;
-    item.loaded = 2; item.spare = kettle_cool_ticks;
-    emit_sound(game,SoundId::KettleReady,cell);
-}
 
 std::vector<Cell> kettle_cells(const Game& game, const Item& item, Cell source, Cell direction) {
     const ItemPattern pattern = item_pattern(item);
@@ -54,7 +25,8 @@ std::vector<Cell> kettle_cells(const Game& game, const Item& item, Cell source, 
         for (int lane=-width;lane<=width;++lane) {
             const Cell cell = source+Cell{direction.x*reach+side.x*lane,direction.y*reach+side.y*lane};
             const Tile* tile = game.stage.at(cell);
-            if (tile && walkable(tile->kind) && clear_attack_sight(game,source,cell,false)) cells.push_back(cell);
+            const bool sight=item.kind==ItemKind::SteamLance ? clear_shot_sight(game,source,cell,false) : clear_attack_sight(game,source,cell,false);
+            if (tile && walkable(tile->kind) && sight) cells.push_back(cell);
         }
     }
     return cells;

@@ -1,3 +1,4 @@
+#include "../items/heated_water.hpp"
 #include "../items/magnet.hpp"
 #include "../items/echo_pebble.hpp"
 #include "../artifacts/hearth.hpp"
@@ -215,7 +216,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"FUEL %ds | %s",(item.loaded+59)/60,item.light.shape==LightShape::Beam ? "FOCUSED" : "WIDE");
     if (item.kind == ItemKind::CandleStub)
         std::snprintf(line, sizeof(line), "FUEL %.1fs | PLACED HP %d", static_cast<double>(item.loaded)/60, item.durability);
-    if (item.kind == ItemKind::SteamKettle)
+    if (heated_water_item(item.kind))
         std::snprintf(line,sizeof(line),item.loaded == 0 ? "FILL AT WATER | HEAT 1.5s" :
             item.loaded == 1 ? "COLD: DOUSE | WATER 5s" : "SCALD %d | WATER 5s",pattern.damage);
     if (item.kind == ItemKind::PressureValve) std::snprintf(line,sizeof(line),"AIM LOCK | RECOVER BELOW 25");
@@ -294,7 +295,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
-    if (item.kind == ItemKind::SteamKettle || item.kind==ItemKind::PocketPump)
+    if (heated_water_item(item.kind) || item.kind==ItemKind::PocketPump)
         std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
     else if (item.kind == ItemKind::PressureValve || item.kind==ItemKind::NozzleElbow)
         std::snprintf(line,sizeof(line),"ATTACHES | RECOVERABLE");
@@ -350,7 +351,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         text(renderer,x+10,y+129,"PLACED | RECOVERABLE",167,197,199);
     } else if (item.kind==ItemKind::StormLantern) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"TOGGLE SHUTTER");
-    } else if (item.kind == ItemKind::SteamKettle) {
+    } else if (heated_water_item(item.kind)) {
         text(renderer,x + 10,y + 129,item_state_text(item,false),167,197,199);
     } else if (item.kind == ItemKind::CandleStub) {
         text(renderer, x + 10, y + 129, item_stackable(item) ? "UNUSED: STACKS UP TO 4" : "USED: DOES NOT STACK", 167, 197, 199);

@@ -46,6 +46,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
+    case SoundId::LanceJet:
     case SoundId::WeightSlam: case SoundId::WeightBreak: case SoundId::PumpBreak: case SoundId::MoldBreak:
     case SoundId::ArcPulse: case SoundId::ArcCut:
     case SoundId::QuarryBurst:
@@ -79,6 +80,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
     case SoundId::BarricadeUnfold:
+    case SoundId::LanceFill: case SoundId::LanceReady: case SoundId::LanceCool: case SoundId::LanceWindup: case SoundId::LancePour: case SoundId::LanceScald: case SoundId::LanceSplash:
     case SoundId::MoldTongs: case SoundId::MoldSnatch: case SoundId::MoldCrank: case SoundId::MoldSeal:
     case SoundId::MoldSpill: case SoundId::MoldRattle: case SoundId::MoldUnlock: case SoundId::MoldKeySpent: case SoundId::MoldThiefDeath:
     case SoundId::NozzleFit: case SoundId::NozzleRemove: case SoundId::NozzleTurn: case SoundId::NozzleBreak:

@@ -1,3 +1,4 @@
+#include "../items/heated_water.hpp"
 #include "../items/pocket_pump.hpp"
 #include "../items/muffling.hpp"
 #include "../items/echo_pebble.hpp"
@@ -43,7 +44,7 @@ void normalize_test_item(Item& item) {
         fresh.opened = item.opened || fresh.loaded < candle_fuel_ticks;
         if (fresh.opened) fresh.count = 1;
     }
-    if (item.kind == ItemKind::SteamKettle) {
+    if (heated_water_item(item.kind)) {
         fresh.loaded = std::clamp(item.loaded, 0, 2);
         fresh.spare = fresh.loaded == 2 ? std::clamp(item.spare, 1, kettle_cool_ticks) : 0;
     }

@@ -13,7 +13,7 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
     if (const RegionalItem* spec = regional_item(used_kind)) {
         if (used_kind == ItemKind::CandleStub)
             emit_sound(game, item.loaded > 0 ? SoundId::CandleLight : SoundId::Drop, user.cell + direction);
-        else if (!item_is_melee(used_kind) && used_kind != ItemKind::CoalLump && used_kind != ItemKind::SteamKettle) emit_sound(game, spec->sound,
+        else if (!item_is_melee(used_kind) && used_kind != ItemKind::CoalLump && used_kind != ItemKind::SteamKettle && used_kind != ItemKind::SteamLance) emit_sound(game, spec->sound,
             used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
     }
     else switch (used_kind) {

@@ -1,3 +1,4 @@
+#include "items/heated_water.hpp"
 #include "item_pattern.hpp"
 #include "items/catalog.hpp"
 
@@ -90,8 +91,8 @@ ItemPattern item_pattern(const Item& item) {
     }
     if (item.kind==ItemKind::HeatSiphon)
         pattern.damage=item.loaded>0 ? std::max(1,pattern.damage*std::min(item.loaded,300)/300) : 0;
-    // CONTENTS: Empty kettles fill one cell; cold water keeps the hot spray's footprint.
-    if (item.kind == ItemKind::SteamKettle) {
+    // CONTENTS: Empty water tools fill one cell; cold water keeps the hot footprint.
+    if (heated_water_item(item.kind)) {
         if (item.loaded == 0) { pattern.minimum = pattern.maximum = 1; pattern.half_width = 0; }
         if (item.loaded != 2) { pattern.damage = 0; pattern.effect = PatternEffect::Utility; }
     }

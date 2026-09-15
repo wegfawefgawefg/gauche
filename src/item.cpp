@@ -1,3 +1,4 @@
+#include "items/steam_lance.hpp"
 #include "items/pocket_pump.hpp"
 #include "projectiles/chain_hook.hpp"
 #include "items/use_completion.hpp"
@@ -154,6 +155,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::PressureValve: case ItemKind::Sealant:
         cooldown = item_pattern(item).cooldown;
         used = use_pressure_item(game,user_slot,direction);
+        break;
+    case ItemKind::SteamLance:
+        cooldown = item_pattern(item).cooldown;
+        used = use_steam_lance(game,user_slot,direction);
         break;
     case ItemKind::SteamKettle:
         cooldown = item_pattern(item).cooldown;

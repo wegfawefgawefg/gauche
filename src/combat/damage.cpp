@@ -59,10 +59,10 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     hurt_mold_thief(game,entity,attacker);
     hurt_ash_sleeper(game,entity,attacker);
     interrupt_pocket_drill(entity);
-    // The overhead press swing is deliberately vulnerable; a blocked hit never
-    // reaches this path. An interrupted windup spends no tool condition.
+    // Heavy bracing is vulnerable; a blocked hit never reaches this path.
+    // Interrupting the hammer/lance spends neither condition nor water.
     if (entity.kind == EntityKind::Player && entity.label_b < 0 &&
-        entity.ground_item.kind == ItemKind::PressHammer) cancel_item_action(entity);
+        (entity.ground_item.kind == ItemKind::PressHammer || entity.ground_item.kind==ItemKind::SteamLance)) cancel_item_action(entity);
     interrupt_furnace_moth(entity);
     hurt_audit_clerk(game,slot,attacker);
     hurt_mine_worker(game,slot,damage,attacker);

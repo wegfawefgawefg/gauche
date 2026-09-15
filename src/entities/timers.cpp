@@ -141,7 +141,8 @@ void step_entity_timers(Game& game, int slot) {
     }
     const bool wet = ground != nullptr && surface_wet(*ground);
     // PAYLOAD: A melee windup copy is not another burning object in the world.
-    step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
+    if (!(entity.kind==EntityKind::Player && entity.label_b<0 && entity.ground_item.kind==ItemKind::SteamLance))
+        step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
     stow_effigy_mask(entity.ground_item,false);
     if (entity.kind==EntityKind::GroundItem && entity.ground_item.kind==ItemKind::IceAnchor) {
         sync_ice_anchor(game,entity.ground_item);

@@ -1,3 +1,4 @@
+#include "../items/heated_water.hpp"
 #include "../items/pocket_pump.hpp"
 #include "item_meter.hpp"
 #include "../items/effigy_mask.hpp"
@@ -38,7 +39,7 @@ std::string item_state_text(const Item& item, bool compact) {
         std::snprintf(result,sizeof(result),compact ? "%.1f/6" : "HEAT %.1f / 6 CHARGES",static_cast<double>(item.loaded)/300.0);
     } else if (item.kind==ItemKind::StormLantern) {
         std::snprintf(result,sizeof(result),"%ds %s",(item.loaded+59)/60,item.opened ? "LIT" : "SHUT");
-    } else if (item.kind == ItemKind::SteamKettle) {
+    } else if (heated_water_item(item.kind)) {
         if (item.loaded == 0) return "EMPTY";
         if (item.loaded == 2) std::snprintf(result,sizeof(result),compact ? "HOT %ds" : "HOT | COOLS IN %ds",(item.spare+59)/60);
         else if (item.spare > 0) std::snprintf(result,sizeof(result),compact ? "H %d%%" : "HEATING %d%%",item.spare*100/90);
@@ -82,7 +83,7 @@ int item_meter_capacity(const Item& item) {
     if (item.kind==ItemKind::EffigyMask) return item.max_uses*60;
     if (item.kind==ItemKind::HeatSiphon) return 1800;
     if (item.kind==ItemKind::StormLantern) return 7200;
-    if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? 1800 : 90;
+    if (heated_water_item(item.kind)) return item.loaded == 2 ? 1800 : 90;
     if (item.max_durability > 0) return item.max_durability;
     if (item.max_uses > 0) return item.max_uses;
     if (const RegionalItem* spec = regional_item(item.kind); spec != nullptr && spec->magazine > 0)
@@ -103,7 +104,7 @@ int item_meter_current(const Item& item) {
     if (item.kind==ItemKind::EffigyMask) return effigy_mask_ticks(item);
     if (item.kind==ItemKind::HeatSiphon) return item.loaded;
     if (item.kind==ItemKind::StormLantern) return item.loaded;
-    if (item.kind == ItemKind::SteamKettle) return item.spare;
+    if (heated_water_item(item.kind)) return item.spare;
     if (item.max_durability > 0) return item.durability;
     if (item.max_uses > 0) return item.uses;
     if (item_is_gun(item.kind)) return item.loaded;

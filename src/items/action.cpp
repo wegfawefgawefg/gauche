@@ -12,6 +12,7 @@ int item_windup(const Item& item) {
     if (item.kind==ItemKind::ArcTorch) return arc_prime_ticks;
     int ticks = 0;
     switch (item.kind) {
+    case ItemKind::SteamLance: ticks = 27; break;
     case ItemKind::NailBoard: ticks = 6; break;
     case ItemKind::PressHammer: ticks = 36; break;
     case ItemKind::RubberMallet: ticks = 9; break;
@@ -45,8 +46,8 @@ void cancel_item_action(Entity& user) {
 bool step_melee_action(Game& game, int slot, const Input& input) {
     Entity& user = game.entities[static_cast<std::size_t>(slot)];
     const Item& held = *user.inventory.held();
-    const bool melee = item_is_melee(held.kind) || held.kind==ItemKind::TuningFork;
-    // PLAYER SLOTS: negative label_b = committed melee/fork slot, counter_a = windup left;
+    const bool melee = item_is_melee(held.kind) || held.kind==ItemKind::TuningFork || held.kind==ItemKind::SteamLance;
+    // PLAYER SLOTS: negative label_b = committed melee/fork/lance slot, counter_a = windup left;
     // point_b = committed facing, ground_item = weapon at windup. Bow uses positive label_b.
     if (user.label_b < 0) {
         if (input.cancel_use || input.drop || input.interact || !melee ||
@@ -70,6 +71,9 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
     }
     if (!input.use) { user.counter_b = 0; return true; }
     if (user.counter_b != 0 || held.cooldown > 0) return true;
+    if (held.kind==ItemKind::SteamLance && held.loaded==0) {
+        use_held_item(game,slot,user.cell+user.facing);return true;
+    }
     // FIXTURE: Cooking and switches take priority over starting a swing.
     const Cell target = aimed_item_target(user, input.aim, item_pattern(held));
     if (interact_with_fixture(game, user.owner, target, true)) return true;

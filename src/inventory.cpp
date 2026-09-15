@@ -114,6 +114,7 @@ Sprite item_sprite(const Item& item) {
     if (item.kind == ItemKind::EchoPebble) return item.loaded>0 ? Sprite::EchoPebbleReady : Sprite::EchoPebble;
     if (item.kind == ItemKind::HeatSiphon) return item.loaded>0 ? Sprite::SiphonCharged : Sprite::HeatSiphon;
     if (item.kind == ItemKind::StormLantern) return lantern_sprite(item);
+    if (item.kind==ItemKind::SteamLance) return item.loaded==2 ? Sprite::LanceHot : Sprite::SteamLance;
     if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? Sprite::KettleHot :
         item.loaded == 1 ? Sprite::KettleFull : Sprite::SteamKettle;
     return item.kind == ItemKind::BearTrap && item.opened ?

@@ -1,3 +1,4 @@
+#include "../items/heated_water.hpp"
 #include "../surfaces/liquid_transfer.hpp"
 #include "../items/pocket_pump.hpp"
 #include "../items/muffling.hpp"
@@ -96,7 +97,7 @@ bool edit_item(Item& item) {
             item.loaded = seconds*60; changed = true;
         }
     }
-    if (item.kind == ItemKind::SteamKettle) {
+    if (heated_water_item(item.kind)) {
         constexpr const char* states[]{"Empty", "Cold water", "Boiling"};
         if (ImGui::Combo("Contents", &item.loaded, states, 3)) { item.spare = kettle_cool_ticks; changed = true; }
         if (item.loaded == 2) {

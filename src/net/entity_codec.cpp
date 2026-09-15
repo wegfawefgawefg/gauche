@@ -1,3 +1,4 @@
+#include "../items/heated_water.hpp"
 #include "../entities/mold_thief.hpp"
 #include "../entities/casting_mold.hpp"
 #include "../items/machine_fittings.hpp"
@@ -97,7 +98,7 @@ Item read_item(PacketReader& reader) {
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
     if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
     if (item.kind == ItemKind::CandleStub && item.loaded > candle_fuel_ticks) reader.okay = false;
-    if (item.kind == ItemKind::SteamKettle && (item.loaded > 2 ||
+    if (heated_water_item(item.kind) && (item.loaded > 2 ||
         item.spare > (item.loaded == 2 ? 1800 : item.loaded == 1 ? 89 : 0))) reader.okay = false;
     if (item.count < 0 || item.max_count < item.count || item.cooldown < 0 ||
         item.loaded < 0 || item.spare < 0 ||

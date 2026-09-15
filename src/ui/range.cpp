@@ -232,7 +232,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                 if (entity_at(game, cell, true) >= 0) break;
             }
         }
-    } else if (held.kind == ItemKind::SteamKettle) {
+    } else if ((held.kind == ItemKind::SteamKettle || held.kind==ItemKind::SteamLance)) {
         for (Cell cell : kettle_cells(game,held,player.cell,facing))
             mark(renderer,cell,camera,zoom,pattern.effect);
     } else if (pattern.cone) {

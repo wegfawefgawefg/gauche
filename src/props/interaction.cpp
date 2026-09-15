@@ -23,6 +23,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     case PropKind::ScrapBin:
         if (roll<20) item=ItemKind::HorseshoeMagnet;
         else if (roll>=40 && roll<60) item=ItemKind::CopperWire;
+        else if (roll>=60 && roll<80) {place_ground_item(game,cell,ItemKind::BoltPouch,3);return;}
         break; // Unimplemented slag/hook ranges remain empty.
     case PropKind::OreBin:
         if (roll<25) { place_ground_item(game,cell,ItemKind::CoalLump,2); return; }

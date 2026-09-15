@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, fifteen regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, sixteen regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -117,7 +117,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 5 | Chain hook | Traveling hook to 5 catches a prop/cart and pulls it one cell per held beat; anchored targets pull the user instead. 24 casts, blocked lanes cut the line. Chain whip. | U / 22 |
 | 6 | Quarry charge | Implemented: place facing ordinary stone. Three-second fuse cuts up to three forward cells; 24 damage along the cut, at the charge and one cell behind. Stack 3. Dig-power-2 reinforcement, other materials and outer boundaries stop it. Water quenches into a recoverable charge; cold slows the fuse. No modifiers. Fuse scratch, deep crack. | U / 19 |
 | 7 | Rubber mallet | Implemented: 0.15s swing, 3 damage and one-cell shove; 70 repairable condition. Tap a boiler to shed 40 pressure without cutting it or spending fuel; below 25 cancels its tell. Sealed outlets refuse. Shoving into a wall can crush. Hollow rubber knock. | C / 9 |
-| 8 | Bolt pouch | Fling five 2-damage bolts in a short fan; three handfuls. Bolts are cosmetic after impact; spent ammo is not infinitely recoverable. Tin scatter. | C / 7 |
+| 8 | Bolt pouch | Implemented: five physical 6-damage bolts spread over five cells, four ticks per cell. All five can hit at point-blank range; outer lanes cover crowds. Stack six, ordinary bundle three, 0.7s cooldown. Grates pass bolts; solid cover/corners stop them. Parries return bolts on the same finite clock. Spent bolts become local steel scraps, never reusable ammo. | C / 9; native stage-one supplies, assembly cargo and 20% scrap-bin bundles |
 | 9 | Steam lance | Fill at fresh water, heat at a furnace; spends one fill on a two-cell 18-damage steaming thrust. Cold thrust only wets. Reusable, long 0.45s windup. Valve hiss. | U / 24 |
 | 10 | Nail board | 10-damage melee board, 35 condition; secondary lays it as a recoverable 16-damage ground trap, hurting the next grounded entrant including its owner. Flying enemies ignore it. Wood slap, nail crunch. | C / 11 |
 | 11 | Foreman's whistle | Implemented: gives audible idle pickhands fixed lane destinations four tiles in the aimed direction for up to 4s. Angry workers refuse; audible real leader calls take them back. Six successful calls, 1.5s cooldown; Long reaches eight tiles, Durable has twelve calls. Successful calls wake sleepers and attract hearing enemies. Short-short-long call, worker answer, spent note. | U / 18 |
@@ -179,7 +179,7 @@ foundry exit. Special layouts replace a floor only once their full route works.
 | Work front | Bent gallery, breakable interior spur, protected outer wall | Foreman and up to three pickhands, chalk marks, one side bypass. Their digging opens optional space. |
 | Blasting alcove | Two offset pockets around a thick rock seam | Powder monkey and exposed fuse, clear retreat bay, optional seam-cache reward. |
 | Rail junction | Broad T crossing with walkable margins | Shunter/cart, lever points, crate platform; no rails through party spawn or mandatory gate footprint. |
-| Assembly line | Implemented: two opposing belt lanes with stationary protected crossings, including a disconnected manual run | Reserved rivet gunner and short grates where safe, crank, brake shoes, and real coal cargo; dry ordinary route. Belts can be broken, hand-driven or braked. |
+| Assembly line | Implemented: two opposing belt lanes with stationary protected crossings, including a disconnected manual run | Reserved rivet gunner and short grates where safe, crank, brake shoes, three-handful Bolt Pouch and real coal cargo; dry ordinary route. Belts can be broken, hand-driven or braked. |
 | Scrap yard | Implemented: open dry yard with a short optional hot sorting lane and crane pedestal | Worn six-condition pickaxe, magnet beyond the initial five-cell crane reach, scrap/ore bins. Protected route and occupancy checks precede all placement. Up to one eligible yard per floor, half selection chance. Scrap effigy remains pending. |
 | Slag bank | Curved hot basin with two dry shores | Snail, cooling splash source, brittle optional shortcut; no required lava crossing. |
 | Pipe crawl | Narrow alternate service lane parallel to main hall | Pressure rats, readable leaking outlet and cutoff valve. Can be bypassed or deliberately vented. |
@@ -221,7 +221,7 @@ only thematic stock. Healing/ammo budgets remain separate from bonus caches.
 | Lunch box | 8-HP tin, opens or breaks | 35% lunch tin, 25% cinder sausage, 15% two salt tablets, 15% two coal biscuits. |
 | Coolant locker | 35-HP cabinet; bullets can puncture its cosmetic casing | 30% coolant can, 20% solvent rag, 15% refractory paste, 15% emergency foam. No unrolled free liquid on break. |
 | Fuse crate | 12-HP wood; fire ignites only after a fuse tell | 25% quarry charge, 20% bolt pouch, 20% ammo, 10% tension spring. Fire destruction trades safe loot for a warned burst. |
-| Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 0–19: horseshoe magnet; 40–59: copper wire. Planned glow-slag and chain-hook ranges remain empty until those items exist. |
+| Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 0–19: horseshoe magnet; 40–59: copper wire; 60–79: three Bolt Pouch handfuls. Other ranges stay empty. |
 | Ore bin | Implemented 30-HP mining bin; local ore/basalt fragments | 25% two coal lumps, next 15% 2–4 gold, next 15% Coolant Can, otherwise empty. |
 | Pay cage | Implemented optional 60-HP shoot-through metal cover; break or cut to open, no key interaction | Initial generation roll: 60% 8–14 gold, otherwise empty pending punch card/inspector stamp. Clerk deposits add real gold up to 60,000; overflow remains carried. Breaking releases the stored balance once, without rerolling loot. Clerk-carried gold returns separately on death. |
 | Ceramic chest | 20-HP brittle shell, ordinary opening | 30% two ceramic plates, 20% refractory paste, 15% furnace seed, 15% coal biscuit. |

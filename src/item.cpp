@@ -103,6 +103,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::BoltPouch:
     case ItemKind::EmergencyFoam:
     case ItemKind::TensionSpring:
     case ItemKind::CoolantCan:

@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "../items/bolt_pouch.hpp"
 #include "../items/emergency_foam.hpp"
 #include "fishing.hpp"
 #include "../lighting/render.hpp"
@@ -54,8 +55,10 @@ ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera ca
         if (const Entity* victim = get_entity(game,shot.entity_b)) render_cell = victim->cell;
     SDL_FRect rect = tile_rect(render_cell, camera, zoom);
     const float offset = drill && shot.label_b == 1 ? .25F : travel;
-    rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
-    rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
+    Cell motion=shot.facing;
+    if (shot.label_a==static_cast<int>(ProjectileKind::ThrownBolt)) motion=thrown_bolt_next(shot)-shot.cell;
+    rect.x += static_cast<float>(motion.x) * offset * pixels;
+    rect.y += static_cast<float>(motion.y) * offset * pixels;
     ProjectilePose pose{rect,rect,0};
     if (thrown && shot.counter_a > 0) {
         const float progress = (static_cast<float>(shot.attack_interval - shot.counter_a) + travel) /

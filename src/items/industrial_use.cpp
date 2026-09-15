@@ -1,4 +1,5 @@
 #include "industrial_use.hpp"
+#include "bolt_pouch.hpp"
 #include "emergency_foam.hpp"
 #include "tension_spring.hpp"
 #include "coolant.hpp"
@@ -14,6 +15,8 @@ bool use_industrial_tool(Game& game, int user_slot, Cell direction, int range, i
     bool used=false;
     cooldown=0;
     switch (item.kind) {
+    case ItemKind::BoltPouch:
+        used=throw_bolts(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::EmergencyFoam:
         used=throw_emergency_foam(game,user_slot,direction,range); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TensionSpring:

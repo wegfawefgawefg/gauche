@@ -64,7 +64,7 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
     if (user.counter_b != 0 || held.cooldown > 0) return true;
     // FIXTURE: Cooking and switches take priority over starting a swing.
     const Cell target = aimed_item_target(user, input.aim, item_pattern(held));
-    if (interact_with_fixture(game, user.owner, target)) return true;
+    if (interact_with_fixture(game, user.owner, target, true)) return true;
     user.counter_a = item_windup(held);
     user.label_b = -(user.inventory.selected + 1);
     user.point_b = user.facing;

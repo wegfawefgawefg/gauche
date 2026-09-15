@@ -65,12 +65,20 @@ void step_owl(Game& game, int slot) {
     }
     if (step_scarecrow_fear(game, slot)) return;
     if (step_hearing(game, slot)) return;
+    // A quiet seed pile can interrupt the trip home, but not a committed dive,
+    // landing recovery or an active scare. Keep the original perch as territory.
+    if (feed_on_bird_seed(game, slot)) {
+        owl.label_a = 0;
+        owl.timer_a = 60;
+        owl.move_interval = 16;
+        owl.sprite = Sprite::Owl;
+        return;
+    }
     if (owl.label_a == 4) {
         if (distance(owl.cell, owl.point_a) <= 1) { owl.label_a = 0; owl.timer_a = 150; }
         else pursue(game, slot, owl.point_a);
         return;
     }
-    if (feed_on_bird_seed(game, slot)) return;
     if (owl.timer_a > 0) return;
     const auto target = enemy_target(game, owl.point_a, 6);
     if (!target) return;

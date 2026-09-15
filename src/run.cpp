@@ -120,7 +120,7 @@ void start_run(Game& game, std::uint64_t seed) {
     generate_world_floor(game);
 }
 
-bool interact_with_fixture(Game& game, int owner, Cell target) {
+bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
     if (owner < 0 || owner >= 4) return false;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
     if (player == nullptr || player->health <= 0 || distance(player->cell, target) > 1)
@@ -143,8 +143,13 @@ bool interact_with_fixture(Game& game, int owner, Cell target) {
             emit_sound(game, SoundId::SuperConfirm, fixture.cell, false);
             return true;
         }
-        if (fixture.kind == EntityKind::Campfire && use_campfire(game, *player, fixture))
-            return true;
+        if (fixture.kind == EntityKind::Campfire) {
+            const auto held = player->inventory.held()->kind;
+            // Explicit interaction may cook from the pack; using a flask, gun or
+            // other utility keeps that item's action even when meat is carried.
+            const bool cooking_hand = item_is_melee(held) || held == ItemKind::RawMeat || held == ItemKind::Egg;
+            if ((!held_use || cooking_hand) && use_campfire(game, *player, fixture)) return true;
+        }
         if (fixture.kind == EntityKind::Door && game.run.has_key) {
             fixture.fixture_open = true;
             fixture.impassable = false;

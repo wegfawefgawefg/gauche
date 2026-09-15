@@ -304,7 +304,7 @@ void start_run(Game& game, std::uint64_t seed);
 enum class FloorLayout { Automatic, Generated, HauntedHouse };
 void generate_world_floor(Game& game, FloorLayout layout = FloorLayout::Automatic);
 bool floor_reachable(const Game& game);
-bool interact_with_fixture(Game& game, int owner, Cell target);
+bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use = false);
 void finish_floor(Game& game);
 void choose_reward(Game& game, int owner, int choice);
 void choose_pending_reward(Game& game, int owner, int choice);

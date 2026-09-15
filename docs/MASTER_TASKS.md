@@ -514,3 +514,15 @@ playtesting; use builds and focused static captures for implementation checks.
 - [ ] Human recheck with the launcher and Japan–Houston internet playtesting after
   every peer rebuilds to wire version 13. Automated lossy four-player sync is not
   a substitute for judging movement responsiveness.
+
+### Water and owl feedback repairs (2026-09-15)
+
+- [x] Poured water uses the same quench path as cold flasks: campfire fuel state,
+  light, cooking and contact ignition stop together; burning actors, held sticks,
+  candles and stoves in the poured cells are quenched too. Add one douse/steam cue.
+- [x] Held utility use is no longer intercepted by campfire cooking from the pack.
+  Explicit fixture interaction still cooks carried ingredients; fists/melee and
+  selected ingredients retain their familiar cooking shortcut.
+- [x] A returning owl notices nearby reachable seed before flying home. Committed
+  attacks, landing recovery and fright still take priority. Seed behavior and
+  quenched state passed a focused direct-call/snapshot check; no live playtest.

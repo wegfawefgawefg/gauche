@@ -4,7 +4,18 @@ Pending work linked from MASTER_TASKS.md. This is the detailed specification,
 not another completion checklist. Nothing below is claimed implemented merely
 because it is recorded. Numbers are initial design targets for user playtesting.
 
-## Confirmed gaps and existing behavior
+## Implemented feedback repairs
+
+2026-09-15: `pour_surface` now calls the shared `quench_cell` path for water/brine,
+including Campfire entities and exposed actor/item flames. Water uses its douse
+cue with local steam. Automatic campfire cooking cannot intercept held utility
+use; explicit interaction still searches the pack. Returning owls consider seed
+before going home, while committed dives, recovery and fright keep precedence.
+A direct-call check covered flask use while carrying raw meat, one-shot dousing,
+extinguished cooking rejection, explicit cooking, owl priorities and snapshot
+round-trip. Strict build passed; gameplay version is `0x2026091509`.
+
+## Original gaps and remaining design
 
 - Water on a campfire failed during playtesting. `pour_surface` extinguishes
   surface fire, candles and stoves, but does not extinguish Campfire entities.

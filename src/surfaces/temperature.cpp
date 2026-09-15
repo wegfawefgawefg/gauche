@@ -110,7 +110,7 @@ bool thaw_water(Game& game, Cell cell) {
     return true;
 }
 
-void quench_cell(Game& game, Cell cell) {
+void quench_cell(Game& game, Cell cell, SoundId sound) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return;
     bool quenched = tile->surface.fire_ticks > 0;
@@ -139,7 +139,7 @@ void quench_cell(Game& game, Cell cell) {
             quenched = true;
         }
     }
-    if (quenched) emit_sound(game, SoundId::ColdQuench, cell);
+    if (quenched) emit_sound(game, sound, cell);
 }
 
 void step_temperature(Game& game) {

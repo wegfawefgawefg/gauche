@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "temperature.hpp"
 #include "../entities/icicle_spider.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
@@ -32,10 +33,8 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     Surface& surface = tile->surface;
     if (kind == LiquidKind::Rot && surface.fire_ticks > 0) return false;
     if (water_liquid(kind)) {
-        douse_candle(game,cell);
-        douse_stove(game,cell);
-        if (surface.fire_ticks > 0) emit_sound(game, SoundId::WaterDouse, cell);
-        surface.fire_ticks = 0;
+        // Water reaches actors and fixtures as well as the floor beneath them.
+        quench_cell(game, cell, SoundId::WaterDouse);
         surface.gritted = false;
         surface.smoke_ticks = static_cast<std::uint16_t>(std::min(45, static_cast<int>(surface.smoke_ticks)));
         surface.sleep_ticks = 0;

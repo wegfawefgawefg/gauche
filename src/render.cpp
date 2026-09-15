@@ -1,3 +1,4 @@
+#include "entities/furnace_moth.hpp"
 #include "items/pocket_drill.hpp"
 #include "entities/pressure_rat.hpp"
 #include "entities/crane_render.hpp"
@@ -279,10 +280,14 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y -= pixels * .035F * std::abs(scurry);
                 angle += static_cast<double>(scurry * (entity.timer_a > 0 ? 18 : 8));
             }
-            if (entity.kind == EntityKind::LanternMoth) {
-                const float wing = .84F + .16F * std::cos(static_cast<float>(game.tick % 60) * .7F);
-                body_rect.x += body_rect.w * (1.0F - wing) * .5F;
-                body_rect.w *= wing;
+            if (entity.kind == EntityKind::LanternMoth || entity.kind==EntityKind::FurnaceMoth) {
+                const bool warning=entity.kind==EntityKind::FurnaceMoth && entity.label_a==FurnaceWarn;
+                const float wing = warning ? .60F : .84F + .16F * std::cos(static_cast<float>(game.tick % 60) * .7F);
+                if (entity.kind==EntityKind::FurnaceMoth) {
+                    body_rect.y+=body_rect.h*(1-wing)*.5F;body_rect.h*=wing;
+                } else {
+                    body_rect.x += body_rect.w * (1.0F - wing) * .5F;body_rect.w *= wing;
+                }
             }
             if (body > 0) {
                 const float sway = std::sin(static_cast<float>(game.tick % 6000) * .05F +

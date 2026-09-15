@@ -1,3 +1,4 @@
+#include "../entities/furnace_moth.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "../items/pocket_drill.hpp"
 #include "../entities/cable_crawler.hpp"
@@ -52,6 +53,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     // reaches this path. An interrupted windup spends no tool condition.
     if (entity.kind == EntityKind::Player && entity.label_b < 0 &&
         entity.ground_item.kind == ItemKind::PressHammer) cancel_item_action(entity);
+    interrupt_furnace_moth(entity);
     hurt_audit_clerk(game,slot,attacker);
     hurt_mine_worker(game,slot,damage,attacker);
     alert_strikebreakers(game,slot,attacker);

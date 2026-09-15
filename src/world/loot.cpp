@@ -31,6 +31,11 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::FurnaceMoth: {
+        const auto roll=random_u32(game)%100;
+        if (roll>=25 && roll<35) place_ground_item(game,enemy.cell,ItemKind::HeatCapsule);
+        break; // The catalog glow-slag range remains empty until implemented.
+    }
     case EntityKind::AuditClerk: {
         place_coins(game,enemy.cell,enemy.counter_a);
         const auto roll=random_u32(game)%100;

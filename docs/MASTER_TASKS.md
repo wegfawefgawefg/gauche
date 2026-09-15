@@ -375,7 +375,8 @@ behavior and balance playtesting remain the user's.
   [Tension Springs](history/TENSION_SPRING.md) add stackable underfoot launch pads, real airborne gap crossings and pursuer traps, heat/destruction counters and supplies at optional hot salvage banks.
   [Audit Clerks and pay offices](history/AUDIT_CLERK.md) add real loose-gold collection, finite breakable pay cages, interruptible alarms and existing-worker responses without reinforcements spawning.
   [Emergency Foam](history/EMERGENCY_FOAM.md) adds traveling sealed cans, a visible expansion delay, shared fire/fuse quenching and temporary shot-blocking soft cover, with kiln-court supplies.
-  Twelve catalog enemy behaviors and fifteen of fifty regional items implemented;
+  [Furnace Moths and lamp alcoves](history/FURNACE_MOTH.md) add finite heat theft, light lures, warned committed dives, cold/cover counters and paired flame/electric-light scenes. Dropped lit sticks now work with shared heat extraction.
+  Thirteen catalog enemy behaviors and fifteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

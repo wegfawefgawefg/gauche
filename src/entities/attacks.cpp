@@ -1,3 +1,4 @@
+#include "furnace_moth.hpp"
 #include "walking_kiln.hpp"
 #include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
@@ -37,6 +38,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::FurnaceMoth:
+        if (enemy.cell==enemy.point_b && (enemy.label_a==FurnaceWarn || enemy.label_a==FurnaceDive))
+            for (int i=1;i<=enemy.counter_b;++i) add(enemy.cell+Cell{enemy.facing.x*i,enemy.facing.y*i});
+        break;
     case EntityKind::RivetGunner:
         if (enemy.cell==enemy.point_a && (enemy.label_a==GunnerBrace || enemy.label_a==GunnerBurst))
             for (int i=1;i<=8;++i) add(enemy.point_a+Cell{enemy.point_b.x*i,enemy.point_b.y*i});

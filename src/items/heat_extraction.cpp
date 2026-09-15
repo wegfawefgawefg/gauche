@@ -30,7 +30,7 @@ int extract_heat(Game& game, Cell cell, int limit) {
     }
     if (tile->surface.fire_ticks>0) return take(tile->surface.fire_ticks,limit);
     for (Entity& actor : game.entities) {
-        if (actor.kind==EntityKind::None || actor.cell!=cell || actor.health<=0) continue;
+        if (actor.kind==EntityKind::None || actor.cell!=cell || (actor.health<=0 && actor.kind!=EntityKind::GroundItem)) continue;
         if (actor.kind==EntityKind::Campfire && actor.fire_tramples<5 && limit>=siphon_portion) {
             ++actor.fire_tramples; actor.fire_dim_ticks=60;
             if (actor.fire_tramples==5) {

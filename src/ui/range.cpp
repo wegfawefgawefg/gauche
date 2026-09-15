@@ -73,7 +73,14 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::BlackFelt) {
+    if (held.kind == ItemKind::SignalFlare) {
+        for (int step=1;step<=pattern.maximum;++step) {
+            const Cell cell=player.cell+Cell{facing.x*step,facing.y*step};
+            if (projectile_blocked(game,cell)) break;
+            mark(renderer,cell,camera,zoom,pattern.effect,true);
+            if (entity_at(game,cell,true)>=0) break;
+        }
+    } else if (held.kind == ItemKind::BlackFelt) {
         const Cell cell = player.cell + facing;
         const Tile* tile = game.stage.at(cell);
         if (tile && can_cover_optic(*tile)) mark(renderer, cell, camera, zoom, pattern.effect);

@@ -1,3 +1,4 @@
+#include "items/flare.hpp"
 #include "items/ice_equipment.hpp"
 #include "game.hpp"
 #include "props/candle.hpp"
@@ -99,6 +100,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::SignalFlare:
+        used = launch_flare(game,user_slot,item,direction); cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::Crampons:
         used = use_crampons(user); cooldown = item_pattern(item).cooldown;
         break;

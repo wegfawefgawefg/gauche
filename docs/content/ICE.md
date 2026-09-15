@@ -49,7 +49,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 | 11 | Fishing widow | Implemented: 64 HP, 0.6s fixed-lane tell, six-tile traveling hook for 14 damage. Pulls the first struck actor every ten ticks, then untangles for 1.5s. Sidestep, cover or interrupt her to cut the line; allies can be hooked. | Fishing huts; 20% fishing line, 20% smoked fish. |
 | 12 | Candle keeper | Implemented: 56 HP; tends reachable candles within eight of home, relights a dry fueled wick after 0.6s. Guards lamps; witnessed theft provokes 5s pursuit inside its territory. A fixed two-cell flame tell lasts 0.6s, then deals 10 damage plus up to 8 burning damage; its lamp goes dark for 3s. Water suppresses the lamp. | Chapel implemented; one roll: 30% candle stub, 15% wick spool. |
 | 13 | Shard colony | Implemented: three 28-HP crystals share a colony handle and 0.8s warning. Valid connections pulse once for 18 damage, then recover for 2s. Cover cuts links; damage, sleep, stun, root or displacement disable an endpoint. Surviving pairs keep working; one lone crystal cannot pulse. | Crystal gallery implemented; 25% crystal lens on the final node only. |
-| 14 | Whiteout drummer | Implemented: 44 HP; three beats, 0.4s apart, then a four-second radius-2 squall at a fixed target within six cells. No direct damage. Damage, sleep, stun or displacement interrupts the 1.2s buildup. | Weather station; 20% muffling felt. Signal flare drop awaits that item. |
+| 14 | Whiteout drummer | Implemented: 44 HP; three beats, 0.4s apart, then a four-second radius-2 squall at a fixed target within six cells. No direct damage. Damage, sleep, stun or displacement interrupts the 1.2s buildup. | Weather station; implemented one roll: 20% muffling felt, next 10% signal flare. |
 | 15 | Seal thief | Implemented: 56 HP; steals one loose food, prefers fish, then takes seven-tick steps to a reachable bank. Holds food for 3s before eating. Adjacent threats provoke a 0.5s bark then 16-damage fixed bite; damage/sleep/stun/displacement interrupts. | Reservoir/fishing huts; carried food returned intact, independent 25% raw meat. |
 | 16 | Icicle spider | Implemented: 34 HP; weaves for 1s across two to six floor cells between walls. A crossing roots for 1s and consumes the line; spider pursues caught prey for up to 3s. Fixed 0.45s bite tell, 12 damage. Silk can be cut/burned; broken anchors or displaced spiders release it. | Service passages implemented; one roll: 20% fishing line, 10% ice needle. |
 | 17 | Boiler porter | Implemented: 68-HP porter braces 0.3s to push its separate 60-HP tank. A 0.75s pressure warning precedes an 18-damage four-cell vent. Hot rupture deals 24 down a three-cell cross, including other enemies. Water cools; fuel is finite. | Bathhouse/boiler gallery implemented; one roll: 25% pressure valve, 20% two coal lumps. |
@@ -87,7 +87,7 @@ same effective item definition as attacks, including rare attributes.
 | 12 | Coal lump | Implemented: feed an adjacent stove or boiler +20s fuel, capped at 120s. Cold stoves need separate ignition. Otherwise throw to 6 at four ticks/cell for 4 damage and recover the lump. Stack 8. | Common; 3 |
 | 13 | Candle stub | Implemented: place an 80s lamp with 6 HP (Durable 12), recover remaining fuel and condition. Only equal unused candles stack, up to four. Water snuffs it; warmth thaws nearby ice. | Common; 5 |
 | 14 | Wick spool | Implemented: add up to 30s fuel to an adjacent candle, capped at 80s. Four portions (Durable eight); no repair or automatic relight. No electrical or living emitter refill. | Common; 7 |
-| 15 | Signal flare | Fires to 8 and burns where it lands for 15s; bright red light, hot contact and noise on launch. Stack 3. | Common; 10 |
+| 15 | Signal flare | Implemented: travels to 8 at four ticks/cell; stops at cover/bodies, burns red for 15s on landing. Hot contact gives a 5s weak burn; water quenches. Stack 3; Long reaches 12. | Common; 10 |
 | 16 | Storm lantern | Aim to shutter its directional light; secondary toggles shutter fully closed. No damage; 120s fuel, conserved while shut. | Uncommon; 20 |
 | 17 | Heat siphon | Transfer up to 5s of burn/fuel from an adjacent source into a carried charge, then discharge a short flame cone. Six charge capacity. | Rare; 34 |
 | 18 | Air bladder | Implemented: shove adjacent actors one cell outward, or aim at loose shallow-water loot to attach a float. Travels straight up to 16 cells, stopping at shore or obstruction. Three uses; Big widens pulse, Durable doubles uses. | Common; 10 |
@@ -191,9 +191,9 @@ painted ceramic. Give each a small silhouette and appropriate source, friction,
 wind response and lifetime. Snow/ice may visually melt near heat; those cosmetic
 pieces cannot create water, block light, change traction or damage anything.
 Use the existing local debris pool and wall collision, not a second physics world.
-Nineteen regional debris types are implemented: ice chips, snow clumps, mirror
+Twenty regional debris types are implemented: ice chips, snow clumps, mirror
 chips, crystal splinters, felt scraps, clock gears, wool tufts, rope fibers, fish bones,
-wicker strips, fishing floats, globe glass, copper curls, kelp scraps, tin lids, wax, charred wick, coal crumbs and brass rivets. Kelp chewing leaves wet scraps; globes leave glass;
+wicker strips, fishing floats, globe glass, copper curls, kelp scraps, tin lids, wax, charred wick, coal crumbs, brass rivets and spent flare cinders. Kelp chewing leaves wet scraps; globes leave glass;
 Coal impacts/stove burnout leave coal crumbs. Broken tanks/maintenance lockers scatter brass rivets and copper curls. Bathhouses can contain fuel-limited iron stoves.
 Spent/broken candles leave wax and wick. Memorial courts hold recoverable candles.
 Each opened lunch tin leaves one metal lid and ice chips; weather vanes shed copper and brass. Creels scatter wicker, line and a small float.
@@ -201,7 +201,9 @@ Bones scatter when fish is eaten; fibers from snapped line and exhausted spools.
 from dead pilgrims and burned Wool Wraps. Clock gears scatter from
 broken alarms. Felt comes from torn/burned covers
 and smashed lens cases, with light-piece friction and local wind response.
-All use the shared cosmetic pool; remaining catalog materials are still open.
+All use the shared cosmetic pool. Burned/doused flares leave light cinders; the
+quota of twenty implemented regional debris types is met. Additional catalog
+materials remain optional content, not extra physics systems.
 
 ## Twenty ambient cues and small scenes
 

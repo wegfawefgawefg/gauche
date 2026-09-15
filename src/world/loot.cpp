@@ -63,9 +63,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll < 45) place_ground_item(game, enemy.cell, ItemKind::WoolWrap);
         break;
     }
-    case EntityKind::WhiteoutDrummer:
-        if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::MufflingFelt);
+    case EntityKind::WhiteoutDrummer: {
+        const auto roll=random_u32(game)%100;
+        if (roll<20) place_ground_item(game,enemy.cell,ItemKind::MufflingFelt);
+        else if (roll<30) place_ground_item(game,enemy.cell,ItemKind::SignalFlare);
         break;
+    }
     case EntityKind::SealThief:
         drop_scavenged_items(game, enemy);
         if (random_u32(game) % 4 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);

@@ -209,6 +209,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     case SoundId::FeltTear: case SoundId::FeltBurn:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Felt, 4, seed, false);
         break;
+    case SoundId::FlareSpent: case SoundId::FlareOut:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::FlareCinder,4,seed);
+        break;
     case SoundId::PrismBurst:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::CrystalSplinter, 6, seed);
         break;

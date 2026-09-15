@@ -78,7 +78,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/frozen_pilgrim.cpp src/entities/pilgrim_heat.cpp
     src/entities/bell_diver.cpp src/entities/diver_route.cpp
     src/entities/frost_bat.cpp src/projectiles/frost.cpp src/surfaces/temperature.cpp
-    src/entities/rime_skater.cpp src/items/ice_footing.cpp src/items/ice_equipment.cpp src/items/ice_projectiles.cpp src/items/catalog.cpp
+    src/entities/rime_skater.cpp src/items/ice_footing.cpp src/items/ice_equipment.cpp src/items/flare.cpp src/items/ice_projectiles.cpp src/items/catalog.cpp
     src/entities/pocket_door.cpp src/items/pocket_door.cpp
     src/projectiles/thunder.cpp
     src/entities/targeting.cpp

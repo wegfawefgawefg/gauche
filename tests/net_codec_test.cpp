@@ -102,6 +102,10 @@ int main() {
     blade->ground_item=make_item(ItemKind::SkateBlade,1,ItemAttribute::Big); blade->ground_item.durability=17;
     auto* spikes = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{16,8}));
     spikes->ground_item=make_item(ItemKind::Crampons,1,ItemAttribute::Durable); spikes->ground_item.uses=7;
+    auto* flare = get_entity(original,spawn_entity(original,EntityKind::Projectile,{17,8}));
+    flare->label_a=static_cast<int>(ProjectileKind::Flare); flare->label_b=1; flare->timer_a=713;
+    flare->ground_item=make_item(ItemKind::SignalFlare); flare->sprite=Sprite::FlareBurning;
+    flare->light={7,1350,{255,69,42}}; flare->entity_a=original.players[0];
     original.stage.tiles[14].prop = {PropKind::MaintenanceLocker,13,0,false};
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};

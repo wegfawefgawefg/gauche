@@ -197,6 +197,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line,sizeof(line),item.loaded == 0 ? "FILL AT WATER | HEAT 1.5s" :
             item.loaded == 1 ? "COLD: DOUSE | WATER 5s" : "SCALD %d | WATER 5s",pattern.damage);
     if (item.kind == ItemKind::PressureValve) std::snprintf(line,sizeof(line),"AIM LOCK | RECOVER BELOW 25");
+    if (item.kind == ItemKind::SignalFlare) std::snprintf(line,sizeof(line),"LIGHT 15s | CONTACT BURNS 5s");
     if (item.kind == ItemKind::SkateBlade)
         std::snprintf(line,sizeof(line),"DMG %d | TIP %s",pattern.damage,player.vitals.slide_momentum>0 ? "ACTIVE" : "AFTER SLIP");
     if (item.kind == ItemKind::Crampons) {

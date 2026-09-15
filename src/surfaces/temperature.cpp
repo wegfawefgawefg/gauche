@@ -1,3 +1,4 @@
+#include "../items/flare.hpp"
 #include "temperature.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
@@ -24,6 +25,7 @@ bool entity_has_flame(const Entity& actor) {
     if (actor.kind == EntityKind::None || actor.kind == EntityKind::SteamLeech) return false;
     if (actor.kind == EntityKind::GroundItem) return hot_item(actor.ground_item);
     if (actor.health <= 0) return false;
+    if (burning_flare(actor)) return true;
     if (actor.kind == EntityKind::CandleKeeper && actor.timer_b == 0) return true;
     if ((actor.kind == EntityKind::Campfire && actor.fire_tramples < 5) ||
         actor.kind == EntityKind::Ember || actor.burn_ticks > 0 || actor.scorch_ticks > 0) return true;
@@ -116,6 +118,7 @@ void quench_cell(Game& game, Cell cell) {
     tile->surface.fire_ticks = 0;
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
+        if (douse_flare(game,actor)) quenched = true;
         if (douse_keeper_lamp(game,actor)) quenched = true;
         quenched |= actor.burn_ticks > 0 || actor.scorch_ticks > 0;
         actor.burn_ticks = actor.scorch_ticks = 0;

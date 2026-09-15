@@ -13,6 +13,7 @@ void mix_light(std::uint64_t& hash, LightEmitter light) {
     mix(hash, light.color.red);
     mix(hash, light.color.green);
     mix(hash, light.color.blue);
+    mix(hash, static_cast<std::uint64_t>(light.shape));
 }
 
 } // namespace

@@ -54,6 +54,7 @@ void drop_player_item(Game& game, Entity& player) {
         nearby_ground_item_cell(game, player.cell));
     if (Entity* ground = get_entity(game, dropped)) {
         ground->ground_item = held;
+        ground->facing = player.facing;
         ground->sprite = item_sprite(held);
         held = {};
         player.block_ticks = 0;
@@ -114,6 +115,7 @@ bool pickup_or_drop(Game& game, Entity& player) {
     }
     stop_item_float(game, ground);
     ground.ground_item = outgoing;
+    ground.facing = player.facing;
     ground.sprite = item_sprite(outgoing);
     player.inventory = candidate;
     player.block_ticks = 0;

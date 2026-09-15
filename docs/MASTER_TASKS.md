@@ -5,11 +5,7 @@ port. Keep task status here. The [content brief](CONTENT_FARM_BRIEF.md) records 
 the [forest ideas](FOREST_CONTENT_IDEAS.md) are candidates; [NEXT_TASKS.md](NEXT_TASKS.md) is completed history. The new lighting contrast is the visual starting point;
 preserve its dark, readable rooms.
 
-Execution started 2026-09-14. The user owns playtesting and balance feedback;
-this implementation pass uses builds and focused render/asset inspection, without
-adding a large test suite. Validation/playtest bullets below describe desired
-coverage, not a requirement to run autonomous playthroughs. Unchecked work stays
-visible until implemented; visual changes awaiting inspection are noted explicitly.
+Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
 ## Tile rules and damage feedback
 
 - [x] Give tiles one explicit break rule: **unbreakable**, **damageable**, or
@@ -274,8 +270,8 @@ behavior and balance playtesting remain the user's.
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
   Fifteen cold room roles host twenty enemy types, including [shard colonies](history/ICE_SHARDS.md),
-  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Thirty-six items include
-  [observatory optics](history/ICE_OPTICS.md). Twenty of twenty enemy behaviors, thirty-six of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. Twenty Ice debris materials are implemented.
+  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Thirty-seven items include
+  [observatory optics](history/ICE_OPTICS.md). Twenty of twenty enemy behaviors, thirty-seven of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](history/STORM_LANTERN.md) adds directional light. Twenty Ice debris materials are implemented.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava
@@ -497,3 +493,8 @@ Finish active playtest fixes, then forest content slices, contextual loot and
 unique floors. Extend each later biome through design, implementation and user
 playtesting. Keep Rust as the parity reference and current C++ lighting as the
 visual baseline; review visible changes in static captures at normal zoom.
+## Playtest tools and stage presentation
+
+- [ ] Implement the [playtest tools specification](PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.
+- [ ] Controller icon override in settings; set this user’s preference to Xbox.
+- [ ] Small upper-right angled stage announcement, subtle entrance and fade.

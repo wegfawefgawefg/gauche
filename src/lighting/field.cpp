@@ -1,5 +1,7 @@
 #include "field.hpp"
 #include "canopy.hpp"
+#include "shape.hpp"
+#include "../entities/attacks.hpp"
 
 #include <algorithm>
 #include <array>
@@ -25,7 +27,8 @@ float ambient_seed(const Stage& stage, Cell cell) {
     return (wall ? 0.06F : 0.10F) + 0.08F * open / 8.0F;
 }
 
-void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
+void cast_source(LightingCache& cache, const Game& game, LightSource source) {
+    const Stage& stage=game.stage;
     if (!cache.contains(source.cell) || source.radius <= 0 || source.power <= 0.0F) return;
     struct Wave { Cell cell; float power; int distance; };
     std::vector<float> best(cache.cast.size(), -1.0F);
@@ -34,10 +37,15 @@ void cast_source(LightingCache& cache, const Stage& stage, LightSource source) {
     best[cache.index(source.cell)] = source.power;
     for (std::size_t cursor = 0; cursor < wave.size(); ++cursor) {
         const Wave current = wave[cursor];
-        LightColor& target = cache.cast[cache.index(current.cell)];
-        target.red = std::max(target.red, source.color.red * current.power);
-        target.green = std::max(target.green, source.color.green * current.power);
-        target.blue = std::max(target.blue, source.color.blue * current.power);
+        const int factor=light_direction_factor(source.shape,source.facing,current.cell-source.cell);
+        const bool visible=source.shape==LightShape::Omni || clear_attack_sight(game,source.cell,current.cell,false);
+        if (visible && factor>0) {
+            const float lit=current.power*static_cast<float>(factor)*.001F;
+            LightColor& target=cache.cast[cache.index(current.cell)];
+            target.red=std::max(target.red,source.color.red*lit);
+            target.green=std::max(target.green,source.color.green*lit);
+            target.blue=std::max(target.blue,source.color.blue*lit);
+        }
         // What if a wall receives light? Its face glows, but it cannot relay light behind it.
         if (current.distance >= source.radius || (current.distance > 0 && solid(stage, current.cell))) continue;
         for (Cell direction : neighbors) {
@@ -106,7 +114,7 @@ void build_lighting(LightingCache& cache, const Game& game,
 
     // SOURCES: Cosmetic flashes share this local cache; rules never read it.
     for (LightSource source : collect_light_sources(game, cache, flashes))
-        cast_source(cache, game.stage, source);
+        cast_source(cache, game, source);
     project_canopy(cache, game);
 }
 

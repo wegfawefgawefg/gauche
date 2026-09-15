@@ -14,11 +14,10 @@ void add(std::vector<LightSource>& sources, const LightingCache& cache,
 }
 
 void add_emitter(std::vector<LightSource>& sources, const LightingCache& cache,
-                 Cell cell, LightEmitter emitter, float scale = 1.0F) {
+                 Cell cell, LightEmitter emitter, float scale = 1.0F, Cell facing = {1,0}) {
     if (emitter.radius <= 0 || emitter.strength <= 0) return;
-    add(sources, cache, cell, emitter.radius,
-        static_cast<float>(emitter.strength) * 0.001F * scale,
-        light_color(emitter.color));
+    if (cache.contains(cell)) sources.push_back({cell,emitter.radius,
+        static_cast<float>(emitter.strength)*.001F*scale,light_color(emitter.color),facing,emitter.shape});
 }
 
 } // namespace
@@ -60,16 +59,16 @@ std::vector<LightSource> collect_light_sources(const Game& game,
         if (entity.max_health > 0 && entity.health <= 0) continue;
         const float source_scale = entity.kind == EntityKind::Campfire ?
             1.0F - 0.8F * static_cast<float>(entity.fire_dim_ticks) / 60.0F : 1.0F;
-        add_emitter(sources, cache, entity.cell, entity.light, source_scale * heat_scale(entity.cell));
+        add_emitter(sources, cache, entity.cell, entity.light, source_scale * heat_scale(entity.cell),entity.facing);
         if (entity.scorch_ticks > 0 || entity.burn_ticks > 0)
             add(sources, cache, entity.cell, 3, 0.55F * heat_scale(entity.cell), {1.0F, 0.36F, 0.09F});
         if (entity.kind == EntityKind::GroundItem)
-            add_emitter(sources, cache, entity.cell, item_light(entity.ground_item), heat_scale(entity.cell));
+            add_emitter(sources, cache, entity.cell, item_light(entity.ground_item), heat_scale(entity.cell),entity.facing);
         if (entity.kind != EntityKind::GroundItem &&
             entity.inventory.selected >= 0 && entity.inventory.selected < quick_slots)
             add_emitter(sources, cache, entity.cell,
                 item_light(*entity.inventory.held()),
-                0.75F * heat_scale(entity.cell));
+                (entity.inventory.held()->kind==ItemKind::StormLantern ? 1.0F : .75F)*heat_scale(entity.cell),entity.facing);
         if (entity.use_flash > 0)
             add(sources, cache, entity.cell, 4,
                 0.58F * static_cast<float>(entity.use_flash) / 8.0F,
@@ -79,8 +78,10 @@ std::vector<LightSource> collect_light_sources(const Game& game,
     // EFFECTS: These local flashes fade without entering gameplay hashes.
     for (const LightFlash& flash : flashes)
         if (flash.life > 0 && flash.span > 0)
-            add(sources, cache, flash.source.cell, flash.source.radius,
-                flash.source.power * static_cast<float>(flash.life) /
-                    static_cast<float>(flash.span), flash.source.color);
+            if (cache.contains(flash.source.cell)) {
+                LightSource source=flash.source;
+                source.power*=static_cast<float>(flash.life)/static_cast<float>(flash.span);
+                sources.push_back(source);
+            }
     return sources;
 }

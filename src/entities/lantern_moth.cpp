@@ -1,6 +1,7 @@
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "../items/fire.hpp"
+#include "../lighting/shape.hpp"
 #include "../props/growth.hpp"
 #include "dispatch.hpp"
 #include "attacks.hpp"
@@ -15,11 +16,11 @@ void find_lamp(Game& game, Entity& moth) {
     int best = 0;
     moth.entity_a = {};
     moth.point_a = moth.cell;
-    const auto consider = [&](Cell cell, LightEmitter light, Handle handle) {
+    const auto consider = [&](Cell cell, LightEmitter light, Handle handle,Cell facing=Cell{1,0}) {
         const int range = distance(cell, moth.cell);
         if (range > 10 || light.strength <= 0 || range > light.radius ||
             !clear_sight(game, moth.cell, cell)) return;
-        const int score = light.strength / (range + 1);
+        const int score = light.strength*light_direction_factor(light.shape,facing,moth.cell-cell) / (1000*(range + 1));
         if (score > best) { best = score; moth.entity_a = handle; moth.point_a = cell; }
     };
     for (int slot = 0; slot < max_entities; ++slot) {
@@ -28,9 +29,9 @@ void find_lamp(Game& game, Entity& moth) {
         if (source.kind == EntityKind::Player && source.owner >= 0 && source.owner < 4 &&
             !game.run.online[static_cast<std::size_t>(source.owner)]) continue;
         const Handle handle{slot, source.generation};
-        consider(source.cell, source.light, handle);
-        consider(source.cell, item_light(*source.inventory.held()), handle);
-        if (source.kind == EntityKind::GroundItem) consider(source.cell, item_light(source.ground_item), handle);
+        consider(source.cell, source.light, handle,source.facing);
+        consider(source.cell, item_light(*source.inventory.held()), handle,source.facing);
+        if (source.kind == EntityKind::GroundItem) consider(source.cell, item_light(source.ground_item), handle,source.facing);
     }
     // PLANTS: Search a bounded patch, using the same emitter as the light renderer.
     for (int y = std::max(0, moth.cell.y - 10); y <= std::min(game.stage.height - 1, moth.cell.y + 10); ++y)

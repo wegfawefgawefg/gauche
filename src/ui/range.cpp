@@ -83,7 +83,15 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::CopperWire || held.kind == ItemKind::GroundingSpike) {
+    if (held.kind==ItemKind::StormLantern) {
+        if (!held.opened || held.loaded<=0) return;
+        const Cell side{-facing.y,facing.x};
+        for (int reach=1;reach<=pattern.maximum;++reach)
+            for (int lane=-pattern_half_width(pattern,reach);lane<=pattern_half_width(pattern,reach);++lane) {
+                const Cell cell=player.cell+Cell{facing.x*reach+side.x*lane,facing.y*reach+side.y*lane};
+                if (clear_attack_sight(game,player.cell,cell,false)) mark(renderer,cell,camera,zoom,PatternEffect::Utility);
+            }
+    } else if (held.kind == ItemKind::CopperWire || held.kind == ItemKind::GroundingSpike) {
         if (circuit_space(game,player.cell+facing)) mark(renderer,player.cell+facing,camera,zoom,PatternEffect::Utility);
     } else if (held.kind == ItemKind::SignalFlare) {
         for (int step=1;step<=pattern.maximum;++step) {

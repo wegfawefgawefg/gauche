@@ -1,4 +1,5 @@
 #include "../items/flare.hpp"
+#include "../items/storm_lantern.hpp"
 #include "dispatch.hpp"
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
@@ -107,8 +108,12 @@ void step_entity_timers(Game& game, int slot) {
     const bool wet = ground != nullptr && surface_wet(*ground);
     // PAYLOAD: A melee windup copy is not another burning object in the world.
     step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
-    for (Item& item : entity.inventory.slots)
-        step_item_state(game, item, entity.cell, wet && wading_actor(entity));
+    step_lantern_fuel(game,entity.ground_item,entity.cell,entity.kind==EntityKind::GroundItem,false);
+    for (int index=0;index<quick_slots;++index) {
+        Item& item=entity.inventory.slots[static_cast<std::size_t>(index)];
+        step_item_state(game,item,entity.cell,wet && wading_actor(entity));
+        step_lantern_fuel(game,item,entity.cell,entity.health>0 && index==entity.inventory.selected,true);
+    }
     if (entity.kind == EntityKind::GroundItem && entity.ground_item.flame_ticks > 0)
         ignite_surface(game, entity.cell);
 }

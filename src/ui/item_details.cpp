@@ -105,6 +105,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item_stackable(item))
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
     else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
+    if (item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), "IN FLIGHT");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
@@ -191,6 +192,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         else std::snprintf(line, sizeof(line), "WRAP #%d: %s", target + 1,
             item_name(order.slots[static_cast<std::size_t>(target)].kind));
     }
+    if (item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"FUEL %ds | %s",(item.loaded+59)/60,item.light.shape==LightShape::Beam ? "FOCUSED" : "WIDE");
     if (item.kind == ItemKind::CandleStub)
         std::snprintf(line, sizeof(line), "FUEL %.1fs | PLACED HP %d", static_cast<double>(item.loaded)/60, item.durability);
     if (item.kind == ItemKind::SteamKettle)
@@ -285,7 +287,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::SteamKettle) {
+    if (item.kind==ItemKind::StormLantern) {
+        draw_action_hint(renderer,x+10,y+127,Action::Reload,"TOGGLE SHUTTER");
+    } else if (item.kind == ItemKind::SteamKettle) {
         text(renderer,x + 10,y + 129,item_state_text(item,false),167,197,199);
     } else if (item.kind == ItemKind::CandleStub) {
         text(renderer, x + 10, y + 129, item_stackable(item) ? "UNUSED: STACKS UP TO 4" : "USED: DOES NOT STACK", 167, 197, 199);

@@ -20,6 +20,7 @@ struct ItemPattern {
     bool chain = false;
     bool conduction = false;
     int momentum_tip = 0; // Conditional forward cell beyond the ordinary sweep.
+    LightShape light_shape = LightShape::Omni; // Directional illumination, not a damaging cone.
 };
 
 int pattern_half_width(ItemPattern pattern, int reach);

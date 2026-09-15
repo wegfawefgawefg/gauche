@@ -5,6 +5,8 @@
 #include <cstdlib>
 
 int pattern_half_width(ItemPattern pattern, int reach) {
+    if (pattern.light_shape!=LightShape::Omni)
+        return std::min(pattern.maximum-reach,(reach-1)/(pattern.light_shape==LightShape::Beam ? 2 : 1));
     return pattern.cone ? std::min(pattern.half_width, std::max(0, reach - 1)) : pattern.half_width;
 }
 
@@ -42,6 +44,13 @@ ItemPattern item_pattern(ItemKind kind) {
 
 ItemPattern item_pattern(const Item& item) {
     ItemPattern pattern = item_pattern(item.kind);
+    if (item.kind==ItemKind::StormLantern) {
+        pattern.light_shape=item.light.shape;
+        pattern.maximum=item.light.shape==LightShape::Beam ? 12 : 8;
+        pattern.minimum=1; pattern.cone=true;
+        for (int step=1;step<=pattern.maximum;++step)
+            pattern.half_width=std::max(pattern.half_width,pattern_half_width(pattern,step));
+    }
     switch (item.attribute) {
     case ItemAttribute::None: case ItemAttribute::Durable: break;
     case ItemAttribute::Strong:

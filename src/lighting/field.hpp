@@ -24,6 +24,8 @@ struct LightSource {
     int radius = 0;
     float power = 0.0F;
     LightColor color{1.0F, 1.0F, 1.0F};
+    Cell facing{1,0};
+    LightShape shape = LightShape::Omni;
 };
 
 struct LightFlash {

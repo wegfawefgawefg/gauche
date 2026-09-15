@@ -101,6 +101,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::StormLantern: break; // Its shutter/focus follows held input in the player step.
     case ItemKind::CopperWire: case ItemKind::GroundingSpike:
         used = place_circuit_item(game,user.cell+direction,item); cooldown = item_pattern(item).cooldown;
         break;

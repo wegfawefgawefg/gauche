@@ -80,12 +80,15 @@ void PacketWriter::light(LightEmitter value) {
     i32(value.radius);
     i32(value.strength);
     u8(value.color.red); u8(value.color.green); u8(value.color.blue);
+    u8(static_cast<std::uint8_t>(value.shape));
 }
 LightEmitter PacketReader::light() {
     LightEmitter light;
     light.radius = i32();
     light.strength = i32();
     light.color = {u8(), u8(), u8()};
+    light.shape = static_cast<LightShape>(u8());
+    if (light.shape > LightShape::Beam) okay = false;
     if (light.radius < 0 || light.radius > 128 ||
         light.strength < 0 || light.strength > 10000) okay = false;
     return light;

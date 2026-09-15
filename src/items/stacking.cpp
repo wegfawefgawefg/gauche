@@ -20,7 +20,7 @@ bool compatible(const Item& a, const Item& b) {
         a.max_count == b.max_count && a.consume_on_use == b.consume_on_use &&
         a.light.radius == b.light.radius && a.light.strength == b.light.strength &&
         a.light.color.red == b.light.color.red && a.light.color.green == b.light.color.green &&
-        a.light.color.blue == b.light.color.blue;
+        a.light.color.blue == b.light.color.blue && a.light.shape == b.light.shape;
 }
 
 } // namespace

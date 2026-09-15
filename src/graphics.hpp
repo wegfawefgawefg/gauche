@@ -52,6 +52,7 @@ enum class Sprite : std::size_t {
     SkateBlade, Crampons,
     SignalFlare, FlareBurning, DebrisFlareCinder,
     CopperWire, WireJunction, GroundingSpike, SpikeHot, SpikeSpent,
+    StormLantern, LanternOpen, LanternFocused,
     Count,
 };
 

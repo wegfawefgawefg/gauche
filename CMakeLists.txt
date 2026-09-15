@@ -53,6 +53,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/storm_lantern.cpp
     src/items/circuits.cpp src/props/circuits.cpp
     src/items/candles.cpp src/props/candle.cpp src/items/coal.cpp src/props/stove.cpp src/items/kettle.cpp
     src/items/brine.cpp src/props/lunch_tin.cpp

@@ -45,6 +45,7 @@ enum class SoundId : std::size_t {
     SkateBreak, CramponsSpent,
     FlareLaunch, FlareLand, FlareHiss, FlareOut, FlareSpent,
     WireLay, WireEmpty, WireCut, SpikePlant, SpikeSink, SpikeCool, SpikeLift, SpikeBreak,
+    LanternOpen, LanternClose, LanternFocus, LanternWide, LanternEmpty,
     Count,
 };
 
@@ -87,4 +88,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "skate_break", "crampons_spent",
     "flare_launch", "flare_land", "flare_hiss", "flare_out", "flare_spent",
     "wire_lay", "wire_empty", "wire_cut", "spike_plant", "spike_sink", "spike_cool", "spike_lift", "spike_break",
+    "lantern_open", "lantern_close", "lantern_focus", "lantern_wide", "lantern_empty",
 };

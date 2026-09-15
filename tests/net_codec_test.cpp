@@ -146,6 +146,11 @@ int main() {
         node->timer_b = 71; node->point_a = cell;
     }
     remove_entity(original,colony);
+    Entity* lantern_loot=get_entity(original,spawn_entity(original,EntityKind::GroundItem,{23,8}));
+    lantern_loot->ground_item=make_item(ItemKind::StormLantern);
+    lantern_loot->ground_item.loaded=4317; lantern_loot->ground_item.spare=2;
+    lantern_loot->ground_item.light.shape=LightShape::Beam;
+    lantern_loot->facing={-1,0};
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

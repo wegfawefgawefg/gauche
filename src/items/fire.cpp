@@ -1,11 +1,13 @@
 #include "fire.hpp"
 #include "kettle.hpp"
+#include "storm_lantern.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
 
 #include <algorithm>
 
 LightEmitter item_light(const Item& item) {
+    if (item.kind == ItemKind::StormLantern) return lantern_light(item);
     return item.flame_ticks > 0 ? LightEmitter{4, 950, {255, 133, 43}} : item.light;
 }
 

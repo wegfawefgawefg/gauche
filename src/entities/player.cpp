@@ -1,6 +1,7 @@
 #include "dispatch.hpp"
 #include "player_movement.hpp"
 #include "../items/bow.hpp"
+#include "../items/storm_lantern.hpp"
 #include "../items/quarry_tools.hpp"
 #include "../items/action.hpp"
 #include "../items/ground_interaction.hpp"
@@ -52,6 +53,7 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_lantern_action(game,slot,input)) return;
     if (step_melee_action(game, slot, input)) return;
     if (step_ice_brick(game, slot, input)) return;
     if (step_bow(game, slot, input)) return;

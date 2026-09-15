@@ -46,6 +46,8 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang)) reader.okay = false;
+    if (item.kind==ItemKind::StormLantern && (item.loaded>7200 || item.spare>3 ||
+        item.light.shape==LightShape::Omni)) reader.okay=false;
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
     if (item.dig_power < 0 || item.dig_power > 255) reader.okay = false;
     if (item.kind == ItemKind::CandleStub && item.loaded > candle_fuel_ticks) reader.okay = false;

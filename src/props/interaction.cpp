@@ -28,6 +28,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         if (roll < 35) item = ItemKind::CandleStub;
         else if (roll < 55) item = ItemKind::WickSpool;
         else if (roll < 70) item = ItemKind::WoolWrap;
+        else if (roll < 80) item = ItemKind::StormLantern;
         break;
     case PropKind::FrozenLunchTin:
         if (roll < 30) item = ItemKind::HotBroth;

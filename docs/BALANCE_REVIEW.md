@@ -105,6 +105,16 @@ flow so players understand both the choice and what it costs them.
 
 ## Working checks and iteration
 
+Follow-up: some throwables are underpowered and arrive in inadequate quantities.
+Audit actual items before choosing changes; increase damage where their attack
+doesn't justify use, and provide useful stacks where a single disposable item
+doesn't justify a slot. Tune damage, radius, utility/status effects, travel/windup,
+recoverability, source stack count, stack maximum and price together. Not every
+utility throwable needs a damage buff, and stronger reusable throws need not get
+the same quantity as weak expendable ones. Distinguish a stack of consumables
+from uses remaining on one item. Carry intended quantities consistently through
+ground drops, containers, rewards and shops, respecting normal stack merging.
+
 Use small temporary summaries/calculations for effective loot frequency, starting
 and replenished damage budgets, real attack cycles, healing over a floor, and
 co-op/stacking extremes. Include imports and native replacements at early, middle

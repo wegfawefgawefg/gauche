@@ -185,6 +185,20 @@ static inspection and later human playtesting, while respecting normal run order
 
 ## Layering and rarity
 
+Small dwelling candidates: a little Forest house, isolated tent, hovel, tree house
+or hut in a tree. These can be compact scene pieces within a room or clearing;
+they need not each consume a multi-room landmark or unique-floor slot. Use shared
+overhead fading for enterable covered interiors. A tree dwelling can suggest
+height through art and an explicit one-plane entrance without requiring decks.
+
+The same structure can have different frequency and context by biome: a lone tent
+is an occasional Forest find, while clustered tents/encampments could be common
+in the provisional military fourth biome. Define biome/stage/source placement
+weights and compatible furnishings, inhabitants and loot; do not mark a structure
+universally rare just because its first appearance was rare. The fourth-biome
+use remains conditional on the final theme. Existing per-feature rarity budgets
+apply to major features; ordinary small camps need their own suitable density.
+
 Compose when the combination is interesting: a road can interrupt fuel in Timber
 Forest and become a firebreak; a fallen tree can obstruct traffic; reactor damage
 can sever power to signals or open a train route. These are design candidates,

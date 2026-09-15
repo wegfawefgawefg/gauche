@@ -56,7 +56,14 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
                           float x, float y, float width, float height, const Entity* user) {
     const ItemPattern pattern = item_pattern(item);
     if (pattern.effect == PatternEffect::None || width <= 0 || height <= 0) return;
-    const PatternDiagramLayout layout = pattern_diagram_layout(pattern, x, y, width, height);
+    PatternDiagramLayout layout = pattern_diagram_layout(pattern, x, y, width, height);
+    if (item.kind == ItemKind::EffigyMask) {
+        layout.min_x=-7; layout.max_x=7; layout.min_y=-3; layout.max_y=3;
+        layout.columns=15; layout.rows=7;
+        layout.cell_size=std::min({16.0F,width/15.0F,height/7.0F});
+        layout.x=x+(width-15.0F*layout.cell_size)*0.5F;
+        layout.y=y+(height-7.0F*layout.cell_size)*0.5F;
+    }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     // GRID: The backing follows the effect's bounds instead of filling the whole card.
@@ -72,7 +79,13 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         }
 
     // EFFECT: Dashed travel has no hit; the destination and nearby lanes do.
-    if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
+    if (item.kind == ItemKind::EffigyMask) {
+        // Rear mask gaze is solid; ordinary forward observation is outlined.
+        // Both have the effigy's Manhattan-seven, ninety-degree sight bounds.
+        for (int dx=-7;dx<=7;++dx) for (int dy=-3;dy<=3;++dy)
+            if (dx!=0 && std::abs(dx)+std::abs(dy)<=7 && std::abs(dy)<=std::abs(dx))
+                colored_cell(renderer,layout,dx,dy,PatternEffect::Utility,dx>0);
+    } else if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
         colored_cell(renderer, layout, 0, 0, pattern.effect, false);
     else if (pattern.conduction) {
         // WATER: Outlines are conditional paths, not a solid blast through dry ground.

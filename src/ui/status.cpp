@@ -1,4 +1,5 @@
 #include "status.hpp"
+#include "../items/effigy_mask.hpp"
 #include "text.hpp"
 
 #include <algorithm>
@@ -35,6 +36,8 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
         player.vitals.recovery == RecoveryKind::Poultice ? Sprite::IcePoultice : Sprite::HerbBag;
     std::snprintf(speed, sizeof(speed), "STEP %d TICKS | BURN AFTER", movement_beat(player, player.move_interval));
     const std::array rows{
+        StatusRow{"MASK WATCHING", effigy_mask_active(player) ? effigy_mask_ticks(*player.inventory.held()) : 0,
+                  {195,192,157,255}, "REAR GAZE | STAND STILL", Sprite::MaskWatching},
         StatusRow{"STILL GROUND", game.stage.at_or_border(player.cell).surface.still_ticks,
                   {116,184,188,255}, "NO DRIFT/SLIP | CAN MOVE", Sprite::StillwaterBell},
         StatusRow{"BURNING", std::max(player.scorch_ticks, player.burn_ticks),

@@ -126,6 +126,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "HEAL +%d   HP %d/%d", pattern.heal,
                       player.health, player.max_health);
     else std::snprintf(line, sizeof(line), "%s", item.opened ? "OPEN" : "UTILITY");
+    if (item.kind == ItemKind::EffigyMask)
+        std::snprintf(line,sizeof(line),"%s",item.opened ? "WATCHING BEHIND" : "REAR GAZE WHEN WORN");
     if (item.kind == ItemKind::SaltedKelp) {
         if (player.vitals.nausea > 0)
             std::snprintf(line, sizeof(line), "CURE | HP %d -> %d", player.health,
@@ -295,9 +297,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                       item.consume_on_use ? "CONSUMES" : "PERSISTS");
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
+    if (item.kind==ItemKind::EffigyMask) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.kind==ItemKind::HeatSiphon) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::StillwaterBell) {
+    if (item.kind == ItemKind::EffigyMask) {
+        draw_action_hint(renderer,x+10,y+127,Action::Use,"HOLD STILL / REAR GAZE");
+    } else if (item.kind == ItemKind::StillwaterBell) {
         text(renderer,x+10,y+129,"3s CALM | WALLS BLOCK SOUND",116,184,188);
     } else if (item.kind == ItemKind::TuningFork) {
         text(renderer,x+10,y+129,"CRYSTAL CHAIN | GAPS STOP IT",151,195,212);
@@ -350,7 +355,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.kind == ItemKind::HeatCapsule)
         std::snprintf(line, sizeof(line), "WARM REACH %d", pattern.blast_radius);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    if (item.kind == ItemKind::PitchBomb)
+    if (item.kind == ItemKind::EffigyMask)
+        std::snprintf(line,sizeof(line),"SIGHT 7 | WALLS BLOCK");
+    else if (item.kind == ItemKind::PitchBomb)
         std::snprintf(line, sizeof(line), "FUSE 2s | FIRE 6s + RESIN");
     else if (item.kind == ItemKind::RottenFruit)
         std::snprintf(line, sizeof(line), "THROW %d | ROT PATCH 10s", pattern.maximum);
@@ -372,7 +379,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
     if (height >= 176.0F) {
-        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
+        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::EffigyMask ? "REAR SOLID / FRONT OUTLINE" : item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
                              width - 20.0F, height - 169.0F, &player);
     }

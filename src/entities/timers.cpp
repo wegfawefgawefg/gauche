@@ -1,3 +1,4 @@
+#include "../items/effigy_mask.hpp"
 #include "../items/thaw_charge.hpp"
 #include "../items/echo_pebble.hpp"
 #include "../items/flare.hpp"
@@ -113,10 +114,12 @@ void step_entity_timers(Game& game, int slot) {
     const bool wet = ground != nullptr && surface_wet(*ground);
     // PAYLOAD: A melee windup copy is not another burning object in the world.
     step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
+    stow_effigy_mask(entity.ground_item,false);
     step_lantern_fuel(game,entity.ground_item,entity.cell,entity.kind==EntityKind::GroundItem,false);
     for (int index=0;index<quick_slots;++index) {
         Item& item=entity.inventory.slots[static_cast<std::size_t>(index)];
         step_item_state(game,item,entity.cell,wet && wading_actor(entity));
+        stow_effigy_mask(item,entity.health>0 && entity.sleep_ticks==0 && entity.stun_ticks==0 && index==entity.inventory.selected);
         step_lantern_fuel(game,item,entity.cell,entity.health>0 && index==entity.inventory.selected,true);
     }
     if (entity.kind == EntityKind::GroundItem && entity.ground_item.flame_ticks > 0)

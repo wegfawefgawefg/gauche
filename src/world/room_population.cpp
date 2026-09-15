@@ -265,7 +265,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         } else if (room.role == RoomRole::Chapel) {
             supply(game,room,ItemKind::BrineFlask,2,budget.equipment);
         } else if (room.role == RoomRole::MemorialCourt) {
-            supply(game, room, ItemKind::HeatCapsule, 2, budget.equipment);
+            supply(game, room, round%2==0 ? ItemKind::EffigyMask : ItemKind::HeatCapsule, round%2==0 ? 1 : 2, budget.equipment);
         } else if (room.role == RoomRole::CliffPath) {
             supply(game, room, round%2==0 ? ItemKind::Crampons : ItemKind::WoolWrap, 1, budget.equipment);
         } else if (room.role == RoomRole::WeatherStation) {

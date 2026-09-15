@@ -1,4 +1,5 @@
 #include "item_meter.hpp"
+#include "../items/effigy_mask.hpp"
 #include "text.hpp"
 #include "../items/catalog.hpp"
 #include "../item_attribute.hpp"
@@ -19,7 +20,9 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::HeatSiphon) {
+    if (item.kind==ItemKind::EffigyMask) {
+        std::snprintf(result,sizeof(result),compact ? "%.1fs" : "WEAR %.1fs LEFT",static_cast<double>(effigy_mask_ticks(item))/60);
+    } else if (item.kind==ItemKind::HeatSiphon) {
         std::snprintf(result,sizeof(result),compact ? "%.1f/6" : "HEAT %.1f / 6 CHARGES",static_cast<double>(item.loaded)/300.0);
     } else if (item.kind==ItemKind::StormLantern) {
         std::snprintf(result,sizeof(result),"%ds %s",(item.loaded+59)/60,item.opened ? "LIT" : "SHUT");
@@ -63,6 +66,7 @@ std::string item_state_text(const Item& item, bool compact) {
 }
 
 int item_meter_capacity(const Item& item) {
+    if (item.kind==ItemKind::EffigyMask) return item.max_uses*60;
     if (item.kind==ItemKind::HeatSiphon) return 1800;
     if (item.kind==ItemKind::StormLantern) return 7200;
     if (item.kind == ItemKind::SteamKettle) return item.loaded == 2 ? 1800 : 90;
@@ -82,6 +86,7 @@ int item_meter_capacity(const Item& item) {
 }
 
 int item_meter_current(const Item& item) {
+    if (item.kind==ItemKind::EffigyMask) return effigy_mask_ticks(item);
     if (item.kind==ItemKind::HeatSiphon) return item.loaded;
     if (item.kind==ItemKind::StormLantern) return item.loaded;
     if (item.kind == ItemKind::SteamKettle) return item.spare;

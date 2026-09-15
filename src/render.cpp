@@ -1,6 +1,7 @@
 #include "scenery/ice_render.hpp"
 #include "combat/parry.hpp"
 #include "render.hpp"
+#include "items/effigy_mask_render.hpp"
 #include "entities/gate_render.hpp"
 #include "world/floating_render.hpp"
 #include "entities/bell_diver.hpp"
@@ -335,6 +336,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderRect(renderer, &held_rect);
             }
         }
+        draw_effigy_mask(renderer,graphics,entity,rect,brightness);
         draw_boiler_details(renderer,graphics,entity,rect,brightness);
         draw_brick_prepare(renderer, entity, rect, brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&

@@ -54,9 +54,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll < 45) place_ground_item(game,enemy.cell,ItemKind::WickSpool);
         break;
     }
-    case EntityKind::SnowEffigy:
-        if (random_u32(game) % 100 < 20) place_ground_item(game, enemy.cell, ItemKind::CandleStub);
+    case EntityKind::SnowEffigy: {
+        const auto roll=random_u32(game)%100;
+        if (roll<20) place_ground_item(game,enemy.cell,ItemKind::CandleStub);
+        else if (roll<30) place_ground_item(game,enemy.cell,ItemKind::EffigyMask);
         break;
+    }
     case EntityKind::AvalancheRam: {
         const auto roll = random_u32(game) % 100;
         if (roll < 35) place_ground_item(game, enemy.cell, ItemKind::RawMeat, 2);

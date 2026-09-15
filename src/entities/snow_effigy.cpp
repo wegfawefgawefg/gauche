@@ -1,4 +1,5 @@
 #include "snow_effigy.hpp"
+#include "../items/effigy_mask.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "../surfaces/temperature.hpp"
@@ -25,7 +26,8 @@ bool watched(const Game& game, const Entity& effigy) {
         if (!game.run.online[owner]) continue;
         const Entity* player = get_entity(game,game.players[owner]);
         if (player && player->health > 0 && player->sleep_ticks == 0 &&
-            observer_faces_cell(game,*player,effigy.cell)) return true;
+            (observer_faces_cell(game,*player,effigy.cell) || (effigy_mask_active(*player) &&
+             observer_faces_direction(game,*player,effigy.cell,Cell{-player->facing.x,-player->facing.y})))) return true;
     }
     return false;
 }
@@ -50,10 +52,14 @@ std::optional<Cell> target_cell(const Game& game, const Entity& effigy) {
 } // namespace
 
 bool observer_faces_cell(const Game& game, const Entity& observer, Cell cell) {
+    return observer_faces_direction(game,observer,cell,observer.facing);
+}
+
+bool observer_faces_direction(const Game& game,const Entity& observer,Cell cell,Cell facing) {
     const Cell delta = cell-observer.cell;
     if (distance({},delta) > 7) return false;
-    const int forward = delta.x*observer.facing.x + delta.y*observer.facing.y;
-    const int sideways = delta.x*observer.facing.y - delta.y*observer.facing.x;
+    const int forward = delta.x*facing.x + delta.y*facing.y;
+    const int sideways = delta.x*facing.y - delta.y*facing.x;
     // GAZE: Cardinal 90-degree cone, actual tiles and sight blockers; never camera state.
     return (delta == Cell{} || (forward > 0 && std::abs(sideways) <= forward)) &&
         clear_sight(game,observer.cell,cell);

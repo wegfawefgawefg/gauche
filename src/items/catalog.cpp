@@ -1,3 +1,4 @@
+#include "effigy_mask.hpp"
 #include "stillwater_bell.hpp"
 #include "tuning_fork.hpp"
 #include "folded_bridge.hpp"
@@ -34,6 +35,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=effigy_mask_item(kind)) return item;
     if (const auto* item=stillwater_bell_item(kind)) return item;
     if (const auto* item=tuning_fork_item(kind)) return item;
     if (const auto* item=folded_bridge_item(kind)) return item;

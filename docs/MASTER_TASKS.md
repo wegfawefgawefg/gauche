@@ -487,10 +487,10 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 
 ## Suggested order
 
-Finish active playtest fixes, then forest content slices, contextual loot and
-unique floors. Extend each later biome through design, implementation and user
-playtesting. Keep Rust as the parity reference and current C++ lighting as the
-visual baseline; review visible changes in static captures at normal zoom.
+- [ ] Prioritize [internet multiplayer playtesting](MULTIPLAYER_PLAYTESTING.md): Splonks/Gubsy room discovery, punch/relay fallback, party lifecycle, saved desync evidence, FPS-independent transport timing and friendly-fire ON by default with a lobby opt-out.
+Then finish active playtest fixes and biome content. Keep Rust as the parity
+reference and current C++ lighting as the visual baseline. The user owns live
+playtesting; use builds and focused static captures for implementation checks.
 ## Playtest tools and stage presentation
 
 - [x] Implement the [playtest tools specification](PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.

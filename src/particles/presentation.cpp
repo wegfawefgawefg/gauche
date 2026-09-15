@@ -328,7 +328,8 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         else if (impact.prop == PropKind::None && impact.damage > 0)
             scatter_material(cosmetics.debris, impact.cell,
                 impact.material == Sprite::ForestTree ? DebrisKind::Bark :
-                impact.material == Sprite::ForestTimber ? DebrisKind::WoodChip : DebrisKind::StoneChip,
+                impact.material == Sprite::ForestTimber ? DebrisKind::WoodChip :
+                industrial_floor(game.run.floor) ? DebrisKind::BasaltChip : DebrisKind::StoneChip,
                              impact.broken ? 6 : 2, key);
     }
     if (game.tick % 6 == 0)

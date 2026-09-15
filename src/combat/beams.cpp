@@ -29,7 +29,7 @@ BeamTrace trace_paths(const Game& game, Cell source, std::span<const Cell> direc
         BeamCell center{source, source, damage};
         center.optic = optical_prop(game.stage.at(source)->prop);
         center.covered = game.stage.at(source)->prop.covered;
-        center.stop = center.covered || projectile_blocked(game, source);
+        center.stop = center.covered || projectile_blocked(game, source,false,true);
         const int target = entity_at(game, source, true);
         if (target >= 0) center.target = {target, game.entities[static_cast<std::size_t>(target)].generation};
         trace.cells[static_cast<std::size_t>(trace.count++)] = center;
@@ -44,7 +44,7 @@ BeamTrace trace_paths(const Game& game, Cell source, std::span<const Cell> direc
         if (!tile) continue;
         BeamCell hit{ray.cell, cell, ray.damage};
         hit.covered = tile->prop.covered;
-        hit.stop = hit.covered || projectile_blocked(game, cell);
+        hit.stop = hit.covered || projectile_blocked(game, cell,false,true);
         hit.optic = optical_prop(tile->prop);
         const int slot = entity_at(game, cell, true);
         if (slot >= 0) {
@@ -107,7 +107,7 @@ void resolve_beam(Game& game, const BeamTrace& trace) {
             }
             continue;
         }
-        if (!hit.optic && !hit.covered) hit_prop(game, hit.cell, hit.damage, hit.from);
+        if (!hit.optic && !hit.covered && !prop_shoot_through(game.stage.at_or_border(hit.cell).prop)) hit_prop(game, hit.cell, hit.damage, hit.from);
         if (get_entity(game, hit.target))
             damage_entity(game, hit.target.slot, hit.damage, hit.from, hit.from != hit.cell);
     }

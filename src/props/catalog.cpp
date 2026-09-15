@@ -3,6 +3,9 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::Grate: return {Sprite::GrateH,SoundId::GrateBreak,60,true,false};
+    case PropKind::ScrapBin: return {Sprite::ScrapBin,SoundId::ScrapBreak,18,true,false};
+    case PropKind::OreBin: return {Sprite::OreBin,SoundId::OreBreak,30,true,false};
     case PropKind::SnowWindbreak: return {Sprite::SnowWallH,SoundId::ShelterBreak,24,true,false};
     case PropKind::CrystalGrowth: return {Sprite::CrystalGrowth,SoundId::CrystalBreak,6,true,false};
     case PropKind::BridgePlank: return {Sprite::BridgePlankH,SoundId::BridgeBreak,30,false,false};
@@ -59,4 +62,8 @@ int prop_max_health(const Prop& prop) {
 
 bool prop_low_cover(const Prop& prop) {
     return prop.kind==PropKind::SnowWindbreak && !prop.broken && prop.hp>0;
+}
+
+bool prop_shoot_through(const Prop& prop) {
+    return prop.kind==PropKind::Grate && !prop.broken && prop.hp>0;
 }

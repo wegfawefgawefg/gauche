@@ -17,6 +17,13 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
+    case PropKind::ScrapBin:
+        if (roll>=40 && roll<60) item=ItemKind::CopperWire;
+        break; // Unimplemented magnet/slag/hook ranges remain empty.
+    case PropKind::OreBin:
+        if (roll<25) { place_ground_item(game,cell,ItemKind::CoalLump,2); return; }
+        if (roll<40) place_coins(game,cell,2+static_cast<int>(random_u32(game)%3));
+        break;
     case PropKind::MaintenanceLocker:
         if (roll < 20) item = ItemKind::CoalLump;
         else if (roll < 40) item = ItemKind::Sealant;
@@ -103,7 +110,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
                 distance(actor.cell, cell) <= 1)
                 apply_sleep(actor, 75);
     }
-    if (prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
+    if (prop.kind == PropKind::ScrapBin || prop.kind == PropKind::OreBin || prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
     if (prop.kind==PropKind::BridgePlank) collapse_bridge_plank(game,cell,source);
 }
@@ -116,6 +123,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
+    if (kind == PropKind::Grate) tile->prop.variant &= 1U;
     if (kind == PropKind::Stove) {
         tile->prop.variant = 1; tile->prop.growth_ticks = 3600;
     }
@@ -134,6 +142,9 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::Grate) emit_sound(game,SoundId::GrateHit,cell);
+    else if (prop.kind == PropKind::ScrapBin) emit_sound(game,SoundId::ScrapHit,cell);
+    else if (prop.kind == PropKind::OreBin) emit_sound(game,SoundId::OreHit,cell);
     else if (prop.kind == PropKind::Doorstop) emit_sound(game,SoundId::WedgeHit,cell);
     else if (prop.kind == PropKind::SnowWindbreak) emit_sound(game,SoundId::ShelterHit,cell);
     else if (prop.kind == PropKind::CopperWire) emit_sound(game,SoundId::WireCut,cell);

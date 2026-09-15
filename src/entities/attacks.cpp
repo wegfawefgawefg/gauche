@@ -165,7 +165,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     return attack;
 }
 
-static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target) {
+static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool solid_target,bool through_grates=false) {
     if (smoke_blocks && obscures_sight(game.stage.at_or_border(from).surface)) return false;
     // GRID RAY: Corner gaps must not leak dust or a creature's line of sight.
     const int dx = to.x - from.x, dy = to.y - from.y;
@@ -173,10 +173,10 @@ static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks,
     const Cell sx{dx > 0 ? 1 : -1, 0}, sy{0, dy > 0 ? 1 : -1};
     int ix = 0, iy = 0;
     Cell cell = from;
-    const auto open = [&game, smoke_blocks, solid_target, to](Cell at) {
+    const auto open = [&game, smoke_blocks, solid_target, through_grates, to](Cell at) {
         const Tile* tile = game.stage.at(at);
         if (tile == nullptr || !walkable(tile->kind) ||
-            (prop_blocks(tile->prop) && !(solid_target && at == to)) ||
+            (prop_blocks(tile->prop) && !(through_grates && prop_shoot_through(tile->prop)) && !(solid_target && at == to)) ||
             (smoke_blocks && obscures_sight(tile->surface))) return false;
         // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.
         if (at != to) {
@@ -198,7 +198,11 @@ static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks,
 }
 
 bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
-    return trace_sight(game, from, to, smoke_blocks, false);
+    return trace_sight(game, from, to, smoke_blocks, false,true);
+}
+
+bool clear_shot_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
+    return trace_sight(game,from,to,smoke_blocks,true,true);
 }
 
 bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {

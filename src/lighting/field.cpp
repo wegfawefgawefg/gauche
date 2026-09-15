@@ -38,7 +38,7 @@ void cast_source(LightingCache& cache, const Game& game, LightSource source) {
     for (std::size_t cursor = 0; cursor < wave.size(); ++cursor) {
         const Wave current = wave[cursor];
         const int factor=light_direction_factor(source.shape,source.facing,current.cell-source.cell);
-        const bool visible=source.shape==LightShape::Omni || clear_attack_sight(game,source.cell,current.cell,false);
+        const bool visible=source.shape==LightShape::Omni || clear_shot_sight(game,source.cell,current.cell,false);
         if (visible && factor>0) {
             const float lit=current.power*static_cast<float>(factor)*.001F;
             LightColor& target=cache.cast[cache.index(current.cell)];

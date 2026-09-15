@@ -29,7 +29,15 @@ bool light_material(DebrisKind kind) {
 
 } // namespace
 
-float debris_friction(DebrisKind kind) { return light_material(kind) ? .92F : .83F; }
+float debris_friction(DebrisKind kind) {
+    switch (kind) {
+    case DebrisKind::BasaltChip: return .72F;
+    case DebrisKind::OreFlake: return .86F;
+    case DebrisKind::SteelWasher: return .91F;
+    case DebrisKind::TinCurl: return .88F;
+    default: return light_material(kind) ? .92F : .83F;
+    }
+}
 
 void rebuild_debris_index(LooseDebris& debris) {
     debris.buckets.fill(-1);

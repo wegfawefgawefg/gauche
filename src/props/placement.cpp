@@ -1,3 +1,4 @@
+#include "industrial.hpp"
 #include "interaction.hpp"
 #include "../world/route.hpp"
 #include "../world/chapel.hpp"
@@ -56,6 +57,7 @@ bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking)
 } // namespace
 
 void scatter_room_props(Game& game, const FloorPlan& plan) {
+    if (industrial_floor(game.run.floor)) { scatter_industrial_props(game,plan); return; }
     const bool cold = ice_floor(game.run.floor);
     if (!forest_floor(game.run.floor) && !cold) return;
     for (const RoomPlan& room : plan.rooms) {

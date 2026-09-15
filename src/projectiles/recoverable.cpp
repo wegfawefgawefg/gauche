@@ -119,14 +119,16 @@ void step_recoverable(Game& game, int slot) {
     if (shot.timer_b > 0) return;
     if (boomerang && shot.label_b == 1) shot.facing = cardinal_toward(shot.cell, owner->cell, shot.facing);
     const Cell next = shot.cell + shot.facing;
-    bool blocked = projectile_blocked(game, next);
+    const bool needle=shot.ground_item.kind==ItemKind::IceNeedle;
+    bool blocked = projectile_blocked(game, next,false,needle);
     // ANCHORS: Turn before entering a crusher or a creature's closed shell.
     for (const Entity& actor : game.entities)
         if (actor.kind != EntityKind::None && actor.impassable && actor.hard_blocker && actor.cell == next)
             blocked = true;
     const int tank = boiler_at(game,next);
     if (tank >= 0) damage_entity(game,tank,shot.counter_b,shot.cell);
-    hit_prop(game, next, shot.counter_b, shot.cell);
+    if (!needle || !prop_shoot_through(game.stage.at_or_border(next).prop))
+        hit_prop(game, next, shot.counter_b, shot.cell);
     if (blocked) {
         if (!boomerang) hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);
         if (boomerang && shot.label_b == 0) turn_back(game, slot);

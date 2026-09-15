@@ -1,3 +1,4 @@
+#include "grate_scene.hpp"
 #include "breaker_scene.hpp"
 #include "hammer_scene.hpp"
 #include "powder_scene.hpp"
@@ -258,6 +259,7 @@ int main(int argc, char** argv) {
     if (mode=="powder" || mode=="powder-run") arrange_powder_scene(game,cosmetics,mode=="powder-run");
     if (mode=="hammer-items") arrange_hammer_scene(game,cosmetics);
     if (mode=="breakers" || mode=="breaker-raise") arrange_breaker_scene(game,cosmetics,mode=="breaker-raise");
+    if (mode=="grates") arrange_grate_scene(game,cosmetics);
     Entity& player = *get_entity(game, game.players[0]);
     player.owner = 0;
     if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }
@@ -267,7 +269,7 @@ int main(int argc, char** argv) {
         player.stun_ticks = 30;
         player.freeze_ticks = 90;
     }
-    if (mode!="quarry" && mode!="quarry-items" && mode!="hammer-items") {
+    if (mode!="quarry" && mode!="quarry-items" && mode!="hammer-items" && mode!="grates") {
         player.inventory = {};
         insert_item(player.inventory, make_item(ItemKind::Fist));
         insert_item(player.inventory, make_item(ItemKind::Buckler));

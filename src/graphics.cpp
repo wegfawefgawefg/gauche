@@ -67,6 +67,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "powder_monkey", "powder_light", "powder_run", "powder_scratch",
     "press_hammer", "rubber_mallet",
     "strikebreaker", "breaker_push", "breaker_raise", "breaker_recover", "breaker_unshielded", "breaker_shield",
+    "grate_h", "grate_v", "scrap_bin", "ore_bin", "debris_basalt_chip", "debris_ore_flake", "debris_steel_washer", "debris_tin_curl",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

@@ -29,9 +29,11 @@ Ordinary heat is local, never a passive biome-wide health tax.
 * Normal rock can be cut at its dig threshold. Structural boundary rock and
   protected objective barriers cannot. Every excavation action uses shared
   tile break rules, including enemy picks, drills, blasts and the train.
-* Grates block bodies but pass flat shots and beams through visible openings.
-  They have HP, stop melee reach unless the weapon explicitly reaches through,
-  and can be broken. Molten baths still need safe banks; a grate is not a bridge.
+* Implemented grates have 60 HP and block bodies/melee while passing sight,
+  bullets, arrows/bolts, ice needles, coal/frost pellets and beams without damage
+  to the bars. Bombs, rockets and larger thrown objects still collide. Mining
+  crews can cut blocked routes; Press Hammers break the mesh quickly. Short
+  partitions avoid protected routes. A grate is not a bridge.
 * Powered belts move grounded actors, loose gameplay items and pushable fixtures
   one cell per beat. Flying enemies ignore them. Occupancy stops motion; no
   hidden pushing chains, overlap, diagonal movement or collision-free conveyors.
@@ -214,7 +216,8 @@ only thematic stock. Healing/ammo budgets remain separate from bonus caches.
 | Lunch box | 8-HP tin, opens or breaks | 35% lunch tin, 25% cinder sausage, 15% two salt tablets, 15% two coal biscuits. |
 | Coolant locker | 35-HP cabinet; bullets can puncture its cosmetic casing | 30% coolant can, 20% solvent rag, 15% refractory paste, 15% emergency foam. No unrolled free liquid on break. |
 | Fuse crate | 12-HP wood; fire ignites only after a fuse tell | 25% quarry charge, 20% bolt pouch, 20% ammo, 10% tension spring. Fire destruction trades safe loot for a warned burst. |
-| Scrap bin | 18-HP sheet metal, noisy opening | 20% horseshoe magnet, 20% two glow slag, 20% copper wire, 15% chain hook. |
+| Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 40–59: copper wire. Planned magnet, glow-slag and chain-hook ranges remain empty until those items exist. |
+| Ore bin | Implemented 30-HP mining bin; local ore/basalt fragments | 25% two coal lumps, next 15% 2–4 gold, otherwise empty. |
 | Pay cage | Locked optional 60-HP bars, shoot-through cover | 60% 8–14 gold, 20% punch card, 10% inspector stamp. Clerk-carried gold returns separately. |
 | Ceramic chest | 20-HP brittle shell, ordinary opening | 30% two ceramic plates, 20% refractory paste, 15% furnace seed, 15% coal biscuit. |
 | Machine spares | 25-HP crate | 20% nozzle elbow, 20% rubber hose, 15% brake shoe, 15% belt crank, 10% overtime clock. |
@@ -227,14 +230,14 @@ sparks in addition to settled solids; no fragment-to-fragment simulation.
 
 | # | Material | Source; movement character |
 | --- | --- | --- |
-| 1 | Basalt chip | Mined walls; short heavy skid. |
-| 2 | Ore flake | Ore seam; small metallic skip, dull highlight. |
+| 1 | Basalt chip | Implemented: Industrial wall impacts and ore bins; short heavy skid. |
+| 2 | Ore flake | Implemented: ore bins; small metallic skip, dull highlight. Ore seams remain pending. |
 | 3 | Brick corner | Furnace wall; angular tumble, fast stop. |
 | 4 | Mortar dust | Brick damage; fine short puff, settles/fades. |
 | 5 | Timber splinter | Supports/crates; elongated skitter, burns only visually. |
 | 6 | Bent nail | Wooden stock; one hard bounce then flat. |
 | 7 | Rivet casing | Rivet gun ejection; tiny brass roll. |
-| 8 | Steel washer | Machinery break; edge roll then wobble. |
+| 8 | Steel washer | Implemented: grate destruction; longer roll before settling. |
 | 9 | Chain link | Broken hoist; heavy localized tumble. |
 | 10 | Copper strand | Cut cable; curled light drag. |
 | 11 | Rubber scrap | Hose/boots; springy bounce, high friction. |
@@ -244,7 +247,7 @@ sparks in addition to settled solids; no fragment-to-fragment simulation.
 | 15 | Ash tuft | Sleeper/sack; light wind response, quick fade. |
 | 16 | Tar fleck | Choir; soft sticky-looking short landing, no actual surface. |
 | 17 | Paper slip | Clerk/cards; flutters, easily stirred by feet. |
-| 18 | Tin curl | Lunch box/cabinet; hollow flutter and short roll. |
+| 18 | Tin curl | Implemented: grates and scrap bins; short curled-metal skid. Lunch boxes remain pending. |
 | 19 | Filter fiber | Mask/loft sacks; pale tiny drifting threads. |
 | 20 | Moth scale | Wings; sparse warm flecks, float then fade. |
 

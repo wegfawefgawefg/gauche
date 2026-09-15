@@ -273,7 +273,10 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (tile == nullptr) break;
             const bool pierced = pattern.piercing ||
                 (pattern.effect == PatternEffect::Damage && has_artifact(player, ArtifactKind::AllPiercing));
-            const bool obstacle = held.kind == ItemKind::RootDrill ? root_drill_blocked(game, cell, held) : projectile_blocked(game, cell);
+            const bool thin_shot = (item_is_gun(held.kind) && held.kind!=ItemKind::RocketLauncher &&
+                held.kind!=ItemKind::HarpoonGun) || held.kind==ItemKind::IceNeedle;
+            const bool obstacle = held.kind == ItemKind::RootDrill ? root_drill_blocked(game, cell, held) :
+                projectile_blocked(game, cell,false,thin_shot);
             const bool impact = obstacle ||
                 (entity_at(game, cell, true) >= 0 &&
                  (!pierced || held.kind == ItemKind::RocketLauncher)) ||

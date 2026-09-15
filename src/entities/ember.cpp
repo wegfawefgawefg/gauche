@@ -86,7 +86,7 @@ void step_ember(Game& game,int slot) {
     const auto target=enemy_target(game,actor.cell,8);
     if (!target) { if (!step_hearing(game,slot)) wander(game,slot); return; }
     const Cell delta=target->cell-actor.cell;
-    if (actor.counter_b>0 && (delta.x==0 || delta.y==0) && clear_attack_sight(game,actor.cell,target->cell)) {
+    if (actor.counter_b>0 && (delta.x==0 || delta.y==0) && clear_shot_sight(game,actor.cell,target->cell)) {
         actor.facing=cardinal_toward(actor.cell,target->cell,actor.facing);
         actor.point_a=actor.cell; actor.point_b=actor.facing;
         actor.label_a=StokerPack; actor.timer_a=30; actor.sprite=Sprite::StokerPack;

@@ -103,10 +103,11 @@ void detonate_projectile(Game& game, int slot, Cell impact) {
 
 } // namespace
 
-bool projectile_blocked(const Game& game, Cell cell,bool overhead) {
+bool projectile_blocked(const Game& game, Cell cell,bool overhead,bool through_grates) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr || tile->kind == TileKind::Wall ||
-        (prop_blocks(tile->prop) && !(overhead && prop_low_cover(tile->prop)))) return true;
+        (prop_blocks(tile->prop) && !(overhead && prop_low_cover(tile->prop)) &&
+         !(through_grates && prop_shoot_through(tile->prop)))) return true;
     for (const Entity& fixture : game.entities)
         if (fixture.cell == cell && fixture.impassable &&
             (fixture.kind == EntityKind::Door || fixture.kind == EntityKind::EncounterGate)) return true;
@@ -163,7 +164,8 @@ void step_projectile(Game& game, int slot) {
     if (bomb && shot.timer_a % 30 == 0) emit_sound(game, SoundId::BombFuse, shot.cell);
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
-    const bool blocked = projectile_blocked(game, next,(bomb || flask) && shot.counter_a>1);
+    const bool blocked = projectile_blocked(game, next,(bomb || flask) && shot.counter_a>1,
+        shot.label_a==static_cast<int>(ProjectileKind::Arrow));
     if (rocket) {
         const int victim = entity_at(game, next, true);
         const bool owner = victim == shot.entity_a.slot && victim >= 0 &&
@@ -187,7 +189,8 @@ void step_projectile(Game& game, int slot) {
         return;
     }
     if (!bomb && !flask) {
-        hit_prop(game, next, shot.counter_b, shot.cell);
+        if (!prop_shoot_through(game.stage.at_or_border(next).prop))
+            hit_prop(game, next, shot.counter_b, shot.cell);
         if (blocked) {
             hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);
             finish_arrow(game, slot, next);

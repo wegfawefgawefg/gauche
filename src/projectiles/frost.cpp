@@ -37,7 +37,7 @@ void step_frost_puff(Game& game, int slot) {
     if (puff.timer_a == 0 || puff.counter_a == 0) { disperse(game, slot, puff.cell); return; }
     if (puff.timer_b > 0) return;
     const Cell next = puff.cell + puff.facing;
-    if (projectile_blocked(game, next)) {
+    if (projectile_blocked(game,next,false,true)) {
         // COVER: Capture obstruction before damaging it; no chilling through broken cover.
         hit_prop(game, next, puff.counter_b, puff.cell);
         disperse(game, slot, puff.cell);

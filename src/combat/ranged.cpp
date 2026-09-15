@@ -32,8 +32,8 @@ void fire_bullet(Game& game, int owner_slot, Cell source, Cell direction,
         if (tile == nullptr) break;
         cell = next;
         --remaining;
-        const bool prop = prop_blocks(tile->prop);
-        hit_prop(game, cell, pattern.damage, attacker);
+        const bool prop = prop_blocks(tile->prop) && !prop_shoot_through(tile->prop);
+        if (!prop_shoot_through(tile->prop)) hit_prop(game, cell, pattern.damage, attacker);
         if (prop && !piercing) { impact = true; break; }
         if (tile->kind == TileKind::Wall) {
             hit_terrain(game, cell, attacker, pattern.damage, weapon.dig_power);

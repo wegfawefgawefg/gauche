@@ -41,7 +41,7 @@ void step_coal_spit(Game& game,int slot) {
     if (shot.timer_b>0) return;
     const Cell next=shot.cell+shot.facing;
     if (surface_wet(game.stage.at_or_border(next))) cool(shot);
-    const bool blocked=projectile_blocked(game,next);
+    const bool blocked=projectile_blocked(game,next,false,true);
     if (blocked) {
         hit_prop(game,next,shot.counter_b,shot.cell);
         hit_terrain(game,next,shot.cell,shot.counter_b,0);

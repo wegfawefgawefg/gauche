@@ -62,6 +62,7 @@ enum class Sprite : std::size_t {
     PowderMonkey, PowderLight, PowderRun, PowderScratch,
     PressHammer, RubberMallet,
     Strikebreaker, BreakerPush, BreakerRaise, BreakerRecover, BreakerUnshielded, BreakerShield,
+    GrateH, GrateV, ScrapBin, OreBin, DebrisBasaltChip, DebrisOreFlake, DebrisSteelWasher, DebrisTinCurl,
     Count,
 };
 

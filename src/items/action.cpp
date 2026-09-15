@@ -8,6 +8,7 @@
 int item_windup(const Item& item) {
     int ticks = 0;
     switch (item.kind) {
+    case ItemKind::SkateBlade: ticks = 4; break;
     case ItemKind::Chisel: ticks = 3; break;
     case ItemKind::DiggingClaws: ticks = 3; break;
     case ItemKind::Torch: ticks = 6; break;

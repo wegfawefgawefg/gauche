@@ -36,7 +36,7 @@ jellyfish can be additional wildlife; neither counts toward the twenty.
 
 | # | Enemy | Behavior, tell and counterplay | Habitat; drops |
 | --- | --- | --- | --- |
-| 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; 20% grit pouch, 10% skate blade. |
+| 1 | Rime skater | Pushes off along one cardinal lane and cannot turn until reaching rough ground or stopping. Scraping blades precede departure; bait it into a bank or another creature. Implemented: 50 HP, 0.5s tell, 18 contact damage. | Reservoir; implemented single roll: 20% grit pouch, 10% skate blade. |
 | 2 | Bell diver | Implemented: 72 HP; swims between visible air holes, rings its brass helmet for 0.6s, emerges for 0.4s, then winds up an 18-damage swing for 0.5s. Blocking a hole redirects it; never attacks submerged. | Reservoir/fishing huts; 20% air bladder, 25% 2–5 gold implemented. |
 | 3 | Snow burrower | Implemented: 36 HP; moves as a visible snow mound, commits an adjacent bite for 0.45s then deals 14 damage and stays exposed for 1.25s. A 0.5s dive needs dry snow. Hits, sleep, stun or clearing its snow expose it for 1.5s. | Quarry snow banks; 25% raw meat, 15% snow scoop, one roll. |
 | 4 | Ice mason | Implemented: 60 HP; places carried 35-HP cover after 0.5s, cuts replacement ice for 1.5s, and defends with a 0.4s jab for 12 damage. Damage, sleep, stun or displacement interrupts work. | Quarry; 20% ice brick, 15% chisel, 25% 2–4 gold, one roll. |
@@ -75,7 +75,7 @@ same effective item definition as attacks, including rare attributes.
 | --- | --- | --- | --- |
 | 1 | Ice needle | Implemented: recoverable straight throw to 7, 8 damage and 1s chill; melts on a hot landing. Stack 8. Strong/Agile/Heavy/Long keep their effects after recovery. | Common; 4 |
 | 2 | Chisel | Implemented: 9-damage jab with 0.05s windup, dig power 1, 0.3s cooldown; double damage to ice-material walls and ice blocks. 40 condition, wears per swing and accepts glue. | Common; 12 |
-| 3 | Skate blade | Three-cell lateral slash, 12 damage; striking while slipping extends the slash one cell ahead. 36 durability. | Common; 16 |
+| 3 | Skate blade | Implemented: three-cell sweep, 12 damage, 4-tick windup, 0.4s cooldown. A successful slip grants a 0.2s extra forward tip. 36 repairable condition; Big widens to five, Long adds reach. | Common; 16 |
 | 4 | Harpoon gun | One shot loaded, 28 damage to range 10; leaves a tether. Holding use reels the victim until blocked; reload releases it. | Uncommon; 32 |
 | 5 | Lens carbine | Implemented: instant 18-damage beam to 12, three loaded/six spare; 0.4s cooldown, 1.33s reload. Mirrors turn it, lenses split it, opaque cover stops it. Returned light can hit the shooter. | Rare; 40 |
 | 6 | Snowball | Implemented: 1-damage throw to 5 at 5 ticks/cell; breaks into a 2s wet patch and quenches the impact cell. Damage disrupts fragile windups. Stack 12; Long reaches 9. Shields/parries and All Piercing retain their rules. | Common; 2 |
@@ -113,7 +113,7 @@ same effective item definition as attacks, including rare attributes.
 | 38 | Ice poultice | Implemented: stops burning and grants 10 HP over 5s, but chills for 3s; Wool Wrap prevents that chill. Stack 4. Restorative: 15 HP over 7.5s. | Common; 7 |
 | 39 | Flask of brine | Implemented: visible throw to 5, radius-1 splash. Melts floor/prop ice, leaves 8s wet antifreeze; stings already-wounded actors for 4. Stack 3. Big widens; Long throws farther. | Common; 9 |
 | 40 | Snow shelter | Place a two-cell breakable windbreak, only if both cells are free; blocks wind/snow attacks, not overhead shots. Two uses. | Uncommon; 18 |
-| 41 | Crampons | Activate for 5s of traction: no ice slide, slower ordinary steps, still vulnerable to deliberate shoves. Six activations. | Uncommon; 17 |
+| 41 | Crampons | Implemented: 5s without ice slips; doubles step interval. Oil and shoves still work. Six activations, Durable twelve. Timed HUD and movement preview; no expense when already gripping. | Uncommon; 17 |
 | 42 | Sled | Deploy facing forward; step onto it to slide until stopped, taking one carried loose item along. Steer only while stopped. 45 HP. | Uncommon; 25 |
 | 43 | Ice anchor | Place a tether point, then activate to return along the clear tether up to 5 cells. Obstructions stop travel; hazards apply to each step. | Rare; 32 |
 | 44 | Folded bridge | Place three walkable planks across shallow/deep water; requires support at both ends. Burnable, 30 HP per section. One kit. | Uncommon; 24 |

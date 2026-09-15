@@ -74,6 +74,7 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
         entity.move_wait = entity.move_interval;
         return false;
     }
+    entity.vitals.slide_momentum = 0;
     const Cell direction = destination - entity.cell;
     entity.facing = direction;
     entity.cell = destination;

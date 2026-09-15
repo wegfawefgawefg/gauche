@@ -1,3 +1,4 @@
+#include "items/ice_equipment.hpp"
 #include "game.hpp"
 #include "props/candle.hpp"
 #include "items/coal.hpp"
@@ -98,6 +99,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::Crampons:
+        used = use_crampons(user); cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::PressureValve: case ItemKind::Sealant:
         cooldown = item_pattern(item).cooldown;
         used = use_pressure_item(game,user_slot,direction);
@@ -260,7 +264,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = use_eel_battery(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
         break;
-    case ItemKind::Chisel:
+    case ItemKind::SkateBlade: case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
     case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
@@ -382,13 +386,14 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
         }
-        if ((used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
-            emit_sound(game, used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);
+        if ((used_kind == ItemKind::SkateBlade || used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
+            emit_sound(game, used_kind == ItemKind::SkateBlade ? SoundId::SkateBreak : used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);
             item = {};
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
+            if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
+            else if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
             else if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
             else if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
             else if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);

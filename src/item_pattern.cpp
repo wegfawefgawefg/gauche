@@ -58,7 +58,8 @@ ItemPattern item_pattern(const Item& item) {
         pattern.cooldown = (pattern.cooldown * 3 + 1) / 2;
         break;
     case ItemAttribute::Big:
-        if (item.kind == ItemKind::SteamKettle) {
+        if (item.kind == ItemKind::SkateBlade) ++pattern.half_width;
+        else if (item.kind == ItemKind::SteamKettle) {
             ++pattern.half_width; ++pattern.maximum;
         } else if (item.kind == ItemKind::SnowScoop || item.kind == ItemKind::GritPouch || item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
         else if (pattern.blast_radius > 0) ++pattern.blast_radius;
@@ -96,4 +97,10 @@ Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern) {
                    std::max(1, pattern.minimum), std::max(1, pattern.maximum));
     return {user.cell.x + direction.x * reach,
             user.cell.y + direction.y * reach};
+}
+
+ItemPattern active_item_pattern(const Item& item, const Entity& user) {
+    ItemPattern pattern=item_pattern(item);
+    if (user.vitals.slide_momentum==0) pattern.momentum_tip=0;
+    return pattern;
 }

@@ -22,6 +22,7 @@ int main() {
         player->scorch_ticks = 239;
         player->freeze_ticks = 23;
         player->vitals.chill_guard = 351;
+        player->vitals.traction = 217; player->vitals.slide_momentum = 11;
         player->vitals.recovery = RecoveryKind::Poultice;
         player->vitals.healing_left = 9;
         player->vitals.healing_wait = 27;
@@ -97,6 +98,10 @@ int main() {
     porter->entity_a = {static_cast<int>(tank-original.entities.data()),tank->generation};
     tank->entity_a = {static_cast<int>(porter-original.entities.data()),porter->generation};
     porter->label_a = 1; porter->timer_a = 13; porter->point_a = porter->cell; porter->point_b = {13,8};
+    auto* blade = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{15,8}));
+    blade->ground_item=make_item(ItemKind::SkateBlade,1,ItemAttribute::Big); blade->ground_item.durability=17;
+    auto* spikes = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{16,8}));
+    spikes->ground_item=make_item(ItemKind::Crampons,1,ItemAttribute::Durable); spikes->ground_item.uses=7;
     original.stage.tiles[14].prop = {PropKind::MaintenanceLocker,13,0,false};
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};

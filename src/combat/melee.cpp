@@ -1,3 +1,4 @@
+#include "../entities/attacks.hpp"
 #include "../items/catalog.hpp"
 #include "../traps/woodland.hpp"
 #include "../world/terrain_material.hpp"
@@ -20,18 +21,19 @@ int contact_damage(const Item& item, const Entity& target, Cell source, int base
 bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
     const Cell origin = game.entities[static_cast<std::size_t>(user_slot)].cell;
     const Cell sideways{-direction.y, direction.x};
-    const ItemPattern pattern = item_pattern(item);
+    const ItemPattern pattern = active_item_pattern(item,game.entities[static_cast<std::size_t>(user_slot)]);
     if (item.kind == ItemKind::Rake && game.sweep_count < static_cast<int>(game.sweeps.size()))
         game.sweeps[static_cast<std::size_t>(game.sweep_count++)] =
             {origin, direction, pattern.maximum, pattern.half_width};
     bool struck = false;
     std::array<bool, max_entities> hit_once{};
     for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane) {
-        for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
+        for (int reach = pattern.minimum; reach <= pattern.maximum + (lane == 0 ? pattern.momentum_tip : 0); ++reach) {
             const Cell cell = origin + Cell{direction.x * reach + sideways.x * lane,
                                             direction.y * reach + sideways.y * lane};
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
+            if (item.kind == ItemKind::SkateBlade && !clear_attack_sight(game,origin,cell,false)) break;
             const bool blocked = !walkable(*tile);
             int prop_damage = pattern.damage;
             if (item.kind == ItemKind::Chisel && tile->prop.kind == PropKind::IceBlock) prop_damage *= 2;
@@ -46,7 +48,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 Entity& target = game.entities[static_cast<std::size_t>(hit)];
                 hit_once[static_cast<std::size_t>(hit)] = true;
                 const bool blocked_hit = blocks_facing(target, origin);
-                emit_sound(game, SoundId::Punch1, cell);
+                emit_sound(game, item.kind == ItemKind::SkateBlade ? SoundId::SkateCut : SoundId::Punch1, cell);
                 damage_entity(game, hit, contact_damage(item, target, origin, pattern.damage), origin);
                 if (!blocked_hit && (item.flame_ticks > 0 || item.kind == ItemKind::Torch))
                     ignite_struck_actor(game, hit);

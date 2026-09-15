@@ -1,4 +1,5 @@
 #include "catalog.hpp"
+#include "ice_equipment.hpp"
 #include "candles.hpp"
 #include "coal.hpp"
 #include "kettle.hpp"
@@ -21,6 +22,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* equipment = ice_equipment_item(kind)) return equipment;
     if (const RegionalItem* pressure = pressure_item(kind)) return pressure;
     if (const RegionalItem* kettle = kettle_item(kind)) return kettle;
     if (const RegionalItem* coal = coal_item(kind)) return coal;

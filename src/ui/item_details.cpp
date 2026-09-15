@@ -197,6 +197,13 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line,sizeof(line),item.loaded == 0 ? "FILL AT WATER | HEAT 1.5s" :
             item.loaded == 1 ? "COLD: DOUSE | WATER 5s" : "SCALD %d | WATER 5s",pattern.damage);
     if (item.kind == ItemKind::PressureValve) std::snprintf(line,sizeof(line),"AIM LOCK | RECOVER BELOW 25");
+    if (item.kind == ItemKind::SkateBlade)
+        std::snprintf(line,sizeof(line),"DMG %d | TIP %s",pattern.damage,player.vitals.slide_momentum>0 ? "ACTIVE" : "AFTER SLIP");
+    if (item.kind == ItemKind::Crampons) {
+        Entity preview=player; preview.vitals.traction=300;
+        std::snprintf(line,sizeof(line),"STEP %d -> %d TICKS | 5s",movement_beat(player,player.move_interval),
+            movement_beat(preview,preview.move_interval));
+    }
     if (item.kind == ItemKind::Sealant) std::snprintf(line,sizeof(line),"REPAIR 20 HP | PLUG 10s");
     if (item.kind == ItemKind::WickSpool)
         std::snprintf(line, sizeof(line), "CANDLE +30s | CAPACITY 80s");
@@ -336,7 +343,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (height >= 176.0F) {
         text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + WET PATH" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
-                             width - 20.0F, height - 169.0F);
+                             width - 20.0F, height - 169.0F, &player);
     }
 }
 

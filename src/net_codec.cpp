@@ -175,6 +175,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
+    writer.u16(entity.vitals.traction); writer.u16(entity.vitals.slide_momentum);
     writer.u16(entity.vitals.grip); writer.u8(static_cast<std::uint8_t>(entity.vitals.root_kind));
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
@@ -223,6 +224,8 @@ Entity read_entity(PacketReader& reader) {
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
     entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();
     if (entity.vitals.nausea > 600 || entity.vitals.nausea_wait > 60) reader.okay = false;
+    entity.vitals.traction = reader.u16(); entity.vitals.slide_momentum = reader.u16();
+    if (entity.vitals.traction > 300 || entity.vitals.slide_momentum > 12) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());
     if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
         entity.vitals.recovery > RecoveryKind::Poultice || entity.vitals.chill_guard > 480 ||
@@ -268,7 +271,7 @@ Entity read_entity(PacketReader& reader) {
 
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(34);
+    writer.u32(35);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -340,7 +343,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 34) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 35) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;

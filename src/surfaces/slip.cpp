@@ -13,7 +13,7 @@ bool slip_on_surface(Game& game, int slot, Cell direction) {
     const Tile* tile = game.stage.at(actor.cell);
     if (tile == nullptr) return false;
     const bool oil = tile->surface.liquid == LiquidKind::Oil && tile->surface.liquid_ticks > 0;
-    const bool ice = bare_ice(*tile) && actor.kind != EntityKind::RimeSkater;
+    const bool ice = bare_ice(*tile) && actor.kind != EntityKind::RimeSkater && actor.vitals.traction == 0;
     if ((!oil && !ice) ||
         !wading_actor(actor) || actor.vitals.grip > 0 || actor.vitals.rooted > 0 || actor.hard_blocker ||
         distance({}, direction) != 1) return false;
@@ -22,6 +22,7 @@ bool slip_on_surface(Game& game, int slot, Cell direction) {
     if (tile == nullptr || !walkable(*tile) || entity_at(game, next, true) >= 0) return false;
     // SLIP: One extra real cell per step; no recursion along a whole lake.
     if (!move_entity(game, slot, next, false)) return false;
+    if (actor.health > 0) actor.vitals.slide_momentum = 12;
     emit_sound(game, oil ? SoundId::OilSlip : SoundId::IceSlip, actor.cell);
     return true;
 }

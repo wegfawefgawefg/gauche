@@ -132,9 +132,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     case EntityKind::FrostBat:
         if (random_u32(game) % 100 < 15) place_ground_item(game, enemy.cell, ItemKind::IceNeedle);
         break;
-    case EntityKind::RimeSkater:
-        if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::GritPouch);
+    case EntityKind::RimeSkater: {
+        const auto roll=random_u32(game)%100;
+        if (roll<20) place_ground_item(game,enemy.cell,ItemKind::GritPouch);
+        else if (roll<30) place_ground_item(game,enemy.cell,ItemKind::SkateBlade);
         break;
+    }
     case EntityKind::ForagerGoblin:
         drop_scavenged_items(game, enemy);
         if (random_u32(game) % 2 == 0) place_coins(game, enemy.cell, 3 + static_cast<int>(random_u32(game) % 5));

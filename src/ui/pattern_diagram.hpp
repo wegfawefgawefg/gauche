@@ -12,4 +12,4 @@ PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
                                              float x, float y,
                                              float width, float height);
 void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
-                          float x, float y, float width, float height);
+                          float x, float y, float width, float height, const Entity* user = nullptr);

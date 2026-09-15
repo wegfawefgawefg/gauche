@@ -40,7 +40,7 @@ PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
     const int half = std::max(pattern.half_width, blast);
     PatternDiagramLayout layout;
     layout.min_x = std::min(0, target - blast) - 1;
-    layout.max_x = target + blast + 1;
+    layout.max_x = target + blast + pattern.momentum_tip + 1;
     layout.min_y = -half - 1;
     layout.max_y = half + 1;
     layout.columns = layout.max_x - layout.min_x + 1;
@@ -53,7 +53,7 @@ PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
 }
 
 void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
-                          float x, float y, float width, float height) {
+                          float x, float y, float width, float height, const Entity* user) {
     const ItemPattern pattern = item_pattern(item);
     if (pattern.effect == PatternEffect::None || width <= 0 || height <= 0) return;
     const PatternDiagramLayout layout = pattern_diagram_layout(pattern, x, y, width, height);
@@ -105,6 +105,10 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
                 colored_cell(renderer, layout, reach, lane,
                              pattern.effect, reach < pattern.minimum);
     }
+    // MOMENTUM: Outline is conditional reach; fill it only during an actual slip window.
+    for (int tip=1;tip<=pattern.momentum_tip;++tip)
+        colored_cell(renderer,layout,pattern.maximum+tip,0,pattern.effect,
+            user==nullptr || user->vitals.slide_momentum==0);
     SDL_FRect player{layout.x + static_cast<float>(-layout.min_x) * layout.cell_size,
                      layout.y + static_cast<float>(-layout.min_y) * layout.cell_size,
                      layout.cell_size, layout.cell_size};

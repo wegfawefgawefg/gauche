@@ -70,7 +70,7 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                          float zoom, const PointerState& pointer) {
     const Item& held = *player.inventory.held();
     const Cell facing = player.label_b < 0 ? player.point_b : player.facing;
-    const ItemPattern pattern = item_pattern(held);
+    const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (held.kind == ItemKind::BlackFelt) {
@@ -252,12 +252,13 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else if (item_is_melee(held.kind) || pattern.half_width > 0) {
         const Cell sideways{-facing.y, facing.x};
         for (int lane = -pattern.half_width; lane <= pattern.half_width; ++lane)
-            for (int reach = pattern.minimum; reach <= pattern.maximum; ++reach) {
+            for (int reach = pattern.minimum; reach <= pattern.maximum + (lane == 0 ? pattern.momentum_tip : 0); ++reach) {
                 const Cell cell = player.cell +
                     Cell{facing.x * reach + sideways.x * lane,
                          facing.y * reach + sideways.y * lane};
                 const Tile* tile = game.stage.at(cell);
                 if (tile == nullptr) break;
+                if (held.kind == ItemKind::SkateBlade && !clear_attack_sight(game,player.cell,cell,false)) break;
                 mark(renderer, cell, camera, zoom, pattern.effect);
                 if (!walkable(*tile) || (!pattern.piercing && entity_at(game, cell, true) >= 0)) break;
             }

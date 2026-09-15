@@ -43,5 +43,6 @@ int populate_workfront(Game& game,const RoomPlan& room) {
     // are required to clear the key/switch route.
     place_ground_item(game,room.center+Cell{-5,-3},ItemKind::Pickaxe);
     place_prop(game.stage,room.center+Cell{-5,3},PropKind::Crate);
+    if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-5,2},ItemKind::ForemanWhistle);
     return 4;
 }

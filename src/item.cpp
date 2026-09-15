@@ -1,3 +1,4 @@
+#include "items/foreman_whistle.hpp"
 #include "items/sled.hpp"
 #include "items/snow_shelter.hpp"
 #include "items/stillwater_bell.hpp"
@@ -111,6 +112,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::ForemanWhistle:
+        used=use_foreman_whistle(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::StillwaterBell:
         used=ring_stillwater_bell(game,user_slot); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TuningFork:
@@ -440,6 +443,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
             if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
+            else if (used_kind == ItemKind::ForemanWhistle) emit_sound(game,SoundId::WorkSpent,user.cell);
             else if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
             else if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
             else if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);

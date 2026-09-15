@@ -1,3 +1,4 @@
+#include "items/industrial_catalog.hpp"
 #include "game.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/campfire.hpp"
@@ -36,6 +37,10 @@ ItemAttribute rare_attribute(Game& game, ItemKind kind) {
 }
 
 Reward random_reward(Game& game, int category) {
+    if (category==0 && industrial_floor(game.run.floor) && random_u32(game)%4==0) {
+        const ItemKind kind=industrial_finds[random_u32(game)%industrial_finds.size()];
+        return {RewardKind::Item,kind,ArtifactKind::None,1,rare_attribute(game,kind)};
+    }
     if (category == 0 && ice_floor(game.run.floor) && random_u32(game) % 4 == 0) {
         constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish, ItemKind::SnowGlobe, ItemKind::SaltedKelp, ItemKind::BrineFlask, ItemKind::CandleStub, ItemKind::WickSpool, ItemKind::CoalLump, ItemKind::SteamKettle, ItemKind::PressureValve, ItemKind::Sealant, ItemKind::SkateBlade, ItemKind::Crampons, ItemKind::SignalFlare, ItemKind::CopperWire, ItemKind::GroundingSpike, ItemKind::StormLantern, ItemKind::EchoPebble, ItemKind::HarpoonGun, ItemKind::EmergencyDoorstop, ItemKind::BorrowedSummer, ItemKind::HeatSiphon, ItemKind::ThawCharge, ItemKind::FoldedBridge, ItemKind::TuningFork, ItemKind::StillwaterBell, ItemKind::EffigyMask, ItemKind::IceAnchor, ItemKind::SnowShelter, ItemKind::Sled};
         const ItemKind kind = cold_tools[random_u32(game) % std::size(cold_tools)];
@@ -273,6 +278,8 @@ void advance_run(Game& game) {
                                    !forest_floor(game.run.floor) ? ItemKind::Mine : ItemKind::Buckler,
                                    industrial_floor(game.run.floor) ? ItemKind::RocketLauncher :
                                    (game.run.floor > 2 ? ItemKind::Shotgun : ItemKind::Pistol)};
+            if (industrial_floor(game.run.floor) && random_u32(game)%4==0)
+                game.run.shop_stock[1]=industrial_finds[random_u32(game)%industrial_finds.size()];
             if (ice_floor(game.run.floor)) {
                 constexpr ItemKind cold_tools[]{ItemKind::GritPouch, ItemKind::IceNeedle, ItemKind::AirBladder, ItemKind::ColdFlask, ItemKind::HeatCapsule, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::IcePoultice, ItemKind::Chisel, ItemKind::IceBrick, ItemKind::EelBattery, ItemKind::SnowScoop, ItemKind::Snowball, ItemKind::LensCarbine, ItemKind::MirrorShard, ItemKind::CrystalLens, ItemKind::PrismBomb, ItemKind::BlackFelt, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::FishingLine, ItemKind::SmokedFish, ItemKind::SnowGlobe, ItemKind::SaltedKelp, ItemKind::BrineFlask, ItemKind::CandleStub, ItemKind::WickSpool, ItemKind::CoalLump, ItemKind::SteamKettle, ItemKind::PressureValve, ItemKind::Sealant, ItemKind::SkateBlade, ItemKind::Crampons, ItemKind::SignalFlare, ItemKind::CopperWire, ItemKind::GroundingSpike, ItemKind::StormLantern, ItemKind::EchoPebble, ItemKind::HarpoonGun, ItemKind::EmergencyDoorstop, ItemKind::BorrowedSummer, ItemKind::HeatSiphon, ItemKind::ThawCharge, ItemKind::FoldedBridge, ItemKind::TuningFork, ItemKind::StillwaterBell, ItemKind::EffigyMask, ItemKind::IceAnchor, ItemKind::SnowShelter, ItemKind::Sled};
                 game.run.shop_stock[1] = cold_tools[random_u32(game) % std::size(cold_tools)];

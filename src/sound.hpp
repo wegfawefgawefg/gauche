@@ -50,6 +50,7 @@ enum class SoundId : std::size_t {
     HarpoonFire, HarpoonImpact, HarpoonLatch, HarpoonReel, HarpoonRelease, HarpoonReload,
     WedgeFit, WedgeLift, WedgeHit, WedgeBreak, WedgeStrain, SluiceOpen, SluiceClose, SluiceWarning, SummerOpen, SummerFade, SiphonDraw, SiphonFire, SiphonFlame, ThawPlace, ThawFuse, ThawBurst, ThawSteam, BridgeUnfold, BridgeBreak, BridgeSplash, BridgeStep, ForkWindup, ForkRing, ForkTravel, ForkSpent, CrystalBreak, StillwaterRing, StillwaterSpent, CurrentDrift, MaskRaise, MaskLower, MaskWhisper, MaskSpent, AnchorSet, AnchorRecover, AnchorBlocked, AnchorTension, AnchorReel, AnchorBreak, ShelterPack, ShelterHit, ShelterBreak, ShelterMelt, ShelterEmpty, SledDeploy, SledBoard, SledSlide, SledBrake, SledBreak, SledBurn,
     CrewWhistle, CrewMarch, CrewHeave, CrewPick, CrewPick2, CrewWarn, CrewSwing, CrewComplain, CrewAlarm, CrewDeath, CrewStep1, CrewStep2,
+    WorkCall, WorkAnswer, WorkSpent,
     Count,
 };
 
@@ -97,4 +98,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "harpoon_fire", "harpoon_impact", "harpoon_latch", "harpoon_reel", "harpoon_release", "harpoon_reload",
     "wedge_fit", "wedge_lift", "wedge_hit", "wedge_break", "wedge_strain", "sluice_open", "sluice_close", "sluice_warning", "summer_open", "summer_fade", "siphon_draw", "siphon_fire", "siphon_flame", "thaw_place", "thaw_fuse", "thaw_burst", "thaw_steam", "bridge_unfold", "bridge_break", "bridge_splash", "bridge_step", "fork_windup", "fork_ring", "fork_travel", "fork_spent", "crystal_break", "stillwater_ring", "stillwater_spent", "current_drift", "mask_raise", "mask_lower", "mask_whisper", "mask_spent", "anchor_set", "anchor_recover", "anchor_blocked", "anchor_tension", "anchor_reel", "anchor_break", "shelter_pack", "shelter_hit", "shelter_break", "shelter_melt", "shelter_empty", "sled_deploy", "sled_board", "sled_slide", "sled_brake", "sled_break", "sled_burn",
     "crew_whistle", "crew_march", "crew_heave", "crew_pick", "crew_pick2", "crew_warn", "crew_swing", "crew_complain", "crew_alarm", "crew_death", "crew_step1", "crew_step2",
+    "work_call", "work_answer", "work_spent",
 };

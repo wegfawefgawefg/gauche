@@ -1,3 +1,4 @@
+#include "../entities/hearing.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "../items/thaw_charge.hpp"
@@ -173,7 +174,7 @@ Entity read_entity(PacketReader& reader) {
     entity.counter_a = reader.i32(); entity.counter_b = reader.i32(); entity.counter_c = reader.i32();
     entity.label_a = reader.i32(); entity.label_b = reader.i32(); entity.label_c = reader.i32();
     entity.timer_a = reader.i32(); entity.timer_b = reader.i32(); entity.timer_c = reader.i32();
-    if (entity.label_c < 0 || entity.label_c > 5 || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
+    if (entity.label_c < 0 || entity.label_c > PlayerWorkOrder || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     if (entity.kind == EntityKind::IcicleSpider && (entity.label_a < 0 || entity.label_a > 5 ||
         entity.counter_a < 0 || entity.counter_a > 1)) reader.okay = false;

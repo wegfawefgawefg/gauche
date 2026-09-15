@@ -152,7 +152,10 @@ void step_mine_worker(Game& game,int slot) {
             const auto heard=audible_cells(game,worker.cell,8);
             for (Entity& follower:game.entities)
                 if (follower.kind==EntityKind::Pickhand && follower.health>0 && follower.entity_a==worker.entity_a &&
-                    std::find(heard.begin(),heard.end(),follower.cell)!=heard.end()) follower.label_b=1;
+                    std::find(heard.begin(),heard.end(),follower.cell)!=heard.end()) {
+                    follower.label_b=1;
+                    if (follower.label_c==PlayerWorkOrder) { follower.label_c=0; follower.timer_c=0; follower.point_c={}; }
+                }
             emit_sound(game,SoundId::CrewMarch,worker.cell); make_noise(game,worker.cell,8);
             return;
         }
@@ -179,6 +182,10 @@ void step_mine_worker(Game& game,int slot) {
     }
     worker.entity_b={}; worker.attack_wait=0;
     if (worker.kind==EntityKind::ShiftForeman) { direct_crew(game,slot); return; }
+    if (worker.label_c==PlayerWorkOrder && worker.timer_c>0) {
+        advance_worker(game,slot,worker.point_c);
+        return;
+    }
     const Entity* leader=get_entity(game,worker.entity_a);
     if (!leader || leader->kind!=EntityKind::ShiftForeman || leader->health<=0) {
         if (!step_hearing(game,slot) && worker.move_wait==0) yield_lane(game,slot);

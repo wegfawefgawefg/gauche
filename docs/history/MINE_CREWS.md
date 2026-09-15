@@ -59,10 +59,12 @@ two pick impacts, warning, swing, complaint, alarm, death and two bootsteps.
 Whistles/impacts are also semantic noise for existing hearing/echo systems;
 mute settings and local playback cannot change who hears them in gameplay.
 
-Current single-roll drops: pickhand 20% pickaxe at 12 condition, next 20% 3–6
+Initial single-roll drops: pickhand 20% pickaxe at 12 condition, next 20% 3–6
 gold, otherwise nothing; foreman 50% 5–9 gold, otherwise nothing. Foreman's
 whistle, survey chalk and lunch tin drops wait for those real items to exist.
-Neither new actor type adds an implemented regional item to the quota.
+Neither new actor type added an implemented regional item to the quota in this
+milestone. The subsequent [Foreman's Whistle](FOREMAN_WHISTLE.md) implements that
+item and updates foreman drops, supplies and rewards.
 
 Shared entity slots store phases, lane, work direction, damage/casualty counters
 and generation-checked foreman/attacker handles; no per-species fields were added.

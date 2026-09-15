@@ -2,7 +2,7 @@
 
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
-working Pickhand/Shift Foreman crews. Track implementation in `../MASTER_TASKS.md`.
+working Pickhand/Shift Foreman crews and their usable whistle. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -59,7 +59,7 @@ assets to make, not substitutes using the current generic sounds.
 | --- | --- | --- | --- |
 | 1 | Ember stoker | Expand existing Ember into a 48-HP worker: packs a coal spit for 0.5s, fires a traveling hot pellet, then must scoop from its finite coal sack. Water suppresses the next ignition. Cough, shovel scrape, furnace spit. | Furnace aisles; 25% two coal lumps, 15% slag scoop. |
 | 2 | Pickhand | Implemented: 80 HP; follows a separate lane at the foreman's work front, braces 0.6s, then cuts walls/props for 25 damage, dig power 1. Single weak hits provoke a complaint; a hit of at least 12 damage or accumulated 20 damage in 2s causes pursuit. Interrupted swings still need a new tell. Boot scurry, pick ring, mutter. | Implemented workfront; 20% pickaxe at 12 condition, next 20% 3–6 gold, otherwise nothing. Lunch tin drop awaits item implementation. |
-| 3 | Shift foreman | Implemented: 110 HP; surveys, whistles for 0.6s, then advances behind three linked pickhands in separate lanes. Attacking him or killing two crew members rallies surviving crew against the attacker. Points, whistle, three-part “hup” cadence. | Implemented workfront; current roll 50% 5–9 gold, otherwise nothing. Whistle/chalk drops await their items. |
+| 3 | Shift foreman | Implemented: 110 HP; surveys, whistles for 0.6s, then advances behind three linked pickhands in separate lanes. Attacking him or killing two crew members rallies surviving crew against the attacker. Points, whistle, three-part “hup” cadence. | Implemented workfront; single roll 25% Foreman's Whistle, next 25% 5–9 gold, otherwise nothing. Chalk drops await its item. |
 | 4 | Powder monkey | 42 HP; plants a visible two-second charge against cover, then runs for a safe cell. Cannot spawn bombs instantly under players; killed carriers leave the already-armed bomb ticking. Cold delays its exposed fuse, water quenches it. Cork pull, fuse fizz, panicked steps. | Blasting alcoves; 25% quarry charge, 15% fuse scissors. |
 | 5 | Rail shunter | 120 HP, slow; pushes a separate cart down an existing rail after ringing a bell for 0.8s. Cart stops at obstruction, hurts on collision, spills real cargo when broken. Cut the route, brake the cart or flank the worker. Hand bell, wheel squeal. | Freight junction; 20% brake shoe, 20% rail switch key, 20% 4–8 gold. |
 | 6 | Rivet gunner | 64 HP; braces behind a grate and fires three traveling rivets along a fixed lane, 0.15s apart, after a 0.5s buzz. Long 1.5s reload invites crossing. Displacement spoils the burst. Pneumatic buzz and three dry snaps. | Assembly line; 25% rivet gun, 20% ammo. |
@@ -113,7 +113,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 8 | Bolt pouch | Fling five 2-damage bolts in a short fan; three handfuls. Bolts are cosmetic after impact; spent ammo is not infinitely recoverable. Tin scatter. | C / 7 |
 | 9 | Steam lance | Fill at fresh water, heat at a furnace; spends one fill on a two-cell 18-damage steaming thrust. Cold thrust only wets. Reusable, long 0.45s windup. Valve hiss. | U / 24 |
 | 10 | Nail board | 10-damage melee board, 35 condition; secondary lays it as a recoverable 16-damage ground trap, hurting the next grounded entrant including its owner. Flying enemies ignore it. Wood slap, nail crunch. | C / 11 |
-| 11 | Foreman's whistle | Calls nearby idle workers to a chosen work direction for 4s; real leader orders override it and an attacked crew refuses. Six calls. Also attracts hearing enemies. Short two-note whistle. | U / 18 |
+| 11 | Foreman's whistle | Implemented: gives audible idle pickhands fixed lane destinations four tiles in the aimed direction for up to 4s. Angry workers refuse; audible real leader calls take them back. Six successful calls, 1.5s cooldown; Long reaches eight tiles, Durable has twelve calls. Successful calls wake sleepers and attract hearing enemies. Short-short-long call, worker answer, spent note. | U / 18 |
 | 12 | Survey chalk | Draw three bright floor marks per use, six uses. Allies see them; crew uses marked work fronts when idle. Washes away; does not reveal unseen rooms. Chalk squeak. | C / 5 |
 | 13 | Pocket drill | Hold 0.4s to start, then cut adjacent diggable rock every 0.2s while still; 6s battery. Loud and slower to retarget than a pick. Mechanical chatter. | U / 27 |
 | 14 | Fuse scissors | Snip an adjacent exposed fuse and recover the disarmed charge if pack space permits; sealed fuses reject it. Twelve snips, timing matters. Metallic click. | C / 8 |

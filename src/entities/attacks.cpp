@@ -1,3 +1,4 @@
+#include "rail_shunter.hpp"
 #include "tar_choir.hpp"
 #include "emergency_pump.hpp"
 #include "counterweight.hpp"
@@ -47,6 +48,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         if (enemy.label_a==PumpWarn && enemy.cell==enemy.point_a)
             for (int i=1;i<=std::min(3,(enemy.counter_b+599)/600);++i)
                 add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
+    case EntityKind::RailShunter:
+        if (enemy.label_a==ShunterSwing && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;
     case EntityKind::TarChoir:
         if (enemy.label_a==ChoirHum && enemy.cell==enemy.point_a) add(enemy.point_b);

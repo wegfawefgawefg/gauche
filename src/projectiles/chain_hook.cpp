@@ -1,3 +1,4 @@
+#include "../entities/rail_cart.hpp"
 #include "chain_hook.hpp"
 #include "../items/sled.hpp"
 #include "../world/floating_items.hpp"
@@ -15,6 +16,7 @@ bool movable_prop(const Prop& prop) {
 }
 int signature(const Prop& prop) {return prop.hp+(prop.covered ? 256 : 0)+static_cast<int>(prop.variant)*512;}
 bool cargo(const Game& game,const Entity& actor) {
+    if (actor.kind==EntityKind::RailCart) return actor.health>0;
     if (actor.kind==EntityKind::Sled) return actor.health>0 && actor.toss.ticks==0;
     return actor.kind==EntityKind::GroundItem && actor.ground_item.kind!=ItemKind::None &&
         actor.ground_item.count>0 && actor.ground_item.flight.slot<0 && actor.toss.ticks==0 && !sled_cargo(game,actor);
@@ -60,7 +62,7 @@ void cast_step(Game& game,Handle handle,const Entity& owner) {
         latch(game,line,movable_prop(tile->prop) ? ChainProp : ChainFixedProp);return;
     }
     // A loaded sled takes priority over its loose-item passenger in the same cell.
-    for (EntityKind kind:{EntityKind::Sled,EntityKind::GroundItem}) {
+    for (EntityKind kind:{EntityKind::RailCart,EntityKind::Sled,EntityKind::GroundItem}) {
         if (kind==EntityKind::GroundItem) {
             const int body=entity_at(game,next,true);
             if (body>=0) {
@@ -72,7 +74,7 @@ void cast_step(Game& game,Handle handle,const Entity& owner) {
         for (int i=0;i<max_entities;++i) {
             Entity& found=game.entities[static_cast<std::size_t>(i)];
             if (found.kind!=kind || found.cell!=next || !cargo(game,found)) continue;
-            if (kind==EntityKind::Sled) {found.label_a=0;found.timer_b=0;found.point_a=found.cell;}
+            if (kind==EntityKind::Sled || kind==EntityKind::RailCart) {found.label_a=0;found.timer_b=0;found.point_a=found.cell;}
             else stop_item_float(game,found);
             line.entity_b={i,found.generation};latch(game,line,ChainCargo);return;
         }
@@ -94,7 +96,9 @@ void reel(Game& game,Handle handle,Entity& owner) {
     } else if (line.label_b==ChainCargo) {
         Entity& target=*get_entity(game,line.entity_b);const Cell next=target.cell-line.facing;
         if (!vacant(game,next,false)) {release_chain_hook(game,handle);return;}
-        if (target.kind==EntityKind::Sled) {
+        if (target.kind==EntityKind::RailCart) {
+            if (!haul_rail_cart(game,line.entity_b.slot,{-line.facing.x,-line.facing.y})) {release_chain_hook(game,handle);return;}
+        } else if (target.kind==EntityKind::Sled) {
             if (!haul_sled(game,line.entity_b.slot,{-line.facing.x,-line.facing.y})) {release_chain_hook(game,handle);return;}
         } else target.cell=next;
         line.cell=line.point_b=next;

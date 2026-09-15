@@ -27,11 +27,12 @@ void pulse(Game& game,int slot) {
     const bool wall=tile && !walkable(tile->kind);
     const bool prop=tile && prop_blocks(tile->prop);
     const int target=entity_at(game,contact,true);
+    const bool freight=tile && tile->kind==TileKind::Rail && tile->hp>0 && !prop && target<0;
     const Handle victim=target<0 ? Handle{} : Handle{target,game.entities[static_cast<std::size_t>(target)].generation};
-    emit_sound(game,wall || prop || target>=0 ? SoundId::PocketDrillWork : SoundId::PocketDrillAir,origin);
+    emit_sound(game,wall || freight || prop || target>=0 ? SoundId::PocketDrillWork : SoundId::PocketDrillAir,origin);
     make_noise(game,origin,12);
     if (!tile) return;
-    if (wall) {hit_terrain(game,contact,origin,pattern.damage,tool.dig_power,TileImpact::Strike,false);return;}
+    if (wall || freight) {hit_terrain(game,contact,origin,pattern.damage,tool.dig_power,TileImpact::Strike,false);return;}
     hit_prop(game,contact,pattern.damage,origin);
     if (prop) return; // This beat cannot hit through the cover it just broke.
     hit_ground_traps(game,contact,pattern.damage,origin);

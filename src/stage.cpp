@@ -61,7 +61,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact 
         tile->prop = broken_prop.kind==PropKind::BridgePlank ? Prop{} : broken_prop;
         return true;
     }
-    if (tile->kind != TileKind::Wall || tile->hp == 0 || damage <= 0 ||
+    if ((tile->kind != TileKind::Wall && tile->kind != TileKind::Rail) || tile->hp == 0 || damage <= 0 ||
         tile->break_rule == BreakRule::Unbreakable) return false;
     if (tile->break_rule == BreakRule::DigRequired &&
         dig_power < tile->required_dig_power) return false;
@@ -76,10 +76,11 @@ bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact 
 bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
                  TileImpact impact, bool sound) {
     const Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || tile->kind != TileKind::Wall) return false;
+    if (tile == nullptr || (tile->kind != TileKind::Wall && !(tile->kind==TileKind::Rail && tile->hp>0))) return false;
     const int previous = tile->hp;
+    const bool freight=tile->kind==TileKind::Rail;
     const bool wood = wooden_terrain(*tile);
-    const Sprite material = tile->material == TileMaterial::Tree ? Sprite::ForestTree :
+    const Sprite material = freight ? Sprite::Rail : tile->material == TileMaterial::Tree ? Sprite::ForestTree :
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
         tile->material == TileMaterial::Ice ? Sprite::IceWall :
         game.run.phase == RunPhase::Arena ? Sprite::Wall :
@@ -89,7 +90,8 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =
             {cell, source, material, hit ? previous - tile->hp : 0, hit && tile->hp == 0};
-    if (sound) emit_sound(game, hit ? (wood ? SoundId::WoodCrack : tile->hp == 0 ? SoundId::BoxBreak : SoundId::HitBlock1) :
+    if (sound && freight) emit_sound(game,hit ? SoundId::RailCut : SoundId::SturdyBlockBouncedOn,cell);
+    else if (sound) emit_sound(game, hit ? (wood ? SoundId::WoodCrack : tile->hp == 0 ? SoundId::BoxBreak : SoundId::HitBlock1) :
                SoundId::SturdyBlockBouncedOn, cell);
     return hit;
 }

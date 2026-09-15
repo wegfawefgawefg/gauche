@@ -1,3 +1,4 @@
+#include "freight_siding.hpp"
 #include "settling_tanks.hpp"
 #include "casting_floor.hpp"
 #include "room_supplies.hpp"
@@ -52,7 +53,7 @@ void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool g
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) spawn_room_enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -371,6 +372,9 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
             --budget.equipment;
         }
+    }
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::FreightSiding && budget.threat>=3 && budget.equipment>=2) {
+        if (populate_freight_siding(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::SettlingTanks && budget.threat>=3 && budget.equipment>=2) {
         if (populate_settling_tanks(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}

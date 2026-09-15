@@ -1,3 +1,5 @@
+#include "rail_cart.hpp"
+#include "rail_shunter.hpp"
 #include "tar_choir.hpp"
 #include "mold_thief.hpp"
 #include "casting_mold.hpp"
@@ -60,6 +62,8 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
     case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
     case EntityKind::SnowEffigy: init_snow_effigy(entity); break;
+    case EntityKind::RailCart: init_rail_cart(entity);break;
+    case EntityKind::RailShunter: init_rail_shunter(entity);break;
     case EntityKind::TarChoir: init_tar_singer(game,entity);break;
     case EntityKind::MoldThief: init_mold_thief(entity);break;
     case EntityKind::CastingMold: init_casting_mold(entity);break;
@@ -147,6 +151,8 @@ void step_entity(Game& game, int slot) {
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;
     case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;
     case EntityKind::SnowEffigy: step_snow_effigy(game, slot); break;
+    case EntityKind::RailCart: step_rail_cart(game,slot);break;
+    case EntityKind::RailShunter: step_rail_shunter(game,slot);break;
     case EntityKind::TarChoir: step_tar_singer(game,slot);break;
     case EntityKind::MoldThief: step_mold_thief(game,slot);break;
     case EntityKind::CastingMold: break;

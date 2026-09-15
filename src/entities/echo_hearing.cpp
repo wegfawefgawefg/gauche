@@ -54,6 +54,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SlagLunge: case SoundId::SlagImpact:
     case SoundId::BoltsThrow: case SoundId::BoltsClatter:
     case SoundId::RivetImpact:
+    case SoundId::ShunterBell: case SoundId::CartImpact: case SoundId::CartBreak: case SoundId::RailCut:
     case SoundId::ChoirCough:
     case SoundId::StokerSpit:
     case SoundId::WorkCall:

@@ -4,7 +4,7 @@
 
 namespace {
 constexpr RegionalItem hook{"Chain Hook",
-    "Hold to haul crates, bins, loose gear or sleds. Fixed anchors pull you. Release pauses; secondary cuts. 24 casts.",
+    "Hold to haul crates, gear, sleds or rail carts. Fixed anchors pull you. Release pauses; secondary cuts. 24 casts.",
     Sprite::ChainHook,{1,5,0,0,36,PatternEffect::Utility,true},
     ItemAction::Material,22,1,false,24,0,0,0,0,SoundId::ChainCast};
 }

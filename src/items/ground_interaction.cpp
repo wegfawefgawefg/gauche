@@ -1,3 +1,4 @@
+#include "../entities/rail_cart.hpp"
 #include "../entities/casting_mold.hpp"
 #include "../traps/nail_board.hpp"
 #include "sled.hpp"
@@ -27,6 +28,8 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
         const Item candle = candle_item(prop);
         if (candle.kind != ItemKind::None) return candle;
     }
+    const Item cart=recoverable_cart_item(game,cell);
+    if (cart.kind!=ItemKind::None) return cart;
     const Item cargo=recoverable_mold_item(game,cell);
     if (cargo.kind!=ItemKind::None) return cargo;
     const Item board=recoverable_nail_board(game,cell);
@@ -40,6 +43,7 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
 }
 
 int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
+    if (recoverable_cart_item(game,cell).kind==kind) return release_cart_item(game,cell,player.cell);
     if (recoverable_mold_item(game,cell).kind==kind) return release_mold_item(game,cell,player.cell);
     if (kind == ItemKind::NailBoard) return release_nail_board(game,cell);
     if (kind == ItemKind::Sled) return release_sled(game,cell);

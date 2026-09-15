@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::TensionSpring: return {Sprite::TensionSpring,SoundId::TensionBreak,6,false,false};
     case PropKind::Conveyor: return {Sprite::Conveyor,SoundId::BeltBreak,48,false,false};
     case PropKind::Barricade: return {Sprite::BarricadeSection,SoundId::GrateBreak,20,true,false};
     case PropKind::Grate: return {Sprite::GrateH,SoundId::GrateBreak,60,true,false};
@@ -72,6 +73,6 @@ bool prop_shoot_through(const Prop& prop) {
 }
 
 bool prop_cuttable_metal(const Prop& prop) {
-    return !prop.broken && (prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+    return !prop.broken && (prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
         prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

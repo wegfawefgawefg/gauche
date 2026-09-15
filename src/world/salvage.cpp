@@ -59,6 +59,7 @@ bool place_salvage_pocket(Game& game,const FloorPlan& plan,const RoomPlan& room)
         place_coins(game,center,5+static_cast<int>(random_u32(game)%5));
         place_ground_item(game,center,reward,supply_count(reward));
         if (cold) place_ground_item(game,bank,ItemKind::FishingLine);
+        else if (random_u32(game)%4==0) place_ground_item(game,bank,ItemKind::TensionSpring,3);
         else if (magnetic_item(reward) && random_u32(game)%4==0)
             place_ground_item(game,bank,ItemKind::HorseshoeMagnet);
         // A broken-working-place cue beside the casting bank, never on its ray.

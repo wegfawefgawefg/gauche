@@ -122,6 +122,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/pocket_drill.cpp
     src/entities/cable_crawler.cpp src/world/cable_trench.cpp
     src/entities/walking_kiln.cpp src/world/kiln_court.cpp
+    src/items/tension_spring.cpp src/props/tension_spring.cpp
     src/entities/pressure_rat.cpp
     src/entities/magnet_crane.cpp
     src/entities/arc_welder.cpp

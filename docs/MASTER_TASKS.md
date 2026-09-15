@@ -372,7 +372,8 @@ behavior and balance playtesting remain the user's.
   [Cable Crawlers and cable trenches](history/CABLE_CRAWLER.md) add finite wire laying, wall-biased movement, warned pulses through live circuits, severing/grounding counters, and an optional wet/dry encounter.
   [Pocket Drills](history/POCKET_DRILL.md) add sustained stationary cutting, finite battery, real noise and shared wall/prop/wire interactions, with movement/aim reprime and hurt/control cancellation.
   [Walking Kilns and kiln courts](history/WALKING_KILN.md) add warned flame rows, cold interruption, an exposed mouth, finite fuel and actual wood/coal consumption beside optional oil/stock encounters.
-  Eleven catalog enemy behaviors and thirteen of fifty regional items implemented;
+  [Tension Springs](history/TENSION_SPRING.md) add stackable underfoot launch pads, real airborne gap crossings and pursuer traps, heat/destruction counters and supplies at optional hot salvage banks.
+  Eleven catalog enemy behaviors and fourteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

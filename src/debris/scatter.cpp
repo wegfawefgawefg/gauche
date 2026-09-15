@@ -39,6 +39,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     case PropKind::CrystalGrowth: first = second = DebrisKind::CrystalSplinter; break;
     case PropKind::BridgePlank: first = DebrisKind::WoodChip; second = DebrisKind::RopeFiber; break;
     case PropKind::Doorstop: first = DebrisKind::BrassCase; second = DebrisKind::BrassRivet; break;
+    case PropKind::TensionSpring: first=second=DebrisKind::SteelWasher; break;
     case PropKind::CopperWire: first = second = DebrisKind::CopperCurl; break;
     case PropKind::GroundingSpike: first = DebrisKind::CopperCurl; second = DebrisKind::BrassRivet; break;
     case PropKind::MaintenanceLocker: first = DebrisKind::BrassRivet; second = DebrisKind::CopperCurl; break;

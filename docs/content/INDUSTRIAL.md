@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, thirteen regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, fourteen regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -156,7 +156,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 44 | Folding barricade | Implemented: one kit unfolds three independent low steel sections across the adjacent lane. All cells must be clear. 20 HP each, Durable 40. Walkers stop, narrow shots pass, lobbed objects pass overhead. Torch/welder cutting and worker smashing reopen gaps. Metal survives fire; folded kit is magnetic. Hinges/latches clatter. | U / 23; native stock from regional stage 2 |
 | 45 | Warning cone | Place a bright recoverable marker; idle crews route around it, angry crews kick it aside. No physical immunity or invisible wall. Stack 3 unused cones. Rubber bonk. | C / 4 |
 | 46 | Glow slag | Recoverable throw to 6, 4 damage; lights its landing cell for 20s. Cold turns it dark, furnace reheats it. Carries remaining heat through trading. Stack only identical cold pieces. Glassy clink. | C / 6 |
-| 47 | Tension spring | Place a directional one-use launch pad; next grounded actor/cart gets a three-cell shove with normal collisions. Stack 3; fire weakens it before trigger. Compressed squeal, sproing. | U / 15 |
+| 47 | Tension spring | Implemented: set underfoot aimed; arms in 0.3s. Next susceptible walker launches four cells in 0.4s, skipping ground contacts while airborne. Walls cause 12 damage/0.5s stun; unsafe landings stay unsafe. Stack 3, single use; 6-HP mechanism softens in heat. Flyers, grip/root and sled riders refuse. Uses existing toss arc; carts remain pending. | U / 15; native stage-one stock and one-quarter of hot salvage banks |
 | 48 | Scrap effigy | Assemble an 18-HP metal decoy ahead. Cranes prioritize it and ranged work guards may commit one attack to its sound. No universal taunt. Two kits. Loose-metal jangle. | U / 20 |
 | 49 | Furnace seed | Plant a small 24-HP hungry burner; feed actual wood/coal to keep a warm cross active. Fire can ignite nearby spills; cold stops it. One recoverable cold seed. Tiny furnace cough. | R / 31 |
 | 50 | Overtime clock | Place a 12-HP clock, wait 1s; for 5s nearby working machines/crew shorten idle beats, including dangerous attacks. Affects allies' crank/drill work too; no global player haste. Two windings. Fast mechanical ticking. | R / 34 |

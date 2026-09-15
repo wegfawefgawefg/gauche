@@ -14,7 +14,7 @@ void enter_actor_cell(Game& game, int slot) {
     contact_surface(game, slot);
     if (!wading_actor(actor)) return; // Airborne actors do not stomp props or campfires.
     step_on_prop(game, slot);
-    if (actor.health <= 0) return;
+    if (actor.health <= 0 || actor.toss.ticks>0) return;
 
     const Cell arrival = actor.cell;
     enter_woodland_traps(game, slot);

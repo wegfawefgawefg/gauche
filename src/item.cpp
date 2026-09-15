@@ -1,3 +1,4 @@
+#include "items/tension_spring.hpp"
 #include "items/coolant.hpp"
 #include "items/barricade.hpp"
 #include "items/magnet.hpp"
@@ -108,6 +109,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::TensionSpring:
+        used=place_tension_spring(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::CoolantCan:
         used=pour_coolant(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::FoldingBarricade:

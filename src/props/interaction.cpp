@@ -1,3 +1,4 @@
+#include "tension_spring.hpp"
 #include "interaction.hpp"
 #include "conveyor.hpp"
 #include "../items/folded_bridge.hpp"
@@ -127,6 +128,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind == PropKind::Conveyor) tile->prop.variant &= 7U;
+    if (kind == PropKind::TensionSpring) {tile->prop.variant &= 3U;tile->prop.growth_ticks=18;}
     if (kind == PropKind::Grate) tile->prop.variant &= 1U;
     if (kind == PropKind::Barricade) {tile->prop.variant &= 3U;tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));}
     if (kind == PropKind::Stove) {
@@ -167,6 +169,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
 }
 
 void step_on_prop(Game& game, int actor_slot) {
+    if (trigger_tension_spring(game,actor_slot)) return;
     enter_spider_strand(game,actor_slot);
     const Entity& actor = game.entities[static_cast<std::size_t>(actor_slot)];
     Tile* tile = game.stage.at(actor.cell);

@@ -66,11 +66,11 @@ int main() {
         return 1;
     }
     for (int tick = 1; tick <= 400; ++tick) {
-        pump_network(client);
+        pump_network(client, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
-        pump_network(host);
+        pump_network(host, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
-        pump_network(client);
+        pump_network(client, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
         Input remote;
         remote.move = tick % 24 < 12 ? Cell{1, 0} : Cell{-1, 0};
@@ -84,11 +84,11 @@ int main() {
         relay.pump(tick);
     }
     for (int tick = 401; tick <= 1000; ++tick) {
-        pump_network(client);
+        pump_network(client, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
-        pump_network(host);
+        pump_network(host, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
-        pump_network(client);
+        pump_network(client, static_cast<std::uint64_t>(tick) * 17);
         relay.pump(tick);
     }
     const auto common = client.rollback.confirmed_through;

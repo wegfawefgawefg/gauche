@@ -244,7 +244,7 @@ void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
             gubsy_set_lobby_session_phase(*menu.runtime, "in_game");
     }
     if (menu.network->role == NetRole::Client && !menu.network->ready &&
-        menu.network->pump_tick > 360 && menu.visible &&
+        menu.network->now_ms - menu.network->started_ms > 6000 && menu.visible &&
         gubsy_get_lobby_state(*menu.runtime).direct_join_pending) {
         gubsy_fail_lobby_direct_join(*menu.runtime, "Host did not answer");
         leave_network_game(*menu.network);

@@ -16,14 +16,15 @@ struct SnapshotSend {
     std::uint64_t tick = 0;
     std::uint64_t checksum = 0;
     std::vector<std::uint8_t> bytes;
-    std::uint64_t last_sent_pump = 0;
+    std::uint64_t next_send_ms = 0;
+    std::size_t next_chunk = 0;
 };
 
 struct NetPeer {
     std::uint64_t identity = 0;
     NetEndpoint endpoint{};
     bool connected = false;
-    std::uint64_t last_heard_pump = 0;
+    std::uint64_t last_heard_ms = 0;
     std::map<std::uint64_t, Input> pending_inputs;
     SnapshotSend snapshot{};
 };
@@ -52,8 +53,13 @@ struct NetSession {
     std::uint64_t local_identity = 0;
     int local_owner = 0;
     std::uint64_t host_tick = 0;
-    std::uint64_t pump_tick = 0;
-    std::uint64_t last_host_packet = 0;
+    std::uint64_t now_ms = 0;
+    std::uint64_t started_ms = 0;
+    std::uint64_t next_heartbeat_ms = 0;
+    std::uint64_t next_hello_ms = 0;
+    std::uint64_t next_snapshot_request_ms = 0;
+    bool clock_started = false;
+    std::uint64_t last_host_packet_ms = 0;
     std::uint32_t next_transfer_id = 1;
     std::uint32_t last_correction_id = 0;
     std::uint32_t last_snapshot_id = 0;
@@ -68,7 +74,8 @@ bool host_game(NetSession& session, std::uint16_t port, std::uint64_t seed,
                DeathPolicy policy, std::string& error);
 bool join_game(NetSession& session, const std::string& host, std::uint16_t port,
                std::uint64_t identity, std::string& error);
-void pump_network(NetSession& session);
+std::uint64_t network_clock_ms();
+void pump_network(NetSession& session, std::uint64_t now_ms = network_clock_ms());
 void step_network_game(NetSession& session, Input local_input);
 void restart_host_run(NetSession& session, std::uint64_t seed);
 void leave_network_game(NetSession& session);

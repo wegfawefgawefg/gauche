@@ -5,6 +5,14 @@
 
 namespace {
 
+// CLOCK: Advance virtual time explicitly; checks do not sleep for retry deadlines.
+void pump_for_check(NetSession& session) {
+    static std::uint64_t now_ms = 0;
+    now_ms += 17;
+    pump_network(session, now_ms);
+}
+
+
 bool four_players() {
     NetSession host;
     std::array<NetSession, 3> clients{};
@@ -16,10 +24,10 @@ bool four_players() {
                        error)) return false;
         for (int iteration = 0; iteration < 30; ++iteration) {
             for (NetSession& client : clients)
-                if (client.role == NetRole::Client) pump_network(client);
-            pump_network(host);
+                if (client.role == NetRole::Client) pump_for_check(client);
+            pump_for_check(host);
             for (NetSession& client : clients)
-                if (client.role == NetRole::Client) pump_network(client);
+                if (client.role == NetRole::Client) pump_for_check(client);
         }
     }
     int players = 0;
@@ -46,9 +54,9 @@ int main() {
         return 1;
     }
     for (int iteration = 0; iteration < 20 && !client.ready; ++iteration) {
-        pump_network(client);
-        pump_network(host);
-        pump_network(client);
+        pump_for_check(client);
+        pump_for_check(host);
+        pump_for_check(client);
     }
     if (!client.ready || client.local_owner != 1 ||
         get_entity(host.rollback.game, host.rollback.game.players[1]) == nullptr) {
@@ -56,8 +64,8 @@ int main() {
         return 1;
     }
     for (int tick = 0; tick < 80; ++tick) {
-        pump_network(host);
-        pump_network(client);
+        pump_for_check(host);
+        pump_for_check(client);
         Input host_input;
         Input client_input;
         if (tick % 12 < 6) host_input.move = {1, 0};
@@ -66,8 +74,8 @@ int main() {
         step_network_game(client, client_input);
     }
     for (int iteration = 0; iteration < 10; ++iteration) {
-        pump_network(host);
-        pump_network(client);
+        pump_for_check(host);
+        pump_for_check(client);
     }
     if (host.rollback.game.tick != client.rollback.game.tick ||
         game_hash(host.rollback.game) != game_hash(client.rollback.game)) {
@@ -78,8 +86,8 @@ int main() {
         return 1;
     }
     for (int idle = 0; idle < 450; ++idle) {
-        pump_network(host);
-        pump_network(client);
+        pump_for_check(host);
+        pump_for_check(client);
     }
     if (!client.ready || !host.peers[1].connected) {
         std::fputs("idle session lost its heartbeat\n", stderr);
@@ -89,9 +97,9 @@ int main() {
     restart_host_run(host, 71234);
     for (int iteration = 0; iteration < 30 &&
          client.rollback.game.run.seed != 71234; ++iteration) {
-        pump_network(client);
-        pump_network(host);
-        pump_network(client);
+        pump_for_check(client);
+        pump_for_check(host);
+        pump_for_check(client);
     }
     if (host.rollback.game.tick != previous_tick ||
         client.rollback.game.run.seed != 71234 ||
@@ -102,7 +110,7 @@ int main() {
     }
     client.socket.close();
     const Handle original_slot = host.rollback.game.players[1];
-    for (int iteration = 0; iteration < 370; ++iteration) pump_network(host);
+    for (int iteration = 0; iteration < 370; ++iteration) pump_for_check(host);
     if (host.rollback.game.run.online[1]) {
         std::fputs("disconnected player still blocked the run\n", stderr);
         return 1;
@@ -113,9 +121,9 @@ int main() {
         return 1;
     }
     for (int iteration = 0; iteration < 20 && !rejoined.ready; ++iteration) {
-        pump_network(rejoined);
-        pump_network(host);
-        pump_network(rejoined);
+        pump_for_check(rejoined);
+        pump_for_check(host);
+        pump_for_check(rejoined);
     }
     int players = 0;
     for (const Entity& entity : host.rollback.game.entities)

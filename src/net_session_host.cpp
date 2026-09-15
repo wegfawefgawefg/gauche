@@ -89,7 +89,7 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
     peer.identity = identity;
     peer.endpoint = datagram.from;
     peer.connected = true;
-    peer.last_heard_pump = session.pump_tick;
+    peer.last_heard_ms = session.now_ms;
     peer.pending_inputs.clear();
     bool changed = false;
     if (new_player) {
@@ -135,7 +135,7 @@ void receive_input(NetSession& session, const Datagram& datagram, PacketReader& 
     if (owner < 0) return;
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (!peer.connected || peer.endpoint != datagram.from) return;
-    peer.last_heard_pump = session.pump_tick;
+    peer.last_heard_ms = session.now_ms;
     const std::uint64_t current = session.rollback.game.tick;
     std::sort(inputs.begin(), inputs.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
@@ -168,7 +168,7 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
     if (peer.endpoint != datagram.from || peer.snapshot.id != id) return;
     const std::uint64_t snapshot_tick = peer.snapshot.tick;
     peer.snapshot = {};
-    peer.last_heard_pump = session.pump_tick;
+    peer.last_heard_ms = session.now_ms;
     send_history_since(session, owner, snapshot_tick);
 }
 
@@ -218,7 +218,8 @@ void host_receive(NetSession& session, const Datagram& datagram,
         const std::uint64_t identity = reader.u64();
         if (!reader.finished()) break;
         const int owner = peer_for(session, identity);
-        if (owner >= 0 && session.peers[static_cast<std::size_t>(owner)].endpoint == datagram.from)
+        if (owner >= 0 && session.peers[static_cast<std::size_t>(owner)].endpoint == datagram.from &&
+            session.peers[static_cast<std::size_t>(owner)].snapshot.id == 0)
             queue_snapshot(session, owner);
         break;
     }
@@ -230,7 +231,7 @@ void host_receive(NetSession& session, const Datagram& datagram,
         if (owner >= 0) {
             NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
             if (peer.connected && peer.endpoint == datagram.from)
-                peer.last_heard_pump = session.pump_tick;
+                peer.last_heard_ms = session.now_ms;
         }
         break;
     }

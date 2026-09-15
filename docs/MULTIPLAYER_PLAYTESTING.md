@@ -17,9 +17,9 @@ it does not claim that the missing integration is complete.
   room-code integration, NAT punching or relayed game transport is wired in.
 - No persistent desync input/snapshot capture comparable to Splonks' `.sdrp`
   dumps. Current recovery can overwrite useful evidence of the first divergence.
-- Networking retry/timeout counters advance once per `pump_network` call, which
-  runs per rendered frame. Replace those with monotonic elapsed time before
-  relying on mixed-refresh-rate sessions; render FPS must not set timeout length.
+- Networking retry/timeout counters now use monotonic elapsed time. Snapshot
+  transfers are paced and retain progress on retries. See the implemented
+  [foundation milestone](history/NETWORK_FOUNDATION.md) and its validation limits.
 - Friendly fire is currently enabled by behavior: melee and bullets do not
   exclude teammates. There is no lobby disable setting. Requested rule is ON
   by default, with a host-controlled pre-run option to disable it.

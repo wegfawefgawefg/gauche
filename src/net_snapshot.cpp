@@ -19,6 +19,7 @@ void queue_snapshot(NetSession& session, int owner) {
     if (owner <= 0 || owner >= 4) return;
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (!peer.connected) return;
+    peer.snapshot = {};
     peer.snapshot.bytes = encode_game(session.rollback.game);
     peer.snapshot.tick = session.rollback.game.tick;
     peer.snapshot.checksum = bytes_hash(peer.snapshot.bytes);
@@ -28,11 +29,14 @@ void queue_snapshot(NetSession& session, int owner) {
 
 void send_snapshot_chunks(NetSession& session, int owner) {
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
-    const SnapshotSend& transfer = peer.snapshot;
+    SnapshotSend& transfer = peer.snapshot;
     if (!peer.connected || transfer.id == 0 || transfer.bytes.empty()) return;
     const auto count = static_cast<std::uint16_t>(
         (transfer.bytes.size() + chunk_bytes - 1) / chunk_bytes);
-    for (std::uint16_t index = 0; index < count; ++index) {
+    // PACING: Large worlds must not overflow a receiver before it can poll.
+    const std::size_t end = std::min(transfer.next_chunk + 32, static_cast<std::size_t>(count));
+    for (std::size_t cursor = transfer.next_chunk; cursor < end; ++cursor) {
+        const auto index = static_cast<std::uint16_t>(cursor);
         const std::size_t start = static_cast<std::size_t>(index) * chunk_bytes;
         const std::size_t size = std::min(chunk_bytes, transfer.bytes.size() - start);
         PacketWriter packet = begin_packet(WireKind::SnapshotChunk);
@@ -48,7 +52,8 @@ void send_snapshot_chunks(NetSession& session, int owner) {
                             transfer.bytes.begin() + static_cast<std::ptrdiff_t>(start + size));
         send_wire(session, peer.endpoint, packet);
     }
-    peer.snapshot.last_sent_pump = session.pump_tick;
+    transfer.next_chunk = end == count ? 0 : end;
+    transfer.next_send_ms = session.now_ms + (end == count ? 500 : 16);
 }
 
 void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
@@ -67,6 +72,7 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
         return;
     }
     SnapshotReceive& transfer = session.receiving_snapshot;
+    if (id < transfer.id) return; // A delayed old fragment must not discard newer progress.
     if (transfer.id != id) {
         transfer = {};
         transfer.id = id;

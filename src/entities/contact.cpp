@@ -1,3 +1,4 @@
+#include "../traps/nail_board.hpp"
 #include "../game.hpp"
 #include "pocket_door.hpp"
 #include "../world/water.hpp"
@@ -18,6 +19,7 @@ void enter_actor_cell(Game& game, int slot) {
 
     const Cell arrival = actor.cell;
     enter_woodland_traps(game, slot);
+    if (actor.health>0 && actor.toss.ticks==0 && actor.cell==arrival) enter_nail_boards(game,slot);
     if (actor.toss.ticks>0 || actor.health <= 0 || actor.cell != arrival) return;
 
     // TRAMPLE: Only a successful step or shove calls this; standing still spends no fire life.

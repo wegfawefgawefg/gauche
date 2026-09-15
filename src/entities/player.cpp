@@ -1,3 +1,4 @@
+#include "../items/nail_board.hpp"
 #include "../items/chain_hook.hpp"
 #include "../items/pocket_drill.hpp"
 #include "../items/magnet.hpp"
@@ -79,6 +80,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (step_harpoon_action(game,slot,input)) return;
     if (step_siphon_action(game,slot,input)) return;
     if (step_lantern_action(game,slot,input)) return;
+    if (step_nail_board_action(game,slot,input)) return;
     if (step_melee_action(game, slot, input)) return;
     if (step_ice_brick(game, slot, input)) return;
     if (step_bow(game, slot, input)) return;

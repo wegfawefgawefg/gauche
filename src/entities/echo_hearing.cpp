@@ -78,6 +78,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
         radius = 7; break;
     case SoundId::BarricadeUnfold:
     case SoundId::CraneSlew: case SoundId::CraneCoil: case SoundId::CraneTug: case SoundId::CraneDeath:
+    case SoundId::NailSet: case SoundId::NailStep: case SoundId::NailBreak:
     case SoundId::ChainCast: case SoundId::ChainLatch: case SoundId::ChainHaul:
     case SoundId::MagnetPull:
     case SoundId::WelderMask: case SoundId::WelderDeath:

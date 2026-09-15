@@ -12,6 +12,7 @@ int item_windup(const Item& item) {
     if (item.kind==ItemKind::ArcTorch) return arc_prime_ticks;
     int ticks = 0;
     switch (item.kind) {
+    case ItemKind::NailBoard: ticks = 6; break;
     case ItemKind::PressHammer: ticks = 36; break;
     case ItemKind::RubberMallet: ticks = 9; break;
     case ItemKind::TuningFork: ticks = 30; break;

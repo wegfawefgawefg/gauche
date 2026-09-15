@@ -379,7 +379,8 @@ behavior and balance playtesting remain the user's.
   [Bolt Pouches](history/BOLT_POUCH.md) add stackable five-bolt fans, close-range concentration, grate passage, parries and finite flight. Assembly cargo and scrap bins provide three-handful bundles.
   [Slag Snails and slag banks](history/SLAG_SNAIL.md) add armored crawlers, fixed warned lunges, exposed recovery/cold states, short hot trails and crackable cooled crust beside optional lava-bank supplies.
   [Chain Hooks](history/CHAIN_HOOK.md) add held cargo/prop hauling, safe fixed-anchor pulls, loaded sled transport and scrap-yard supplies.
-  Fourteen catalog enemy behaviors and seventeen of fifty regional items implemented;
+  [Nail Boards](history/NAIL_BOARD.md) add melee/ground-trap conversion with shared condition, safe recovery, heat/destruction and assembly-belt acquisition.
+  Fourteen catalog enemy behaviors and eighteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

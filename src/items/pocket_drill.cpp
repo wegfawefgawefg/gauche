@@ -3,7 +3,7 @@
 #include "sled.hpp"
 #include "ice_anchor.hpp"
 #include "../props/interaction.hpp"
-#include "../traps/woodland.hpp"
+#include "../traps/contact.hpp"
 #include "../entities/hearing.hpp"
 
 namespace {
@@ -34,7 +34,7 @@ void pulse(Game& game,int slot) {
     if (wall) {hit_terrain(game,contact,origin,pattern.damage,tool.dig_power,TileImpact::Strike,false);return;}
     hit_prop(game,contact,pattern.damage,origin);
     if (prop) return; // This beat cannot hit through the cover it just broke.
-    hit_woodland_traps(game,contact,pattern.damage,origin);
+    hit_ground_traps(game,contact,pattern.damage,origin);
     hit_sled(game,contact,pattern.damage,origin);
     hit_ice_anchor(game,contact,pattern.damage,origin);
     if (target!=slot && get_entity(game,victim))

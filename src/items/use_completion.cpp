@@ -31,6 +31,7 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
         emit_sound(game, SoundId::BlockLand, target); break;
     default: break;
     }
+    if (used_kind==ItemKind::NailBoard && --item.durability<=0) {emit_sound(game,SoundId::NailBreak,user.cell);item={};return;}
     if ((used_kind == ItemKind::PressHammer || used_kind == ItemKind::RubberMallet) && --item.durability <= 0) {
         emit_sound(game,SoundId::WoodCrack,user.cell);
         item = {};

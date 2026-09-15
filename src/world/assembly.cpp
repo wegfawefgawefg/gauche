@@ -23,6 +23,6 @@ void assembly_supplies(Game& game,const RoomPlan& room) {
     for (Cell offset:{Cell{-4,-3},Cell{4,3}}) {
         const Cell cell=room.center+offset;
         if (live_belt(game.stage.at_or_border(cell).prop) && entity_at(game,cell,false)<0)
-            place_ground_item(game,cell,offset.x<0 ? ItemKind::BoltPouch : ItemKind::CoalLump,offset.x<0 ? 3 : 1);
+            place_ground_item(game,cell,offset.x<0 ? ItemKind::BoltPouch : ItemKind::NailBoard,offset.x<0 ? 3 : 1);
     }
 }

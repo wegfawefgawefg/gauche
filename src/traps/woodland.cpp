@@ -1,3 +1,4 @@
+#include "contact.hpp"
 #include "woodland.hpp"
 #include "../items/woodland_traps.hpp"
 #include "../combat/shove.hpp"
@@ -44,7 +45,7 @@ void burst_acorn(Game& game, int slot) {
             cell = cell + direction;
             const bool blocked = projectile_blocked(game, cell);
             hit_prop(game, cell, pattern.damage, center);
-            hit_woodland_traps(game, cell, pattern.damage, center);
+            hit_ground_traps(game, cell, pattern.damage, center);
             if (blocked) break;
             const int target = entity_at(game, cell, true);
             if (target >= 0) {

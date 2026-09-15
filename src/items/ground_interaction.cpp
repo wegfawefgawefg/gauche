@@ -1,3 +1,4 @@
+#include "../traps/nail_board.hpp"
 #include "sled.hpp"
 #include "ground_interaction.hpp"
 #include "../props/doorstop.hpp"
@@ -25,6 +26,8 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
         const Item candle = candle_item(prop);
         if (candle.kind != ItemKind::None) return candle;
     }
+    const Item board=recoverable_nail_board(game,cell);
+    if (board.kind!=ItemKind::None) return board;
     const Item wedge = recoverable_doorstop(prop);
     if (wedge.kind != ItemKind::None) return wedge;
     const Item spike = recoverable_spike(prop);
@@ -34,6 +37,7 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
 }
 
 int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
+    if (kind == ItemKind::NailBoard) return release_nail_board(game,cell);
     if (kind == ItemKind::Sled) return release_sled(game,cell);
     if (kind == ItemKind::GroundingSpike) return release_grounding_spike(game,cell,player.cell);
     if (kind == ItemKind::EmergencyDoorstop) return release_doorstop(game,cell,player.cell);

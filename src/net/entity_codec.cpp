@@ -1,3 +1,4 @@
+#include "../traps/nail_board.hpp"
 #include "../projectiles/chain_hook.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../items/emergency_foam.hpp"
@@ -243,6 +244,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_quarry_charge(entity)) reader.okay=false;
     if (!valid_foam_can(entity)) reader.okay=false;
+    if (!valid_nail_board(entity)) reader.okay=false;
     if (!valid_chain_hook(entity)) reader.okay=false;
     if (!valid_thrown_bolt(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;

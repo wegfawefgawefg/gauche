@@ -264,8 +264,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         } else if (room.role == RoomRole::WeatherStation) {
             supply(game, room, round%3==0 ? ItemKind::StormLantern : round%3==1 ? ItemKind::SignalFlare : ItemKind::SnowGlobe, 1, budget.equipment);
         } else if (room.role == RoomRole::EchoTunnel) {
-            constexpr ItemKind quiet_tools[]{ItemKind::IceNeedle, ItemKind::MufflingFelt, ItemKind::AlarmClock};
-            supply(game, room, quiet_tools[round % 3], round % 3 == 0 ? 3 : 1, budget.equipment);
+            constexpr ItemKind quiet_tools[]{ItemKind::IceNeedle, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::EchoPebble};
+            supply(game, room, quiet_tools[round % 4], round % 4 == 0 ? 3 : 1, budget.equipment);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {
             constexpr ItemKind supplies[]{ItemKind::Shotgun, ItemKind::Musket,
                 ItemKind::Bomb, ItemKind::Buckler};

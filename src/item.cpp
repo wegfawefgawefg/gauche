@@ -1,3 +1,4 @@
+#include "items/echo_pebble.hpp"
 #include "items/circuits.hpp"
 #include "items/flare.hpp"
 #include "items/ice_equipment.hpp"
@@ -101,6 +102,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::EchoPebble:
+        used = launch_echo_pebble(game,user_slot,item,direction); cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::StormLantern: break; // Its shutter/focus follows held input in the player step.
     case ItemKind::CopperWire: case ItemKind::GroundingSpike:
         used = place_circuit_item(game,user.cell+direction,item); cooldown = item_pattern(item).cooldown;

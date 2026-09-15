@@ -26,7 +26,7 @@ void init_playtest_tools(const std::filesystem::path& path) {
             attribute > static_cast<int>(ItemAttribute::Restorative)) { input.setstate(std::ios::failbit); break; }
         item.kind = static_cast<ItemKind>(kind); item.attribute = static_cast<ItemAttribute>(attribute);
         item.light.shape = shape == 2 ? LightShape::Beam : LightShape::Cone;
-        item.muffled_uses = static_cast<std::uint8_t>(std::clamp(muffled, 0, 8));
+        item.muffled_uses = static_cast<std::uint8_t>(std::clamp(muffled, 0, 6));
         normalize_test_item(item);
     }
     if (!input || version != 1) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }

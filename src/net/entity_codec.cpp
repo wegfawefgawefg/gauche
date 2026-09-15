@@ -1,3 +1,5 @@
+#include "../items/echo_pebble.hpp"
+#include "../projectiles/projectile.hpp"
 #include "entity_codec.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../items/flare.hpp"
@@ -46,6 +48,10 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang)) reader.okay = false;
+    if (item.kind == ItemKind::EchoPebble) {
+        const EchoVoice* voice = echo_voice(item);
+        if ((item.loaded != 0 && voice == nullptr) || item.spare != (voice ? voice->radius : 0)) reader.okay = false;
+    }
     if (item.kind==ItemKind::StormLantern && (item.loaded>7200 || item.spare>3 ||
         item.light.shape==LightShape::Omni)) reader.okay=false;
     if (item.flame_ticks < 0 || item.flame_ticks > 1800) reader.okay = false;
@@ -168,6 +174,10 @@ Entity read_entity(PacketReader& reader) {
         reader.okay = false;
     for (Item& item : entity.inventory.slots) item = read_item(reader);
     entity.ground_item = read_item(reader);
+    if (entity.kind == EntityKind::Projectile && entity.label_a == static_cast<int>(ProjectileKind::EchoPebble) &&
+        (entity.ground_item.kind != ItemKind::EchoPebble || entity.label_b < 0 || entity.label_b > 1 ||
+         entity.counter_a < 0 || entity.counter_a > 20 || entity.counter_b < 0 || entity.counter_b > 3 ||
+         entity.timer_a < 0 || entity.timer_a > 240 || entity.timer_b < 0 || entity.timer_b > 6)) reader.okay = false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
         entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||

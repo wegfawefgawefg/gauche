@@ -1,3 +1,5 @@
+#include "../items/muffling.hpp"
+#include "../items/echo_pebble.hpp"
 #include "playtest.hpp"
 #include "../item_attribute.hpp"
 #include "../items/storm_lantern.hpp"
@@ -24,6 +26,11 @@ void normalize_test_item(Item& item) {
         fresh.opened = item.opened && fresh.loaded > 0;
         fresh.light.shape = item.light.shape == LightShape::Beam ? LightShape::Beam : LightShape::Cone;
     }
+    if (item.kind == ItemKind::EchoPebble) {
+        if (const EchoVoice* voice = echo_voice(item)) {
+            fresh.loaded = static_cast<int>(voice->sound)+1; fresh.spare = voice->radius;
+        }
+    }
     if (item.kind == ItemKind::CandleStub) {
         fresh.loaded = std::clamp(item.loaded, 0, candle_fuel_ticks);
         fresh.opened = item.opened || fresh.loaded < candle_fuel_ticks;
@@ -35,7 +42,7 @@ void normalize_test_item(Item& item) {
     }
     if (item.kind == ItemKind::BearTrap) fresh.opened = item.opened;
     if (item.kind == ItemKind::Stick) fresh.flame_ticks = std::clamp(item.flame_ticks, 0, 1800);
-    fresh.muffled_uses = std::min<std::uint8_t>(item.muffled_uses, 8);
+    fresh.muffled_uses = muffleable_item(fresh) ? std::min<std::uint8_t>(item.muffled_uses, 6) : 0;
     item = fresh;
 }
 

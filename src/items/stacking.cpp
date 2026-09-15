@@ -15,6 +15,7 @@ bool item_stackable(const Item& item) {
 namespace {
 
 bool compatible(const Item& a, const Item& b) {
+    if (a.kind == ItemKind::EchoPebble && (a.loaded != b.loaded || a.spare != b.spare)) return false;
     return item_stackable(a) && item_stackable(b) && a.kind == b.kind &&
         a.flight.slot < 0 && b.flight.slot < 0 && a.flame_ticks == b.flame_ticks && a.muffled_uses == b.muffled_uses && a.attribute == b.attribute && a.opened == b.opened && a.dig_power == b.dig_power &&
         a.max_count == b.max_count && a.consume_on_use == b.consume_on_use &&

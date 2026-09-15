@@ -1,3 +1,4 @@
+#include "echo_pebble.hpp"
 #include "circuits.hpp"
 #include "storm_lantern.hpp"
 #include "flare.hpp"
@@ -25,6 +26,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* echo = echo_pebble_item(kind)) return echo;
     if (const RegionalItem* lantern = storm_lantern_item(kind)) return lantern;
     if (const RegionalItem* circuit = circuit_item(kind)) return circuit;
     if (const RegionalItem* flare = flare_item(kind)) return flare;

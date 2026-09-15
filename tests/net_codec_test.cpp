@@ -1,5 +1,6 @@
-#include "../src/net_codec.hpp"
+#include "../src/items/echo_pebble.hpp"
 #include "../src/projectiles/projectile.hpp"
+#include "../src/net_codec.hpp"
 #include "../src/entities/shard_colony.hpp"
 #include "../src/entities/icicle_spider.hpp"
 #include "../src/entities/boiler_tank.hpp"
@@ -151,6 +152,11 @@ int main() {
     lantern_loot->ground_item.loaded=4317; lantern_loot->ground_item.spare=2;
     lantern_loot->ground_item.light.shape=LightShape::Beam;
     lantern_loot->facing={-1,0};
+    Entity* echo=get_entity(original,spawn_entity(original,EntityKind::Projectile,{24,8}));
+    echo->label_a=static_cast<int>(ProjectileKind::EchoPebble); echo->label_b=1;
+    echo->counter_b=2; echo->timer_a=17;
+    echo->ground_item=make_item(ItemKind::EchoPebble);
+    echo->ground_item.loaded=static_cast<int>(SoundId::BowRelease)+1; echo->ground_item.spare=7;
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

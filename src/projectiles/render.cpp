@@ -38,6 +38,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
     if (shot.label_a == static_cast<int>(ProjectileKind::Net)) { draw_net(renderer, graphics, shot, game, camera, zoom, lighting); return; }
+    const bool echo = shot.label_a == static_cast<int>(ProjectileKind::EchoPebble);
     const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
@@ -51,7 +52,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
@@ -85,6 +86,15 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     if ((!fishing || shot.label_b != FishingCargo) && (!widow || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+    if (echo && shot.use_flash>0) {
+        const float spread = pixels*(1-static_cast<float>(shot.use_flash)/12);
+        const float x = rect.x+rect.w*.5F, y = rect.y+rect.h*.5F;
+        SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer,139,198,211,static_cast<Uint8>(shot.use_flash*12));
+        const SDL_FPoint wave[]{{x-spread,y},{x,y-spread*.5F},{x+spread,y},{x,y+spread*.5F},{x-spread,y}};
+        SDL_RenderLines(renderer,wave,5);
+        SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+    }
     if (rocket) {
         SDL_SetRenderDrawColor(renderer, 255, 181, 76, 255);
         const float x = rect.x + rect.w * .5F, y = rect.y + rect.h * .5F;

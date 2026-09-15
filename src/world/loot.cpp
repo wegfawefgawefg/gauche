@@ -89,6 +89,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         const auto roll = random_u32(game) % 100;
         if (roll < 25) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
         else if (roll < 35) place_ground_item(game, enemy.cell, ItemKind::MufflingFelt);
+        else if (roll < 45) place_ground_item(game, enemy.cell, ItemKind::EchoPebble);
         break;
     }
     case EntityKind::LensWarden:

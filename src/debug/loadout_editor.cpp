@@ -1,3 +1,5 @@
+#include "../items/muffling.hpp"
+#include "../items/echo_pebble.hpp"
 #include "playtest.hpp"
 #include "../item_attribute.hpp"
 #include "../artifacts/catalog.hpp"
@@ -52,6 +54,17 @@ bool edit_item(Item& item) {
             item.light.shape = focused ? LightShape::Beam : LightShape::Cone; changed = true;
         }
     }
+    if (item.kind == ItemKind::EchoPebble) {
+        const EchoVoice* voice = echo_voice(item);
+        if (ImGui::BeginCombo("Recording",voice ? voice->name : "Blank (knock)")) {
+            if (ImGui::Selectable("Blank (knock)",!voice)) { item.loaded = item.spare = 0; changed = true; }
+            for (const EchoVoice& option : echo_voices)
+                if (ImGui::Selectable(option.name,voice == &option)) {
+                    item.loaded = static_cast<int>(option.sound)+1; item.spare = option.radius; changed = true;
+                }
+            ImGui::EndCombo();
+        }
+    }
     if (item.kind == ItemKind::CandleStub) {
         int seconds = (item.loaded+59)/60;
         if (ImGui::SliderInt("Candle fuel seconds", &seconds, 0, candle_fuel_ticks/60)) {
@@ -71,9 +84,9 @@ bool edit_item(Item& item) {
         int seconds = (item.flame_ticks+59)/60;
         if (ImGui::SliderInt("Burning seconds", &seconds, 0, 30)) { item.flame_ticks = seconds*60; changed = true; }
     }
-    if (item_is_gun(item.kind)) {
+    if (muffleable_item(item)) {
         int shots = item.muffled_uses;
-        if (ImGui::SliderInt("Muffled shots", &shots, 0, 8)) { item.muffled_uses = static_cast<std::uint8_t>(shots); changed = true; }
+        if (ImGui::SliderInt("Muffled shots", &shots, 0, 6)) { item.muffled_uses = static_cast<std::uint8_t>(shots); changed = true; }
     }
     return changed;
 }

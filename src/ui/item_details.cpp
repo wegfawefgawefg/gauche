@@ -1,3 +1,4 @@
+#include "../items/echo_pebble.hpp"
 #include "../combat/parry.hpp"
 #include "../items/fire_render.hpp"
 #include "item_details.hpp"
@@ -191,6 +192,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         else if (target < 0) std::snprintf(line, sizeof(line), "NO UNWRAPPED WEAPON");
         else std::snprintf(line, sizeof(line), "WRAP #%d: %s", target + 1,
             item_name(order.slots[static_cast<std::size_t>(target)].kind));
+    }
+    if (item.kind == ItemKind::EchoPebble) {
+        const EchoVoice* voice = echo_voice(item);
+        std::snprintf(line,sizeof(line),"RECORD: %s | 3 ECHOES",voice ? voice->name : "Knock");
     }
     if (item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"FUEL %ds | %s",(item.loaded+59)/60,item.light.shape==LightShape::Beam ? "FOCUSED" : "WIDE");
     if (item.kind == ItemKind::CandleStub)

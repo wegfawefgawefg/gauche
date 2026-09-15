@@ -1,3 +1,4 @@
+#include "entities/pressure_rat.hpp"
 #include "entities/crane_render.hpp"
 #include "combat/toss.hpp"
 #include "entities/yeti.hpp"
@@ -258,6 +259,14 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.h*=1+.18F*reach; body_rect.y-=pixels*.18F*reach;
                 angle+=entity.facing.x<0 ? 15*reach : -15*reach;
             }
+            if (entity.kind==EntityKind::PressureRat) {
+                if (entity.facing.y!=0) angle=entity.facing.y<0 ? -90 : 90;
+                if (entity.label_a==RatInflate) {
+                    const float inset=.14F*static_cast<float>(entity.timer_a)/36;
+                    body_rect.x+=pixels*inset;body_rect.y+=pixels*inset;
+                    body_rect.w-=pixels*2*inset;body_rect.h-=pixels*2*inset;
+                }
+            }
             // TELLS: Keep the creature visible while its committed attack winds up.
             if (entity.kind == EntityKind::Bear && entity.label_a == 1) {
                 body_rect.y -= pixels * .18F;
@@ -299,7 +308,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip ?
+                nullptr, (entity.kind==EntityKind::PressureRat ? entity.facing.x<0 :
+                    !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
         SDL_SetTextureAlphaMod(texture, 255);

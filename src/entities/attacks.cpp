@@ -1,3 +1,4 @@
+#include "pressure_rat.hpp"
 #include "magnet_crane.hpp"
 #include "arc_welder.hpp"
 #include "yeti.hpp"
@@ -69,6 +70,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::PressureRat:
+        if ((enemy.label_a==RatInflate || enemy.label_a==RatDash) && enemy.cell==enemy.point_a)
+            for (int i=1;i<=std::min(8,enemy.counter_a);++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
         break;
     case EntityKind::MagnetCrane:
         if (enemy.label_a==CraneLock && enemy.cell==enemy.point_a) add(enemy.point_b);

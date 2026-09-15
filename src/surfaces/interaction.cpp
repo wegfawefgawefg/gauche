@@ -1,3 +1,4 @@
+#include "../entities/pressure_rat.hpp"
 #include "../entities/ember.hpp"
 #include "interaction.hpp"
 #include "temperature.hpp"
@@ -76,7 +77,7 @@ void contact_surface(Game& game, int slot) {
     if (tile == nullptr) return;
     if (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest) {
         if (surface_wet(*tile)) {
-            damp_stoker(actor);
+            damp_stoker(actor);cool_pressure_rat(actor);
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) emit_sound(game, SoundId::WaterDouse, actor.cell);
             actor.burn_ticks = actor.scorch_ticks = 0;
             actor.vitals.nausea = actor.vitals.nausea_wait = 0;

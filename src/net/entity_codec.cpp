@@ -1,3 +1,4 @@
+#include "../entities/pressure_rat.hpp"
 #include "../entities/magnet_crane.hpp"
 #include "../entities/arc_welder.hpp"
 #include "../items/arc_torch.hpp"
@@ -215,6 +216,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_pressure_rat(entity)) reader.okay=false;
     if (!valid_magnet_crane(entity)) reader.okay=false;
     if (!valid_arc_welder(entity)) reader.okay=false;
     if (!valid_arc_torch(entity)) reader.okay=false;

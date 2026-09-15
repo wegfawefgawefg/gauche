@@ -163,10 +163,12 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         return;
     }
     if (!forest_floor(game.run.floor)) {
+        const auto roll=ice_floor(game.run.floor) ? 0U : random_u32(game)%4;
         const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat :
-            random_u32(game)%3==0 ? EntityKind::RivetGunner : EntityKind::Ember;
-        enemy(game, room, hazard, 2, budget);
-        if (round >= 2) enemy(game, room, hazard, 2, budget);
+            roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : EntityKind::Ember;
+        const int cost=hazard==EntityKind::PressureRat ? 1 : 2;
+        enemy(game, room, hazard, cost, budget);
+        if (round >= 2) enemy(game, room, hazard, cost, budget);
         return;
     }
     switch (room.role) {

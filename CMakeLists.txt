@@ -117,6 +117,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/boiler_porter.cpp src/entities/boiler_tank.cpp src/entities/boiler_splash.cpp src/items/pressure.cpp src/world/boiler_room.cpp
     src/entities/candle_keeper.cpp src/entities/keeper_tending.cpp src/world/chapel.cpp
     src/entities/snow_effigy.cpp
+    src/entities/pressure_rat.cpp
     src/entities/magnet_crane.cpp
     src/entities/arc_welder.cpp
     src/entities/yeti.cpp

@@ -31,6 +31,9 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::PressureRat:
+        if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::RawMeat);
+        break; // Rubber hose reserved until its item is implemented.
     case EntityKind::RivetGunner: {
         const auto roll=random_u32(game)%100;
         if (roll<25) place_ground_item(game,enemy.cell,ItemKind::RivetGun);

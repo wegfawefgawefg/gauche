@@ -1,3 +1,4 @@
+#include "../entities/pressure_rat.hpp"
 #include "../items/flare.hpp"
 #include "temperature.hpp"
 #include "../projectiles/exposed_fuse.hpp"
@@ -124,6 +125,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
         if (quench_exposed_fuse(actor,sound==SoundId::ColdQuench)) quenched=true;
+        if (cool_pressure_rat(actor)) quenched=true;
         if (damp_stoker(actor) || douse_coal_spit(actor)) quenched = true;
         if (douse_flare(game,actor)) quenched = true;
         if (douse_keeper_lamp(game,actor)) quenched = true;

@@ -129,6 +129,10 @@ it OFF. Legitimate item-driven camera effects continue working without dev mode.
 
 ## Objectives, escape pressure and floor modifiers
 
+[Level-feature clarification](LEVEL_FEATURES.md) expands the reactor crank/exit
+disaster, distinguishes Timber Forest from its possible wildfire, and specifies
+rare roads/railways as infrastructure rather than ordinary rooms.
+
 Support separately identified requirements: two keys, a key plus a lever, and
 other combinations. Keep generated requirements obtainable before their gates,
 provide readable objective information, and preserve intended tool shortcuts.

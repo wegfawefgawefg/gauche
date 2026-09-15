@@ -186,6 +186,10 @@ use cheap local presentation.
 
 ## Cross-room features and layered generation
 
+See [level features](LEVEL_FEATURES.md) for related infrastructure (roads, stations
+and trains), floor variants and triggered disasters. These compose with geography;
+not every idea must be forced into the room/landmark category.
+
 User follow-up: rare root/log formations should cut across the existing arrangement
 of rooms and walls, allowing burning/chopping to reveal unexpected connections.
 Treat this as a distinct category of cross-room features, not another rectangular

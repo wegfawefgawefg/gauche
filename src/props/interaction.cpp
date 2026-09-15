@@ -19,8 +19,9 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
     case PropKind::ScrapBin:
-        if (roll>=40 && roll<60) item=ItemKind::CopperWire;
-        break; // Unimplemented magnet/slag/hook ranges remain empty.
+        if (roll<20) item=ItemKind::HorseshoeMagnet;
+        else if (roll>=40 && roll<60) item=ItemKind::CopperWire;
+        break; // Unimplemented slag/hook ranges remain empty.
     case PropKind::OreBin:
         if (roll<25) { place_ground_item(game,cell,ItemKind::CoalLump,2); return; }
         if (roll<40) place_coins(game,cell,2+static_cast<int>(random_u32(game)%3));

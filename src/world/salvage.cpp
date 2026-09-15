@@ -1,4 +1,5 @@
 #include "salvage.hpp"
+#include "../items/magnet.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "../items/supply.hpp"
@@ -36,10 +37,10 @@ bool place_salvage_pocket(Game& game,const FloorPlan& plan,const RoomPlan& room)
         room.role!=RoomRole::Workshop && room.role!=RoomRole::Cache) return false;
     if (!cold && !hot) return false;
     // A single optional cache has its own small scene budget. Reserve enough
-    // entity slots for the weapon, coins and (in Ice) the shore's fishing line.
+    // entity slots for the weapon, coins and an optional shore tool.
     const auto free=std::count_if(game.entities.begin(),game.entities.end(),
         [](const Entity& actor){return actor.kind==EntityKind::None;});
-    if (free<(cold ? 3 : 2)) return false;
+    if (free<3) return false;
     for (bool vertical:{true,false}) for (int sy:{-1,1}) for (int sx:{1,-1}) {
         const Cell forward=vertical ? Cell{0,sy} : Cell{sx,0};
         const Cell sideways=vertical ? Cell{sx,0} : Cell{0,sy};
@@ -58,6 +59,8 @@ bool place_salvage_pocket(Game& game,const FloorPlan& plan,const RoomPlan& room)
         place_coins(game,center,5+static_cast<int>(random_u32(game)%5));
         place_ground_item(game,center,reward,supply_count(reward));
         if (cold) place_ground_item(game,bank,ItemKind::FishingLine);
+        else if (magnetic_item(reward) && random_u32(game)%4==0)
+            place_ground_item(game,bank,ItemKind::HorseshoeMagnet);
         // A broken-working-place cue beside the casting bank, never on its ray.
         const Cell crate=center+Cell{sideways.x*3-forward.x*2,sideways.y*3-forward.y*2};
         Tile* tile=game.stage.at(crate);

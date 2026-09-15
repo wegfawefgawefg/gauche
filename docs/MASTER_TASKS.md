@@ -363,7 +363,8 @@ behavior and balance playtesting remain the user's.
   [Arc Torches](history/ARC_TORCH.md) add finite sustained electrical attacks, metal cutting and shared water/wire/grounding interactions; available through the master Industrial supply table.
   [Conveyors and assembly rooms](history/CONVEYORS.md) add deterministic roller transport, safe stationary crossings, hand-cranked runs, six-second brakes, powered-belt debris drag and positional roller ambience.
   [Arc Welders and repair bays](history/ARC_WELDER.md) add a visor-down warning, committed electrical lane sweep, metal cutting and wet/dry/grounding encounter choices.
-  Seven catalog enemy behaviors and nine of fifty regional items implemented;
+  [Horseshoe Magnets](history/HORSESHOE_MAGNET.md) pull real loose steel gear while moving, preserve item state, and connect native scrap-bin drops to hot salvage pockets.
+  Seven catalog enemy behaviors and ten of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

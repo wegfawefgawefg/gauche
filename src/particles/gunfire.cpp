@@ -13,6 +13,18 @@ void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
         cosmetics.seen_events[cosmetics.next_event++ % cosmetics.seen_events.size()] = key;
         const ShotEvent& shot = game.shots[static_cast<std::size_t>(index)];
         if (distance(shot.source, focus) > 24 && distance(shot.end, focus) > 24) continue;
+        if (shot.magnetic) {
+            RibbonParticle trail;trail.life=trail.span=8;trail.count=2;
+            trail.red=151;trail.green=171;trail.blue=175;
+            trail.points[0]={static_cast<float>(shot.source.x)+.5F,static_cast<float>(shot.source.y)+.5F};
+            trail.points[1]={static_cast<float>(shot.end.x)+.5F,static_cast<float>(shot.end.y)+.5F};
+            if (cosmetics.ribbons.size()<256) cosmetics.ribbons.push_back(trail);
+            RingParticle ring;ring.x=trail.points[1].x;ring.y=trail.points[1].y;
+            ring.radius=.4F;ring.speed=-.035F;ring.life=ring.span=8;
+            ring.red=155;ring.green=178;ring.blue=184;
+            if (cosmetics.rings.size()<256) cosmetics.rings.push_back(ring);
+            continue;
+        }
         if (shot.electric) {
             if (shot.impact) spawn_electric_arc(cosmetics, shot.source, shot.end, key);
             else spawn_water_arc(cosmetics, shot.source, shot.end, key);

@@ -1,3 +1,4 @@
+#include "items/magnet.hpp"
 #include "items/belt_tools.hpp"
 #include "artifacts/hearth.hpp"
 #include "items/ammunition.hpp"
@@ -69,18 +70,6 @@
 
 namespace {
 
-int magazine_size(ItemKind kind) {
-    if (const RegionalItem* spec = regional_item(kind)) return spec->magazine;
-    switch (kind) {
-    case ItemKind::Pistol: return 12;
-    case ItemKind::Shotgun: return 6;
-    case ItemKind::SMG: return 30;
-    case ItemKind::Musket: case ItemKind::RocketLauncher: return 1;
-    default: return 0;
-    }
-}
-
-
 void blast(Game& game, Cell center, int radius, int damage, Cell attacker) {
     emit_sound(game, SoundId::Explosion, center);
     for (int y = center.y - radius; y <= center.y + radius; ++y) {
@@ -117,6 +106,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::HorseshoeMagnet:
+        used=pull_magnetic_item(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::BeltCrank: case ItemKind::BrakeShoe:
         used=use_belt_tool(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::QuarryCharge:
@@ -455,7 +446,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
+            if (used_kind == ItemKind::HorseshoeMagnet) emit_sound(game,SoundId::MagnetSpent,user.cell);
+            else if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
             else if (used_kind == ItemKind::FuseScissors) emit_sound(game,SoundId::ScissorsSpent,user.cell);
             else if (used_kind == ItemKind::ForemanWhistle) emit_sound(game,SoundId::WorkSpent,user.cell);
             else if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
@@ -477,26 +469,4 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         if (item.consume_on_use && --item.count <= 0) item = {};
     }
     return used;
-}
-
-bool reload_held_item(Game& game, int user_slot) {
-    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind==ItemKind::HeatSiphon)
-        return discharge_siphon(game,user_slot);
-    if (uncover_optic(game, user_slot)) return true;
-    if (rotate_mirror(game, user_slot)) return true;
-    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::SnowScoop)
-        return pack_snowball(game, user_slot);
-    if (game.entities[static_cast<std::size_t>(user_slot)].inventory.held()->kind == ItemKind::RottenFruit)
-        return eat_rotten_fruit(game, user_slot);
-    Item& item = *game.entities[static_cast<std::size_t>(user_slot)].inventory.held();
-    const int capacity = magazine_size(item.kind);
-    if (capacity == 0 || item.loaded >= capacity || item.spare <= 0 || item.cooldown > 0)
-        return false;
-    const int transfer = std::min(capacity - item.loaded, item.spare);
-    item.loaded += transfer;
-    item.spare -= transfer;
-    const RegionalItem* spec = regional_item(item.kind);
-    item.cooldown = spec != nullptr ? spec->reload : item.kind == ItemKind::Pistol ? 45 : 60;
-    emit_sound(game, firearm_reload_sound(item.kind), game.entities[static_cast<std::size_t>(user_slot)].cell);
-    return true;
 }

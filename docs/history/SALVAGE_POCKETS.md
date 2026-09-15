@@ -18,7 +18,9 @@ Industrial Workfront/Blasting/Workshop/Cache rooms can contain the hot-ground
 variant. It has a metal scrap bin, a dry loot spot and surrounding lava. A carried
 fishing line retrieves its loose item; crossing safely requires an appropriate
 tool or accepting the existing heat risk. No out-of-zone Fishing Line is handed
-out in Industry. The water-only portable bridge does not bridge lava.
+out in Industry. The water-only portable bridge does not bridge lava. A later
+[magnet milestone](HORSESHOE_MAGNET.md) adds a native alternative: one-quarter
+of hot pockets with magnetic loot offer a Horseshoe Magnet on the bank.
 
 Both scenes put 5–9 coins alongside the weapon as an extra payoff for actually
 reaching the plinth. Coins are placed before the item so the shared ground-item

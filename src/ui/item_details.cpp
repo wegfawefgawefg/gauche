@@ -1,3 +1,4 @@
+#include "../items/magnet.hpp"
 #include "../items/echo_pebble.hpp"
 #include "../artifacts/hearth.hpp"
 #include "../items/ammunition.hpp"
@@ -229,6 +230,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::Sealant) std::snprintf(line,sizeof(line),"REPAIR 20 HP | PLUG 10s");
     if (item.kind == ItemKind::WickSpool)
         std::snprintf(line, sizeof(line), "CANDLE +30s | CAPACITY 80s");
+    if (item.kind == ItemKind::HorseshoeMagnet)
+        std::snprintf(line,sizeof(line),"PULL 1 / 0.2s | REACH %d",pattern.maximum);
     if (item.kind == ItemKind::FishingLine)
         std::snprintf(line, sizeof(line), "REELS LOOSE ITEMS | NO DAMAGE");
     if (item.kind == ItemKind::AlarmClock)
@@ -366,7 +369,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     } else if (pattern.chain) {
         std::snprintf(line, sizeof(line), "4 HITS | JUMP %d | CIRCUIT 6", pattern.blast_radius);
         text(renderer, x + 10, y + 129, line, 162, 196, 213);
-    } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
+    } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? (magnetic_item(item.kind) ? "STACKABLE | MAGNETIC" : "STACKABLE") :
+        (magnetic_item(item.kind) ? "NOT STACKABLE | MAGNETIC" : "NOT STACKABLE"), 162, 171, 159);
     if (item_windup(item) > 0)
         std::snprintf(line, sizeof(line), "WINDUP %.2fs  RANGE %d-%d",
             static_cast<double>(item_windup(item)) / 60.0, pattern.minimum, pattern.maximum);

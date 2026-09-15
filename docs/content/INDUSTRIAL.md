@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, nine regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, ten regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -126,7 +126,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 14 | Fuse scissors | Implemented: snip the shortest landed exposed fuse at your feet or ahead; recover that exact bomb into the pack. A full pack, airborne/expired fuse or sealed Prism/Thaw Charge rejects it without spending. Twelve snips; Durable 24, Fragile 6. Also works on Bomb, Firecracker and Pitch Bomb. Metallic click. | C / 8 |
 | 15 | Brake shoe | Implemented for belts: jam one adjacent straight run for 6s, four shoes; a hit of at least 16 damage snaps its brake. Already-jammed runs refuse without spending. Does not stop trains. Cart interaction awaits carts. Rubber drag. | C / 10; assembly supply and Industrial stock/rewards |
 | 16 | Rail switch key | Rotate a nearby existing rail junction; twelve turns. Cannot conjure track or remotely turn occupied points under a cart. Lever clack. | C / 9 |
-| 17 | Horseshoe magnet | Hold to draw one loose metal item along a clear five-cell lane. Also attracts a nearby active crane head toward the user. 15s active wear. Low metallic tremolo. | U / 18 |
+| 17 | Horseshoe magnet | Implemented: hold to pull the nearest loose steel item one cell per 0.2s along a clear five-cell lane. Moving/aiming stay live. 75 successful pulls; empty/blocked attempts free. Preserves exact item state, no inventory theft or copper/wood/food attraction. Long reaches nine; Durable 150 pulls. Quiet metallic strain and spent crumble. Crane-head attraction awaits cranes. | U / 18; native stock, 20% scrap-bin drop; one-quarter of compatible hot salvage pockets offer a bank magnet |
 | 18 | Foundry tongs | Carry one hot loose object at arm's length; release places it ahead. Occupies held use and prevents attacks, preserving the exact item/heat. Forty handling wear. Tongs clink. | C / 12 |
 | 19 | Mold key | Open adjacent casting molds without breaking them; keep trapped items intact. Eight uses. Also releases a mold thief's sealed stash. Heavy key turn. | C / 8 |
 | 20 | Pocket pump | Collect a real shallow spill into three-cell capacity; secondary discharges one portion ahead. No draining whole lakes/lava; stored liquid type cannot mix. Hand pump squeak. | U / 23 |
@@ -221,7 +221,7 @@ only thematic stock. Healing/ammo budgets remain separate from bonus caches.
 | Lunch box | 8-HP tin, opens or breaks | 35% lunch tin, 25% cinder sausage, 15% two salt tablets, 15% two coal biscuits. |
 | Coolant locker | 35-HP cabinet; bullets can puncture its cosmetic casing | 30% coolant can, 20% solvent rag, 15% refractory paste, 15% emergency foam. No unrolled free liquid on break. |
 | Fuse crate | 12-HP wood; fire ignites only after a fuse tell | 25% quarry charge, 20% bolt pouch, 20% ammo, 10% tension spring. Fire destruction trades safe loot for a warned burst. |
-| Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 40–59: copper wire. Planned magnet, glow-slag and chain-hook ranges remain empty until those items exist. |
+| Scrap bin | Implemented 18-HP sheet metal, noisy destruction; local tin/copper scraps | Implemented roll 0–19: horseshoe magnet; 40–59: copper wire. Planned glow-slag and chain-hook ranges remain empty until those items exist. |
 | Ore bin | Implemented 30-HP mining bin; local ore/basalt fragments | 25% two coal lumps, next 15% 2–4 gold, otherwise empty. |
 | Pay cage | Locked optional 60-HP bars, shoot-through cover | 60% 8–14 gold, 20% punch card, 10% inspector stamp. Clerk-carried gold returns separately. |
 | Ceramic chest | 20-HP brittle shell, ordinary opening | 30% two ceramic plates, 20% refractory paste, 15% furnace seed, 15% coal biscuit. |

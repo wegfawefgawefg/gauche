@@ -1,3 +1,4 @@
+#include "../items/magnet.hpp"
 #include "../items/arc_torch.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
@@ -65,6 +66,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
     if (step_arc_torch(game,slot,input)) return;
+    if (step_magnet(game,slot,input)) return;
     if (step_rivet_action(game,slot,input)) return;
     if (step_anchor_action(game,slot,input)) return;
     if (step_effigy_mask(game,slot,input)) return;

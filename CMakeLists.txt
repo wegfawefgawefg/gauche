@@ -83,6 +83,8 @@ set(GAUCHE_ENTITY_SOURCES
     src/world/assembly.cpp
     src/props/conveyor_render.cpp
     src/props/conveyor.cpp
+    src/items/reload.cpp
+    src/items/magnet.cpp
     src/items/arc_torch.cpp
     src/items/belt_tools.cpp
     src/items/rivet_gun.cpp

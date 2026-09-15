@@ -13,6 +13,28 @@ dependencies; the first build needs internet access. Native platform development
 libraries may still need installing. The UI needs FreeType and HarfBuzz, supplied
 by dependency targets or system development packages through pkg-config.
 
+On a recent Debian/Ubuntu-based Linux installation, install the native build,
+font, window and audio dependencies once:
+
+```sh
+sudo apt update
+sudo apt install -y build-essential cmake ninja-build pkg-config git \
+  libglm-dev libfreetype-dev libharfbuzz-dev \
+  libx11-dev libxext-dev libxcursor-dev libxi-dev libxfixes-dev \
+  libxrandr-dev libxrender-dev libxss-dev \
+  libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev \
+  libasound2-dev libpulse-dev libpipewire-0.3-dev \
+  libdrm-dev libgbm-dev libudev-dev libgl1-mesa-dev libegl1-mesa-dev
+cmake --version
+```
+
+CMake must report at least 3.24. Older distributions may need a newer toolchain;
+other Linux distributions use their equivalent development packages. SDL3 is
+fetched automatically if its complete system dependency stack is unavailable.
+Lua is not needed for Gauche's build. This package list follows the engine's
+Linux setup plus Gauche's font dependencies; a clean-machine install has not
+been verified here.
+
 Clone the repository, then build and launch from its root:
 
 ```sh

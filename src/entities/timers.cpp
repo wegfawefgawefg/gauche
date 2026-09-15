@@ -1,3 +1,4 @@
+#include "yeti.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "../items/effigy_mask.hpp"
@@ -75,6 +76,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerTank && entity.health > 0) step_boiler_tank(game,slot);
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
+    if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) interrupt_yeti(entity);
     step_shard_state(entity);
     step_spider_strand(game,entity);
     thaw_snow_effigy(game, slot);
@@ -97,7 +99,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.sleep_ticks = std::max(0, entity.sleep_ticks - 1);
     entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
     const Tile* ground = game.stage.at(entity.cell);
-    if (ground != nullptr && ground->kind == TileKind::Lava &&
+    if (entity.toss.ticks==0 && ground != nullptr && ground->kind == TileKind::Lava &&
         entity.kind != EntityKind::Ember && entity.kind != EntityKind::SteamLeech && game.tick % 30 == 0)
         damage_entity(game, slot, 5, entity.cell, false);
 

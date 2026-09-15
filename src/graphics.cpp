@@ -70,6 +70,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "grate_h", "grate_v", "scrap_bin", "ore_bin", "debris_basalt_chip", "debris_ore_flake", "debris_steel_washer", "debris_tin_curl",
     "rivet_gun", "rivet", "rivet_gunner", "gunner_brace", "gunner_fire", "gunner_reload", "debris_rivet_casing",
     "conveyor", "conveyor_moving", "conveyor_off", "conveyor_brake", "belt_crank", "brake_shoe", "debris_belt_rubber",
+    "yeti",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

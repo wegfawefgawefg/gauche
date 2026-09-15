@@ -146,7 +146,7 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::CliffPath) {
-        enemy(game, room, EntityKind::AvalancheRam, 2, budget);
+        enemy(game, room, random_u32(game)%2==0 ? EntityKind::Yeti : EntityKind::AvalancheRam, 2, budget);
         if (round >= 2) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
         return;
     }

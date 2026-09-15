@@ -28,7 +28,7 @@ scraps, decorative fog and ambient audio are local. Visual steam must correspond
 to a gameplay smoke surface when it blocks targeting. Sound propagation used by
 enemy hearing is gameplay, independent of whether a client plays the sound.
 
-## Twenty adversaries
+## Initial twenty adversaries
 
 Each drop row is one roll unless noted. Undropped probability means nothing.
 Carried stolen items always return intact. Passive fish and harmless drifting
@@ -269,3 +269,12 @@ within floor budgets. Sparse 18-HP weather vanes are nonblocking metal props,
 not fuel or guaranteed loot. Existing route protection constrains placement.
 See [weather implementation](../history/ICE_WEATHER.md) for synced obscuration,
 interrupt rules and the distinction between action cues and ambient audio.
+
+## Beyond the initial roster
+
+**Territorial Yeti — implemented.** Sometimes inhabits a Cliff Path instead of
+the ram. Committed adjacent grab, 0.6s warning, four-cell throw, wall-impact
+damage and ice landing slips. It shuffles locally instead of chasing. Heavy
+hits interrupt it; a side-step, facing shield or active grip provides counterplay.
+Drops two Raw Meat and independently 25% Crampons. See
+[Yeti implementation and limits](../history/ICE_YETI.md).

@@ -1,3 +1,4 @@
+#include "yeti.hpp"
 #include "strikebreaker.hpp"
 #include "rivet_gunner.hpp"
 #include "mine_crew.hpp"
@@ -66,6 +67,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::Yeti:
+        if (enemy.label_a==YetiGrab && enemy.cell==Cell{enemy.counter_a,enemy.counter_b}) add(enemy.point_b);
         break;
     case EntityKind::AvalancheRam:
         if ((enemy.label_a == RamPaw || enemy.label_a == RamLunge) && enemy.cell == enemy.point_a)

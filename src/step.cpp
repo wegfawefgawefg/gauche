@@ -1,3 +1,4 @@
+#include "combat/toss.hpp"
 #include "world/currents.hpp"
 #include "props/conveyor.hpp"
 #include "items/borrowed_summer.hpp"
@@ -53,6 +54,7 @@ void step_players(Game& game, const std::array<Input, 4>& inputs) {
         Entity* player = get_entity(game, handle);
         if (player == nullptr) continue;
         if (player->health <= 0 || !game.run.online[owner]) { cancel_item_action(*player); continue; }
+        if (player->toss.ticks>0) { cancel_item_action(*player); continue; }
         if (player->sleep_ticks > 0 || player->stun_ticks > 0) {
             use_disabled_remedy(game, handle.slot, inputs[owner]);
             continue;
@@ -78,7 +80,7 @@ void step_nonplayers(Game& game) {
         if (entity.kind == EntityKind::None || entity.birth_tick == game.tick ||
             (entity.health == 0 && entity.kind != EntityKind::RailLayer &&
              entity.kind != EntityKind::GroundItem) ||
-            entity.sleep_ticks > 0 || entity.stun_ticks > 0) continue;
+            entity.toss.ticks>0 || entity.sleep_ticks > 0 || entity.stun_ticks > 0) continue;
         step_entity(game, slot);
     }
 }
@@ -125,6 +127,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     // TIMERS: A cooldown reaching zero can act on this tick.
     for (int slot = 0; slot < max_entities; ++slot)
         step_entity_timers(game, slot);
+    step_actor_tosses(game);
     step_players(game, inputs);
     step_summer_auras(game);
     if (game.run.phase == RunPhase::Reward) return;

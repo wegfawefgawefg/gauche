@@ -1,3 +1,5 @@
+#include "../combat/toss.hpp"
+#include "../entities/yeti.hpp"
 #include "../entities/strikebreaker.hpp"
 #include "../items/rivet_gun.hpp"
 #include "../entities/rivet_gunner.hpp"
@@ -111,6 +113,9 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
     writer.u16(entity.vitals.traction); writer.u16(entity.vitals.slide_momentum);
     writer.u16(entity.vitals.grip); writer.u8(static_cast<std::uint8_t>(entity.vitals.root_kind));
+    writer.cell(entity.toss.origin); writer.cell(entity.toss.direction); writer.cell(entity.toss.source);
+    writer.i32(entity.toss.instigator.slot); writer.u32(entity.toss.instigator.generation);
+    writer.i32(entity.toss.ticks);
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
     writer.cell(entity.train_origin);
@@ -168,6 +173,8 @@ Entity read_entity(PacketReader& reader) {
         entity.vitals.recovery > RecoveryKind::Poultice || entity.vitals.chill_guard > 480 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
         entity.vitals.haste > 240 || entity.vitals.rooted > 600 || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
+    entity.toss.origin=reader.cell(); entity.toss.direction=reader.cell(); entity.toss.source=reader.cell();
+    entity.toss.instigator={reader.i32(),reader.u32()}; entity.toss.ticks=reader.i32();
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
     entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
     entity.train_origin = reader.cell();
@@ -205,6 +212,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_actor_toss(entity) || !valid_yeti(entity)) reader.okay=false;
     if (!valid_rivet_gunner(entity)) reader.okay=false;
     if (!valid_rivet_action(entity)) reader.okay=false;
     if (!valid_strikebreaker(entity)) reader.okay=false;

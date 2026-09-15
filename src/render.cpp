@@ -1,3 +1,5 @@
+#include "combat/toss.hpp"
+#include "entities/yeti.hpp"
 #include "items/rivet_gun.hpp"
 #include "entities/breaker_render.hpp"
 #include "items/ice_anchor_render.hpp"
@@ -232,6 +234,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
                       pose->shake * pixels;
         }
+        rect.y-=actor_toss_height(entity)*pixels;
         SDL_Texture* texture = texture_for(graphics, entity.kind == EntityKind::GroundItem &&
             (entity.ground_item.kind == ItemKind::SteamKettle || entity.ground_item.kind == ItemKind::HeatSiphon) ? item_sprite(entity.ground_item) : entity.sprite);
         const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
@@ -248,6 +251,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (eats_meat(entity.kind) && entity.label_b == 1) {
                 body_rect.h *= .88F; body_rect.y += pixels * .12F;
                 angle += std::sin(static_cast<double>(game.tick % 60) * .65) * 7;
+            }
+            if (entity.kind==EntityKind::Yeti && entity.label_a==YetiGrab) {
+                const float reach=1-static_cast<float>(entity.timer_a)/36;
+                body_rect.h*=1+.18F*reach; body_rect.y-=pixels*.18F*reach;
+                angle+=entity.facing.x<0 ? 15*reach : -15*reach;
             }
             // TELLS: Keep the creature visible while its committed attack winds up.
             if (entity.kind == EntityKind::Bear && entity.label_a == 1) {

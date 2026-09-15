@@ -53,7 +53,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::Yeti: case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
     case EntityKind::RivetGunner: case EntityKind::Strikebreaker: case EntityKind::PowderMonkey:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
@@ -94,7 +94,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     }
     const bool teleport = std::any_of(game.sounds.begin(), game.sounds.begin() + game.sound_count,
         [&entity](const SoundEvent& sound) { return (sound.sound == SoundId::SwapFold || sound.sound == SoundId::PocketTravel) && sound.cell == entity.cell; });
-    if (same && !teleport && entity.cell != pose.cell) {
+    if (same && !teleport && entity.toss.ticks==0 && entity.cell != pose.cell) {
         if (entity.kind != EntityKind::GroundItem && entity.kind != EntityKind::RailLayer)
             push_debris(cosmetics.debris, entity.cell,
                 entity.kind == EntityKind::Train ? 2.2F : 1.1F,

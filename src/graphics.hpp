@@ -65,6 +65,7 @@ enum class Sprite : std::size_t {
     GrateH, GrateV, ScrapBin, OreBin, DebrisBasaltChip, DebrisOreFlake, DebrisSteelWasher, DebrisTinCurl,
     RivetGun, Rivet, RivetGunner, GunnerBrace, GunnerFire, GunnerReload, DebrisRivetCasing,
     Conveyor, ConveyorMoving, ConveyorOff, ConveyorBrake, BeltCrank, BrakeShoe, DebrisBeltRubber,
+    Yeti,
     Count,
 };
 

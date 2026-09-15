@@ -129,6 +129,12 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.x));
         mix(hash, static_cast<std::uint64_t>(entity.train_origin.y));
         mix(hash, static_cast<std::uint64_t>(entity.spawn_wait));
+        for (Cell cell:{entity.toss.origin,entity.toss.direction,entity.toss.source}) {
+            mix(hash,static_cast<std::uint64_t>(cell.x)); mix(hash,static_cast<std::uint64_t>(cell.y));
+        }
+        mix(hash,static_cast<std::uint64_t>(entity.toss.instigator.slot));
+        mix(hash,entity.toss.instigator.generation);
+        mix(hash,static_cast<std::uint64_t>(entity.toss.ticks));
         for (Handle handle : {entity.entity_a, entity.entity_b, entity.encounter}) {
             mix(hash, static_cast<std::uint64_t>(handle.slot));
             mix(hash, handle.generation);

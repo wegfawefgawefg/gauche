@@ -1,3 +1,4 @@
+#include "../entities/yeti.hpp"
 #include "../entities/rivet_gunner.hpp"
 #include "../entities/strikebreaker.hpp"
 #include "../items/action.hpp"
@@ -49,6 +50,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     alert_strikebreakers(game,slot,attacker);
     interrupt_strikebreaker(entity);
     interrupt_rivet_gunner(entity);
+    if (damage>=12) interrupt_yeti(entity);
     interrupt_stoker(entity);
     interrupt_powder_monkey(entity);
     interrupt_whiteout_drummer(entity);
@@ -74,7 +76,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
     if (entity.health == 0 && entity.kind == EntityKind::Trap) return;
     if (entity.health == 0) emit_sound(game, entity_death_sound(entity.kind), entity.cell);
-    if (entity.health == 0) { entity.vitals = {}; drop_enemy_loot(game, entity); }
+    if (entity.health == 0) { entity.toss = {}; entity.vitals = {}; drop_enemy_loot(game, entity); }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;

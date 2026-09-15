@@ -1,3 +1,4 @@
+#include "yeti.hpp"
 #include "strikebreaker.hpp"
 #include "rivet_gunner.hpp"
 #include "mine_crew.hpp"
@@ -45,6 +46,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
     case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
     case EntityKind::SnowEffigy: init_snow_effigy(entity); break;
+    case EntityKind::Yeti: init_yeti(entity); break;
     case EntityKind::AvalancheRam: init_avalanche_ram(entity); break;
     case EntityKind::WhiteoutDrummer: init_whiteout_drummer(entity); break;
     case EntityKind::SealThief: init_seal_thief(entity); break;
@@ -117,6 +119,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;
     case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;
     case EntityKind::SnowEffigy: step_snow_effigy(game, slot); break;
+    case EntityKind::Yeti: step_yeti(game,slot); break;
     case EntityKind::AvalancheRam: step_avalanche_ram(game, slot); break;
     case EntityKind::WhiteoutDrummer: step_whiteout_drummer(game, slot); break;
     case EntityKind::SealThief: step_seal_thief(game, slot); break;

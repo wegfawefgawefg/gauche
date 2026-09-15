@@ -1,3 +1,4 @@
+#include "../combat/toss.hpp"
 #include "shadows.hpp"
 #include "../debug/panels.hpp"
 #include "../entities/bell_diver.hpp"
@@ -82,7 +83,7 @@ void entity_shadow(ShadowBatch& batch,const Game& game,const Entity& actor,ViewC
     const bool insect=actor.kind==EntityKind::Mosquito || actor.kind==EntityKind::Wasp || actor.kind==EntityKind::LanternMoth;
     const float width=actor.kind==EntityKind::Train ? 1.3F : small ? .32F : insect ? .30F : .58F;
     const float height=actor.kind==EntityKind::Train ? .3F : small || insect ? .10F : .17F;
-    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width,pixels*height,insect ? .22F : .38F);
+    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width,pixels*height,(insect ? .22F : .38F)/(1+actor_toss_height(actor)));
 }
 }
 

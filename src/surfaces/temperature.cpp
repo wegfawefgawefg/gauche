@@ -86,7 +86,7 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
 bool freeze_water(Game& game, Cell cell, int ticks) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || ticks <= 0 || warm_cell(game, cell)) return false;
-    if (tile->surface.liquid == LiquidKind::Brine && tile->surface.liquid_ticks > 0) return false;
+    if ((tile->surface.liquid == LiquidKind::Brine || tile->surface.liquid == LiquidKind::Coolant) && tile->surface.liquid_ticks > 0) return false;
     // MEMORY: Refresh temporary ice without forgetting the pool or diver hole beneath it.
     if (tile->kind != TileKind::Ice || tile->freeze_ticks == 0) {
         if (!shallow_water(tile->kind)) return false;

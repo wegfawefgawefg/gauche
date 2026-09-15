@@ -55,6 +55,12 @@ required. The two supplied tools count against the ordinary equipment budget.
 If the authored layout cannot fit, an ordinary crane uses the same two-point
 threat budget. The planned Scrap Effigy item is not implemented yet.
 
+A later generated-scene audit found that the original footprint overlapped the
+protected central cross, so generation used the lone-crane fallback. The static
+fixture capture had not exposed this. [Coolant/cooling-works follow-up](COOLANT_CAN.md)
+moves the whole yard into legal side cells and verifies 34 complete sorting
+yards across 64 generated Industrial floors.
+
 ## State, visuals and audio
 
 `label_a`/`timer_a` hold phase/timing, `entity_a` the checked marked target,

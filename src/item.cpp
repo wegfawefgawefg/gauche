@@ -1,3 +1,4 @@
+#include "items/coolant.hpp"
 #include "items/barricade.hpp"
 #include "items/magnet.hpp"
 #include "items/belt_tools.hpp"
@@ -107,6 +108,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::CoolantCan:
+        used=pour_coolant(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::FoldingBarricade:
         used=place_barricade(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::HorseshoeMagnet:
@@ -449,7 +452,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::HorseshoeMagnet) emit_sound(game,SoundId::MagnetSpent,user.cell);
+            if (used_kind == ItemKind::CoolantCan) emit_sound(game,SoundId::CoolantEmpty,user.cell);
+            else if (used_kind == ItemKind::HorseshoeMagnet) emit_sound(game,SoundId::MagnetSpent,user.cell);
             else if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
             else if (used_kind == ItemKind::FuseScissors) emit_sound(game,SoundId::ScissorsSpent,user.cell);
             else if (used_kind == ItemKind::ForemanWhistle) emit_sound(game,SoundId::WorkSpent,user.cell);

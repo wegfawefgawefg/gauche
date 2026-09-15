@@ -22,13 +22,7 @@ bool tap_boiler(Game& game,int slot) {
     if (tank.kind!=EntityKind::BoilerTank || tank.health<=0) return false;
     if (tank.timer_b>0) return true; // A sealed outlet cannot vent pressure.
     const int previous=tank.counter_a;
-    tank.counter_a=std::max(0,tank.counter_a-40);
-    if (tank.label_a==BoilerTell && tank.counter_a<25) {
-        tank.label_a=BoilerVent; tank.timer_a=30;
-        tank.self_light={};
-    }
-    tank.sprite=tank.timer_b>0 ? Sprite::BoilerPlugged : tank.label_a==BoilerTell ? Sprite::BoilerTell :
-        tank.counter_a>=60 ? Sprite::BoilerHot : Sprite::BoilerTank;
+    reduce_boiler_pressure(tank,40);
     if (previous>0) emit_sound(game,SoundId::MalletVent,tank.cell);
     return true;
 }

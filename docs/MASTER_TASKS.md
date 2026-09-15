@@ -367,7 +367,8 @@ behavior and balance playtesting remain the user's.
   [Magnet Cranes and scrap yards](history/MAGNET_CRANE.md) add overhead committed grabs, metal-gear targeting, magnet bait, cold/heavy-hit interruption and optional hot sorting lanes.
   [Folding Barricades](history/FOLDING_BARRICADE.md) add atomic three-section lane blocking, narrow-shot/overhead passage, independent panel damage and shared metal-cutting counters.
   [Pressure Rats](history/PRESSURE_RAT.md) add a visible inflation tell, fixed rush, obstacle-triggered steam burst and shared cold/water/control counters.
-  Nine catalog enemy behaviors and eleven of fifty regional items implemented;
+  [Coolant Cans and cooling works](history/COOLANT_CAN.md) connect quenching, pressure reduction, lava crossings, slippery conductive residue and an alternate maintenance encounter; this also fixes sorting-yard footprints that previously always fell back to a lone crane.
+  Nine catalog enemy behaviors and twelve of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

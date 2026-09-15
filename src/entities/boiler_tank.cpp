@@ -50,6 +50,16 @@ void damage_boiler(Game& game, int slot) {
     tank.counter_c = 1;
 }
 
+void reduce_boiler_pressure(Entity& tank,int amount) {
+    if (tank.kind!=EntityKind::BoilerTank || tank.health<=0 || amount<=0) return;
+    tank.counter_a=std::max(0,tank.counter_a-amount);
+    if (tank.label_a==BoilerTell && tank.counter_a<25) {
+        tank.label_a=BoilerVent;tank.timer_a=30;tank.self_light={};
+    }
+    tank.sprite=tank.timer_b>0 ? Sprite::BoilerPlugged : tank.label_a==BoilerTell ? Sprite::BoilerTell :
+        tank.counter_a>=60 ? Sprite::BoilerHot : Sprite::BoilerTank;
+}
+
 void step_boiler_tank(Game& game, int slot) {
     Entity& tank = game.entities[static_cast<std::size_t>(slot)];
     const Tile& tile = game.stage.at_or_border(tank.cell);

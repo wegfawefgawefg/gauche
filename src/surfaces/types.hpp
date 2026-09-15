@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-enum class LiquidKind : std::uint8_t { None, Oil, Sap, Water, Honey, Rot, SpentSap, Brine, Count };
+enum class LiquidKind : std::uint8_t { None, Oil, Sap, Water, Honey, Rot, SpentSap, Brine, Coolant, Count };
 struct Surface {
     LiquidKind liquid = LiquidKind::None;
     std::uint16_t liquid_ticks = 0;
@@ -20,5 +20,5 @@ inline bool obscures_sight(const Surface& surface) {
 }
 
 inline bool water_liquid(LiquidKind kind) {
-    return kind == LiquidKind::Water || kind == LiquidKind::Brine;
+    return kind == LiquidKind::Water || kind == LiquidKind::Brine || kind == LiquidKind::Coolant;
 }

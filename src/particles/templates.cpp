@@ -196,6 +196,7 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
         shockwave(cosmetics,sound.cell,151,195,212);
         break;
     case SoundId::BridgeSplash:
+    case SoundId::CoolantPour:
     case SoundId::KettleSplash:
         shockwave(cosmetics,sound.cell,122,167,181);
         break;

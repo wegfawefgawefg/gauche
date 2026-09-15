@@ -3,8 +3,8 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, eleven regional items, metal cover/bins,
-assembly-room conveyors, wet repair bays, scrap-yard sorting lanes, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, twelve regional items, metal cover/bins,
+assembly-room conveyors, wet repair bays, cooling works, scrap-yard sorting lanes, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -136,7 +136,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 24 | Inspection mirror | Hold to look around one adjacent corner with a narrow reflected sight wedge. Cannot shoot through it; hard hits break its 12 condition. Tiny handle rattle. | U / 17 |
 | 25 | Belt crank | Implemented: hold to turn an adjacent unpowered straight run once per 0.2s beat. Forty turns (Durable eighty), one real step per turn. Brakes refuse; broken sections disconnect the drive. Powered runs cannot be accelerated with it. Ratchet clicks. | C / 11; assembly supply and Industrial stock/rewards |
 | 26 | Tar flask | Traveling throw to 5 leaves a short sticky fuel patch for 10s. Stack 3. Slows friends; cold clots it, fire makes a dangerous crossing. Thick glug. | C / 8 |
-| 27 | Coolant can | Pour three adjacent cells to quench/cool; four uses. Cools machines faster than water but leaves slippery residue. No lava swimming immunity. Watery metal glug. | C / 12 |
+| 27 | Coolant can | Implemented: four three-cell pours, Durable eight. Shared quench plus 3s chill; removes 80 boiler pressure without consuming fuel/fittings. Cool lava to stone. Green 10s residue slips, conducts shocks and prevents refreezing; no clean kettle filling or lava immunity. Pour, empty-can and slip sounds. | C / 12; native stage-one stock, 15% ore-bin drop, cooling-works supply |
 | 28 | Refractory paste | Coat held tool for six contacts with hot objects, avoiding heat wear; does not give the player full fire immunity. Three applications. Gritty smear. | U / 14 |
 | 29 | Solvent rag | Clean adjacent tar/oil or a fouled mechanism; five wipes. Used rag becomes flammable until rinsed. Cannot erase an entire room. Cloth swish. | C / 6 |
 | 30 | Ash sack | Dump a three-cell fan that smothers exposed ground flame and quiets steps for 8s; two dumps. Wind scatters it; hot machines remain hot. Dusty thump. | C / 7 |
@@ -186,11 +186,11 @@ foundry exit. Special layouts replace a floor only once their full route works.
 | Settling tanks | Paired rectangular pits with dry central bridge | Tar choir with broken sightlines, solvent shelf. Fire clears tar but endangers the bridge approach. |
 | Kiln court | Wide U around one furnace | Walking kiln and burnable stock, alcoves to bait a breath, ceramic chest. |
 | Pay office | Quiet side room with window grates | Clerk, pay cage and ledger; optional theft alarms existing nearby crew, no infinite respawn. |
-| Repair bay | Implemented: broad dry clearing with an offset 3×3 wet work area and two grate benches opposite | One welder on the dry bank, one ready grounding spike beside the water. Entire footprint is checked before placement and avoids protected routes. Up to one eligible bay per floor, two-thirds selection chance. Drain/toolbox remain pending. |
+| Repair bay | Implemented: broad dry clearing with an offset 3×3 wet work area and two grate benches opposite | One welder on the dry bank, one ready grounding spike beside the water. Entire footprint is checked before placement and avoids protected routes. Maintenance-room selection has a two-thirds chance, then picks repair bay or cooling works equally. Drain/toolbox remain pending. |
 | Ash loft | Broad quiet shelf with a single noisy floor strip | Sleepers, bagged ash, fan outlet; acoustic choice before combat. |
 | Casting floor | Two connected yards and a mold recess | Mold thief, breakable molds, tongs rack; stolen loot stays recoverable. |
 | Hoist shaft | Ring around a marked lifting rectangle | Counterweight, chain target reachable from both sides, pressure plate holding an optional cache. |
-| Cooling works | Reservoir beside a dry pump platform | Emergency pump, alternate nozzle positions, coolant locker; core route remains dry. |
+| Cooling works | Implemented initial variant: finite-fuel boiler and rat across a three-cell lava trench, dry routes around both ends | Coolant Can and ore bin on the dry side; initial coolant spill. Protected center and four-cell vent lane stay separate. Shares the maintenance-room selection with repair bays. Emergency pump/reservoir/nozzle variants remain pending. |
 | Service reader | Small optional locked branch | Punch-card reader beside a breakable alternate route. Consumable access is never the sole mandatory exit path. |
 | Shift shelter | Safe-ish reunion room, camp stove and benches | Lunch box, repair supplies; occasional shop approach and human-scale quiet. |
 

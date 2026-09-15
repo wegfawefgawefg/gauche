@@ -7,6 +7,7 @@ void init_boiler_tank(Entity& tank);
 void step_boiler_tank(Game& game, int slot);
 bool arm_boiler(Game& game, Entity& tank);
 void damage_boiler(Game& game, int slot);
+void reduce_boiler_pressure(Entity& tank,int amount);
 void rupture_boiler(Game& game, int slot);
 bool feed_boiler(Game& game, Cell cell);
 std::vector<Cell> boiler_splash_cells(const Game& game, Cell source, Cell direction, bool rupture);

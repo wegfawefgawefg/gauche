@@ -170,6 +170,7 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             case LiquidKind::SpentSap: color = {.28F, .20F, .12F}; break;
             case LiquidKind::Oil: color = {.13F, .14F, .22F}; break;
             case LiquidKind::Sap: color = {.50F, .31F, .13F}; break;
+            case LiquidKind::Coolant: color = {.24F, .48F, .32F}; break;
             case LiquidKind::Brine: color = {.48F, .57F, .43F}; break;
             case LiquidKind::Water: color = {.24F, .46F, .48F}; break;
             case LiquidKind::Honey: color = {.58F, .40F, .15F}; break;

@@ -25,6 +25,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     case PropKind::OreBin:
         if (roll<25) { place_ground_item(game,cell,ItemKind::CoalLump,2); return; }
         if (roll<40) place_coins(game,cell,2+static_cast<int>(random_u32(game)%3));
+        else if (roll<55) item=ItemKind::CoolantCan;
         break;
     case PropKind::MaintenanceLocker:
         if (roll < 20) item = ItemKind::CoalLump;

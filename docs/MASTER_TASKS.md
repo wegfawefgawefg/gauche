@@ -273,9 +273,9 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Thirteen cold room roles host eighteen enemy types, including [shard colonies](history/ICE_SHARDS.md),
+  Fourteen cold room roles host nineteen enemy types, including [shard colonies](history/ICE_SHARDS.md),
   [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Twenty-nine items include
-  [observatory optics](history/ICE_OPTICS.md). Eighteen of twenty enemy behaviors, twenty-nine of fifty items; [steam kettles](history/ICE_KETTLE.md) add stored heat, scalding and dousing.
+  [observatory optics](history/ICE_OPTICS.md). Nineteen of twenty enemy behaviors, twenty-nine of fifty items; [icicle spiders](history/ICE_SPIDER.md) weave cuttable, burnable passage traps.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

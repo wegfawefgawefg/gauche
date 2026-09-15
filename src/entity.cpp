@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "entities/icicle_spider.hpp"
 #include "entities/echo_hound.hpp"
 #include "world/water.hpp"
 #include "surfaces/interaction.hpp"
@@ -47,6 +48,7 @@ const Entity* get_entity(const Game& game, Handle handle) {
 void remove_entity(Game& game, Handle handle) {
     Entity* entity = get_entity(game, handle);
     if (entity == nullptr) return;
+    clear_spider_strand(game,*entity);
     const std::uint32_t generation = entity->generation;
     *entity = {};
     entity->generation = generation;

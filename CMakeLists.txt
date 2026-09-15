@@ -58,6 +58,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/alarms.cpp src/props/alarm_clock.cpp
     src/items/fishing_line.cpp src/projectiles/fishing.cpp
     src/entities/shard_colony.cpp src/entities/shard_links.cpp src/world/crystal_gallery.cpp
+    src/entities/icicle_spider.cpp src/entities/spider_strand.cpp src/entities/spider_site.cpp
     src/entities/candle_keeper.cpp src/entities/keeper_tending.cpp src/world/chapel.cpp
     src/entities/snow_effigy.cpp
     src/entities/avalanche_ram.cpp

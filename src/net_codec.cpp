@@ -241,6 +241,8 @@ Entity read_entity(PacketReader& reader) {
     entity.timer_a = reader.i32(); entity.timer_b = reader.i32(); entity.timer_c = reader.i32();
     if (entity.label_c < 0 || entity.label_c > 5 || entity.timer_c < 0 || entity.timer_c > 300) reader.okay = false;
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
+    if (entity.kind == EntityKind::IcicleSpider && (entity.label_a < 0 || entity.label_a > 5 ||
+        entity.counter_a < 0 || entity.counter_a > 1)) reader.okay = false;
     entity.birth_tick = reader.u64();
     entity.impassable = reader.u8() != 0;
     entity.hard_blocker = reader.u8() != 0;
@@ -387,6 +389,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             tile.prop.growth_ticks > (tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
             (tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if (tile.prop.kind == PropKind::Candle && (tile.prop.variant > 3 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
+        if (tile.prop.kind == PropKind::SpiderStrand && (tile.prop.variant > 1 || tile.prop.hp != 1 || tile.prop.broken)) reader.okay = false;
         if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;

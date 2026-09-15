@@ -1,6 +1,7 @@
 #include "../src/net_codec.hpp"
 #include "../src/projectiles/projectile.hpp"
 #include "../src/entities/shard_colony.hpp"
+#include "../src/entities/icicle_spider.hpp"
 
 #include <cstdio>
 
@@ -78,6 +79,16 @@ int main() {
     Entity* kettle = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{8,8}));
     kettle->ground_item = make_item(ItemKind::SteamKettle);
     kettle->ground_item.loaded = 2; kettle->ground_item.spare = 731;
+    Entity* spider = get_entity(original,spawn_entity(original,EntityKind::IcicleSpider,{3,5}));
+    spider->point_a = {2,5}; spider->point_b = {7,5};
+    spider->counter_a = 1; spider->label_a = SpiderWait;
+    spider->entity_a = original.players[0]; spider->timer_b = 117;
+    for (Cell cell : spider_strand_cells(*spider)) {
+        *original.stage.at(cell) = {TileKind::Ruin,0,0};
+        original.stage.at(cell)->prop = {PropKind::SpiderStrand,1,0,false};
+    }
+    *original.stage.at({2,5}) = {TileKind::Wall,100,0};
+    *original.stage.at({7,5}) = {TileKind::Wall,100,0};
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
     owner->inventory.slots[5] = make_item(ItemKind::CandleStub, 1, ItemAttribute::Durable);

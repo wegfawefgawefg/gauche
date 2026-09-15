@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::SpiderStrand: return {Sprite::SpiderStrand,SoundId::SpiderCut,1,false,false};
     case PropKind::Stove: return {Sprite::Stove,SoundId::StoveBreak,40,true,false,{4,950,{255,168,78}}};
     case PropKind::CandleCabinet: return {Sprite::CandleCabinet,SoundId::CabinetOpen,18,true,false};
     case PropKind::Candle: return {Sprite::CandleStub, SoundId::CandleBreak, 6, false, false, {3,650,{255,182,82}}};

@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../entities/icicle_spider.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
 #include "../world/terrain_material.hpp"
@@ -49,6 +50,7 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
 bool ignite_surface(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || surface_wet(*tile)) return false;
+    if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell,true);
     const bool wood = tile->kind == TileKind::Wall && wooden_terrain(*tile) &&
         tile->break_rule != BreakRule::Unbreakable;
     if (tile->kind == TileKind::Wall && !wood) return false;

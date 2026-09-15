@@ -2,6 +2,7 @@
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
 #include "shard_colony.hpp"
+#include "icicle_spider.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../surfaces/interaction.hpp"
@@ -53,6 +54,7 @@ void step_entity_timers(Game& game, int slot) {
     contact_surface(game, slot);
     step_keeper_lamp(game, slot);
     step_shard_state(entity);
+    step_spider_strand(game,entity);
     thaw_snow_effigy(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.

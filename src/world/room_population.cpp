@@ -108,6 +108,11 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::ServicePassage) {
+        enemy(game,room,EntityKind::IcicleSpider,2,budget);
+        if (round >= 2) enemy(game,room,EntityKind::IcicleSpider,2,budget);
+        return;
+    }
     if (ice_floor(game.run.floor) && room.role == RoomRole::CrystalGallery) {
         if (budget.threat >= 3 && get_entity(game,populate_crystal_gallery(game,plan,room))) budget.threat -= 3;
         if (round >= 2) enemy(game,room,EntityKind::FrostBat,2,budget);
@@ -235,6 +240,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+        } else if (room.role == RoomRole::ServicePassage) {
+            supply(game,room,ItemKind::Lighter,1,budget.equipment);
         } else if (room.role == RoomRole::CrystalGallery) {
             supply(game,room,ItemKind::IceBrick,2,budget.equipment);
         } else if (room.role == RoomRole::Chapel) {

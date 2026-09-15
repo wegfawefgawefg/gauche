@@ -11,6 +11,7 @@
 #include "avalanche_ram.hpp"
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
+#include "icicle_spider.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -23,6 +24,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::IcicleSpider:
+        if (enemy.label_a == SpiderBite && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::CandleKeeper:
         if (enemy.label_a == KeeperStrike && enemy.cell == Cell{enemy.counter_a,enemy.counter_b})
             for (int i=1;i<=2;++i) add(enemy.cell+Cell{enemy.facing.x*i,enemy.facing.y*i});

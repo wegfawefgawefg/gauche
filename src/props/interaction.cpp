@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../entities/icicle_spider.hpp"
 #include "candle.hpp"
 #include "stove.hpp"
 #include "cloth.hpp"
@@ -109,6 +110,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || damage <= 0 || tile->prop.kind == PropKind::None ||
         tile->prop.broken) return false;
+    if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
@@ -122,6 +124,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
 }
 
 void step_on_prop(Game& game, int actor_slot) {
+    enter_spider_strand(game,actor_slot);
     const Entity& actor = game.entities[static_cast<std::size_t>(actor_slot)];
     Tile* tile = game.stage.at(actor.cell);
     if (tile != nullptr && tile->prop.kind == PropKind::Thorns && !tile->prop.broken) {

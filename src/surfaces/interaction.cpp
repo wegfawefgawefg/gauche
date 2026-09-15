@@ -1,3 +1,5 @@
+#include "../entities/slag_snail.hpp"
+#include "slag.hpp"
 #include "../items/emergency_foam.hpp"
 #include "../entities/pressure_rat.hpp"
 #include "../entities/ember.hpp"
@@ -79,7 +81,7 @@ void contact_surface(Game& game, int slot) {
     if (tile == nullptr) return;
     if (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest) {
         if (surface_wet(*tile)) {
-            damp_stoker(actor);cool_pressure_rat(actor);
+            damp_stoker(actor);cool_pressure_rat(actor);cool_slag_snail(actor);
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) emit_sound(game, SoundId::WaterDouse, actor.cell);
             actor.burn_ticks = actor.scorch_ticks = 0;
             actor.vitals.nausea = actor.vitals.nausea_wait = 0;
@@ -89,12 +91,13 @@ void contact_surface(Game& game, int slot) {
                 apply_nausea(actor, 180);
             }
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) ignite_surface(game, actor.cell);
-            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SteamLeech && actor.kind != EntityKind::WalkingKiln && actor.kind != EntityKind::Ember) {
+            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SlagSnail && actor.kind != EntityKind::SteamLeech && actor.kind != EntityKind::WalkingKiln && actor.kind != EntityKind::Ember) {
                 if (actor.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, actor.cell);
                 actor.scorch_ticks = 300;
             }
         }
     }
+    crack_slag(game,slot);
     if (tile->surface.sleep_ticks > 0 && game.tick % 30 == 0 && actor.kind != EntityKind::Ember)
         apply_sleep(actor, 90);
 }

@@ -31,6 +31,9 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::SlagSnail:
+        if (random_u32(game)%100<30) place_ground_item(game,enemy.cell,ItemKind::CookedMeat);
+        break; // Shared cooked flesh; refractory paste remains a planned item.
     case EntityKind::FurnaceMoth: {
         const auto roll=random_u32(game)%100;
         if (roll>=25 && roll<35) place_ground_item(game,enemy.cell,ItemKind::HeatCapsule);

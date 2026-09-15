@@ -166,6 +166,7 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             if (surface.liquid == LiquidKind::None) continue;
             LightColor color;
             switch (surface.liquid) {
+            case LiquidKind::Slag: color = surface.fire_ticks>0 ? LightColor{.54F,.23F,.09F} : LightColor{.27F,.28F,.29F}; break;
             case LiquidKind::Rot: color = {.34F, .38F, .14F}; break;
             case LiquidKind::SpentSap: color = {.28F, .20F, .12F}; break;
             case LiquidKind::Oil: color = {.13F, .14F, .22F}; break;

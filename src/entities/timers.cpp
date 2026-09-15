@@ -1,3 +1,4 @@
+#include "slag_snail.hpp"
 #include "../items/emergency_foam.hpp"
 #include "furnace_moth.hpp"
 #include "audit_clerk.hpp"
@@ -72,7 +73,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.fire_dim_ticks = std::max(0, entity.fire_dim_ticks - 1);
 
     // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
-    if (entity.kind == EntityKind::FurnaceMoth || entity.kind == EntityKind::SteamLeech || entity.kind==EntityKind::WalkingKiln) entity.scorch_ticks = entity.burn_ticks = 0;
+    if (entity.kind == EntityKind::SlagSnail || entity.kind == EntityKind::FurnaceMoth || entity.kind == EntityKind::SteamLeech || entity.kind==EntityKind::WalkingKiln) entity.scorch_ticks = entity.burn_ticks = 0;
     step_foam_can(game,slot);
     step_thaw_charge(game,slot);
     step_quarry_charge(game,slot);
@@ -87,7 +88,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
-        interrupt_furnace_moth(entity);interrupt_audit_clerk(entity);interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
+        interrupt_slag_snail(entity);interrupt_furnace_moth(entity);interrupt_audit_clerk(entity);interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
         cool_pressure_rat(entity);interrupt_cable_crawler(entity);interrupt_pocket_drill(entity);
     }
     step_shard_state(entity);
@@ -113,7 +114,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
     const Tile* ground = game.stage.at(entity.cell);
     if (entity.toss.ticks==0 && ground != nullptr && ground->kind == TileKind::Lava &&
-        entity.kind != EntityKind::Ember && entity.kind != EntityKind::SteamLeech && game.tick % 30 == 0)
+        entity.kind != EntityKind::SlagSnail && entity.kind != EntityKind::Ember && entity.kind != EntityKind::SteamLeech && game.tick % 30 == 0)
         damage_entity(game, slot, 5, entity.cell, false);
 
     // RESPAWN: A blocked entrance delays return instead of overlapping a fixture.

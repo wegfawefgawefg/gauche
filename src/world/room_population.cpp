@@ -1,3 +1,4 @@
+#include "slag_bank.hpp"
 #include "lamp_alcove.hpp"
 #include "pay_office.hpp"
 #include "kiln_court.hpp"
@@ -89,7 +90,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -168,9 +169,9 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         return;
     }
     if (!forest_floor(game.run.floor)) {
-        const auto roll=ice_floor(game.run.floor) ? 0U : random_u32(game)%7;
+        const auto roll=ice_floor(game.run.floor) ? 0U : random_u32(game)%8;
         const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat :
-            roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : roll==2 ? EntityKind::CableCrawler : roll==3 ? EntityKind::WalkingKiln : roll==4 ? EntityKind::FurnaceMoth : EntityKind::Ember;
+            roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : roll==2 ? EntityKind::CableCrawler : roll==3 ? EntityKind::WalkingKiln : roll==4 ? EntityKind::FurnaceMoth : roll==5 ? EntityKind::SlagSnail : EntityKind::Ember;
         const int cost=(hazard==EntityKind::PressureRat || hazard==EntityKind::FurnaceMoth) ? 1 : hazard==EntityKind::WalkingKiln ? 3 : 2;
         enemy(game, room, hazard, cost, budget);
         if (round >= 2) enemy(game, room, hazard, cost, budget);
@@ -408,6 +409,9 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
             --budget.equipment;
         }
+    }
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::SlagBank && budget.threat>=2 && budget.equipment>0) {
+        if (populate_slag_bank(game,plan,room)) {budget.threat-=2;--budget.equipment;}
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::LampAlcove && budget.threat>=2 && budget.equipment>0) {
         if (populate_lamp_alcove(game,plan,room)) {budget.threat-=2;--budget.equipment;}

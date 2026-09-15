@@ -268,6 +268,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
     case SoundId::RivetFire:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::RivetCasing, 1, seed);
         break;
+    case SoundId::SlagCrack: case SoundId::SlagDeath:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::BasaltChip,3,seed);
+        break;
     case SoundId::BoltsClatter:
     case SoundId::RivetImpact:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::SteelWasher, 1, seed);

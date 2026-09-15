@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-enum class LiquidKind : std::uint8_t { None, Oil, Sap, Water, Honey, Rot, SpentSap, Brine, Coolant, Count };
+enum class LiquidKind : std::uint8_t { None, Oil, Sap, Water, Honey, Rot, SpentSap, Brine, Coolant, Slag, Count };
 struct Surface {
     LiquidKind liquid = LiquidKind::None;
     std::uint16_t liquid_ticks = 0;

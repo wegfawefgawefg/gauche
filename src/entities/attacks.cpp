@@ -1,3 +1,4 @@
+#include "slag_snail.hpp"
 #include "furnace_moth.hpp"
 #include "walking_kiln.hpp"
 #include "cable_crawler.hpp"
@@ -38,6 +39,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::SlagSnail:
+        if ((enemy.label_a==SlagTuck || enemy.label_a==SlagLunge) && enemy.cell==enemy.point_a)
+            for (int i=1;i<=enemy.counter_a;++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::FurnaceMoth:
         if (enemy.cell==enemy.point_b && (enemy.label_a==FurnaceWarn || enemy.label_a==FurnaceDive))
             for (int i=1;i<=enemy.counter_b;++i) add(enemy.cell+Cell{enemy.facing.x*i,enemy.facing.y*i});

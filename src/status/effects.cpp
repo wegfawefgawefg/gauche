@@ -1,3 +1,4 @@
+#include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "../entities/walking_kiln.hpp"
@@ -32,7 +33,7 @@
 
 // CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
 bool apply_chill(Entity& actor, int ticks) {
-    if (ticks>0) {cool_furnace_moth(actor);interrupt_audit_clerk(actor);cool_walking_kiln(actor);damp_stoker(actor);interrupt_cable_crawler(actor);}
+    if (ticks>0) {cool_slag_snail(actor);cool_furnace_moth(actor);interrupt_audit_clerk(actor);cool_walking_kiln(actor);damp_stoker(actor);interrupt_cable_crawler(actor);}
     if (ticks>0 && cool_pressure_rat(actor)) {
         actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);return true;
     }

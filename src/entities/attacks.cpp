@@ -1,4 +1,5 @@
 #include "strikebreaker.hpp"
+#include "rivet_gunner.hpp"
 #include "mine_crew.hpp"
 #include "powder_monkey.hpp"
 #include "attacks.hpp"
@@ -30,6 +31,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::RivetGunner:
+        if (enemy.cell==enemy.point_a && (enemy.label_a==GunnerBrace || enemy.label_a==GunnerBurst))
+            for (int i=1;i<=8;++i) add(enemy.point_a+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::Strikebreaker:
         if (enemy.cell==enemy.point_a && (enemy.label_a==BreakerPush ||
             enemy.label_a==BreakerHammer || enemy.label_a==BreakerCut)) add(enemy.point_b);

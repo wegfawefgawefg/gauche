@@ -2,7 +2,9 @@
 
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
-working Pickhand/Shift Foreman crews, their usable whistle, and finite-coal Ember Stokers. Track implementation in `../MASTER_TASKS.md`.
+working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
+Strikebreaker escorts, Rivet Gunners, six regional items, metal cover/bins and five
+new catalog debris materials. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -64,7 +66,7 @@ assets to make, not substitutes using the current generic sounds.
 | 3 | Shift foreman | Implemented: 110 HP; surveys, whistles for 0.6s, then advances behind three linked pickhands in separate lanes. Attacking him or killing two crew members rallies surviving crew against the attacker. Points, whistle, three-part “hup” cadence. | Implemented workfront; single roll 25% Foreman's Whistle, next 25% 5–9 gold, otherwise nothing. Chalk drops await its item. |
 | 4 | Powder monkey | Implemented: 42 HP, two charges; finds reachable dry cover, lights a real 2s Quarry Charge, spends 0.4s placing it, then scrambles away. Killed/displaced carriers leave the same bomb at its original cell. Cold slows the fuse; water/scissors recover it. Empty monkeys flee and use a 0.4s, 6-damage swipe when cornered. Cork pop, panicked chatter and fast steps. | Implemented reserved blasting alcove with scissors; 25% one unspent quarry charge, next 15% fuse scissors, otherwise nothing. Already-armed charge is separate and persists. |
 | 5 | Rail shunter | 120 HP, slow; pushes a separate cart down an existing rail after ringing a bell for 0.8s. Cart stops at obstruction, hurts on collision, spills real cargo when broken. Cut the route, brake the cart or flank the worker. Hand bell, wheel squeal. | Freight junction; 20% brake shoe, 20% rail switch key, 20% 4–8 gold. |
-| 6 | Rivet gunner | 64 HP; braces behind a grate and fires three traveling rivets along a fixed lane, 0.15s apart, after a 0.5s buzz. Long 1.5s reload invites crossing. Displacement spoils the burst. Pneumatic buzz and three dry snaps. | Assembly line; 25% rivet gun, 20% ammo. |
+| 6 | Rivet gunner | Implemented: 64 HP; braces for 0.5s and fires three physical 9-damage rivets along a fixed lane, 0.15s apart. 1.5s reload; damage/displacement/control effects spoil the burst. Seeks reachable firing lanes and can use grates. Pneumatic pop, brace, reload and death sounds. | Blasting-alcove side posts where safe (ordinary room spawn otherwise), plus incidental Industrial encounters. One roll: 25% rivet gun, next 20% ammo. Full assembly-line room remains pending. |
 | 7 | Magnet crane | 90-HP anchored machine; sweeps a visible lifting head toward loose metal, pauses 0.75s, then pulls the first marked target one cell. Can grab its own allies' shields; never deletes inventory. Break its chain, de-energize it or use nonmetal bait. Relay clack, rising coil hum. | Scrap yard; 25% horseshoe magnet, 20% copper wire. |
 | 8 | Slag snail | 96 HP; lays a short hot trail, retreats into its shell before a slow two-cell lunge. Cold turns its trail into safe brittle crust and exposes a vulnerable body for 2s. Shell scrape and wet furnace burble. | Slag bank; 30% cinder sausage, 15% refractory paste. |
 | 9 | Pressure rat | 22 HP; gnaws a leaky outlet, visibly inflates for 0.6s, then rockets in one cardinal direction until a wall. Pops in a small steam cross; cooling deflates it and removes the burst. Rubber squeak, kettle whistle. | Pipe crawl; 25% raw meat, 10% rubber hose. |
@@ -105,7 +107,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 
 | # | Item | Action, cost, failure or tradeoff; sound | Rarity / price |
 | --- | --- | --- | --- |
-| 1 | Rivet gun | Three-round traveling burst, 9 damage/rivet to 8; 12 loaded/24 spare, 1.5s reload. Stops at bodies, passes grates. Pneumatic rattle. | U / 30 |
+| 1 | Rivet gun | Implemented: three-round traveling burst, 9 damage/rivet to 8, 0.15s between shots; 12 loaded/24 spare, 1.5s reload. Fixed burst aim, 0.6s recovery after last shot. Release finishes burst; switching/reload cancels unfired rounds. Stops at bodies, passes grates; Piercing and other supported weapon modifiers work. | U / 30; gunner drops, Industrial stock/rewards |
 | 2 | Press hammer | Implemented: 0.6s overhead windup, 32 damage and one-cell shove; 30 repairable condition. Double damage to blocking props; dig power 1 preserves reinforced routes. Taking damage cancels the windup without wear. Iron thud. | U / 25 |
 | 3 | Arc torch | Hold to charge 0.3s, then adjacent 7-damage electric ticks every 0.25s; 8s total battery. Water/wire endangers the user. No instant full-room beam. Electrical spit. | R / 38 |
 | 4 | Slag scoop | Collect one safe crust/ash patch, or scoop a hot patch while taking a little heat unless protected. Holds three loads; secondary flings the oldest material to 3. Metal scrape, granular pour. | C / 10 |
@@ -236,7 +238,7 @@ sparks in addition to settled solids; no fragment-to-fragment simulation.
 | 4 | Mortar dust | Brick damage; fine short puff, settles/fades. |
 | 5 | Timber splinter | Supports/crates; elongated skitter, burns only visually. |
 | 6 | Bent nail | Wooden stock; one hard bounce then flat. |
-| 7 | Rivet casing | Rivet gun ejection; tiny brass roll. |
+| 7 | Rivet casing | Implemented: one local casing per discharge, small rolling brass piece; no ammo, loot or gameplay collision. |
 | 8 | Steel washer | Implemented: grate destruction; longer roll before settling. |
 | 9 | Chain link | Broken hoist; heavy localized tumble. |
 | 10 | Copper strand | Cut cable; curled light drag. |

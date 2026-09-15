@@ -1,3 +1,4 @@
+#include "../entities/rivet_gunner.hpp"
 #include "../entities/strikebreaker.hpp"
 #include "../entities/mine_crew.hpp"
 #include "effects.hpp"
@@ -59,6 +60,7 @@ bool apply_sleep(Entity& actor, int ticks) {
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
     interrupt_mine_worker(actor);
+    interrupt_rivet_gunner(actor);
     interrupt_stoker(actor);
     interrupt_powder_monkey(actor);
     interrupt_strikebreaker(actor);
@@ -91,6 +93,7 @@ bool apply_stun(Entity& actor, int ticks) {
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
     interrupt_mine_worker(actor);
+    interrupt_rivet_gunner(actor);
     interrupt_stoker(actor);
     interrupt_powder_monkey(actor);
     interrupt_strikebreaker(actor);

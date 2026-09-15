@@ -245,6 +245,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::GroundingSpike) std::snprintf(line,sizeof(line),"ABSORBS 1 PULSE | COOL 3s");
     if (item.kind == ItemKind::EelBattery)
         std::snprintf(line, sizeof(line), "DMG %d | CIRCUIT %d", pattern.damage, pattern.blast_radius);
+    if (item.kind == ItemKind::RivetGun)
+        std::snprintf(line,sizeof(line),"BURST 3 x %d | GAP 0.15s",pattern.damage);
     if (item.kind == ItemKind::Chisel)
         std::snprintf(line, sizeof(line), "DMG %d | ICE %d | DIG 1", pattern.damage, pattern.damage * 2);
     if (item.kind == ItemKind::IceBrick)

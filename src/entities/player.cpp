@@ -6,6 +6,7 @@
 #include "../items/harpoon.hpp"
 #include "player_movement.hpp"
 #include "../items/bow.hpp"
+#include "../items/rivet_gun.hpp"
 #include "../items/storm_lantern.hpp"
 #include "../items/quarry_tools.hpp"
 #include "../items/action.hpp"
@@ -61,6 +62,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_rivet_action(game,slot,input)) return;
     if (step_anchor_action(game,slot,input)) return;
     if (step_effigy_mask(game,slot,input)) return;
     if (step_harpoon_action(game,slot,input)) return;

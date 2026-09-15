@@ -1,3 +1,4 @@
+#include "../entities/rivet_gunner.hpp"
 #include "../entities/strikebreaker.hpp"
 #include "../items/action.hpp"
 #include "../entities/mine_crew.hpp"
@@ -47,6 +48,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     hurt_mine_worker(game,slot,damage,attacker);
     alert_strikebreakers(game,slot,attacker);
     interrupt_strikebreaker(entity);
+    interrupt_rivet_gunner(entity);
     interrupt_stoker(entity);
     interrupt_powder_monkey(entity);
     interrupt_whiteout_drummer(entity);

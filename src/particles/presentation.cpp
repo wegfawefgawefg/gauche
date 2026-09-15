@@ -54,7 +54,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
     case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
-    case EntityKind::Strikebreaker: case EntityKind::PowderMonkey:
+    case EntityKind::RivetGunner: case EntityKind::Strikebreaker: case EntityKind::PowderMonkey:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;
@@ -249,6 +249,13 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         break;
     case SoundId::BottleBreak:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::Pottery, 4, seed);
+        break;
+    case SoundId::RivetFire:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::RivetCasing, 1, seed);
+        break;
+    case SoundId::RivetImpact:
+        scatter_material(cosmetics.debris, sound.cell, DebrisKind::SteelWasher, 1, seed);
+        push_debris(cosmetics.debris, sound.cell, .8F, .07F);
         break;
     case SoundId::ArrowImpact:
         scatter_material(cosmetics.debris, sound.cell, DebrisKind::WoodChip, 2, seed);

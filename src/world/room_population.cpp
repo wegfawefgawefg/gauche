@@ -1,4 +1,5 @@
 #include "workfront.hpp"
+#include "rivet_post.hpp"
 #include "route.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -157,7 +158,8 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         return;
     }
     if (!forest_floor(game.run.floor)) {
-        const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat : EntityKind::Ember;
+        const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat :
+            random_u32(game)%3==0 ? EntityKind::RivetGunner : EntityKind::Ember;
         enemy(game, room, hazard, 2, budget);
         if (round >= 2) enemy(game, room, hazard, 2, budget);
         return;
@@ -387,6 +389,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::BlastingAlcove) {
             enemy(game,room,EntityKind::PowderMonkey,2,budget);
+            if (budget.threat>=2) {
+                if (populate_rivet_post(game,plan,room)) budget.threat-=2;
+                else enemy(game,room,EntityKind::RivetGunner,2,budget);
+            }
             if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
         }
     for (const RoomPlan& room : plan.rooms) {

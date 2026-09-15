@@ -109,7 +109,7 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
         emit_sound(game,(entity.cell.x+entity.cell.y+slot)%2==0 ? SoundId::BreakerStep1 : SoundId::BreakerStep2,entity.cell);
     else if (entity.kind==EntityKind::PowderMonkey)
         emit_sound(game,(entity.cell.x+entity.cell.y+slot)%2==0 ? SoundId::PowderStep1 : SoundId::PowderStep2,entity.cell);
-    else if (mine_worker(entity.kind) || entity.kind==EntityKind::Ember)
+    else if (mine_worker(entity.kind) || entity.kind==EntityKind::RivetGunner || entity.kind==EntityKind::Ember)
         emit_sound(game,(entity.cell.x+entity.cell.y+slot)%2==0 ? SoundId::CrewStep1 : SoundId::CrewStep2,entity.cell);
     else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)

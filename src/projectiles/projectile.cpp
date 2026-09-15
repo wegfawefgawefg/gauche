@@ -75,21 +75,21 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     shot->ground_item = item;
     shot->ground_item.count = 1;
     shot->sprite = bomb ? Sprite::BombLit : rocket ? Sprite::Rocket : flask ? item_sprite(item) :
-        item.kind == ItemKind::Crossbow ? Sprite::Bolt : Sprite::Arrow;
+        item.kind == ItemKind::RivetGun ? Sprite::Rivet : item.kind == ItemKind::Crossbow ? Sprite::Bolt : Sprite::Arrow;
     if (rocket) shot->light = {2, 380, {255, 162, 73}};
     if (bomb) {
         shot->light = {2, 180, {255, 156, 56}};
         emit_sound(game, SoundId::BombFuse, owner.cell);
     }
     if (!flask) emit_weapon_sound(game, item, bomb ? SoundId::BombThrow : rocket ? SoundId::RocketLaunch :
-        item.kind == ItemKind::Crossbow ? SoundId::CrossbowShot : SoundId::BowRelease, owner.cell);
+        item.kind == ItemKind::RivetGun ? SoundId::RivetFire : item.kind == ItemKind::Crossbow ? SoundId::CrossbowShot : SoundId::BowRelease, owner.cell);
     return true;
 }
 
 namespace {
 
 void finish_arrow(Game& game, int slot, Cell impact) {
-    emit_sound(game, SoundId::ArrowImpact, impact);
+    emit_sound(game, game.entities[static_cast<std::size_t>(slot)].ground_item.kind==ItemKind::RivetGun ? SoundId::RivetImpact : SoundId::ArrowImpact, impact);
     remove_entity(game, {slot, game.entities[static_cast<std::size_t>(slot)].generation});
 }
 
@@ -213,7 +213,7 @@ void step_projectile(Game& game, int slot) {
             return;
         }
         damage_entity(game, victim_slot, shot.counter_b, next - shot.facing, true, shot.entity_a);
-        emit_sound(game, SoundId::ArrowImpact, next);
+        emit_sound(game, shot.ground_item.kind==ItemKind::RivetGun ? SoundId::RivetImpact : SoundId::ArrowImpact, next);
         if (shot.label_b == 0) { remove_entity(game, {slot, shot.generation}); return; }
     }
     if (shot.counter_a == 0) finish_arrow(game, slot, next);

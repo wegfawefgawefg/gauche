@@ -287,7 +287,8 @@ behavior and balance playtesting remain the user's.
   [Press Hammers and Rubber Mallets](history/INDUSTRIAL_HAMMERS.md) add interruptible heavy blows, low-damage shoves, cover breaking and boiler pressure relief. Both wear down and accept resin repairs.
   [Strikebreakers](history/STRIKEBREAKER.md) guard later workfronts with finite frontal shields and delayed shove/hammer combinations. Traveling direct hits now retain shooter attribution separately from impact direction.
   [Industrial grates and bins](history/INDUSTRIAL_GRATES.md) add shoot-through cover, themed container drops and four native loose-debris materials, placed outside protected routes.
-  Five catalog enemy behaviors and five of fifty regional items implemented;
+  [Rivet Guns and Gunners](history/RIVET_GUNNERS.md) add committed three-round traveling bursts, a braced enemy with a long reload, safe side firing posts, finite player magazines and local ejected casings.
+  Six catalog enemy behaviors and six of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

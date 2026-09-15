@@ -57,6 +57,7 @@ enum class SoundId : std::size_t {
     PressHeave, PressImpact, MalletSwing, MalletImpact, MalletVent,
     GrateHit, GrateBreak, ScrapHit, ScrapBreak, OreHit, OreBreak,
     BreakerBrace, BreakerHeave, BreakerAlarm, BreakerBlock, BreakerShieldBreak, BreakerShove, BreakerSlam, BreakerDeath, BreakerStep1, BreakerStep2,
+    RivetFire, RivetImpact, RivetReload, GunnerBrace, GunnerDeath,
     Count,
 };
 
@@ -111,4 +112,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "press_heave", "press_impact", "mallet_swing", "mallet_impact", "mallet_vent",
     "grate_hit", "grate_break", "scrap_hit", "scrap_break", "ore_hit", "ore_break",
     "breaker_brace", "breaker_heave", "breaker_alarm", "breaker_block", "breaker_shield_break", "breaker_shove", "breaker_slam", "breaker_death", "breaker_step1", "breaker_step2",
+    "rivet_fire", "rivet_impact", "rivet_reload", "gunner_brace", "gunner_death",
 };

@@ -358,6 +358,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     case ItemKind::EffigyMask: return false; // Continuous stationary use belongs to the player action.
     case ItemKind::IceBrick: return false; // Tap/hold release is owned by the player action step.
+    case ItemKind::RivetGun: return false; // The timed burst belongs to the player action.
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
     case ItemKind::IceNeedle: case ItemKind::Boomerang: case ItemKind::ThrowingRock:
         used = launch_recoverable(game, user_slot, item, direction);

@@ -78,6 +78,9 @@ set(GAUCHE_CODEC_SOURCES
 set(GAUCHE_ENTITY_SOURCES
     src/props/industrial.cpp
     src/entities/strikebreaker.cpp src/entities/breaker_render.cpp
+    src/entities/rivet_gunner.cpp
+    src/world/rivet_post.cpp
+    src/items/rivet_gun.cpp
     src/items/industrial_melee.cpp
     src/entities/powder_monkey.cpp src/entities/powder_route.cpp
     src/items/quarry_charge.cpp src/items/fuse_scissors.cpp src/projectiles/exposed_fuse.cpp

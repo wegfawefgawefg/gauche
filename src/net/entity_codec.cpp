@@ -1,4 +1,6 @@
 #include "../entities/strikebreaker.hpp"
+#include "../items/rivet_gun.hpp"
+#include "../entities/rivet_gunner.hpp"
 #include "../entities/ember.hpp"
 #include "../entities/powder_monkey.hpp"
 #include "../items/quarry_charge.hpp"
@@ -203,6 +205,8 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_rivet_gunner(entity)) reader.okay=false;
+    if (!valid_rivet_action(entity)) reader.okay=false;
     if (!valid_strikebreaker(entity)) reader.okay=false;
     if (!valid_sled(entity)) reader.okay=false;
     if (!valid_ice_anchor(entity)) reader.okay=false;

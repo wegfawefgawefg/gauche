@@ -1,3 +1,4 @@
+#include "../entities/hearing.hpp"
 #include "firearms.hpp"
 #include "../projectiles/harpoon.hpp"
 #include "muffling.hpp"
@@ -24,6 +25,7 @@ SoundId firing_sound(ItemKind kind) {
 
 SoundId firearm_reload_sound(ItemKind kind) {
     switch (kind) {
+    case ItemKind::RivetGun: return SoundId::RivetReload;
     case ItemKind::HarpoonGun: return SoundId::HarpoonReload;
     case ItemKind::LensCarbine: return SoundId::LensReload;
     case ItemKind::Pistol: case ItemKind::SMG: return SoundId::PistolReload;
@@ -44,9 +46,10 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
     }
     if (item.kind == ItemKind::HarpoonGun) return launch_harpoon(game,user_slot,item,direction);
     const ItemPattern pattern = item_pattern(item);
-    if (item.kind == ItemKind::Crossbow || item.kind == ItemKind::RocketLauncher) {
+    if (item.kind == ItemKind::RivetGun || item.kind == ItemKind::Crossbow || item.kind == ItemKind::RocketLauncher) {
         // FLIGHT: Allocation must succeed before spending ammunition or recovery.
         if (!launch_projectile(game, user_slot, item, direction, pattern.maximum)) return false;
+        if (item.kind==ItemKind::RivetGun && item.muffled_uses==0) make_noise(game,user.cell,8);
         finish_muffled_use(game, item, user.cell);
         --item.loaded;
         item.cooldown = pattern.cooldown;

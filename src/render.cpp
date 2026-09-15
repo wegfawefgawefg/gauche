@@ -1,3 +1,4 @@
+#include "items/rivet_gun.hpp"
 #include "entities/breaker_render.hpp"
 #include "items/ice_anchor_render.hpp"
 #include "scenery/ice_render.hpp"
@@ -317,10 +318,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_RenderTexture(renderer, rope, nullptr, &feet);
             SDL_SetTextureColorModFloat(rope, 1, 1, 1);
         }
+        Item displayed_gun;
         const Item* held = entity.inventory.held();
+        if (entity.kind==EntityKind::RivetGunner) { displayed_gun=make_item(ItemKind::RivetGun); held=&displayed_gun; }
         if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun) && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
-            const Cell held_facing = winding ? entity.point_b : entity.facing;
+            const Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;
             const float forward = winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
             SDL_FRect held_rect{rect.x + pixels * 0.25F +
                                 static_cast<float>(held_facing.x) * forward,

@@ -71,6 +71,11 @@ combine naturally without hand-coding every pair.
   route to exit, optional branches, keys and levers, gates, secrets, and any
   locked-in encounters. The final layout may have loops, varying room sizes,
   irregular outlines, and larger multi-part rooms.
+- The [world interaction review](WORLD_INTERACTION_REVIEW.md) extends this brief
+  with useful mobility terrain, material routes, multi-room landmarks, overhead
+  groups, tall reactive props and small life. Proposed scene counts supplement
+  existing quotas. Revisit content when playtesting exposes unclear behavior;
+  catalog completeness alone is not a quality milestone.
 - A key can open a door; a lever can alter passages; gates can appear or a
   door can close after the party enters a room. A lock-in fight needs a clear
   completion condition, readable warning, and a deterministic release. Handle

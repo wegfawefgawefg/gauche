@@ -3,6 +3,34 @@
 This is the **single live checklist**. [Content brief](CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](NEXT_TASKS.md): history. Preserve dark, readable lighting.
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
+
+## World interaction review (2026-09-15)
+
+Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.
+
+- [ ] Repair shop/three-choice announcements and transactional replacement: South confirm, East cancel, West gameplay pickup/interact including keys; no trigger purchases/input leakage. Merchant/cart, NO ROOM replacement picker, exchange confirmation, cancellation and co-op stock/cost validation.
+- [ ] Audit every enemy's notice/windup/strike/recovery, attack effects and first-hit counterplay; prioritize snail, zombie swipe and legacy circle/gun enemies. Rework inherited art/behavior; compare current Stoker to the reported older build.
+- [ ] Replace Rabbit Charm retreat with held/active speed. Design separately themed escape, hop, leap, moving-flight and optional reactive dodge alongside useful gaps/tar/pits and solvable required routes.
+- [ ] Replace Swap Seed with thrown impact-destination Blink Seed: legal landing, hazards, feedback, pools and serialized state; preserve actor swapping only as a separate candidate.
+- [ ] Audit/rename Storm Lantern as a readable fueled lamp, including all acquisition paths; add light-toy candidates and a creature/item/place field guide distinguishing operation from discoveries.
+- [ ] Revisit mimic frequency/threat/valuable loot and bear aggression/commitment; populate sleeping/fishing dens with nests, bones, droppings and fish ecology.
+- [ ] Make levers unmistakable through silhouette/state/sound and mechanism response; design biome-appropriate wall levers/protected-button variants.
+- [ ] Build grouped overhead reveal starting with hollow logs/root tunnels/ice arches; add directional ledges and slow steps. Assess true decks and multi-cell actor footprints separately.
+- [ ] Build tall reactive props with sorting, light breakage, warned falling/crushing, melting and debris; proposed eight families per biome in scene candidates. Reflections remain exploratory.
+- [ ] Add material routes: axe/fire root masses, shovel-soft and pick-hard walls, shallow-hole candidates, populated burnable-web caves and alternate/guaranteed solutions.
+- [ ] Implement Timber Forest connected-fuel variant and the requested bounded noninteractive fire performance check, including cosmetics/network load and deterministic propagation.
+- [ ] Expand fruit/berry sources, bushes and seed-pile stack yields; design contact-popping Snap Seeds and implement shared burning-arrow/fire/water interactions.
+- [ ] Build compact source/condition-based small life, proposed eight types per biome; local cosmetics versus authoritative gameplay follows effects, not struct size.
+- [ ] Add multi-room landmark reservation, sockets, internal population/loot and debug selection; proposed six per biome, including legal 1x2/1x3/2x2 regions and overhead groups.
+- [ ] Add frozen loot/creatures and fragile-ice crack propagation, bounded deterministic updates, release-once contents, falls/rescue and melting effects; distinguish IceFlag from pickups.
+- [ ] Revisit Ice threat compositions and readable archetypes: throwing yeti, king yeti, mammoth and penguin candidates; beam/boiler enemies must also function outside authored sets.
+- [ ] Choose/implement biome-fourth-floor boss areas/minibosses, world interactions, digging escape policy, co-op entry/release and meaningful rewards; giant bear/spider mother/wolf leader candidates.
+- [ ] Implement requested ~two-minute floor ghost with warning, timer/pause/reward/shop/reconnect policy and unique-floor exceptions; haunted house does not implement this.
+- [ ] Expand Pocket Door into thrown/shared actor-projectile passages, wall/evil/heaven candidates with explicit boundary/lock rules; retain paired pads under an appropriate theme.
+- [ ] Audit all loot sources for universal/native/very-rare-import policy and cross-biome usefulness; review danger/reward alongside catalog quotas.
+
+## Conditions and world feedback
+
 - [ ] Implement [conditions and world feedback](CONDITIONS_AND_WORLD_FEEDBACK.md): water/campfire and owl bait fixes; ~50 conditions and useful splints; ice momentum/cold-water rescue; excavation crews and shoot-through barriers; optics/dev-mode gate; compound objectives, escape hazards, pursuer and team-pause policy. Modifier counts remain exploratory.
 ## Tile rules and damage feedback
 

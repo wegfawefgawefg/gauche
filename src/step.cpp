@@ -72,21 +72,6 @@ void step_players(Game& game, const std::array<Input, 4>& inputs) {
     }
 }
 
-void step_hearth_aura(Game& game) {
-    if (game.tick % 60 != 0) return;
-    for (Handle source_handle : game.players) {
-        const Entity* source = get_entity(game, source_handle);
-        if (source == nullptr || source->health <= 0 ||
-            !has_artifact(*source, ArtifactKind::Hearth)) continue;
-        for (Handle target_handle : game.players) {
-            Entity* target = get_entity(game, target_handle);
-            if (target != nullptr && target->health > 0 &&
-                distance(source->cell, target->cell) <= 4)
-                target->health = std::min(target->max_health, target->health + 1);
-        }
-    }
-}
-
 void step_nonplayers(Game& game) {
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& entity = game.entities[static_cast<std::size_t>(slot)];
@@ -141,7 +126,6 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     for (int slot = 0; slot < max_entities; ++slot)
         step_entity_timers(game, slot);
     step_players(game, inputs);
-    step_hearth_aura(game);
     step_summer_auras(game);
     if (game.run.phase == RunPhase::Reward) return;
 

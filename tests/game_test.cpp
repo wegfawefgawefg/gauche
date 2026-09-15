@@ -80,8 +80,14 @@ bool artifact_rules() {
     get_entity(game, friend_handle)->health = 80;
     game.players[1] = friend_handle;
     for (int tick = 0; tick < 60; ++tick) step_game(game, {});
-    if (!check(player->health == 71 && get_entity(game, friend_handle)->health == 81,
-               "hearth did not heal nearby party members")) return false;
+    if (!check(player->health == 70 && get_entity(game, friend_handle)->health == 80,
+               "hearth must not regenerate passively")) return false;
+    *player->inventory.held() = make_item(ItemKind::CookedMeat);
+    const int meal_heal = item_pattern(*player->inventory.held()).heal;
+    if (!check(use_held_item(game, game.players[0].slot, player->cell) &&
+               player->health == std::min(100, 70 + meal_heal + 3) &&
+               get_entity(game, friend_handle)->health == 83,
+               "hearth cooked meal did not share a bounded bonus")) return false;
     Game reflection = small_game();
     Entity* defender = get_entity(reflection, reflection.players[0]);
     defender->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::Reflector);

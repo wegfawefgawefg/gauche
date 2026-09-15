@@ -7,7 +7,8 @@ extends the [world interaction review](WORLD_INTERACTION_REVIEW.md).
 First implementation pass: [native supply/ammo/fist changes](history/SUPPLY_BALANCE.md).
 The starting-point findings below describe the pre-change behavior. Availability,
 SMG reserves/refills, general consumable bundles and baseline Fist are now changed;
-Hearth, offer-value matching, augments and broader balance remain pending.
+Hearth now uses [finite cooked-meal sharing](history/HEARTH_BALANCE.md).
+Offer-value matching, acquisition timing, augments and broader balance remain pending.
 
 ## Preserve what is working
 

@@ -1,4 +1,5 @@
 #include "cold_remedies.hpp"
+#include "../artifacts/hearth.hpp"
 
 namespace {
 
@@ -35,7 +36,8 @@ bool use_cold_remedy(Game& game, int slot) {
     }
     // REMEDIES: Full-health use needs a symptom to cure; another active recovery is never replaced.
     if (item.kind == ItemKind::HotBroth) {
-        if (user.health >= user.max_health && user.freeze_ticks == 0) return false;
+        if (user.health >= user.max_health && user.freeze_ticks == 0 &&
+            !hearth_meal_needed(game,user,item.kind)) return false;
         if (!begin_recovery(user, RecoveryKind::Broth, item_pattern(item).heal)) return false;
         user.freeze_ticks = 0;
         return true;

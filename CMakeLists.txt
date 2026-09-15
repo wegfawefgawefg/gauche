@@ -189,7 +189,7 @@ set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/
 
 add_executable(gauche
     src/main.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
     src/entities/shard_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
@@ -251,7 +251,7 @@ if(BUILD_TESTING)
     set(GAUCHE_TEST_GAME_SOURCES
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp
         src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp
-        src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     add_executable(gauche_tests
         tests/game_test.cpp ${GAUCHE_TEST_GAME_SOURCES})
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
@@ -264,13 +264,13 @@ if(BUILD_TESTING)
     add_test(NAME item_rules COMMAND gauche_item_tests)
     add_executable(gauche_rollback_tests
         tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
     add_executable(gauche_codec_tests
         tests/net_codec_test.cpp ${GAUCHE_CODEC_SOURCES} src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
@@ -284,7 +284,7 @@ if(BUILD_TESTING)
         tests/net_session_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -295,7 +295,7 @@ if(BUILD_TESTING)
         tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
@@ -307,7 +307,7 @@ if(BUILD_TESTING)
         tests/presentation_test.cpp src/particles/system.cpp
         src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
-        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp ${GAUCHE_WORLD_SOURCES})
+        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME presentation_rules COMMAND gauche_presentation_tests)

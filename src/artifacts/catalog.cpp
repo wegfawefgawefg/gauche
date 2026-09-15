@@ -16,7 +16,7 @@ const char* artifact_description(ArtifactKind kind) {
     switch (kind) {
     case ArtifactKind::AllPiercing: return "Shots pass through actors until a wall. Ignore directional enemy armor.";
     case ArtifactKind::Reflector: return "25% chance to return half of a survived, blockable hit to its attacker.";
-    case ArtifactKind::Hearth: return "Heal yourself and friends within four tiles by 1 HP each second.";
+    case ArtifactKind::Hearth: return "Cooked meals give you and visible friends within 4 tiles +3 HP. Meat, fried eggs, smoked fish and hot broth.";
     case ArtifactKind::FleetFeet: return "Move one tile about 0.03 seconds sooner, down to 0.05 seconds per step.";
     case ArtifactKind::None: return "";
     }
@@ -27,7 +27,7 @@ const char* artifact_summary(ArtifactKind kind) {
     switch (kind) {
     case ArtifactKind::AllPiercing: return "Pierce actors and armor";
     case ArtifactKind::Reflector: return "25%: return half a hit";
-    case ArtifactKind::Hearth: return "+1 HP/s in 4-tile aura";
+    case ArtifactKind::Hearth: return "Cooked meal: nearby +3 HP";
     case ArtifactKind::FleetFeet: return "Step -0.033s; min 0.05s";
     case ArtifactKind::None: return "";
     }

@@ -13,7 +13,8 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 - [ ] Audit underpowered throwables: tune actual damage/utility and useful acquisition stack sizes together with recoverability, timing, price and slot value; apply quantities consistently across drops/containers/rewards/shops and preserve stack merging.
 - [x] Heavily nerf baseline Fist: damage 10→4 with its three-tick windup/twelve-tick cooldown preserved. Real damage/timing checked; live feel and encounter balance remain human feedback work.
 - [ ] Design earned punching equipment/augments (heavy glove, lightning/light/heavy/fire/poison candidates), with explicit acquisition, slot/permanence, stacking, material interactions and counters.
-- [ ] Rebalance Hearth and existing artifacts/attributes/buffs for absolute strength, co-op/stacking, price and earliest availability; expand creative conditional augments and plan growth across the intended sixteen-floor run.
+- [x] Replace Hearth's unlimited stacking regeneration with finite cooked-meal sharing: +3 HP to the eater and eligible nearby friends, once per consumed portion; no recipient multiplication or passive recovery. Inventory/offer text and focused co-op checks are in place; see [Hearth balance](history/HEARTH_BALANCE.md).
+- [ ] Continue artifact/attribute/buff balance for absolute strength, price and earliest availability, including Hearth acquisition/offer value; expand creative conditional augments and plan growth across the intended sixteen-floor run.
 - [ ] Rework shop/three-choice reward valuation so same-stage offers are meaningfully competitive; bundle/replace weak toy offers appropriately without making every toy overpowered. Review loot, ammo, melee and permanent-power balance during each content slice using focused calculations and human feedback.
 
 ## Content architecture maintenance

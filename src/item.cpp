@@ -1,4 +1,5 @@
 #include "items/belt_tools.hpp"
+#include "artifacts/hearth.hpp"
 #include "items/ammunition.hpp"
 #include "items/foreman_whistle.hpp"
 #include "items/quarry_charge.hpp"
@@ -295,7 +296,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
     case ItemKind::RawMeat: case ItemKind::CookedMeat:
     case ItemKind::SmokedFish: case ItemKind::Egg: case ItemKind::FriedEgg:
-        if (user.health < user.max_health) {
+        if (user.health > 0 && (user.health < user.max_health || hearth_meal_needed(game,user,used_kind))) {
             const ItemPattern pattern = item_pattern(item);
             user.health = std::min(user.max_health, user.health + pattern.heal);
             used = true;
@@ -417,6 +418,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     }
     if (used) {
+        share_hearth_meal(game,user,used_kind);
         if (item_is_melee(used_kind)) finish_muffled_use(game, item, user.cell);
         item.cooldown = cooldown;
         user.use_flash = 8;

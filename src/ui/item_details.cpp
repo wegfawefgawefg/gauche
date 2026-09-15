@@ -1,4 +1,5 @@
 #include "../items/echo_pebble.hpp"
+#include "../artifacts/hearth.hpp"
 #include "../items/ammunition.hpp"
 #include "../combat/parry.hpp"
 #include "../items/fire_render.hpp"
@@ -405,6 +406,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | ROOT 3.0s");
     else if (item.kind == ItemKind::SpringTrap)
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
+    if (has_artifact(player,ArtifactKind::Hearth) && hearth_meal(item.kind))
+        std::snprintf(line,sizeof(line),"HEARTH: +3 HP / NEARBY FRIENDS");
     if (item_is_gun(item.kind))
         std::snprintf(line,sizeof(line),"RANGE %d-%d | AMMO +%d",pattern.minimum,pattern.maximum,ammunition_refill(item.kind));
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);

@@ -1,0 +1,303 @@
+{
+  "slug": "last_shift",
+  "title": "After the Last Shift",
+  "zone": "INDUSTRY / HOLLOW PULSE",
+  "seconds": 100,
+  "description": "Wide low drum skins, steel cavities, a tired pipe breath and an occasional uneven bell. Rhythms stop before settling into a loop.",
+  "contrast": "More weight and motion. Compare its hollow percussion with the dry Forest knocks.",
+  "seed": 806,
+  "loop": true,
+  "room": 3.3,
+  "wet": 0.25,
+  "target": -26,
+  "events": [
+    {
+      "at": 4,
+      "duration": 19,
+      "kind": "breath",
+      "hz": 49,
+      "gain": 0.115,
+      "pan": -0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 42,
+      "duration": 16,
+      "kind": "breath",
+      "hz": 49,
+      "gain": 0.095,
+      "pan": -0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 73,
+      "duration": 22,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.12,
+      "pan": -0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 8,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.095,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 10.7,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.052250000000000005,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 11.32,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.052250000000000005,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 14.1,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.095,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 9.22,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 157,
+      "gain": 0.025650000000000003,
+      "pan": 0.48,
+      "material": "steel",
+      "softness": 0.84
+    },
+    {
+      "at": 29,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.075,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 30.89,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.04125,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 33.33,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.04125,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 30.22,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 157,
+      "gain": 0.02025,
+      "pan": 0.48,
+      "material": "steel",
+      "softness": 0.84
+    },
+    {
+      "at": 51,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.12,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 53.4,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.066,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 54.03,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.066,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 57.5,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.12,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 59.1,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.066,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 52.22,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 157,
+      "gain": 0.0324,
+      "pan": 0.48,
+      "material": "steel",
+      "softness": 0.84
+    },
+    {
+      "at": 81,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.095,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 84.05,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.052250000000000005,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 84.68,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 108,
+      "gain": 0.052250000000000005,
+      "pan": 0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 88.2,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 72,
+      "gain": 0.095,
+      "pan": -0.17,
+      "material": "hide",
+      "softness": 0.85
+    },
+    {
+      "at": 82.22,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 157,
+      "gain": 0.025650000000000003,
+      "pan": 0.48,
+      "material": "steel",
+      "softness": 0.84
+    },
+    {
+      "at": 22,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 557.3,
+      "gain": 0.017,
+      "pan": -0.4,
+      "material": "bell",
+      "softness": 0.8
+    },
+    {
+      "at": 64,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 553.6,
+      "gain": 0.017,
+      "pan": 0.35,
+      "material": "bell",
+      "softness": 0.8
+    },
+    {
+      "at": 91,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 557.3,
+      "gain": 0.017,
+      "pan": -0.3,
+      "material": "bell",
+      "softness": 0.8
+    },
+    {
+      "at": 36,
+      "duration": 9,
+      "kind": "friction",
+      "hz": 118,
+      "gain": 0.023,
+      "pan": -0.45,
+      "material": "steel"
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Low skin and air"
+    },
+    {
+      "seconds": 35,
+      "name": "The machines stop"
+    },
+    {
+      "seconds": 50,
+      "name": "Heavier broken pulse"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.01,
+    "true_peak_dbtp": -10.57,
+    "range_lu": 19.1
+  },
+  "fixed_gain_db": 8.479999999999997,
+  "source_boundary_step": 5.518367025192849e-05,
+  "sample_rate": 32000
+}

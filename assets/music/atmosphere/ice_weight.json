@@ -1,0 +1,150 @@
+{
+  "slug": "ice_weight",
+  "title": "Ice Has Weight",
+  "zone": "ICE / HELD RESONANCE",
+  "seconds": 102,
+  "description": "Rubbed glass held for many seconds, low pressure below it, tiny stone fractures. High detail without a chime melody.",
+  "contrast": "Cold, slow and exposed. Are the glass overtones interesting or too piercing?",
+  "seed": 804,
+  "loop": true,
+  "room": 5.8,
+  "wet": 0.34,
+  "target": -26,
+  "events": [
+    {
+      "at": 4,
+      "duration": 24,
+      "kind": "breath",
+      "hz": 231.3,
+      "gain": 0.095,
+      "pan": -0.4,
+      "character": "glass"
+    },
+    {
+      "at": 34,
+      "duration": 20,
+      "kind": "breath",
+      "hz": 227.8,
+      "gain": 0.071,
+      "pan": 0.3,
+      "character": "glass"
+    },
+    {
+      "at": 64,
+      "duration": 27,
+      "kind": "breath",
+      "hz": 173.8,
+      "gain": 0.09,
+      "pan": -0.2,
+      "character": "glass"
+    },
+    {
+      "at": 13,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.095,
+      "pan": 0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 49,
+      "duration": 14,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.095,
+      "pan": 0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 75,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 43.65,
+      "gain": 0.095,
+      "pan": 0.05,
+      "character": "pipe"
+    },
+    {
+      "at": 9,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 619,
+      "gain": 0.019,
+      "pan": 0.55,
+      "material": "stone",
+      "softness": 0.85
+    },
+    {
+      "at": 43,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 487,
+      "gain": 0.026,
+      "pan": -0.5,
+      "material": "stone",
+      "softness": 0.85
+    },
+    {
+      "at": 60,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 711,
+      "gain": 0.014,
+      "pan": 0.4,
+      "material": "stone",
+      "softness": 0.85
+    },
+    {
+      "at": 94,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 533,
+      "gain": 0.018,
+      "pan": -0.4,
+      "material": "stone",
+      "softness": 0.85
+    },
+    {
+      "at": 30,
+      "duration": 12,
+      "kind": "friction",
+      "hz": 321,
+      "gain": 0.026,
+      "pan": -0.2,
+      "material": "ice"
+    },
+    {
+      "at": 58,
+      "duration": 13,
+      "kind": "strike",
+      "hz": 384.7,
+      "gain": 0.017,
+      "pan": 0.3,
+      "material": "ice",
+      "softness": 0.94
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Rubbed glass"
+    },
+    {
+      "seconds": 33,
+      "name": "Pressure without percussion"
+    },
+    {
+      "seconds": 63,
+      "name": "Lower ice"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.04,
+    "true_peak_dbtp": -11.21,
+    "range_lu": 16.0
+  },
+  "fixed_gain_db": 7.939999999999998,
+  "source_boundary_step": 6.13493051357694e-11,
+  "sample_rate": 32000
+}

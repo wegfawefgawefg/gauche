@@ -1,0 +1,52 @@
+{
+  "slug": "run_lost",
+  "title": "Run lost \u2014 the cavity closes",
+  "zone": "SHORT CUE",
+  "seconds": 13,
+  "description": "Wood stops, a rough low wire hangs in the air, and the remaining breath dies away. No comedy sad trombone.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 824,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.1,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 109,
+      "gain": 0.06,
+      "pan": -0.2,
+      "material": "wood",
+      "softness": 0.8
+    },
+    {
+      "at": 0.35,
+      "duration": 8,
+      "kind": "breath",
+      "hz": 52.4,
+      "gain": 0.09,
+      "pan": 0,
+      "character": "pipe"
+    },
+    {
+      "at": 0.7,
+      "duration": 7,
+      "kind": "breath",
+      "hz": 107.7,
+      "gain": 0.026,
+      "pan": 0.25,
+      "character": "wire"
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -27.01,
+    "true_peak_dbtp": -15.32,
+    "range_lu": 5.0
+  },
+  "fixed_gain_db": 8.170000000000002,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

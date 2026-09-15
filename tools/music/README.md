@@ -1,5 +1,9 @@
 # First music sketches
 
+The user's listens led to a new, less melodic direction. See
+[pass 02: atmosphere studies](atmosphere/README.md) for 15 new candidates,
+including title/menu and short cues. This first batch is preserved for comparison.
+
 Open `assets/music/sketches/index.html` in a browser. It uses local relative OGG
 files, native audio controls, optional looping and section markers; no server,
 network connection or automatic playback is needed.

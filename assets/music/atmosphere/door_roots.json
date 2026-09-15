@@ -1,0 +1,170 @@
+{
+  "slug": "door_roots",
+  "title": "The Door in the Roots",
+  "zone": "TITLE / WARM & UNEASY",
+  "seconds": 108,
+  "description": "One low breath, a hollow wooden answer, then room to wait. The gesture returns in a different register without growing into a melody.",
+  "contrast": "The more welcoming title option. A small identity, with unease around its edges.",
+  "seed": 810,
+  "loop": true,
+  "room": 3.4,
+  "wet": 0.24,
+  "target": -26,
+  "events": [
+    {
+      "at": 3,
+      "duration": 22,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.13,
+      "pan": -0.12,
+      "character": "root"
+    },
+    {
+      "at": 17,
+      "duration": 14,
+      "kind": "breath",
+      "hz": 110,
+      "gain": 0.055,
+      "pan": 0.15,
+      "character": "root"
+    },
+    {
+      "at": 43,
+      "duration": 23,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.105,
+      "pan": 0.1,
+      "character": "root"
+    },
+    {
+      "at": 76,
+      "duration": 25,
+      "kind": "breath",
+      "hz": 65.41,
+      "gain": 0.12,
+      "pan": -0.1,
+      "character": "root"
+    },
+    {
+      "at": 11,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 220.0,
+      "gain": 0.04,
+      "pan": -0.35,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 11.73,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 224.33619999999996,
+      "gain": 0.011200000000000002,
+      "pan": -0.35,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 48,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 196.0,
+      "gain": 0.032,
+      "pan": 0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 48.73,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 199.86316,
+      "gain": 0.008960000000000001,
+      "pan": 0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 90,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 220.0,
+      "gain": 0.03,
+      "pan": -0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 90.73,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 224.33619999999996,
+      "gain": 0.008400000000000001,
+      "pan": -0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 27,
+      "duration": 14,
+      "kind": "friction",
+      "hz": 148,
+      "gain": 0.025,
+      "pan": -0.4,
+      "material": "wood"
+    },
+    {
+      "at": 60,
+      "duration": 17,
+      "kind": "breath",
+      "hz": 147.6,
+      "gain": 0.023,
+      "pan": 0.4,
+      "character": "wire"
+    },
+    {
+      "at": 68,
+      "duration": 10,
+      "kind": "strike",
+      "hz": 438.7,
+      "gain": 0.012,
+      "pan": 0.3,
+      "material": "bell",
+      "softness": 0.97
+    },
+    {
+      "at": 94,
+      "duration": 9,
+      "kind": "friction",
+      "hz": 131,
+      "gain": 0.026,
+      "pan": 0.3,
+      "material": "wood"
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "A door-shaped breath"
+    },
+    {
+      "seconds": 36,
+      "name": "Wait at the threshold"
+    },
+    {
+      "seconds": 76,
+      "name": "A darker return"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.03,
+    "true_peak_dbtp": -11.51,
+    "range_lu": 16.6
+  },
+  "fixed_gain_db": 8.25,
+  "source_boundary_step": 7.979233524115714e-11,
+  "sample_rate": 32000
+}

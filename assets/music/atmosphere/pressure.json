@@ -1,0 +1,323 @@
+{
+  "slug": "pressure",
+  "title": "Do Not Wake the Press",
+  "zone": "THREAT / BOSS STUDY",
+  "seconds": 72,
+  "description": "A weight-bearing pulse with missing steps. Skin and struck steel gather, then leave a hole where the next hit should be.",
+  "contrast": "A more urgent option without a heroic tune; should combat music go this far?",
+  "seed": 809,
+  "loop": true,
+  "room": 2.2,
+  "wet": 0.2,
+  "target": -25,
+  "events": [
+    {
+      "at": 1,
+      "duration": 21,
+      "kind": "breath",
+      "hz": 55,
+      "gain": 0.105,
+      "pan": 0,
+      "character": "wire"
+    },
+    {
+      "at": 26,
+      "duration": 17,
+      "kind": "breath",
+      "hz": 56.1,
+      "gain": 0.12,
+      "pan": 0,
+      "character": "wire"
+    },
+    {
+      "at": 49,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 55,
+      "gain": 0.09,
+      "pan": 0,
+      "character": "wire"
+    },
+    {
+      "at": 4,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 6.4,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 8.8,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 9.379999999999999,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 12.4,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 4.9,
+      "duration": 5,
+      "kind": "strike",
+      "hz": 133,
+      "gain": 0.037,
+      "pan": 0.4,
+      "material": "steel",
+      "softness": 0.8
+    },
+    {
+      "at": 19,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 20.8,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 23.2,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 23.759999999999998,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 26.8,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 28,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 19.9,
+      "duration": 5,
+      "kind": "strike",
+      "hz": 133,
+      "gain": 0.037,
+      "pan": 0.4,
+      "material": "steel",
+      "softness": 0.8
+    },
+    {
+      "at": 36,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 38.1,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 38.67,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 40.2,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 42.3,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 43.41,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 44.4,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 36.9,
+      "duration": 5,
+      "kind": "strike",
+      "hz": 133,
+      "gain": 0.037,
+      "pan": 0.4,
+      "material": "steel",
+      "softness": 0.8
+    },
+    {
+      "at": 57,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 59.8,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 99,
+      "gain": 0.065,
+      "pan": -0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 62.6,
+      "duration": 2.8,
+      "kind": "strike",
+      "hz": 66,
+      "gain": 0.13,
+      "pan": 0.2,
+      "material": "hide",
+      "softness": 0.72
+    },
+    {
+      "at": 57.9,
+      "duration": 5,
+      "kind": "strike",
+      "hz": 133,
+      "gain": 0.037,
+      "pan": 0.4,
+      "material": "steel",
+      "softness": 0.8
+    },
+    {
+      "at": 49,
+      "duration": 10,
+      "kind": "friction",
+      "hz": 203,
+      "gain": 0.05,
+      "pan": -0.4,
+      "material": "steel"
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "The first weight"
+    },
+    {
+      "seconds": 35,
+      "name": "Compressed spacing"
+    },
+    {
+      "seconds": 48,
+      "name": "Missing blows"
+    }
+  ],
+  "encoded": {
+    "lufs": -25.04,
+    "true_peak_dbtp": -8.22,
+    "range_lu": 11.5
+  },
+  "fixed_gain_db": 7.259999999999998,
+  "source_boundary_step": 6.469207749929528e-15,
+  "sample_rate": 32000
+}

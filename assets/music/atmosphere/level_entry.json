@@ -1,0 +1,53 @@
+{
+  "slug": "level_entry",
+  "title": "Level entry \u2014 through the threshold",
+  "zone": "SHORT CUE",
+  "seconds": 8,
+  "description": "Two soft wooden contacts and a breath that opens, then leaves the soundscape clear.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 821,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.15,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 196.0,
+      "gain": 0.075,
+      "pan": -0.15,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 0.63,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 198.54016000000001,
+      "gain": 0.03,
+      "pan": -0.15,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 0.4,
+      "duration": 5,
+      "kind": "breath",
+      "hz": 98,
+      "gain": 0.065,
+      "pan": 0.1,
+      "character": "root"
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -26.97,
+    "true_peak_dbtp": -14.07,
+    "range_lu": 9.3
+  },
+  "fixed_gain_db": 10.64,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

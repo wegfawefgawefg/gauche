@@ -1,0 +1,203 @@
+{
+  "slug": "thaw_pipes",
+  "title": "Thaw in the Pipes",
+  "zone": "ICE \u2192 INDUSTRY / WATER & METAL",
+  "seconds": 92,
+  "description": "An air-filled pipe, low metal touched rather than struck hard, irregular hollow droplets. Brief activity followed by waiting.",
+  "contrast": "A quieter mechanical direction, with no march or drum kit.",
+  "seed": 805,
+  "loop": true,
+  "room": 4.1,
+  "wet": 0.31,
+  "target": -26,
+  "events": [
+    {
+      "at": 2,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 61.74,
+      "gain": 0.11,
+      "pan": -0.15,
+      "character": "pipe"
+    },
+    {
+      "at": 35,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 61.74,
+      "gain": 0.075,
+      "pan": -0.15,
+      "character": "pipe"
+    },
+    {
+      "at": 68,
+      "duration": 20,
+      "kind": "breath",
+      "hz": 55,
+      "gain": 0.105,
+      "pan": -0.15,
+      "character": "pipe"
+    },
+    {
+      "at": 12,
+      "duration": 13,
+      "kind": "strike",
+      "hz": 219,
+      "gain": 0.036,
+      "pan": 0.4,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 41,
+      "duration": 13,
+      "kind": "strike",
+      "hz": 173,
+      "gain": 0.03,
+      "pan": -0.3,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 76,
+      "duration": 13,
+      "kind": "strike",
+      "hz": 219,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 6,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 384.0,
+      "gain": 0.0135,
+      "pan": -0.5,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 8.1,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 405.77279999999996,
+      "gain": 0.027,
+      "pan": -0.5,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 8.49,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 409.81631999999996,
+      "gain": 0.0081,
+      "pan": -0.5,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 28,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 429.0,
+      "gain": 0.0108,
+      "pan": 0.45,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 29.63,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 447.88029000000006,
+      "gain": 0.0189,
+      "pan": 0.45,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 55,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 361.0,
+      "gain": 0.027,
+      "pan": -0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 55.39,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 364.80132999999995,
+      "gain": 0.0081,
+      "pan": -0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 58.07,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 390.92328999999995,
+      "gain": 0.0135,
+      "pan": -0.3,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 83,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 402.0,
+      "gain": 0.0162,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 84.19,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 414.91626,
+      "gain": 0.00675,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 49,
+      "duration": 7,
+      "kind": "friction",
+      "hz": 183,
+      "gain": 0.026,
+      "pan": 0.35,
+      "material": "steel"
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Air in the pipe"
+    },
+    {
+      "seconds": 25,
+      "name": "Only drops"
+    },
+    {
+      "seconds": 67,
+      "name": "A larger cavity"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.01,
+    "true_peak_dbtp": -10.87,
+    "range_lu": 20.1
+  },
+  "fixed_gain_db": 9.619999999999997,
+  "source_boundary_step": 1.2684695611201298e-07,
+  "sample_rate": 32000
+}

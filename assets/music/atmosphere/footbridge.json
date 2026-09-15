@@ -1,0 +1,189 @@
+{
+  "slug": "footbridge",
+  "title": "Something under the Footbridge",
+  "zone": "FOREST / HORROR",
+  "seconds": 94,
+  "description": "A strained wire underneath the wood, uneven scraping, a very low breathing cavity. No jump-scare hit.",
+  "contrast": "More uncomfortable. Keep this tension, or reserve it for haunted places?",
+  "seed": 803,
+  "loop": true,
+  "room": 3.6,
+  "wet": 0.25,
+  "target": -26,
+  "events": [
+    {
+      "at": 5,
+      "duration": 19,
+      "kind": "breath",
+      "hz": 57.8,
+      "gain": 0.11,
+      "pan": -0.2,
+      "character": "pipe"
+    },
+    {
+      "at": 31,
+      "duration": 23,
+      "kind": "breath",
+      "hz": 59.1,
+      "gain": 0.08,
+      "pan": 0.2,
+      "character": "pipe"
+    },
+    {
+      "at": 67,
+      "duration": 20,
+      "kind": "breath",
+      "hz": 57.8,
+      "gain": 0.12,
+      "pan": 0,
+      "character": "pipe"
+    },
+    {
+      "at": 13,
+      "duration": 16,
+      "kind": "breath",
+      "hz": 147.2,
+      "gain": 0.045,
+      "pan": 0.45,
+      "character": "wire"
+    },
+    {
+      "at": 44,
+      "duration": 14,
+      "kind": "breath",
+      "hz": 151.7,
+      "gain": 0.038,
+      "pan": -0.4,
+      "character": "wire"
+    },
+    {
+      "at": 73,
+      "duration": 17,
+      "kind": "breath",
+      "hz": 146.1,
+      "gain": 0.041,
+      "pan": 0.3,
+      "character": "wire"
+    },
+    {
+      "at": 3,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 107.0,
+      "gain": 0.028000000000000004,
+      "pan": -0.5,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 3.71,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 109.05118999999999,
+      "gain": 0.007700000000000001,
+      "pan": -0.5,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 28,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.0,
+      "gain": 0.028000000000000004,
+      "pan": 0.4,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 28.71,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 196.69980999999999,
+      "gain": 0.007700000000000001,
+      "pan": 0.4,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 59,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 107.0,
+      "gain": 0.028000000000000004,
+      "pan": -0.3,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 59.71,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 109.05118999999999,
+      "gain": 0.007700000000000001,
+      "pan": -0.3,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 84,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 169.0,
+      "gain": 0.028000000000000004,
+      "pan": 0.45,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 84.71,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 172.23972999999998,
+      "gain": 0.007700000000000001,
+      "pan": 0.45,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 37,
+      "duration": 8,
+      "kind": "friction",
+      "hz": 287,
+      "gain": 0.028,
+      "pan": -0.5,
+      "material": "stone"
+    },
+    {
+      "at": 62,
+      "duration": 5,
+      "kind": "friction",
+      "hz": 112,
+      "gain": 0.04,
+      "pan": 0.45,
+      "material": "wood"
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Below the boards"
+    },
+    {
+      "seconds": 31,
+      "name": "Wire pressure"
+    },
+    {
+      "seconds": 56,
+      "name": "Wait before the return"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.02,
+    "true_peak_dbtp": -11.08,
+    "range_lu": 19.5
+  },
+  "fixed_gain_db": 10.009999999999998,
+  "source_boundary_step": 8.548383591201526e-10,
+  "sample_rate": 32000
+}

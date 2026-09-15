@@ -1,0 +1,53 @@
+{
+  "slug": "title_mark",
+  "title": "Title mark \u2014 a hollow seal",
+  "zone": "SHORT CUE",
+  "seconds": 10,
+  "description": "A short title/logo gesture, using air and a low wooden seal rather than an orchestral sting.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 820,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.1,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 146.8,
+      "gain": 0.11,
+      "pan": -0.1,
+      "material": "coconut",
+      "softness": 0.83
+    },
+    {
+      "at": 0.5,
+      "duration": 7,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.09,
+      "pan": 0.1,
+      "character": "root"
+    },
+    {
+      "at": 2.8,
+      "duration": 5,
+      "kind": "strike",
+      "hz": 294.1,
+      "gain": 0.018,
+      "pan": 0.3,
+      "material": "steel",
+      "softness": 0.96
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -27.07,
+    "true_peak_dbtp": -13.28,
+    "range_lu": 5.6
+  },
+  "fixed_gain_db": 8.14,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

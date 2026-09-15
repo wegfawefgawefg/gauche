@@ -1,0 +1,84 @@
+{
+  "slug": "shop_arrives",
+  "title": "Shop arrives \u2014 wheels and a crooked bell",
+  "zone": "SHORT CUE",
+  "seconds": 9,
+  "description": "Hollow cart-wheel contacts and a slightly off metal bell. Small and tactile, with time for the merchant voice.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 825,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.1,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 201.0,
+      "gain": 0.035,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 0.41000000000000003,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 202.68237,
+      "gain": 0.045500000000000006,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 0.97,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 205.72149,
+      "gain": 0.07,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 1.12,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 206.53553999999997,
+      "gain": 0.0175,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 1.4,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 557.3,
+      "gain": 0.028,
+      "pan": 0.25,
+      "material": "bell",
+      "softness": 0.89
+    },
+    {
+      "at": 1.43,
+      "duration": 5.7,
+      "kind": "strike",
+      "hz": 559.1,
+      "gain": 0.01,
+      "pan": -0.2,
+      "material": "bell",
+      "softness": 0.97
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -26.94,
+    "true_peak_dbtp": -11.65,
+    "range_lu": 14.3
+  },
+  "fixed_gain_db": 13.270000000000003,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

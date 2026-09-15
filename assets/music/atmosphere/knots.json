@@ -1,0 +1,252 @@
+{
+  "slug": "knots",
+  "title": "Knots in the Bark",
+  "zone": "FOREST / DRY MATERIAL",
+  "seconds": 88,
+  "description": "Close coconut shells, rubbing wood and distant stone. No continuous bass bed; long gaps separate small rhythms.",
+  "contrast": "Drier and more physical. Does this feel like a place, or too much like isolated sound effects?",
+  "seed": 802,
+  "loop": true,
+  "room": 1.5,
+  "wet": 0.14,
+  "target": -26,
+  "events": [
+    {
+      "at": 3,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 244.0,
+      "gain": 0.09,
+      "pan": -0.35,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 3.29,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 245.91052,
+      "gain": 0.0288,
+      "pan": -0.35,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 4.3100000000000005,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 252.63027999999997,
+      "gain": 0.058499999999999996,
+      "pan": -0.35,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 15,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.0,
+      "gain": 0.0448,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 15.58,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 185.86578,
+      "gain": 0.0256,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 17.06,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.17846,
+      "gain": 0.064,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 17.240000000000002,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 194.06784000000002,
+      "gain": 0.017920000000000002,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 38,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 221.0,
+      "gain": 0.06,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 38.81,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 225.83327,
+      "gain": 0.018,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 55,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 157.0,
+      "gain": 0.05600000000000001,
+      "pan": 0.2,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 55.27,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 158.14453,
+      "gain": 0.028000000000000004,
+      "pan": 0.2,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 56.72,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 164.29108,
+      "gain": 0.038500000000000006,
+      "pan": 0.2,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 58.01,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 169.75939,
+      "gain": 0.0175,
+      "pan": 0.2,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 78,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 244.0,
+      "gain": 0.037700000000000004,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 79.17,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 251.70796,
+      "gain": 0.0203,
+      "pan": -0.25,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 10,
+      "duration": 5,
+      "kind": "friction",
+      "hz": 126,
+      "gain": 0.048,
+      "pan": 0.5,
+      "material": "wood"
+    },
+    {
+      "at": 44,
+      "duration": 5,
+      "kind": "friction",
+      "hz": 181,
+      "gain": 0.048,
+      "pan": -0.35,
+      "material": "wood"
+    },
+    {
+      "at": 69,
+      "duration": 5,
+      "kind": "friction",
+      "hz": 153,
+      "gain": 0.048,
+      "pan": 0.25,
+      "material": "wood"
+    },
+    {
+      "at": 27,
+      "duration": 10,
+      "kind": "breath",
+      "hz": 82.41,
+      "gain": 0.072,
+      "pan": -0.1,
+      "character": "root"
+    },
+    {
+      "at": 62,
+      "duration": 12,
+      "kind": "breath",
+      "hz": 82.41,
+      "gain": 0.069,
+      "pan": 0.1,
+      "character": "root"
+    },
+    {
+      "at": 22,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 520,
+      "gain": 0.018,
+      "pan": -0.5,
+      "material": "stone",
+      "softness": 0.7
+    },
+    {
+      "at": 73,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 431,
+      "gain": 0.022,
+      "pan": 0.45,
+      "material": "stone",
+      "softness": 0.8
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Close, hollow objects"
+    },
+    {
+      "seconds": 26,
+      "name": "A brief resonance"
+    },
+    {
+      "seconds": 52,
+      "name": "Broken rhythm"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.01,
+    "true_peak_dbtp": -8.96,
+    "range_lu": 16.5
+  },
+  "fixed_gain_db": 13.009999999999998,
+  "source_boundary_step": 3.7374838922106885e-22,
+  "sample_rate": 32000
+}

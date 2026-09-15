@@ -5,6 +5,34 @@ direction. Replace it with original, deliberately composed music. Lowering the
 volume is a separate immediate fix, not completion of the composition work.
 MASTER_TASKS.md remains the execution checklist.
 
+## Listening feedback after the first three drafts
+
+The user's listens to *Lanterns among Ferns*, *Under the Hollow Bough* and *The
+Shift Below* supersede the first pass's melodic/orchestral interpretation below.
+Preserve those drafts, but start the next compositions from scratch:
+
+- Much more negative space, longer held sounds, stranger timbres and an
+  avant-garde atmospheric direction. Some atmospheric horror is welcome.
+- Avoid the obvious foreground melody plus backing part. The first pass felt
+  cheesy/toyish, especially the apparent fake violin/cello duet. A low cello-like
+  background has useful weight, but sampled strings are not the required sound.
+- The Fern horn's **timbre** was promising; its melody was too clear and its level
+  too prominent. Keep any similar voice quiet, near the other material. The user
+  also mentions SimCity 4 as an atmospheric reference, not a tune to reproduce.
+- Explore actual feedback/resonance synthesis and less familiar instruments.
+  Do not merely change SoundFont programs around the same arrangement.
+- Percussion should suggest the environment: hollow coconuts/wood, rock on rock,
+  steel clangs. The occasional slightly off chime in Shift Below was acceptable.
+  Drums and chimes sounded less artificial than the sampled strings.
+- Supply a **broad, varied set** for comparison, including title/menu directions
+  and win/lose/transition cues now, rather than postponing them until after one
+  exploration style is settled. The user needs enough alternatives to say
+  “more like this, less like that.”
+
+Pass 02 delivers [15 original atmosphere studies and cues](history/ATMOSPHERE_STUDIES.md)
+with a local listening gallery and comparison reel. These are audition sketches;
+listening feedback, full-length development and game integration remain open.
+
 ## Scope and character
 
 - A few exploration songs per biome, typically about **3 minutes 30 seconds**
@@ -68,8 +96,9 @@ MIDI itself is entirely optional: a simple text note notation or an iterated
 composition script is equally acceptable. Choose the representation that helps
 write and revise the music; no format/framework requirement should hold it up.
 
-Start with a representative Forest composition and a small set of timbral
-sketches, then develop the full arrangement before multiplying it across zones.
+The initial small Forest-led sketch pass was useful but too narrow. Following
+the user's listening feedback, compare a broader set of genuinely different
+material/space directions and short cues before choosing full arrangements.
 Use expressive envelopes, voicing, articulation, humanized performance where
 appropriate, and restrained space/effects. Preserve Gauche's quirky identity.
 Keep reproducible composition/render sources alongside asset provenance and

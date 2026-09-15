@@ -1,0 +1,171 @@
+{
+  "slug": "root_lung",
+  "title": "Root Lung",
+  "zone": "FOREST / BREATH",
+  "seconds": 96,
+  "description": "Long, low breaths caught inside a wooden body. A few hollow knocks; the middle empties out.",
+  "contrast": "Warmest option. Is the quiet horn-like body useful when it never becomes a tune?",
+  "seed": 801,
+  "loop": true,
+  "room": 2.8,
+  "wet": 0.23,
+  "target": -26,
+  "events": [
+    {
+      "at": 3,
+      "duration": 20,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.19,
+      "pan": -0.2,
+      "character": "root"
+    },
+    {
+      "at": 28,
+      "duration": 16,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.13,
+      "pan": 0.2,
+      "character": "root"
+    },
+    {
+      "at": 57,
+      "duration": 24,
+      "kind": "breath",
+      "hz": 65.4,
+      "gain": 0.17,
+      "pan": -0.1,
+      "character": "root"
+    },
+    {
+      "at": 79,
+      "duration": 13,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.11,
+      "pan": 0.15,
+      "character": "root"
+    },
+    {
+      "at": 16,
+      "duration": 9,
+      "kind": "friction",
+      "hz": 143,
+      "gain": 0.027,
+      "pan": 0.5,
+      "material": "wood"
+    },
+    {
+      "at": 68,
+      "duration": 12,
+      "kind": "friction",
+      "hz": 196,
+      "gain": 0.034,
+      "pan": -0.4,
+      "material": "wood"
+    },
+    {
+      "at": 8,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 162.0,
+      "gain": 0.046,
+      "pan": -0.48,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 8.43,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 163.88081999999997,
+      "gain": 0.01472,
+      "pan": -0.48,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 32,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 211.0,
+      "gain": 0.0224,
+      "pan": 0.5,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 33.1,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 217.26670000000001,
+      "gain": 0.008,
+      "pan": 0.5,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 50,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 131.0,
+      "gain": 0.011250000000000001,
+      "pan": -0.3,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 76,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 148.0,
+      "gain": 0.036,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 76.31,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 149.23875999999998,
+      "gain": 0.0144,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 78.6,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 158.3896,
+      "gain": 0.00792,
+      "pan": 0.4,
+      "material": "coconut",
+      "softness": 0.65
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Breath and hollow wood"
+    },
+    {
+      "seconds": 43,
+      "name": "An almost empty clearing"
+    },
+    {
+      "seconds": 57,
+      "name": "Low return"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.02,
+    "true_peak_dbtp": -10.86,
+    "range_lu": 13.0
+  },
+  "fixed_gain_db": 5.800000000000001,
+  "source_boundary_step": 2.229488120085548e-11,
+  "sample_rate": 32000
+}

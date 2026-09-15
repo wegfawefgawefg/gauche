@@ -1,0 +1,52 @@
+{
+  "slug": "level_clear",
+  "title": "Level clear \u2014 unclenching",
+  "zone": "SHORT CUE",
+  "seconds": 10,
+  "description": "A held tension releases into a warmer cavity. Relief without a bright success arpeggio.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 822,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.05,
+      "duration": 3.2,
+      "kind": "breath",
+      "hz": 147.8,
+      "gain": 0.035,
+      "pan": -0.3,
+      "character": "wire"
+    },
+    {
+      "at": 1.1,
+      "duration": 6.6,
+      "kind": "breath",
+      "hz": 73.42,
+      "gain": 0.095,
+      "pan": 0.08,
+      "character": "root"
+    },
+    {
+      "at": 0.3,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 220,
+      "gain": 0.028,
+      "pan": 0.3,
+      "material": "steel",
+      "softness": 0.93
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -27.01,
+    "true_peak_dbtp": -15.08,
+    "range_lu": 4.9
+  },
+  "fixed_gain_db": 8.759999999999998,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

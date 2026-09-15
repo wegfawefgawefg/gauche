@@ -1,0 +1,159 @@
+{
+  "slug": "machine_moss",
+  "title": "A Machine Dreams of Moss",
+  "zone": "TITLE / STRANGER",
+  "seconds": 98,
+  "description": "Air moves through an impossible pipe; soft wooden contact and bent metal slowly trade places. Almost no rhythm.",
+  "contrast": "The less pastoral title. Does this feel distinctively Gauche, or too abstract?",
+  "seed": 811,
+  "loop": true,
+  "room": 4.5,
+  "wet": 0.3,
+  "target": -26,
+  "events": [
+    {
+      "at": 2,
+      "duration": 24,
+      "kind": "breath",
+      "hz": 61.74,
+      "gain": 0.11,
+      "pan": -0.2,
+      "character": "pipe"
+    },
+    {
+      "at": 37,
+      "duration": 23,
+      "kind": "breath",
+      "hz": 62.1,
+      "gain": 0.085,
+      "pan": 0.2,
+      "character": "pipe"
+    },
+    {
+      "at": 69,
+      "duration": 23,
+      "kind": "breath",
+      "hz": 55,
+      "gain": 0.11,
+      "pan": 0,
+      "character": "pipe"
+    },
+    {
+      "at": 16,
+      "duration": 18,
+      "kind": "breath",
+      "hz": 184.2,
+      "gain": 0.042,
+      "pan": 0.4,
+      "character": "glass"
+    },
+    {
+      "at": 47,
+      "duration": 17,
+      "kind": "breath",
+      "hz": 181.7,
+      "gain": 0.03,
+      "pan": -0.35,
+      "character": "glass"
+    },
+    {
+      "at": 78,
+      "duration": 15,
+      "kind": "breath",
+      "hz": 183.9,
+      "gain": 0.032,
+      "pan": 0.3,
+      "character": "glass"
+    },
+    {
+      "at": 8,
+      "duration": 12,
+      "kind": "strike",
+      "hz": 123.8,
+      "gain": 0.035,
+      "pan": 0.3,
+      "material": "steel",
+      "softness": 0.98
+    },
+    {
+      "at": 57,
+      "duration": 12,
+      "kind": "strike",
+      "hz": 123.8,
+      "gain": 0.029,
+      "pan": -0.3,
+      "material": "steel",
+      "softness": 0.96
+    },
+    {
+      "at": 30,
+      "duration": 6,
+      "kind": "friction",
+      "hz": 174,
+      "gain": 0.027,
+      "pan": -0.35,
+      "material": "wood"
+    },
+    {
+      "at": 64,
+      "duration": 8,
+      "kind": "friction",
+      "hz": 131,
+      "gain": 0.025,
+      "pan": 0.4,
+      "material": "wood"
+    },
+    {
+      "at": 42,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 247.0,
+      "gain": 0.02145,
+      "pan": -0.4,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 42.61,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 251.06808999999998,
+      "gain": 0.00825,
+      "pan": -0.4,
+      "material": "wood",
+      "softness": 0.65
+    },
+    {
+      "at": 86,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 196.0,
+      "gain": 0.0135,
+      "pan": 0.3,
+      "material": "coconut",
+      "softness": 0.65
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Metal with breath inside"
+    },
+    {
+      "seconds": 30,
+      "name": "Wood intrudes"
+    },
+    {
+      "seconds": 66,
+      "name": "Lower chamber"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.01,
+    "true_peak_dbtp": -10.78,
+    "range_lu": 15.7
+  },
+  "fixed_gain_db": 9.200000000000003,
+  "source_boundary_step": 3.807523050621839e-10,
+  "sample_rate": 32000
+}

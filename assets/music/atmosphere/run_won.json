@@ -1,0 +1,62 @@
+{
+  "slug": "run_won",
+  "title": "Run won \u2014 daylight through wood",
+  "zone": "SHORT CUE",
+  "seconds": 15,
+  "description": "A larger exhale, a low hollow impact and a slowly appearing upper resonance. More warmth than triumph.",
+  "contrast": "An isolated candidate; game timing and mix are still to be chosen.",
+  "seed": 823,
+  "loop": false,
+  "room": 1.7,
+  "wet": 0.22,
+  "target": -27,
+  "events": [
+    {
+      "at": 0.1,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 82.4,
+      "gain": 0.09,
+      "pan": 0,
+      "material": "hide",
+      "softness": 0.95
+    },
+    {
+      "at": 0.3,
+      "duration": 10,
+      "kind": "breath",
+      "hz": 82.41,
+      "gain": 0.115,
+      "pan": -0.15,
+      "character": "root"
+    },
+    {
+      "at": 3.5,
+      "duration": 8.5,
+      "kind": "breath",
+      "hz": 123.47,
+      "gain": 0.043,
+      "pan": 0.2,
+      "character": "root"
+    },
+    {
+      "at": 5.4,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 329.7,
+      "gain": 0.019,
+      "pan": 0.4,
+      "material": "ice",
+      "softness": 0.99
+    }
+  ],
+  "markers": [],
+  "encoded": {
+    "lufs": -27.0,
+    "true_peak_dbtp": -14.6,
+    "range_lu": 14.5
+  },
+  "fixed_gain_db": 6.630000000000003,
+  "source_boundary_step": 0.0,
+  "sample_rate": 32000
+}

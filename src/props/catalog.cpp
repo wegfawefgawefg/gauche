@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::CrystalGrowth: return {Sprite::CrystalGrowth,SoundId::CrystalBreak,6,true,false};
     case PropKind::BridgePlank: return {Sprite::BridgePlankH,SoundId::BridgeBreak,30,false,false};
     case PropKind::Doorstop: return {Sprite::EmergencyDoorstop,SoundId::WedgeBreak,25,false,false};
     case PropKind::CopperWire: return {Sprite::WireJunction,SoundId::WireCut,4,false,false};

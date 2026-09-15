@@ -51,6 +51,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         else if (roll < 50) item = ItemKind::CrystalLens;
         else if (roll < 65) item = ItemKind::BlackFelt;
         else if (roll < 80) place_coins(game, cell, 3 + static_cast<int>(random_u32(game) % 4));
+        else if (roll < 90) item = ItemKind::TuningFork;
         break;
     case PropKind::SnowCache:
         if (roll < 30) item = ItemKind::Snowball;
@@ -140,7 +141,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     else if (prop.kind == PropKind::WeatherVane) emit_sound(game, SoundId::OpticHit, cell);
     else if (prop.kind == PropKind::AlarmClock) emit_sound(game, SoundId::OpticHit, cell);
     else if (prop.kind != PropKind::BirdSeed && prop.kind != PropKind::Thorns)
-        emit_sound(game, (optical_prop(prop) || prop.kind == PropKind::BeamLamp) ? SoundId::OpticHit : prop.kind == PropKind::SnowCache ? SoundId::SnowScrape : prop.kind == PropKind::IceBlock ? SoundId::IceBlockHit : prop.kind == PropKind::StrawDecoy ? SoundId::DecoyHit : SoundId::WoodCrack, cell);
+        emit_sound(game, (prop.kind == PropKind::CrystalGrowth || optical_prop(prop) || prop.kind == PropKind::BeamLamp) ? SoundId::OpticHit : prop.kind == PropKind::SnowCache ? SoundId::SnowScrape : prop.kind == PropKind::IceBlock ? SoundId::IceBlockHit : prop.kind == PropKind::StrawDecoy ? SoundId::DecoyHit : SoundId::WoodCrack, cell);
     return true;
 }
 

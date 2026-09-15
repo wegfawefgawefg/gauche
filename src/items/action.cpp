@@ -8,6 +8,7 @@
 int item_windup(const Item& item) {
     int ticks = 0;
     switch (item.kind) {
+    case ItemKind::TuningFork: ticks = 30; break;
     case ItemKind::SkateBlade: ticks = 4; break;
     case ItemKind::Chisel: ticks = 3; break;
     case ItemKind::DiggingClaws: ticks = 3; break;
@@ -37,8 +38,8 @@ void cancel_item_action(Entity& user) {
 bool step_melee_action(Game& game, int slot, const Input& input) {
     Entity& user = game.entities[static_cast<std::size_t>(slot)];
     const Item& held = *user.inventory.held();
-    const bool melee = item_is_melee(held.kind);
-    // PLAYER SLOTS: negative label_b = committed melee slot, counter_a = windup left;
+    const bool melee = item_is_melee(held.kind) || held.kind==ItemKind::TuningFork;
+    // PLAYER SLOTS: negative label_b = committed melee/fork slot, counter_a = windup left;
     // point_b = committed facing, ground_item = weapon at windup. Bow uses positive label_b.
     if (user.label_b < 0) {
         if (input.cancel_use || input.drop || input.interact || !melee ||
@@ -70,7 +71,7 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
     user.point_b = user.facing;
     user.ground_item = held;
     const RegionalItem* spec = regional_item(held.kind);
-    emit_weapon_sound(game, held, spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
+    emit_weapon_sound(game, held, held.kind==ItemKind::TuningFork ? SoundId::ForkWindup : spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
         SoundId::FistWindup : held.kind == ItemKind::Pickaxe ? SoundId::PickaxeWindup : SoundId::StickWindup, user.cell);
     return true;
 }

@@ -1,3 +1,4 @@
+#include "items/tuning_fork.hpp"
 #include "items/borrowed_summer.hpp"
 #include "props/doorstop.hpp"
 #include "items/echo_pebble.hpp"
@@ -107,6 +108,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::TuningFork:
+        used=ring_tuning_fork(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::FoldedBridge:
         used=place_folded_bridge(game,user_slot); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::ThawCharge:
@@ -421,7 +424,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
+            if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
+            else if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
             else if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
             else if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
             else if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);

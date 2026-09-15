@@ -32,6 +32,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
                          std::uint64_t seed, bool settled) {
     DebrisKind first = DebrisKind::WoodChip, second = DebrisKind::Bark;
     switch (kind) {
+    case PropKind::CrystalGrowth: first = second = DebrisKind::CrystalSplinter; break;
     case PropKind::BridgePlank: first = DebrisKind::WoodChip; second = DebrisKind::RopeFiber; break;
     case PropKind::Doorstop: first = DebrisKind::BrassCase; second = DebrisKind::BrassRivet; break;
     case PropKind::CopperWire: first = second = DebrisKind::CopperCurl; break;

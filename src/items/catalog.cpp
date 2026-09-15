@@ -1,3 +1,4 @@
+#include "tuning_fork.hpp"
 #include "folded_bridge.hpp"
 #include "thaw_charge.hpp"
 #include "heat_siphon.hpp"
@@ -32,6 +33,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=tuning_fork_item(kind)) return item;
     if (const auto* item=folded_bridge_item(kind)) return item;
     if (const auto* item=thaw_charge_item(kind)) return item;
     if (const auto* item=heat_siphon_item(kind)) return item;

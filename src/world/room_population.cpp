@@ -261,7 +261,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         } else if (room.role == RoomRole::ServicePassage) {
             supply(game,room,round%2==0 ? ItemKind::CopperWire : ItemKind::GroundingSpike,1,budget.equipment);
         } else if (room.role == RoomRole::CrystalGallery) {
-            supply(game,room,ItemKind::IceBrick,2,budget.equipment);
+            supply(game,room,round%2==0 ? ItemKind::TuningFork : ItemKind::IceBrick,round%2==0 ? 1 : 2,budget.equipment);
         } else if (room.role == RoomRole::Chapel) {
             supply(game,room,ItemKind::BrineFlask,2,budget.equipment);
         } else if (room.role == RoomRole::MemorialCourt) {
@@ -381,6 +381,7 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;
         place_sluice_chamber(game,plan,room);
         encounter(game, plan, room, budget);
+        place_crystal_vein(game,plan,room);
         room_loot(game, room, budget);
     }
     // SUPPLIES: A sparse role roll must not accidentally remove all healing or new equipment.

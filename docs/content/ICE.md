@@ -104,7 +104,7 @@ same effective item definition as attacks, including rare attributes.
 | 29 | Black felt | Implemented: cover an adjacent mirror, lens or beam lamp. Stops light beams, disables lamp emission and interrupts its warden. Stack 3; consumes one. Fire burns it off; secondary with felt or an empty hand tears it off without refund. | Common; 7 |
 | 30 | Muffling felt | Implemented: wrap the next unwrapped melee weapon or gun in inventory slot order. Six quiet uses; impacts/explosions stay loud. Two applications, or four with Durable. Remaining quiet uses stay on dropped/traded weapons. | Uncommon; 14 |
 | 31 | Echo pebble | Implemented: records the last audible weapon use within six steps. Throw to 7 (Long: 11); land, wait 0.5s, then repeat three times one second apart. Lures/wakes listeners without attacking; blank stones knock. Stack 3, matching recordings only. | Uncommon; 16; Echo Tunnel, hound drops, rewards/shops. |
-| 32 | Tuning fork | Short 0.5s windup sends a straight vibration through contiguous brittle crystal to 8; breaks weak crystal, 8 actor damage. 24 uses. | Uncommon; 22 |
+| 32 | Tuning fork | Implemented: 0.5s windup; straight vibration through touching growths, optics and shard nodes to 8, then stops at the first gap. 8 damage, including friends; interrupts nodes for 1.5s. Felt/stone/closed gates block. 24 uses; Durable 48, Long reaches 12. Loud, recordable by Echo Pebbles. | Uncommon; 22; crystal gallery, lens cases, rewards/shops. |
 | 33 | Alarm clock | Implemented: place, wait 3s, then five once-per-second radius-10 acoustic pulses. Recover after 5s, keeping damage. 8 HP, or 16 Durable; attacks can destroy it. No stun. | Common; 10 |
 | 34 | Wool wrap | Implemented: clears chill and resists new chill for 8s; ignition burns away protection and sustains a 5s weak burn. Cannot apply while burning or already wrapped. Stack 3. | Common; 8 |
 | 35 | Hot broth | Implemented: 12 HP over 4s and removes chill. Any actual damage ends recovery; blocked hits do not. Stack 3. Restorative: 18 HP over 6s. | Common; 9 |
@@ -175,7 +175,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 10 wire, 8 grounding spike, 4 doorstop, 3 heat siphon, 3 thaw charge, 2 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
 | Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 10 storm lantern, 5 borrowed summer, 15 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
-| Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 20 empty | Guarded observatory; 16 HP, blocking, breakable wood |
+| Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 10 tuning fork, 10 empty | Guarded observatory; 16 HP, blocking, breakable wood |
 | Locked expedition chest | 40 regional weapon, 35 regional utility, 25 medicine; plus 6–12 gold | Optional key branch |
 
 Ordinary shops offer medicine, fuel, ammo and two local tools. Rare shops can

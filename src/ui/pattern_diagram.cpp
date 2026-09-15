@@ -64,6 +64,12 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         layout.x=x+(width-15.0F*layout.cell_size)*0.5F;
         layout.y=y+(height-7.0F*layout.cell_size)*0.5F;
     }
+    if (item.kind==ItemKind::SnowShelter) {
+        layout.max_y=2; layout.rows=4;
+        layout.cell_size=std::min({16.0F,width/static_cast<float>(layout.columns),height/4.0F});
+        layout.x=x+(width-static_cast<float>(layout.columns)*layout.cell_size)*.5F;
+        layout.y=y+(height-4.0F*layout.cell_size)*.5F;
+    }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     // GRID: The backing follows the effect's bounds instead of filling the whole card.
@@ -85,6 +91,9 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         for (int dx=-7;dx<=7;++dx) for (int dy=-3;dy<=3;++dy)
             if (dx!=0 && std::abs(dx)+std::abs(dy)<=7 && std::abs(dy)<=std::abs(dx))
                 colored_cell(renderer,layout,dx,dy,PatternEffect::Utility,dx>0);
+    } else if (item.kind==ItemKind::SnowShelter) {
+        colored_cell(renderer,layout,1,0,PatternEffect::Utility,false);
+        colored_cell(renderer,layout,1,1,PatternEffect::Utility,false);
     } else if (item.kind == ItemKind::IceAnchor) {
         for (int dx=1;dx<=5;++dx) colored_cell(renderer,layout,dx,0,PatternEffect::Utility,dx<5);
     } else if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)

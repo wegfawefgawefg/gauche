@@ -58,6 +58,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         else if (roll < 50) item = ItemKind::WoolWrap;
         else if (roll < 65) item = ItemKind::Ammo;
         else if (roll < 90) place_coins(game, cell, 3);
+        else item=ItemKind::SnowShelter;
         break;
     case PropKind::RottenLog: if (roll < 15) item = ItemKind::RottenFruit; break;
     case PropKind::Nest: if (roll < 18) item = ItemKind::Egg; break;
@@ -133,6 +134,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
     else if (prop.kind == PropKind::Doorstop) emit_sound(game,SoundId::WedgeHit,cell);
+    else if (prop.kind == PropKind::SnowWindbreak) emit_sound(game,SoundId::ShelterHit,cell);
     else if (prop.kind == PropKind::CopperWire) emit_sound(game,SoundId::WireCut,cell);
     else if (prop.kind == PropKind::GroundingSpike) emit_sound(game,SoundId::SpikePlant,cell);
     else if (prop.kind == PropKind::MaintenanceLocker) emit_sound(game,SoundId::StoveHit,cell);

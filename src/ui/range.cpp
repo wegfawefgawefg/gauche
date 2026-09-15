@@ -1,3 +1,4 @@
+#include "../items/snow_shelter.hpp"
 #include "../props/scarecrow.hpp"
 #include "../items/circuits.hpp"
 #include "presentation.hpp"
@@ -83,7 +84,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind==ItemKind::StormLantern) {
+    if (held.kind==ItemKind::SnowShelter) {
+        for (Cell cell : snow_shelter_cells(player.cell,facing)) mark(renderer,cell,camera,zoom,PatternEffect::Utility);
+    } else if (held.kind==ItemKind::StormLantern) {
         if (!held.opened || held.loaded<=0) return;
         const Cell side{-facing.y,facing.x};
         for (int reach=1;reach<=pattern.maximum;++reach)

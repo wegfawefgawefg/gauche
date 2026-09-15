@@ -101,9 +101,10 @@ void detonate_projectile(Game& game, int slot, Cell impact) {
 
 } // namespace
 
-bool projectile_blocked(const Game& game, Cell cell) {
+bool projectile_blocked(const Game& game, Cell cell,bool overhead) {
     const Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || tile->kind == TileKind::Wall || prop_blocks(tile->prop)) return true;
+    if (tile == nullptr || tile->kind == TileKind::Wall ||
+        (prop_blocks(tile->prop) && !(overhead && prop_low_cover(tile->prop)))) return true;
     for (const Entity& fixture : game.entities)
         if (fixture.cell == cell && fixture.impassable &&
             (fixture.kind == EntityKind::Door || fixture.kind == EntityKind::EncounterGate)) return true;
@@ -112,7 +113,7 @@ bool projectile_blocked(const Game& game, Cell cell) {
 
 Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
     for (int step = 0; step < reach; ++step) {
-        if (projectile_blocked(game, origin + facing)) break;
+        if (projectile_blocked(game, origin + facing,step+1<reach)) break;
         origin = origin + facing;
     }
     return origin;
@@ -158,7 +159,7 @@ void step_projectile(Game& game, int slot) {
     if (bomb && shot.timer_a % 30 == 0) emit_sound(game, SoundId::BombFuse, shot.cell);
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
-    const bool blocked = projectile_blocked(game, next);
+    const bool blocked = projectile_blocked(game, next,(bomb || flask) && shot.counter_a>1);
     if (rocket) {
         const int victim = entity_at(game, next, true);
         const bool owner = victim == shot.entity_a.slot && victim >= 0 &&

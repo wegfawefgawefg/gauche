@@ -8,5 +8,5 @@ void step_projectile(Game& game, int slot);
 bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach);
 int projectile_step_ticks(const Entity& entity);
 
-bool projectile_blocked(const Game& game, Cell cell);
+bool projectile_blocked(const Game& game, Cell cell,bool overhead=false);
 Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach);

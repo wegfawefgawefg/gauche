@@ -49,7 +49,7 @@ void step_prism_bomb(Game& game, int slot) {
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
     // LANDING: Cover stops flight on the near side. Bodies can pass under the thrown bomb.
-    if (projectile_blocked(game, next)) shot.counter_a = 0;
+    if (projectile_blocked(game, next,shot.counter_a>1)) shot.counter_a = 0;
     else { shot.cell = next; --shot.counter_a; }
     shot.timer_b = projectile_step_ticks(shot);
     if (shot.counter_a == 0) emit_sound(game, SoundId::PrismLand, shot.cell);

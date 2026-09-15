@@ -1,3 +1,4 @@
+#include "snow_shelter.hpp"
 #include "ice_anchor.hpp"
 #include "effigy_mask.hpp"
 #include "stillwater_bell.hpp"
@@ -36,6 +37,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=snow_shelter_item(kind)) return item;
     if (const auto* item=ice_anchor_item(kind)) return item;
     if (const auto* item=effigy_mask_item(kind)) return item;
     if (const auto* item=stillwater_bell_item(kind)) return item;

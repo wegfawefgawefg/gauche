@@ -24,12 +24,13 @@ bool place_ice_cover(Game& game, Cell cell) {
 
 bool melt_ice_cover(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
-    if (!tile || tile->prop.kind != PropKind::IceBlock || tile->prop.broken) return false;
+    if (!tile || (tile->prop.kind != PropKind::IceBlock && tile->prop.kind != PropKind::SnowWindbreak) || tile->prop.broken) return false;
+    const bool snow=tile->prop.kind==PropKind::SnowWindbreak;
     // MELT: Water, not a shatter event. Leave the underlying floor and other liquids intact.
     tile->prop = {};
     if (tile->surface.liquid == LiquidKind::None || tile->surface.liquid == LiquidKind::Water)
         pour_surface(game, cell, LiquidKind::Water, 180);
-    emit_sound(game, SoundId::IceThaw, cell);
+    emit_sound(game, snow ? SoundId::ShelterMelt : SoundId::IceThaw, cell);
     return true;
 }
 

@@ -359,7 +359,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.kind == ItemKind::HeatCapsule)
         std::snprintf(line, sizeof(line), "WARM REACH %d", pattern.blast_radius);
     else std::snprintf(line, sizeof(line), "RANGE %d-%d", pattern.minimum, pattern.maximum);
-    if (item.kind == ItemKind::IceAnchor)
+    if (item.kind == ItemKind::SnowShelter)
+        std::snprintf(line,sizeof(line),"2 SECTIONS / 24 HP EACH");
+    else if (item.kind == ItemKind::IceAnchor)
         std::snprintf(line,sizeof(line),"HOLD USE: REEL 5 / 1 HP PER STEP");
     else if (item.kind == ItemKind::EffigyMask)
         std::snprintf(line,sizeof(line),"SIGHT 7 | WALLS BLOCK");
@@ -385,7 +387,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
     if (height >= 176.0F) {
-        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceAnchor ? "CLEAR TETHER / EXAMPLE" : item.kind == ItemKind::EffigyMask ? "REAR SOLID / FRONT OUTLINE" : item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
+        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::SnowShelter ? "PLACE BOTH / FRONT + RIGHT" : item.kind == ItemKind::IceAnchor ? "CLEAR TETHER / EXAMPLE" : item.kind == ItemKind::EffigyMask ? "REAR SOLID / FRONT OUTLINE" : item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
                              width - 20.0F, height - 169.0F, &player);
     }

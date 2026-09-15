@@ -253,8 +253,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
                 supply(game,room,ItemKind::SteamKettle,1,budget.equipment);
             }
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
-            supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
-                room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+            supply(game, room, room.role == RoomRole::Shelter ? (round%3==0 ? ItemKind::SnowShelter : round%3==1 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
+                room.role == RoomRole::Shelter && round%3!=2 ? 1 : 2, budget.equipment);
         } else if (room.role == RoomRole::BoilerGallery) {
             if (random_u32(game)%4==0) supply(game,room,ItemKind::HeatSiphon,1,budget.equipment);
             supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment);

@@ -53,7 +53,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
-    src/items/effigy_mask.cpp src/items/ice_anchor.cpp
+    src/items/effigy_mask.cpp src/items/ice_anchor.cpp src/items/snow_shelter.cpp
     src/items/stillwater_bell.cpp src/world/currents.cpp
     src/items/tuning_fork.cpp
     src/items/folded_bridge.cpp

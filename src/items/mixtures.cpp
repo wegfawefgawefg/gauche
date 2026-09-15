@@ -106,7 +106,7 @@ void step_mixture(Game& game, int slot) {
     if (pitch_bomb && shot.timer_a % 30 == 0) emit_sound(game, SoundId::PitchFuse, shot.cell);
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
-    if (projectile_blocked(game, next)) shot.counter_a = 0;
+    if (projectile_blocked(game, next,shot.counter_a>1)) shot.counter_a = 0;
     else { shot.cell = next; --shot.counter_a; shot.timer_b = 8; }
     if (pitch_bomb && shot.counter_a == 0) emit_sound(game, SoundId::PitchLand, shot.cell);
 }

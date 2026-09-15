@@ -106,7 +106,7 @@ void step_echo_pebble(Game& game, int slot) {
     if (shot.timer_a==0) { land(game,shot); return; }
     if (shot.timer_b>0) return;
     const Cell next = shot.cell+shot.facing;
-    if (projectile_blocked(game,next)) { land(game,shot); return; }
+    if (projectile_blocked(game,next,shot.counter_a>1)) { land(game,shot); return; }
     shot.cell = next; --shot.counter_a; shot.timer_b = 6;
     if (shot.counter_a<=0 || entity_at(game,next,true)>=0) land(game,shot);
 }

@@ -133,6 +133,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             tile.prop.growth_ticks > (tile.prop.kind == PropKind::GroundingSpike ? 180 : tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
             (tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if (!valid_bridge_tile(tile)) reader.okay=false;
+        if (tile.prop.kind == PropKind::SnowWindbreak && (tile.prop.variant>1 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind == PropKind::Doorstop && (tile.prop.variant > 1 ||
             (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.prop.kind == PropKind::GroundingSpike && (tile.prop.variant > 2 ||

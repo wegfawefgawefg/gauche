@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::SnowWindbreak: return {Sprite::SnowWallH,SoundId::ShelterBreak,24,true,false};
     case PropKind::CrystalGrowth: return {Sprite::CrystalGrowth,SoundId::CrystalBreak,6,true,false};
     case PropKind::BridgePlank: return {Sprite::BridgePlankH,SoundId::BridgeBreak,30,false,false};
     case PropKind::Doorstop: return {Sprite::EmergencyDoorstop,SoundId::WedgeBreak,25,false,false};
@@ -54,4 +55,8 @@ int prop_max_health(const Prop& prop) {
     if (prop.kind == PropKind::Doorstop && prop.variant == 1) return base * 2;
     if (prop.kind == PropKind::Candle && (prop.variant & candle_durable_bit)) return base * 2;
     return prop.kind == PropKind::AlarmClock && prop.variant == 1 ? base * 2 : base;
+}
+
+bool prop_low_cover(const Prop& prop) {
+    return prop.kind==PropKind::SnowWindbreak && !prop.broken && prop.hp>0;
 }

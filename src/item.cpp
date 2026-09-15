@@ -1,3 +1,4 @@
+#include "items/snow_shelter.hpp"
 #include "items/stillwater_bell.hpp"
 #include "items/tuning_fork.hpp"
 #include "items/borrowed_summer.hpp"
@@ -336,6 +337,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = fire_weapon(game, user_slot, direction, item);
         return used;
     case ItemKind::IceAnchor: return false; // Placement/reeling belongs to the player action.
+    case ItemKind::SnowShelter:
+        used=place_snow_shelter(game,user_slot,direction);
+        cooldown=item_pattern(item).cooldown;
+        break;
     case ItemKind::EffigyMask: return false; // Continuous stationary use belongs to the player action.
     case ItemKind::IceBrick: return false; // Tap/hold release is owned by the player action step.
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.
@@ -429,7 +434,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
+            if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
+            else if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
             else if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
             else if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
             else if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);

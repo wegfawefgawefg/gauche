@@ -1,0 +1,482 @@
+{
+  "slug": "watchtower_relay",
+  "title": "Watchtower Relay",
+  "zone": "FOURTH ZONE? / DRY ELECTRONICS",
+  "seconds": 78,
+  "description": "Small electronic relays, clipped low pulses and short radio-like interference. Hard edges, little room sound; no pipe or acoustic drone.",
+  "contrast": "A provisional military/robot palette only\u2014the fourth biome is still undecided.",
+  "seed": 904,
+  "loop": true,
+  "room": 0.5,
+  "wet": 0.035,
+  "target": -26,
+  "events": [
+    {
+      "at": 1.0,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 1.05,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 1.47,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 1.94,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 2.88,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 2.9299999999999997,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 3.3499999999999996,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 3.82,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 4.76,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 4.81,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 7.3,
+      "duration": 2.4,
+      "kind": "radio",
+      "hz": 891,
+      "gain": 0.012,
+      "pan": -0.25
+    },
+    {
+      "at": 20.0,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 20.05,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 20.61,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 21.22,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 22.44,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 22.490000000000002,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 23.05,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 23.66,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 24.88,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 24.93,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 26.3,
+      "duration": 2.4,
+      "kind": "radio",
+      "hz": 891,
+      "gain": 0.012,
+      "pan": -0.25
+    },
+    {
+      "at": 46.0,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 46.05,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 46.47,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 46.94,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 47.88,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 47.93,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 48.35,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 48.82,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 49.76,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 49.809999999999995,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 50.23,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 51.17,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 51.64,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 51.69,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 52.3,
+      "duration": 2.4,
+      "kind": "radio",
+      "hz": 891,
+      "gain": 0.012,
+      "pan": 0.25
+    },
+    {
+      "at": 62.0,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 62.05,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 62.7,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 63.4,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 64.8,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 64.85,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 65.5,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.021,
+      "pan": -0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 66.2,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 370,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": 0.17
+    },
+    {
+      "at": 67.6,
+      "duration": 0.8,
+      "kind": "relay",
+      "hz": 247,
+      "gain": 0.033,
+      "pan": 0.4,
+      "bend": -0.08
+    },
+    {
+      "at": 67.64999999999999,
+      "duration": 1.2,
+      "kind": "bass",
+      "hz": 41.2,
+      "gain": 0.062,
+      "pan": 0,
+      "grit": 0.12
+    },
+    {
+      "at": 68.3,
+      "duration": 2.4,
+      "kind": "radio",
+      "hz": 891,
+      "gain": 0.012,
+      "pan": 0.25
+    },
+    {
+      "at": 35,
+      "duration": 3,
+      "kind": "radio",
+      "hz": 1317,
+      "gain": 0.017,
+      "pan": 0.25
+    },
+    {
+      "at": 40,
+      "duration": 1,
+      "kind": "relay",
+      "hz": 164.81,
+      "gain": 0.02,
+      "pan": -0.25,
+      "bend": -0.34
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Dry relays"
+    },
+    {
+      "seconds": 32,
+      "name": "Broken transmission"
+    },
+    {
+      "seconds": 46,
+      "name": "Irregular response"
+    }
+  ],
+  "encoded": {
+    "lufs": -25.99,
+    "true_peak_dbtp": -10.33,
+    "range_lu": 14.7
+  },
+  "fixed_gain_db": 15.490000000000002,
+  "source_boundary_step": 6.90527274501944e-53,
+  "sample_rate": 32000
+}

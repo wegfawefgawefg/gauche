@@ -1,0 +1,689 @@
+{
+  "slug": "beneath_the_thaw",
+  "title": "Beneath the Thaw",
+  "zone": "ICE / FULL ARRANGEMENT CANDIDATE",
+  "seconds": 210,
+  "description": "One pipe-based Ice song: the cavity opens, a brittle walking pulse gathers, pressure rises, then exposed glass takes over before the low return.",
+  "contrast": "Does the pulse, harmonic detail and middle-section contrast give the pipe material enough development?",
+  "seed": 901,
+  "loop": true,
+  "room": 4.6,
+  "wet": 0.3,
+  "target": -26,
+  "events": [
+    {
+      "at": 2,
+      "duration": 25,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.11,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 27,
+      "duration": 19,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.078,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 50,
+      "duration": 23,
+      "kind": "breath",
+      "hz": 55,
+      "gain": 0.085,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 78,
+      "duration": 22,
+      "kind": "breath",
+      "hz": 61.74,
+      "gain": 0.105,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 146,
+      "duration": 24,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.092,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 173,
+      "duration": 25,
+      "kind": "breath",
+      "hz": 46.25,
+      "gain": 0.073,
+      "pan": -0.07,
+      "character": "pipe"
+    },
+    {
+      "at": 10,
+      "duration": 12,
+      "kind": "glass",
+      "hz": 277.18,
+      "gain": 0.025,
+      "pan": -0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 25,
+      "duration": 10,
+      "kind": "glass",
+      "hz": 246.94,
+      "gain": 0.019,
+      "pan": 0.35,
+      "rough": 0.013
+    },
+    {
+      "at": 37,
+      "duration": 9,
+      "kind": "glass",
+      "hz": 369.99,
+      "gain": 0.013,
+      "pan": 0.15,
+      "rough": 0.013
+    },
+    {
+      "at": 65,
+      "duration": 12,
+      "kind": "glass",
+      "hz": 329.63,
+      "gain": 0.022,
+      "pan": -0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 92,
+      "duration": 11,
+      "kind": "glass",
+      "hz": 311.13,
+      "gain": 0.022,
+      "pan": 0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 117,
+      "duration": 17,
+      "kind": "glass",
+      "hz": 277.18,
+      "gain": 0.028,
+      "pan": -0.25,
+      "rough": 0.013
+    },
+    {
+      "at": 126,
+      "duration": 15,
+      "kind": "glass",
+      "hz": 278.02,
+      "gain": 0.009,
+      "pan": 0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 138,
+      "duration": 9,
+      "kind": "glass",
+      "hz": 184.99,
+      "gain": 0.027,
+      "pan": 0.25,
+      "rough": 0.013
+    },
+    {
+      "at": 157,
+      "duration": 12,
+      "kind": "glass",
+      "hz": 277.18,
+      "gain": 0.02,
+      "pan": -0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 174,
+      "duration": 11,
+      "kind": "glass",
+      "hz": 246.94,
+      "gain": 0.018,
+      "pan": 0.3,
+      "rough": 0.013
+    },
+    {
+      "at": 190,
+      "duration": 13,
+      "kind": "glass",
+      "hz": 369.99,
+      "gain": 0.015,
+      "pan": 0.05,
+      "rough": 0.013
+    },
+    {
+      "at": 44,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.047,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 45.4,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.02585,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 47.5,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.047,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 48.2,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.02585,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 51.7,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.047,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 53.8,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.02585,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 55.2,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.047,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 44.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.0329,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 59,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.035,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 61.1,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.019250000000000003,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 61.8,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.035,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 65.3,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.019250000000000003,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 67.4,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.035,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 59.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.0245,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 78,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.052,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 79.4,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.0286,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 80.8,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.052,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 81.5,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.0286,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 83.6,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.052,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 85,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.0286,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 87.1,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.052,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 88.5,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.0286,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 78.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.036399999999999995,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 96,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.035,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 96.7,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.019250000000000003,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 98.1,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.035,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 100.9,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.019250000000000003,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 96.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.0245,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 153,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.036,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 154.4,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.0198,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 157.9,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.036,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 160,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.0198,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 162.8,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.036,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 153.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.025199999999999997,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 174,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 176.1,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.0143,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 176.8,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 139,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 180.3,
+      "duration": 2.5,
+      "kind": "strike",
+      "hz": 185,
+      "gain": 0.0143,
+      "pan": -0.2,
+      "material": "stone",
+      "softness": 0.82
+    },
+    {
+      "at": 174.45,
+      "duration": 6,
+      "kind": "prepared",
+      "hz": 92.5,
+      "gain": 0.018199999999999997,
+      "pan": 0,
+      "pin": 0.08,
+      "felt": 0.82
+    },
+    {
+      "at": 90,
+      "duration": 13,
+      "kind": "scrape",
+      "hz": 480,
+      "gain": 0.012,
+      "pan": -0.35,
+      "teeth": 8
+    },
+    {
+      "at": 106,
+      "duration": 9,
+      "kind": "strike",
+      "hz": 231.7,
+      "gain": 0.018,
+      "pan": 0.35,
+      "material": "steel",
+      "softness": 0.98
+    },
+    {
+      "at": 113,
+      "duration": 9,
+      "kind": "tape",
+      "hz": 185,
+      "gain": 0.023,
+      "pan": 0.35,
+      "reverse": 0.85
+    },
+    {
+      "at": 135,
+      "duration": 7,
+      "kind": "tape",
+      "hz": 123.47,
+      "gain": 0.021,
+      "pan": -0.4,
+      "reverse": 0.75
+    },
+    {
+      "at": 6,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 639,
+      "gain": 0.011,
+      "pan": 0.4,
+      "material": "ice",
+      "softness": 0.95
+    },
+    {
+      "at": 31,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 509,
+      "gain": 0.013,
+      "pan": -0.4,
+      "material": "ice",
+      "softness": 0.95
+    },
+    {
+      "at": 72,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 731,
+      "gain": 0.009,
+      "pan": 0.3,
+      "material": "ice",
+      "softness": 0.95
+    },
+    {
+      "at": 103,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 588,
+      "gain": 0.012,
+      "pan": -0.35,
+      "material": "ice",
+      "softness": 0.95
+    },
+    {
+      "at": 144,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 627,
+      "gain": 0.008,
+      "pan": 0.4,
+      "material": "ice",
+      "softness": 0.95
+    },
+    {
+      "at": 185,
+      "duration": 3,
+      "kind": "strike",
+      "hz": 509,
+      "gain": 0.008,
+      "pan": -0.4,
+      "material": "ice",
+      "softness": 0.95
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "A \u00b7 cavity and first upper figure"
+    },
+    {
+      "seconds": 43,
+      "name": "B \u00b7 brittle walking pulse"
+    },
+    {
+      "seconds": 78,
+      "name": "C \u00b7 pressure gathers"
+    },
+    {
+      "seconds": 111,
+      "name": "D \u00b7 exposed glass, pipe falls away"
+    },
+    {
+      "seconds": 146,
+      "name": "E \u00b7 changed return"
+    },
+    {
+      "seconds": 189,
+      "name": "F \u00b7 thinning into the loop"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.02,
+    "true_peak_dbtp": -10.59,
+    "range_lu": 13.9
+  },
+  "fixed_gain_db": 9.850000000000001,
+  "source_boundary_step": 6.895783995349971e-12,
+  "sample_rate": 32000
+}

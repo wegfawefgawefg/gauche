@@ -1,0 +1,879 @@
+{
+  "slug": "counterweight",
+  "title": "Counterweight",
+  "zone": "INDUSTRY / SKIN, SCRAP & ROUGH BASS",
+  "seconds": 88,
+  "description": "Heavy low skin, dry rack scrapes and a rough oscillator bass. A broken machine rhythm builds, shuts off, and returns with a different spacing.",
+  "contrast": "Much more rhythm-led than the pipe studies. Does it have the right weight without crowding combat?",
+  "seed": 903,
+  "loop": true,
+  "room": 0.9,
+  "wet": 0.12,
+  "target": -25.5,
+  "events": [
+    {
+      "at": 1.0,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 2.4634146341463414,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 3.5609756097560976,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 4.658536585365853,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 1.7317073170731707,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 3.0121951219512195,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 4.2926829268292686,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 5.390243902439025,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 1.12,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 49,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 3.926829268292683,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 27
+    },
+    {
+      "at": 6.121951219512195,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 7.585365853658537,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 8.682926829268293,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 9.78048780487805,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 6.853658536585366,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 8.134146341463415,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 9.414634146341463,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 10.512195121951219,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 6.241951219512195,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 46.25,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 9.048780487804878,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 30
+    },
+    {
+      "at": 11.24390243902439,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 12.707317073170731,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 13.804878048780488,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 14.902439024390244,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 11.975609756097562,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 13.25609756097561,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 14.536585365853659,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 15.634146341463415,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 11.36390243902439,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 49,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 14.170731707317074,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 33
+    },
+    {
+      "at": 17.365853658536587,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 116,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 26.0,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 27.463414634146343,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 28.5609756097561,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 29.65853658536585,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 26.73170731707317,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 28.01219512195122,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 29.29268292682927,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 30.390243902439025,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 26.12,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 49,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 28.926829268292682,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 27
+    },
+    {
+      "at": 31.121951219512194,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 32.58536585365854,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 33.68292682926829,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 34.78048780487805,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 31.853658536585364,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 33.13414634146341,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 34.41463414634146,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 35.51219512195122,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 31.241951219512195,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 46.25,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 34.048780487804876,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 30
+    },
+    {
+      "at": 37.24390243902439,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 116,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 58.0,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 59.46341463414634,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 60.5609756097561,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 61.65853658536585,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 58.73170731707317,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 60.01219512195122,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 61.292682926829265,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 62.390243902439025,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 337,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 58.12,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 49,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 60.926829268292686,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 27
+    },
+    {
+      "at": 63.1219512195122,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 64.58536585365854,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 65.6829268292683,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 66.78048780487805,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 63.85365853658537,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 65.13414634146342,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 66.41463414634147,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 67.51219512195122,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 348,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 63.241951219512195,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 46.25,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 66.04878048780488,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 30
+    },
+    {
+      "at": 68.2439024390244,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 62,
+      "gain": 0.1,
+      "pan": -0.08,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 69.70731707317074,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.048,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 70.8048780487805,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.06999999999999999,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 71.90243902439025,
+      "duration": 2,
+      "kind": "strike",
+      "hz": 103,
+      "gain": 0.065,
+      "pan": 0.18,
+      "material": "hide",
+      "softness": 0.75
+    },
+    {
+      "at": 68.97560975609757,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.015,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 70.25609756097562,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.010000000000000002,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 71.53658536585367,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.020000000000000004,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 72.63414634146342,
+      "duration": 1.7,
+      "kind": "strike",
+      "hz": 359,
+      "gain": 0.008749999999999999,
+      "pan": -0.4,
+      "material": "steel",
+      "softness": 0.93
+    },
+    {
+      "at": 68.3639024390244,
+      "duration": 1.8,
+      "kind": "bass",
+      "hz": 49,
+      "gain": 0.06,
+      "pan": 0,
+      "grit": 0.55
+    },
+    {
+      "at": 71.17073170731707,
+      "duration": 1.3,
+      "kind": "scrape",
+      "hz": 490,
+      "gain": 0.015,
+      "pan": 0.4,
+      "teeth": 33
+    },
+    {
+      "at": 74.3658536585366,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 116,
+      "gain": 0.026,
+      "pan": 0.25,
+      "material": "steel",
+      "softness": 0.92
+    },
+    {
+      "at": 44,
+      "duration": 3.5,
+      "kind": "scrape",
+      "hz": 280,
+      "gain": 0.022,
+      "pan": -0.3,
+      "teeth": 6
+    },
+    {
+      "at": 49,
+      "duration": 6,
+      "kind": "strike",
+      "hz": 154,
+      "gain": 0.021,
+      "pan": 0.35,
+      "material": "steel",
+      "softness": 0.98
+    },
+    {
+      "at": 53,
+      "duration": 1.5,
+      "kind": "rattle",
+      "hz": 760,
+      "gain": 0.009,
+      "pan": -0.3,
+      "density": 9
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Seven-step machinery"
+    },
+    {
+      "seconds": 42,
+      "name": "Shutdown / loose parts"
+    },
+    {
+      "seconds": 58,
+      "name": "Restart"
+    }
+  ],
+  "encoded": {
+    "lufs": -25.46,
+    "true_peak_dbtp": -10.21,
+    "range_lu": 17.1
+  },
+  "fixed_gain_db": 10.280000000000001,
+  "source_boundary_step": 1.7363249390326071e-31,
+  "sample_rate": 32000
+}

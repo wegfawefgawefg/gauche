@@ -40,15 +40,18 @@ def place(mix, mono, event, loop):
         mix[:len(stereo)-count] += stereo[count:]
 
 
-def synthesize(piece):
+def synthesize(piece, instruments=None):
     mix = np.zeros((round(piece.seconds*RATE),2))
+    voices = {"breath":breath,"strike":strike,"friction":friction}
+    if instruments:
+        voices.update(instruments)
     for index,event in enumerate(piece.events):
         # Per-event seeds: adding a later sound does not change every earlier timbre.
         rng = np.random.default_rng(piece.seed*1000+index)
         args = (event["duration"],event["hz"],rng)
         options = {key:value for key,value in event.items()
                    if key not in ("at","duration","kind","hz","gain","pan")}
-        function = {"breath":breath,"strike":strike,"friction":friction}[event["kind"]]
+        function = voices[event["kind"]]
         place(mix,function(*args,**options),event,piece.loop)
     lengths = np.array([1429,1789,2281,2671])
     # A pre-roll full cycle settles every feedback tail before capturing one period.
@@ -67,9 +70,9 @@ def synthesize(piece):
     return mix
 
 
-def render(piece,output,masters=None):
+def render(piece,output,masters=None,instruments=None):
     print(f"Rendering {piece.title} ({piece.seconds:g}s, {len(piece.events)} gestures)",flush=True)
-    mix = synthesize(piece)
+    mix = synthesize(piece,instruments)
     output.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="gauche-music-") as temporary:
         source = Path(temporary)/"master.wav"

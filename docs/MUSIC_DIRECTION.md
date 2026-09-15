@@ -35,6 +35,22 @@ listening feedback, full-length development and game integration remain open.
 
 ## Scope and character
 
+### Feedback on pass 02 / approval boundary
+
+The user found the second batch cool as a sound, but **all essentially the same**.
+Different event spacing and nominal material names did not create different
+musical identities. Do not use that pipe texture as the whole game's soundtrack.
+**Shop Arrives — wheels and a crooked bell is approved** for shop arrival: preserve
+`assets/music/atmosphere/shop_arrives.ogg` unchanged when integrating it. None of
+the other pass-02 pieces are accepted for use as-is. Their material may become
+**one developed Ice song**, which needs more happening/real development.
+
+Pass 03 provides [one 3:30 Ice candidate and four contrasting studies](../tools/music/contrasts/README.md).
+Separate the dominant instruments, rhythm, register, space and composition—not
+just presets within one resonant drone. The user then asked to finish the current
+small music batch and return to game content. Further music iteration waits for
+listening feedback; do not keep generating indefinitely.
+
 - A few exploration songs per biome, typically about **3 minutes 30 seconds**
   each, designed for seamless looping. First planning target: three per biome
   (twelve across four zones), subject to iteration rather than a settled ceiling.

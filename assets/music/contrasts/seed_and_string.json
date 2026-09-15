@@ -1,0 +1,428 @@
+{
+  "slug": "seed_and_string",
+  "title": "Seed and String",
+  "zone": "FOREST / PREPARED STRINGS & WOOD",
+  "seconds": 84,
+  "description": "Low prepared strings, dry gourd contacts and seed-pod rattles. Small lopsided figures wander between clearings; no wind or pipe bed.",
+  "contrast": "A more tactile, grounded Forest direction. Is this kind of rhythm useful without becoming too tuneful?",
+  "seed": 902,
+  "loop": true,
+  "room": 1.0,
+  "wet": 0.09,
+  "target": -26,
+  "events": [
+    {
+      "at": 1,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.14,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 3.35,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 146.83,
+      "gain": 0.058800000000000005,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 5.12,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 110,
+      "gain": 0.0868,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 9.7,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 82.41,
+      "gain": 0.07840000000000001,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 1.9,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 181.0,
+      "gain": 0.031200000000000002,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 2.33,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.10141,
+      "gain": 0.00858,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 4.529999999999999,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.85281,
+      "gain": 0.01755,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 6.4,
+      "duration": 1.1,
+      "kind": "rattle",
+      "hz": 1200,
+      "gain": 0.012,
+      "pan": 0.45,
+      "density": 19
+    },
+    {
+      "at": 18,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.10500000000000001,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 19.6,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 220,
+      "gain": 0.028000000000000004,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 23.8,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 110,
+      "gain": 0.06300000000000001,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 18.9,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 181.0,
+      "gain": 0.031200000000000002,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 19.33,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.10141,
+      "gain": 0.00858,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 21.529999999999998,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.85281,
+      "gain": 0.01755,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 23.4,
+      "duration": 1.1,
+      "kind": "rattle",
+      "hz": 1200,
+      "gain": 0.012,
+      "pan": 0.45,
+      "density": 19
+    },
+    {
+      "at": 35,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 65.41,
+      "gain": 0.11900000000000001,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 38.9,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 130.81,
+      "gain": 0.060200000000000004,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 40.1,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 98,
+      "gain": 0.084,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 44.2,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 146.83,
+      "gain": 0.033600000000000005,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 35.9,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 181.0,
+      "gain": 0.031200000000000002,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 36.33,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.10141,
+      "gain": 0.00858,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 38.53,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.85281,
+      "gain": 0.01755,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 40.4,
+      "duration": 1.1,
+      "kind": "rattle",
+      "hz": 1200,
+      "gain": 0.012,
+      "pan": 0.45,
+      "density": 19
+    },
+    {
+      "at": 57,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.11200000000000002,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 59.6,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 110,
+      "gain": 0.07700000000000001,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 64.5,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 146.83,
+      "gain": 0.03780000000000001,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 57.9,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 181.0,
+      "gain": 0.031200000000000002,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 58.33,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.10141,
+      "gain": 0.00858,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 60.53,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.85281,
+      "gain": 0.01755,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 62.4,
+      "duration": 1.1,
+      "kind": "rattle",
+      "hz": 1200,
+      "gain": 0.012,
+      "pan": 0.45,
+      "density": 19
+    },
+    {
+      "at": 72,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 82.41,
+      "gain": 0.07,
+      "pan": 0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 75.7,
+      "duration": 5,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.05600000000000001,
+      "pan": -0.18,
+      "pin": 0.22,
+      "felt": 0.5
+    },
+    {
+      "at": 72.9,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 181.0,
+      "gain": 0.031200000000000002,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 73.33000000000001,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 183.10141,
+      "gain": 0.00858,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 75.53,
+      "duration": 1.8,
+      "kind": "strike",
+      "hz": 193.85281,
+      "gain": 0.01755,
+      "pan": -0.4,
+      "material": "coconut",
+      "softness": 0.65
+    },
+    {
+      "at": 77.4,
+      "duration": 1.1,
+      "kind": "rattle",
+      "hz": 1200,
+      "gain": 0.012,
+      "pan": 0.45,
+      "density": 19
+    },
+    {
+      "at": 12,
+      "duration": 6,
+      "kind": "tape",
+      "hz": 146.83,
+      "gain": 0.021,
+      "pan": 0.4,
+      "reverse": 0.2
+    },
+    {
+      "at": 28,
+      "duration": 6,
+      "kind": "tape",
+      "hz": 110,
+      "gain": 0.021,
+      "pan": -0.4,
+      "reverse": 0.2
+    },
+    {
+      "at": 47,
+      "duration": 6,
+      "kind": "tape",
+      "hz": 130.81,
+      "gain": 0.021,
+      "pan": 0.3,
+      "reverse": 0.2
+    },
+    {
+      "at": 66,
+      "duration": 6,
+      "kind": "tape",
+      "hz": 146.83,
+      "gain": 0.021,
+      "pan": -0.3,
+      "reverse": 0.2
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Low prepared-string figure"
+    },
+    {
+      "seconds": 32,
+      "name": "A different clearing"
+    },
+    {
+      "seconds": 56,
+      "name": "Loose return"
+    }
+  ],
+  "encoded": {
+    "lufs": -28.3,
+    "true_peak_dbtp": -7.23,
+    "range_lu": 20.6
+  },
+  "fixed_gain_db": 11.649999999999999,
+  "source_boundary_step": 2.2060010351179e-21,
+  "sample_rate": 32000
+}

@@ -1,0 +1,169 @@
+{
+  "slug": "crooked_door",
+  "title": "The Crooked Door",
+  "zone": "TITLE / WARPED PLUCKED MEMORY",
+  "seconds": 92,
+  "description": "Prepared-string scraps stretch, reverse and recur in the quiet. Low plucks give the fragments a center, without a sustained background bed.",
+  "contrast": "An intimate, odd title alternative. Compare this texture with the direct Forest strings.",
+  "seed": 905,
+  "loop": true,
+  "room": 2.0,
+  "wet": 0.22,
+  "target": -26,
+  "events": [
+    {
+      "at": 1,
+      "duration": 13,
+      "kind": "tape",
+      "hz": 146.83,
+      "gain": 0.062,
+      "pan": -0.3,
+      "reverse": 0.58
+    },
+    {
+      "at": 14,
+      "duration": 10,
+      "kind": "tape",
+      "hz": 220,
+      "gain": 0.033,
+      "pan": 0.3,
+      "reverse": 0.58
+    },
+    {
+      "at": 30,
+      "duration": 15,
+      "kind": "tape",
+      "hz": 130.81,
+      "gain": 0.057,
+      "pan": 0.25,
+      "reverse": 0.58
+    },
+    {
+      "at": 48,
+      "duration": 12,
+      "kind": "tape",
+      "hz": 196,
+      "gain": 0.031,
+      "pan": -0.3,
+      "reverse": 0.58
+    },
+    {
+      "at": 64,
+      "duration": 15,
+      "kind": "tape",
+      "hz": 146.83,
+      "gain": 0.056,
+      "pan": -0.25,
+      "reverse": 0.58
+    },
+    {
+      "at": 78,
+      "duration": 9,
+      "kind": "tape",
+      "hz": 110,
+      "gain": 0.04,
+      "pan": 0.3,
+      "reverse": 0.58
+    },
+    {
+      "at": 4,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.11,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 22,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 110,
+      "gain": 0.038,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 33,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 65.41,
+      "gain": 0.09,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 55,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 98,
+      "gain": 0.045,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 67,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 73.42,
+      "gain": 0.085,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 82,
+      "duration": 7,
+      "kind": "prepared",
+      "hz": 82.41,
+      "gain": 0.04,
+      "pan": 0,
+      "pin": 0.04,
+      "felt": 0.85
+    },
+    {
+      "at": 27,
+      "duration": 3,
+      "kind": "rattle",
+      "hz": 940,
+      "gain": 0.007,
+      "pan": -0.4,
+      "density": 5
+    },
+    {
+      "at": 60,
+      "duration": 2,
+      "kind": "rattle",
+      "hz": 1100,
+      "gain": 0.007,
+      "pan": 0.4,
+      "density": 7
+    }
+  ],
+  "markers": [
+    {
+      "seconds": 0,
+      "name": "Memory in fragments"
+    },
+    {
+      "seconds": 30,
+      "name": "Changed register"
+    },
+    {
+      "seconds": 64,
+      "name": "Recognition without a tune"
+    }
+  ],
+  "encoded": {
+    "lufs": -26.6,
+    "true_peak_dbtp": -6.96,
+    "range_lu": 16.5
+  },
+  "fixed_gain_db": 14.940000000000001,
+  "source_boundary_step": 2.989661498150788e-14,
+  "sample_rate": 32000
+}

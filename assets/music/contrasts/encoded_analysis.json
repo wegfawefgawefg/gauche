@@ -1,0 +1,52 @@
+[
+  {
+    "slug": "beneath_the_thaw",
+    "seconds": 210.0,
+    "lufs": -26.02,
+    "true_peak_dbtp": -10.59,
+    "range_lu": 13.9,
+    "finite": true,
+    "peak": 0.29524242877960205,
+    "boundary_step": 0.0
+  },
+  {
+    "slug": "seed_and_string",
+    "seconds": 84.0,
+    "lufs": -28.3,
+    "true_peak_dbtp": -7.23,
+    "range_lu": 20.6,
+    "finite": true,
+    "peak": 0.4348594546318054,
+    "boundary_step": 0.0
+  },
+  {
+    "slug": "counterweight",
+    "seconds": 88.0,
+    "lufs": -25.46,
+    "true_peak_dbtp": -10.21,
+    "range_lu": 17.1,
+    "finite": true,
+    "peak": 0.30852341651916504,
+    "boundary_step": 0.0
+  },
+  {
+    "slug": "watchtower_relay",
+    "seconds": 78.0,
+    "lufs": -25.99,
+    "true_peak_dbtp": -10.33,
+    "range_lu": 14.7,
+    "finite": true,
+    "peak": 0.304341197013855,
+    "boundary_step": 0.0
+  },
+  {
+    "slug": "crooked_door",
+    "seconds": 92.0,
+    "lufs": -26.6,
+    "true_peak_dbtp": -6.96,
+    "range_lu": 16.5,
+    "finite": true,
+    "peak": 0.4451986253261566,
+    "boundary_step": 0.0
+  }
+]

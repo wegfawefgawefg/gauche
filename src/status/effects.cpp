@@ -1,3 +1,4 @@
+#include "../entities/cable_crawler.hpp"
 #include "../entities/pressure_rat.hpp"
 #include "../entities/magnet_crane.hpp"
 #include "../entities/rivet_gunner.hpp"
@@ -28,7 +29,7 @@
 
 // CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
 bool apply_chill(Entity& actor, int ticks) {
-    if (ticks>0) damp_stoker(actor);
+    if (ticks>0) {damp_stoker(actor);interrupt_cable_crawler(actor);}
     if (ticks>0 && cool_pressure_rat(actor)) {
         actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);return true;
     }

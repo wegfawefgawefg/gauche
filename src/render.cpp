@@ -259,9 +259,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.h*=1+.18F*reach; body_rect.y-=pixels*.18F*reach;
                 angle+=entity.facing.x<0 ? 15*reach : -15*reach;
             }
-            if (entity.kind==EntityKind::PressureRat) {
+            if (entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) {
                 if (entity.facing.y!=0) angle=entity.facing.y<0 ? -90 : 90;
-                if (entity.label_a==RatInflate) {
+                if (entity.kind==EntityKind::PressureRat && entity.label_a==RatInflate) {
                     const float inset=.14F*static_cast<float>(entity.timer_a)/36;
                     body_rect.x+=pixels*inset;body_rect.y+=pixels*inset;
                     body_rect.w-=pixels*2*inset;body_rect.h-=pixels*2*inset;
@@ -308,7 +308,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, (entity.kind==EntityKind::PressureRat ? entity.facing.x<0 :
+                nullptr, ((entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
                     !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }

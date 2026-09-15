@@ -150,7 +150,8 @@ void describe_rooms(Game& game, FloorPlan& plan) {
             auto& room=plan.rooms[i];
             if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
                 room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine) continue;
-            room.role=random_u32(game)%2==0 ? RoomRole::RepairBay : RoomRole::CoolingWorks;room.shape=RoomShape::Clearing;
+            const auto choice=random_u32(game)%3;
+            room.role=choice==0 ? RoomRole::RepairBay : choice==1 ? RoomRole::CoolingWorks : RoomRole::CableTrench;room.shape=RoomShape::Clearing;
             room.half_width=8;room.half_height=7;
             break;
         }
@@ -158,7 +159,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
             auto& room=plan.rooms[i];
             if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
                 room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove ||
-                room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::CoolingWorks) continue;
+                room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench) continue;
             room.role=RoomRole::ScrapYard;room.shape=RoomShape::Clearing;
             room.half_width=8;room.half_height=7;break;
         }
@@ -179,7 +180,7 @@ FloorPlan plan_floor(Game& game) {
             int degree = 0;
             for (RouteEdge edge : plan.edges)
                 if (edge.a == static_cast<int>(i) || edge.b == static_cast<int>(i)) ++degree;
-            if (degree != 1 || plan.rooms[i].role==RoomRole::Workfront || plan.rooms[i].role==RoomRole::BlastingAlcove || plan.rooms[i].role==RoomRole::AssemblyLine || plan.rooms[i].role==RoomRole::RepairBay || plan.rooms[i].role==RoomRole::ScrapYard || plan.rooms[i].role==RoomRole::CoolingWorks) continue;
+            if (degree != 1 || plan.rooms[i].role==RoomRole::Workfront || plan.rooms[i].role==RoomRole::BlastingAlcove || plan.rooms[i].role==RoomRole::AssemblyLine || plan.rooms[i].role==RoomRole::RepairBay || plan.rooms[i].role==RoomRole::ScrapYard || plan.rooms[i].role==RoomRole::CoolingWorks || plan.rooms[i].role==RoomRole::CableTrench) continue;
             plan.secret_room = static_cast<int>(i);
             plan.rooms[i].role = RoomRole::Secret;
             break;
@@ -196,7 +197,7 @@ bool FloorPlan::protected_cell(Cell cell) const {
 const char* room_name(RoomRole role) {
     constexpr const char* names[]{"Trailhead", "Way out", "Clearing", "Thicket", "Brook",
         "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache",
-        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery", "Work front", "Blasting alcove", "Assembly line", "Repair bay", "Scrap yard", "Cooling works"};
-    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::CoolingWorks) + 1);
+        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery", "Work front", "Blasting alcove", "Assembly line", "Repair bay", "Scrap yard", "Cooling works", "Cable trench"};
+    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::CableTrench) + 1);
     return names[static_cast<std::size_t>(role)];
 }

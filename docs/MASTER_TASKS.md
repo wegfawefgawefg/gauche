@@ -369,7 +369,8 @@ behavior and balance playtesting remain the user's.
   [Pressure Rats](history/PRESSURE_RAT.md) add a visible inflation tell, fixed rush, obstacle-triggered steam burst and shared cold/water/control counters.
   [Coolant Cans and cooling works](history/COOLANT_CAN.md) connect quenching, pressure reduction, lava crossings, slippery conductive residue and an alternate maintenance encounter; this also fixes sorting-yard footprints that previously always fell back to a lone crane.
   [Industry ambience and scraps](history/INDUSTRIAL_ATMOSPHERE.md) add seven local/offline cue families, state-dependent machine sounds, nail/chain debris, and an audit of existing copper/coal sources. Ten of twenty catalog debris materials and eight of twenty ambient families are integrated.
-  Nine catalog enemy behaviors and twelve of fifty regional items implemented;
+  [Cable Crawlers and cable trenches](history/CABLE_CRAWLER.md) add finite wire laying, wall-biased movement, warned pulses through live circuits, severing/grounding counters, and an optional wet/dry encounter.
+  Ten catalog enemy behaviors and twelve of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

@@ -1,3 +1,4 @@
+#include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
 #include "magnet_crane.hpp"
 #include "arc_welder.hpp"
@@ -70,6 +71,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         break;
     case EntityKind::SnowEffigy:
         if (enemy.label_a == EffigyStrike && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::CableCrawler:
+        if (enemy.label_a==CrawlerCharge && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;
     case EntityKind::PressureRat:
         if ((enemy.label_a==RatInflate || enemy.label_a==RatDash) && enemy.cell==enemy.point_a)

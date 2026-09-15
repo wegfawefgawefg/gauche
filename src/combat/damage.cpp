@@ -1,3 +1,4 @@
+#include "../entities/cable_crawler.hpp"
 #include "../entities/magnet_crane.hpp"
 #include "../entities/arc_welder.hpp"
 #include "../entities/yeti.hpp"
@@ -54,6 +55,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_rivet_gunner(entity);
     if (damage>=12) {interrupt_yeti(entity);interrupt_magnet_crane(entity);}
     if (damage>=10) interrupt_arc_welder(entity);
+    if (damage>=8) interrupt_cable_crawler(entity);
     interrupt_stoker(entity);
     interrupt_powder_monkey(entity);
     interrupt_whiteout_drummer(entity);

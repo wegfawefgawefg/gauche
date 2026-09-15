@@ -1,3 +1,4 @@
+#include "cable_crawler.hpp"
 #include "pressure_rat.hpp"
 #include "magnet_crane.hpp"
 #include "arc_welder.hpp"
@@ -81,7 +82,7 @@ void step_entity_timers(Game& game, int slot) {
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
         interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
-        cool_pressure_rat(entity);
+        cool_pressure_rat(entity);interrupt_cable_crawler(entity);
     }
     step_shard_state(entity);
     step_spider_strand(game,entity);

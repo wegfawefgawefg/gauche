@@ -9,8 +9,27 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(GAUCHE_STRICT "Enable strict compiler warnings" ON)
 option(GAUCHE_WARN_AS_ERROR "Treat warnings as errors" ON)
+# Published revisions used by this game, including the transitive layout library.
+set(GAUCHE_GUBSY_REV c4d5408c74e61914f3886099db799919a2637696)
+set(GAUCHE_GVIEW_REV 71956a3f3884a7e542b65cadd413637b9b3cff0e)
+set(GAUCHE_GLAYOUT_REV 50861b524e58195f937e48984b33c1ca65e9631d)
+option(GAUCHE_USE_LOCAL_DEPS "Use developer checkouts instead of published dependency pins" OFF)
 set(GAUCHE_GUBSY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../Splonks/gubsy"
-    CACHE PATH "Pinned local Gubsy checkout")
+    CACHE PATH "Developer Gubsy checkout (requires GAUCHE_USE_LOCAL_DEPS)")
+set(GAUCHE_GVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../gview"
+    CACHE PATH "Developer GView checkout (requires GAUCHE_USE_LOCAL_DEPS)")
+set(GAUCHE_GLAYOUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../glayout"
+    CACHE PATH "Developer GLayout checkout (requires GAUCHE_USE_LOCAL_DEPS)")
+if(GAUCHE_USE_LOCAL_DEPS)
+    foreach(source IN ITEMS "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GVIEW_DIR}" "${GAUCHE_GLAYOUT_DIR}")
+        if(NOT EXISTS "${source}/CMakeLists.txt")
+            message(FATAL_ERROR "Missing developer dependency: ${source}. Disable GAUCHE_USE_LOCAL_DEPS to fetch the published pins.")
+        endif()
+    endforeach()
+    message(STATUS "Gauche: using developer dependency checkouts")
+else()
+    message(STATUS "Gauche: fetching published Gubsy/GView/GLayout pins")
+endif()
 
 set(GUB_MODE consumer CACHE STRING "" FORCE)
 set(GUB_BUILD_SAMPLE OFF CACHE BOOL "" FORCE)
@@ -19,33 +38,37 @@ set(GUB_ENABLE_LUA_MOD_HOST OFF CACHE BOOL "" FORCE)
 set(GUB_ENABLE_STEAM OFF CACHE BOOL "" FORCE)
 set(GUB_FETCH_DEPS ON CACHE BOOL "" FORCE)
 
-if(EXISTS "${GAUCHE_GUBSY_DIR}/CMakeLists.txt")
+if(GAUCHE_USE_LOCAL_DEPS)
     add_subdirectory("${GAUCHE_GUBSY_DIR}" gubsy)
 else()
     FetchContent_Declare(gubsy
         GIT_REPOSITORY https://github.com/wegfawefgawefg/gubsy.git
-        GIT_TAG c4d5408c74e61914f3886099db799919a2637696)
+        GIT_TAG ${GAUCHE_GUBSY_REV})
     FetchContent_MakeAvailable(gubsy)
     set(GAUCHE_GUBSY_DIR "${gubsy_SOURCE_DIR}")
 endif()
 
-set(GAUCHE_GVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../gview"
-    CACHE PATH "Pinned local GView checkout")
+set(GLAYOUT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLAYOUT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLAYOUT_BUILD_SDL_DEMO OFF CACHE BOOL "" FORCE)
+set(GLAYOUT_WITH_IMGUI OFF CACHE BOOL "" FORCE)
 set(GVIEW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GVIEW_BUILD_AUTHORING OFF CACHE BOOL "" FORCE)
 set(GVIEW_WITH_IMGUI OFF CACHE BOOL "" FORCE)
 set(GVIEW_WITH_SDL3_RENDERER ON CACHE BOOL "" FORCE)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../glayout/CMakeLists.txt")
-    set(GVIEW_GLAYOUT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../glayout"
-        CACHE PATH "Pinned local GLayout checkout")
-endif()
 set(GVIEW_SDL3_TARGET SDL3::SDL3 CACHE STRING "" FORCE)
-if(EXISTS "${GAUCHE_GVIEW_DIR}/CMakeLists.txt")
+# Provide glayout::graph before GView, so its older fallback pin is never selected.
+if(GAUCHE_USE_LOCAL_DEPS)
+    add_subdirectory("${GAUCHE_GLAYOUT_DIR}" glayout)
     add_subdirectory("${GAUCHE_GVIEW_DIR}" gview)
 else()
+    FetchContent_Declare(glayout
+        GIT_REPOSITORY https://github.com/wegfawefgawefg/glayout.git
+        GIT_TAG ${GAUCHE_GLAYOUT_REV})
+    FetchContent_MakeAvailable(glayout)
     FetchContent_Declare(gview
         GIT_REPOSITORY https://github.com/wegfawefgawefg/gview.git
-        GIT_TAG 992224876f590f5ae6722dda99d5b53a84c8c739)
+        GIT_TAG ${GAUCHE_GVIEW_REV})
     FetchContent_MakeAvailable(gview)
 endif()
 

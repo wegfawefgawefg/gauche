@@ -35,6 +35,21 @@ Lua is not needed for Gauche's build. This package list follows the engine's
 Linux setup plus Gauche's font dependencies; a clean-machine install has not
 been verified here.
 
+Builds use published, commit-pinned Gubsy, GView and GLayout sources by default,
+even if other checkouts exist beside Gauche. Engine/UI development can opt into
+those sibling checkouts with `-DGAUCHE_USE_LOCAL_DEPS=ON`; the `GAUCHE_GUBSY_DIR`,
+`GAUCHE_GVIEW_DIR` and `GAUCHE_GLAYOUT_DIR` CMake paths then select them.
+
+If an older checkout failed with `Failed to checkout tag` for GView, update Gauche
+and run the build again. The previously pinned commit had not been published;
+the corrected pins are available remotely. No game source edits or switch to a
+random GView revision are needed:
+
+```sh
+git pull --ff-only
+./scripts/run.sh
+```
+
 Clone the repository, then build and launch from its root:
 
 ```sh

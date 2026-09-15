@@ -39,7 +39,7 @@ void draw_net(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
 ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera camera,float zoom) {
     const bool drill=shot.label_a==static_cast<int>(ProjectileKind::Drill);
     const bool harpoon=shot.label_a==static_cast<int>(ProjectileKind::Harpoon);
-    const bool hook=harpoon || shot.label_a==static_cast<int>(ProjectileKind::Hook) ||
+    const bool hook=harpoon || shot.label_a==static_cast<int>(ProjectileKind::ChainHook) || shot.label_a==static_cast<int>(ProjectileKind::Hook) ||
         shot.label_a==static_cast<int>(ProjectileKind::WidowHook) || shot.label_a==static_cast<int>(ProjectileKind::FishingHook);
     const bool thrown=shot.label_a==static_cast<int>(ProjectileKind::FoamCan) || shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
         shot.label_a==static_cast<int>(ProjectileKind::EchoPebble) || shot.label_a==static_cast<int>(ProjectileKind::PrismBomb) ||
@@ -81,7 +81,8 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool fishing = shot.label_a == static_cast<int>(ProjectileKind::FishingHook);
     const bool widow = shot.label_a == static_cast<int>(ProjectileKind::WidowHook);
     const bool harpoon = shot.label_a == static_cast<int>(ProjectileKind::Harpoon);
-    const bool hook = harpoon || widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
+    const bool chain=shot.label_a==static_cast<int>(ProjectileKind::ChainHook);
+    const bool hook = chain || harpoon || widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool flare = shot.label_a == static_cast<int>(ProjectileKind::Flare);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
     const bool thaw = shot.label_a == static_cast<int>(ProjectileKind::ThawCharge) || shot.label_a == static_cast<int>(ProjectileKind::QuarryCharge);
@@ -110,12 +111,21 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
             const SDL_FRect hand = tile_rect(owner->cell, camera, zoom);
             SDL_SetRenderDrawColorFloat(renderer, light.red * (fishing ? .70F : .57F),
                 light.green * (fishing ? .72F : .47F), light.blue * (fishing ? .67F : .31F), 1);
-            SDL_RenderLine(renderer, hand.x + hand.w * .5F, hand.y + hand.h * .5F,
-                rect.x + rect.w * .5F, rect.y + rect.h * .5F);
+            const float x=hand.x+hand.w*.5F,y=hand.y+hand.h*.5F;
+            const float dx=rect.x+rect.w*.5F-x,dy=rect.y+rect.h*.5F-y;
+            if (chain) {
+                SDL_SetRenderDrawColorFloat(renderer,light.red*.55F,light.green*.58F,light.blue*.60F,1);
+                const int links=std::max(1,static_cast<int>(std::hypot(dx,dy)/4));
+                for (int i=0;i<links;++i) {
+                    const float a=static_cast<float>(i)/static_cast<float>(links);
+                    const float b=(static_cast<float>(i)+.7F)/static_cast<float>(links);
+                    SDL_RenderLine(renderer,x+dx*a,y+dy*a,x+dx*b,y+dy*b);
+                }
+            } else SDL_RenderLine(renderer,x,y,x+dx,y+dy);
         }
     }
     // CARGO: The actual item is already drawn at this cell; keep the hook off its icon.
-    if ((!fishing || shot.label_b != FishingCargo) && (!(widow || harpoon) || shot.label_b == 0))
+    if ((!fishing || shot.label_b != FishingCargo) && (!(chain || widow || harpoon) || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (foam && shot.label_b==1) {

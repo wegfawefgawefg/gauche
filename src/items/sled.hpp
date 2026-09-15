@@ -8,6 +8,7 @@ void board_sled(Game& game,int player_slot);
 const Entity* ridden_sled(const Game& game,const Entity& player);
 void sled_player_input(Game& game,int player_slot,Input& input);
 void step_sled(Game& game,int slot);
+bool haul_sled(Game& game,int slot,Cell direction);
 void sled_contact(Game& game,int slot);
 void clear_sled_links(Game& game,Entity& sled);
 bool sled_cargo(const Game& game,const Entity& cargo);

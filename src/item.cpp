@@ -1,3 +1,4 @@
+#include "projectiles/chain_hook.hpp"
 #include "items/use_completion.hpp"
 #include "items/industrial_use.hpp"
 #include "artifacts/hearth.hpp"
@@ -103,6 +104,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::ChainHook: return launch_chain_hook(game,user_slot,direction);
     case ItemKind::BoltPouch:
     case ItemKind::EmergencyFoam:
     case ItemKind::TensionSpring:

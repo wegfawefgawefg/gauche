@@ -1,3 +1,4 @@
+#include "../items/chain_hook.hpp"
 #include "../items/pocket_drill.hpp"
 #include "../items/magnet.hpp"
 #include "../items/arc_torch.hpp"
@@ -56,7 +57,9 @@ void step_player(Game& game, int slot, const Input& incoming) {
     collect_coins(game, player);
 
     // INTERACTIONS: The player owns pickup, fixture use, and the held item.
-    if (input.pickup || input.drop || input.interact || input.cancel_use) release_held_harpoon(game,player);
+    if (input.pickup || input.drop || input.interact || input.cancel_use) {
+        release_held_harpoon(game,player);release_held_chain(game,player);
+    }
     if (input.pickup) {
         cancel_item_action(player);
         // WEST: Objectives and mechanisms share pickup, before the empty-ground drop fallback.
@@ -72,6 +75,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (step_rivet_action(game,slot,input)) return;
     if (step_anchor_action(game,slot,input)) return;
     if (step_effigy_mask(game,slot,input)) return;
+    if (step_chain_action(game,slot,input)) return;
     if (step_harpoon_action(game,slot,input)) return;
     if (step_siphon_action(game,slot,input)) return;
     if (step_lantern_action(game,slot,input)) return;

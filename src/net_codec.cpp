@@ -238,7 +238,9 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             const Entity* shot = get_entity(result, item.flight);
             const Handle owner{slot,actor.generation};
             const bool valid = shot && shot->kind == EntityKind::Projectile &&
-                (item.kind == ItemKind::HarpoonGun ?
+                (item.kind == ItemKind::ChainHook ?
+                    shot->label_a == static_cast<int>(ProjectileKind::ChainHook) && shot->entity_a == owner :
+                 item.kind == ItemKind::HarpoonGun ?
                     shot->label_a == static_cast<int>(ProjectileKind::Harpoon) && shot->entity_a == owner :
                     shot->label_a == static_cast<int>(ProjectileKind::Boomerang) && shot->entity_b == owner);
             if (!valid) reader.okay = false;

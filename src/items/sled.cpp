@@ -201,6 +201,22 @@ void step_sled(Game& game,int slot) {
     if (shallow_water(landing.kind) || landing.surface.still_ticks>0 ||
         (rider && (rider->health<=0 || rider->cell!=next || rider->vitals.rooted>0))) stop_sled(game,sled);
 }
+bool haul_sled(Game& game,int slot,Cell direction) {
+    Entity& sled=game.entities[static_cast<std::size_t>(slot)];
+    if (sled.kind!=EntityKind::Sled || sled.health<=0 || sled.toss.ticks || distance({},direction)!=1) return false;
+    sync_passengers(game,sled);
+    Entity* rider=get_entity(game,sled.entity_a);
+    const Cell next=sled.cell+direction;
+    if (!free_landing(game,sled,next) || (rider && (rider->vitals.rooted || rider->vitals.grip))) return false;
+    stop_sled(game,sled);
+    Entity* cargo=get_entity(game,sled.entity_b);
+    // Preserve the reciprocal passenger handles before applying landing hazards.
+    sled.cell=sled.point_a=next;
+    if (cargo) cargo->cell=next;
+    if (rider) {rider->cell=next;rider->vitals.slide_momentum=0;enter_actor_cell(game,sled.entity_a.slot);}
+    if (sled.kind==EntityKind::Sled && sled.health>0) {sync_passengers(game,sled);load_cargo(game,sled);sled_contact(game,slot);}
+    return true;
+}
 Item recoverable_sled(const Game& game,Cell cell) {
     for (const Entity& sled : game.entities) {
         if (sled.kind!=EntityKind::Sled || sled.cell!=cell || sled.health<=0 || sled.label_a!=0 ||

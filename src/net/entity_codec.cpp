@@ -1,3 +1,4 @@
+#include "../projectiles/chain_hook.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../items/emergency_foam.hpp"
 #include "../entities/furnace_moth.hpp"
@@ -73,7 +74,7 @@ Item read_item(PacketReader& reader) {
     if (item.anchor.slot < -1 || item.anchor.slot >= max_entities ||
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor && item.kind != ItemKind::IceAnchor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
-        (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun)) reader.okay = false;
+        (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
     if (item.kind==ItemKind::HeatSiphon && (item.loaded>1800 || item.spare!=0)) reader.okay=false;
     if (item.kind == ItemKind::HarpoonGun && item.loaded > 1) reader.okay = false;
@@ -242,6 +243,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_quarry_charge(entity)) reader.okay=false;
     if (!valid_foam_can(entity)) reader.okay=false;
+    if (!valid_chain_hook(entity)) reader.okay=false;
     if (!valid_thrown_bolt(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;

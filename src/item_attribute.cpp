@@ -69,7 +69,7 @@ bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
     case ItemAttribute::Big:
         return kind == ItemKind::HeatSiphon || kind == ItemKind::SteamKettle || kind == ItemKind::SnowScoop || kind == ItemKind::GritPouch || kind == ItemKind::ThrowingNet || kind == ItemKind::ThornCaltrops || item_is_melee(kind) || (spec != nullptr && spec->pattern.blast_radius > 0) || kind == ItemKind::Bomb ||
                kind == ItemKind::RocketLauncher;
-    case ItemAttribute::Long: return kind != ItemKind::ThawCharge && (kind == ItemKind::HorseshoeMagnet || kind == ItemKind::ForemanWhistle || kind == ItemKind::EchoPebble || kind == ItemKind::SignalFlare || kind == ItemKind::FishingLine || kind == ItemKind::ColdFlask || kind == ItemKind::WolfWhistle || kind == ItemKind::Firecracker || kind == ItemKind::StinkBomb || kind == ItemKind::RottenFruit || (weapon && kind != ItemKind::AcornMine && kind != ItemKind::EelBattery) || kind == ItemKind::RopeHook || kind == ItemKind::BlinkSeed || kind == ItemKind::ThrowingNet);
+    case ItemAttribute::Long: return kind != ItemKind::ThawCharge && (kind == ItemKind::ChainHook || kind == ItemKind::HorseshoeMagnet || kind == ItemKind::ForemanWhistle || kind == ItemKind::EchoPebble || kind == ItemKind::SignalFlare || kind == ItemKind::FishingLine || kind == ItemKind::ColdFlask || kind == ItemKind::WolfWhistle || kind == ItemKind::Firecracker || kind == ItemKind::StinkBomb || kind == ItemKind::RottenFruit || (weapon && kind != ItemKind::AcornMine && kind != ItemKind::EelBattery) || kind == ItemKind::RopeHook || kind == ItemKind::BlinkSeed || kind == ItemKind::ThrowingNet);
     case ItemAttribute::Piercing:
         return item_is_gun(kind) && kind != ItemKind::RocketLauncher;
     case ItemAttribute::Restorative:

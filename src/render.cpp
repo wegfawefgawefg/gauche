@@ -349,7 +349,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind==EntityKind::RivetGunner || entity.kind==EntityKind::ArcWelder) {
             displayed_gun=make_item(entity.kind==EntityKind::ArcWelder ? ItemKind::ArcTorch : ItemKind::RivetGun); held=&displayed_gun;
         }
-        if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun) && entity.kind != EntityKind::GroundItem) {
+        if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun || held->kind == ItemKind::ChainHook) && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
             const Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;
             const float forward = pocket_drill_active(entity) ? pixels*(.38F+(game.tick%2==0 ? .015F : -.015F)) : winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;

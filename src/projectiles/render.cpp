@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "../items/emergency_foam.hpp"
 #include "fishing.hpp"
 #include "../lighting/render.hpp"
 #include "../item_pattern.hpp"
@@ -39,7 +40,7 @@ ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera ca
     const bool harpoon=shot.label_a==static_cast<int>(ProjectileKind::Harpoon);
     const bool hook=harpoon || shot.label_a==static_cast<int>(ProjectileKind::Hook) ||
         shot.label_a==static_cast<int>(ProjectileKind::WidowHook) || shot.label_a==static_cast<int>(ProjectileKind::FishingHook);
-    const bool thrown=shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
+    const bool thrown=shot.label_a==static_cast<int>(ProjectileKind::FoamCan) || shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
         shot.label_a==static_cast<int>(ProjectileKind::EchoPebble) || shot.label_a==static_cast<int>(ProjectileKind::PrismBomb) ||
         shot.label_a==static_cast<int>(ProjectileKind::Snowball) || shot.label_a==static_cast<int>(ProjectileKind::IceBrick) ||
         shot.label_a==static_cast<int>(ProjectileKind::Mixture) || shot.label_a==static_cast<int>(ProjectileKind::Bomb) ||
@@ -69,6 +70,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
     if (shot.label_a == static_cast<int>(ProjectileKind::Net)) { draw_net(renderer, graphics, shot, game, camera, zoom, lighting); return; }
+    const bool foam=shot.label_a==static_cast<int>(ProjectileKind::FoamCan);
     const bool echo = shot.label_a == static_cast<int>(ProjectileKind::EchoPebble);
     const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
@@ -85,7 +87,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = foam || blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float pixels=tile_pixels(zoom);
     const ProjectilePose pose=projectile_pose(shot,game,camera,zoom);
     SDL_FRect rect=pose.body;
@@ -113,6 +115,15 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     if ((!fishing || shot.label_b != FishingCargo) && (!(widow || harpoon) || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+    if (foam && shot.label_b==1) {
+        SDL_Texture* mound=texture_for(graphics,Sprite::FoamCover);
+        const float size=.18F+.65F*(1-static_cast<float>(shot.timer_a)/foam_expand_ticks);
+        SDL_FRect cloud=tile_rect(shot.cell,camera,zoom);
+        cloud.x+=cloud.w*(1-size)*.5F;cloud.y+=cloud.h*(1-size);cloud.w*=size;cloud.h*=size;
+        SDL_SetTextureColorModFloat(mound,light.red,light.green,light.blue);
+        SDL_RenderTexture(renderer,mound,nullptr,&cloud);
+        SDL_SetTextureColorModFloat(mound,1,1,1);
+    }
     if (echo && shot.use_flash>0) {
         const float spread = pixels*(1-static_cast<float>(shot.use_flash)/12);
         const float x = rect.x+rect.w*.5F, y = rect.y+rect.h*.5F;

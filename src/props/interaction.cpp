@@ -131,6 +131,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind == PropKind::Conveyor) tile->prop.variant &= 7U;
+    if (kind == PropKind::FoamCover) tile->prop.growth_ticks=600;
     if (kind == PropKind::TensionSpring) {tile->prop.variant &= 3U;tile->prop.growth_ticks=18;}
     if (kind == PropKind::Grate) tile->prop.variant &= 1U;
     if (kind == PropKind::Barricade) {tile->prop.variant &= 3U;tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));}
@@ -154,6 +155,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::FoamCover) emit_sound(game,SoundId::FoamTear,cell);
     else if (prop.kind == PropKind::PayCage) emit_sound(game,SoundId::PayRattle,cell);
     else if (prop.kind == PropKind::Conveyor) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade) emit_sound(game,SoundId::GrateHit,cell);

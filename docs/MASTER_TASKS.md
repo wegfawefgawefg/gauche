@@ -374,7 +374,8 @@ behavior and balance playtesting remain the user's.
   [Walking Kilns and kiln courts](history/WALKING_KILN.md) add warned flame rows, cold interruption, an exposed mouth, finite fuel and actual wood/coal consumption beside optional oil/stock encounters.
   [Tension Springs](history/TENSION_SPRING.md) add stackable underfoot launch pads, real airborne gap crossings and pursuer traps, heat/destruction counters and supplies at optional hot salvage banks.
   [Audit Clerks and pay offices](history/AUDIT_CLERK.md) add real loose-gold collection, finite breakable pay cages, interruptible alarms and existing-worker responses without reinforcements spawning.
-  Twelve catalog enemy behaviors and fourteen of fifty regional items implemented;
+  [Emergency Foam](history/EMERGENCY_FOAM.md) adds traveling sealed cans, a visible expansion delay, shared fire/fuse quenching and temporary shot-blocking soft cover, with kiln-court supplies.
+  Twelve catalog enemy behaviors and fifteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

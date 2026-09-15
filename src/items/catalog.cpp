@@ -1,3 +1,4 @@
+#include "emergency_foam.hpp"
 #include "tension_spring.hpp"
 #include "pocket_drill.hpp"
 #include "coolant.hpp"
@@ -51,6 +52,7 @@
 #include "belt_tools.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=emergency_foam_item(kind)) return item;
     if (const auto* item=tension_spring_item(kind)) return item;
     if (const auto* item=coolant_item(kind)) return item;
     if (const auto* item=barricade_item(kind)) return item;

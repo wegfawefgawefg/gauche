@@ -30,7 +30,8 @@ bool populate_kiln_court(Game& game,const FloorPlan& plan,const RoomPlan& room) 
             Tile& tile=*game.stage.at(at(x,-3));
             tile.surface.liquid=LiquidKind::Oil;tile.surface.liquid_ticks=1800;
         }
-        place_ground_item(game,tool,ItemKind::CoolantCan);
+        const bool foam=random_u32(game)%2==0;
+        place_ground_item(game,tool,foam ? ItemKind::EmergencyFoam : ItemKind::CoolantCan,foam ? 2 : 1);
         return true;
     }
     return false;

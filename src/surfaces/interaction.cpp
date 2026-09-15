@@ -1,3 +1,4 @@
+#include "../items/emergency_foam.hpp"
 #include "../entities/pressure_rat.hpp"
 #include "../entities/ember.hpp"
 #include "interaction.hpp"
@@ -18,8 +19,9 @@ namespace {
 
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
+    if (prop.kind==PropKind::FoamCover) return false;
     if (prop.covered) return true;
-    return prop.kind != PropKind::Barricade && prop.kind != PropKind::Conveyor && prop.kind != PropKind::Grate && prop.kind != PropKind::ScrapBin && prop.kind != PropKind::OreBin && prop.kind != PropKind::CrystalGrowth && prop.kind != PropKind::Doorstop && prop.kind != PropKind::CopperWire && prop.kind != PropKind::GroundingSpike && prop.kind != PropKind::MaintenanceLocker && prop.kind != PropKind::Stove && prop.kind != PropKind::Candle && prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
+    return prop.kind != PropKind::PayCage && prop.kind != PropKind::TensionSpring && prop.kind != PropKind::Barricade && prop.kind != PropKind::Conveyor && prop.kind != PropKind::Grate && prop.kind != PropKind::ScrapBin && prop.kind != PropKind::OreBin && prop.kind != PropKind::CrystalGrowth && prop.kind != PropKind::Doorstop && prop.kind != PropKind::CopperWire && prop.kind != PropKind::GroundingSpike && prop.kind != PropKind::MaintenanceLocker && prop.kind != PropKind::Stove && prop.kind != PropKind::Candle && prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
 } // namespace
@@ -50,7 +52,7 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
 
 bool ignite_surface(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || surface_wet(*tile)) return false;
+    if (tile == nullptr || surface_wet(*tile) || live_foam(tile->prop)) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell,true);
     const bool wood = tile->kind == TileKind::Wall && wooden_terrain(*tile) &&
         tile->break_rule != BreakRule::Unbreakable;

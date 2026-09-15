@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, fourteen regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, fifteen regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -149,7 +149,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 37 | Cinder sausage | Eat for 8 HP and 8s warmth; briefly attracts furnace moths and heat-seeking creatures. Dropped sausage is real food bait. Stack 4. Crunchy munch. | C / 6 |
 | 38 | Coal biscuit | Awful snack: lose 2 HP, resist nausea for 12s; alternatively feed it to a kiln as fuel. Stack 5. No free healing conversion. Dry crunch. | C / 3 |
 | 39 | Salt tablet | Clears one heat-fatigue penalty but gives 2s thirst/slow recovery; use only when affected. Stack 6. Never a requirement to survive normal floor temperature. Capsule click. | C / 5 |
-| 40 | Emergency foam | Traveling can to 4, 1s expansion then radius-1 fire smothering and temporary soft cover. Two cans. Bullets tear it; heat slowly consumes it. Expanding fizz. | U / 18 |
+| 40 | Emergency foam | Implemented: throw to four cells, then expand for 1s after landing. Quenches a small cross through shared fire/fuse rules; empty solid floor gets 12-HP cover for 10s. Bullets tear it, adjacent heat costs 2 HP each 0.5s. No terrain conversion, buried loot, overwrite or water bridge. Stack 2, sealed reaction, no modifiers. Six original can/hiss/tear/collapse sounds. | U / 18; native stage-one stock, half of kiln-court supply rolls |
 | 41 | Punch card | Insert into a marked service reader for one optional access/maintenance cycle. Stack 3, consumed; main route never requires a randomly found card. Paper punch. | C / 7 |
 | 42 | Inspector stamp | Mark one idle worker/machine for inspection: it pauses one work cycle unless already fighting. Five stamps; foreman notices repeated misuse. Official thump. | U / 13 |
 | 43 | Counterweight bag | Place a heavy 30-HP bag on a pressure plate, or throw to 3 for a 10-damage shove. Recoverable; belts carry it, flying cannot trigger plates. Sand thud. | U / 17 |
@@ -184,7 +184,7 @@ foundry exit. Special layouts replace a floor only once their full route works.
 | Slag bank | Curved hot basin with two dry shores | Snail, cooling splash source, brittle optional shortcut; no required lava crossing. |
 | Pipe crawl | Narrow alternate service lane parallel to main hall | Pressure rats, readable leaking outlet and cutoff valve. Can be bypassed or deliberately vented. |
 | Settling tanks | Paired rectangular pits with dry central bridge | Tar choir with broken sightlines, solvent shelf. Fire clears tar but endangers the bridge approach. |
-| Kiln court | Implemented initial variant: open court with an offset oil lane and clear dry margins | Walking kiln, crate/log stock, and a Coolant Can on the opposite dry side. Shared maintenance-room selection, protected footprint; U-shaped alcoves/ceramic chest remain candidates. |
+| Kiln court | Implemented initial variant: open court with an offset oil lane and clear dry margins | Walking kiln, crate/log stock, and an equal choice of Coolant Can or two Emergency Foam cans on the opposite dry side. Shared maintenance-room selection, protected footprint; U-shaped alcoves/ceramic chest remain candidates. |
 | Pay office | Implemented initial variant: optional dry clearing with an offset grated pay cage | Clerk, six loose coins, finite cage balance and a nearby Pickhand. Whole footprint checked before placement, mirrored if needed; protected central route stays open. Tampering warns before calling existing audible workers. |
 | Repair bay | Implemented: broad dry clearing with an offset 3×3 wet work area and two grate benches opposite | One welder on the dry bank, one ready grounding spike beside the water. Entire footprint is checked before placement and avoids protected routes. Maintenance-room selection has a two-thirds chance, then picks repair bay, cooling works, cable trench, kiln court or pay office equally. Drain/toolbox remain pending. |
 | Ash loft | Broad quiet shelf with a single noisy floor strip | Sleepers, bagged ash, fan outlet; acoustic choice before combat. |

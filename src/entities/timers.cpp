@@ -1,3 +1,4 @@
+#include "../items/emergency_foam.hpp"
 #include "audit_clerk.hpp"
 #include "walking_kiln.hpp"
 #include "../items/pocket_drill.hpp"
@@ -71,6 +72,7 @@ void step_entity_timers(Game& game, int slot) {
 
     // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
     if (entity.kind == EntityKind::SteamLeech || entity.kind==EntityKind::WalkingKiln) entity.scorch_ticks = entity.burn_ticks = 0;
+    step_foam_can(game,slot);
     step_thaw_charge(game,slot);
     step_quarry_charge(game,slot);
     step_flare(game,slot);

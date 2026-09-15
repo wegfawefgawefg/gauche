@@ -1,3 +1,4 @@
+#include "../items/emergency_foam.hpp"
 #include "tension_spring.hpp"
 #include "growth.hpp"
 #include "conveyor.hpp"
@@ -35,6 +36,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind == PropKind::FoamCover) { step_foam_cover(game,cell); continue; }
             if (prop.kind == PropKind::TensionSpring) { step_tension_spring(game,cell); continue; }
             if (prop.kind == PropKind::Conveyor) { step_belt_timer(prop); continue; }
             if (prop.kind == PropKind::BridgePlank) { step_bridge_support(game,cell); continue; }

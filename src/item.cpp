@@ -1,3 +1,4 @@
+#include "items/emergency_foam.hpp"
 #include "items/tension_spring.hpp"
 #include "items/coolant.hpp"
 #include "items/barricade.hpp"
@@ -109,6 +110,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::EmergencyFoam:
+        used=throw_emergency_foam(game,user_slot,direction,range); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TensionSpring:
         used=place_tension_spring(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::CoolantCan:

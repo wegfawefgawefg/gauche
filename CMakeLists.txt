@@ -124,6 +124,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/walking_kiln.cpp src/world/kiln_court.cpp
     src/entities/audit_clerk.cpp src/world/pay_office.cpp
     src/items/tension_spring.cpp src/props/tension_spring.cpp
+    src/items/emergency_foam.cpp
     src/entities/pressure_rat.cpp
     src/entities/magnet_crane.cpp
     src/entities/arc_welder.cpp

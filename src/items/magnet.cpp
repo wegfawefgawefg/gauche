@@ -43,7 +43,7 @@ bool magnetic_item(ItemKind kind) {
     case ItemKind::Crampons: case ItemKind::GroundingSpike: case ItemKind::HarpoonGun:
     case ItemKind::EmergencyDoorstop: case ItemKind::TuningFork: case ItemKind::IceAnchor:
     case ItemKind::FuseScissors: case ItemKind::PressHammer: case ItemKind::RivetGun:
-    case ItemKind::TensionSpring: case ItemKind::PocketDrill: case ItemKind::CoolantCan: case ItemKind::FoldingBarricade: case ItemKind::BeltCrank: case ItemKind::HorseshoeMagnet: return true;
+    case ItemKind::EmergencyFoam: case ItemKind::TensionSpring: case ItemKind::PocketDrill: case ItemKind::CoolantCan: case ItemKind::FoldingBarricade: case ItemKind::BeltCrank: case ItemKind::HorseshoeMagnet: return true;
     default: return false;
     }
 }

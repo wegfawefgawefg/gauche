@@ -1,3 +1,4 @@
+#include "../items/emergency_foam.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "../entities/walking_kiln.hpp"
 #include "../items/pocket_drill.hpp"
@@ -235,6 +236,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_sled(entity)) reader.okay=false;
     if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_quarry_charge(entity)) reader.okay=false;
+    if (!valid_foam_can(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||

@@ -28,6 +28,10 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
                 Sprite::IceBlockThaw : spec.sprite;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (prop.kind==PropKind::FoamCover && prop.growth_ticks<120) {
+                const float size=.35F+.65F*static_cast<float>(prop.growth_ticks)/120;
+                rect.x+=rect.w*(1-size)*.5F;rect.y+=rect.h*(1-size);rect.w*=size;rect.h*=size;
+            }
             if (prop.kind == PropKind::Doorstop) {
                 rect.x += rect.w*.35F; rect.y += rect.h*.4F; rect.w *= .55F; rect.h *= .55F;
             }

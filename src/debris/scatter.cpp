@@ -30,6 +30,7 @@ void scatter_material(LooseDebris& debris, Cell cell, DebrisKind kind,
 
 void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
                          std::uint64_t seed, bool settled) {
+    if (kind==PropKind::FoamCover) return; // Collapses in place, not into wooden fragments.
     DebrisKind first = DebrisKind::WoodChip, second = DebrisKind::Bark;
     switch (kind) {
     case PropKind::Conveyor: first=DebrisKind::BeltRubber; second=DebrisKind::SteelWasher; break;

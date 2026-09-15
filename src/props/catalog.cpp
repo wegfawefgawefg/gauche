@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::FoamCover: return {Sprite::FoamCover,SoundId::FoamCollapse,12,true,false};
     case PropKind::PayCage: return {Sprite::PayCage,SoundId::PayBreak,60,true,false};
     case PropKind::TensionSpring: return {Sprite::TensionSpring,SoundId::TensionBreak,6,false,false};
     case PropKind::Conveyor: return {Sprite::Conveyor,SoundId::BeltBreak,48,false,false};
@@ -66,7 +67,7 @@ int prop_max_health(const Prop& prop) {
 }
 
 bool prop_low_cover(const Prop& prop) {
-    return (prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::FoamCover || prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
 }
 
 bool prop_shoot_through(const Prop& prop) {

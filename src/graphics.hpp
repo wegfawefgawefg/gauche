@@ -51,6 +51,7 @@ enum class Sprite : std::size_t {
     IceWindow, IceChain, IceHatch, IcePipe, IceWheel, IceMotor, IceFlag, IceDrip, IceChimney,
     SkateBlade, Crampons,
     SignalFlare, FlareBurning, DebrisFlareCinder,
+    CopperWire, WireJunction, GroundingSpike, SpikeHot, SpikeSpent,
     Count,
 };
 

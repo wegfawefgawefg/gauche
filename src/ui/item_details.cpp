@@ -222,8 +222,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACED HP 18 | SPLIT 50%%/50%%");
     if (item.kind == ItemKind::Snowball)
         std::snprintf(line, sizeof(line), "DMG %d | WET PATCH 2s", pattern.damage);
+    if (item.kind == ItemKind::CopperWire) std::snprintf(line,sizeof(line),"LINKS WET / WIRED CELLS | 4 HP");
+    if (item.kind == ItemKind::GroundingSpike) std::snprintf(line,sizeof(line),"ABSORBS 1 PULSE | COOL 3s");
     if (item.kind == ItemKind::EelBattery)
-        std::snprintf(line, sizeof(line), "DMG %d | WET PATH %d", pattern.damage, pattern.blast_radius);
+        std::snprintf(line, sizeof(line), "DMG %d | CIRCUIT %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::Chisel)
         std::snprintf(line, sizeof(line), "DMG %d | ICE %d | DIG 1", pattern.damage, pattern.damage * 2);
     if (item.kind == ItemKind::IceBrick)
@@ -306,7 +308,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "FIRE %.1fs  BURN 20 / 5s", static_cast<double>(item.flame_ticks)/60);
         text(renderer, x + 10.0F, y + 129.0F, line, 235, 167, 80);
     } else if (pattern.chain) {
-        std::snprintf(line, sizeof(line), "4 HITS | JUMP %d / WET %d", pattern.blast_radius, pattern.blast_radius + 2);
+        std::snprintf(line, sizeof(line), "4 HITS | JUMP %d | CIRCUIT 6", pattern.blast_radius);
         text(renderer, x + 10, y + 129, line, 162, 196, 213);
     } else text(renderer, x + 10.0F, y + 129.0F, item_stackable(item) ? "STACKABLE" : "NOT STACKABLE", 162, 171, 159);
     if (item_windup(item) > 0)
@@ -342,7 +344,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
     text(renderer, x + 10.0F, y + 140.0F, line, 194, 192, 180);
     if (height >= 176.0F) {
-        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + WET PATH" : "PATTERN", 185, 185, 172);
+        text(renderer, x + 10.0F, y + 151.0F, item.kind == ItemKind::IceBrick ? "THROW PATTERN" : item.kind == ItemKind::EelBattery ? "CONTACT + CIRCUIT" : "PATTERN", 185, 185, 172);
         draw_pattern_diagram(renderer, item, x + 10.0F, y + 159.0F,
                              width - 20.0F, height - 169.0F, &player);
     }

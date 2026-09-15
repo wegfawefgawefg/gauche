@@ -3,7 +3,7 @@
 
 namespace {
 
-constexpr RegionalItem acorn{"Thunder Acorn", "Flies, then shocks four bodies. Jumps weaken; wet feet extend them. Friends too. Sparks light fuel.",
+constexpr RegionalItem acorn{"Thunder Acorn", "Flies, then arcs through up to four bodies. Water or wire takes the rest as a six-step circuit. Friends too; a planted spike grounds it.",
     Sprite::ThunderAcorn, {1, 5, 1, 24, 60, PatternEffect::Damage, true, 0, 0, false, false, false, true},
     ItemAction::Material, 30, 3, true, 0, 0, 0, 0, 0, SoundId::ThunderThrow};
 

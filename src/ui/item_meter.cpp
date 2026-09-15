@@ -24,6 +24,9 @@ std::string item_state_text(const Item& item, bool compact) {
         if (item.loaded == 2) std::snprintf(result,sizeof(result),compact ? "HOT %ds" : "HOT | COOLS IN %ds",(item.spare+59)/60);
         else if (item.spare > 0) std::snprintf(result,sizeof(result),compact ? "H %d%%" : "HEATING %d%%",item.spare*100/90);
         else return compact ? "COLD" : "COLD WATER";
+    } else if (item.kind == ItemKind::GroundingSpike) {
+        if (item_stackable(item)) std::snprintf(result,sizeof(result),"x%d %dHP",item.count,item.durability);
+        else std::snprintf(result,sizeof(result),"%d/%dHP",item.durability,item.max_durability);
     } else if (item.kind == ItemKind::CandleStub) {
         if (item_stackable(item)) std::snprintf(result, sizeof(result), "x%d %ds", item.count, (item.loaded+59)/60);
         else std::snprintf(result, sizeof(result), "%ds %d/%d", (item.loaded+59)/60, item.durability, item.max_durability);

@@ -19,7 +19,7 @@ void rest(Entity& eel, int ticks) {
 }
 
 bool swim_space(const Game& game, Cell cell) {
-    return conductive_cell(game, cell) && entity_at(game, cell, true) < 0;
+    return conductive_water(game, cell) && entity_at(game, cell, true) < 0;
 }
 
 bool swim(Game& game, int slot, Cell cell) {
@@ -44,7 +44,7 @@ const Entity* nearest_player(const Game& game, Cell cell) {
     return best;
 }
 
-bool player_in_water(const Game& game, const WetWave& wave) {
+bool player_in_circuit(const Game& game, const WetWave& wave) {
     for (int owner = 0; owner < 4; ++owner) {
         const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
         if (!game.run.online[static_cast<std::size_t>(owner)] || !player || !water_shock_target(game, *player)) continue;
@@ -163,7 +163,7 @@ void interrupt_glass_eel(Entity& eel) {
 void step_glass_eel(Game& game, int slot) {
     Entity& eel = game.entities[static_cast<std::size_t>(slot)];
     eel.counter_a = std::max(0,eel.counter_a-1);
-    if (!conductive_cell(game, eel.cell)) {
+    if (!conductive_water(game, eel.cell)) {
         interrupt_glass_eel(eel);
         eel.sprite = Sprite::EelStranded;
         // STRANDED: Freeze or drain its pool. It can flop into adjacent water, never cross land.
@@ -186,7 +186,7 @@ void step_glass_eel(Game& game, int slot) {
         return;
     }
     if (follow_bait(game,slot)) return;
-    if (eel.freeze_ticks == 0 && player_in_water(game, wet_wave(game, eel.cell, eel_shock_reach))) {
+    if (eel.freeze_ticks == 0 && player_in_circuit(game, wet_wave(game, eel.cell, eel_shock_reach))) {
         eel.label_a = EelCharge;
         eel.timer_a = 48;
         eel.point_a = eel.cell;

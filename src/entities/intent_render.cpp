@@ -21,6 +21,7 @@ void draw_enemy_intents(SDL_Renderer* renderer, const Game& game,
         const bool water = enemy.kind == EntityKind::GlassEel && enemy.label_a == EelCharge;
         if (water) {
             const WetWave wave = wet_wave(game, enemy.cell, eel_shock_reach);
+            if (wave.ground_node>=0) continue;
             for (int i = 0; i < wave.count && attack.count < static_cast<int>(attack.cells.size()); ++i)
                 attack.cells[static_cast<std::size_t>(attack.count++)] = wave.nodes[static_cast<std::size_t>(i)].cell;
         }

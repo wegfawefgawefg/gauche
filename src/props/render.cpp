@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "circuit_render.hpp"
 #include "candle.hpp"
 #include "stove.hpp"
 #include "alarm_clock.hpp"
@@ -19,15 +20,17 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             if (prop.kind == PropKind::None || prop.broken) continue;
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
-            const Sprite sprite = prop.kind == PropKind::SpiderStrand ?
+            const Sprite sprite = prop.kind == PropKind::GroundingSpike && prop.variant>0 ?
+                (prop.variant==1 ? Sprite::SpikeHot : Sprite::SpikeSpent) : prop.kind == PropKind::SpiderStrand ?
                 (prop.variant == 0 ? Sprite::SpiderStrand : Sprite::SpiderStrandV) : stove_lit(prop) ? Sprite::StoveLit : candle_lit(prop) ? Sprite::CandleLit : prop.kind == PropKind::AlarmClock ? alarm_clock_sprite(prop) : prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
                 Sprite::ShootTall : prop.kind == PropKind::IceBlock && prop.growth_ticks <= 120 ?
                 Sprite::IceBlockThaw : spec.sprite;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, 0, nullptr,
-                (prop.kind == PropKind::SpiderStrand || prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
+                (prop.kind == PropKind::GroundingSpike || prop.kind == PropKind::SpiderStrand || prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
             SDL_SetTextureColorModFloat(texture, 1, 1, 1);
             if (prop.covered) {
                 SDL_Texture* cloth = texture_for(graphics, Sprite::FeltCover);

@@ -123,6 +123,15 @@ int main() {
     owner->inventory.slots[0].muffled_uses = 4;
     owner->inventory.slots[5] = make_item(ItemKind::GritPouch, 1, ItemAttribute::Big);
     owner->inventory.slots[5].uses = 2;
+    original.stage.tiles[11].prop = {PropKind::CopperWire, 2, 0, false};
+    original.stage.tiles[12].prop = {PropKind::GroundingSpike, 5, 1, false, 137};
+    original.stage.tiles[13].prop = {PropKind::GroundingSpike, 8, 2, false};
+    Entity* circuit_loot = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{21,8}));
+    circuit_loot->ground_item = make_item(ItemKind::GroundingSpike);
+    circuit_loot->ground_item.durability = 5;
+    Entity* wire_loot = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{22,8}));
+    wire_loot->ground_item = make_item(ItemKind::CopperWire,1,ItemAttribute::Durable);
+    wire_loot->ground_item.uses = 9;
     original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};
     original.stage.tiles[2].prop = {PropKind::Puffball, 0, 9, true};
     original.run.pending_count[0] = 1;

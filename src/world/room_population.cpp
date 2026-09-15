@@ -252,7 +252,7 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
         } else if (room.role == RoomRole::BoilerGallery) {
             supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment);
         } else if (room.role == RoomRole::ServicePassage) {
-            supply(game,room,ItemKind::Lighter,1,budget.equipment);
+            supply(game,room,round%2==0 ? ItemKind::CopperWire : ItemKind::GroundingSpike,1,budget.equipment);
         } else if (room.role == RoomRole::CrystalGallery) {
             supply(game,room,ItemKind::IceBrick,2,budget.equipment);
         } else if (room.role == RoomRole::Chapel) {

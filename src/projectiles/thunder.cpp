@@ -4,6 +4,7 @@
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
 #include "../props/interaction.hpp"
+#include "../surfaces/conduction.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -31,9 +32,19 @@ void discharge(Game& game, int slot, Cell impact, int first) {
     const ItemPattern pattern = item_pattern(shot.ground_item);
     // COMMIT: Capture all victims and cells before deaths, drops or burning alter cover.
     const ThunderChain chain = thunder_chain(game, first, pattern);
+    std::array<ConductedShock,4> circuits{};
+    for (int i=0;i<chain.count;++i) {
+        const Cell cell=chain.cells[static_cast<std::size_t>(i)];
+        if (conductive_cell(game,cell) || wet_wave(game,cell,6).ground_node>=0)
+            circuits[static_cast<std::size_t>(i)]=trace_conducted_shock(game,cell,6);
+    }
     remove_entity(game, {slot, shot.generation});
     if (chain.count == 0) {
         arc_event(game, shot.cell, impact, true);
+        if (conductive_cell(game,impact) || wet_wave(game,impact,6).ground_node>=0) {
+            discharge_water(game,impact,shot.point_a,pattern.damage,6);
+            return;
+        }
         hit_prop(game, impact, pattern.damage, shot.point_a);
         ignite_surface(game, impact);
         return;
@@ -44,6 +55,12 @@ void discharge(Game& game, int slot, Cell impact, int first) {
         const Cell cell = chain.cells[at];
         const int damage = (pattern.damage * (4 - index) + 3) / 4;
         arc_event(game, previous, cell, index == 0);
+        // CIRCUIT: On contact with water or laid wire, the remaining arc takes that path.
+        // Stop the actor chain here so a loop cannot hit anyone twice in one discharge.
+        if (circuits[at].wave.count>0) {
+            apply_conducted_shock(game,circuits[at],previous,damage);
+            break;
+        }
         if (get_entity(game, chain.targets[at]))
             damage_entity(game, chain.targets[at].slot, damage, previous, false);
         hit_prop(game, cell, damage, shot.point_a);

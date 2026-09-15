@@ -3,7 +3,7 @@
 
 namespace {
 
-constexpr RegionalItem battery{"Eel Battery", "Touch to shock. Wet paths carry weaker arcs. Friends and you can be hit. Eels are immune.",
+constexpr RegionalItem battery{"Eel Battery", "Touch to shock. Water and wire carry weaker arcs. Friends and you can be hit. Eels are immune.",
     Sprite::EelBattery, {1, 1, 4, 14, 45, PatternEffect::Damage, false, 0, 0, false, false, false, false, true},
     ItemAction::Material, 24, 1, false, 3, 0, 0, 0, 0, SoundId::BatteryZap};
 

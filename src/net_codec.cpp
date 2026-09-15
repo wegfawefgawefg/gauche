@@ -128,8 +128,13 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind >= PropKind::Count ||
             tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
-            tile.prop.growth_ticks > (tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
-            (tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            tile.prop.growth_ticks > (tile.prop.kind == PropKind::GroundingSpike ? 180 : tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
+            (tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+        if (tile.prop.kind == PropKind::GroundingSpike && (tile.prop.variant > 2 ||
+            (!tile.prop.broken && tile.prop.hp == 0) ||
+            (tile.prop.variant != 1 && tile.prop.growth_ticks != 0))) reader.okay = false;
+        if (tile.prop.kind == PropKind::CopperWire && (tile.prop.variant != 0 ||
+            (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.prop.kind == PropKind::Candle && (tile.prop.variant > 3 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.prop.kind == PropKind::SpiderStrand && (tile.prop.variant > 1 || tile.prop.hp != 1 || tile.prop.broken)) reader.okay = false;
         if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;

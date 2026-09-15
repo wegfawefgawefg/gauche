@@ -1,4 +1,5 @@
 #include "../props/scarecrow.hpp"
+#include "../items/circuits.hpp"
 #include "presentation.hpp"
 #include "../combat/beams.hpp"
 #include "../props/cloth.hpp"
@@ -55,6 +56,15 @@ void mark(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
     } else SDL_RenderRect(renderer, &rect);
 }
 
+bool circuit_marks(SDL_Renderer* renderer,const Game& game,Cell cell,ViewCamera camera,float zoom) {
+    const WetWave wave=wet_wave(game,cell,6);
+    if (!conductive_cell(game,cell) && wave.ground_node<0) return false;
+    if (wave.ground_node>=0) mark(renderer,wave.ground,camera,zoom,PatternEffect::Utility);
+    else for (int i=0;i<wave.count;++i)
+        mark(renderer,wave.nodes[static_cast<std::size_t>(i)].cell,camera,zoom,PatternEffect::Damage);
+    return true;
+}
+
 void blast_marks(SDL_Renderer* renderer, Cell center, int radius,
                  ViewCamera camera, float zoom, PatternEffect effect) {
     for (int dy = -radius; dy <= radius; ++dy)
@@ -73,7 +83,9 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (held.kind == ItemKind::SignalFlare) {
+    if (held.kind == ItemKind::CopperWire || held.kind == ItemKind::GroundingSpike) {
+        if (circuit_space(game,player.cell+facing)) mark(renderer,player.cell+facing,camera,zoom,PatternEffect::Utility);
+    } else if (held.kind == ItemKind::SignalFlare) {
         for (int step=1;step<=pattern.maximum;++step) {
             const Cell cell=player.cell+Cell{facing.x*step,facing.y*step};
             if (projectile_blocked(game,cell)) break;
@@ -106,7 +118,8 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     } else if (pattern.conduction) {
         const WetWave wave = wet_wave(game, player.cell + facing, pattern.blast_radius);
-        for (int i = 0; i < wave.count; ++i)
+        if (wave.ground_node>=0) mark(renderer,wave.ground,camera,zoom,PatternEffect::Utility);
+        else for (int i = 0; i < wave.count; ++i)
             mark(renderer, wave.nodes[static_cast<std::size_t>(i)].cell, camera, zoom, pattern.effect);
     } else if (held.kind == ItemKind::IceBrick && player.counter_a < brick_throw_hold_ticks) {
         const Cell cell = player.cell + facing;
@@ -222,13 +235,21 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
         Cell cell = player.cell;
         for (int reach = 1; reach <= pattern.maximum; ++reach) {
             cell = cell + facing;
-            mark(renderer, cell, camera, zoom, pattern.effect);
-            if (projectile_blocked(game, cell)) break;
-            const int victim = entity_at(game, cell, true);
-            if (victim < 0) continue;
-            const ThunderChain chain = thunder_chain(game, victim, pattern);
-            for (int index = 0; index < chain.count; ++index)
-                mark(renderer, chain.cells[static_cast<std::size_t>(index)], camera, zoom, pattern.effect);
+            if (projectile_blocked(game,cell)) { mark(renderer,cell,camera,zoom,pattern.effect); break; }
+            const int victim = entity_at(game,cell,true);
+            if (victim < 0 && reach < pattern.maximum) {
+                mark(renderer,cell,camera,zoom,pattern.effect,true); continue;
+            }
+            if (victim < 0) {
+                if (!circuit_marks(renderer,game,cell,camera,zoom)) mark(renderer,cell,camera,zoom,pattern.effect);
+                break;
+            }
+            const ThunderChain chain = thunder_chain(game,victim,pattern);
+            for (int index=0;index<chain.count;++index) {
+                const Cell target=chain.cells[static_cast<std::size_t>(index)];
+                if (circuit_marks(renderer,game,target,camera,zoom)) break;
+                mark(renderer,target,camera,zoom,pattern.effect);
+            }
             break;
         }
     } else if (pattern.ray) {

@@ -56,6 +56,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "ice_window", "ice_chain", "ice_hatch", "ice_pipe", "ice_wheel", "ice_motor", "ice_flag", "ice_drip", "ice_chimney",
     "skate_blade", "crampons",
     "signal_flare", "flare_burning", "debris_flare_cinder",
+    "copper_wire", "wire_junction", "grounding_spike", "spike_hot", "spike_spent",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

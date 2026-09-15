@@ -1,5 +1,6 @@
 #include "../items/flare.hpp"
 #include "temperature.hpp"
+#include "../props/circuits.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
 #include "../props/lunch_tin.hpp"
@@ -113,6 +114,7 @@ void quench_cell(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return;
     bool quenched = tile->surface.fire_ticks > 0;
+    cool_grounding_spike(game,cell);
     douse_candle(game,cell);
     douse_stove(game,cell);
     tile->surface.fire_ticks = 0;

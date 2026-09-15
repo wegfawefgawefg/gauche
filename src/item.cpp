@@ -1,3 +1,4 @@
+#include "items/circuits.hpp"
 #include "items/flare.hpp"
 #include "items/ice_equipment.hpp"
 #include "game.hpp"
@@ -100,6 +101,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::CopperWire: case ItemKind::GroundingSpike:
+        used = place_circuit_item(game,user.cell+direction,item); cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::SignalFlare:
         used = launch_flare(game,user_slot,item,direction); cooldown = item_pattern(item).cooldown;
         break;
@@ -396,7 +400,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
+            if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
+            else if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
             else if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
             else if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
             else if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);

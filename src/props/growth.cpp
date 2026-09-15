@@ -1,4 +1,5 @@
 #include "growth.hpp"
+#include "circuits.hpp"
 #include "candle.hpp"
 #include "stove.hpp"
 #include "ice_cover.hpp"
@@ -31,6 +32,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind == PropKind::GroundingSpike) { step_grounding_spike(game,cell); continue; }
             if (prop.kind == PropKind::Stove) { step_stove(game,cell); continue; }
             if (prop.kind == PropKind::Candle) { step_candle(game,cell); continue; }
             if (prop.kind == PropKind::AlarmClock) { step_alarm_clock(game, cell); continue; }
@@ -48,6 +50,8 @@ void step_prop_growth(Game& game) {
 }
 
 LightEmitter prop_light(const Prop& prop) {
+    if (prop.kind == PropKind::GroundingSpike)
+        return !prop.broken && prop.variant == 1 ? LightEmitter{2,450,{245,117,61}} : LightEmitter{};
     if ((prop.kind == PropKind::Candle || prop.kind == PropKind::Stove) && !prop_has_flame(prop)) return {};
     return prop.broken || prop.covered ? LightEmitter{} : prop_spec(prop.kind).light;
 }

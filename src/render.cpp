@@ -1,3 +1,4 @@
+#include "entities/mold_render.hpp"
 #include "items/machine_fitting_render.hpp"
 #include "entities/pump_render.hpp"
 #include "entities/counterweight_render.hpp"
@@ -308,6 +309,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y += (static_cast<float>(entity.point_a.y - entity.cell.y) - .6F) * pixels * remaining;
                 angle += static_cast<double>(remaining * 270);
             }
+            apply_mold_pose(entity,body_rect,angle);
             apply_pump_pose(entity,body_rect);
             apply_flight_pose(entity, game.tick, body_rect, angle);
             if (entity.kind==EntityKind::AshSleeper) {
@@ -342,6 +344,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::IceMason) draw_mason_block(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        draw_mold_details(renderer,graphics,entity,rect,brightness);
         draw_machine_fitting(renderer,graphics,entity,rect,brightness);
         draw_pump_nozzle(renderer,entity,rect,brightness);
         draw_wolf_call(renderer, graphics, entity, rect, brightness);

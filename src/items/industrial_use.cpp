@@ -1,3 +1,4 @@
+#include "mold_key.hpp"
 #include "machine_fittings.hpp"
 #include "hand_bellows.hpp"
 #include "industrial_use.hpp"
@@ -17,6 +18,8 @@ bool use_industrial_tool(Game& game, int user_slot, Cell direction, int range, i
     bool used=false;
     cooldown=0;
     switch (item.kind) {
+    case ItemKind::MoldKey:
+        used=unlock_casting_mold(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::NozzleElbow:
         used=fit_nozzle_elbow(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::HandBellows:

@@ -1,3 +1,4 @@
+#include "../entities/mold_thief.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "../entities/counterweight.hpp"
 #include "../entities/ash_sleeper.hpp"
@@ -36,7 +37,7 @@
 
 // CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
 bool apply_chill(Entity& actor, int ticks) {
-    if (ticks>0) {interrupt_emergency_pump(actor);damp_ash_sleeper(actor);cool_slag_snail(actor);cool_furnace_moth(actor);interrupt_audit_clerk(actor);cool_walking_kiln(actor);damp_stoker(actor);interrupt_cable_crawler(actor);}
+    if (ticks>0) {interrupt_mold_thief(actor);interrupt_emergency_pump(actor);damp_ash_sleeper(actor);cool_slag_snail(actor);cool_furnace_moth(actor);interrupt_audit_clerk(actor);cool_walking_kiln(actor);damp_stoker(actor);interrupt_cable_crawler(actor);}
     if (ticks>0 && cool_pressure_rat(actor)) {
         actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);return true;
     }
@@ -65,7 +66,7 @@ bool apply_nausea(Entity& actor, int ticks) {
 
 bool apply_sleep(Entity& actor, int ticks) {
     if (actor.kind==EntityKind::Sled || actor.health <= 0 || actor.vitals.sleep_guard > 0 || ticks <= 0) return false;
-    interrupt_emergency_pump(actor);
+    interrupt_mold_thief(actor);interrupt_emergency_pump(actor);
     interrupt_whiteout_drummer(actor);
     interrupt_avalanche_ram(actor);
     interrupt_snow_effigy(actor);
@@ -92,7 +93,7 @@ bool apply_sleep(Entity& actor, int ticks) {
 
 bool apply_root(Entity& actor, int ticks, RootKind kind) {
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0) return false;
-    interrupt_emergency_pump(actor);
+    interrupt_mold_thief(actor);interrupt_emergency_pump(actor);
     if (ticks >= actor.vitals.rooted) actor.vitals.root_kind = kind;
     actor.vitals.rooted = static_cast<std::uint16_t>(std::clamp(std::max(ticks, static_cast<int>(actor.vitals.rooted)), 0, 600));
     return true;
@@ -100,7 +101,7 @@ bool apply_root(Entity& actor, int ticks, RootKind kind) {
 
 bool apply_stun(Entity& actor, int ticks) {
     if (actor.kind==EntityKind::Sled || actor.health <= 0 || actor.vitals.stun_guard > 0 || ticks <= 0) return false;
-    interrupt_emergency_pump(actor);
+    interrupt_mold_thief(actor);interrupt_emergency_pump(actor);
     interrupt_whiteout_drummer(actor);
     interrupt_avalanche_ram(actor);
     interrupt_snow_effigy(actor);

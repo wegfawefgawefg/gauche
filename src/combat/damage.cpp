@@ -1,3 +1,5 @@
+#include "../entities/mold_thief.hpp"
+#include "../entities/casting_mold.hpp"
 #include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "../entities/counterweight.hpp"
@@ -54,6 +56,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     damage_machine_fitting(game,entity,damage);
+    hurt_mold_thief(game,entity,attacker);
     hurt_ash_sleeper(game,entity,attacker);
     interrupt_pocket_drill(entity);
     // The overhead press swing is deliberately vulnerable; a blocked hit never
@@ -94,6 +97,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
     if (entity.health == 0 && entity.kind == EntityKind::Trap) return;
     if (entity.health == 0) emit_sound(game, entity_death_sound(entity.kind), entity.cell);
+    if (entity.health == 0 && finish_mold_death(game,slot)) return;
     if (entity.health == 0) { entity.toss = {}; entity.vitals = {}; break_counterweight(game,entity); drop_enemy_loot(game, entity); }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;

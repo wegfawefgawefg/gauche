@@ -263,6 +263,7 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::BasaltChip,4,seed);
         push_debris(cosmetics.debris,sound.cell,2.0F,.1F);
         break;
+    case SoundId::MoldBreak:
     case SoundId::NozzleBreak:
     case SoundId::PumpBreak:
     case SoundId::WeightBreak:

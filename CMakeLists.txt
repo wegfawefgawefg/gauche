@@ -125,7 +125,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/audit_clerk.cpp src/world/pay_office.cpp
     src/items/tension_spring.cpp src/props/tension_spring.cpp
     src/items/emergency_foam.cpp
-    src/items/machine_fittings.cpp src/items/machine_fitting_render.cpp src/entities/emergency_pump.cpp src/entities/pump_render.cpp src/entities/furnace_moth.cpp src/entities/counterweight.cpp src/entities/counterweight_render.cpp src/world/hoist_shaft.cpp src/world/room_supplies.cpp src/entities/ash_sleeper.cpp src/world/ash_loft.cpp src/entities/slag_snail.cpp src/surfaces/slag.cpp src/world/slag_bank.cpp src/world/lamp_alcove.cpp
+    src/entities/mold_thief.cpp src/entities/casting_mold.cpp src/items/mold_key.cpp src/world/casting_floor.cpp src/entities/mold_render.cpp src/items/machine_fittings.cpp src/items/machine_fitting_render.cpp src/entities/emergency_pump.cpp src/entities/pump_render.cpp src/entities/furnace_moth.cpp src/entities/counterweight.cpp src/entities/counterweight_render.cpp src/world/hoist_shaft.cpp src/world/room_supplies.cpp src/entities/ash_sleeper.cpp src/world/ash_loft.cpp src/entities/slag_snail.cpp src/surfaces/slag.cpp src/world/slag_bank.cpp src/world/lamp_alcove.cpp
     src/entities/pressure_rat.cpp
     src/entities/magnet_crane.cpp
     src/entities/arc_welder.cpp

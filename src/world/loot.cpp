@@ -34,6 +34,11 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     drop_machine_fitting(game,enemy);
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::MoldThief: {
+        const auto roll=random_u32(game)%100;
+        if (roll>=20 && roll<40) place_ground_item(game,enemy.cell,ItemKind::MoldKey);
+        break; // Tongs remain a pending drop slot; actual cargo is returned separately.
+    }
     case EntityKind::EmergencyPump: drop_emergency_pump(game,enemy);break;
     case EntityKind::Counterweight:
         if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::ChainHook);

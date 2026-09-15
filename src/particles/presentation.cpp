@@ -1,3 +1,4 @@
+#include "../scenery/ice_render.hpp"
 #include "system.hpp"
 #include "gunfire.hpp"
 #include "motion.hpp"
@@ -339,6 +340,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
     observe_raking(cosmetics, game);
     observe_gunfire(cosmetics, game, focus);
     observe_water(cosmetics, game, focus);
+    observe_ice_scenery(cosmetics, game, focus);
     observe_surfaces(cosmetics, game, focus);
     if (game.run.phase == RunPhase::Arena || (game.run.floor > 4 && game.run.floor <= 8))
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);

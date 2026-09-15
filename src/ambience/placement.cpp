@@ -1,24 +1,16 @@
 #include "system.hpp"
 #include "../world/water.hpp"
+#include "../world/ice_terrain.hpp"
 
 #include <algorithm>
 
 void place_ambience(AmbientAudio& audio, const Game& game, Cell listener) {
     audio.sources.clear();
+    if (ice_floor(game.run.floor)) { place_ice_ambience(audio,game,listener); return; }
     if (game.run.floor < 1 || game.run.floor > 4) return;
     const auto add = [&](AmbientCue cue, Cell cell, bool global = false,
                          Handle owner = {}, PropKind prop = PropKind::None) {
-        if (audio.sources.size() >= 128) return;
-        int siblings = 0;
-        for (const AmbientSource& source : audio.sources) {
-            if (source.cue != cue) continue;
-            if (distance(source.cell, cell) < 12 && !global) return;
-            ++siblings;
-        }
-        if (siblings >= 4) return;
-        const AmbientSpec& spec = ambient_specs[static_cast<std::size_t>(cue)];
-        audio.sources.push_back({cue, cell, owner, prop, spec.cooldown * .5F,
-            global, static_cast<float>(distance(cell, listener)) <= spec.trigger_radius, false});
+        add_ambient_source(audio,game,listener,cue,cell,global,owner,prop);
     };
     // LEVEL: These schedules are local; creating ambience never advances game.rng.
     add(AmbientCue::ForestWind, game.run.spawn, true);

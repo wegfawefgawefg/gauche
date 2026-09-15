@@ -1,3 +1,4 @@
+#include "scenery/ice_render.hpp"
 #include "combat/parry.hpp"
 #include "render.hpp"
 #include "world/floating_render.hpp"
@@ -375,6 +376,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     draw_surfaces(renderer, game, camera, zoom, lighting, false);
+    if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting);
     for (const Entity& actor : game.entities)
         if (actor.kind == EntityKind::LensWarden) draw_warden_charge(renderer, graphics, game, actor, camera, zoom, lighting);

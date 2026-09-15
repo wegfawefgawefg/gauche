@@ -2,6 +2,7 @@
 
 #include "catalog.hpp"
 #include "../game.hpp"
+#include "../scenery/ice.hpp"
 
 #include <SDL3_mixer/SDL_mixer.h>
 #include <filesystem>
@@ -17,6 +18,8 @@ struct AmbientSource {
     bool inside = false;
     bool consumed = false;
     bool pending = false;
+    IceScene scene{};
+    bool has_scene = false;
 };
 struct AmbientVoice {
     MIX_Track* track = nullptr;
@@ -40,3 +43,9 @@ void shutdown_ambience(AmbientAudio& audio);
 void place_ambience(AmbientAudio& audio, const Game& game, Cell listener);
 void update_ambience(AmbientAudio& audio, const Game& game, Cell listener,
                      float seconds, float volume, bool enabled);
+
+Cell ambient_source_cell(const AmbientSource& source, const Game& game);
+float ambient_source_gain(const AmbientSource& source, const Game& game, Cell listener);
+void add_ambient_source(AmbientAudio& audio, const Game& game, Cell listener,
+    AmbientCue cue, Cell cell, bool global = false, Handle owner = {}, PropKind prop = PropKind::None);
+void place_ice_ambience(AmbientAudio& audio, const Game& game, Cell listener);

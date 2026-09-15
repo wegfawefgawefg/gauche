@@ -4,6 +4,7 @@
 #include "../view.hpp"
 #include "../lighting/field.hpp"
 #include "../debris/system.hpp"
+#include "../scenery/ice.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -96,6 +97,7 @@ struct Cosmetics {
     std::vector<TileShake> tile_shakes;
     std::vector<LightFlash> flashes;
     mutable LightingCache lighting;
+    mutable IceScenery ice_scenery;
     std::array<EntityPose, max_entities> poses{};
     std::array<std::uint64_t, 256> seen_events{};
     std::size_t next_event = 0;

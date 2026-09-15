@@ -14,33 +14,8 @@ float random_unit(AmbientAudio& audio) {
     return static_cast<float>(value & 0xffffU) / 65536.0F;
 }
 
-float source_gain(const AmbientSource& source, const Game& game, Cell listener) {
-    if (source.owner.slot >= 0) {
-        const Entity* owner = get_entity(game, source.owner);
-        if (owner == nullptr || owner->health <= 0) return 0;
-    }
-    if (source.prop != PropKind::None) {
-        const Tile* tile = game.stage.at(source.cell);
-        if (tile == nullptr || tile->prop.kind != source.prop || tile->prop.broken) return 0;
-    }
-    // TERRAIN: A demolished pool must not keep playing its old water loop.
-    if (source.cue == AmbientCue::Stream || source.cue == AmbientCue::WallTrickle ||
-        source.cue == AmbientCue::PoolDrips || source.cue == AmbientCue::ReedHiss ||
-        source.cue == AmbientCue::Frogs) {
-        const Tile* tile = game.stage.at(source.cell);
-        if (tile == nullptr || (tile->kind != TileKind::Water && !shallow_water(tile->kind))) return 0;
-    }
-    const AmbientSpec& spec = ambient_specs[static_cast<std::size_t>(source.cue)];
-    if (source.global) return spec.gain;
-    const float dx = static_cast<float>(listener.x - source.cell.x);
-    const float dy = static_cast<float>(listener.y - source.cell.y);
-    const float range = std::sqrt(dx * dx + dy * dy);
-    const float t = std::clamp((range - spec.near_radius) / (spec.far_radius - spec.near_radius), 0.0F, 1.0F);
-    return spec.gain * (1 - t) * (1 - t);
-}
-
-void pan_voice(AmbientVoice& voice, const AmbientSource& source, Cell listener, float volume) {
-    const float pan = source.global ? 0 : std::clamp(static_cast<float>(source.cell.x - listener.x) / 10, -1.0F, 1.0F);
+void pan_voice(AmbientVoice& voice, const AmbientSource& source, const Game& game, Cell listener, float volume) {
+    const float pan = source.global ? 0 : std::clamp(static_cast<float>(ambient_source_cell(source,game).x - listener.x) / 10, -1.0F, 1.0F);
     const float angle = (pan + 1) * .78539816F;
     const MIX_StereoGains stereo{std::cos(angle), std::sin(angle)};
     MIX_SetTrackStereo(voice.track, &stereo);
@@ -65,13 +40,13 @@ void schedule_events(AmbientAudio& audio, const Game& game, Cell listener) {
         AmbientSource& source = audio.sources[i];
         const AmbientSpec& spec = ambient_specs[static_cast<std::size_t>(source.cue)];
         source.cooldown = std::max(0.0F, source.cooldown - beat);
-        const bool inside = static_cast<float>(distance(source.cell, listener)) <= spec.trigger_radius;
+        const bool inside = static_cast<float>(distance(ambient_source_cell(source,game), listener)) <= spec.trigger_radius;
         const bool entered = inside && !source.inside;
         source.inside = inside;
         if (entered) source.pending = true;
         if (!inside) source.pending = false;
         if (spec.mode == AmbientMode::Loop || source.cooldown > 0 ||
-            (source.consumed && !spec.rearm) || source_gain(source, game, listener) < .005F) continue;
+            (source.consumed && !spec.rearm) || ambient_source_gain(source, game, listener) < .005F) continue;
         const bool fire = spec.mode == AmbientMode::Enter ? source.pending :
             random_unit(audio) < 1.0F - std::exp(-spec.chance_per_second * beat);
         if (!fire || audio.quiet_time > 0) continue;
@@ -79,7 +54,7 @@ void schedule_events(AmbientAudio& audio, const Game& game, Cell listener) {
             [](const AmbientVoice& candidate) { return !MIX_TrackPlaying(candidate.track); });
         if (voice == audio.events.end()) continue;
         start_voice(audio, *voice, static_cast<int>(i), false);
-        voice->gain = source_gain(source, game, listener);
+        voice->gain = ambient_source_gain(source, game, listener);
         source.cooldown = spec.cooldown * (.8F + .4F * random_unit(audio));
         source.consumed = spec.mode == AmbientMode::Enter;
         source.pending = false;
@@ -142,17 +117,17 @@ void update_ambience(AmbientAudio& audio, const Game& game, Cell listener,
     std::vector<int> choices;
     if (enabled) for (std::size_t i = 0; i < audio.sources.size(); ++i)
         if (ambient_specs[static_cast<std::size_t>(audio.sources[i].cue)].mode == AmbientMode::Loop &&
-            source_gain(audio.sources[i], game, listener) > .003F) choices.push_back(static_cast<int>(i));
+            ambient_source_gain(audio.sources[i], game, listener) > .003F) choices.push_back(static_cast<int>(i));
     std::stable_sort(choices.begin(), choices.end(), [&](int a, int b) {
-        return source_gain(audio.sources[static_cast<std::size_t>(a)], game, listener) >
-               source_gain(audio.sources[static_cast<std::size_t>(b)], game, listener);
+        return ambient_source_gain(audio.sources[static_cast<std::size_t>(a)], game, listener) >
+               ambient_source_gain(audio.sources[static_cast<std::size_t>(b)], game, listener);
     });
     if (choices.size() > audio.loops.size()) choices.resize(audio.loops.size());
     for (AmbientVoice& voice : audio.loops) {
         const bool wanted = std::find(choices.begin(), choices.end(), voice.source) != choices.end();
-        const float target = wanted ? source_gain(audio.sources[static_cast<std::size_t>(voice.source)], game, listener) : 0;
+        const float target = wanted ? ambient_source_gain(audio.sources[static_cast<std::size_t>(voice.source)], game, listener) : 0;
         voice.gain += (target - voice.gain) * std::min(1.0F, delta * 4);
-        if (voice.source >= 0) pan_voice(voice, audio.sources[static_cast<std::size_t>(voice.source)], listener, volume);
+        if (voice.source >= 0) pan_voice(voice, audio.sources[static_cast<std::size_t>(voice.source)], game, listener, volume);
         if (!wanted && voice.gain < .001F) { MIX_StopTrack(voice.track, 0); voice.source = -1; }
     }
     for (int choice : choices) {
@@ -166,8 +141,8 @@ void update_ambience(AmbientAudio& audio, const Game& game, Cell listener,
     }
     for (AmbientVoice& voice : audio.events) {
         if (voice.source < 0) continue;
-        const float target = enabled ? source_gain(audio.sources[static_cast<std::size_t>(voice.source)], game, listener) : 0;
+        const float target = enabled ? ambient_source_gain(audio.sources[static_cast<std::size_t>(voice.source)], game, listener) : 0;
         voice.gain += (target - voice.gain) * std::min(1.0F, delta * 5);
-        pan_voice(voice, audio.sources[static_cast<std::size_t>(voice.source)], listener, volume);
+        pan_voice(voice, audio.sources[static_cast<std::size_t>(voice.source)], game, listener, volume);
     }
 }

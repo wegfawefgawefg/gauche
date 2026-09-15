@@ -328,7 +328,7 @@ the available art reference; new source scripts keep a small explicit palette.
   (80 across four), with thematic assets, placement rules, volume and falloff.
   Include continuous water/wind/machinery, occasional wildlife/distant events,
   and unsettling one-shot creaks, screams or other discoveries. This is an
-  additional quota, separate from combat and item sound effects.
+  additional quota: Forest and [Ice](history/ICE_AMBIENCE.md) each have twenty implemented cues; other biomes remain.
 - [x] Add positional looping sources with per-source gain, near/far falloff,
   smooth enter/exit fades, sensible voice limits and listener-aware mixing.
 - [x] Add point/area triggers: enter once, optionally rearm after leaving or a

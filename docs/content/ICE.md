@@ -84,7 +84,7 @@ same effective item definition as attacks, including rare attributes.
 | 9 | Grit pouch | Fans across three adjacent ice tiles; stops slipping until washed away. Six uses; Big covers five, Durable supplies twelve. Oil still slips. No universal terrain immunity. | Common; 6 |
 | 10 | Snow scoop | Implemented: clears three adjacent snow cells, exposing burrowers and snow-cache supplies. Holds 12 snow; secondary packs one normal snowball if inventory has room. 60 repairable condition, one wear per successful scoop. Big clears five cells; Durable has 120 condition. | Common; 9 |
 | 11 | Heat capsule | Implemented: a 4s warm cross around the user; thaws ice, clears chill and resists cold, but ignites oil even when spilled later. Stack 4; Big extends each arm. | Common; 8 |
-| 12 | Coal lump | Implemented: feed an adjacent stove +20s fuel, capped at 120s. Cold stoves need separate ignition. Otherwise throw to 6 at four ticks/cell for 4 damage and recover the lump. Stack 8. | Common; 3 |
+| 12 | Coal lump | Implemented: feed an adjacent stove or boiler +20s fuel, capped at 120s. Cold stoves need separate ignition. Otherwise throw to 6 at four ticks/cell for 4 damage and recover the lump. Stack 8. | Common; 3 |
 | 13 | Candle stub | Implemented: place an 80s lamp with 6 HP (Durable 12), recover remaining fuel and condition. Only equal unused candles stack, up to four. Water snuffs it; warmth thaws nearby ice. | Common; 5 |
 | 14 | Wick spool | Implemented: add up to 30s fuel to an adjacent candle, capped at 80s. Four portions (Durable eight); no repair or automatic relight. No electrical or living emitter refill. | Common; 7 |
 | 15 | Signal flare | Fires to 8 and burns where it lands for 15s; bright red light, hot contact and noise on launch. Stack 3. | Common; 10 |
@@ -172,7 +172,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | --- | --- | --- |
 | Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
 | Frozen lunch tin | Implemented: 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; 16 HP, blocking, not fuel. Warmth or ordinary damage opens once. |
-| Maintenance locker | 20 coal, 20 sealant, 15 valve, 15 ammo, 30 empty | Boiler gallery |
+| Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 30 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
 | Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 30 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
 | Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 20 empty | Guarded observatory; 16 HP, blocking, breakable wood |
@@ -204,6 +204,10 @@ and smashed lens cases, with light-piece friction and local wind response.
 All use the shared cosmetic pool; remaining catalog materials are still open.
 
 ## Twenty ambient cues and small scenes
+
+Twenty cues are implemented with nine local scenery fittings and conditional
+source playback; see [implementation and verification](../history/ICE_AMBIENCE.md).
+The table below retains scene direction for further authored-room work.
 
 Produce new offline source scripts and committed audio. Positional loops use
 volume/falloff with short crossfades and voice limits; enter triggers use local

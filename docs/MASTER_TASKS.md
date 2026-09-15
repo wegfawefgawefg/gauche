@@ -496,4 +496,4 @@ visual baseline; review visible changes in static captures at normal zoom.
 - [x] Controller icon override in settings; set this user’s preference to Xbox.
 - [x] Small upper-right angled stage announcement, subtle entrance and fade.
 
-- [ ] Unify HUD slot/HP panels with angled inventory styling; stop OS cursor flicker; match Splonks frame pacing for high refresh rendering while simulation stays 60 Hz.
+- [x] [HUD and frame pacing](history/HUD_FRAME_PACING.md): shared angled slot/HP panels, exclusive game cursor, high refresh rendering with 60 Hz simulation. Desktop flicker/144 Hz feel awaits user feedback.

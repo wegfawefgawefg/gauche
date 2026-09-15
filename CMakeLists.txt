@@ -146,7 +146,7 @@ add_executable(gauche
     src/entities/shard_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
-    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp

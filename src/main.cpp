@@ -181,11 +181,13 @@ int main(int argc, char** argv) {
     bool cancel_pending_use = false;
     unsigned int debug_revision = playtest_tools().revision;
     int frames = 0;
-    std::uint64_t last_ticks = SDL_GetTicks();
+    std::uint64_t last_ticks = SDL_GetTicksNS();
     double accumulated = 0.0;
     std::uint64_t steps = 0;
     while (running) {
         const std::uint64_t frame_begin = SDL_GetTicksNS();
+        const double elapsed = static_cast<double>(frame_begin - last_ticks) / 1.0e9;
+        last_ticks = frame_begin;
         MenuInputState menu_input{};
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -271,7 +273,7 @@ int main(int argc, char** argv) {
         if (!join_address.empty() && network.role == NetRole::Client && network.ready)
             menu.playing = true;
         const GubsyFrame menu_frame = gubsy_get_frame(host);
-        update_menu_shell(menu, menu_input, 1.0F / 60.0F,
+        update_menu_shell(menu, menu_input, smoke ? 1.0F / 60.0F : static_cast<float>(std::min(elapsed, .1)),
                           menu_frame.render_width, menu_frame.render_height);
         process_playtest_requests(menu);
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
@@ -285,9 +287,6 @@ int main(int argc, char** argv) {
                 step_network_game(network, missing_remote_input(network.rollback.game, network.local_owner));
         }
 
-        const std::uint64_t now = SDL_GetTicks();
-        const double elapsed = static_cast<double>(now - last_ticks) / 1000.0;
-        last_ticks = now;
         accumulated += smoke ? step_seconds : std::min(elapsed, 0.25);
         if (menu.visible || debug_captures_input()) cancel_pending_use = true;
         while (accumulated >= step_seconds) {
@@ -413,12 +412,13 @@ int main(int argc, char** argv) {
         gubsy_present_frame(host);
         ++frames;
         if (!smoke) {
-            int cap = gubsy_configured_frame_cap_fps(host);
-            if (cap <= 0) cap = 60;
-            const std::uint64_t target_ns = std::uint64_t{1'000'000'000} /
-                static_cast<std::uint64_t>(cap);
-            const std::uint64_t frame_elapsed = SDL_GetTicksNS() - frame_begin;
-            if (frame_elapsed < target_ns) SDL_DelayPrecise(target_ns - frame_elapsed);
+            const int cap = gubsy_configured_frame_cap_fps(host);
+            if (cap > 0) {
+                const std::uint64_t target_ns = std::uint64_t{1'000'000'000} /
+                    static_cast<std::uint64_t>(cap);
+                const std::uint64_t frame_elapsed = SDL_GetTicksNS() - frame_begin;
+                if (frame_elapsed < target_ns) SDL_DelayPrecise(target_ns - frame_elapsed);
+            }
         }
         if (frame_limit > 0 && frames >= frame_limit) {
             running = false;

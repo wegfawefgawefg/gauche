@@ -1,3 +1,4 @@
+#include "panel.hpp"
 #include "../items/fire_render.hpp"
 #include "presentation.hpp"
 #include "status.hpp"
@@ -24,18 +25,7 @@ void ui_text(SDL_Renderer* renderer, float x, float y, const char* value) {
 
 void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
            bool selected = false) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_FRect shadow{x + 3.0F, y + 3.0F, width, height};
-    SDL_SetRenderDrawColor(renderer, 4, 5, 5, 185);
-    SDL_RenderFillRect(renderer, &shadow);
-    SDL_FRect face{x, y, width, height};
-    SDL_SetRenderDrawColor(renderer, selected ? 38 : 19, selected ? 30 : 22,
-                           selected ? 26 : 23, 215);
-    SDL_RenderFillRect(renderer, &face);
-    SDL_SetRenderDrawColor(renderer, selected ? 175 : 75, selected ? 63 : 76,
-                           selected ? 55 : 70, 220);
-    SDL_RenderRect(renderer, &face);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    angled_panel(renderer, {x,y,width,height}, selected ? SDL_Color{202,151,82,230} : SDL_Color{90,86,78,210});
 }
 
 } // namespace
@@ -97,14 +87,15 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
 
     draw_owned_artifacts(renderer, graphics, player, 18, 191, false);
 
-    // Rust's offset red bar is compacted to the half-size render target.
-    panel(renderer, 14.0F, height - 26.0F, 128.0F, 17.0F);
+    // VITALS: Health uses the inventory's angled silhouette and inset fill.
+    panel(renderer, 14.0F, height - 32.0F, 128.0F, 22.0F);
     const float fraction = player.max_health > 0 ?
-        std::clamp(static_cast<float>(player.health) /
-                   static_cast<float>(player.max_health), 0.0F, 1.0F) : 0.0F;
-    SDL_FRect fill{17.0F, height - 30.0F, 122.0F * fraction, 14.0F};
-    SDL_SetRenderDrawColor(renderer, 183, 42, 39, 230);
-    SDL_RenderFillRect(renderer, &fill);
+        std::clamp(static_cast<float>(player.health) / static_cast<float>(player.max_health), 0.0F, 1.0F) : 0.0F;
+    if (fraction > 0) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        angled_fill(renderer, {16,height-30,124*fraction,18}, {.72F,.16F,.14F,.95F}, {.50F,.10F,.09F,.95F});
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
     char health[48];
     std::snprintf(health, sizeof(health), "HP %d / %d", player.health, player.max_health);
     ui_text(renderer, 20.0F, height - 25.0F, health);

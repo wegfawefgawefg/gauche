@@ -17,6 +17,8 @@ void init_debug_panels(SDL_Window* window, SDL_Renderer* renderer) {
     if (!init_imgui_layer(window, renderer)) return;
     // INPUT: Gamepads remain owned by Gubsy's binding profiles.
     ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
+    // CURSOR: The SDL backend must not re-show the OS cursor during NewFrame.
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 }
 
 void shutdown_debug_panels() { shutdown_imgui_layer(); }

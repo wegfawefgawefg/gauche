@@ -1,3 +1,4 @@
+#include "panel.hpp"
 #include "../items/fire_render.hpp"
 #include "interaction.hpp"
 #include "../items/ground_interaction.hpp"
@@ -34,25 +35,7 @@ void shade(SDL_Renderer* renderer) {
 
 void frame(SDL_Renderer* renderer, float x, float y, float width, float height,
            bool selected) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_FRect shadow{x + 5.0F, y + 6.0F, width, height};
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 190);
-    SDL_RenderFillRect(renderer, &shadow);
-    const SDL_Vertex vertices[4]{
-        {{x + 4.0F, y}, {0.10F, 0.10F, 0.10F, 0.98F}, {}},
-        {{x + width + 4.0F, y}, {0.10F, 0.10F, 0.10F, 0.98F}, {}},
-        {{x + width, y + height}, {0.06F, 0.07F, 0.07F, 0.98F}, {}},
-        {{x, y + height}, {0.06F, 0.07F, 0.07F, 0.98F}, {}},
-    };
-    constexpr int indices[]{0, 1, 2, 0, 2, 3};
-    SDL_RenderGeometry(renderer, nullptr, vertices, 4, indices, 6);
-    SDL_SetRenderDrawColor(renderer, selected ? 202 : 90,
-                           selected ? 151 : 86, selected ? 82 : 78, 210);
-    const SDL_FPoint outline[5]{{x + 4.0F, y}, {x + width + 4.0F, y},
-                                {x + width, y + height}, {x, y + height},
-                                {x + 4.0F, y}};
-    SDL_RenderLines(renderer, outline, 5);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    angled_panel(renderer, {x,y,width,height}, selected ? SDL_Color{202,151,82,210} : SDL_Color{90,86,78,210});
 }
 
 Sprite reward_icon(const Reward& reward) {

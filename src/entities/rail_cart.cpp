@@ -1,4 +1,5 @@
 #include "rail_cart.hpp"
+#include "../props/rail_points.hpp"
 #include "../items/sled.hpp"
 #include "../status/effects.hpp"
 
@@ -60,6 +61,7 @@ void step_rail_cart(Game& game,int slot) {
     if (cart.timer_a>0 || !rail(game,cart.cell)) {stop(game,cart);return;}
     if (cart.label_a==0) {gather(game,cart);return;}
     if (cart.timer_b>0) return;
+    cart.facing=rail_exit(game.stage,cart.cell,cart.facing);
     const Cell next=cart.cell+cart.facing;
     if (!rail(game,next)) {stop(game,cart);return;}
     const int victim=entity_at(game,next,true);

@@ -2,8 +2,8 @@
 
 Implemented the twentieth Industry catalog enemy behavior together with a real
 cart and optional freight siding. This reaches the initial behavior count;
-encounter balance, larger junctions, switch points and the remaining regional
-items are still work to do. No interactive playtesting was run.
+encounter balance and the remaining regional items are still work to do.
+The subsequent [rail-points slice](RAIL_POINTS.md) implements keyed T junctions. No interactive playtesting was run.
 
 ## Shunting encounter
 
@@ -19,8 +19,7 @@ An adjacent opponent gets a separate 0.6-second raised-bar warning before a
 12-damage fixed-cell swing. The worker then recovers for a second. It never
 hits immediately on sight or arrival.
 
-One death roll: 20% Brake Shoe, next 20% reserved for the unimplemented Rail
-Switch Key, next 20% 4–8 gold, otherwise nothing. Cargo belongs to the cart and
+One death roll: 20% Brake Shoe, next 20% Rail Switch Key, next 20% 4–8 gold, otherwise nothing. Cargo belongs to the cart and
 is independent of worker loot.
 
 ## Cart and existing tools
@@ -66,8 +65,8 @@ first.
 Placement checks the complete footprint before mutation. Rails can cross the
 reserved walking path because they remain walkable; actors and supplies start
 outside it. The optional role is excluded from objective/exit assignment and
-secret-room replacement. Branching junctions and lever-controlled points remain
-pending, rather than being represented by a cosmetic switch.
+secret-room replacement. The later [rail-points slice](RAIL_POINTS.md) adds branching junctions with
+working keyed points and supplies the appropriate key beside them.
 
 Two original transparent sprites provide worker/cart silhouettes. A raised-bell
 shake and raised strike pose communicate warnings; cargo is drawn inside the

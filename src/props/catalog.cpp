@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::RailPoints: return {Sprite::RailPoints,SoundId::PointsBreak,24,false,false};
     case PropKind::HoistWreck: return {Sprite::WeightBlock,SoundId::WeightBreak,80,true,false};
     case PropKind::FoamCover: return {Sprite::FoamCover,SoundId::FoamCollapse,12,true,false};
     case PropKind::PayCage: return {Sprite::PayCage,SoundId::PayBreak,60,true,false};
@@ -76,6 +77,6 @@ bool prop_shoot_through(const Prop& prop) {
 }
 
 bool prop_cuttable_metal(const Prop& prop) {
-    return !prop.broken && (prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+    return !prop.broken && (prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
         prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

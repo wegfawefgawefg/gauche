@@ -134,6 +134,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             (tile.prop.kind != PropKind::FoamCover && tile.prop.kind != PropKind::PayCage && tile.prop.kind != PropKind::TensionSpring && tile.prop.kind != PropKind::Conveyor && tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if ((tile.prop.kind==PropKind::Grate || tile.prop.kind==PropKind::ScrapBin || tile.prop.kind==PropKind::OreBin) &&
             ((!tile.prop.broken && tile.prop.hp==0) || (tile.prop.kind==PropKind::Grate && tile.prop.variant>1))) reader.okay=false;
+        if (tile.prop.kind==PropKind::RailPoints && (tile.prop.variant>3 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::Conveyor && (tile.prop.variant>7 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::FoamCover && (tile.prop.variant!=0 || (!tile.prop.broken && (tile.prop.hp==0 || tile.prop.growth_ticks==0)))) reader.okay=false;
         if (tile.prop.kind==PropKind::PayCage && (tile.prop.variant!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;

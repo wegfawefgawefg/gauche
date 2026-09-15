@@ -391,7 +391,8 @@ behavior and balance playtesting remain the user's.
   [Tar Flasks and material states](history/TAR_FLASK.md) add traveling three-bottle bundles, sticky fuel, cold-hardened crust, washing/pump transfer and tar-lane kiln variants.
   [Tar Choirs and settling tanks](history/TAR_CHOIR.md) add linked warning/cough rhythms, traveling tar, cover/control disruption, surviving solo singers and paired material basins with practical counter-tools.
   [Rail Shunters and freight carts](history/RAIL_SHUNTER.md) add warned shunting, real cargo, single-impact collisions, hook hauling, cart brakes, cuttable freight track and optional loaded sidings. Generated-floor checks also fixed [scrap-yard snapshot rejection](history/SCRAP_YARD_SNAPSHOT.md).
-  All twenty initial catalog enemy behaviors and twenty-four of fifty regional items implemented;
+  [Rail Switch Keys and points](history/RAIL_POINTS.md) add redirectable T sidings, breakable selected exits, directional rail drawing and contextual key supplies.
+  All twenty initial catalog enemy behaviors and twenty-five of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

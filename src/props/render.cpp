@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "rail_render.hpp"
 #include "conveyor_render.hpp"
 #include "circuit_render.hpp"
 #include "candle.hpp"
@@ -35,6 +36,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             if (prop.kind == PropKind::Doorstop) {
                 rect.x += rect.w*.35F; rect.y += rect.h*.4F; rect.w *= .55F; rect.h *= .55F;
             }
+            if (prop.kind==PropKind::RailPoints) {draw_rail_points(renderer,graphics,prop,rect,light);continue;}
             if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,prop,rect,light,tick); continue; }
             if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);

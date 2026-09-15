@@ -1,3 +1,4 @@
+#include "props/rail_render.hpp"
 #include "entities/freight_render.hpp"
 #include "entities/choir_render.hpp"
 #include "entities/mold_render.hpp"
@@ -172,6 +173,9 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
             const bool arena=game.run.phase==RunPhase::Arena;
             const Biome biome=floor_biome(game.run.floor);
+            if (draw_freight_track(renderer,graphics,game.stage,cell,rect,lighting)) {
+                draw_tile_damage(renderer,tile,cell,rect,lighting);continue;
+            }
             const Sprite id = tile_sprite(tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};

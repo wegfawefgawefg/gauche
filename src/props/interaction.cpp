@@ -132,6 +132,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
+    if (kind == PropKind::RailPoints) tile->prop.variant &= 3U;
     if (kind == PropKind::Conveyor) tile->prop.variant &= 7U;
     if (kind == PropKind::FoamCover) tile->prop.growth_ticks=600;
     if (kind == PropKind::TensionSpring) {tile->prop.variant &= 3U;tile->prop.growth_ticks=18;}

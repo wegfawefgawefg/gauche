@@ -307,7 +307,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = true;
         cooldown = item_pattern(item).cooldown;
         break;
-    case ItemKind::LensCarbine:
+    case ItemKind::HarpoonGun: case ItemKind::LensCarbine:
     case ItemKind::Crossbow: case ItemKind::Blunderbuss:
     case ItemKind::Pistol: case ItemKind::Musket:
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:

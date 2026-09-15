@@ -47,6 +47,7 @@ enum class SoundId : std::size_t {
     WireLay, WireEmpty, WireCut, SpikePlant, SpikeSink, SpikeCool, SpikeLift, SpikeBreak,
     LanternOpen, LanternClose, LanternFocus, LanternWide, LanternEmpty,
     PebbleThrow, PebbleLand, PebbleTone, PebbleSpent,
+    HarpoonFire, HarpoonImpact, HarpoonLatch, HarpoonReel, HarpoonRelease, HarpoonReload,
     Count,
 };
 
@@ -91,4 +92,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "wire_lay", "wire_empty", "wire_cut", "spike_plant", "spike_sink", "spike_cool", "spike_lift", "spike_break",
     "lantern_open", "lantern_close", "lantern_focus", "lantern_wide", "lantern_empty",
     "pebble_throw", "pebble_land", "pebble_tone", "pebble_spent",
+    "harpoon_fire", "harpoon_impact", "harpoon_latch", "harpoon_reel", "harpoon_release", "harpoon_reload",
 };

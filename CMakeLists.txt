@@ -54,6 +54,7 @@ set(GAUCHE_CODEC_SOURCES
 
 set(GAUCHE_ENTITY_SOURCES
     src/items/storm_lantern.cpp src/items/echo_pebble.cpp
+    src/items/harpoon.cpp src/projectiles/harpoon.cpp
     src/items/circuits.cpp src/props/circuits.cpp
     src/items/candles.cpp src/props/candle.cpp src/items/coal.cpp src/props/stove.cpp src/items/kettle.cpp
     src/items/brine.cpp src/props/lunch_tin.cpp

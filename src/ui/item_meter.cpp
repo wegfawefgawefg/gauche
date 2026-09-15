@@ -17,7 +17,7 @@ std::string item_cooldown_text(const Item& item) {
 }
 
 std::string item_state_text(const Item& item, bool compact) {
-    if (item.flight.slot >= 0) return compact ? "OUT" : "IN FLIGHT";
+    if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
     if (item.kind==ItemKind::StormLantern) {
         std::snprintf(result,sizeof(result),"%ds %s",(item.loaded+59)/60,item.opened ? "LIT" : "SHUT");

@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "../items/harpoon.hpp"
 #include "player_movement.hpp"
 #include "../items/bow.hpp"
 #include "../items/storm_lantern.hpp"
@@ -45,6 +46,7 @@ void step_player(Game& game, int slot, const Input& input) {
     collect_coins(game, player);
 
     // INTERACTIONS: The player owns pickup, fixture use, and the held item.
+    if (input.pickup || input.drop || input.interact || input.cancel_use) release_held_harpoon(game,player);
     if (input.pickup) {
         cancel_item_action(player);
         pickup_or_drop(game, player);
@@ -53,6 +55,7 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_harpoon_action(game,slot,input)) return;
     if (step_lantern_action(game,slot,input)) return;
     if (step_melee_action(game, slot, input)) return;
     if (step_ice_brick(game, slot, input)) return;

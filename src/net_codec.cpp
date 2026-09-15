@@ -223,9 +223,12 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         for (const Item& item : actor.inventory.slots) {
             if (item.flight.slot < 0) continue;
             const Entity* shot = get_entity(result, item.flight);
-            if (shot == nullptr || shot->kind != EntityKind::Projectile ||
-                shot->label_a != static_cast<int>(ProjectileKind::Boomerang) ||
-                shot->entity_b != Handle{slot, actor.generation}) reader.okay = false;
+            const Handle owner{slot,actor.generation};
+            const bool valid = shot && shot->kind == EntityKind::Projectile &&
+                (item.kind == ItemKind::HarpoonGun ?
+                    shot->label_a == static_cast<int>(ProjectileKind::Harpoon) && shot->entity_a == owner :
+                    shot->label_a == static_cast<int>(ProjectileKind::Boomerang) && shot->entity_b == owner);
+            if (!valid) reader.okay = false;
         }
     }
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }

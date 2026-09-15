@@ -77,6 +77,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         const auto roll = random_u32(game) % 100;
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::FishingLine);
         else if (roll < 40) place_ground_item(game, enemy.cell, ItemKind::SmokedFish);
+        else if (roll < 45) place_ground_item(game, enemy.cell, ItemKind::HarpoonGun);
         break;
     }
     case EntityKind::FrozenPilgrim: {

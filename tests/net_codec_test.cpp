@@ -1,3 +1,4 @@
+#include "../src/projectiles/harpoon.hpp"
 #include "../src/items/echo_pebble.hpp"
 #include "../src/projectiles/projectile.hpp"
 #include "../src/net_codec.hpp"
@@ -157,6 +158,13 @@ int main() {
     echo->counter_b=2; echo->timer_a=17;
     echo->ground_item=make_item(ItemKind::EchoPebble);
     echo->ground_item.loaded=static_cast<int>(SoundId::BowRelease)+1; echo->ground_item.spare=7;
+    const Handle fisher = spawn_entity(original,EntityKind::Player,{25,8});
+    Entity& fisher_actor = *get_entity(original,fisher);
+    fisher_actor.inventory.slots[0] = make_item(ItemKind::HarpoonGun);
+    launch_harpoon(original,fisher.slot,*fisher_actor.inventory.held(),{1,0});
+    Entity* tether = get_entity(original,fisher_actor.inventory.held()->flight);
+    tether->label_b = 1; tether->counter_a = 0; tether->timer_b = 7;
+    tether->entity_b = original.players[0]; tether->fixture_open = true;
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

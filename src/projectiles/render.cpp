@@ -44,7 +44,8 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
     const bool fishing = shot.label_a == static_cast<int>(ProjectileKind::FishingHook);
     const bool widow = shot.label_a == static_cast<int>(ProjectileKind::WidowHook);
-    const bool hook = widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
+    const bool harpoon = shot.label_a == static_cast<int>(ProjectileKind::Harpoon);
+    const bool hook = harpoon || widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool flare = shot.label_a == static_cast<int>(ProjectileKind::Flare);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
@@ -56,7 +57,11 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
-    SDL_FRect rect = tile_rect(shot.cell, camera, zoom);
+    Cell render_cell = shot.cell;
+    // TETHER: The victim may have stepped later in entity order. Attach to its real cell.
+    if (harpoon && shot.label_b == 1)
+        if (const Entity* victim = get_entity(game,shot.entity_b)) render_cell = victim->cell;
+    SDL_FRect rect = tile_rect(render_cell, camera, zoom);
     const float offset = drill && shot.label_b == 1 ? .25F : travel;
     rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
     rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
@@ -68,7 +73,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     rect.x += pixels * .17F; rect.y += pixels * .17F;
     rect.w = rect.h = pixels * .66F;
     SDL_Texture* texture = texture_for(graphics, shot.sprite);
-    const LightColor light = lit_sprite_color(lighting, shot.cell);
+    const LightColor light = lit_sprite_color(lighting, render_cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
     const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : swap ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
@@ -83,7 +88,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     }
     // CARGO: The actual item is already drawn at this cell; keep the hook off its icon.
-    if ((!fishing || shot.label_b != FishingCargo) && (!widow || shot.label_b == 0))
+    if ((!fishing || shot.label_b != FishingCargo) && (!(widow || harpoon) || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
     if (echo && shot.use_flash>0) {

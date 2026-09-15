@@ -107,7 +107,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
     else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
     if (item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
-    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), "IN FLIGHT");
+    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), item.kind == ItemKind::HarpoonGun ? "LINE OUT" : "IN FLIGHT");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
              item_attribute_name(item.attribute), 218, 169, 94);
@@ -193,6 +193,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         else std::snprintf(line, sizeof(line), "WRAP #%d: %s", target + 1,
             item_name(order.slots[static_cast<std::size_t>(target)].kind));
     }
+    if (item.kind == ItemKind::HarpoonGun)
+        std::snprintf(line,sizeof(line),"DMG %d | REEL 1 / 0.17s",pattern.damage);
     if (item.kind == ItemKind::EchoPebble) {
         const EchoVoice* voice = echo_voice(item);
         std::snprintf(line,sizeof(line),"RECORD: %s | 3 ECHOES",voice ? voice->name : "Knock");
@@ -263,7 +265,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
             movement_beat(faster, faster.move_interval));
     }
     text(renderer, x + 10.0F, y + 96.0F, line);
-    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), "IN FLIGHT - SLOT RESERVED");
+    if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), item.kind == ItemKind::HarpoonGun ? "SECONDARY CUTS THE LINE" : "IN FLIGHT - SLOT RESERVED");
     else std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);

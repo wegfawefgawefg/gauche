@@ -1,4 +1,5 @@
 #include "firearms.hpp"
+#include "../projectiles/harpoon.hpp"
 #include "muffling.hpp"
 #include "../combat/beams.hpp"
 #include "catalog.hpp"
@@ -23,6 +24,7 @@ SoundId firing_sound(ItemKind kind) {
 
 SoundId firearm_reload_sound(ItemKind kind) {
     switch (kind) {
+    case ItemKind::HarpoonGun: return SoundId::HarpoonReload;
     case ItemKind::LensCarbine: return SoundId::LensReload;
     case ItemKind::Pistol: case ItemKind::SMG: return SoundId::PistolReload;
     case ItemKind::Shotgun: return SoundId::ShellReload;
@@ -40,6 +42,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         emit_sound(game, SoundId::WeaponEmpty, user.cell);
         return false;
     }
+    if (item.kind == ItemKind::HarpoonGun) return launch_harpoon(game,user_slot,item,direction);
     const ItemPattern pattern = item_pattern(item);
     if (item.kind == ItemKind::Crossbow || item.kind == ItemKind::RocketLauncher) {
         // FLIGHT: Allocation must succeed before spending ammunition or recovery.

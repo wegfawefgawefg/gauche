@@ -16,6 +16,8 @@ struct PacketWriter {
     void u64(std::uint64_t value);
     void i32(int value);
     void input(const Input& value);
+    void cell(Cell value);
+    void light(LightEmitter value);
 };
 
 struct PacketReader {
@@ -28,6 +30,8 @@ struct PacketReader {
     std::uint64_t u64();
     int i32();
     Input input();
+    Cell cell();
+    LightEmitter light();
     bool finished() const;
 };
 

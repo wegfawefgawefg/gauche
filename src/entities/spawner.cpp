@@ -46,8 +46,8 @@ void init_den(Entity& entity) {
 void step_spawner(Game& game, int slot) {
     Entity& spawner = game.entities[static_cast<std::size_t>(slot)];
     if (spawner.spawn_wait > 0) { --spawner.spawn_wait; return; }
-    const EntityKind kind = game.run.floor <= 4 ? EntityKind::Zombie :
-                            (game.run.floor <= 8 ? EntityKind::Ember : EntityKind::FrostBat);
+    const EntityKind kind = (game.run.phase==RunPhase::Arena || forest_floor(game.run.floor)) ? EntityKind::Zombie :
+                            (ice_floor(game.run.floor) ? EntityKind::FrostBat : EntityKind::Ember);
     if (nearby_kind(game, spawner.cell, kind, 7) < 4)
         release_into_neighbor(game, spawner.cell, kind);
     spawner.spawn_wait = 120;

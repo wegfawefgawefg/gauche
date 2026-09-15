@@ -5,7 +5,7 @@
 
 void draw_canopy_shafts(SDL_Renderer* renderer, const Game& game,
                         ViewCamera camera, float zoom) {
-    if (game.run.phase == RunPhase::Arena || game.run.floor > 4) return;
+    if (game.run.phase == RunPhase::Arena || !forest_floor(game.run.floor)) return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (int i = 0; i < game.run.roof_light_count; ++i) {

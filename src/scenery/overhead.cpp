@@ -89,7 +89,7 @@ void draw_overhead(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_SetRenderScale(renderer, 1, 1);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
-    if (game.run.phase != RunPhase::Arena && game.run.floor <= 4)
+    if (game.run.phase != RunPhase::Arena && forest_floor(game.run.floor))
         forest_canopies(renderer, graphics, game, camera, zoom, lighting);
     else if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);

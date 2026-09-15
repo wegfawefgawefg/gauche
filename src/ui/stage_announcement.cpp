@@ -9,10 +9,10 @@ void update_stage_announcement(StageAnnouncement& banner, const Game& game,
     if (banner.seed != game.run.seed || banner.floor != game.run.floor || banner.revision != revision) {
         banner.seed = game.run.seed; banner.floor = game.run.floor; banner.revision = revision;
         banner.age = 0;
-        const int biome = (game.run.floor - 1) / 4;
-        const char* name = biome == 0 ? "FOREST" : biome == 1 ? "FIRE" : "ICE";
+        const Biome biome=floor_biome(game.run.floor);
+        const char* name=biome_name(biome);
         char label[48];
-        std::snprintf(label, sizeof(label), "%s %d-%d", name, biome+1, (game.run.floor-1)%4+1);
+        std::snprintf(label, sizeof(label), "%s %d-%d", name, static_cast<int>(biome)+1, biome_stage(game.run.floor));
         banner.title = label; banner.subtitle.clear();
         for (const Entity& entity : game.entities)
             if (entity.kind == EntityKind::Encounter) { banner.subtitle = "HAUNTED HOUSE"; break; }

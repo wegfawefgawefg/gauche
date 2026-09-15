@@ -2,8 +2,7 @@
 
 #include "route.hpp"
 
-// ORDER: Keep the current fire/ice run order until all four zones are integrated.
-inline bool ice_floor(int floor) { return floor >= 9 && floor <= 12; }
+// Regional selection is shared in biome.hpp through game.hpp.
 
 TileKind ice_room_floor(const RoomPlan& room, int x, int y);
 

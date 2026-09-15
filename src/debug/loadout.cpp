@@ -53,8 +53,8 @@ void set_loadout_preset(TestLoadout& kit, int preset) {
     constexpr ItemKind kits[][6]{
         {ItemKind::Fist, ItemKind::Bandage, ItemKind::Stick},
         {ItemKind::Bow, ItemKind::Buckler, ItemKind::Pickaxe, ItemKind::CookedMeat},
-        {ItemKind::Shotgun, ItemKind::Hatchet, ItemKind::WaterFlask, ItemKind::Medkit, ItemKind::Ammo},
-        {ItemKind::Musket, ItemKind::SkateBlade, ItemKind::StormLantern, ItemKind::HotBroth, ItemKind::Ammo},
+        {ItemKind::Bow, ItemKind::Hatchet, ItemKind::Torch, ItemKind::WoolWrap, ItemKind::HotBroth, ItemKind::Ammo},
+        {ItemKind::Shotgun, ItemKind::SkateBlade, ItemKind::ColdFlask, ItemKind::StormLantern, ItemKind::Medkit, ItemKind::Ammo},
         {ItemKind::RocketLauncher, ItemKind::Bomb, ItemKind::Bow, ItemKind::Ammo, ItemKind::Medkit, ItemKind::Pickaxe},
     };
     preset = std::clamp(preset, 0, 4);

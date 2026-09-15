@@ -220,8 +220,12 @@ int main(int argc, char** argv) {
         falling->label_b = 1;
         falling->timer_b = 12;
     }
-    if (mode == "floor") {
+    if (mode == "floor" || mode == "industrial-floor") {
         start_run(game, argc >= 4 ? std::strtoull(argv[3], nullptr, 10) : 1);
+        if (mode == "industrial-floor") {
+            game.run.floor=first_floor(Biome::Industrial);
+            generate_world_floor(game);
+        }
         cosmetics = {};
     }
     if (mode == "mansion" || mode == "mansion-map") {

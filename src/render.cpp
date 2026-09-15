@@ -44,7 +44,7 @@
 
 namespace {
 
-Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
+Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome, bool arena) {
     if (tile.surface.still_ticks>0) tick=0;
     if (tile.kind == TileKind::Ice && tile.freeze_ticks > 0)
         return tile.freeze_ticks <= 120 ? Sprite::ThawingWater : Sprite::FrozenWater;
@@ -53,11 +53,11 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
         return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
     if (tile.material == TileMaterial::Timber)
         return tile.kind == TileKind::Wall ? Sprite::ForestTimber : Sprite::TimberBroken;
-    if (world == 2) {
+    if (!arena && biome==Biome::Ice) {
         const Sprite native = ice_tile_sprite(tile, cell, tick);
         if (native != Sprite::Count) return native;
     }
-    if (world >= 0) {
+    if (!arena) {
         switch (tile.kind) {
         case TileKind::Empty: {
             const unsigned int variant = static_cast<unsigned int>(cell.x * 17 + cell.y * 31) % 3U;
@@ -149,11 +149,11 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                               strength * pixels;
                 }
             }
-            const int world = game.run.phase == RunPhase::Arena ? -1 :
-                              (game.run.floor - 1) / 4;
-            const Sprite id = tile_sprite(tile, game.tick, cell, world);
+            const bool arena=game.run.phase==RunPhase::Arena;
+            const Biome biome=floor_biome(game.run.floor);
+            const Sprite id = tile_sprite(tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
-            const LightColor tint = world == 1 && tile.kind != TileKind::Lava ?
+            const LightColor tint = !arena && biome==Biome::Industrial && tile.kind != TileKind::Lava ?
                 LightColor{225.0F / 255.0F, 133.0F / 255.0F, 105.0F / 255.0F} :
                 LightColor{1.0F, 1.0F, 1.0F};
             if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
@@ -162,9 +162,9 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderTexture(renderer, texture, nullptr, &rect);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
-            if (world >= 0 && tile.kind == TileKind::Wall)
+            if (!arena && tile.kind == TileKind::Wall)
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
-                    world == 2 ? LightColor{.78F, .9F, 1.25F} : tint);
+                    biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} : tint);
             draw_tile_damage(renderer, tile, cell, rect, lighting);
         }
     }
@@ -358,10 +358,8 @@ void draw_run_status(SDL_Renderer* renderer, const Game& game, float zoom) {
     SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
-        constexpr const char* worlds[]{"FOREST", "FIRE", "ICE"};
-        const int world = std::clamp((game.run.floor - 1) / 4, 0, 2);
-        std::snprintf(floor, sizeof(floor), "%s %d/4   %s", worlds[world],
-                      (game.run.floor - 1) % 4 + 1,
+        std::snprintf(floor, sizeof(floor), "%s %d/4   %s", biome_name(floor_biome(game.run.floor)),
+                      biome_stage(game.run.floor),
                       game.run.has_key ? "DOOR OPEN" :
                       (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);

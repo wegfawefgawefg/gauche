@@ -29,10 +29,16 @@ void init_playtest_tools(const std::filesystem::path& path) {
         item.muffled_uses = static_cast<std::uint8_t>(std::clamp(muffled, 0, 6));
         normalize_test_item(item);
     }
-    if (!input || version != 1) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
+    if (!input || (version != 1 && version != 2)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
     loaded.selected_level = std::clamp(loaded.selected_level, 0, 12);
     loaded.starting_level = std::clamp(loaded.starting_level, 0, 12);
     loaded.repeat_level = std::clamp(loaded.repeat_level, 0, 12);
+    if (version==1) {
+        const auto remap=[](int level) { return level>=4 && level<8 ? level+4 : level>=8 && level<12 ? level-4 : level; };
+        loaded.selected_level=remap(loaded.selected_level);
+        loaded.starting_level=remap(loaded.starting_level);
+        loaded.repeat_level=remap(loaded.repeat_level);
+    }
     kit.health = std::clamp(kit.health, 1, 999); kit.step_ticks = std::clamp(kit.step_ticks, 1, 60);
     kit.gold = std::clamp(kit.gold, 0, 9999); kit.inventory.selected = std::clamp(kit.inventory.selected, 0, quick_slots-1);
     std::uint32_t allowed = 0;
@@ -49,7 +55,7 @@ void save_playtest_tools() {
     auto temporary = state.path; temporary += ".tmp";
     std::ofstream out(temporary);
     const auto& kit = state.loadout;
-    out << 1 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
+    out << 2 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
         << ' ' << state.repeat << ' ' << state.repeat_level << ' ' << state.override_loadout
         << ' ' << kit.health << ' ' << kit.step_ticks << ' ' << kit.gold << ' ' << kit.artifacts
         << ' ' << kit.inventory.selected << '\n';

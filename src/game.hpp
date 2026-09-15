@@ -1,5 +1,6 @@
 #pragma once
 
+#include "biome.hpp"
 #include "graphics.hpp"
 #include "sound.hpp"
 #include "props/catalog.hpp"

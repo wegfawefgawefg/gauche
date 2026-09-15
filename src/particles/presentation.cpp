@@ -303,7 +303,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
     step_particles(cosmetics);
     const bool fresh_debris = !cosmetics.debris.ready;
     prepare_debris(cosmetics.debris, game.stage);
-    step_debris(cosmetics.debris, game.stage, game.tick, game.run.floor <= 4);
+    step_debris(cosmetics.debris, game.stage, game.tick, game.run.phase==RunPhase::Arena || forest_floor(game.run.floor));
     for (int slot = 0; slot < max_entities; ++slot)
         observe_entity(cosmetics, game, slot);
     for (int index = 0; index < game.sound_count; ++index)
@@ -350,7 +350,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
     observe_water(cosmetics, game, focus);
     observe_ice_scenery(cosmetics, game, focus);
     observe_surfaces(cosmetics, game, focus);
-    if (game.run.phase == RunPhase::Arena || (game.run.floor > 4 && game.run.floor <= 8))
+    if (game.run.phase == RunPhase::Arena || industrial_floor(game.run.floor))
         spawn_weather_cloud(cosmetics, focus, game.tick ^ 0x752ac012U, zoom);
 }
 

@@ -64,7 +64,7 @@ void tree_clump(Game& game, const FloorPlan& plan, const RoomPlan& room) {
 } // namespace
 
 void place_forest_terrain(Game& game, const FloorPlan& plan) {
-    if (game.run.floor > 4) return;
+    if (!forest_floor(game.run.floor)) return;
     for (const RoomPlan& room : plan.rooms) {
         wooded_edges(game, plan, room);
         tree_clump(game, plan, room);

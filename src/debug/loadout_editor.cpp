@@ -104,7 +104,7 @@ void draw_loadout_editor(const Game& game, bool offline) {
     if (ImGui::Begin("Debug: Loadout", &tools.loadouts)) {
         bool changed = false;
         ImGui::TextWrapped("Edit a saved kit, then apply it now or use it on future spawns. Applying replaces equipment and restores kit HP.");
-        constexpr const char* presets[]{"Forest entry", "Forest veteran", "Fire entry", "Ice entry", "Projectile lab"};
+        constexpr const char* presets[]{"Forest entry", "Forest veteran", "Ice entry", "Industrial entry", "Projectile lab"};
         ImGui::Combo("Preset", &tools.preset, presets, 5);
         if (ImGui::Button("Load preset into editor")) { set_loadout_preset(kit, tools.preset); changed = true; }
         const Entity* player = get_entity(game, game.players[0]);

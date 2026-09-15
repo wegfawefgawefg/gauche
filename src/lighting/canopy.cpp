@@ -35,7 +35,7 @@ float canopy_strength(const StageLight& light, float x, float y, std::uint64_t t
 }
 
 void project_canopy(LightingCache& cache, const Game& game) {
-    if (game.run.floor > 4) return;
+    if (game.run.phase!=RunPhase::Arena && !forest_floor(game.run.floor)) return;
     for (int i = 0; i < game.run.roof_light_count; ++i) {
         const StageLight& source = game.run.roof_lights[static_cast<std::size_t>(i)];
         if (!cache.contains(source.cell)) continue;

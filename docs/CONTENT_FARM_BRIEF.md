@@ -28,7 +28,8 @@ or sounds already exist. The current generator and content set are a prototype.
 | Fourth biome | Military / robot area is a candidate, **not decided**. |
 
 Desired progression is **Forest → Ice → Industrial/mine/lava → fourth biome**.
-The current Forest → Fire → Ice runtime order still needs changing. Preserve
+The runtime now follows Forest → Ice → Industrial for its three implemented
+zones. The fourth zone remains to be built and added to progression. Preserve
 cross-biome utility: forest fire tools burn wooden obstacles and remain valuable
 in Ice; their usefulness drops in the hot industrial zone, where carried ice
 tools gain new uses. Inventory choices should anticipate the next area's

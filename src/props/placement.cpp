@@ -57,7 +57,7 @@ bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking)
 
 void scatter_room_props(Game& game, const FloorPlan& plan) {
     const bool cold = ice_floor(game.run.floor);
-    if (game.run.floor > 4 && !cold) return;
+    if (!forest_floor(game.run.floor) && !cold) return;
     for (const RoomPlan& room : plan.rooms) {
         if (cold && room.role == RoomRole::Chapel) { place_chapel_props(game,plan,room); continue; }
         // STASH: A few snowy lumps hide regional supplies off the mandatory paths.

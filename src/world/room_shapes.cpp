@@ -39,12 +39,12 @@ TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
     if (room.role == RoomRole::Ruins || room.role == RoomRole::Workshop ||
         room.role == RoomRole::Shrine) return TileKind::Ruin;
     if (room.role == RoomRole::Brook && std::abs(x + y / 2) <= 2) return TileKind::ShallowWater;
-    if (game.run.floor <= 4) {
+    if (forest_floor(game.run.floor)) {
         if (room.role == RoomRole::Thicket || room.role == RoomRole::Orchard ||
             x * x + y * y > room.half_width * room.half_height / 2) return TileKind::Grass;
-    } else if (game.run.floor <= 8) {
+    } else if (industrial_floor(game.run.floor)) {
         if (x > 2 && y > 2) return TileKind::Lava;
-    } else if (x * x + y * y > 8) return TileKind::Ice;
+    }
     return TileKind::Empty;
 }
 

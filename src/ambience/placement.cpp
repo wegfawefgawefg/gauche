@@ -7,7 +7,7 @@
 void place_ambience(AmbientAudio& audio, const Game& game, Cell listener) {
     audio.sources.clear();
     if (ice_floor(game.run.floor)) { place_ice_ambience(audio,game,listener); return; }
-    if (game.run.floor < 1 || game.run.floor > 4) return;
+    if (!forest_floor(game.run.floor)) return;
     const auto add = [&](AmbientCue cue, Cell cell, bool global = false,
                          Handle owner = {}, PropKind prop = PropKind::None) {
         add_ambient_source(audio,game,listener,cue,cell,global,owner,prop);

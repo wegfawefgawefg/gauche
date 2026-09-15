@@ -21,7 +21,7 @@ bool wading_actor(const Entity& actor) {
 }
 
 void place_water_scenes(Game& game, const FloorPlan& plan) {
-    if (game.run.floor > 4) return;
+    if (!forest_floor(game.run.floor)) return;
     for (const RoomPlan& room : plan.rooms) {
         if (room.role != RoomRole::Brook) continue;
         // SPRING: An actual northern wall feeds a reachable pool beside the dry route.

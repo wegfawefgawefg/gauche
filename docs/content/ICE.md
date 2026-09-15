@@ -247,10 +247,12 @@ twenty ambience cues. Keep variation/headroom and preserve directional playback.
 ## Implementation order and acceptance
 
 Implement shared terrain/material rules and regional selection first; no change
-to the existing forest's floor identities by accident. Current runtime order is
-forest/fire/ice and only three zones; integrating all four must explicitly update
-HUD, generation, stock, rewards, end-of-run rules and compatibility together.
-The design does not pretend the present placeholder ice floors are complete.
+to the existing forest's floor identities by accident. Runtime order is now
+Forest (1–4), Ice (5–8), Industrial (9–12). Named biome rules drive terrain,
+populations, visuals, stock and rewards; debug selections migrate with the order.
+The fourth zone still needs integration with end-of-run rules and compatibility.
+The Ice item/enemy catalogs are implemented; room composition and balance remain
+under iteration.
 
 Then implement coherent room slices: reservoir footing and skater; fishing and
 diver; heat and bathhouse; snow and listening; crystal/reflection and observatory.

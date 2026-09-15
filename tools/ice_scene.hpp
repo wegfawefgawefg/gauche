@@ -10,13 +10,13 @@ inline void arrange_ice_scene(Game& game, Cosmetics& cosmetics, bool generated,
     cosmetics = {};
     game.rng = seed == 0 ? 1 : seed;
     game.run.seed = game.rng;
-    game.run.floor = 9;
+    game.run.floor = first_floor(Biome::Ice);
     game.run.phase = RunPhase::Playing;
     game.run.online[0] = true;
     if (generated) {
         // PARTY: Enter through a real initial loadout, then carry it to the cold floor.
         start_run(game, seed == 0 ? 1 : seed);
-        game.run.floor = 9;
+        game.run.floor = first_floor(Biome::Ice);
         generate_world_floor(game);
         return;
     }

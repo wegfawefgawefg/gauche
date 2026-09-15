@@ -154,8 +154,8 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
-    if (game.run.floor > 4) {
-        const EntityKind hazard = game.run.floor <= 8 ? EntityKind::Ember : EntityKind::FrostBat;
+    if (!forest_floor(game.run.floor)) {
+        const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat : EntityKind::Ember;
         enemy(game, room, hazard, 2, budget);
         if (round >= 2) enemy(game, room, hazard, 2, budget);
         return;
@@ -353,7 +353,7 @@ void room_light(Game& game, const RoomPlan& room) {
         }
         return;
     }
-    if (game.run.floor > 4) return;
+    if (!forest_floor(game.run.floor)) return;
     if (room.role == RoomRole::Clearing || room.role == RoomRole::Orchard || room.role == RoomRole::Brook) {
         if (game.run.roof_light_count >= static_cast<int>(game.run.roof_lights.size())) return;
         StageLight& gap = game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)];

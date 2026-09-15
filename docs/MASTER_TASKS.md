@@ -236,7 +236,7 @@ and 50 biome-specific items per biome**. Across four biomes this is at least
 80 enemies, 80 debris types, and 200 items, plus a small shared item pool.
 Distinct behavior, encounter role, silhouette, sound, and sensible drops matter
 more than different colors or HP values. Room, tile, prop, hazard, and container
-variety belongs to every biome too. Pending: change runtime order to Forest → Ice → Industrial/mine/lava → fourth biome, with cross-biome fire/ice utility as specified in the [content brief](CONTENT_FARM_BRIEF.md).
+variety belongs to every biome too. Runtime order is now Forest → Ice → Industrial/mine/lava, with named biome rules, migrated debug selections and matching visuals/stock/populations ([progression notes](history/BIOME_ORDER.md)). Adding the fourth biome remains pending. Preserve cross-biome fire/ice utility as specified in the [content brief](CONTENT_FARM_BRIEF.md).
 
 - [x] Design a full forest catalog to those quotas, including enemies with
   tells and drop tables, strange or weak-but-useful items, prop/debris families,

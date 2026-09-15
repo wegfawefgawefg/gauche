@@ -222,6 +222,50 @@ and wolf-leader fights are candidates. Large art does not mandate multi-cell
 collision; if 2x2 occupancy is needed, define navigation, narrow passages, targeting,
 shoves, hazards and snapshots. One hit overlapping four cells must not quadruple.
 
+## Haunted-house follow-up (2026-09-15)
+
+User played the house and likes it as a promising mode, but easily punched through
+the encounter. Preserve that foundation while adding tactical tools and variety.
+This feedback is summarized selectively, not archived verbatim.
+
+Make ordinary house zombies individually weaker and simpler, with more bodies
+creating pressure. Replace instant adjacent swipes with recognizable preparation,
+strike and recovery. Coordinate with the baseline Fist nerf: do not compensate
+for overpowered fists by turning every zombie into a damage sponge. Crowd danger
+should come from encirclement, entry lanes and lost space rather than unavoidable
+first-frame damage. Tune counts/cadence for solo and co-op with an active-body
+budget; telegraph arrivals and avoid spawning directly onto players.
+
+Provide crowd-control resources before/around activation: placeable or repairable
+barricades, doors that can block routes, and clearly marked lever-operated fire
+or spike lanes. Give barriers material, HP, placement/repair cost and breaking
+feedback. Zombies should batter reachable blocking barriers when their route to
+prey is obstructed. They can be tactically dumb without freezing against a closed
+door or always knowing the globally optimal breach. Select nearby reachable
+breach targets with bounded work; reconsider when a passage opens. One zombie
+must not stop the whole crowd navigating toward an available entrance.
+
+Trap controls must visibly correspond to their affected area; telegraph activation,
+define cooldown/fuel/reset and friendly-fire consequences, and leave an escape
+route. Barricades buy time, not permanent safety. Do not let player construction
+softlock a wave by sealing required spawn points or stranding the last zombie.
+Preserve encounter death/disconnect/rejoin and gate-release behavior.
+
+Build several house variants with distinct circulation: galleries and chokepoints,
+connected small rooms, courtyard loops and multiple entrances, rather than merely
+changing props in the same large open shell. Add an outside hut/outbuilding and
+consider a small compound of houses as a variant. Supply and danger placement
+should reward exploring and preparing. Define the active encounter region across
+the yard/buildings so outbuildings are not accidentally inaccessible after locking.
+
+The current authored shell does contain partitions, but the user's experience
+still reads as one open area; improve meaningful layout differences and readable
+room identity. Reuse the encounter controller and multi-room landmark work where
+appropriate. Add variant selection/repeat to existing debug tools. A separate
+standalone mode is an opportunity, not an immediate requirement inferred from
+the user's enjoyment. Current fixed Shotgun supplies and intermission Ammo also
+need the shared biome/weapon-balance audit rather than remaining hidden exceptions.
+
 ## Small life, landmarks, frozen contents and ghost
 
 Compact local populations can orbit/follow a home actor/source, scatter from steps,

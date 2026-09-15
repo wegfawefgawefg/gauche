@@ -19,6 +19,9 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 
 Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.
 
+- [ ] Rework haunted-house pressure: weaker/simpler ordinary zombies in larger crowds, readable delayed swipes, spawn/crowd budgets and solo/co-op pacing coordinated with the Fist nerf. Preserve the mode's promising foundation.
+- [ ] Give haunted houses crowd-control tools: build/repair barriers, blockable routes, zombie breach behavior and marked lever fire/spike lanes with costs/cooldowns, friendly-fire rules and no stranded-wave softlocks.
+- [ ] Add distinct haunted-house layouts, meaningful internal rooms, outside hut/outbuildings and compound candidates; define encounter boundaries, placement/supply budgets and debug variant/repeat access. See the [house follow-up](WORLD_INTERACTION_REVIEW.md#haunted-house-follow-up-2026-09-15).
 - [ ] Repair shop/three-choice announcements and transactional replacement: South confirm, East cancel, West gameplay pickup/interact including keys; no trigger purchases/input leakage. Merchant/cart, NO ROOM replacement picker, exchange confirmation, cancellation and co-op stock/cost validation.
 - [ ] Audit every enemy's notice/windup/strike/recovery, attack effects and first-hit counterplay; prioritize snail, zombie swipe and legacy circle/gun enemies. Rework inherited art/behavior; compare current Stoker to the reported older build.
 - [ ] Replace Rabbit Charm retreat with held/active speed. Design separately themed escape, hop, leap, moving-flight and optional reactive dodge alongside useful gaps/tar/pits and solvable required routes.

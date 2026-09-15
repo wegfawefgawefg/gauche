@@ -1,3 +1,4 @@
+#include "entities/choir_render.hpp"
 #include "entities/mold_render.hpp"
 #include "items/machine_fitting_render.hpp"
 #include "entities/pump_render.hpp"
@@ -309,6 +310,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y += (static_cast<float>(entity.point_a.y - entity.cell.y) - .6F) * pixels * remaining;
                 angle += static_cast<double>(remaining * 270);
             }
+            apply_choir_pose(entity,game.tick,body_rect,angle);
             apply_mold_pose(entity,body_rect,angle);
             apply_pump_pose(entity,body_rect);
             apply_flight_pose(entity, game.tick, body_rect, angle);

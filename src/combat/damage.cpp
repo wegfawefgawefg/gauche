@@ -1,3 +1,4 @@
+#include "../entities/tar_choir.hpp"
 #include "../entities/mold_thief.hpp"
 #include "../entities/casting_mold.hpp"
 #include "../items/machine_fittings.hpp"
@@ -56,6 +57,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     damage_machine_fitting(game,entity,damage);
+    interrupt_tar_singer(entity);
     hurt_mold_thief(game,entity,attacker);
     hurt_ash_sleeper(game,entity,attacker);
     interrupt_pocket_drill(entity);

@@ -1,3 +1,5 @@
+#include "../projectiles/tar_spit.hpp"
+#include "../entities/tar_choir.hpp"
 #include "../items/heated_water.hpp"
 #include "../entities/mold_thief.hpp"
 #include "../entities/casting_mold.hpp"
@@ -236,6 +238,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_tar_singer(entity) || !valid_tar_spit(entity)) reader.okay=false;
     if (!valid_mold_thief(entity) || !valid_casting_mold(entity)) reader.okay=false;
     if (!valid_machine_fitting(entity)) reader.okay=false;
     if (!valid_emergency_pump(entity)) reader.okay=false;

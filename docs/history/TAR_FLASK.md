@@ -37,7 +37,7 @@ terrain or resetting its remaining lifetime. Pouring tar onto native ice clots
 it immediately. Crust is passable and no longer slows walking. Applied warmth or
 fire softens/ignites it through the shared fuel rules. Fire consumes at most four
 seconds of available tar, never extending a short remainder into free fuel.
-Spread remains on the ordinary budgeted surface beat; tar has no special
+Spread remains on the ordinary thirty-tick surface spread beat; tar has no special
 whole-floor propagation loop.
 
 Water/coolant/brine wash it away using the existing spill rules. Hot contact can

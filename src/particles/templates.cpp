@@ -196,6 +196,7 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::ForkTravel:
         shockwave(cosmetics,sound.cell,151,195,212);
         break;
+    case SoundId::ChoirDeath:
     case SoundId::TarSplash:
         shockwave(cosmetics,sound.cell,82,57,39);
         break;

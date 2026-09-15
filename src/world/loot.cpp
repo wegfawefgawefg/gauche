@@ -1,3 +1,4 @@
+#include "../entities/tar_choir.hpp"
 #include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
 #include "loot.hpp"
@@ -34,6 +35,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     drop_machine_fitting(game,enemy);
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::TarChoir: drop_tar_choir(game,enemy);break;
     case EntityKind::MoldThief: {
         const auto roll=random_u32(game)%100;
         if (roll>=20 && roll<40) place_ground_item(game,enemy.cell,ItemKind::MoldKey);

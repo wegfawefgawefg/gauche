@@ -1,3 +1,4 @@
+#include "tar_spit.hpp"
 #include "chain_hook.hpp"
 #include "projectile.hpp"
 #include "../items/bolt_pouch.hpp"
@@ -36,6 +37,7 @@ void init_projectile(Entity& entity) {
 }
 
 int projectile_step_ticks(const Entity& entity) {
+    if (entity.label_a==static_cast<int>(ProjectileKind::TarSpit)) return 6;
     if (entity.label_a==static_cast<int>(ProjectileKind::ChainHook)) return 4;
     if (entity.label_a==static_cast<int>(ProjectileKind::ThrownBolt)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::CoalSpit)) return 5;
@@ -128,6 +130,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a==static_cast<int>(ProjectileKind::TarSpit)) {step_tar_spit(game,slot);return;}
     if (game.entities[static_cast<std::size_t>(slot)].label_a==static_cast<int>(ProjectileKind::ChainHook)) {step_chain_hook(game,slot);return;}
     if (game.entities[static_cast<std::size_t>(slot)].label_a==static_cast<int>(ProjectileKind::ThrownBolt)) {step_thrown_bolt(game,slot);return;}
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::FoamCan)) return; // Sealed expansion, physical timer phase.

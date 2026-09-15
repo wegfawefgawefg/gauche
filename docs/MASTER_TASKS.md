@@ -389,7 +389,8 @@ behavior and balance playtesting remain the user's.
   [Mold Thieves and casting floors](history/MOLD_THIEF.md) add real loose-metal theft, interruptible sealing, reusable breakable molds, exact cargo salvage and eight-use keys in optional paired workstations.
   [Steam Lances](history/STEAM_LANCE.md) add refillable two-cell scalding thrusts, shared kettle heating/cooling, interruptible bracing and lamp-alcove water/stove supplies.
   [Tar Flasks and material states](history/TAR_FLASK.md) add traveling three-bottle bundles, sticky fuel, cold-hardened crust, washing/pump transfer and tar-lane kiln variants.
-  Eighteen catalog enemy behaviors and twenty-four of fifty regional items implemented;
+  [Tar Choirs and settling tanks](history/TAR_CHOIR.md) add linked warning/cough rhythms, traveling tar, cover/control disruption, surviving solo singers and paired material basins with practical counter-tools.
+  Nineteen catalog enemy behaviors and twenty-four of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

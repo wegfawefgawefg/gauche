@@ -36,7 +36,7 @@ TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
     const bool trail = std::abs(x) <= 1 || std::abs(y) <= 1;
     if (trail) return TileKind::Empty;
     if (ice_floor(game.run.floor)) return ice_room_floor(room, x, y);
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine) return TileKind::Ruin;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::SettlingTanks) return TileKind::Ruin;
     if (room.role == RoomRole::Ruins || room.role == RoomRole::Workshop ||
         room.role == RoomRole::Shrine) return TileKind::Ruin;
     if (room.role == RoomRole::Brook && std::abs(x + y / 2) <= 2) return TileKind::ShallowWater;

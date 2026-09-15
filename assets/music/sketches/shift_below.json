@@ -1,0 +1,35 @@
+{
+  "title": "The Shift Below",
+  "description": "Industry / 4:4. Low horns, cello ostinato, modal membrane drums and distant metal.",
+  "seconds": 93.91304347826087,
+  "integrated_lufs_estimate": -23.0,
+  "loudness_range_lu": 14.0,
+  "true_peak_db_estimate": -5.35,
+  "loop_boundary_step": 5.1433260006629325e-05,
+  "sections": [
+    {
+      "seconds": 0.0,
+      "name": "The lift descends"
+    },
+    {
+      "seconds": 10.434782608695652,
+      "name": "First shift / measured drums"
+    },
+    {
+      "seconds": 31.304347826086957,
+      "name": "Furnace floor / horns"
+    },
+    {
+      "seconds": 52.17391304347826,
+      "name": "Stopped machinery / breath"
+    },
+    {
+      "seconds": 62.608695652173914,
+      "name": "Second shift / counterline"
+    },
+    {
+      "seconds": 83.47826086956522,
+      "name": "The lift returns"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Under the Hollow Bough",
+  "description": "Forest / 6:8. Cello and bassoon, an answering flute, harp and soft frame drum.",
+  "seconds": 100.0,
+  "integrated_lufs_estimate": -23.0,
+  "loudness_range_lu": 8.2,
+  "true_peak_db_estimate": -3.37,
+  "loop_boundary_step": 0.00017593054965961896,
+  "sections": [
+    {
+      "seconds": 0.0,
+      "name": "Roots / low strings"
+    },
+    {
+      "seconds": 20.0,
+      "name": "A small clearing / flute answer"
+    },
+    {
+      "seconds": 40.0,
+      "name": "The old house / harmonic turn"
+    },
+    {
+      "seconds": 60.0,
+      "name": "Returning path / fuller pulse"
+    },
+    {
+      "seconds": 80.0,
+      "name": "Under the leaves / thinning to the beginning"
+    }
+  ]
+}

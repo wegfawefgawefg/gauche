@@ -100,10 +100,13 @@ appropriate. A paused/resumed game or a reconnect should not restart cues in a
 burst. Track selection/playback remains local presentation state, outside
 gameplay RNG, hashes and snapshots.
 
-Current source audit: `audio.cpp` loads only `title.ogg` and `playing.ogg`; music
-gain is `0.4125 * master * music` in both start and settings-update paths. This
-identifies existing behavior, not a measurement of the files' loudness. Multiple
-biome tracks, the new compositions and the new mixing policy remain unimplemented.
+First preview milestone: [three original sketches](history/MUSIC_SKETCHES.md)
+and their local listening page are available for the user's feedback. These
+shorter arrangements are not completion of the full song catalog.
+`audio.cpp` still loads only `title.ogg` and `playing.ogg`; their measured loudness
+was -8.97 LUFS before playback gain. Music gain is now `0.12 * master * music`
+(previously 0.4125), in both start and settings-update paths. Biome-aware playback
+and installing the new compositions in the game remain unimplemented.
 
 Use offline listening/render/analysis checks for production and the user's
 playtesting for whether it feels right in play. Finishing a render or hitting a

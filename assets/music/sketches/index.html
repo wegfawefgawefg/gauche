@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gauche — first music sketches</title><style>
+:root{color-scheme:dark;font:17px/1.55 system-ui,sans-serif;background:#101612;color:#e4e0cc}
+body{max-width:920px;margin:0 auto;padding:36px 24px 70px}header{margin-bottom:34px}
+h1{font:600 clamp(30px,5vw,48px)/1.1 Georgia,serif;margin:12px 0 20px}
+h2{font:500 28px/1.2 Georgia,serif;margin:6px 0 12px}.eyebrow{color:#c5a776;letter-spacing:.14em;font-size:12px}
+article{background:#1a231e;border-left:3px solid #8d6c43;padding:24px 28px;margin:24px 0;box-shadow:7px 8px #080d0a}
+p{max-width:74ch;color:#c6cbbb}audio{display:block;width:100%;margin:22px 0 16px}
+button{font:inherit;font-size:12px;color:#d6c5a8;background:#222c24;border:1px solid #465442;padding:7px 10px;cursor:pointer}
+button:hover,button:focus-visible{border-color:#c5a776;background:#344335}.markers{display:flex;gap:7px;flex-wrap:wrap}
+a{color:#e4ba80}.links{display:flex;gap:24px;flex-wrap:wrap;font-size:13px}footer{font-size:13px;color:#a1ad9c}
+</style><header><p class="eyebrow">GAUCHE / MUSIC WORKBENCH / PASS 01</p>
+<h1>Roots, lanterns, and the shift below.</h1>
+<p>Three original directions to listen through. These are shorter arrangement sketches,
+not the finished biome soundtrack. They are mixed quietly and retain their swells and rests.</p>
+<p>Each has section buttons for jumping around. Nothing plays automatically.</p></header><article>
+<p class="eyebrow">01 / FOREST / FIRST SKETCH</p>
+<h2>Under the Hollow Bough</h2><p>Forest / 6:8. Cello and bassoon, an answering flute, harp and soft frame drum.</p>
+<audio id="hollow_bough" controls preload="metadata" src="hollow_bough.ogg"></audio>
+<div class="markers"><button data-player="hollow_bough" data-time="0.000">0:00 Roots / low strings</button><button data-player="hollow_bough" data-time="20.000">0:20 A small clearing / flute answer</button><button data-player="hollow_bough" data-time="40.000">0:40 The old house / harmonic turn</button><button data-player="hollow_bough" data-time="60.000">1:00 Returning path / fuller pulse</button><button data-player="hollow_bough" data-time="80.000">1:20 Under the leaves / thinning to the beginning</button></div>
+<p class="links"><a href="hollow_bough.ogg" download>Download OGG</a>
+<label><input type="checkbox" data-loop="hollow_bough"> Repeat to hear the loop</label></p></article>
+<article>
+<p class="eyebrow">02 / FOREST / FIRST SKETCH</p>
+<h2>Lanterns among Ferns</h2><p>Forest / nocturnal 4:4. Clarinet, bowed low strings and sparse glass harmonics.</p>
+<audio id="fern_lanterns" controls preload="metadata" src="fern_lanterns.ogg"></audio>
+<div class="markers"><button data-player="fern_lanterns" data-time="0.000">0:00 Dusk / clarinet</button><button data-player="fern_lanterns" data-time="22.857">0:22 Footpaths / pizzicato pulse</button><button data-player="fern_lanterns" data-time="45.714">0:45 Lantern light / cello answer</button><button data-player="fern_lanterns" data-time="68.571">1:08 Night settles / reprise</button></div>
+<p class="links"><a href="fern_lanterns.ogg" download>Download OGG</a>
+<label><input type="checkbox" data-loop="fern_lanterns"> Repeat to hear the loop</label></p></article>
+<article>
+<p class="eyebrow">03 / INDUSTRY / FIRST SKETCH</p>
+<h2>The Shift Below</h2><p>Industry / 4:4. Low horns, cello ostinato, modal membrane drums and distant metal.</p>
+<audio id="shift_below" controls preload="metadata" src="shift_below.ogg"></audio>
+<div class="markers"><button data-player="shift_below" data-time="0.000">0:00 The lift descends</button><button data-player="shift_below" data-time="10.435">0:10 First shift / measured drums</button><button data-player="shift_below" data-time="31.304">0:31 Furnace floor / horns</button><button data-player="shift_below" data-time="52.174">0:52 Stopped machinery / breath</button><button data-player="shift_below" data-time="62.609">1:02 Second shift / counterline</button><button data-player="shift_below" data-time="83.478">1:23 The lift returns</button></div>
+<p class="links"><a href="shift_below.ogg" download>Download OGG</a>
+<label><input type="checkbox" data-loop="shift_below"> Repeat to hear the loop</label></p></article><footer>Original Gauche scores. Cello, woodwinds, horns and other sampled instruments
+from FluidR3 (MIT), layered with custom synthesis. Editable sources: tools/music/.<br>
+Useful feedback: which tune stays with you; which instruments feel right or wrong;
+which passages should breathe, grow, or disappear.</footer><script>
+const players=[...document.querySelectorAll('audio')];
+players.forEach(player=>player.addEventListener('play',()=>players.forEach(other=>{if(other!==player)other.pause()})));
+document.querySelectorAll('[data-player]').forEach(button=>button.addEventListener('click',()=>{
+ const player=document.getElementById(button.dataset.player);player.currentTime=Number(button.dataset.time);player.play();
+}));
+document.querySelectorAll('[data-loop]').forEach(box=>box.addEventListener('change',()=>{
+ document.getElementById(box.dataset.loop).loop=box.checked;
+}));</script></html>

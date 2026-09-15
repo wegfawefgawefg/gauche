@@ -1,0 +1,27 @@
+{
+  "title": "Lanterns among Ferns",
+  "description": "Forest / nocturnal 4:4. Clarinet, bowed low strings and sparse glass harmonics.",
+  "seconds": 91.42857142857143,
+  "integrated_lufs_estimate": -23.0,
+  "loudness_range_lu": 7.6,
+  "true_peak_db_estimate": -6.23,
+  "loop_boundary_step": 4.249915999004561e-05,
+  "sections": [
+    {
+      "seconds": 0.0,
+      "name": "Dusk / clarinet"
+    },
+    {
+      "seconds": 22.857142857142858,
+      "name": "Footpaths / pizzicato pulse"
+    },
+    {
+      "seconds": 45.714285714285715,
+      "name": "Lantern light / cello answer"
+    },
+    {
+      "seconds": 68.57142857142857,
+      "name": "Night settles / reprise"
+    }
+  ]
+}

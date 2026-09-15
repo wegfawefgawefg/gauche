@@ -398,8 +398,8 @@ the available art reference; new source scripts keep a small explicit palette.
 
 Direction and local reference inventory: [music brief](MUSIC_DIRECTION.md).
 
-- [ ] Fix excessive music loudness: inspect current assets, lower the default mix in both playback/settings paths, preserve saved sliders and leave combat/ambient cues intelligible.
-- [ ] Make original Forest timbral/composition sketches, revisiting `/home/vega/Music/samples/` selectively for inspiration. Full reference investigation is not a prerequisite; listening/plots are optional tools when useful. Iterate through the user's repeated listens.
+- [x] Initial music loudness fix: measured the old assets and lowered the runtime mix from 0.4125 to 0.12 (about 10.7 dB) in playback/settings paths, preserving saved sliders. Human mix feedback remains part of soundtrack iteration; see [first previews](history/MUSIC_SKETCHES.md).
+- [x] Make original Forest timbral/composition sketches: two Forest directions plus an Industry drum/horn sketch are available on the [listening page](../assets/music/sketches/index.html). Sources/measurements/provenance are included. These 1:31–1:40 previews await the user's listens and do not finish the full song quota; references remain optional ongoing inspiration.
 - [ ] Build a reproducible offline composition/instrument/render workflow; MIDI, text notation or composition scripts are all optional choices. Develop changing passages, distinctive biome character and seamless loop tails, with deep/mid/high voices (including cello candidates), preserved dynamic range and Industry drum/horn candidates. Install suitable synthesis/audio tools as needed.
 - [ ] Author a few exploration songs per biome, normally about 3:30 each; initial planning target three per biome. Forest starts from the requested Fable-like woodland mood; avoid generic space ambience and unchanged short-pattern repetition.
 - [ ] Develop shorter boss-loop candidates (initial proposal one per biome), main-menu music, and level-start, level-win and shop-arrival jingles with appropriate intensity and related motifs.

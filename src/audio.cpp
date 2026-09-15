@@ -13,6 +13,9 @@
 
 namespace {
 
+// MIX: Leave room for combat tells and environmental sources at default sliders.
+constexpr float music_mix_gain = 0.12F;
+
 bool load_audio_asset(GameAudio& audio, MIX_Audio*& destination,
                       const std::filesystem::path& path, bool preload, std::string& error) {
     destination = MIX_LoadAudio(audio.mixer, path.string().c_str(), preload);
@@ -125,7 +128,7 @@ void play_song(GameAudio& audio, int song) {
     MIX_StopTrack(audio.music_track, 0);
     MIX_SetTrackAudio(audio.music_track, audio.songs[static_cast<std::size_t>(song)]);
     MIX_SetTrackGain(audio.music_track,
-                     0.4125F * audio.master_level * audio.music_level);
+                     music_mix_gain * audio.master_level * audio.music_level);
     const SDL_PropertiesID properties = SDL_CreateProperties();
     if (properties != 0) SDL_SetNumberProperty(properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
     MIX_PlayTrack(audio.music_track, properties);
@@ -189,5 +192,5 @@ void sync_audio_settings(GameAudio& audio, const std::filesystem::path& path) {
     audio.music_level = music;
     audio.sound_level = sound;
     if (audio.music_track != nullptr)
-        MIX_SetTrackGain(audio.music_track, 0.4125F * master * music);
+        MIX_SetTrackGain(audio.music_track, music_mix_gain * master * music);
 }

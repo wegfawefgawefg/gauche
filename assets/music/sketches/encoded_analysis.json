@@ -1,0 +1,32 @@
+[
+  {
+    "file": "hollow_bough.ogg",
+    "duration": 100.0,
+    "integrated_lufs": -22.98,
+    "true_peak_dbtp": -3.31,
+    "loudness_range_lu": 8.2,
+    "decoded_peak": 0.682541012763977,
+    "decoded_boundary_step": 0.00038055659388192,
+    "finite": true
+  },
+  {
+    "file": "fern_lanterns.ogg",
+    "duration": 91.42857142857143,
+    "integrated_lufs": -22.97,
+    "true_peak_dbtp": -6.27,
+    "loudness_range_lu": 7.6,
+    "decoded_peak": 0.4841538667678833,
+    "decoded_boundary_step": 0.00012066098861396313,
+    "finite": true
+  },
+  {
+    "file": "shift_below.ogg",
+    "duration": 93.9130612244898,
+    "integrated_lufs": -22.98,
+    "true_peak_dbtp": -5.35,
+    "loudness_range_lu": 14.0,
+    "decoded_peak": 0.5399904251098633,
+    "decoded_boundary_step": 6.195378955453634e-05,
+    "finite": true
+  }
+]

@@ -53,6 +53,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/stillwater_bell.cpp src/world/currents.cpp
     src/items/tuning_fork.cpp
     src/items/folded_bridge.cpp
     src/items/thaw_charge.cpp

@@ -7,7 +7,7 @@
 
 namespace {
 
-constexpr RegionalItem bladder{"Air Bladder", "Push nearby actors outward, or aim at loose loot in shallow water to float it straight to shore.",
+constexpr RegionalItem bladder{"Air Bladder", "Push neighbors, or float loose shallow-water loot toward shore. Currents steer it; the Stillwater Bell pauses it.",
     Sprite::AirBladder, {0, 0, 1, 0, 45, PatternEffect::Utility, false, 0, 0, false, false, true},
     ItemAction::Material, 10, 1, false, 3, 0, 0, 0, 0, SoundId::AirInflate};
 

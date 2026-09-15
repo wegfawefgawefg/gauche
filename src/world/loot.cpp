@@ -132,6 +132,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         const unsigned int roll = random_u32(game) % 100;
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::AirBladder);
         else if (roll < 45) place_coins(game, enemy.cell, 2 + static_cast<int>(random_u32(game) % 4));
+        else if (roll < 55) place_ground_item(game,enemy.cell,ItemKind::StillwaterBell);
         break;
     }
     case EntityKind::FrostBat:

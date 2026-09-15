@@ -11,7 +11,7 @@ bool bare_ice(const Tile& tile) {
 bool slip_on_surface(Game& game, int slot, Cell direction) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     const Tile* tile = game.stage.at(actor.cell);
-    if (tile == nullptr) return false;
+    if (tile == nullptr || tile->surface.still_ticks>0) return false;
     const bool oil = tile->surface.liquid == LiquidKind::Oil && tile->surface.liquid_ticks > 0;
     const bool ice = bare_ice(*tile) && actor.kind != EntityKind::RimeSkater && actor.vitals.traction == 0;
     if ((!oil && !ice) ||

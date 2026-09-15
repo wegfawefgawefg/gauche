@@ -182,6 +182,12 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::KettleScald:
         spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
         break;
+    case SoundId::StillwaterRing:
+        shockwave(cosmetics,sound.cell,116,184,188);
+        break;
+    case SoundId::CurrentDrift:
+        shockwave(cosmetics,sound.cell,105,143,159);
+        break;
     case SoundId::ForkTravel:
         shockwave(cosmetics,sound.cell,151,195,212);
         break;

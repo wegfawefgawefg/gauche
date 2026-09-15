@@ -1,3 +1,4 @@
+#include "../world/current_render.hpp"
 #include "render.hpp"
 #include "../particles/templates.hpp"
 
@@ -160,6 +161,7 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
                     .32F * std::min(1.0F, static_cast<float>(time) / 60), game.tick, cell);
                 continue;
             }
+            draw_current_marks(renderer,game.stage,cell,rect,light,game.tick);
             if (surface.gritted) draw_grit(renderer, rect, light, cell);
             if (surface.liquid == LiquidKind::None) continue;
             LightColor color;

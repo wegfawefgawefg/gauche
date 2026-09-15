@@ -43,6 +43,7 @@
 namespace {
 
 Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, int world) {
+    if (tile.surface.still_ticks>0) tick=0;
     if (tile.kind == TileKind::Ice && tile.freeze_ticks > 0)
         return tile.freeze_ticks <= 120 ? Sprite::ThawingWater : Sprite::FrozenWater;
     if (tile.material == TileMaterial::Ice && tile.kind == TileKind::Wall) return Sprite::IceWall;

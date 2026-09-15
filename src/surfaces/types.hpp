@@ -12,6 +12,7 @@ struct Surface {
     bool gritted = false;
     std::uint16_t warmth_ticks = 0;
     std::uint16_t whiteout_ticks = 0;
+    std::uint16_t still_ticks = 0;
 };
 
 inline bool obscures_sight(const Surface& surface) {

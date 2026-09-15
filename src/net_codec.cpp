@@ -9,14 +9,14 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(37);
+    writer.u32(38);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
     writer.i32(game.stage.width); writer.i32(game.stage.height);
     for (const Tile& tile : game.stage.tiles) {
         writer.u8(static_cast<std::uint8_t>(tile.kind));
-        writer.u16(tile.hp); writer.u8(tile.water_phase);
+        writer.u16(tile.hp); writer.u8(tile.water_phase); writer.u8(tile.current);
         writer.u16(tile.max_hp);
         writer.u8(static_cast<std::uint8_t>(tile.break_rule));
         writer.u8(tile.required_dig_power);
@@ -25,7 +25,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u16(tile.freeze_ticks);
         writer.u8(static_cast<std::uint8_t>(tile.surface.liquid));
         writer.u8(tile.surface.gritted ? 1 : 0);
-        for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks, tile.surface.warmth_ticks, tile.surface.whiteout_ticks}) writer.u16(ticks);
+        for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks, tile.surface.warmth_ticks, tile.surface.whiteout_ticks, tile.surface.still_ticks}) writer.u16(ticks);
         writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
         writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
         writer.u8(static_cast<std::uint8_t>(tile.prop.broken));
@@ -81,7 +81,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 37) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 38) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -99,7 +99,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         const std::uint8_t kind = reader.u8();
         if (kind >= static_cast<std::uint8_t>(TileKind::Count)) reader.okay = false;
         tile.kind = static_cast<TileKind>(kind);
-        tile.hp = reader.u16(); tile.water_phase = reader.u8();
+        tile.hp = reader.u16(); tile.water_phase = reader.u8(); tile.current=reader.u8();
+        if (tile.current>4) reader.okay=false;
         tile.max_hp = reader.u16();
         tile.break_rule = static_cast<BreakRule>(reader.u8());
         tile.required_dig_power = reader.u8();
@@ -116,8 +117,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.surface.gritted = gritted != 0;
         tile.surface.liquid_ticks = reader.u16(); tile.surface.fire_ticks = reader.u16();
         tile.surface.smoke_ticks = reader.u16(); tile.surface.sleep_ticks = reader.u16(); tile.surface.scent_ticks = reader.u16();
-        tile.surface.warmth_ticks = reader.u16(); tile.surface.whiteout_ticks = reader.u16();
-        if (tile.surface.warmth_ticks > 240 || tile.surface.scent_ticks > 600 || tile.surface.whiteout_ticks > 360) reader.okay = false;
+        tile.surface.warmth_ticks = reader.u16(); tile.surface.whiteout_ticks = reader.u16(); tile.surface.still_ticks=reader.u16();
+        if (tile.surface.still_ticks > 180 || tile.surface.warmth_ticks > 240 || tile.surface.scent_ticks > 600 || tile.surface.whiteout_ticks > 360) reader.okay = false;
         if (tile.surface.liquid >= LiquidKind::Count) reader.okay = false;
         tile.prop.kind = static_cast<PropKind>(reader.u8());
         tile.prop.hp = reader.u8(); tile.prop.variant = reader.u8();

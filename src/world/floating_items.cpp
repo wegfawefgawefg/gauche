@@ -1,4 +1,5 @@
 #include "floating_items.hpp"
+#include "currents.hpp"
 #include "water.hpp"
 #include "../surfaces/interaction.hpp"
 
@@ -55,7 +56,10 @@ void step_floating_item(Game& game, int slot) {
         stop_item_float(game, cargo);
         return;
     }
+    if (game.stage.at_or_border(cargo.cell).surface.still_ticks>0) return;
     if (cargo.timer_a > 0) return;
+    const Cell flow=water_current(game.stage.at_or_border(cargo.cell));
+    if (flow!=Cell{}) cargo.point_b=flow;
     const Cell next = cargo.cell + cargo.point_b;
     if (!float_cell_free(game, next, slot)) { stop_item_float(game, cargo); return; }
     cargo.cell = cargo.point_a = next;

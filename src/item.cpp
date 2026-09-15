@@ -1,3 +1,4 @@
+#include "items/stillwater_bell.hpp"
 #include "items/tuning_fork.hpp"
 #include "items/borrowed_summer.hpp"
 #include "props/doorstop.hpp"
@@ -108,6 +109,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::StillwaterBell:
+        used=ring_stillwater_bell(game,user_slot); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TuningFork:
         used=ring_tuning_fork(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::FoldedBridge:
@@ -424,7 +427,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
+            if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
+            else if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
             else if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
             else if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
             else if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);

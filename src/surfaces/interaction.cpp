@@ -109,6 +109,7 @@ void step_surfaces(Game& game) {
             if (surface.liquid_ticks > 0 && --surface.liquid_ticks == 0) surface.liquid = LiquidKind::None;
             if (surface.smoke_ticks > 0) --surface.smoke_ticks;
             if (surface.whiteout_ticks > 0) --surface.whiteout_ticks;
+            if (surface.still_ticks > 0) --surface.still_ticks;
             if (surface.sleep_ticks > 0) --surface.sleep_ticks;
             if (surface.scent_ticks > 0) --surface.scent_ticks;
             if (surface_wet(tile) || surface.fire_ticks > 0) surface.scent_ticks = 0;

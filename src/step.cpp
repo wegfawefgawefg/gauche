@@ -1,3 +1,4 @@
+#include "world/currents.hpp"
 #include "items/borrowed_summer.hpp"
 #include "game.hpp"
 #include "entities/echo_hound.hpp"
@@ -142,6 +143,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
 
     // ACTORS: Newborns wait a tick; cleanup follows every attack and hazard.
     step_nonplayers(game);
+    step_water_currents(game);
     step_traps(game);
     sweep_dead(game);
 }

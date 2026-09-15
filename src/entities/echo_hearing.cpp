@@ -42,6 +42,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
+    case SoundId::StillwaterRing:
     case SoundId::SiphonFire:
     case SoundId::PorterHeave: case SoundId::PorterWarn: case SoundId::PorterHit: case SoundId::PorterDeath:
     case SoundId::BoilerRoll: case SoundId::LockerOpen: case SoundId::KettleReady:

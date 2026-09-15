@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, twelve regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, thirteen regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, cooling works, cable trenches, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -122,7 +122,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 10 | Nail board | 10-damage melee board, 35 condition; secondary lays it as a recoverable 16-damage ground trap, hurting the next grounded entrant including its owner. Flying enemies ignore it. Wood slap, nail crunch. | C / 11 |
 | 11 | Foreman's whistle | Implemented: gives audible idle pickhands fixed lane destinations four tiles in the aimed direction for up to 4s. Angry workers refuse; audible real leader calls take them back. Six successful calls, 1.5s cooldown; Long reaches eight tiles, Durable has twelve calls. Successful calls wake sleepers and attract hearing enemies. Short-short-long call, worker answer, spent note. | U / 18 |
 | 12 | Survey chalk | Draw three bright floor marks per use, six uses. Allies see them; crew uses marked work fronts when idle. Washes away; does not reveal unseen rooms. Chalk squeak. | C / 5 |
-| 13 | Pocket drill | Hold 0.4s to start, then cut adjacent diggable rock every 0.2s while still; 6s battery. Loud and slower to retarget than a pick. Mechanical chatter. | U / 27 |
+| 13 | Pocket drill | Implemented: hold still/aimed for 0.4s, then adjacent 8-damage contacts every 0.2s. Thirty finite battery beats, including open air; Durable sixty, Fragile fifteen. Moving/turning restarts the prime; real health damage, sleep/stun/toss cancel until release. Dig power 1; cuts ordinary stone, wood, props and wire, preserves reinforced boundaries. Motor noise wakes sleepers and attracts hearing enemies. No ammo refill. | U / 27; native stage-two stock, weapon/reward/cache/workshop tables |
 | 14 | Fuse scissors | Implemented: snip the shortest landed exposed fuse at your feet or ahead; recover that exact bomb into the pack. A full pack, airborne/expired fuse or sealed Prism/Thaw Charge rejects it without spending. Twelve snips; Durable 24, Fragile 6. Also works on Bomb, Firecracker and Pitch Bomb. Metallic click. | C / 8 |
 | 15 | Brake shoe | Implemented for belts: jam one adjacent straight run for 6s, four shoes; a hit of at least 16 damage snaps its brake. Already-jammed runs refuse without spending. Does not stop trains. Cart interaction awaits carts. Rubber drag. | C / 10; assembly supply and Industrial stock/rewards |
 | 16 | Rail switch key | Rotate a nearby existing rail junction; twelve turns. Cannot conjure track or remotely turn occupied points under a cart. Lever clack. | C / 9 |

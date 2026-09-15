@@ -1,3 +1,4 @@
+#include "pocket_drill.hpp"
 #include "arc_torch.hpp"
 #include "action.hpp"
 #include "catalog.hpp"
@@ -7,6 +8,7 @@
 #include <algorithm>
 
 int item_windup(const Item& item) {
+    if (item.kind==ItemKind::PocketDrill) return drill_prime_ticks;
     if (item.kind==ItemKind::ArcTorch) return arc_prime_ticks;
     int ticks = 0;
     switch (item.kind) {

@@ -1,3 +1,4 @@
+#include "pocket_drill.hpp"
 #include "coolant.hpp"
 #include "barricade.hpp"
 #include "magnet.hpp"
@@ -52,6 +53,7 @@ const RegionalItem* regional_item(ItemKind kind) {
     if (const auto* item=coolant_item(kind)) return item;
     if (const auto* item=barricade_item(kind)) return item;
     if (const auto* item=magnet_item(kind)) return item;
+    if (const auto* item=pocket_drill_item(kind)) return item;
     if (const auto* item=arc_torch_item(kind)) return item;
     if (const auto* item=belt_tool_item(kind)) return item;
     if (const auto* item=rivet_gun_item(kind)) return item;

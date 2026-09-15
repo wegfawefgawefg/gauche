@@ -1,3 +1,4 @@
+#include "../items/pocket_drill.hpp"
 #include "../entities/cable_crawler.hpp"
 #include "../entities/magnet_crane.hpp"
 #include "../entities/arc_welder.hpp"
@@ -45,6 +46,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    interrupt_pocket_drill(entity);
     // The overhead press swing is deliberately vulnerable; a blocked hit never
     // reaches this path. An interrupted windup spends no tool condition.
     if (entity.kind == EntityKind::Player && entity.label_b < 0 &&

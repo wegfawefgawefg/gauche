@@ -1,3 +1,4 @@
+#include "../items/pocket_drill.hpp"
 #include "../items/magnet.hpp"
 #include "../items/arc_torch.hpp"
 #include "../items/sled.hpp"
@@ -65,6 +66,7 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_pocket_drill(game,slot,input)) return;
     if (step_arc_torch(game,slot,input)) return;
     if (step_magnet(game,slot,input)) return;
     if (step_rivet_action(game,slot,input)) return;

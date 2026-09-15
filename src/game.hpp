@@ -96,7 +96,7 @@ enum class ItemKind : std::uint8_t {
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
     BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, BlinkSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt, MufflingFelt, AlarmClock, FishingLine, SmokedFish, SnowGlobe, SaltedKelp, BrineFlask, CandleStub, WickSpool, CoalLump, SteamKettle, PressureValve, Sealant, SkateBlade, Crampons, SignalFlare, CopperWire, GroundingSpike, StormLantern, EchoPebble, HarpoonGun, EmergencyDoorstop, BorrowedSummer, HeatSiphon, ThawCharge, FoldedBridge, TuningFork, StillwaterBell, EffigyMask, IceAnchor, SnowShelter, Sled,
-    ForemanWhistle, QuarryCharge, FuseScissors, PressHammer, RubberMallet, RivetGun, BeltCrank, BrakeShoe, ArcTorch, HorseshoeMagnet, FoldingBarricade, CoolantCan,
+    ForemanWhistle, QuarryCharge, FuseScissors, PressHammer, RubberMallet, RivetGun, BeltCrank, BrakeShoe, ArcTorch, HorseshoeMagnet, FoldingBarricade, CoolantCan, PocketDrill,
     Count,
 };
 
@@ -297,7 +297,7 @@ struct Game {
 };
 
 bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power = 0,
-                 TileImpact impact = TileImpact::Strike);
+                 TileImpact impact = TileImpact::Strike, bool sound = true);
 
 std::uint32_t random_u32(Game& game);
 void emit_sound(Game& game, SoundId sound, Cell cell, bool positional = true, bool muffled = false);

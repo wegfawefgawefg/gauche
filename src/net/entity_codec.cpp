@@ -1,3 +1,4 @@
+#include "../items/pocket_drill.hpp"
 #include "../entities/cable_crawler.hpp"
 #include "../entities/pressure_rat.hpp"
 #include "../entities/magnet_crane.hpp"
@@ -221,6 +222,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_pressure_rat(entity)) reader.okay=false;
     if (!valid_magnet_crane(entity)) reader.okay=false;
     if (!valid_arc_welder(entity)) reader.okay=false;
+    if (!valid_pocket_drill(entity)) reader.okay=false;
     if (!valid_arc_torch(entity)) reader.okay=false;
     if (!valid_actor_toss(entity) || !valid_yeti(entity)) reader.okay=false;
     if (!valid_rivet_gunner(entity)) reader.okay=false;

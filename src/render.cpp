@@ -1,3 +1,4 @@
+#include "items/pocket_drill.hpp"
 #include "entities/pressure_rat.hpp"
 #include "entities/crane_render.hpp"
 #include "combat/toss.hpp"
@@ -346,7 +347,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun) && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
             const Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;
-            const float forward = winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
+            const float forward = pocket_drill_active(entity) ? pixels*(.38F+(game.tick%2==0 ? .015F : -.015F)) : winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
             SDL_FRect held_rect{rect.x + pixels * 0.25F +
                                 static_cast<float>(held_facing.x) * forward,
                                 rect.y + pixels * 0.25F +

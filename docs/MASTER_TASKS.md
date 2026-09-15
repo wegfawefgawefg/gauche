@@ -382,7 +382,8 @@ behavior and balance playtesting remain the user's.
   [Nail Boards](history/NAIL_BOARD.md) add melee/ground-trap conversion with shared condition, safe recovery, heat/destruction and assembly-belt acquisition.
   [Ash Sleepers and ash lofts](history/ASH_SLEEPER.md) add noise-triggered waking, warned swipes, quiet/wet settling and manual-belt encounters with useful cargo.
   [Hand Bellows](history/HAND_BELLOWS.md) add directional actor/cargo pushes, gas drift, finite flame fanning and ash/debris disturbance; ash lofts can supply them.
-  Fifteen catalog enemy behaviors and nineteen of fifty regional items implemented;
+  [Counterweights and hoist shafts](history/COUNTERWEIGHT.md) add warned overhead impacts, baitable prop/creature crushing, cold/heavy-hit interruption and persistent cuttable wrecks.
+  Sixteen catalog enemy behaviors and nineteen of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

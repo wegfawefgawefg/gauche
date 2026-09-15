@@ -46,6 +46,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
+    case SoundId::WeightSlam: case SoundId::WeightBreak:
     case SoundId::ArcPulse: case SoundId::ArcCut:
     case SoundId::QuarryBurst:
     case SoundId::BeltCrank: case SoundId::BrakeSnap: case SoundId::BeltHit:
@@ -78,6 +79,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
     case SoundId::BarricadeUnfold:
+    case SoundId::WeightTravel: case SoundId::WeightWarn: case SoundId::WeightReel:
     case SoundId::CraneSlew: case SoundId::CraneCoil: case SoundId::CraneTug: case SoundId::CraneDeath:
     case SoundId::NailSet: case SoundId::NailStep: case SoundId::NailBreak:
     case SoundId::ChainCast: case SoundId::ChainLatch: case SoundId::ChainHaul:

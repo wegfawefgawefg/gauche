@@ -1,3 +1,4 @@
+#include "../entities/counterweight.hpp"
 #include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
@@ -62,7 +63,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     alert_strikebreakers(game,slot,attacker);
     interrupt_strikebreaker(entity);
     interrupt_rivet_gunner(entity);
-    if (damage>=12) {interrupt_slag_snail(entity);interrupt_yeti(entity);interrupt_magnet_crane(entity);}
+    if (damage>=12) {interrupt_counterweight(entity);interrupt_slag_snail(entity);interrupt_yeti(entity);interrupt_magnet_crane(entity);}
     if (damage>=10) interrupt_arc_welder(entity);
     if (damage>=8) interrupt_cable_crawler(entity);
     interrupt_stoker(entity);
@@ -90,7 +91,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;
     if (entity.health == 0 && entity.kind == EntityKind::Trap) return;
     if (entity.health == 0) emit_sound(game, entity_death_sound(entity.kind), entity.cell);
-    if (entity.health == 0) { entity.toss = {}; entity.vitals = {}; drop_enemy_loot(game, entity); }
+    if (entity.health == 0) { entity.toss = {}; entity.vitals = {}; break_counterweight(game,entity); drop_enemy_loot(game, entity); }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;
@@ -141,4 +142,3 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
             apply_health_damage(game, reflected, std::max(1, damage / 2), entity.cell);
     }
 }
-

@@ -1,3 +1,4 @@
+#include "entities/counterweight_render.hpp"
 #include "entities/ash_sleeper.hpp"
 #include "entities/furnace_moth.hpp"
 #include "items/pocket_drill.hpp"
@@ -442,12 +443,14 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_shard_links(renderer,game,camera,zoom,lighting);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,true);
+    draw_counterweights(renderer,graphics,game,camera,zoom,lighting,true);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting, &game.stage);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 1);
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false);
+    draw_counterweights(renderer,graphics,game,camera,zoom,lighting,false);
     draw_plant_lash(renderer, game, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,

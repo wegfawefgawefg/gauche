@@ -1,3 +1,4 @@
+#include "../entities/counterweight.hpp"
 #include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
@@ -39,9 +40,9 @@ bool apply_chill(Entity& actor, int ticks) {
         actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);return true;
     }
     // Cold stalls this motor even though anchored machinery cannot be slowed.
-    if (actor.kind==EntityKind::MagnetCrane && actor.health>0 && ticks>0) {
+    if ((actor.kind==EntityKind::MagnetCrane || actor.kind==EntityKind::Counterweight) && actor.health>0 && ticks>0) {
         actor.freeze_ticks=std::clamp(std::max(actor.freeze_ticks,ticks),0,600);
-        interrupt_magnet_crane(actor);return true;
+        interrupt_magnet_crane(actor);interrupt_counterweight(actor);return true;
     }
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0 ||
         actor.burn_ticks > 0 || actor.scorch_ticks > 0 ||

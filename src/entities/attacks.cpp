@@ -1,3 +1,4 @@
+#include "counterweight.hpp"
 #include "ash_sleeper.hpp"
 #include "slag_snail.hpp"
 #include "furnace_moth.hpp"
@@ -40,6 +41,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Counterweight:
+        if ((enemy.label_a==WeightWarn || enemy.label_a==WeightDrop) && enemy.cell==enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::AshSleeper:
         if (enemy.label_a==AshSwipe && enemy.cell==enemy.point_a) add(enemy.point_a+enemy.point_b);
         break;

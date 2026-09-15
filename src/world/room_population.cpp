@@ -1,3 +1,5 @@
+#include "room_supplies.hpp"
+#include "hoist_shaft.hpp"
 #include "ash_loft.hpp"
 #include "slag_bank.hpp"
 #include "lamp_alcove.hpp"
@@ -31,51 +33,8 @@
 
 namespace {
 
-struct Supplies { int threat, healing, ammunition, equipment, stashes; };
-
-std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind = EntityKind::None) {
-    const int width = room.half_width * 2 + 1;
-    std::vector<bool> seen(static_cast<std::size_t>(width * (room.half_height * 2 + 1)), false);
-    std::vector<Cell> queue{room.center}, choices;
-    constexpr Cell sides[]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    for (std::size_t next = 0; next < queue.size(); ++next) {
-        const Cell cell = queue[next];
-        const int x = cell.x - room.center.x + room.half_width;
-        const int y = cell.y - room.center.y + room.half_height;
-        if (x < 0 || x >= width || y < 0 || y > room.half_height * 2) continue;
-        const auto index = static_cast<std::size_t>(y * width + x);
-        if (seen[index]) continue;
-        seen[index] = true;
-        const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava) continue;
-        if (distance(cell, game.run.spawn) >= 4 && entity_at(game, cell, false) < 0 &&
-            tile->kind != TileKind::Spring && (kind != EntityKind::RimeSkater || tile->kind == TileKind::Ice) &&
-            (kind != EntityKind::BellDiver || tile->kind == TileKind::IceHole) &&
-            (kind != EntityKind::GlassEel || surface_wet(*tile)) &&
-            (kind != EntityKind::SnowBurrower || tile->kind == TileKind::Snow) &&
-            (kind != EntityKind::SealThief || seal_bank(game,cell)))
-            choices.push_back(cell);
-        for (Cell side : sides) queue.push_back(cell + side);
-    }
-    // ISLANDS: Required supplies never roll onto a bank isolated by water or lava.
-    if (choices.empty()) return std::nullopt;
-    return choices[random_u32(game) % choices.size()];
-}
-
-Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Supplies& budget) {
-    if (cost > budget.threat) return {};
-    if (const auto cell = room_space(game, room, kind)) {
-        const Handle spawned = kind == EntityKind::BurrowWorm ?
-            spawn_burrow_worm(game, *cell) : kind == EntityKind::BoilerPorter ?
-            spawn_boiler_porter(game,*cell) : spawn_entity(game, kind, *cell);
-        if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
-        return spawned;
-    }
-    return {};
-}
-
-void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guarded) {
-    const Handle root_handle = enemy(game, room, EntityKind::RootTurret, 2, budget);
+void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool guarded) {
+    const Handle root_handle = spawn_room_enemy(game, room, EntityKind::RootTurret, 2, budget);
     const Entity* root = get_entity(game, root_handle);
     if (root == nullptr || !guarded || budget.threat < 2) return;
     for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
@@ -89,31 +48,31 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
     }
 }
 
-void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
+void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
-        if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
-        else if (room.role == RoomRole::FishingHut) enemy(game, room, EntityKind::FishingWidow, 2, budget);
-        else if (room.role == RoomRole::Reservoir && round % 2 == 1) enemy(game, room, EntityKind::BellDiver, 2, budget);
-        else enemy(game, room, EntityKind::RimeSkater, 2, budget);
+        if (room.role == RoomRole::IceQuarry) spawn_room_enemy(game, room, EntityKind::IceMason, 2, budget);
+        else if (room.role == RoomRole::FishingHut) spawn_room_enemy(game, room, EntityKind::FishingWidow, 2, budget);
+        else if (room.role == RoomRole::Reservoir && round % 2 == 1) spawn_room_enemy(game, room, EntityKind::BellDiver, 2, budget);
+        else spawn_room_enemy(game, room, EntityKind::RimeSkater, 2, budget);
         if (room.role == RoomRole::Reservoir) {
-            enemy(game, room, EntityKind::GlassEel, 2, budget);
-            enemy(game, room, EntityKind::SealThief, 1, budget);
+            spawn_room_enemy(game, room, EntityKind::GlassEel, 2, budget);
+            spawn_room_enemy(game, room, EntityKind::SealThief, 1, budget);
         }
-        else if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
+        else if (room.role == RoomRole::IceQuarry) spawn_room_enemy(game, room, EntityKind::SnowBurrower, 1, budget);
         else {
-            enemy(game, room, EntityKind::SealThief, 1, budget);
-            if (round >= 2) enemy(game, room, EntityKind::BellDiver, 2, budget);
+            spawn_room_enemy(game, room, EntityKind::SealThief, 1, budget);
+            if (round >= 2) spawn_room_enemy(game, room, EntityKind::BellDiver, 2, budget);
         }
         return;
     }
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Bathhouse || room.role == RoomRole::Shelter)) {
-        if (room.role == RoomRole::Shelter) enemy(game, room, EntityKind::FrozenPilgrim, 2, budget);
-        else if (round % 2 == 1) enemy(game, room, EntityKind::BoilerPorter, 3, budget);
-        else enemy(game, room, EntityKind::SteamLeech, 2, budget);
-        if (round >= 2) enemy(game, room, room.role == RoomRole::Shelter ?
+        if (room.role == RoomRole::Shelter) spawn_room_enemy(game, room, EntityKind::FrozenPilgrim, 2, budget);
+        else if (round % 2 == 1) spawn_room_enemy(game, room, EntityKind::BoilerPorter, 3, budget);
+        else spawn_room_enemy(game, room, EntityKind::SteamLeech, 2, budget);
+        if (round >= 2) spawn_room_enemy(game, room, room.role == RoomRole::Shelter ?
             EntityKind::SteamLeech : EntityKind::FrozenPilgrim, 2, budget);
         return;
     }
@@ -123,50 +82,50 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
             warden = get_entity(game, populate_lens_watch(game, room)) != nullptr;
             if (warden) budget.threat -= 4;
         }
-        if (!warden) enemy(game, room, EntityKind::MirrorKnight, 3, budget);
-        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        if (!warden) spawn_room_enemy(game, room, EntityKind::MirrorKnight, 3, budget);
+        if (round >= 2) spawn_room_enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::BoilerGallery) {
         place_maintenance_locker(game,plan,room);
-        enemy(game,room,EntityKind::BoilerPorter,3,budget);
-        if (round >= 2) enemy(game,room,EntityKind::SteamLeech,2,budget);
+        spawn_room_enemy(game,room,EntityKind::BoilerPorter,3,budget);
+        if (round >= 2) spawn_room_enemy(game,room,EntityKind::SteamLeech,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::ServicePassage) {
-        enemy(game,room,EntityKind::IcicleSpider,2,budget);
-        if (round >= 2) enemy(game,room,EntityKind::IcicleSpider,2,budget);
+        spawn_room_enemy(game,room,EntityKind::IcicleSpider,2,budget);
+        if (round >= 2) spawn_room_enemy(game,room,EntityKind::IcicleSpider,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::CrystalGallery) {
         if (budget.threat >= 3 && get_entity(game,populate_crystal_gallery(game,plan,room))) budget.threat -= 3;
-        if (round >= 2) enemy(game,room,EntityKind::FrostBat,2,budget);
+        if (round >= 2) spawn_room_enemy(game,room,EntityKind::FrostBat,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::Chapel) {
-        const Handle handle = enemy(game,room,EntityKind::CandleKeeper,2,budget);
+        const Handle handle = spawn_room_enemy(game,room,EntityKind::CandleKeeper,2,budget);
         if (Entity* keeper = get_entity(game,handle)) keeper->point_a = room.center;
-        if (round >= 2) enemy(game,room,EntityKind::SnowEffigy,2,budget);
+        if (round >= 2) spawn_room_enemy(game,room,EntityKind::SnowEffigy,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::MemorialCourt) {
-        enemy(game, room, EntityKind::SnowEffigy, 2, budget);
-        if (round >= 2) enemy(game, room, EntityKind::EchoHound, 2, budget);
+        spawn_room_enemy(game, room, EntityKind::SnowEffigy, 2, budget);
+        if (round >= 2) spawn_room_enemy(game, room, EntityKind::EchoHound, 2, budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::CliffPath) {
-        enemy(game, room, random_u32(game)%2==0 ? EntityKind::Yeti : EntityKind::AvalancheRam, 2, budget);
-        if (round >= 2) enemy(game, room, EntityKind::SnowBurrower, 1, budget);
+        spawn_room_enemy(game, room, random_u32(game)%2==0 ? EntityKind::Yeti : EntityKind::AvalancheRam, 2, budget);
+        if (round >= 2) spawn_room_enemy(game, room, EntityKind::SnowBurrower, 1, budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::WeatherStation) {
-        enemy(game, room, EntityKind::WhiteoutDrummer, 1, budget);
-        enemy(game, room, round >= 2 ? EntityKind::EchoHound : EntityKind::FrostBat, 2, budget);
+        spawn_room_enemy(game, room, EntityKind::WhiteoutDrummer, 1, budget);
+        spawn_room_enemy(game, room, round >= 2 ? EntityKind::EchoHound : EntityKind::FrostBat, 2, budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::EchoTunnel) {
-        enemy(game, room, EntityKind::EchoHound, 2, budget);
-        if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        spawn_room_enemy(game, room, EntityKind::EchoHound, 2, budget);
+        if (round >= 2) spawn_room_enemy(game, room, EntityKind::FrostBat, 2, budget);
         return;
     }
     if (!forest_floor(game.run.floor)) {
@@ -174,55 +133,55 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         const EntityKind hazard = ice_floor(game.run.floor) ? EntityKind::FrostBat :
             roll==0 ? EntityKind::PressureRat : roll==1 ? EntityKind::RivetGunner : roll==2 ? EntityKind::CableCrawler : roll==3 ? EntityKind::WalkingKiln : roll==4 ? EntityKind::FurnaceMoth : roll==5 ? EntityKind::SlagSnail : roll==6 ? EntityKind::AshSleeper : EntityKind::Ember;
         const int cost=(hazard==EntityKind::PressureRat || hazard==EntityKind::FurnaceMoth) ? 1 : hazard==EntityKind::WalkingKiln ? 3 : 2;
-        enemy(game, room, hazard, cost, budget);
-        if (round >= 2) enemy(game, room, hazard, cost, budget);
+        spawn_room_enemy(game, room, hazard, cost, budget);
+        if (round >= 2) spawn_room_enemy(game, room, hazard, cost, budget);
         return;
     }
     switch (room.role) {
     case RoomRole::Thicket:
-        if (round > 0 && random_u32(game) % 3 == 0) { enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
+        if (round > 0 && random_u32(game) % 3 == 0) { spawn_room_enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
         if (random_u32(game) % 3 == 0) rooted_watch(game, room, budget, round > 0);
-        else enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
-        if (round > 0) enemy(game, room, EntityKind::ThornSnail, 2, budget);
+        else spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
+        if (round > 0) spawn_room_enemy(game, room, EntityKind::ThornSnail, 2, budget);
         break;
     case RoomRole::Brook:
-        enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::SporeToad : EntityKind::LanternMoth, 1, budget);
-        if (round > 0) enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Bat : EntityKind::Mosquito, 1, budget);
+        spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::SporeToad : EntityKind::LanternMoth, 1, budget);
+        if (round > 0) spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Bat : EntityKind::Mosquito, 1, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Bunny, *cell);
         break;
     case RoomRole::Ruins:
-        if (random_u32(game) % 3 == 0) enemy(game, room, EntityKind::CarrionCrow, 1, budget);
-        enemy(game, room, round >= 2 ? EntityKind::ZombieStack : EntityKind::Zombie,
+        if (random_u32(game) % 3 == 0) spawn_room_enemy(game, room, EntityKind::CarrionCrow, 1, budget);
+        spawn_room_enemy(game, room, round >= 2 ? EntityKind::ZombieStack : EntityKind::Zombie,
               round >= 2 ? 3 : 1, budget);
         break;
     case RoomRole::Den:
-        if (round > 0 && random_u32(game) % 3 == 0) { enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
-        if (random_u32(game) % 3 == 0) enemy(game, room, EntityKind::CarrionCrow, 1, budget);
-        enemy(game, room, EntityKind::Wolf, 2, budget);
-        if (round > 0) enemy(game, room, EntityKind::Den, 4, budget);
+        if (round > 0 && random_u32(game) % 3 == 0) { spawn_room_enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
+        if (random_u32(game) % 3 == 0) spawn_room_enemy(game, room, EntityKind::CarrionCrow, 1, budget);
+        spawn_room_enemy(game, room, EntityKind::Wolf, 2, budget);
+        if (round > 0) spawn_room_enemy(game, room, EntityKind::Den, 4, budget);
         break;
     case RoomRole::Cache:
-        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
-        else enemy(game, room, EntityKind::ThornSnail, 2, budget);
+        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::CrateMimic, 2, budget);
+        else spawn_room_enemy(game, room, EntityKind::ThornSnail, 2, budget);
         break;
     case RoomRole::Shrine:
         if (random_u32(game) % 2 == 0) { rooted_watch(game, room, budget, round > 0); break; }
-        enemy(game, room, round > 0 ? EntityKind::Bear : EntityKind::Wolf,
+        spawn_room_enemy(game, room, round > 0 ? EntityKind::Bear : EntityKind::Wolf,
               round > 0 ? 3 : 2, budget);
         break;
     case RoomRole::Orchard:
-        if (round > 0 || random_u32(game) % 2 == 0) enemy(game, room, EntityKind::WaspNest, 3, budget);
+        if (round > 0 || random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::WaspNest, 3, budget);
         if (const auto cell = room_space(game, room)) spawn_chicken_family(game, *cell);
         break;
     case RoomRole::Workshop:
-        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::ForagerGoblin, 1, budget);
-        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Woodpecker, 2, budget);
-        if (round > 0 && random_u32(game) % 2 == 0) enemy(game, room, EntityKind::CrateMimic, 2, budget);
+        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::ForagerGoblin, 1, budget);
+        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::Woodpecker, 2, budget);
+        if (round > 0 && random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::CrateMimic, 2, budget);
         if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Dog, *cell);
         break;
     case RoomRole::Clearing:
-        if (random_u32(game) % 2 == 0) enemy(game, room, EntityKind::Owl, 2, budget);
-        else enemy(game, room, EntityKind::Mosquito, 1, budget);
+        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::Owl, 2, budget);
+        else spawn_room_enemy(game, room, EntityKind::Mosquito, 1, budget);
         break;
     default: break;
     }
@@ -236,7 +195,7 @@ void supply(Game& game, const RoomPlan& room, ItemKind kind, int count, int& rem
     }
 }
 
-void stash(Game& game, const RoomPlan& room, Supplies& budget) {
+void stash(Game& game, const RoomPlan& room, RoomSupplies& budget) {
     if (budget.stashes <= 0) return;
     if (const auto cell = room_space(game, room)) {
         place_coins(game, *cell, 6 + static_cast<int>(random_u32(game) % 7));
@@ -244,7 +203,7 @@ void stash(Game& game, const RoomPlan& room, Supplies& budget) {
     }
 }
 
-void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
+void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
     const int round = (game.run.floor - 1) % 4;
     // RESERVOIR: Shared supplies bridge the regional catalog as its items arrive.
     if (ice_floor(game.run.floor)) {
@@ -392,7 +351,7 @@ void room_light(Game& game, const RoomPlan& room) {
 
 void populate_rooms(Game& game, const FloorPlan& plan) {
     const int round = (game.run.floor - 1) % 4;
-    Supplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
+    RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     game.run.roof_lights = {};
     game.run.roof_light_count = 0;
     // LANDMARKS: Reserve objectives before any scatter or encounter placement.
@@ -411,6 +370,9 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             --budget.equipment;
         }
     }
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::HoistShaft && budget.threat>=3 && budget.equipment>=2) {
+        if (populate_hoist_shaft(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
+    }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::AshLoft && budget.threat>=2 && budget.equipment>=2) {
         if (populate_ash_loft(game,plan,room)) {budget.threat-=2;budget.equipment-=2;}
     }
@@ -425,23 +387,23 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::KilnCourt && budget.threat>=3) {
         if (populate_kiln_court(game,plan,room)) {budget.threat-=3;budget.equipment=std::max(0,budget.equipment-1);}
-        else enemy(game,room,EntityKind::WalkingKiln,3,budget);
+        else spawn_room_enemy(game,room,EntityKind::WalkingKiln,3,budget);
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CableTrench && budget.threat>=2) {
         if (populate_cable_trench(game,plan,room)) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-1);}
-        else enemy(game,room,EntityKind::CableCrawler,2,budget);
+        else spawn_room_enemy(game,room,EntityKind::CableCrawler,2,budget);
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CoolingWorks && budget.threat>=2) {
         if (populate_cooling_works(game,plan,room)) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-1);}
-        else enemy(game,room,EntityKind::PressureRat,1,budget);
+        else spawn_room_enemy(game,room,EntityKind::PressureRat,1,budget);
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::RepairBay && budget.threat>=2) {
         if (get_entity(game,populate_repair_bay(game,plan,room))) budget.threat-=2;
-        else enemy(game,room,EntityKind::ArcWelder,2,budget);
+        else spawn_room_enemy(game,room,EntityKind::ArcWelder,2,budget);
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::ScrapYard && budget.threat>=2) {
         if (get_entity(game,populate_scrap_yard(game,plan,room))) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-2);}
-        else enemy(game,room,EntityKind::MagnetCrane,2,budget);
+        else spawn_room_enemy(game,room,EntityKind::MagnetCrane,2,budget);
     }
     // Reserve crew budget before incidental encounters consume it.
     for (const RoomPlan& room:plan.rooms)
@@ -455,15 +417,15 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
         budget.equipment=std::max(0,budget.equipment-2);
         if (budget.threat>=2) {
             if (populate_rivet_post(game,plan,room)) budget.threat-=2;
-            else enemy(game,room,EntityKind::RivetGunner,2,budget);
+            else spawn_room_enemy(game,room,EntityKind::RivetGunner,2,budget);
         }
     }
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::BlastingAlcove) {
-            enemy(game,room,EntityKind::PowderMonkey,2,budget);
+            spawn_room_enemy(game,room,EntityKind::PowderMonkey,2,budget);
             if (!assembly && budget.threat>=2) {
                 if (populate_rivet_post(game,plan,room)) budget.threat-=2;
-                else enemy(game,room,EntityKind::RivetGunner,2,budget);
+                else spawn_room_enemy(game,room,EntityKind::RivetGunner,2,budget);
             }
             if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
         }

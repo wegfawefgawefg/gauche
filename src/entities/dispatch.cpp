@@ -1,3 +1,4 @@
+#include "counterweight.hpp"
 #include "ash_sleeper.hpp"
 #include "slag_snail.hpp"
 #include "furnace_moth.hpp"
@@ -55,6 +56,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
     case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
     case EntityKind::SnowEffigy: init_snow_effigy(entity); break;
+    case EntityKind::Counterweight: init_counterweight(entity); break;
     case EntityKind::AshSleeper: init_ash_sleeper(entity); break;
     case EntityKind::SlagSnail: init_slag_snail(entity); break;
     case EntityKind::FurnaceMoth: init_furnace_moth(entity); break;
@@ -137,6 +139,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;
     case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;
     case EntityKind::SnowEffigy: step_snow_effigy(game, slot); break;
+    case EntityKind::Counterweight: step_counterweight(game,slot); break;
     case EntityKind::AshSleeper: step_ash_sleeper(game,slot); break;
     case EntityKind::SlagSnail: step_slag_snail(game,slot); break;
     case EntityKind::FurnaceMoth: step_furnace_moth(game,slot); break;

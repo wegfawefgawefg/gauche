@@ -31,6 +31,9 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::Counterweight:
+        if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::ChainHook);
+        break; // Counterweight bag remains an unimplemented drop slot.
     case EntityKind::AshSleeper:
         (void)random_u32(game); // Ash sack / filter-mask slots remain unimplemented; no substitute loot.
         break;

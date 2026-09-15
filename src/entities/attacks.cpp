@@ -1,3 +1,4 @@
+#include "strikebreaker.hpp"
 #include "mine_crew.hpp"
 #include "powder_monkey.hpp"
 #include "attacks.hpp"
@@ -29,6 +30,10 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Strikebreaker:
+        if (enemy.cell==enemy.point_a && (enemy.label_a==BreakerPush ||
+            enemy.label_a==BreakerHammer || enemy.label_a==BreakerCut)) add(enemy.point_b);
+        break;
     case EntityKind::PowderMonkey:
         if (enemy.label_a==PowderStrike && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;

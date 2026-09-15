@@ -76,6 +76,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/entities/strikebreaker.cpp src/entities/breaker_render.cpp
     src/items/industrial_melee.cpp
     src/entities/powder_monkey.cpp src/entities/powder_route.cpp
     src/items/quarry_charge.cpp src/items/fuse_scissors.cpp src/projectiles/exposed_fuse.cpp

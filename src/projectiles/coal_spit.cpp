@@ -53,7 +53,7 @@ void step_coal_spit(Game& game,int slot) {
         if (Handle{victim,target.generation}!=shot.entity_a) {
             if (parry_ranged_hit(game,victim,shot.facing)) { reflect_projectile(shot,target,victim); return; }
             const int hp=target.health;
-            damage_entity(game,victim,shot.counter_b,shot.cell);
+            damage_entity(game,victim,shot.counter_b,shot.cell,true,shot.entity_a);
             if (shot.label_b==1 && target.health<hp) ignite_struck_actor(game,victim);
             ignite(game,shot,next); finish(game,slot,next); return;
         }

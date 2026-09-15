@@ -57,5 +57,15 @@ int populate_workfront(Game& game,const RoomPlan& room) {
     const auto tool_roll=random_u32(game)%4;
     if (tool_roll<2) place_ground_item(game,room.center+Cell{-6,2},
         tool_roll==0 ? ItemKind::PressHammer : ItemKind::RubberMallet);
+    const Cell guard_cell=origin+Cell{-2,1};
+    const auto* tile=game.stage.at(guard_cell);
+    if ((game.run.floor-1)%4>=1 && available>=5 && tile && walkable(*tile) &&
+        tile->kind!=TileKind::Lava && entity_at(game,guard_cell,false)<0) {
+        const auto handle=spawn_entity(game,EntityKind::Strikebreaker,guard_cell);
+        if (auto* guard=get_entity(game,handle)) {
+            guard->entity_a=leader_handle; guard->facing={1,0};
+            return 5;
+        }
+    }
     return 4;
 }

@@ -59,7 +59,7 @@ void step_snowball(Game& game, int slot) {
         if (!target.impassable || target.health <= 0 || target.cell != next ||
             Handle{victim, target.generation} == shot.entity_a) continue;
         if (parry_ranged_hit(game, victim, shot.facing)) { reflect_projectile(shot, target, victim); return; }
-        damage_entity(game, victim, shot.counter_b, next - shot.facing);
+        damage_entity(game, victim, shot.counter_b, next - shot.facing, true, shot.entity_a);
         if (shot.label_b == 0) { splat(game, slot, next); return; }
         quench_cell(game, next);
         pour_surface(game, next, LiquidKind::Water, 120);

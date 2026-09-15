@@ -1,3 +1,4 @@
+#include "../entities/strikebreaker.hpp"
 #include "shove.hpp"
 
 bool shove_in_front(Game& game, int user_slot, Cell direction) {
@@ -47,6 +48,7 @@ bool shove_actor(Game& game, int target_slot, Cell direction, Cell source) {
 }
 
 bool blocks_facing(const Entity& actor, Cell attacker) {
+    if (breaker_blocks(actor,attacker)) return true;
     const Item& held = *actor.inventory.held();
     const bool shield = held.kind == ItemKind::Buckler || held.kind == ItemKind::ShieldLantern;
     return actor.health > 0 && actor.block_ticks > 0 &&

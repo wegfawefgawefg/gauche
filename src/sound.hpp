@@ -55,6 +55,7 @@ enum class SoundId : std::size_t {
     QuarryPlace, QuarryFuse, QuarryBurst, FuseSnip, FuseDouse, ScissorsSpent,
     PowderCork, PowderPanic, PowderWarn, PowderScratch, PowderDeath, PowderStep1, PowderStep2,
     PressHeave, PressImpact, MalletSwing, MalletImpact, MalletVent,
+    BreakerBrace, BreakerHeave, BreakerAlarm, BreakerBlock, BreakerShieldBreak, BreakerShove, BreakerSlam, BreakerDeath, BreakerStep1, BreakerStep2,
     Count,
 };
 
@@ -107,4 +108,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "quarry_place", "quarry_fuse", "quarry_burst", "fuse_snip", "fuse_douse", "scissors_spent",
     "powder_cork", "powder_panic", "powder_warn", "powder_scratch", "powder_death", "powder_step1", "powder_step2",
     "press_heave", "press_impact", "mallet_swing", "mallet_impact", "mallet_vent",
+    "breaker_brace", "breaker_heave", "breaker_alarm", "breaker_block", "breaker_shield_break", "breaker_shove", "breaker_slam", "breaker_death", "breaker_step1", "breaker_step2",
 };

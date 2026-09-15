@@ -149,7 +149,7 @@ void step_recoverable(Game& game, int slot) {
             return;
         }
         const int health = actor.health;
-        damage_entity(game, index, shot.counter_b, next - shot.facing);
+        damage_entity(game, index, shot.counter_b, next - shot.facing, true, shot.entity_a);
         if (shot.ground_item.kind == ItemKind::IceNeedle && actor.health < health && !hot_cell(game, next))
             apply_chill(game.entities[static_cast<std::size_t>(index)], 60);
         if ((boomerang && shot.label_b == 2) || (!boomerang && shot.counter_c == 0)) { land(game, slot); return; }

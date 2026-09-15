@@ -48,7 +48,7 @@ void cast_step(Game& game,int slot) {
             parry_ranged_hit(game,victim,hook.facing)) { finish(game,slot,true); return; }
         const bool shield=blocks_facing(actor,hook.point_a);
         const int before=actor.health;
-        damage_entity(game,victim,14,hook.point_a);
+        damage_entity(game,victim,14,hook.point_a,true,hook.entity_a);
         // A blocked or depth-avoided hit must not secretly attach a tether.
         if (shield || actor.health <= 0 || actor.health >= before) { finish(game,slot,true); return; }
         hook.entity_b={victim,actor.generation};

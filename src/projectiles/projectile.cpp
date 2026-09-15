@@ -209,7 +209,7 @@ void step_projectile(Game& game, int slot) {
             reflect_projectile(shot, victim, victim_slot);
             return;
         }
-        damage_entity(game, victim_slot, shot.counter_b, next - shot.facing);
+        damage_entity(game, victim_slot, shot.counter_b, next - shot.facing, true, shot.entity_a);
         emit_sound(game, SoundId::ArrowImpact, next);
         if (shot.label_b == 0) { remove_entity(game, {slot, shot.generation}); return; }
     }

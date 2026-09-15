@@ -1,3 +1,4 @@
+#include "strikebreaker.hpp"
 #include "mine_crew.hpp"
 #include "powder_monkey.hpp"
 #include "../items/sled.hpp"
@@ -33,6 +34,7 @@
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::Strikebreaker: init_strikebreaker(entity); break;
     case EntityKind::PowderMonkey: init_powder_monkey(entity); break;
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: init_mine_worker(entity); break;
     case EntityKind::BoilerPorter: init_boiler_porter(entity); break;
@@ -100,6 +102,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::Strikebreaker: step_strikebreaker(game,slot); break;
     case EntityKind::PowderMonkey: step_powder_monkey(game,slot); break;
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: step_mine_worker(game,slot); break;
     case EntityKind::IceAnchor: step_ice_anchor(game,slot); break;

@@ -63,7 +63,7 @@ void step_ice_brick_flight(Game& game, int slot) {
                 reflect_projectile(shot, target, victim);
                 return;
             }
-            damage_entity(game, victim, shot.counter_b, shot.cell);
+            damage_entity(game, victim, shot.counter_b, shot.cell, true, shot.entity_a);
             if (shot.label_b == 0) { shatter(game, slot, next); return; }
         }
     }

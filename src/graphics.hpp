@@ -61,6 +61,7 @@ enum class Sprite : std::size_t {
     QuarryCharge, QuarryChargeLit, QuarryChargeReady, FuseScissors,
     PowderMonkey, PowderLight, PowderRun, PowderScratch,
     PressHammer, RubberMallet,
+    Strikebreaker, BreakerPush, BreakerRaise, BreakerRecover, BreakerUnshielded, BreakerShield,
     Count,
 };
 

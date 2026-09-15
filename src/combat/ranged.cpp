@@ -54,7 +54,7 @@ void fire_bullet(Game& game, int owner_slot, Cell source, Cell direction,
             continue;
         }
         const int health = actor.health;
-        damage_entity(game, target, pattern.damage, attacker);
+        damage_entity(game, target, pattern.damage, attacker, true, shooter);
         if (burning && actor.health < health)
             game.entities[static_cast<std::size_t>(target)].burn_ticks = 120;
         if (!piercing || actor.hard_blocker) { impact = true; break; }

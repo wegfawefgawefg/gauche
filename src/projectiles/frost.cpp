@@ -49,7 +49,7 @@ void step_frost_puff(Game& game, int slot) {
         Entity& target = game.entities[static_cast<std::size_t>(victim)];
         if (Handle{victim, target.generation} != puff.entity_a) {
             const int health = target.health;
-            damage_entity(game, victim, puff.counter_b, puff.cell);
+            damage_entity(game, victim, puff.counter_b, puff.cell, true, puff.entity_a);
             if (target.health < health) apply_chill(target, 120);
             disperse(game, slot, next);
             return;

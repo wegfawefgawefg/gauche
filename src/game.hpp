@@ -157,7 +157,7 @@ enum class EntityKind : std::uint8_t {
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
-    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey,
+    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey, Strikebreaker,
     Count,
 };
 
@@ -296,7 +296,9 @@ const Entity* get_entity(const Game& game, Handle handle);
 void remove_entity(Game& game, Handle handle);
 int entity_at(const Game& game, Cell cell, bool impassable_only = false);
 bool move_entity(Game& game, int slot, Cell destination, bool allow_slip = true);
-void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable = true);
+// Contact direction and a traveling shot's responsible actor are separate.
+void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable = true,
+                   Handle instigator = {});
 void enter_actor_cell(Game& game, int slot);
 void crush_entity(Game& game, int slot, Cell attacker);
 void blast_area(Game& game, Cell center, int radius, int damage, Cell attacker);

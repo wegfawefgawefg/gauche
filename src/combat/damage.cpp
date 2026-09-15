@@ -1,3 +1,4 @@
+#include "../entities/strikebreaker.hpp"
 #include "../items/action.hpp"
 #include "../entities/mine_crew.hpp"
 #include "../game.hpp"
@@ -44,6 +45,8 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.kind == EntityKind::Player && entity.label_b < 0 &&
         entity.ground_item.kind == ItemKind::PressHammer) cancel_item_action(entity);
     hurt_mine_worker(game,slot,damage,attacker);
+    alert_strikebreakers(game,slot,attacker);
+    interrupt_strikebreaker(entity);
     interrupt_stoker(entity);
     interrupt_powder_monkey(entity);
     interrupt_whiteout_drummer(entity);
@@ -84,7 +87,7 @@ void crush_entity(Game& game, int slot, Cell attacker) {
     apply_health_damage(game, slot, 1000000, attacker);
 }
 
-void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable) {
+void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable, Handle instigator) {
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::Projectile || entity.kind == EntityKind::None || entity.kind == EntityKind::GroundItem ||
         entity.kind == EntityKind::RailLayer || entity.kind == EntityKind::Key ||
@@ -92,6 +95,13 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
         entity.kind == EntityKind::Switch || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
         entity.kind == EntityKind::Crusher ||
         damage <= 0) return;
+    const Entity* culprit=get_entity(game,instigator);
+    // A stale projectile owner cannot blame an unrelated actor in its old slot.
+    const Cell responsible=instigator.slot<0 ? attacker : culprit ? culprit->cell : Cell{-1000,-1000};
+    if (blockable && breaker_blocks(entity,attacker)) {
+        hit_breaker_shield(game,slot,damage,responsible);
+        return;
+    }
     Item* held = entity.inventory.held();
     if (blockable && blocks_facing(entity, attacker)) {
         held->durability -= std::max(1, damage);
@@ -105,7 +115,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
         return;
     }
     damage = enemy_defense(game, slot, damage, attacker, blockable);
-    apply_health_damage(game, slot, damage, attacker);
+    apply_health_damage(game, slot, damage, responsible);
     if (blockable && entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&
         random_u32(game) % 4 == 0) {
         const int reflected = entity_at(game, attacker, true);

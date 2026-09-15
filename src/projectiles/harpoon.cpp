@@ -42,7 +42,7 @@ void fly(Game& game, Handle handle) {
         if (parry_ranged_hit(game,slot,shot.facing)) { release_harpoon(game,handle); return; }
         const int before = victim.health;
         const bool shield = blocks_facing(victim,next-shot.facing);
-        damage_entity(game,slot,shot.counter_b,next-shot.facing);
+        damage_entity(game,slot,shot.counter_b,next-shot.facing,true,shot.entity_a);
         emit_sound(game,SoundId::HarpoonImpact,next);
         if (!shield && victim.health < before && movable(victim)) shot.entity_b = {slot,victim.generation};
         if (shot.counter_c == 0 || shield || victim.hard_blocker) { latch_or_finish(game,handle); return; }

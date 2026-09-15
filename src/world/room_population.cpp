@@ -380,8 +380,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     place_ground_item(game, game.run.spawn + Cell{0, 2}, ItemKind::Stick);
     // Reserve crew budget before incidental encounters consume it.
     for (const RoomPlan& room:plan.rooms)
-        if (room.role==RoomRole::Workfront && budget.threat>=5 && populate_workfront(game,room)>0)
-            budget.threat-=5;
+        if (room.role==RoomRole::Workfront && budget.threat>=5) {
+            const int crew=populate_workfront(game,room);
+            if (crew>0) budget.threat-=crew>=5 ? 8 : 5;
+        }
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::BlastingAlcove) {
             enemy(game,room,EntityKind::PowderMonkey,2,budget);

@@ -66,6 +66,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "quarry_charge", "quarry_charge_lit", "quarry_charge_ready", "fuse_scissors",
     "powder_monkey", "powder_light", "powder_run", "powder_scratch",
     "press_hammer", "rubber_mallet",
+    "strikebreaker", "breaker_push", "breaker_raise", "breaker_recover", "breaker_unshielded", "breaker_shield",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

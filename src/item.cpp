@@ -1,14 +1,7 @@
-#include "items/emergency_foam.hpp"
-#include "items/tension_spring.hpp"
-#include "items/coolant.hpp"
-#include "items/barricade.hpp"
-#include "items/magnet.hpp"
-#include "items/belt_tools.hpp"
+#include "items/use_completion.hpp"
+#include "items/industrial_use.hpp"
 #include "artifacts/hearth.hpp"
 #include "items/ammunition.hpp"
-#include "items/foreman_whistle.hpp"
-#include "items/quarry_charge.hpp"
-#include "items/fuse_scissors.hpp"
 #include "items/sled.hpp"
 #include "items/snow_shelter.hpp"
 #include "items/stillwater_bell.hpp"
@@ -111,23 +104,17 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     int cooldown = 0;
     switch (item.kind) {
     case ItemKind::EmergencyFoam:
-        used=throw_emergency_foam(game,user_slot,direction,range); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TensionSpring:
-        used=place_tension_spring(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::CoolantCan:
-        used=pour_coolant(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::FoldingBarricade:
-        used=place_barricade(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::HorseshoeMagnet:
-        used=pull_magnetic_item(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
-    case ItemKind::BeltCrank: case ItemKind::BrakeShoe:
-        used=use_belt_tool(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
+    case ItemKind::BeltCrank:
+    case ItemKind::BrakeShoe:
     case ItemKind::QuarryCharge:
-        used=place_quarry_charge(game,user_slot); cooldown=30; break;
     case ItemKind::FuseScissors:
-        used=snip_fuse(game,user_slot,direction); cooldown=24; break;
     case ItemKind::ForemanWhistle:
-        used=use_foreman_whistle(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
+        used=use_industrial_tool(game,user_slot,direction,range,cooldown);
+        break;
     case ItemKind::StillwaterBell:
         used=ring_stillwater_bell(game,user_slot); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::TuningFork:
@@ -422,65 +409,6 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Count: case ItemKind::None:
         break;
     }
-    if (used) {
-        share_hearth_meal(game,user,used_kind);
-        if (item_is_melee(used_kind)) finish_muffled_use(game, item, user.cell);
-        item.cooldown = cooldown;
-        user.use_flash = 8;
-        if (const RegionalItem* spec = regional_item(used_kind)) {
-            if (used_kind == ItemKind::CandleStub)
-                emit_sound(game, item.loaded > 0 ? SoundId::CandleLight : SoundId::Drop, user.cell + direction);
-            else if (!item_is_melee(used_kind) && used_kind != ItemKind::CoalLump && used_kind != ItemKind::SteamKettle) emit_sound(game, spec->sound,
-                used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
-        }
-        else switch (used_kind) {
-        case ItemKind::Wall: emit_sound(game, SoundId::BlockLand, target); break;
-        case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
-            emit_sound(game, SoundId::ClothRip, user.cell); break;
-        case ItemKind::RawMeat: case ItemKind::CookedMeat:
-            emit_sound(game, SoundId::MeatMunch, user.cell); break;
-
-        case ItemKind::ConductorHat:
-            emit_sound(game, SoundId::DistantTrainSound, user.cell); break;
-        case ItemKind::Buckler: emit_sound(game, SoundId::HitBlock1, user.cell); break;
-        case ItemKind::SleepMeds: emit_sound(game, SoundId::ClothRip, target); break;
-        case ItemKind::BearTrap: case ItemKind::Mine:
-            emit_sound(game, SoundId::BlockLand, target); break;
-        default: break;
-        }
-        if ((used_kind == ItemKind::PressHammer || used_kind == ItemKind::RubberMallet) && --item.durability <= 0) {
-            emit_sound(game,SoundId::WoodCrack,user.cell);
-            item = {};
-            return true;
-        }
-        if ((used_kind == ItemKind::SkateBlade || used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
-            emit_sound(game, used_kind == ItemKind::SkateBlade ? SoundId::SkateBreak : used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);
-            item = {};
-            return true;
-        }
-        if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::CoolantCan) emit_sound(game,SoundId::CoolantEmpty,user.cell);
-            else if (used_kind == ItemKind::HorseshoeMagnet) emit_sound(game,SoundId::MagnetSpent,user.cell);
-            else if (used_kind == ItemKind::SnowShelter) emit_sound(game,SoundId::ShelterEmpty,user.cell);
-            else if (used_kind == ItemKind::FuseScissors) emit_sound(game,SoundId::ScissorsSpent,user.cell);
-            else if (used_kind == ItemKind::ForemanWhistle) emit_sound(game,SoundId::WorkSpent,user.cell);
-            else if (used_kind == ItemKind::StillwaterBell) emit_sound(game,SoundId::StillwaterSpent,user.cell);
-            else if (used_kind == ItemKind::TuningFork) emit_sound(game,SoundId::ForkSpent,user.cell);
-            else if (used_kind == ItemKind::CopperWire) emit_sound(game,SoundId::WireEmpty,user.cell);
-            else if (used_kind == ItemKind::Crampons) emit_sound(game,SoundId::CramponsSpent,user.cell);
-            else if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
-            else if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
-            else if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
-            else if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
-            else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
-            else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
-            else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
-            else if (used_kind != ItemKind::PocketDoor && used_kind != ItemKind::BorrowedSummer)
-                emit_sound(game, SoundId::BoxBreak, user.cell);
-            item = {};
-            return true;
-        }
-        if (item.consume_on_use && --item.count <= 0) item = {};
-    }
+    if (used) finish_item_use(game,user,item,used_kind,target,direction,cooldown);
     return used;
 }

@@ -46,61 +46,185 @@
 #include "heat_capsule.hpp"
 #include "ice_footing.hpp"
 #include "ice_projectiles.hpp"
-
 #include "industrial_melee.hpp"
 #include "rivet_gun.hpp"
 #include "belt_tools.hpp"
+#include "materials.hpp"
+#include "woodland_tools.hpp"
+#include "remedies.hpp"
+#include "ground_tools.hpp"
+#include "displacement.hpp"
+#include "root_relics.hpp"
+#include "woodland_traps.hpp"
+#include "movement_tools.hpp"
+#include "noisemakers.hpp"
+#include "mixtures.hpp"
+#include "shields.hpp"
+#include "decoys.hpp"
+#include "pocket_door.hpp"
+
+#include <array>
+
+namespace {
+using Definition = const RegionalItem* (*)(ItemKind);
+struct Entry { ItemKind kind; Definition definition; };
+
+// One explicit owner per kind. Legacy definitions remain in inventory/item_pattern.
+// Check order as well as count so enum additions cannot silently shift a lookup.
+constexpr std::array<Entry, 140> entries{{
+    {ItemKind::None, nullptr},
+    {ItemKind::Wall, nullptr},
+    {ItemKind::Medkit, nullptr},
+    {ItemKind::Bandage, nullptr},
+    {ItemKind::Bandaid, nullptr},
+    {ItemKind::Fist, nullptr},
+    {ItemKind::ConductorHat, nullptr},
+    {ItemKind::Buckler, nullptr},
+    {ItemKind::Pistol, nullptr},
+    {ItemKind::Musket, nullptr},
+    {ItemKind::Bow, nullptr},
+    {ItemKind::RocketLauncher, nullptr},
+    {ItemKind::Ammo, nullptr},
+    {ItemKind::Bomb, nullptr},
+    {ItemKind::SleepMeds, nullptr},
+    {ItemKind::Stick, nullptr},
+    {ItemKind::Shotgun, nullptr},
+    {ItemKind::SMG, nullptr},
+    {ItemKind::BearTrap, nullptr},
+    {ItemKind::Mine, nullptr},
+    {ItemKind::Pickaxe, nullptr},
+    {ItemKind::RawMeat, nullptr},
+    {ItemKind::CookedMeat, nullptr},
+    {ItemKind::ThrowingRock, forest_item},
+    {ItemKind::Hatchet, forest_item},
+    {ItemKind::HuntingSpear, forest_item},
+    {ItemKind::Crossbow, forest_item},
+    {ItemKind::Blunderbuss, forest_item},
+    {ItemKind::WoodenMaul, forest_item},
+    {ItemKind::Rake, forest_item},
+    {ItemKind::FlintKnife, forest_item},
+    {ItemKind::Torch, forest_material_item},
+    {ItemKind::Lighter, forest_material_item},
+    {ItemKind::OilFlask, forest_material_item},
+    {ItemKind::SapJar, forest_material_item},
+    {ItemKind::WaterFlask, forest_material_item},
+    {ItemKind::MushroomSpores, forest_material_item},
+    {ItemKind::SmokePot, forest_material_item},
+    {ItemKind::HoneyPot, forest_material_item},
+    {ItemKind::Egg, forest_food_item},
+    {ItemKind::FriedEgg, forest_food_item},
+    {ItemKind::DiggingClaws, woodland_tool},
+    {ItemKind::ResinGlue, woodland_tool},
+    {ItemKind::SeedBag, woodland_tool},
+    {ItemKind::LanternSeed, woodland_tool},
+    {ItemKind::HerbBag, forest_remedy},
+    {ItemKind::Splint, forest_remedy},
+    {ItemKind::BitterRoot, forest_remedy},
+    {ItemKind::Chili, forest_remedy},
+    {ItemKind::FungalBread, forest_remedy},
+    {ItemKind::BirdSeed, forest_ground_tool},
+    {ItemKind::ThornCaltrops, forest_ground_tool},
+    {ItemKind::HuntingHorn, forest_displacement_item},
+    {ItemKind::RopeHook, forest_displacement_item},
+    {ItemKind::RootDrill, forest_root_relic},
+    {ItemKind::BlinkSeed, forest_root_relic},
+    {ItemKind::Boomerang, forest_item},
+    {ItemKind::RopeSnare, forest_trap_item},
+    {ItemKind::SpringTrap, forest_trap_item},
+    {ItemKind::AcornMine, forest_trap_item},
+    {ItemKind::ThrowingNet, forest_movement_item},
+    {ItemKind::StickyBoots, forest_movement_item},
+    {ItemKind::RabbitCharm, forest_movement_item},
+    {ItemKind::HandBell, forest_noisemaker},
+    {ItemKind::Firecracker, forest_noisemaker},
+    {ItemKind::StinkBomb, forest_mixture},
+    {ItemKind::RottenFruit, forest_mixture},
+    {ItemKind::PitchBomb, forest_mixture},
+    {ItemKind::ShieldLantern, forest_shield},
+    {ItemKind::ReflectingPan, forest_shield},
+    {ItemKind::Scarecrow, forest_decoy},
+    {ItemKind::StrawDecoy, forest_decoy},
+    {ItemKind::WolfWhistle, forest_noisemaker},
+    {ItemKind::ThunderAcorn, forest_root_relic},
+    {ItemKind::PocketDoor, forest_pocket_door},
+    {ItemKind::GritPouch, ice_footing_item},
+    {ItemKind::IceNeedle, ice_projectile_item},
+    {ItemKind::AirBladder, air_bladder_item},
+    {ItemKind::ColdFlask, cold_flask_item},
+    {ItemKind::HeatCapsule, heat_capsule_item},
+    {ItemKind::WoolWrap, cold_remedy_item},
+    {ItemKind::HotBroth, cold_remedy_item},
+    {ItemKind::IcePoultice, cold_remedy_item},
+    {ItemKind::Chisel, quarry_item},
+    {ItemKind::IceBrick, quarry_item},
+    {ItemKind::EelBattery, eel_battery_item},
+    {ItemKind::SnowScoop, snow_tool_item},
+    {ItemKind::Snowball, snow_tool_item},
+    {ItemKind::LensCarbine, optics_item},
+    {ItemKind::MirrorShard, optics_item},
+    {ItemKind::CrystalLens, optics_item},
+    {ItemKind::PrismBomb, optics_item},
+    {ItemKind::BlackFelt, optics_item},
+    {ItemKind::MufflingFelt, muffling_item},
+    {ItemKind::AlarmClock, alarm_item},
+    {ItemKind::FishingLine, fishing_line_item},
+    {ItemKind::SmokedFish, fish_item},
+    {ItemKind::SnowGlobe, snow_globe_item},
+    {ItemKind::SaltedKelp, fish_item},
+    {ItemKind::BrineFlask, brine_item},
+    {ItemKind::CandleStub, candle_supply},
+    {ItemKind::WickSpool, candle_supply},
+    {ItemKind::CoalLump, coal_item},
+    {ItemKind::SteamKettle, kettle_item},
+    {ItemKind::PressureValve, pressure_item},
+    {ItemKind::Sealant, pressure_item},
+    {ItemKind::SkateBlade, ice_equipment_item},
+    {ItemKind::Crampons, ice_equipment_item},
+    {ItemKind::SignalFlare, flare_item},
+    {ItemKind::CopperWire, circuit_item},
+    {ItemKind::GroundingSpike, circuit_item},
+    {ItemKind::StormLantern, storm_lantern_item},
+    {ItemKind::EchoPebble, echo_pebble_item},
+    {ItemKind::HarpoonGun, harpoon_item},
+    {ItemKind::EmergencyDoorstop, doorstop_item},
+    {ItemKind::BorrowedSummer, borrowed_summer_item},
+    {ItemKind::HeatSiphon, heat_siphon_item},
+    {ItemKind::ThawCharge, thaw_charge_item},
+    {ItemKind::FoldedBridge, folded_bridge_item},
+    {ItemKind::TuningFork, tuning_fork_item},
+    {ItemKind::StillwaterBell, stillwater_bell_item},
+    {ItemKind::EffigyMask, effigy_mask_item},
+    {ItemKind::IceAnchor, ice_anchor_item},
+    {ItemKind::SnowShelter, snow_shelter_item},
+    {ItemKind::Sled, sled_item},
+    {ItemKind::ForemanWhistle, foreman_whistle_item},
+    {ItemKind::QuarryCharge, quarry_charge_item},
+    {ItemKind::FuseScissors, fuse_scissors_item},
+    {ItemKind::PressHammer, industrial_melee_item},
+    {ItemKind::RubberMallet, industrial_melee_item},
+    {ItemKind::RivetGun, rivet_gun_item},
+    {ItemKind::BeltCrank, belt_tool_item},
+    {ItemKind::BrakeShoe, belt_tool_item},
+    {ItemKind::ArcTorch, arc_torch_item},
+    {ItemKind::HorseshoeMagnet, magnet_item},
+    {ItemKind::FoldingBarricade, barricade_item},
+    {ItemKind::CoolantCan, coolant_item},
+    {ItemKind::PocketDrill, pocket_drill_item},
+    {ItemKind::TensionSpring, tension_spring_item},
+    {ItemKind::EmergencyFoam, emergency_foam_item},
+}};
+constexpr bool valid_entries() {
+    if (entries.size() != static_cast<std::size_t>(ItemKind::Count)) return false;
+    for (std::size_t i=0; i<entries.size(); ++i)
+        if (static_cast<std::size_t>(entries[i].kind) != i) return false;
+    return true;
+}
+static_assert(valid_entries());
+} // namespace
 
 const RegionalItem* regional_item(ItemKind kind) {
-    if (const auto* item=emergency_foam_item(kind)) return item;
-    if (const auto* item=tension_spring_item(kind)) return item;
-    if (const auto* item=coolant_item(kind)) return item;
-    if (const auto* item=barricade_item(kind)) return item;
-    if (const auto* item=magnet_item(kind)) return item;
-    if (const auto* item=pocket_drill_item(kind)) return item;
-    if (const auto* item=arc_torch_item(kind)) return item;
-    if (const auto* item=belt_tool_item(kind)) return item;
-    if (const auto* item=rivet_gun_item(kind)) return item;
-    if (const auto* item=industrial_melee_item(kind)) return item;
-    if (const auto* item=quarry_charge_item(kind)) return item;
-    if (const auto* item=fuse_scissors_item(kind)) return item;
-    if (const auto* item=foreman_whistle_item(kind)) return item;
-    if (const auto* item=sled_item(kind)) return item;
-    if (const auto* item=snow_shelter_item(kind)) return item;
-    if (const auto* item=ice_anchor_item(kind)) return item;
-    if (const auto* item=effigy_mask_item(kind)) return item;
-    if (const auto* item=stillwater_bell_item(kind)) return item;
-    if (const auto* item=tuning_fork_item(kind)) return item;
-    if (const auto* item=folded_bridge_item(kind)) return item;
-    if (const auto* item=thaw_charge_item(kind)) return item;
-    if (const auto* item=heat_siphon_item(kind)) return item;
-    if (const RegionalItem* summer = borrowed_summer_item(kind)) return summer;
-    if (const RegionalItem* wedge = doorstop_item(kind)) return wedge;
-    if (const RegionalItem* harpoon = harpoon_item(kind)) return harpoon;
-    if (const RegionalItem* echo = echo_pebble_item(kind)) return echo;
-    if (const RegionalItem* lantern = storm_lantern_item(kind)) return lantern;
-    if (const RegionalItem* circuit = circuit_item(kind)) return circuit;
-    if (const RegionalItem* flare = flare_item(kind)) return flare;
-    if (const RegionalItem* equipment = ice_equipment_item(kind)) return equipment;
-    if (const RegionalItem* pressure = pressure_item(kind)) return pressure;
-    if (const RegionalItem* kettle = kettle_item(kind)) return kettle;
-    if (const RegionalItem* coal = coal_item(kind)) return coal;
-    if (const RegionalItem* candle = candle_supply(kind)) return candle;
-    if (const RegionalItem* brine = brine_item(kind)) return brine;
-    if (const RegionalItem* globe = snow_globe_item(kind)) return globe;
-    if (const RegionalItem* fish = fish_item(kind)) return fish;
-    if (const RegionalItem* fishing = fishing_line_item(kind)) return fishing;
-    if (const RegionalItem* alarm = alarm_item(kind)) return alarm;
-    if (const RegionalItem* felt = muffling_item(kind)) return felt;
-    if (const RegionalItem* optic = optics_item(kind)) return optic;
-    if (const RegionalItem* snow = snow_tool_item(kind)) return snow;
-    if (const RegionalItem* battery = eel_battery_item(kind)) return battery;
-    if (const RegionalItem* quarry = quarry_item(kind)) return quarry;
-    if (const RegionalItem* footing = ice_footing_item(kind)) return footing;
-    if (const RegionalItem* projectile = ice_projectile_item(kind)) return projectile;
-    if (const RegionalItem* air = air_bladder_item(kind)) return air;
-    if (const RegionalItem* cold = cold_flask_item(kind)) return cold;
-    if (const RegionalItem* heat = heat_capsule_item(kind)) return heat;
-    if (const RegionalItem* remedy = cold_remedy_item(kind)) return remedy;
-    return forest_item(kind);
+    const auto index=static_cast<std::size_t>(kind);
+    if (index>=entries.size()) return nullptr;
+    const Definition definition=entries[index].definition;
+    return definition ? definition(kind) : nullptr;
 }

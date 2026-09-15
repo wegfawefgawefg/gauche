@@ -23,9 +23,9 @@ Execution started 2026-09-14. The user owns playtesting and balance feedback. Us
 
 ## Content architecture maintenance
 
-- [ ] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. Keep ordinary C++ structs/free functions and clear ownership.
+- [x] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. The 140-entry table checks enum order/count at compile time, including explicit legacy entries. See [item catalog maintenance](history/ITEM_CATALOG_MAINTENANCE.md).
 - [x] Replace duplicated general loot memberships with one explicit item-supply catalog, referenced by rewards/shops/caches/secrets/workshops; keep themed room, enemy and container sources explicit. Native stage/weight rules, rare imports and shared bundle previews/purchases are integrated; see [supply balance](history/SUPPLY_BALANCE.md).
-- [ ] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Keep small init/update dispatch switches; do not replace straightforward registries merely because they have many entries.
+- [x] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Industry one-shot tool dispatch and shared successful-use completion have separate owners; substantive behaviors remain in their domain modules. Keep ordinary switches and split further when growth warrants it. See [item catalog maintenance](history/ITEM_CATALOG_MAINTENANCE.md).
 
 ## World interaction review (2026-09-15)
 

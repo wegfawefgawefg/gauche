@@ -1,17 +1,4 @@
 #include "catalog.hpp"
-#include "materials.hpp"
-#include "woodland_tools.hpp"
-#include "remedies.hpp"
-#include "ground_tools.hpp"
-#include "displacement.hpp"
-#include "root_relics.hpp"
-#include "woodland_traps.hpp"
-#include "movement_tools.hpp"
-#include "noisemakers.hpp"
-#include "mixtures.hpp"
-#include "shields.hpp"
-#include "decoys.hpp"
-#include "pocket_door.hpp"
 
 namespace {
 
@@ -47,20 +34,6 @@ constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage a
 } // namespace
 
 const RegionalItem* forest_item(ItemKind kind) {
-    if (const RegionalItem* passage = forest_pocket_door(kind)) return passage;
-    if (const RegionalItem* decoy = forest_decoy(kind)) return decoy;
-    if (const RegionalItem* shield = forest_shield(kind)) return shield;
-    if (const RegionalItem* mixture = forest_mixture(kind)) return mixture;
-    if (const RegionalItem* noise = forest_noisemaker(kind)) return noise;
-    if (const RegionalItem* movement = forest_movement_item(kind)) return movement;
-    if (const RegionalItem* trap = forest_trap_item(kind)) return trap;
-    if (const RegionalItem* relic = forest_root_relic(kind)) return relic;
-    if (const RegionalItem* tool = forest_displacement_item(kind)) return tool;
-    if (const RegionalItem* tool = forest_ground_tool(kind)) return tool;
-    if (const RegionalItem* remedy = forest_remedy(kind)) return remedy;
-    if (const RegionalItem* tool = woodland_tool(kind)) return tool;
-    if (const RegionalItem* food = forest_food_item(kind)) return food;
-    if (const RegionalItem* material = forest_material_item(kind)) return material;
     switch (kind) {
     case ItemKind::Boomerang: return &boomerang;
     case ItemKind::ThrowingRock: return &rock;

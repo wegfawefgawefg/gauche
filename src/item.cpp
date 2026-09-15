@@ -105,6 +105,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     int cooldown = 0;
     switch (item.kind) {
     case ItemKind::ChainHook: return launch_chain_hook(game,user_slot,direction);
+    case ItemKind::HandBellows:
     case ItemKind::BoltPouch:
     case ItemKind::EmergencyFoam:
     case ItemKind::TensionSpring:

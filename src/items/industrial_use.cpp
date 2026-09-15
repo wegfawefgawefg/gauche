@@ -1,3 +1,4 @@
+#include "hand_bellows.hpp"
 #include "industrial_use.hpp"
 #include "bolt_pouch.hpp"
 #include "emergency_foam.hpp"
@@ -15,6 +16,8 @@ bool use_industrial_tool(Game& game, int user_slot, Cell direction, int range, i
     bool used=false;
     cooldown=0;
     switch (item.kind) {
+    case ItemKind::HandBellows:
+        used=use_hand_bellows(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::BoltPouch:
         used=throw_bolts(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::EmergencyFoam:

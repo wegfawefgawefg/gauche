@@ -25,7 +25,7 @@ bool populate_ash_loft(Game& game,const FloorPlan& plan,const RoomPlan& room) {
         for (int y=2;y<=4;++y) place_prop(game.stage,at({-5,y}),PropKind::Conveyor,1|belt_manual);
         place_ground_item(game,at({-5,2}),ItemKind::NailBoard);
         place_ground_item(game,at({-4,3}),ItemKind::BeltCrank);
-        place_ground_item(game,at({2,3}),ItemKind::CoolantCan);
+        place_ground_item(game,at({2,3}),random_u32(game)%2==0 ? ItemKind::CoolantCan : ItemKind::HandBellows);
         return true;
     }
     return false;

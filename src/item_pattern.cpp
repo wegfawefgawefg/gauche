@@ -70,7 +70,7 @@ ItemPattern item_pattern(const Item& item) {
         if (item.kind == ItemKind::SkateBlade) ++pattern.half_width;
         else if (item.kind == ItemKind::HeatSiphon || item.kind == ItemKind::SteamKettle) {
             ++pattern.half_width; ++pattern.maximum;
-        } else if (item.kind == ItemKind::SnowScoop || item.kind == ItemKind::GritPouch || item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
+        } else if (item.kind == ItemKind::HandBellows || item.kind == ItemKind::SnowScoop || item.kind == ItemKind::GritPouch || item.kind == ItemKind::ThornCaltrops || item.kind == ItemKind::ThrowingNet) ++pattern.half_width;
         else if (pattern.blast_radius > 0) ++pattern.blast_radius;
         else if (pattern.effect == PatternEffect::Damage && !pattern.ray) {
             pattern.maximum = std::max(2, pattern.maximum);

@@ -6,6 +6,12 @@ or sounds already exist. The current generator and content set are a prototype.
 
 ## Inspirations and shape
 
+Music has its own [composition and mixing brief](MUSIC_DIRECTION.md): original,
+quietly mixed, atmospheric but place-specific exploration tracks around 3:30,
+several per zone, plus boss candidates, menu music and event jingles. User-supplied
+audio references live in `/home/vega/Music/samples/`; Forest begins with a
+Fable-like woodland direction. These are additional work beyond ambient/SFX quotas.
+
 - Use a Zelda / Binding of Isaac-like **route graph** for choices, branches,
   objectives, and locks. Make the spaces within that graph more varied in size,
   outline, and tactical complexity, taking Barony's involved rooms as another

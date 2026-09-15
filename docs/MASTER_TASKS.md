@@ -394,6 +394,17 @@ Palette note: no palette, GPL/PAL, ASE or Aseprite source file was found in the
 current `gauche-rs` checkout, including ignored files. Existing PNG colors remain
 the available art reference; new source scripts keep a small explicit palette.
 
+## Music and musical cues
+
+Direction and local reference inventory: [music brief](MUSIC_DIRECTION.md).
+
+- [ ] Fix excessive music loudness: inspect current assets, lower the default mix in both playback/settings paths, preserve saved sliders and leave combat/ambient cues intelligible.
+- [ ] Study the supplied audio references in `/home/vega/Music/samples/`; use listening plus useful waveform/spectral/loudness analysis, document musical observations and make original Forest timbral/composition sketches.
+- [ ] Build a reproducible offline composition/instrument/render workflow; develop full arrangements with changing passages, restrained melody, distinctive biome character and seamless loop tails. Install suitable synthesis/audio tools as needed.
+- [ ] Author a few exploration songs per biome, normally about 3:30 each; initial planning target three per biome. Forest starts from the requested Fable-like woodland mood; avoid generic space ambience and unchanged short-pattern repetition.
+- [ ] Develop shorter boss-loop candidates (initial proposal one per biome), main-menu music, and level-start, level-win and shop-arrival jingles with appropriate intensity and related motifs.
+- [ ] Integrate local biome/boss/menu music selection, repeat avoidance, fades, cue handoffs/ducking, settings, pause/reconnect behavior and per-asset mix gains; keep music outside deterministic gameplay state. Validate actual exported loops and audible quality before marking the music pass complete.
+
 ## Ambient sound and environmental scenes
 
 - [x] Inspect Splonks' ambient audio and reuse suitable loading/mixing pieces;

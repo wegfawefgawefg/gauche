@@ -89,6 +89,100 @@ support a prerequisite. Visible moving parts and authoritative impact space must
 agree. Breaking a streetlight extinguishes its actual source and leaves appropriate
 debris, sharing the tall-prop system.
 
+## Rare fire-response crew
+
+User candidate: a fire engine enters a major burning area with flashing lights
+and a siren, parks, and deploys firefighters. They run to fires, throw finite
+buckets of temporary water, then scurry back to refill and repeat. This is an
+event with participating actors, not a cosmetic truck or immediate floor reset.
+
+Stage the response: eligible incident -> audible approach -> vehicle enters a
+legal route -> parks -> crew disembarks -> obtains water -> fights fires/refills
+-> finishes, withdraws or becomes stranded according to visible circumstances.
+Eligibility should be rare at the floor/run level, possibly tied to a substantial
+fire; don't roll on every burning tile or every frame. A rare pre-authored visit
+can also be valid. Its entry point must connect to usable terrain and leave a
+readable crossing opportunity for players. Reuse infrastructure fitting where
+available; no free invisible road should appear across occupied rooms at runtime.
+
+Water sources: onboard finite tank when no source is available; a stream intake
+in Forest; a red hydrant or other explicit supply in Industry. Existing streams
+and water terrain provide a foundation, but hose/intake/refill behavior is new
+work. Show which supply is connected and whether it works. A simple hose link
+and refill rules suffice; a continuous fluid simulation is unnecessary. Define
+distance, obstruction and disconnection if the truck/source moves or breaks.
+Unlimited supply from a stream/hydrant must be a deliberate source property,
+not an unnoticed free tank refill. Damaged, empty or unavailable sources must
+change what the crew does visibly.
+
+Crew routines can reuse generation-checked truck/source/target handles, cells,
+counters and timers in the existing entity style. Reserve/select reachable fires
+so everyone doesn't chase the same extinguished cell or jam the truck entrance.
+Release stale targets, allow yielding, and leave room for crew return/refill.
+Water lands through the shared wetting/extinguishing rules; temporary wetness
+has an authoritative lifetime. Members' carried water, refill, quench, movement
+and environmental effects synchronize. Siren playback, flashing presentation,
+spray droplets and footstep detail are local consequences of the shared state.
+If sirens attract enemies, emit a deterministic hearing event separately.
+
+Do not assume firefighters are enemy combatants or count the crew as several
+new enemy species. Their allegiance, reaction to harm, exit policy and interaction
+with hostile actors are design choices. They can accidentally frustrate the
+player's fire plan while helping contain a disaster; they shouldn't automatically
+erase all danger just because the rare event appeared.
+
+Ice variants are deliberately very rare: water workers may create durable slippery
+ice or explicit ice-block obstructions, becoming annoying rather than helpful.
+Freezing a shallow puddle into a slippery surface and creating a body-blocking
+wall are different actions with different rules/visuals; do not conflate them.
+Ice walls need telegraph, occupant handling and available ways to break/melt/bypass
+them, rather than silently trapping players forever. “Permanent” slippery patches
+can persist for the floor while still obeying explicit thaw/material rules.
+An exceptionally rare joke variant uses literal fire to melt Ice, with unmistakable
+equipment/cues so it is not confused with water behaving incorrectly.
+
+## Biome transitions and feature placement windows
+
+User direction: hint at the approaching biome using scenery/materials near the
+boundary, and retain a little of the prior biome immediately after crossing.
+This is not permission to broaden ordinary enemy or item pools. The separate
+native/rare-import loot policy still applies.
+
+Suggested initial profiles:
+- Forest stage 3: occasional hints where fitting; features may start spanning the
+  thematic transition window without changing the whole floor's identity.
+- Forest stage 4: more snow and ice patches, snowy/icy tree silhouettes in the
+  overhead vignette, colder vegetation/material accents. Keep readable dark canopy.
+- Ice stage 1: small remnants of woodland, roots or forest structures among the Ice.
+- Ice stage 4: more thaw, liquid water, steam and occasional visible heat/fire,
+  hinting at the coming mines/foundries rather than adding an unexplained warm tint.
+- Industrial stage 1: residual ice/snow/meltwater around entrances or machinery,
+  transitioning into hot stone, metal and active work areas.
+- Fourth-biome transition waits on its chosen identity.
+
+Compose profiles from named biome and stage, optional neighboring biome hints,
+material/scenery weights and eligible features. Do not hardcode a whole new biome
+for every mixture or apply an indiscriminate global palette blend. Snow on trees,
+specific frozen/thawed objects and changing water sources should sell geography.
+Cosmetic frost is decoration; an actually slippery/frozen tile needs the shared
+gameplay state. Audit rules currently gated only on `ice_floor`: isolated Ice in
+Forest or Industry must obey its material/condition behavior deliberately, while
+floor-wide climate remains an explicit separate rule.
+
+Give uniques, landmarks, cross-room features and events optional placement windows
+and environmental requirements. Example: a frozen logging camp could fit Forest
+stages 3–4 and Ice stage 1 (run floors 3–5), but not any random Forest/Ice stage.
+Likewise a thawing pumping station can fit the Ice/Industrial boundary. These are
+examples for future catalogs, not newly implemented uniques. Express windows using
+biome/stage identities where practical so future progression edits do not silently
+move an encounter. Matching a window makes a feature eligible, not guaranteed.
+
+Keep caps/rarity across the entire window: three eligible floors must not turn a
+rare unique into three appearances. Some features may require roads, real water,
+fuel or heat in addition to stage eligibility. Availability, scarcity and actual
+placement success are distinct. Expose forced profiles/events in debug tools for
+static inspection and later human playtesting, while respecting normal run order.
+
 ## Layering and rarity
 
 Compose when the combination is interesting: a road can interrupt fuel in Timber

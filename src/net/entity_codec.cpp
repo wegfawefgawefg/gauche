@@ -1,3 +1,4 @@
+#include "../items/arc_torch.hpp"
 #include "../combat/toss.hpp"
 #include "../entities/yeti.hpp"
 #include "../entities/strikebreaker.hpp"
@@ -212,6 +213,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_arc_torch(entity)) reader.okay=false;
     if (!valid_actor_toss(entity) || !valid_yeti(entity)) reader.okay=false;
     if (!valid_rivet_gunner(entity)) reader.okay=false;
     if (!valid_rivet_action(entity)) reader.okay=false;

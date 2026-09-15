@@ -1,3 +1,4 @@
+#include "arc_torch.hpp"
 #include "action.hpp"
 #include "catalog.hpp"
 #include "muffling.hpp"
@@ -6,6 +7,7 @@
 #include <algorithm>
 
 int item_windup(const Item& item) {
+    if (item.kind==ItemKind::ArcTorch) return arc_prime_ticks;
     int ticks = 0;
     switch (item.kind) {
     case ItemKind::PressHammer: ticks = 36; break;

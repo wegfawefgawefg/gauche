@@ -414,6 +414,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::Ammo:
         used = supply_ammunition(user.inventory);
         break;
+    case ItemKind::ArcTorch: // Continuous action owns priming and battery use in step_player.
     case ItemKind::Count: case ItemKind::None:
         break;
     }

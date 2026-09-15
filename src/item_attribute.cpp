@@ -53,6 +53,7 @@ std::string item_display_name(const Item& item) {
 }
 
 bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
+    if (kind==ItemKind::ArcTorch && attribute==ItemAttribute::Long) return false;
     if (kind == ItemKind::QuarryCharge || kind == ItemKind::GroundingSpike) return attribute == ItemAttribute::None;
     const RegionalItem* spec = regional_item(kind);
     const bool weapon = item_is_gun(kind) || item_is_melee(kind) ||

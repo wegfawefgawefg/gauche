@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, eight regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, nine regional items, metal cover/bins,
 assembly-room conveyors, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -112,7 +112,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | --- | --- | --- | --- |
 | 1 | Rivet gun | Implemented: three-round traveling burst, 9 damage/rivet to 8, 0.15s between shots; 12 loaded/24 spare, 1.5s reload. Fixed burst aim, 0.6s recovery after last shot. Release finishes burst; switching/reload cancels unfired rounds. Stops at bodies, passes grates; Piercing and other supported weapon modifiers work. | U / 30; gunner drops, Industrial stock/rewards |
 | 2 | Press hammer | Implemented: 0.6s overhead windup, 32 damage and one-cell shove; 30 repairable condition. Double damage to blocking props; dig power 1 preserves reinforced routes. Taking damage cancels the windup without wear. Iron thud. | U / 25 |
-| 3 | Arc torch | Hold to charge 0.3s, then adjacent 7-damage electric ticks every 0.25s; 8s total battery. Water/wire endangers the user. No instant full-room beam. Electrical spit. | R / 38 |
+| 3 | Arc torch | Implemented: hold 0.3s, then adjacent 7-damage arcs every 0.25s; 32 pulses. Water/wire carry weaker shocks to 3, including back to the user; grounding sinks one pulse. Cuts grates/metal bins at double damage. Release/switch requires a fresh prime. Electrical start, crackle, metal hiss and spent sputter. | U / 38; stage-two Industrial stock, one-stage early salvage/secret preview |
 | 4 | Slag scoop | Collect one safe crust/ash patch, or scoop a hot patch while taking a little heat unless protected. Holds three loads; secondary flings the oldest material to 3. Metal scrape, granular pour. | C / 10 |
 | 5 | Chain hook | Traveling hook to 5 catches a prop/cart and pulls it one cell per held beat; anchored targets pull the user instead. 24 casts, blocked lanes cut the line. Chain whip. | U / 22 |
 | 6 | Quarry charge | Implemented: place facing ordinary stone. Three-second fuse cuts up to three forward cells; 24 damage along the cut, at the charge and one cell behind. Stack 3. Dig-power-2 reinforcement, other materials and outer boundaries stop it. Water quenches into a recoverable charge; cold slows the fuse. No modifiers. Fuse scratch, deep crack. | U / 19 |

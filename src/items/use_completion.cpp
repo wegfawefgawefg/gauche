@@ -43,7 +43,8 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
         return;
     }
     if (item.max_uses > 0 && --item.uses <= 0) {
-        if (used_kind == ItemKind::RailSwitchKey) emit_sound(game,SoundId::SwitchKeySpent,user.cell);
+        if (used_kind == ItemKind::InsulatedBoots) emit_sound(game,SoundId::InsulatorSpent,user.cell);
+        else if (used_kind == ItemKind::RailSwitchKey) emit_sound(game,SoundId::SwitchKeySpent,user.cell);
         else if (used_kind == ItemKind::MoldKey) emit_sound(game,SoundId::MoldKeySpent,user.cell);
         else if (used_kind == ItemKind::HandBellows) emit_sound(game,SoundId::BellowsSpent,user.cell);
         else if (used_kind == ItemKind::CoolantCan) emit_sound(game,SoundId::CoolantEmpty,user.cell);

@@ -76,9 +76,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
             place_ground_item(game,enemy.cell,ItemKind::CoalLump,std::min(2,enemy.counter_a));
         break;
     }
-    case EntityKind::CableCrawler:
-        if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::CopperWire);
-        break; // Insulated boots await their actual item implementation.
+    case EntityKind::CableCrawler: {
+        const auto roll=random_u32(game)%100;
+        if (roll<25) place_ground_item(game,enemy.cell,ItemKind::CopperWire);
+        else if (roll<40) place_ground_item(game,enemy.cell,ItemKind::InsulatedBoots);
+        break;
+    }
     case EntityKind::PressureRat:
         if (random_u32(game)%100<25) place_ground_item(game,enemy.cell,ItemKind::RawMeat);
         break; // Rubber hose reserved until its item is implemented.

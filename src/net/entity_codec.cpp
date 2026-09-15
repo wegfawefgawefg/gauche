@@ -139,6 +139,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
+    writer.u16(entity.vitals.floor_insulation);
     writer.u16(entity.vitals.traction); writer.u16(entity.vitals.slide_momentum);
     writer.u16(entity.vitals.grip); writer.u8(static_cast<std::uint8_t>(entity.vitals.root_kind));
     writer.cell(entity.toss.origin); writer.cell(entity.toss.direction); writer.cell(entity.toss.source);
@@ -194,6 +195,8 @@ Entity read_entity(PacketReader& reader) {
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
     entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();
     if (entity.vitals.nausea > 600 || entity.vitals.nausea_wait > 60) reader.okay = false;
+    entity.vitals.floor_insulation=reader.u16();
+    if (entity.vitals.floor_insulation>240) reader.okay=false;
     entity.vitals.traction = reader.u16(); entity.vitals.slide_momentum = reader.u16();
     if (entity.vitals.traction > 300 || entity.vitals.slide_momentum > 12) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());

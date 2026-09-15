@@ -129,7 +129,7 @@ bool apply_stun(Entity& actor, int ticks) {
 }
 
 int movement_slow_factor(const Entity& actor) {
-    return (actor.freeze_ticks > 0 ? 2 : 1) * (actor.vitals.grip > 0 || actor.vitals.traction > 0 ? 2 : 1);
+    return (actor.freeze_ticks > 0 ? 2 : 1) * (actor.vitals.grip > 0 || actor.vitals.traction > 0 || actor.vitals.floor_insulation > 0 ? 2 : 1);
 }
 
 int movement_recovery_rate(const Entity& actor) {
@@ -152,6 +152,7 @@ void step_vital_effects(Game& game, int slot) {
         effects.summer_radius=0;
         emit_sound(game,SoundId::SummerFade,actor.cell);
     }
+    if (effects.floor_insulation>0 && --effects.floor_insulation==0) emit_sound(game,SoundId::InsulatorRelease,actor.cell);
     if (effects.traction > 0 && --effects.traction == 0) emit_sound(game,SoundId::CramponsRelease,actor.cell);
     if (effects.slide_momentum > 0) --effects.slide_momentum;
     if (effects.rooted > 0) --effects.rooted;

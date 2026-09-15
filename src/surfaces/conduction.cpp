@@ -120,7 +120,15 @@ void apply_conducted_shock(Game& game,const ConductedShock& shock,Cell attacker,
     }
     for (const ShockVictim& victim : shock.victims) {
         const int power = (damage * (reach + 1 - victim.steps) + reach) / (reach + 1);
-        if (get_entity(game, victim.handle)) damage_entity(game, victim.handle.slot, power, attacker, false);
+        Entity* actor=get_entity(game,victim.handle);
+        if (!actor) continue;
+        // The origin is direct electrode contact, even on wet ground. Only
+        // later circuit nodes enter through the floor; boots do not cut wire
+        // or protect anyone farther downstream, and cannot block the origin.
+        if (victim.steps>0 && actor->vitals.floor_insulation>0) {
+            emit_sound(game,SoundId::InsulatorArc,actor->cell);continue;
+        }
+        damage_entity(game,victim.handle.slot,power,attacker,false);
     }
 }
 

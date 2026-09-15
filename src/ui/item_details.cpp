@@ -223,6 +223,11 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::SignalFlare) std::snprintf(line,sizeof(line),"LIGHT 15s | CONTACT BURNS 5s");
     if (item.kind == ItemKind::SkateBlade)
         std::snprintf(line,sizeof(line),"DMG %d | TIP %s",pattern.damage,player.vitals.slide_momentum>0 ? "ACTIVE" : "AFTER SLIP");
+    if (item.kind == ItemKind::InsulatedBoots) {
+        Entity preview=player; preview.vitals.floor_insulation=240;
+        std::snprintf(line,sizeof(line),"STEP %d -> %d TICKS | 4s",movement_beat(player,player.move_interval),
+            movement_beat(preview,preview.move_interval));
+    }
     if (item.kind == ItemKind::Crampons) {
         Entity preview=player; preview.vitals.traction=300;
         std::snprintf(line,sizeof(line),"STEP %d -> %d TICKS | 5s",movement_beat(player,player.move_interval),

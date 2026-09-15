@@ -12,7 +12,7 @@ constexpr unsigned M=1U<<static_cast<unsigned>(LootSource::Workshop);
 
 // MEMBERSHIP: One row per kind. Sources select these entries; bespoke room/animal
 // supplies still specify their actual contents. Weight/stage are native availability.
-constexpr std::array<ItemSupply, 150> entries{{
+constexpr std::array<ItemSupply, 151> entries{{
     {ItemKind::None, ItemOrigin::Shared, 0, 1, 1, 0},
     {ItemKind::Wall, ItemOrigin::Shared, 0, 1, 1, 0},
     {ItemKind::Medkit, ItemOrigin::Shared, 3, 1, 1, R|S|C|T},
@@ -163,6 +163,7 @@ constexpr std::array<ItemSupply, 150> entries{{
     {ItemKind::SteamLance, ItemOrigin::Industrial, 5, 1, 1, W|R|S|C|T|M},
     {ItemKind::TarFlask, ItemOrigin::Industrial, 4, 1, 3, R|S|C|T|M},
     {ItemKind::RailSwitchKey, ItemOrigin::Industrial, 0, 1, 1, 0},
+    {ItemKind::InsulatedBoots, ItemOrigin::Industrial, 3, 1, 1, R|S|C|T|M},
 }};
 constexpr bool valid_entries() {
     if (entries.size()!=static_cast<std::size_t>(ItemKind::Count)) return false;

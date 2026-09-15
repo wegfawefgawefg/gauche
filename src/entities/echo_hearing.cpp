@@ -100,6 +100,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::AnchorSet: case SoundId::AnchorBreak:
     case SoundId::BeltCarry: case SoundId::BrakeFit:
     case SoundId::RivetReload: case SoundId::GunnerBrace:
+    case SoundId::InsulatorFit:
     case SoundId::MaskRaise:
     case SoundId::ForkWindup:
     case SoundId::BridgeUnfold: case SoundId::BridgeSplash:

@@ -41,8 +41,9 @@ electrode contact. No species-specific entity allocation. Network reader checks
 phase/timer/reserve/contact bounds. Gameplay compatibility is `0x2026091544`;
 snapshot 50 and wire protocol 14 remain unchanged.
 
-One loot roll: 25% Copper Wire, otherwise empty. The planned insulated-boots
-range is not filled with unrelated items while those boots await implementation.
+One loot roll: 25% Copper Wire, next 15% [Insulated Boots](INSULATED_BOOTS.md),
+otherwise empty. The boots slice also gives cable trenches a 50% alternative
+to their grounding-spike supply.
 Destroyed crawlers leave cosmetic copper curls and washers.
 
 ## Cable-trench scene

@@ -36,6 +36,8 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
         player.vitals.recovery == RecoveryKind::Poultice ? Sprite::IcePoultice : Sprite::HerbBag;
     std::snprintf(speed, sizeof(speed), "STEP %d TICKS | BURN AFTER", movement_beat(player, player.move_interval));
     const std::array rows{
+        StatusRow{"RUBBER SOLES", player.vitals.floor_insulation, {226,192,97,255},
+                  "FLOOR ARCS BLOCKED | SLOW", Sprite::InsulatedBoots},
         StatusRow{"MASK WATCHING", effigy_mask_active(player) ? effigy_mask_ticks(*player.inventory.held()) : 0,
                   {195,192,157,255}, "REAR GAZE | STAND STILL", Sprite::MaskWatching},
         StatusRow{"STILL GROUND", game.stage.at_or_border(player.cell).surface.still_ticks,
@@ -61,7 +63,7 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
         StatusRow{"REGENERATING", healing_ticks, {159, 200, 118, 255}, healing, recovery_icon},
         StatusRow{"BORROWED SUMMER", player.vitals.summer_ticks, {225,183,98,255},
                   "MOVING WARMTH | THAWS ALL", Sprite::BorrowedSummer},
-        StatusRow{"INSULATED", player.vitals.chill_guard, {188, 210, 211, 255},
+        StatusRow{"COLD WRAP", player.vitals.chill_guard, {188, 210, 211, 255},
                   "RESISTS CHILL | FLAMMABLE", Sprite::WoolWrap},
         StatusRow{"WAKEFUL", player.vitals.sleep_guard, {190, 159, 113, 255},
                   "RESISTS SLEEP", Sprite::BitterRoot},

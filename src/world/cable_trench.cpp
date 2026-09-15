@@ -29,7 +29,7 @@ bool populate_cable_trench(Game& game,const FloorPlan& plan,const RoomPlan& room
         for (Cell cell:wire) place_prop(game.stage,cell,PropKind::CopperWire);
         *game.stage.at(pool)={TileKind::ShallowWater,0,0};
         place_prop(game.stage,bin,PropKind::ScrapBin);
-        place_ground_item(game,tool,ItemKind::GroundingSpike);
+        place_ground_item(game,tool,random_u32(game)%2==0 ? ItemKind::GroundingSpike : ItemKind::InsulatedBoots);
         return true;
     }
     return false;

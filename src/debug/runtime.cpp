@@ -4,7 +4,7 @@
 #include <algorithm>
 
 void jump_to_test_level(Game& game, int selection) {
-    const auto& level = test_levels[static_cast<std::size_t>(std::clamp(selection, 0, 12))];
+    const auto& level = test_levels[static_cast<std::size_t>(std::clamp(selection, 0, static_cast<int>(test_levels.size())-1))];
     game.run.floor = level.floor;
     game.game_over = false;
     // JUMP: Restore dead party members so No Respawn cannot leave an empty debug level.

@@ -4,7 +4,7 @@ Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
 Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, Slag Snails, Ash Sleepers, Counterweights, Emergency Pumps, Mold Thieves, Tar Choirs, Rail Shunters, twenty-six regional items, metal cover/bins,
-assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, slag banks, ash lofts, hoist shafts, casting floors, settling tanks, freight sidings, scrap-yard sorting lanes, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
+assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, slag banks, ash lofts, hoist shafts, casting floors, settling tanks, freight sidings, scrap-yard sorting lanes, the Freight Exchange unique floor, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -199,6 +199,19 @@ gates need independently reachable prerequisites and a real cut across all exit
 paths, including grates, nearby digging and belt displacement. Workfronts cannot
 excavate quest seals. Routes may permit deliberate tool-earned shortcuts; they
 must not accidentally leave the key irrelevant as the earlier misplaced door did.
+
+Implemented unique: **Freight Exchange**. Industry 3-2 alone has a seeded 20%
+chance to replace its generated map with connected loading halls, two loaded
+cart routes and switch points, a crane salvaging worn gear, a sorting belt near
+an Ash Sleeper, a guarded control booth and a Counterweight over a coin cache.
+The entrance supplies a Rail Switch Key, Chain Hook and Rubber Mallet; cart
+cargo is a worn Press Hammer and a three-use Bolt Pouch stack. Breakable lamps
+mark work areas, dry crossings remain open, and ordinary interior walls can be
+dug. A required switch opens the sealed exit; all living online players gather
+there through the usual rule. Rewards, shop and Industry 3-3 follow normally.
+Debug Levels can force, start at or repeat it. See
+[implementation/checks](../history/FREIGHT_EXCHANGE.md). It is a whole-floor
+layout, not a multi-room overlay or the reactor event below.
 
 Unique candidate: **The Last Shift**. A mostly authored central foundry has a
 clearly labeled emergency shutdown. Activating it cuts power to the exit but

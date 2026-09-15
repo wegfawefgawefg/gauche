@@ -270,6 +270,14 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
   seals the exit and starts classic Call of Duty Zombies-inspired survival
   waves; a defined completion condition releases the party. Author its layout
   and co-op entry/reconnect behavior deliberately.
+- [x] Add the [Freight Exchange](history/FREIGHT_EXCHANGE.md), an authored
+  Industry 3-2 floor with two loaded cart lines, connected switch points,
+  sorting belt/sleeper, crane salvage, guarded control booth and hoist cache.
+  Seeded one-in-five selection at this one stage; explicit dev selection,
+  start override and repeat work. Switch/exit route, four-player carryover,
+  party exit/reward/shop/progression and snapshot replay checked. This is a
+  whole-floor unique, not completion of the multi-room landmark system or
+  the Last Shift reactor event; wider quotas remain open.
 
 ## Biome content farm
 

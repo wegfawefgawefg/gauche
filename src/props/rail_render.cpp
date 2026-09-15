@@ -4,7 +4,7 @@
 bool draw_freight_track(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
                         Cell cell,SDL_FRect rect,const LightingCache& lighting) {
     const Tile& tile=stage.at_or_border(cell);
-    if (tile.kind!=TileKind::Rail || tile.max_hp==0) return false;
+    if (tile.kind!=TileKind::Rail || tile.hp==0) return false;
     draw_lit_tile(renderer,texture_for(graphics,Sprite::IndustrialFloorA),rect,cell,lighting,{1,1,1});
     const LightColor light=light_at_cell(lighting,cell);
     const auto box=[&](float x,float y,float w,float h,LightColor color) {

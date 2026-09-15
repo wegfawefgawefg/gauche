@@ -1,4 +1,5 @@
 #include "playtest.hpp"
+#include "levels.hpp"
 #include "../item_attribute.hpp"
 #include "../artifacts/catalog.hpp"
 #include <fstream>
@@ -30,9 +31,9 @@ void init_playtest_tools(const std::filesystem::path& path) {
         normalize_test_item(item);
     }
     if (!input || (version != 1 && version != 2)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
-    loaded.selected_level = std::clamp(loaded.selected_level, 0, 12);
-    loaded.starting_level = std::clamp(loaded.starting_level, 0, 12);
-    loaded.repeat_level = std::clamp(loaded.repeat_level, 0, 12);
+    loaded.selected_level = std::clamp(loaded.selected_level, 0, static_cast<int>(test_levels.size())-1);
+    loaded.starting_level = std::clamp(loaded.starting_level, 0, static_cast<int>(test_levels.size())-1);
+    loaded.repeat_level = std::clamp(loaded.repeat_level, 0, static_cast<int>(test_levels.size())-1);
     if (version==1) {
         const auto remap=[](int level) { return level>=4 && level<8 ? level+4 : level>=8 && level<12 ? level-4 : level; };
         loaded.selected_level=remap(loaded.selected_level);

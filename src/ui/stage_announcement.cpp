@@ -14,8 +14,8 @@ void update_stage_announcement(StageAnnouncement& banner, const Game& game,
         char label[48];
         std::snprintf(label, sizeof(label), "%s %d-%d", name, static_cast<int>(biome)+1, biome_stage(game.run.floor));
         banner.title = label; banner.subtitle.clear();
-        for (const Entity& entity : game.entities)
-            if (entity.kind == EntityKind::Encounter) { banner.subtitle = "HAUNTED HOUSE"; break; }
+        if (game.run.layout==FloorLayout::HauntedHouse) banner.subtitle="HAUNTED HOUSE";
+        if (game.run.layout==FloorLayout::FreightExchange) banner.subtitle="FREIGHT EXCHANGE";
     } else banner.age += std::clamp(dt, 0.0F, .1F);
 }
 

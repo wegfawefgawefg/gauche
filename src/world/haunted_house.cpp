@@ -31,6 +31,7 @@ void shell(Stage& stage) {
 
 bool make_haunted_floor(Game& game, bool force) {
     if (!force && (game.run.floor != 3 || random_u32(game) % 3 != 0)) return false;
+    game.run.layout=FloorLayout::HauntedHouse;
     game.stage.width = 76;
     game.stage.height = 68;
     game.stage.tiles.assign(76 * 68, {TileKind::Wall, 100, 0});

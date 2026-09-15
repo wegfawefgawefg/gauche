@@ -254,9 +254,11 @@ struct StageLight {
     Cell cell{};
     LightEmitter light{7, 1350, {240, 224, 176}};
 };
+enum class FloorLayout { Automatic, Generated, HauntedHouse, FreightExchange };
 struct Run {
     RunPhase phase = RunPhase::Arena;
     int floor = 0;
+    FloorLayout layout = FloorLayout::Generated;
     std::array<int, 4> coins{};
     bool has_key = false;
     ObjectiveKind objective = ObjectiveKind::Key;
@@ -317,7 +319,6 @@ bool use_held_item(Game& game, int user_slot, Cell target);
 bool reload_held_item(Game& game, int user_slot);
 void start_test_arena(Game& game, std::uint64_t seed);
 void start_run(Game& game, std::uint64_t seed);
-enum class FloorLayout { Automatic, Generated, HauntedHouse };
 void generate_world_floor(Game& game, FloorLayout layout = FloorLayout::Automatic);
 bool floor_reachable(const Game& game);
 bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use = false);

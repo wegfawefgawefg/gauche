@@ -35,6 +35,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
     writer.i32(run.floor); writer.u64(run.seed);
+    writer.u8(static_cast<std::uint8_t>(run.layout));
     writer.u8(static_cast<std::uint8_t>(run.death_policy));
     writer.u8(static_cast<std::uint8_t>(run.has_key));
     writer.u8(static_cast<std::uint8_t>(run.objective));
@@ -166,6 +167,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     if (phase > static_cast<std::uint8_t>(RunPhase::Won)) reader.okay = false;
     run.phase = static_cast<RunPhase>(phase);
     run.floor = reader.i32(); run.seed = reader.u64();
+    run.layout=static_cast<FloorLayout>(reader.u8());
+    if (run.layout<FloorLayout::Generated || run.layout>FloorLayout::FreightExchange) reader.okay=false;
     const std::uint8_t death_policy = reader.u8();
     if (death_policy > static_cast<std::uint8_t>(DeathPolicy::NextFloor)) reader.okay = false;
     run.death_policy = static_cast<DeathPolicy>(death_policy);

@@ -108,10 +108,37 @@ bool host_late_input_batches() {
                  "client did not follow corrected host");
 }
 
+bool correction_ahead_of_client() {
+    RollbackSession host, client;
+    begin_rollback(host, two_player_game());
+    begin_rollback(client, host.game);
+    for (int tick = 1; tick <= 24; ++tick) {
+        predict_frame(host, {});
+        confirm_host_current(host);
+        if (tick <= 16) {
+            predict_frame(client, {});
+            confirm_frame(client, {host.game.tick, {}, game_hash(host.game)});
+        }
+    }
+    Input moved; moved.move = {-1, 0};
+    const auto correction = revise_host_input(host, 12, 1, moved);
+    apply_correction_batch(client, correction);
+    if (!check(!client.needs_snapshot, "future correction tail caused snapshot")) return false;
+    while (client.game.tick < host.game.tick) predict_frame(client, {});
+    if (!check(client.confirmed_through == host.game.tick &&
+               game_hash(client.game) == game_hash(host.game), "future correction tail was lost")) return false;
+    // A later snapshot can lie inside a retransmitted correction's unchanged prefix.
+    apply_host_snapshot(client, host.frames[15].before);
+    apply_correction_batch(client, correction);
+    while (!client.needs_snapshot && client.game.tick < host.game.tick) predict_frame(client, {});
+    return check(!client.needs_snapshot && game_hash(client.game) == game_hash(host.game),
+                 "correction could not overlap snapshot baseline");
+}
+
 } // namespace
 
 int main() {
-    if (!correction_and_resync() || !bounded_history() || !host_late_input_batches()) return 1;
+    if (!correction_and_resync() || !bounded_history() || !host_late_input_batches() || !correction_ahead_of_client()) return 1;
     std::puts("rollback rules passed");
     return 0;
 }

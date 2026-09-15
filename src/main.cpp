@@ -2,6 +2,9 @@
 #include <gubsy/runtime.hpp>
 
 #include "graphics.hpp"
+#include "src/engine_state.hpp"
+#include "src/graphics.hpp"
+#include <gubsy/settings/top_level_settings.hpp>
 #include "app/options.hpp"
 #include "debug/panels.hpp"
 #include "debug/multiplayer.hpp"
@@ -44,6 +47,15 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "Gubsy host failed: %s\n", SDL_GetError());
         cleanup_gubsy_runtime(host);
         return 1;
+    }
+
+    // Debug multi-window sessions retain the game's 16:9 canvas after i3 resizes them.
+    if (!value_arg(argc, argv, "--window-width").empty()) {
+        auto& engine = gubsy_runtime_engine(host);
+        set_top_level_setting_int(engine.top_level_game_settings, "gubsy.video.match_render_to_window", 0);
+        set_top_level_setting_string(engine.top_level_game_settings, "gubsy.video.render_resolution", "640x360");
+        set_render_resolution(engine, 640, 360);
+        set_render_scale_mode(engine, RenderScaleMode::Fit);
     }
 
     std::string asset_error;
@@ -290,13 +302,7 @@ int main(int argc, char** argv) {
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
         const bool networked = network.role != NetRole::Solo;
-        if (network.role == NetRole::Client && network.ready && network.match_started &&
-            !network.rollback.needs_snapshot) {
-            for (int catchup = 0; catchup < 8 &&
-                 !network.rollback.game.game_over &&
-                 network.rollback.game.tick + 2 < network.host_tick; ++catchup)
-                step_network_game(network, missing_remote_input(network.rollback.game, network.local_owner));
-        }
+        catch_up_network_client(network);
 
         accumulated += smoke ? step_seconds : std::min(elapsed, 0.25);
         if (menu.visible || debug_captures_input()) cancel_pending_use = true;

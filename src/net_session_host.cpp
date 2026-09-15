@@ -39,33 +39,6 @@ Cell join_cell(const Game& game, int owner) {
     return game.run.spawn;
 }
 
-void send_correction(NetSession& session, const std::vector<CanonicalFrame>& frames) {
-    if (frames.empty()) return;
-    if (frames.size() > 64) {
-        for (int owner = 1; owner < 4; ++owner) queue_snapshot(session, owner);
-        return;
-    }
-    const std::uint32_t id = session.next_transfer_id++;
-    const std::size_t chunks = (frames.size() + 7) / 8;
-    for (int copy = 0; copy < 2; ++copy) {
-        for (std::size_t index = 0; index < chunks; ++index) {
-            PacketWriter packet = begin_packet(WireKind::Correction);
-            packet.u32(id);
-            packet.u16(static_cast<std::uint16_t>(index));
-            packet.u16(static_cast<std::uint16_t>(chunks));
-            const std::size_t start = index * 8;
-            const std::size_t count = std::min<std::size_t>(8, frames.size() - start);
-            packet.u8(static_cast<std::uint8_t>(count));
-            for (std::size_t offset = 0; offset < count; ++offset)
-                write_frame(packet, frames[start + offset]);
-            for (int owner = 1; owner < 4; ++owner) {
-                const NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
-                if (peer.connected) send_wire(session, peer.endpoint, packet);
-            }
-        }
-    }
-}
-
 void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& reader) {
     const std::uint64_t identity = reader.u64();
     const std::uint64_t version = reader.u64();
@@ -127,6 +100,8 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
 
 void receive_input(NetSession& session, const Datagram& datagram, PacketReader& reader) {
     const std::uint64_t identity = reader.u64();
+    const std::uint32_t acknowledged_revision = reader.u32();
+    const std::uint64_t confirmed_tick = reader.u64();
     const std::uint8_t count = reader.u8();
     if (count == 0 || count > 8) return;
     std::vector<std::pair<std::uint64_t, Input>> inputs;
@@ -139,25 +114,36 @@ void receive_input(NetSession& session, const Datagram& datagram, PacketReader& 
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (!peer.connected || peer.endpoint != datagram.from) return;
     peer.last_heard_ms = session.now_ms;
+    acknowledge_corrections(session, owner, acknowledged_revision);
+    peer.confirmed_tick = std::min(confirmed_tick, session.rollback.game.tick);
     const std::uint64_t current = session.rollback.game.tick;
     std::sort(inputs.begin(), inputs.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
-    std::uint64_t earliest = current + 1;
+    std::vector<std::pair<std::uint64_t, Input>> late;
     for (const auto& [tick, input] : inputs) {
         if (tick == 0 || tick > current + 120) continue;
         if (tick > current) {
             peer.pending_inputs[tick] = input;
             continue;
         }
-        const auto corrected = revise_host_input(session.rollback, tick, owner, input);
-        if (!corrected.empty()) earliest = std::min(earliest, tick);
+        late.push_back({tick, input});
     }
-    if (earliest <= current) {
-        std::vector<CanonicalFrame> corrected;
-        for (const RollbackFrame& frame : session.rollback.frames)
-            if (frame.tick >= earliest)
-                corrected.push_back({frame.tick, frame.inputs, frame.hash_after});
-        send_correction(session, corrected);
+    const auto corrected = revise_host_inputs(session.rollback, owner, late);
+    if (!corrected.empty()) {
+        const auto earliest = corrected.front().tick;
+        ++session.timeline_revision;
+        for (int target = 1; target < 4; ++target) {
+            auto& recipient = session.peers[static_cast<std::size_t>(target)];
+            if (!recipient.connected) continue;
+            recipient.correction_ranges[session.timeline_revision] = earliest;
+            // A peer unable to acknowledge for a whole history window needs a snapshot.
+            if (recipient.correction_ranges.size() > 512) {
+                recipient.correction_ranges.clear();
+                recipient.correction_ranges[session.timeline_revision] = recipient.correction_from;
+            }
+            if (recipient.correction_from == 0) recipient.correction_from = earliest;
+            else recipient.correction_from = std::min(recipient.correction_from, earliest);
+        }
     }
 }
 
@@ -170,6 +156,8 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (peer.endpoint != datagram.from || peer.snapshot.id != id) return;
     const std::uint64_t snapshot_tick = peer.snapshot.tick;
+    peer.confirmed_tick = snapshot_tick;
+    acknowledge_corrections(session, owner, peer.snapshot.revision);
     network_event(session, "snapshot_ack", owner, snapshot_tick);
     peer.snapshot = {};
     peer.last_heard_ms = session.now_ms;
@@ -181,9 +169,12 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
 void publish_host_state(NetSession& session) {
     const Game changed = session.rollback.game;
     begin_rollback(session.rollback, changed);
+    ++session.timeline_revision;
     for (int owner = 1; owner < 4; ++owner) {
         NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
         peer.pending_inputs.clear();
+        peer.correction_from = 0;
+        peer.correction_ranges.clear();
         if (peer.connected) queue_snapshot(session, owner);
     }
 }
@@ -231,12 +222,23 @@ void host_receive(NetSession& session, const Datagram& datagram,
     case WireKind::SnapshotAck: receive_snapshot_ack(session, datagram, reader); break;
     case WireKind::Heartbeat: {
         const std::uint64_t identity = reader.u64();
+        const std::uint32_t revision = reader.u32();
+        const std::uint64_t confirmed_tick = reader.u64();
+        const std::uint64_t echoed_ms = reader.u64();
         if (!reader.finished()) break;
         const int owner = peer_for(session, identity);
         if (owner >= 0) {
             NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
-            if (peer.connected && peer.endpoint == datagram.from)
+            if (peer.connected && peer.endpoint == datagram.from) {
                 peer.last_heard_ms = session.now_ms;
+                acknowledge_corrections(session, owner, revision);
+                peer.confirmed_tick = std::min(confirmed_tick, session.rollback.game.tick);
+                if (revision == session.timeline_revision) send_history_since(session, owner, peer.confirmed_tick);
+                PacketWriter heartbeat = begin_packet(WireKind::Heartbeat);
+                heartbeat.u64(echoed_ms);
+                heartbeat.u64(session.rollback.game.tick);
+                send_wire(session, peer.endpoint, heartbeat);
+            }
         }
         break;
     }
@@ -263,6 +265,7 @@ void host_step(NetSession& session, Input local_input) {
     predict_frame(session.rollback, inputs);
     confirm_host_current(session.rollback);
     PacketWriter packet = begin_packet(WireKind::Canonical);
+    packet.u32(session.timeline_revision);
     const std::size_t count = std::min<std::size_t>(6, session.rollback.frames.size());
     packet.u8(static_cast<std::uint8_t>(count));
     for (std::size_t index = session.rollback.frames.size() - count;

@@ -10,24 +10,9 @@ import sys
 import tempfile
 import time
 
+from multiplayer_layout import i3, arrange
+
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def i3(message=None):
-    args = ['i3-msg', '-t', 'get_outputs'] if message is None else ['i3-msg', message]
-    return json.loads(subprocess.check_output(args, text=True))
-
-
-def windows():
-    tree = json.loads(subprocess.check_output(['i3-msg', '-t', 'get_tree'], text=True))
-    result = []
-    def walk(node):
-        if node.get('window'):
-            result.append(node)
-        for child in node.get('nodes', []) + node.get('floating_nodes', []):
-            walk(child)
-    walk(tree)
-    return result
 
 
 def stop_children(children):
@@ -45,7 +30,7 @@ def stop_children(children):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--layout', choices=['quad', 'split', 'headless'], default='quad',
+    parser.add_argument('--layout', choices=['quad', 'split', 'headless'], default='split',
                         help='quad: four windows; split: human on 3, bots on 4; headless: human window only')
     parser.add_argument('--join', metavar='CODE', help='launch bots into an existing room, without a human host')
     parser.add_argument('--follow-host', metavar='NAME', help='headless bots wait for a public room hosted by this name')
@@ -145,36 +130,7 @@ def main():
             join = ['--follow-host', args.follow_host] if args.follow_host else ['--join-room', code]
             launch(f'bot-{index+1}', [*join, '--player-name', f'Bot {index+1}', '--bot', '--bot-seed', str(101 + index)], args.layout == 'headless')
         if outputs and titles:
-            for workspace, output in [(args.workspace, primary), (args.bot_workspace, secondary)] if args.layout == 'split' else [(args.workspace, primary)]:
-                i3(f'workspace number {workspace}')
-                i3('move workspace to output ' + json.dumps(output['name']))
-            found = set()
-            until = time.monotonic() + 15
-            while time.monotonic() < until and len(found) < len(titles):
-                for node in windows():
-                    title = node.get('name', '')
-                    if title not in titles or title in found:
-                        continue
-                    role = titles[title]
-                    split_bot = args.layout == 'split' and role != 'human'
-                    output = secondary if split_bot else primary
-                    workspace = args.bot_workspace if split_bot else args.workspace
-                    rect = output['rect']; x, y, w, h = (rect[k] for k in ('x', 'y', 'width', 'height'))
-                    if args.layout == 'quad':
-                        index = 0 if role == 'human' else int(role.split('-')[1]) - (0 if human else 1)
-                        w //= 2; h //= 2; x += (index % 2)*w; y += (index // 2)*h
-                    elif split_bot:
-                        index = int(role.split('-')[1])-1
-                        h //= args.bots; y += index*h
-                    target = f'[con_id={node["id"]}]'
-                    for command in ['floating enable', 'border pixel 0', f'move container to workspace number {workspace}', f'resize set {w} px {h} px', f'move position {x} px {y} px']:
-                        i3(f'{target} {command}')
-                    found.add(title)
-                time.sleep(.1)
-            i3(f'workspace number {args.workspace}')
-            for node in windows():
-                if titles.get(node.get('name')) == 'human':
-                    i3(f'[con_id={node["id"]}] focus')
+            arrange(titles, args, primary, secondary, human, run / 'layout.json')
         print('Ctrl-C stops this session only. Closing the human game also stops its bots.', flush=True)
         until = time.monotonic() + args.seconds + 5
         while time.monotonic() < until and any(p.poll() is None for p in children):

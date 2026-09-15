@@ -11,8 +11,9 @@ creates a public online room, and joins all three bots through the room service.
 The host starts when all four are ready. All-dead runs restart after two seconds;
 the launcher uses entrance respawns. It does not move or aim your player for you.
 
-On i3 the default is workspace 3 on the primary display, in four equal quadrants
-(960×540 on a 1920×1080 display). The windows float without borders. It only moves
+On i3 the default puts your game on workspace 3 on the primary display and
+stacks three full-width bot windows top-to-bottom on workspace 4 on the second
+display. Bars are excluded from the usable area. The windows float without borders. It only moves
 its own uniquely named windows and never kills existing games or clears old logs.
 Closing your game or pressing Ctrl-C in the launcher stops its bots. Sessions
 have a 30-minute limit by default; use `--seconds 3600` for an hour.
@@ -20,8 +21,8 @@ have a 30-minute limit by default; use `--seconds 3600` for an hour.
 ## Layouts and connection scenarios
 
 ```sh
-# Your game on workspace 3; three bot windows on workspace 4, second display.
-./scripts/multiplayer.sh --layout split
+# Four quadrants on one display instead of the default two-monitor layout.
+./scripts/multiplayer.sh --layout quad
 
 # Your game is visible; three bot clients have no window, renderer or audio.
 ./scripts/multiplayer.sh --layout headless
@@ -51,6 +52,15 @@ Each process gets isolated XDG data/config directories and its own player identi
 under `~/.local/state/gauche/multiplayer/session-*/`. Console output goes into
 `human.log` / `bot-N.log`; network logs and recovery captures live beneath each
 profile's `data/gauche/Gauche/netlogs`. Profiles/logs remain after exit for diagnosis.
+`layout.json` records requested and actual window positions. The launcher checks
+that placement settles instead of silently ignoring i3 errors. Debug windows keep
+a fixed 16:9 canvas with letterboxing, even when resized into a narrow shape.
+
+Network logs include progress every five seconds, confirmed/host/local ticks,
+timeline revision, measured RTT, prediction lead, byte totals, and recovery count.
+Recovery events name the cause (hash mismatch, expired history, or changed baseline);
+the `.grpl` capture preserves the starting world, inputs, and expected/actual hashes.
+Keep the entire session directory when reporting a problem, including the host.
 Visible bots render at 30 FPS while simulation remains 60 Hz. Bots generate moves,
 aiming, use/release, inventory selection, pickup, interaction, reload and reward
 choices through ordinary player inputs. They are stress inputs, not intelligent
@@ -70,10 +80,16 @@ public room, so use a distinctive host name when several friends are testing.
 
 ## Validation boundaries
 
-The game builds with strict warnings. A bounded dummy-video host and three real
-headless clients joined through the deployed relay, received distinct player
-slots and snapshots, readied, and exited successfully. The host stayed in its
-party during that check: no autonomous gameplay was run. Host/Join menu renders
-were inspected; i3 placement was checked with the launcher's dry-run against the
-actual two-monitor configuration. Live desktop arrangement and random gameplay
-are for the user's playtesting.
+The game builds with strict warnings. The four-player UDP regression advances
+600 simulation ticks with three clients, 10% dropped packets, reordered packets,
+roughly 350 ms round-trip latency, two clients polling at 30 Hz, and one deliberately
+lagging client. All clients match the host at tick 600 with zero snapshot recoveries.
+Existing rollback and direct-session checks also pass. This is a bounded transport
+check, not an autonomous level playthrough.
+
+An isolated Xvfb/i3 desktop with the same landscape + portrait monitor geometry
+verified four placeholder windows at their exact requested positions; the user's
+live desktop was not rearranged. Live gameplay still needs human feedback.
+
+The wire protocol changed to version 13. Rebuild and restart **all** peers together;
+the room service does not need an update for this client/host protocol change.

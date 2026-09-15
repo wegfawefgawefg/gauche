@@ -87,6 +87,10 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             capture_network_recovery(session);
         }
     }
+    if (session.now_ms >= session.diagnostics.next_report_ms) {
+        session.diagnostics.next_report_ms = session.now_ms + 5000;
+        network_event(session, "network_progress", session.local_owner, session.rollback.rollback_count);
+    }
     if (heartbeat_due) send_party_state(session);
     if (session.role == NetRole::Host) {
         for (int owner = 1; owner < 4; ++owner) {
@@ -109,8 +113,11 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             if (peer.snapshot.id != 0 &&
                 session.now_ms >= peer.snapshot.next_send_ms)
                 send_snapshot_chunks(session, owner);
+            send_pending_correction(session, owner);
             if (heartbeat_due) {
                 PacketWriter heartbeat = begin_packet(WireKind::Heartbeat);
+                heartbeat.u64(0);
+                heartbeat.u64(session.rollback.game.tick);
                 send_wire(session, peer.endpoint, heartbeat);
             }
         }
@@ -132,6 +139,9 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
         if (session.ready && heartbeat_due) {
             PacketWriter heartbeat = begin_packet(WireKind::Heartbeat);
             heartbeat.u64(session.local_identity);
+            heartbeat.u32(session.timeline_revision);
+            heartbeat.u64(session.rollback.confirmed_through);
+            heartbeat.u64(session.now_ms);
             send_wire(session, session.host_endpoint, heartbeat);
         }
         if (session.ready && session.rollback.needs_snapshot &&
@@ -143,6 +153,15 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             session.status = "Requesting a fresh game snapshot";
         }
     }
+}
+
+void catch_up_network_client(NetSession& session) {
+    if (session.role != NetRole::Client || !session.ready || !session.match_started ||
+        session.rollback.needs_snapshot) return;
+    const auto target = session.host_tick + static_cast<std::uint64_t>(session.prediction_lead_ticks);
+    for (int count = 0; count < 8 && !session.rollback.game.game_over &&
+         session.rollback.game.tick < target; ++count)
+        client_step(session, missing_remote_input(session.rollback.game, session.local_owner));
 }
 
 void step_network_game(NetSession& session, Input local_input) {
@@ -162,11 +181,14 @@ void leave_network_game(NetSession& session) {
     session.local_identity = 0;
     session.local_owner = 0;
     session.host_tick = 0;
+    session.prediction_lead_ticks = 2;
+    session.round_trip_ms = 0;
     session.now_ms = session.started_ms = 0;
     session.next_heartbeat_ms = session.next_hello_ms = session.next_snapshot_request_ms = 0;
     session.clock_started = false;
     session.last_host_packet_ms = 0;
     session.next_transfer_id = 1;
+    session.timeline_revision = 0;
     session.last_correction_id = 0;
     session.last_snapshot_id = 0;
     session.receiving_snapshot = {};

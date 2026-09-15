@@ -19,9 +19,15 @@ void queue_snapshot(NetSession& session, int owner) {
     if (owner <= 0 || owner >= 4) return;
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (!peer.connected) return;
+    // Shared snapshots commit their baseline: late inputs cannot rewrite an in-flight world.
+    session.rollback.input_commit_tick = session.rollback.game.tick;
+    peer.correction_from = 0;
+    peer.correction_ranges.clear();
+    peer.correction = {};
     peer.snapshot = {};
     peer.snapshot.bytes = encode_game(session.rollback.game);
     peer.snapshot.tick = session.rollback.game.tick;
+    peer.snapshot.revision = session.timeline_revision;
     peer.snapshot.checksum = bytes_hash(peer.snapshot.bytes);
     peer.snapshot.id = session.next_transfer_id++;
     network_event(session, "snapshot_queued", owner, peer.snapshot.bytes.size());
@@ -42,6 +48,7 @@ void send_snapshot_chunks(NetSession& session, int owner) {
         const std::size_t size = std::min(chunk_bytes, transfer.bytes.size() - start);
         PacketWriter packet = begin_packet(WireKind::SnapshotChunk);
         packet.u32(transfer.id);
+        packet.u32(transfer.revision);
         packet.u64(transfer.tick);
         packet.u32(static_cast<std::uint32_t>(transfer.bytes.size()));
         packet.u16(index);
@@ -59,6 +66,7 @@ void send_snapshot_chunks(NetSession& session, int owner) {
 
 void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
     const std::uint32_t id = reader.u32();
+    const std::uint32_t revision = reader.u32();
     const std::uint64_t tick = reader.u64();
     const std::uint32_t total_size = reader.u32();
     const std::uint16_t index = reader.u16();
@@ -77,12 +85,13 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
     if (transfer.id != id) {
         transfer = {};
         transfer.id = id;
+        transfer.revision = revision;
         transfer.tick = tick;
         transfer.total_size = total_size;
         transfer.checksum = checksum;
         transfer.chunks.resize(count);
     }
-    if (transfer.tick != tick || transfer.total_size != total_size ||
+    if (transfer.revision != revision || transfer.tick != tick || transfer.total_size != total_size ||
         transfer.checksum != checksum || transfer.chunks.size() != count) return;
     auto& chunk = transfer.chunks[index];
     if (chunk.empty()) {
@@ -113,6 +122,8 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
     session.sent_inputs.clear();
     session.host_tick = std::max(session.host_tick, tick);
     session.last_snapshot_id = id;
+    session.timeline_revision = revision;
+    session.receiving_correction = {};
     session.ready = true;
     session.status = "Joined as player " + std::to_string(session.local_owner + 1);
     acknowledge(session, id);
@@ -133,6 +144,7 @@ void send_history_since(NetSession& session, int owner, std::uint64_t after_tick
             history.push_back({frame.tick, frame.inputs, frame.hash_after});
     for (std::size_t start = 0; start < history.size(); start += 8) {
         PacketWriter packet = begin_packet(WireKind::Canonical);
+        packet.u32(session.timeline_revision);
         const std::size_t count = std::min<std::size_t>(8, history.size() - start);
         packet.u8(static_cast<std::uint8_t>(count));
         for (std::size_t offset = 0; offset < count; ++offset)

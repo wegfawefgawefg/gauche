@@ -29,7 +29,12 @@ void network_event(NetSession& session, std::string_view event, int owner, std::
     std::ostringstream line;
     line << "ms=" << session.now_ms << " tick=" << session.rollback.game.tick
          << " role=" << static_cast<int>(session.role) << " event=" << event
-         << " owner=" << owner << " value=" << value << '\n';
+         << " owner=" << owner << " value=" << value
+         << " host_tick=" << session.host_tick << " confirmed=" << session.rollback.confirmed_through
+         << " revision=" << session.timeline_revision
+         << " rtt_ms=" << session.round_trip_ms << " lead=" << session.prediction_lead_ticks
+         << " tx_bytes=" << log.sent_bytes << " rx_bytes=" << log.received_bytes
+         << " recoveries=" << log.recovery_count << '\n';
     const std::string text = line.str();
     std::ofstream output(log.log_path, std::ios::app);
     if (output << text) log.log_bytes += text.size();
@@ -40,8 +45,10 @@ void capture_network_recovery(NetSession& session) {
     if (!session.rollback.needs_snapshot) { log.recovery_recorded = false; return; }
     if (log.recovery_recorded) return;
     log.recovery_recorded = true;
+    ++log.recovery_count;
     network_event(session, "recovery_required", session.local_owner,
                   session.rollback.confirmed_through);
+    network_event(session, session.rollback.recovery_reason, session.local_owner, session.rollback.recovery_tick);
     if (log.log_path.empty() || log.captures >= 8 || session.now_ms < log.next_capture_ms) return;
 
     const auto& frames = session.rollback.frames;

@@ -85,6 +85,7 @@ int run_headless_client(int argc, char** argv) {
             pending_heartbeat = std::async(std::launch::async, [copy = request] { return perform_room_request(copy); });
         }
         if (!joined && now > connecting_since + 25000) break;
+        catch_up_network_client(*session);
         accumulated += std::min(static_cast<double>(now - previous)/1000.0, .25); previous = now;
         for (int count = 0; accumulated >= 1.0/60.0 && count < 15; ++count) {
             if (session->ready && session->match_started && !session->rollback.game.game_over)

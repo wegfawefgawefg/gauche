@@ -498,3 +498,19 @@ playtesting; use builds and focused static captures for implementation checks.
 - [x] Small upper-right angled stage announcement, subtle entrance and fade.
 
 - [x] [HUD and frame pacing](history/HUD_FRAME_PACING.md): shared angled slot/HP panels, exclusive game cursor, high refresh rendering with 60 Hz simulation. Desktop flicker/144 Hz feel awaits user feedback.
+
+### Multiplayer recovery and local layout feedback (2026-09-15)
+
+- [x] Fix false resync when host corrections extend beyond the client's simulated
+  tick. Queue the future tail; verify any overlapping snapshot baseline.
+- [x] Order canonical updates by timeline revision, reliably acknowledge/retry
+  correction bundles, coalesce redundant input replay, and prevent recovery
+  snapshots from being constantly replaced by long corrections.
+- [x] Use measured network RTT for client prediction lead; share catch-up behavior
+  between visible and headless clients. Retain true gameplay positions when drawing.
+- [x] Add recovery reasons and periodic tick/RTT/traffic progress to saved netlogs.
+- [x] Default local launcher: human workspace 3, three full-width bot windows stacked
+  vertically on workspace 4. Verify i3 placement; preserve 16:9 game rendering.
+- [ ] Human recheck with the launcher and Japan–Houston internet playtesting after
+  every peer rebuilds to wire version 13. Automated lossy four-player sync is not
+  a substitute for judging movement responsiveness.

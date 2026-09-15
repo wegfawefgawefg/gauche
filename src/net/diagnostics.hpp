@@ -12,9 +12,10 @@ struct NetDiagnostics {
     std::string last_capture;
     std::uint64_t sent_packets = 0, received_packets = 0;
     std::uint64_t sent_bytes = 0, received_bytes = 0;
-    std::uint64_t next_capture_ms = 0;
+    std::uint64_t next_capture_ms = 0, next_report_ms = 0;
     std::uint64_t log_bytes = 0;
     int captures = 0;
+    int recovery_count = 0;
     bool recovery_recorded = false;
 };
 

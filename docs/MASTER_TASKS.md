@@ -277,7 +277,11 @@ behavior and balance playtesting remain the user's.
   implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava
   catalog. [Native terrain art](history/INDUSTRIAL_TERRAIN.md) replaces the tinted
-  Forest tiles and repeating lava waves; enemies/rooms/items remain to implement.
+  Forest tiles and repeating lava waves. [Mine crews](history/MINE_CREWS.md)
+  add Pickhands and Shift Foremen, a dry workfront on each Industrial stage,
+  shared digging, coordinated retaliation, seven poses and twelve sounds.
+  Two catalog enemy behaviors implemented; remaining enemies and regional items
+  still need their content slices.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.
 - [ ] Implement, asset, sound, test, and playtest the fourth biome catalog.

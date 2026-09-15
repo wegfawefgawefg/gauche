@@ -1,3 +1,4 @@
+#include "mine_crew.hpp"
 #include "attacks.hpp"
 #include "bell_diver.hpp"
 #include "steam_leech.hpp"
@@ -26,6 +27,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Pickhand: case EntityKind::ShiftForeman:
+        if (enemy.label_a==CrewStrike && enemy.cell==enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::BoilerPorter:
         if (enemy.label_a == PorterBite && enemy.cell == enemy.point_a) add(enemy.point_b);
         break;

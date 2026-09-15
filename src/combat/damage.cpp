@@ -1,3 +1,4 @@
+#include "../entities/mine_crew.hpp"
 #include "../game.hpp"
 #include "../entities/icicle_spider.hpp"
 #include "../entities/boiler_porter.hpp"
@@ -35,6 +36,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    hurt_mine_worker(game,slot,damage,attacker);
     interrupt_whiteout_drummer(entity);
     interrupt_avalanche_ram(entity);
     interrupt_snow_effigy(entity);

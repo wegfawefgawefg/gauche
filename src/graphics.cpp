@@ -60,6 +60,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "storm_lantern", "lantern_open", "lantern_focused", "echo_pebble", "echo_pebble_ready", "harpoon_gun", "harpoon_head", "emergency_doorstop", "sluice_gate", "sluice_open", "borrowed_summer", "summer_mote", "heat_siphon", "siphon_charged", "thaw_charge", "thaw_charge_lit", "thaw_charge_ready", "folded_bridge", "bridge_plank_h", "bridge_plank_v", "tuning_fork", "crystal_growth", "stillwater_bell", "effigy_mask", "mask_watching", "ice_anchor", "anchor_point", "snow_shelter", "snow_wall_h", "snow_wall_v", "sled",
     "industrial_floor_a", "industrial_floor_b", "industrial_wall", "industrial_ruin",
     "industrial_lava", "industrial_lava_a", "industrial_lava_b",
+    "pickhand", "pickhand_raise", "pickhand_swing", "shift_foreman", "foreman_whistle", "foreman_raise", "foreman_swing",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

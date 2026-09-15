@@ -1,3 +1,4 @@
+#include "crew_scene.hpp"
 #include "../src/game.hpp"
 #include "../src/items/fire.hpp"
 #include "floor_overview.hpp"
@@ -245,6 +246,8 @@ int main(int argc, char** argv) {
             }
         }
     }
+    if (mode=="crew" || mode=="crew-cut" || mode=="crew-alarm")
+        arrange_crew_scene(game,cosmetics,mode=="crew-cut",mode=="crew-alarm");
     Entity& player = *get_entity(game, game.players[0]);
     player.owner = 0;
     if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }

@@ -1,3 +1,4 @@
+#include "workfront.hpp"
 #include "route.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -77,6 +78,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
+    if (room.role==RoomRole::Workfront) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -376,6 +378,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     spawn_entity(game, EntityKind::Door, plan.door);
     spawn_entity(game, EntityKind::Exit, game.run.exit);
     place_ground_item(game, game.run.spawn + Cell{0, 2}, ItemKind::Stick);
+    // Reserve crew budget before incidental encounters consume it.
+    for (const RoomPlan& room:plan.rooms)
+        if (room.role==RoomRole::Workfront && budget.threat>=5 && populate_workfront(game,room)>0)
+            budget.threat-=5;
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;

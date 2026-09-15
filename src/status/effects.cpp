@@ -1,3 +1,4 @@
+#include "../entities/mine_crew.hpp"
 #include "effects.hpp"
 #include "../entities/ice_mason.hpp"
 #include "../entities/glass_eel.hpp"
@@ -53,6 +54,7 @@ bool apply_sleep(Entity& actor, int ticks) {
     interrupt_lens_warden(actor);
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
+    interrupt_mine_worker(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
@@ -81,6 +83,7 @@ bool apply_stun(Entity& actor, int ticks) {
     interrupt_lens_warden(actor);
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
+    interrupt_mine_worker(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);

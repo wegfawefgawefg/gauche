@@ -31,6 +31,20 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::Pickhand: {
+        const auto roll=random_u32(game)%100;
+        if (roll<20) {
+            const Handle handle=spawn_entity(game,EntityKind::GroundItem,nearby_ground_item_cell(game,enemy.cell));
+            if (Entity* item=get_entity(game,handle)) {
+                item->ground_item=make_item(ItemKind::Pickaxe);
+                item->ground_item.durability=12; item->sprite=Sprite::Pickaxe;
+            }
+        } else if (roll<40) place_coins(game,enemy.cell,3+static_cast<int>(random_u32(game)%4));
+        break;
+    }
+    case EntityKind::ShiftForeman:
+        if (random_u32(game)%100<50) place_coins(game,enemy.cell,5+static_cast<int>(random_u32(game)%5));
+        break;
     case EntityKind::BoilerPorter: {
         const auto roll = random_u32(game)%100;
         if (roll < 25) place_ground_item(game,enemy.cell,ItemKind::PressureValve);

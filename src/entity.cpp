@@ -1,3 +1,4 @@
+#include "entities/mine_crew.hpp"
 #include "items/sled.hpp"
 #include "game.hpp"
 #include "entities/icicle_spider.hpp"
@@ -27,6 +28,7 @@ Handle spawn_entity(Game& game, EntityKind kind, Cell cell) {
         entity.cell = cell;
         entity.birth_tick = game.tick;
         init_entity(game, entity);
+        if (kind==EntityKind::ShiftForeman) entity.entity_a={slot,generation};
         return {slot, generation};
     }
     return {};
@@ -103,7 +105,9 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
         emit_sound(game, tile->kind == TileKind::Snow ?
             (alternate ? SoundId::SnowStep2 : SoundId::SnowStep1) :
             (alternate ? SoundId::IceStep2 : SoundId::IceStep1), entity.cell);
-    } else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+    } else if (mine_worker(entity.kind))
+        emit_sound(game,(entity.cell.x+entity.cell.y+slot)%2==0 ? SoundId::CrewStep1 : SoundId::CrewStep2,entity.cell);
+    else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)
         emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
                    SoundId::Step1 : SoundId::Step2,

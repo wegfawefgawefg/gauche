@@ -117,6 +117,17 @@ void describe_rooms(Game& game, FloorPlan& plan) {
     plan.rooms[0].shape = RoomShape::Clearing;
     plan.rooms[static_cast<std::size_t>(plan.exit_room)].role = RoomRole::Exit;
     plan.rooms[static_cast<std::size_t>(plan.objective_room)].role = RoomRole::Shrine;
+    if (industrial_floor(game.run.floor)) {
+        for (std::size_t i=1;i<plan.rooms.size();++i) {
+            if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
+                static_cast<int>(i)==plan.secret_room) continue;
+            RoomPlan& room=plan.rooms[i];
+            room.role=RoomRole::Workfront; room.shape=RoomShape::Courtyard;
+            room.half_width=9; room.half_height=7;
+            break;
+        }
+    }
+
 }
 
 } // namespace
@@ -132,7 +143,7 @@ FloorPlan plan_floor(Game& game) {
             int degree = 0;
             for (RouteEdge edge : plan.edges)
                 if (edge.a == static_cast<int>(i) || edge.b == static_cast<int>(i)) ++degree;
-            if (degree != 1) continue;
+            if (degree != 1 || plan.rooms[i].role==RoomRole::Workfront) continue;
             plan.secret_room = static_cast<int>(i);
             plan.rooms[i].role = RoomRole::Secret;
             break;
@@ -149,7 +160,7 @@ bool FloorPlan::protected_cell(Cell cell) const {
 const char* room_name(RoomRole role) {
     constexpr const char* names[]{"Trailhead", "Way out", "Clearing", "Thicket", "Brook",
         "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache",
-        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery"};
-    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::BoilerGallery) + 1);
+        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery", "Work front"};
+    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::Workfront) + 1);
     return names[static_cast<std::size_t>(role)];
 }

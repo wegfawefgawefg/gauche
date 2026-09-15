@@ -76,6 +76,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/entities/mine_crew.cpp src/entities/mine_route.cpp
     src/items/effigy_mask.cpp src/items/ice_anchor.cpp src/items/snow_shelter.cpp src/items/sled.cpp
     src/items/stillwater_bell.cpp src/world/currents.cpp
     src/items/tuning_fork.cpp
@@ -162,7 +163,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
-set(GAUCHE_WORLD_SOURCES src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp
+set(GAUCHE_WORLD_SOURCES src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp
     src/world/room_population.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/loot.cpp)

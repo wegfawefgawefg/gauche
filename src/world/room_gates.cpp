@@ -38,6 +38,10 @@ Cell gate_room(Game& game, FloorPlan& plan, int room_index) {
             if (tile == nullptr) continue;
             const bool opening = cell == door;
             *tile = opening ? Tile{TileKind::Empty, 0, 0} : Tile{TileKind::Wall, 100, 0};
+            // Foundry exit masonry needs a proper player pick (power 2).
+            // Crew picks (power 1) cannot accidentally bypass its objective.
+            if (!opening && room_index==plan.exit_room && industrial_floor(game.run.floor))
+                tile->required_dig_power=2;
             plan.protected_cells[static_cast<std::size_t>(cell.y * plan.width + cell.x)] = opening ? 1 : 0;
         }
     // APPROACH: The old bend may lie along the wall we just closed. Join the

@@ -53,6 +53,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/items/folded_bridge.cpp
     src/items/thaw_charge.cpp
     src/items/heat_siphon.cpp src/items/heat_extraction.cpp
     src/items/borrowed_summer.cpp src/items/storm_lantern.cpp src/items/echo_pebble.cpp

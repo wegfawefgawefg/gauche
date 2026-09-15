@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::BridgePlank: return {Sprite::BridgePlankH,SoundId::BridgeBreak,30,false,false};
     case PropKind::Doorstop: return {Sprite::EmergencyDoorstop,SoundId::WedgeBreak,25,false,false};
     case PropKind::CopperWire: return {Sprite::WireJunction,SoundId::WireCut,4,false,false};
     case PropKind::GroundingSpike: return {Sprite::GroundingSpike,SoundId::SpikeBreak,8,false,false};
@@ -48,6 +49,7 @@ bool prop_blocks(const Prop& prop) {
 
 int prop_max_health(const Prop& prop) {
     const int base = prop_spec(prop.kind).health;
+    if (prop.kind == PropKind::BridgePlank && (prop.variant&32U)) return base*2;
     if (prop.kind == PropKind::Doorstop && prop.variant == 1) return base * 2;
     if (prop.kind == PropKind::Candle && (prop.variant & candle_durable_bit)) return base * 2;
     return prop.kind == PropKind::AlarmClock && prop.variant == 1 ? base * 2 : base;

@@ -89,7 +89,9 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     // FOOTFALLS: Snow muffles steps; water carries them. Hounds ignore their own pack.
     if (wading_actor(entity) && entity.kind != EntityKind::EchoHound)
         hear_echo_hounds(game, entity.cell, surface_wet(*tile) ? 6 : tile->kind == TileKind::Snow ? 2 : 4);
-    if (surface_wet(*tile) && wading_actor(entity))
+    if (tile->kind==TileKind::Bridge && wading_actor(entity))
+        emit_sound(game,SoundId::BridgeStep,entity.cell);
+    else if (surface_wet(*tile) && wading_actor(entity))
         emit_sound(game, ((entity.cell.x + entity.cell.y + slot) & 1) == 0 ?
             SoundId::WaterStep1 : SoundId::WaterStep2, entity.cell);
     else if (wading_actor(entity) && entity.kind != EntityKind::RimeSkater &&

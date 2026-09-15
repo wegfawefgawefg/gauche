@@ -116,7 +116,7 @@ same effective item definition as attacks, including rare attributes.
 | 41 | Crampons | Implemented: 5s without ice slips; doubles step interval. Oil and shoves still work. Six activations, Durable twelve. Timed HUD and movement preview; no expense when already gripping. | Uncommon; 17 |
 | 42 | Sled | Deploy facing forward; step onto it to slide until stopped, taking one carried loose item along. Steer only while stopped. 45 HP. | Uncommon; 25 |
 | 43 | Ice anchor | Place a tether point, then activate to return along the clear tether up to 5 cells. Obstructions stop travel; hazards apply to each step. | Rare; 32 |
-| 44 | Folded bridge | Place three walkable planks across shallow/deep water; requires support at both ends. Burnable, 30 HP per section. One kit. | Uncommon; 24 |
+| 44 | Folded bridge | Implemented: one kit spans exactly three empty water cells between dry banks. Each section has 30 HP (60 Durable), burns and restores its own water when broken. Lost banks collapse the remaining span. Deep falls kill land creatures under the current water rule; shallow falls wet. | Uncommon; 24; fishing huts/creels, rewards/shops. |
 | 45 | Thaw charge | Implemented: place at your feet facing a breakable ice wall. Sealed 2s fuse melts at most two ice walls into shallow water; protected/other materials stop it. Radius-1 steam cross deals 10, including self, and wets for 3s. Big widens steam; wall reach stays two. Stack 3. | Uncommon; 19 |
 | 46 | Effigy mask | Hold still while facing to draw watching effigies' attention as though another observer were present; consumes one of 12 charges per second. | Rare; 28 |
 | 47 | Snow globe | Implemented: break in the adjacent cell for 6s of radius-2 whiteout. Blocks sight for all sides, not shots; no damage/chill. Walls constrain spread. Stack 2; Big gives radius 3. | Uncommon; 20 |
@@ -170,7 +170,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 
 | Container | Initial weighted pool | Placement |
 | --- | --- | --- |
-| Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
+| Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 10 folded bridge, 20 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
 | Frozen lunch tin | Implemented: 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; 16 HP, blocking, not fuel. Warmth or ordinary damage opens once. |
 | Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 10 wire, 8 grounding spike, 4 doorstop, 3 heat siphon, 3 thaw charge, 2 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
 | Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 10 storm lantern, 5 borrowed summer, 15 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |

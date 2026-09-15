@@ -11,14 +11,15 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
         if (y > 1) return x + y > room.half_width ? TileKind::Snow : TileKind::Empty;
         if (ax >= room.half_width - 1 || ay >= room.half_height - 1 ||
             ax + ay > room.half_width + room.half_height - 4) return TileKind::Snow;
-        if (y < -3 && x > 2 && x + ay < room.half_width + room.half_height - 6)
+        // SPANS: Three-cell channels admit portable bridges; the frozen banks remain.
+        if (y < -3 && x > 2 && x <= 5 && x + ay < room.half_width + room.half_height - 6)
             return TileKind::Water;
-        if (y < -1 && x > 2) return TileKind::ShallowWater;
+        if (y < -1 && x > 2 && x <= 5) return TileKind::ShallowWater;
         return y == -2 && x < -2 ? TileKind::ShallowWater : TileKind::Ice;
     case RoomRole::IceQuarry:
         return (room.mirrored ? x > 2 : x < -2) ? TileKind::Ice : TileKind::Snow;
     case RoomRole::Bathhouse:
-        return ax > 2 && ay > 2 ? TileKind::ShallowWater : TileKind::Ruin;
+        return ax > 2 && ax <= 5 && ay > 2 && ay < room.half_height - 1 ? TileKind::ShallowWater : TileKind::Ruin;
     case RoomRole::FishingHut:
         return y < -2 ? TileKind::Ice : TileKind::Ruin;
     case RoomRole::CrystalGallery: return ax > room.half_width-2 ? TileKind::Ice : TileKind::Ruin;

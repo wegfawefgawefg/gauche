@@ -182,6 +182,7 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::KettleScald:
         spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
         break;
+    case SoundId::BridgeSplash:
     case SoundId::KettleSplash:
         shockwave(cosmetics,sound.cell,122,167,181);
         break;

@@ -51,7 +51,7 @@ constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 Cell cardinal_toward(Cell from, Cell to, Cell fallback);
 
-enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, IceHole, Count };
+enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, IceHole, Bridge, Count };
 enum class TileMaterial : std::uint8_t { Stone, Timber, Tree, Ice, Count };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
 enum class TileImpact : std::uint8_t { Strike, Blast, Train };
@@ -93,7 +93,7 @@ enum class ItemKind : std::uint8_t {
     Torch, Lighter, OilFlask, SapJar, WaterFlask, MushroomSpores, SmokePot, HoneyPot,
     Egg, FriedEgg, DiggingClaws, ResinGlue, SeedBag, LanternSeed,
     HerbBag, Splint, BitterRoot, Chili, FungalBread,
-    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt, MufflingFelt, AlarmClock, FishingLine, SmokedFish, SnowGlobe, SaltedKelp, BrineFlask, CandleStub, WickSpool, CoalLump, SteamKettle, PressureValve, Sealant, SkateBlade, Crampons, SignalFlare, CopperWire, GroundingSpike, StormLantern, EchoPebble, HarpoonGun, EmergencyDoorstop, BorrowedSummer, HeatSiphon, ThawCharge,
+    BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, SwapSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt, MufflingFelt, AlarmClock, FishingLine, SmokedFish, SnowGlobe, SaltedKelp, BrineFlask, CandleStub, WickSpool, CoalLump, SteamKettle, PressureValve, Sealant, SkateBlade, Crampons, SignalFlare, CopperWire, GroundingSpike, StormLantern, EchoPebble, HarpoonGun, EmergencyDoorstop, BorrowedSummer, HeatSiphon, ThawCharge, FoldedBridge,
     Count,
 };
 

@@ -37,7 +37,7 @@ const Tile& Stage::at_or_border(Cell cell) const {
 }
 
 bool walkable(TileKind kind) {
-    return kind == TileKind::Empty || kind == TileKind::Grass ||
+    return kind == TileKind::Bridge || kind == TileKind::Empty || kind == TileKind::Grass ||
            kind == TileKind::Ruin || kind == TileKind::Rail ||
            kind == TileKind::Lava || kind == TileKind::Ice ||
            kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::Snow || kind == TileKind::IceHole;
@@ -58,7 +58,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact 
     if (impact == TileImpact::Train) {
         const Prop broken_prop = tile->prop;
         *tile = {TileKind::Rail, 0, 0};
-        tile->prop = broken_prop;
+        tile->prop = broken_prop.kind==PropKind::BridgePlank ? Prop{} : broken_prop;
         return true;
     }
     if (tile->kind != TileKind::Wall || tile->hp == 0 || damage <= 0 ||

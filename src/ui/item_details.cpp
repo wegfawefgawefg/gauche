@@ -274,6 +274,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
     else if (item.kind == ItemKind::PressureValve)
         std::snprintf(line,sizeof(line),"ATTACHES | RECOVERABLE");
+    else if (item.kind == ItemKind::FoldedBridge)
+        std::snprintf(line,sizeof(line),"PLANK HP %d EACH | ONE KIT",item.durability);
     else if (item.kind == ItemKind::Bow)
         std::snprintf(line, sizeof(line), "QUIVER %d ARROWS", item.loaded);
     else if (item_is_gun(item.kind))
@@ -295,7 +297,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     if (item.kind==ItemKind::HeatSiphon) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::ThawCharge) {
+    if (item.kind == ItemKind::FoldedBridge) {
+        text(renderer,x+10,y+129,"3 CELLS | BANKS AT BOTH ENDS",216,186,117);
+    } else if (item.kind == ItemKind::ThawCharge) {
         text(renderer,x+10,y+129,"2s FUSE | OPENS 2 ICE WALLS",216,186,117);
     } else if (item.kind == ItemKind::HeatSiphon) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"FLAME CONE");

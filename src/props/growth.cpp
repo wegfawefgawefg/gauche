@@ -1,4 +1,5 @@
 #include "growth.hpp"
+#include "../items/folded_bridge.hpp"
 #include "circuits.hpp"
 #include "candle.hpp"
 #include "stove.hpp"
@@ -32,6 +33,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind == PropKind::BridgePlank) { step_bridge_support(game,cell); continue; }
             if (prop.kind == PropKind::GroundingSpike) { step_grounding_spike(game,cell); continue; }
             if (prop.kind == PropKind::Stove) { step_stove(game,cell); continue; }
             if (prop.kind == PropKind::Candle) { step_candle(game,cell); continue; }

@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "../items/folded_bridge.hpp"
 #include "../entities/icicle_spider.hpp"
 #include "candle.hpp"
 #include "stove.hpp"
@@ -43,6 +44,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         if (roll < 35) item = ItemKind::SmokedFish;
         else if (roll < 55) item = ItemKind::FishingLine;
         else if (roll < 70) item = ItemKind::AirBladder;
+        else if (roll < 80) item = ItemKind::FoldedBridge;
         break;
     case PropKind::LensCase:
         if (roll < 30) item = ItemKind::MirrorShard;
@@ -100,11 +102,13 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
     }
     if (prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
+    if (prop.kind==PropKind::BridgePlank) collapse_bridge_plank(game,cell,source);
 }
 
 } // namespace
 
 bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
+    if (kind==PropKind::BridgePlank) return false; // Requires a complete supported span.
     Tile* tile = stage.at(cell);
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;

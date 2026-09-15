@@ -24,7 +24,7 @@ Handle populate_scrap_yard(Game& game,const FloorPlan& plan,const RoomPlan& room
         const Handle crane=spawn_entity(game,EntityKind::MagnetCrane,at({6,-3}));
         if (!get_entity(game,crane)) return {};
         place_ground_item(game,at({2,-3}),ItemKind::Pickaxe);
-        for (auto& e:game.entities) if (e.kind==EntityKind::GroundItem && e.cell==at({2,-3})) e.ground_item.durability=6;
+        for (auto& e:game.entities) if (e.kind==EntityKind::GroundItem && e.cell==at({2,-3})) e.ground_item.uses=6;
         place_ground_item(game,at({-3,2}),ItemKind::HorseshoeMagnet);
         for (Cell offset:{Cell{4,-3},Cell{4,-2}}) *game.stage.at(at(offset))={TileKind::Lava,0,0};
         place_ground_item(game,at({-3,-4}),ItemKind::ChainHook);

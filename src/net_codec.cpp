@@ -153,6 +153,12 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
+        if (!reader.okay) {
+            const auto index=static_cast<std::size_t>(&tile-result.stage.tiles.data());
+            error="Invalid snapshot tile at " + std::to_string(index % static_cast<std::size_t>(result.stage.width)) +
+                "," + std::to_string(index / static_cast<std::size_t>(result.stage.width));
+            return false;
+        }
     }
     Run& run = result.run;
     const std::uint8_t phase = reader.u8();
@@ -214,7 +220,15 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         item = static_cast<ItemKind>(reader.u8());
         if (item >= ItemKind::Count) reader.okay = false;
     }
-    for (Entity& entity : result.entities) entity = read_entity(reader);
+    if (!reader.okay) {error="Invalid snapshot run state";return false;}
+    for (std::size_t slot=0;slot<result.entities.size();++slot) {
+        result.entities[slot]=read_entity(reader);
+        if (!reader.okay) {
+            error="Invalid snapshot entity at slot " + std::to_string(slot) + " (kind " +
+                std::to_string(static_cast<int>(result.entities[slot].kind)) + ")";
+            return false;
+        }
+    }
     const std::uint32_t contacts = reader.u32();
     if (!reader.okay || contacts > max_entities * max_entities ||
         contacts > (bytes.size() - reader.position) / 16) {

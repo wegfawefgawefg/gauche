@@ -1,3 +1,4 @@
+#include "icon_set.hpp"
 #include "prompts.hpp"
 #include "../input.hpp"
 #include <gubsy/lobby/state.hpp>
@@ -8,6 +9,7 @@ namespace {
 GubsyRuntime* backend = nullptr;
 
 int controller_family() {
+    if (controller_icons() != ControllerIcons::Auto) return static_cast<int>(controller_icons()) - 1;
     SDL_Gamepad* pad = SDL_GetGamepadFromID(active_gamepad_id());
     const SDL_GamepadType type = pad == nullptr ? SDL_GAMEPAD_TYPE_UNKNOWN : SDL_GetGamepadType(pad);
     if (type == SDL_GAMEPAD_TYPE_PS3 || type == SDL_GAMEPAD_TYPE_PS4 || type == SDL_GAMEPAD_TYPE_PS5) return 1;
@@ -21,10 +23,17 @@ InputPrompt gamepad_button(int code) {
     SDL_Gamepad* gamepad = SDL_GetGamepadFromID(active_gamepad_id());
     const auto button = static_cast<SDL_GamepadButton>(code);
     prompt.face = gamepad == nullptr ? SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN : SDL_GetGamepadButtonLabel(gamepad, button);
-    if (gamepad == nullptr && button >= SDL_GAMEPAD_BUTTON_SOUTH && button <= SDL_GAMEPAD_BUTTON_NORTH) {
+    if ((controller_icons() != ControllerIcons::Auto || prompt.face == SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) &&
+        button >= SDL_GAMEPAD_BUTTON_SOUTH && button <= SDL_GAMEPAD_BUTTON_NORTH) {
         constexpr SDL_GamepadButtonLabel labels[]{SDL_GAMEPAD_BUTTON_LABEL_A,
             SDL_GAMEPAD_BUTTON_LABEL_B, SDL_GAMEPAD_BUTTON_LABEL_X, SDL_GAMEPAD_BUTTON_LABEL_Y};
-        prompt.face = labels[static_cast<int>(button)];
+        constexpr SDL_GamepadButtonLabel ps[]{SDL_GAMEPAD_BUTTON_LABEL_CROSS,
+            SDL_GAMEPAD_BUTTON_LABEL_CIRCLE, SDL_GAMEPAD_BUTTON_LABEL_SQUARE, SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE};
+        constexpr SDL_GamepadButtonLabel nintendo[]{SDL_GAMEPAD_BUTTON_LABEL_B,
+            SDL_GAMEPAD_BUTTON_LABEL_A, SDL_GAMEPAD_BUTTON_LABEL_Y, SDL_GAMEPAD_BUTTON_LABEL_X};
+        const int family = controller_family();
+        prompt.face = family == 1 ? ps[static_cast<int>(button)] :
+            family == 2 ? nintendo[static_cast<int>(button)] : labels[static_cast<int>(button)];
     }
     switch (prompt.face) {
     case SDL_GAMEPAD_BUTTON_LABEL_A: prompt.label = "A"; break;

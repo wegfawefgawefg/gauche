@@ -48,6 +48,8 @@
 #include "flare_scene.hpp"
 #include "circuit_scene.hpp"
 #include "lantern_scene.hpp"
+#include "../src/debug/playtest.hpp"
+#include "../src/ui/stage_announcement.hpp"
 #include "quarry_tools_scene.hpp"
 #include "projectile_scene.hpp"
 #include "material_scene.hpp"
@@ -164,12 +166,16 @@ int main(int argc, char** argv) {
     arrange_terrain(game, cosmetics);
     const std::string_view mode = argc >= 3 ? argv[2] : "terrain";
     SDL_Window* debug_window = nullptr;
-    if (mode == "debug") {
+    if (mode == "debug" || mode == "debug-levels" || mode == "debug-loadout") {
         debug_window = SDL_CreateWindow("Static debug capture", 1920, 1080, SDL_WINDOW_HIDDEN);
         init_debug_panels(debug_window, renderer);
         debug_panels().visible = true;
-        debug_panels().combat = true;
-        debug_panels().status = true;
+        debug_panels().combat = mode == "debug";
+        debug_panels().status = mode == "debug";
+        playtest_tools().levels = mode == "debug-levels";
+        playtest_tools().loadouts = mode == "debug-loadout";
+        set_loadout_preset(playtest_tools().loadout, 3);
+        playtest_tools().preset = 3;
     }
     InteractionUi interaction;
     if (mode == "enemies") {
@@ -411,8 +417,14 @@ int main(int argc, char** argv) {
         render_game(renderer, graphics, game, 0, 2.0F, &cosmetics, {}, (mode == "muffling-hud" || mode == "cold-recovery" || mode == "poultice-recovery" || mode == "skaters" || mode == "pockets" || mode == "thunder" || mode == "whistle" || mode == "decoys" || mode == "wards" || mode == "parries" || mode == "shields" || mode == "mixtures" || mode == "noisemakers" || mode == "movement-tools" || mode == "woodland-traps" || mode == "recoverables" || mode == "root-relics" || mode == "displacement" || mode == "ground-tools" || mode == "remedy-status" || mode == "wood-tools" || mode == "lit-stick" || mode == "hud" || mode == "fps" || mode == "status" || mode == "debug"), true);
         draw_interaction(renderer, graphics, game, 0, interaction);
     }
+    if (mode == "stage-banner") {
+        StageAnnouncement banner;
+        update_stage_announcement(banner, game, 0, true, 0);
+        banner.age = 1;
+        draw_stage_announcement(renderer, banner);
+    }
     if (mode == "fps") draw_frame_rate(renderer, 60);
-    if (mode == "debug") {
+    if (mode == "debug" || mode == "debug-levels" || mode == "debug-loadout") {
         SDL_SetRenderScale(renderer, 1, 1);
         draw_debug_panels(game, 0);
         draw_debug_panels(game, 0);

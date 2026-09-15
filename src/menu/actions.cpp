@@ -1,3 +1,5 @@
+#include "../input/icon_set.hpp"
+#include "../debug/playtest.hpp"
 #include "actions.hpp"
 #include "profiles.hpp"
 #include "audio.hpp"
@@ -152,7 +154,7 @@ void set_audio(MenuShell& menu, std::string_view action) {
 
 void start_local(MenuShell& menu) {
     if (menu.network->role != NetRole::Solo) return;
-    start_run(*menu.solo_game, SDL_GetTicks() + 1);
+    start_solo_run(*menu.solo_game, SDL_GetTicks() + 1, menu.death_policy);
     menu.solo_game->run.death_policy = menu.death_policy;
     menu.playing = true;
     menu.visible = menu.front_visible = false;
@@ -213,6 +215,11 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
     FrontPage& page = menu.front;
     if (page.screen == MenuScreen::ProfileEditor && !save_profile_name(page)) return;
     if (action == "back") { menu_back_sound(page); back(menu); return; }
+    if (action == "controller-icons") {
+        const auto next = static_cast<ControllerIcons>((static_cast<int>(controller_icons()) + 1) % 4);
+        if (!set_controller_icons(next)) page.toast = "Could not save controller icon preference";
+        page.dirty = true; return;
+    }
     if (action == "play") { show_menu_screen(page, MenuScreen::Lobby); return; }
     if (action == "quick") { start_local(menu); return; }
     if (action == "quit") { menu.quit_requested = true; return; }

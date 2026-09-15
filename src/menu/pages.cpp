@@ -1,3 +1,5 @@
+#include "../debug/levels.hpp"
+#include "../input/icon_set.hpp"
 #include "pages.hpp"
 #include "page_chrome.hpp"
 #include "control_pages.hpp"
@@ -15,11 +17,12 @@ namespace {
 using namespace gauche_menu;
 
 void main_page(ViewBuilder& ui) {
-    frame(ui, "GAUCHE", 520.0F, 385.0F);
+    frame(ui, "GAUCHE", 560.0F, 430.0F);
     button(ui, "quick", "Quick Run", "quick", 51.0F);
     button(ui, "play", "Play", "play", 51.0F);
     button(ui, "settings", "Settings", "settings", 51.0F);
     button(ui, "quit", "Quit", "quit", 51.0F);
+    if (!playtest_summary().empty()) ui.label("card", "test-overrides", playtest_summary(), 52, 14);
     ui.focus_group("menu", "quick", "card");
 }
 
@@ -121,6 +124,7 @@ void settings_page(ViewBuilder& ui) {
     button(ui, "display", "Display", "display");
     button(ui, "audio", "Audio", "audio");
     button(ui, "controls", "Controls", "controls");
+    button(ui, "controller-icons", std::string{"Controller icons  ·  "} + controller_icon_name(), "controller-icons");
     footer(ui, "display");
 }
 

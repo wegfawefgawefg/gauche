@@ -1,9 +1,6 @@
 # Gauche master task list
 
-This is the **single live checklist** for agreed work after the playable C++
-port. Keep task status here. The [content brief](CONTENT_FARM_BRIEF.md) records scale and constraints;
-the [forest ideas](FOREST_CONTENT_IDEAS.md) are candidates; [NEXT_TASKS.md](NEXT_TASKS.md) is completed history. The new lighting contrast is the visual starting point;
-preserve its dark, readable rooms.
+This is the **single live checklist**. [Content brief](CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](NEXT_TASKS.md): history. Preserve dark, readable lighting.
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
 ## Tile rules and damage feedback
@@ -495,6 +492,8 @@ playtesting. Keep Rust as the parity reference and current C++ lighting as the
 visual baseline; review visible changes in static captures at normal zoom.
 ## Playtest tools and stage presentation
 
-- [ ] Implement the [playtest tools specification](PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.
-- [ ] Controller icon override in settings; set this user’s preference to Xbox.
-- [ ] Small upper-right angled stage announcement, subtle entrance and fade.
+- [x] Implement the [playtest tools specification](PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.
+- [x] Controller icon override in settings; set this user’s preference to Xbox.
+- [x] Small upper-right angled stage announcement, subtle entrance and fade.
+
+- [ ] Unify HUD slot/HP panels with angled inventory styling; stop OS cursor flicker; match Splonks frame pacing for high refresh rendering while simulation stays 60 Hz.

@@ -8,7 +8,7 @@
 #include <array>
 #include <utility>
 
-void generate_world_floor(Game& game) {
+void generate_world_floor(Game& game, FloorLayout layout) {
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};
     std::array<bool, 4> joined{};
@@ -31,7 +31,8 @@ void generate_world_floor(Game& game) {
     game.run.phase = RunPhase::Playing;
 
     // ROUTE: Geometry and role pools share one seeded plan; no content can block its dry paths.
-    const bool haunted = make_haunted_floor(game);
+    const bool haunted = layout != FloorLayout::Generated &&
+        make_haunted_floor(game, layout == FloorLayout::HauntedHouse);
     FloorPlan plan;
     if (!haunted) {
         plan = plan_floor(game);

@@ -141,8 +141,8 @@ set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/prop
 set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
-    src/main.cpp src/app/options.cpp src/debug/panels.cpp src/ui/status.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp
+    src/main.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
     src/entities/shard_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp

@@ -1,3 +1,4 @@
+#include "debug/playtest.hpp"
 #include "menu_shell.hpp"
 #include "input.hpp"
 #include "menu/actions.hpp"
@@ -38,7 +39,7 @@ void start_game(void* data, std::int32_t) {
     auto& menu = *static_cast<MenuShell*>(data);
     if (menu.network->role == NetRole::Client && !menu.network->ready) return;
     if (menu.network->role == NetRole::Solo) {
-        start_run(*menu.solo_game, SDL_GetTicks() + 1);
+        start_solo_run(*menu.solo_game, SDL_GetTicks() + 1, menu.death_policy);
         menu.solo_game->run.death_policy = menu.death_policy;
     }
     menu.playing = true;

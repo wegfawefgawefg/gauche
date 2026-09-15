@@ -1,4 +1,5 @@
 #include "panels.hpp"
+#include "playtest.hpp"
 #include "../input.hpp"
 
 #include <imgui.h>
@@ -37,7 +38,7 @@ bool debug_captures_input() {
     return panels.visible && (imgui_want_capture_mouse() || imgui_want_capture_keyboard());
 }
 
-void draw_debug_panels(const Game& game, int owner) {
+void draw_debug_panels(const Game& game, int owner, bool offline) {
     if (!imgui_is_initialized()) return;
     ImGui::GetIO().MouseDrawCursor = false;
     imgui_new_frame();
@@ -48,6 +49,9 @@ void draw_debug_panels(const Game& game, int owner) {
             if (ImGui::CollapsingHeader("Gameplay", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::Checkbox("Combat overlays", &panels.combat);
                 ImGui::Checkbox("Player status", &panels.status);
+                ImGui::Checkbox("Levels / start override", &playtest_tools().levels);
+                ImGui::Checkbox("Loadout / spawn override", &playtest_tools().loadouts);
+                ImGui::Checkbox("Pause offline world while F1 is open", &playtest_tools().pause);
             }
         }
         ImGui::End();
@@ -74,5 +78,6 @@ void draw_debug_panels(const Game& game, int owner) {
         }
         ImGui::End();
     }
+    if (panels.visible) draw_playtest_tools(game, offline);
     imgui_render_layer();
 }

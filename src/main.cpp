@@ -4,9 +4,11 @@
 #include "graphics.hpp"
 #include "app/options.hpp"
 #include "debug/panels.hpp"
+#include "debug/playtest.hpp"
 #include "audio.hpp"
 #include "game.hpp"
 #include "input.hpp"
+#include "input/icon_set.hpp"
 #include "render.hpp"
 #include "net_session.hpp"
 #include "menu_shell.hpp"
@@ -15,6 +17,7 @@
 #include "ui/interaction.hpp"
 #include "ui/presentation.hpp"
 #include "ui/frame_rate.hpp"
+#include "ui/stage_announcement.hpp"
 #include <algorithm>
 #include <charconv>
 #include <cmath>
@@ -109,11 +112,14 @@ int main(int argc, char** argv) {
             game.run.roof_light_count = 1;
         }
     }
+    load_controller_icons();
+    init_playtest_tools(user_data_root() / "playtest.cfg");
     MenuShell menu;
     init_menu_shell(menu, host, game, network, requested_death_policy(argc, argv),
                     identity_path);
     menu.front.audio = &audio;
     menu.playing = network.role == NetRole::Host || game.started;
+    StageAnnouncement announcement;
     Cosmetics cosmetics;
     InteractionUi interaction;
     if (has_arg(argc, argv, "--smoke-inventory")) {
@@ -173,6 +179,7 @@ int main(int argc, char** argv) {
                             0.5F, 8.0F);
     InputReaderState input_reader{};
     bool cancel_pending_use = false;
+    unsigned int debug_revision = playtest_tools().revision;
     int frames = 0;
     std::uint64_t last_ticks = SDL_GetTicks();
     double accumulated = 0.0;
@@ -266,6 +273,7 @@ int main(int argc, char** argv) {
         const GubsyFrame menu_frame = gubsy_get_frame(host);
         update_menu_shell(menu, menu_input, 1.0F / 60.0F,
                           menu_frame.render_width, menu_frame.render_height);
+        process_playtest_requests(menu);
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
         const bool networked = network.role != NetRole::Solo;
@@ -287,7 +295,8 @@ int main(int argc, char** argv) {
             Game& active = networked ? network.rollback.game : game;
             const int owner = networked ? network.local_owner : 0;
             const bool ready = !networked || network.ready;
-            const bool simulating = (menu.playing && (!menu.visible || networked)) ||
+            const bool simulating = (menu.playing && (!menu.visible || networked) &&
+                 (networked || !debug_panels().visible || !playtest_tools().pause)) ||
                 (network.role == NetRole::Client && network.ready && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
@@ -301,7 +310,7 @@ int main(int argc, char** argv) {
                     cancel_pending_use = false;
                 }
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
-                else step_game(game, inputs);
+                else step_solo_game(game, inputs);
                 const Entity* listener = get_entity(active,
                     active.players[static_cast<std::size_t>(owner)]);
                 play_game_sounds(audio, active, listener == nullptr ? Cell{} : listener->cell);
@@ -311,6 +320,11 @@ int main(int argc, char** argv) {
             accumulated -= step_seconds;
         }
 
+        if (debug_revision != playtest_tools().revision) {
+            debug_revision = playtest_tools().revision;
+            cosmetics = {}; interaction = {}; input_reader = {}; cancel_pending_use = true;
+            audio.ambience.world_key = 0; menu.front.dirty = true;
+        }
         const Game& ended = network.role == NetRole::Solo ? game : network.rollback.game;
         cosmetics.frame_alpha = menu.visible || ended.game_over ? 1.0F :
             std::clamp(static_cast<float>(accumulated / step_seconds), 0.0F, 1.0F);
@@ -320,6 +334,8 @@ int main(int argc, char** argv) {
 
         const GubsyFrame frame = gubsy_get_frame(host);
         SDL_HideCursor();
+        update_stage_announcement(announcement, ended, static_cast<float>(elapsed), menu.playing,
+                                  networked ? 0 : debug_revision);
         if (frame.renderer == nullptr || frame.render_target == nullptr) {
             std::fprintf(stderr, "Gubsy render target unavailable\n");
             shutdown_audio(audio);
@@ -358,6 +374,8 @@ int main(int argc, char** argv) {
                         active.run.phase != RunPhase::Shop, interaction.compact_details);
             if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
                                                 network.status.c_str());
+            if (!menu.visible && !interaction.inventory_open && active.run.phase == RunPhase::Playing)
+                draw_stage_announcement(frame.renderer, announcement);
             draw_interaction(frame.renderer, graphics, active,
                              networked ? network.local_owner : 0, interaction);
         } else if (menu.visible) {
@@ -390,7 +408,7 @@ int main(int argc, char** argv) {
             cleanup_gubsy_runtime(host);
             return 1;
         }
-        draw_debug_panels(active, networked ? network.local_owner : 0);
+        draw_debug_panels(active, networked ? network.local_owner : 0, !networked);
         draw_window_pointer(frame.renderer, frame.window, graphics);
         gubsy_present_frame(host);
         ++frames;

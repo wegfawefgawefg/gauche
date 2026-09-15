@@ -271,6 +271,12 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "STEP %d -> %d TICKS", movement_beat(player, player.move_interval),
             movement_beat(gripped, gripped.move_interval));
     }
+    if (item.kind == ItemKind::RabbitCharm) {
+        Entity faster = player;
+        *faster.inventory.held() = item;
+        std::snprintf(line, sizeof(line), "STEP %d -> %d TICKS", movement_beat(player, player.move_interval),
+            movement_beat(faster, faster.move_interval));
+    }
     if (item.kind == ItemKind::Chili) {
         Entity faster = player;
         faster.vitals.haste = 240;
@@ -279,6 +285,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
     text(renderer, x + 10.0F, y + 96.0F, line);
     if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), item.kind == ItemKind::HarpoonGun ? "SECONDARY CUTS THE LINE" : "IN FLIGHT - SLOT RESERVED");
+    else if (item.kind == ItemKind::RabbitCharm) std::snprintf(line,sizeof(line),"ACTIVE WHILE HELD");
     else std::snprintf(line, sizeof(line), "COOLDOWN %.2f / %.2fs",
                   static_cast<double>(item.cooldown) / 60.0,
                   static_cast<double>(pattern.cooldown) / 60.0);
@@ -389,7 +396,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.kind == ItemKind::StickyBoots)
         std::snprintf(line, sizeof(line), "GRIP 6.0s | SLOW STEPS");
     else if (item.kind == ItemKind::RabbitCharm)
-        std::snprintf(line, sizeof(line), "RETREAT UP TO 3 CELLS");
+        std::snprintf(line, sizeof(line), "HELD: FAST STEPS | NO CHARGES");
+    else if (item.kind == ItemKind::BlinkSeed)
+        std::snprintf(line, sizeof(line), "THROW %d | BLINK ON LANDING", pattern.maximum);
     else if (item.kind == ItemKind::AcornMine)
         std::snprintf(line, sizeof(line), "PLACE 1 | SPLINTERS %d", pattern.blast_radius);
     else if (item.kind == ItemKind::RopeSnare)

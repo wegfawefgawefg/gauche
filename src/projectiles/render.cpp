@@ -41,7 +41,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool echo = shot.label_a == static_cast<int>(ProjectileKind::EchoPebble);
     const bool spinning = shot.label_a == static_cast<int>(ProjectileKind::Boomerang);
     const bool drill = shot.label_a == static_cast<int>(ProjectileKind::Drill);
-    const bool swap = shot.label_a == static_cast<int>(ProjectileKind::Swap);
+    const bool blink = shot.label_a == static_cast<int>(ProjectileKind::Blink);
     const bool fishing = shot.label_a == static_cast<int>(ProjectileKind::FishingHook);
     const bool widow = shot.label_a == static_cast<int>(ProjectileKind::WidowHook);
     const bool harpoon = shot.label_a == static_cast<int>(ProjectileKind::Harpoon);
@@ -54,7 +54,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float travel = shot.counter_a > 0 && (!(hook || drill) || shot.label_b == 0) ?
         std::clamp(1 - static_cast<float>(shot.timer_b) / static_cast<float>(projectile_step_ticks(shot)), 0.0F, 1.0F) : 0;
     const float pixels = tile_pixels(zoom);
@@ -76,7 +76,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_Texture* texture = texture_for(graphics, shot.sprite);
     const LightColor light = lit_sprite_color(lighting, render_cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-    const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : swap ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
+    const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : blink ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
     const double wobble = drill ? ((game.tick / 3) % 2 == 0 ? -7.0 : 7.0) : 0;
     if (hook) {

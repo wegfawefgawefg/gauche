@@ -281,7 +281,6 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
         break;
     case SoundId::SwapFold:
         shockwave(cosmetics, sound.cell, 186, 137, 228);
-        spray(cosmetics, sound.cell, seed, 6, Sprite::SwapSeed, .04F, 0.0F);
         break;
     case SoundId::ToadPuff: case SoundId::MothDust:
         spray(cosmetics, sound.cell, seed, sound.sound == SoundId::ToadPuff ? 22 : 10,

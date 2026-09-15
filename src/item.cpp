@@ -250,7 +250,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = launch_thunder_acorn(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
         break;
-    case ItemKind::RootDrill: case ItemKind::SwapSeed:
+    case ItemKind::RootDrill: case ItemKind::BlinkSeed:
         used = launch_root_relic(game, user_slot, item, direction);
         cooldown = item_pattern(item).cooldown;
         break;

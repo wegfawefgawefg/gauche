@@ -109,7 +109,10 @@ int movement_slow_factor(const Entity& actor) {
 }
 
 int movement_recovery_rate(const Entity& actor) {
-    return actor.vitals.haste > 0 ? 2 : 1;
+    // Held movement toys share the haste ceiling; extra copies do not multiply it.
+    const bool rabbit = actor.kind == EntityKind::Player &&
+        actor.inventory.held()->kind == ItemKind::RabbitCharm && actor.inventory.held()->count > 0;
+    return actor.vitals.haste > 0 || rabbit ? 2 : 1;
 }
 
 int movement_beat(const Entity& actor, int recovery) {

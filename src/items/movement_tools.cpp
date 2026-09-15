@@ -1,8 +1,6 @@
 #include "movement_tools.hpp"
 #include "../projectiles/net.hpp"
 
-#include <algorithm>
-
 namespace {
 
 constexpr RegionalItem net{"Throwing Net", "A traveling wide cast. Roots the first group for 2s; they can still attack. Walls catch the net.",
@@ -11,9 +9,9 @@ constexpr RegionalItem net{"Throwing Net", "A traveling wide cast. Roots the fir
 constexpr RegionalItem boots{"Sticky Boots", "Grip for 6s: resist shoves and slips, but each step takes longer. Crushers still crush. Four uses.",
     Sprite::StickyBoots, {0, 0, 0, 0, 45, PatternEffect::Utility},
     ItemAction::Material, 18, 1, false, 4, 0, 0, 0, 0, SoundId::BootsStick};
-constexpr RegionalItem rabbit{"Rabbit Charm", "Retreat up to 3 cells opposite your aim. Stops at obstacles; hazards still apply. Three escapes.",
-    Sprite::RabbitCharm, {0, 0, 0, 0, 90, PatternEffect::Utility},
-    ItemAction::Material, 28, 1, false, 3, 0, 0, 0, 0, SoundId::RabbitEscape};
+constexpr RegionalItem rabbit{"Rabbit Charm", "Hold in your hand to run faster. No charges. Roots, ice and other hazards still apply. Stow it to fight.",
+    Sprite::RabbitCharm, {0, 0, 0, 0, 0, PatternEffect::Utility},
+    ItemAction::Material, 28, 1, false, 0, 0, 0, 0, 0, SoundId::RabbitEscape};
 
 } // namespace
 
@@ -35,17 +33,5 @@ bool use_movement_tool(Game& game, int slot, Cell direction) {
         user.vitals.grip = 360;
         return true;
     }
-    if (item.kind != ItemKind::RabbitCharm || user.vitals.rooted > 0) return false;
-    bool moved = false;
-    for (int step = 0; step < 3; ++step) {
-        const Cell before = user.cell;
-        const Cell next = before - direction;
-        if (!move_entity(game, slot, next)) break;
-        moved = true;
-        // SPRINGS/OIL: An extra displacement takes over; don't add more retreat steps.
-        if (user.health <= 0 || user.cell != next || user.vitals.rooted > 0) break;
-    }
-    user.facing = direction;
-    if (moved) user.move_wait = std::max(user.move_wait, user.move_interval);
-    return moved;
+    return false;
 }

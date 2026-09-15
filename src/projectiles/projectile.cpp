@@ -10,7 +10,7 @@
 #include "fishing.hpp"
 #include "widow_hook.hpp"
 #include "root_drill.hpp"
-#include "swap.hpp"
+#include "blink.hpp"
 #include "recoverable.hpp"
 #include "net.hpp"
 #include "thunder.hpp"
@@ -44,7 +44,8 @@ int projectile_step_ticks(const Entity& entity) {
     if (entity.label_a == static_cast<int>(ProjectileKind::FrostPuff)) return frost_puff_step_ticks;
     if (entity.label_a == static_cast<int>(ProjectileKind::ThunderAcorn)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::Net)) return 4;
-    if (entity.label_a == static_cast<int>(ProjectileKind::Hook) || entity.label_a == static_cast<int>(ProjectileKind::Swap)) return 4;
+    if (entity.label_a == static_cast<int>(ProjectileKind::Blink)) return 6;
+    if (entity.label_a == static_cast<int>(ProjectileKind::Hook)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::Drill)) return 6;
     if (entity.label_a == static_cast<int>(ProjectileKind::Rock)) return 4;
     if (entity.label_a == static_cast<int>(ProjectileKind::Boomerang)) return 3;
@@ -142,7 +143,7 @@ void step_projectile(Game& game, int slot) {
     Entity& shot = game.entities[static_cast<std::size_t>(slot)];
     if (shot.label_a == static_cast<int>(ProjectileKind::Hook)) { step_hook(game, slot); return; }
     if (shot.label_a == static_cast<int>(ProjectileKind::Drill)) { step_root_drill(game, slot); return; }
-    if (shot.label_a == static_cast<int>(ProjectileKind::Swap)) { step_swap_seed(game, slot); return; }
+    if (shot.label_a == static_cast<int>(ProjectileKind::Blink)) { step_blink_seed(game, slot); return; }
     if (shot.label_a == static_cast<int>(ProjectileKind::Rock) || shot.label_a == static_cast<int>(ProjectileKind::Boomerang)) {
         step_recoverable(game, slot); return;
     }

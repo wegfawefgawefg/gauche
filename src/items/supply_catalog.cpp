@@ -68,7 +68,7 @@ constexpr std::array<ItemSupply, 133> entries{{
     {ItemKind::HuntingHorn, ItemOrigin::Forest, 3, 1, 1, R|S|C|T},
     {ItemKind::RopeHook, ItemOrigin::Forest, 3, 1, 1, R|S|C|T|M},
     {ItemKind::RootDrill, ItemOrigin::Forest, 1, 3, 1, R|S|C|T},
-    {ItemKind::SwapSeed, ItemOrigin::Forest, 1, 3, 2, R|S|C|T},
+    {ItemKind::BlinkSeed, ItemOrigin::Forest, 1, 3, 2, R|S|C|T},
     {ItemKind::Boomerang, ItemOrigin::Forest, 3, 1, 1, R|S|C|T},
     {ItemKind::RopeSnare, ItemOrigin::Forest, 3, 1, 2, R|S|C|T|M},
     {ItemKind::SpringTrap, ItemOrigin::Forest, 3, 2, 2, R|S|C|T},

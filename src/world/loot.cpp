@@ -59,7 +59,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
             const Handle handle=spawn_entity(game,EntityKind::GroundItem,nearby_ground_item_cell(game,enemy.cell));
             if (Entity* item=get_entity(game,handle)) {
                 item->ground_item=make_item(ItemKind::Pickaxe);
-                item->ground_item.durability=12; item->sprite=Sprite::Pickaxe;
+                item->ground_item.uses=12; item->sprite=Sprite::Pickaxe;
             }
         } else if (roll<40) place_coins(game,enemy.cell,3+static_cast<int>(random_u32(game)%4));
         break;

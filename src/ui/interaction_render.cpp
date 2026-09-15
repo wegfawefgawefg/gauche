@@ -126,7 +126,7 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Entity& player, const InteractionUi& ui) {
     const float slide = ui.slide;
     const float x = 22.0F - (1.0F - slide) * 180.0F;
-    text(renderer, x + 8.0F, 36.0F, "INVENTORY");
+    text(renderer, x + 8.0F, 36.0F, ui.offer_mode==OfferMode::Browse ? "INVENTORY" : "REPLACE WHICH ITEM?");
     for (int index = 0; index < quick_slots; ++index) {
         const float y = 62.0F + static_cast<float>(index) * 39.0F;
         frame(renderer, x + (index == ui.slot_focus ? 8.0F : 0.0F), y,
@@ -240,10 +240,11 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_item_details(renderer, graphics, *player, *player->inventory.held(),
                           413.0F + shift, 77.0F, 199.0F, 214.0F, "HELD");
     }
-    draw_action_hint(renderer, 26, 319, Action::Pickup, "DROP");
+    if (ui.offer_mode!=OfferMode::Browse) draw_modal_hint(renderer,26,319,false,"REPLACE THIS");
+    else draw_action_hint(renderer, 26, 319, Action::Pickup, "DROP");
     draw_action_hint(renderer, 170, 319, comparing ? Action::MoveDown : Action::Confirm,
-                     comparing ? "COMPARE" : "EQUIP");
-    draw_action_hint(renderer, 425, 319, Action::Inventory, "BACK");
+                     comparing ? "CHOOSE SLOT" : "EQUIP");
+    draw_modal_hint(renderer,425,319,true,"CANCEL");
     if (!ui.notice.empty()) text(renderer, 26.0F, 342.0F, ui.notice, 231, 111, 87);
 }
 
@@ -253,7 +254,8 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player == nullptr) return;
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool pending = game.run.phase == RunPhase::Playing;
-    text(renderer, 25.0F, 26.0F, shop ? "TRAVELING SHOP" :
+    angled_fill(renderer,{20,16,395,28},{0.48F,0.12F,0.10F,1},{0.34F,0.08F,0.07F,1});
+    text(renderer, 32.0F, 26.0F, shop ? "TRAVELING SHOP" :
          (pending ? "CHOOSE MISSED REWARD" : "CHOOSE ONE REWARD"));
     if (shop) {
         char coins[40];
@@ -261,7 +263,8 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                       game.run.coins[static_cast<std::size_t>(owner)]);
         text(renderer, 518.0F, 26.0F, coins, 224, 183, 112);
     }
-    if (!shop && game.run.chosen[static_cast<std::size_t>(owner)] && !pending) {
+    if ((shop && game.run.shop_ready[static_cast<std::size_t>(owner)]) ||
+        (!shop && game.run.chosen[static_cast<std::size_t>(owner)] && !pending)) {
         text(renderer, 210.0F, 166.0F, "WAITING FOR FRIENDS");
         return;
     }
@@ -270,7 +273,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         const bool selected = index == ui.offer_focus;
         const float progress = std::min(1.0F, static_cast<float>(SDL_GetTicks() - ui.offer_changed_at) / 110);
         const float y = 82 - (selected ? 6 * (1-(1-progress)*(1-progress)) : 0);
-        if (selected) draw_action_hint(renderer, x+12, 53, Action::Confirm, shop ? "BUY THIS" : "TAKE THIS");
+        if (selected) draw_modal_hint(renderer, x+12, 53, false, shop ? "BUY THIS" : "TAKE THIS");
         const std::string label = std::to_string(index + 1) +
             (index == ui.offer_focus ? "  SELECTED" : "  CHOOSE");
         if (shop) {
@@ -289,14 +292,44 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         } else reward_card(renderer, graphics, *player, reward_offer(game, owner, index),
                            x, y, 187.0F, index == ui.offer_focus, label.c_str());
     }
-    draw_action_hint(renderer, 25, 319, Action::Confirm, "CHOOSE");
+    draw_modal_hint(renderer,25,319,false,"CHOOSE");
     draw_action_hint(renderer, 215, 319, Action::Compare, "COMPARE");
     draw_action_hint(renderer, 425, 319, Action::Inventory, "PACK");
     if (shop)
         text(renderer, 445.0F, 341.0F, ui.offer_focus == 3 ?
              "> CONTINUE" : "CONTINUE >", 218, 198, 152);
-    else if (!ui.notice.empty())
+    if (!ui.notice.empty())
         text(renderer, 25.0F, 342.0F, ui.notice, 231, 111, 87);
+}
+
+void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
+                          const InteractionUi& ui) {
+    shade(renderer);
+    frame(renderer,144,96,352,172,true);
+    angled_fill(renderer,{144,96,352,27},{0.53F,0.13F,0.10F,1},{0.36F,0.08F,0.06F,1});
+    const bool shop=game.run.phase==RunPhase::Shop;
+    const Reward offer=reward_offer(game,owner,ui.offer_focus);
+    const Entity* player=get_entity(game,game.players[static_cast<std::size_t>(owner)]);
+    if (!player) return;
+    text(renderer,160,106,ui.replace_slot>=0 ? "CONFIRM EXCHANGE" : shop ? "CONFIRM PURCHASE" : "TAKE THIS REWARD?");
+    char line[96];
+    if (offer.kind==RewardKind::Item && offer.amount>1)
+        std::snprintf(line,sizeof(line),"RECEIVE %s x%d",reward_name(offer),offer.amount);
+    else std::snprintf(line,sizeof(line),"RECEIVE %s",reward_name(offer));
+    text(renderer,164,139,line,221,219,193);
+    if (ui.replace_slot>=0) {
+        const Item& outgoing=player->inventory.slots[static_cast<std::size_t>(ui.replace_slot)];
+        std::snprintf(line,sizeof(line),"DROP %s FROM SLOT %d",item_name(outgoing.kind),ui.replace_slot+1);
+        text(renderer,164,158,line,231,144,114);
+        text(renderer,164,175,"The new item takes this slot.",184,187,177);
+    }
+    if (shop) {
+        const int cost=shop_price(offer.item);
+        std::snprintf(line,sizeof(line),"PAY %d GOLD   |   %d LEFT",cost,game.run.coins[static_cast<std::size_t>(owner)]-cost);
+        text(renderer,164,195,line,224,183,112);
+    } else text(renderer,164,195,"Choose one. The other offers are left behind.",184,187,177);
+    draw_modal_hint(renderer,164,230,false,"CONFIRM");
+    draw_modal_hint(renderer,342,230,true,"CANCEL");
 }
 
 } // namespace
@@ -325,6 +358,7 @@ void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_RenderClear(renderer);
     if (ui.inventory_open) inventory_overlay(renderer, graphics, game, owner, ui);
     else offer_overlay(renderer, graphics, game, owner, ui);
+    if (ui.offer_mode==OfferMode::Confirm) confirmation_overlay(renderer,game,owner,ui);
     SDL_SetRenderTarget(renderer, target);
     SDL_SetRenderScale(renderer, scale_x, scale_y);
     const SDL_FRect rect{modal_left, modal_top, 640 * ui_scale, 360 * ui_scale};

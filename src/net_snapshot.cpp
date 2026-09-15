@@ -142,10 +142,10 @@ void send_history_since(NetSession& session, int owner, std::uint64_t after_tick
     for (const RollbackFrame& frame : session.rollback.frames)
         if (frame.tick > after_tick)
             history.push_back({frame.tick, frame.inputs, frame.hash_after});
-    for (std::size_t start = 0; start < history.size(); start += 8) {
+    for (std::size_t start = 0; start < history.size(); start += canonical_frames_per_packet) {
         PacketWriter packet = begin_packet(WireKind::Canonical);
         packet.u32(session.timeline_revision);
-        const std::size_t count = std::min<std::size_t>(8, history.size() - start);
+        const std::size_t count = std::min(canonical_frames_per_packet, history.size() - start);
         packet.u8(static_cast<std::uint8_t>(count));
         for (std::size_t offset = 0; offset < count; ++offset)
             write_frame(packet, history[start + offset]);

@@ -6,6 +6,7 @@
 
 #include <string>
 
+enum class OfferMode { Browse, Replace, Confirm };
 struct InteractionUi {
     bool inventory_open = false;
     bool inventory_latch = false;
@@ -24,11 +25,22 @@ struct InteractionUi {
     int mouse_slot = -1;
     bool request_drop = false;
     bool request_back = false;
+    bool request_confirm = false;
+    bool request_pack = false;
+    OfferMode offer_mode = OfferMode::Browse;
+    int replace_slot = -1;
+    ItemKind replace_kind = ItemKind::None;
+    std::uint64_t active_offer_token = 0;
     float slide = 0.0F;
     RunPhase last_phase = RunPhase::Arena;
     std::uint64_t last_tick = 0;
     std::string notice;
 };
+
+void cancel_offer_flow(InteractionUi& ui);
+void begin_offer_flow(InteractionUi& ui, const Game& game, int owner, int choice);
+void update_offer_flow(InteractionUi& ui, const Game& game, int owner,
+                       bool confirm, bool cancel, Input& input);
 
 bool has_reward_offer(const Game& game, int owner);
 Reward reward_offer(const Game& game, int owner, int index);

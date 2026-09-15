@@ -220,6 +220,9 @@ struct Input {
     bool interact = false;
     bool confirm = false;
     int select = -1;
+    int replace_slot = -1;
+    ItemKind replace_kind = ItemKind::None;
+    std::uint64_t offer_token = 0;
     friend bool operator==(const Input&, const Input&) = default;
 };
 
@@ -311,9 +314,9 @@ void generate_world_floor(Game& game, FloorLayout layout = FloorLayout::Automati
 bool floor_reachable(const Game& game);
 bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use = false);
 void finish_floor(Game& game);
-void choose_reward(Game& game, int owner, int choice);
-void choose_pending_reward(Game& game, int owner, int choice);
-void buy_shop_item(Game& game, int owner, int choice);
+void choose_reward(Game& game, int owner, int choice, int replace_slot = -1, ItemKind expected = ItemKind::None);
+void choose_pending_reward(Game& game, int owner, int choice, int replace_slot = -1, ItemKind expected = ItemKind::None);
+void buy_shop_item(Game& game, int owner, int choice, int replace_slot = -1, ItemKind expected = ItemKind::None);
 int shop_price(ItemKind kind);
 void advance_run(Game& game);
 void step_game(Game& game, const std::array<Input, 4>& inputs);

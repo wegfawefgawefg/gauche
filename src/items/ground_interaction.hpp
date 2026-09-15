@@ -1,9 +1,12 @@
 #pragma once
 #include "../game.hpp"
 
-enum class GroundAction { None, Pickup, Swap, Drop, Blocked };
+enum class GroundAction { None, Pickup, Swap, Drop, Blocked, Interact };
 bool item_can_drop(const Item& item);
 Item pickup_item_at(const Game& game, Cell cell);
 Item reachable_pickup_item(const Game& game, const Entity& player);
 GroundAction ground_action(const Game& game, const Entity& player);
 bool pickup_or_drop(Game& game, Entity& player);
+const Entity* pickup_fixture(const Game& game, const Entity& player);
+const char* pickup_fixture_label(const Game& game, const Entity& fixture);
+bool use_pickup_fixture(Game& game, Entity& player);

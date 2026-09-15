@@ -1,4 +1,5 @@
 #include "items/supply.hpp"
+#include "run/offers.hpp"
 #include "game.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/campfire.hpp"
@@ -169,10 +170,11 @@ void finish_floor(Game& game) {
 
 namespace {
 
-bool grant_reward(Entity& player, Reward reward) {
+bool grant_reward(Game& game, Entity& player, Reward reward, int replace_slot, ItemKind expected) {
+    if (replace_slot>=0 && reward.kind!=RewardKind::Item) return false;
     switch (reward.kind) {
     case RewardKind::Item:
-        if (!insert_item(player.inventory, reward_item(reward))) return false;
+        if (!accept_offer_item(game,player,reward_item(reward),replace_slot,expected)) return false;
         break;
     case RewardKind::Artifact:
         if (!has_artifact(player, reward.artifact)) {
@@ -194,40 +196,44 @@ bool grant_reward(Entity& player, Reward reward) {
 
 } // namespace
 
-void choose_reward(Game& game, int owner, int choice) {
+void choose_reward(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
     if (game.run.phase != RunPhase::Reward || owner < 0 || owner >= 4 ||
         choice < 0 || choice >= 3 || game.run.chosen[static_cast<std::size_t>(owner)]) return;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr || !grant_reward(*player,
-        game.run.offers[static_cast<std::size_t>(owner)][static_cast<std::size_t>(choice)])) return;
+    if (player == nullptr || player->health<=0 || !grant_reward(game,*player,
+        game.run.offers[static_cast<std::size_t>(owner)][static_cast<std::size_t>(choice)],replace_slot,expected)) return;
     game.run.chosen[static_cast<std::size_t>(owner)] = true;
+    emit_sound(game,SoundId::Confirm,player->cell,false);
     advance_run(game);
 }
 
-void choose_pending_reward(Game& game, int owner, int choice) {
+void choose_pending_reward(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
     if (owner < 0 || owner >= 4 || choice < 0 || choice >= 3 ||
         game.run.pending_count[static_cast<std::size_t>(owner)] == 0) return;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr || player->health <= 0 || !grant_reward(*player,
+    if (player == nullptr || player->health <= 0 || !grant_reward(game,*player,
         game.run.pending_offers[static_cast<std::size_t>(owner)][0]
-                               [static_cast<std::size_t>(choice)])) return;
+                               [static_cast<std::size_t>(choice)],replace_slot,expected)) return;
     const std::size_t index = static_cast<std::size_t>(owner);
     for (int pending = 1; pending < game.run.pending_count[index]; ++pending)
         game.run.pending_offers[index][static_cast<std::size_t>(pending - 1)] =
             game.run.pending_offers[index][static_cast<std::size_t>(pending)];
     game.run.pending_offers[index][static_cast<std::size_t>(--game.run.pending_count[index])] = {};
+    emit_sound(game,SoundId::Confirm,player->cell,false);
 }
 
-void buy_shop_item(Game& game, int owner, int choice) {
+void buy_shop_item(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
     if (game.run.phase != RunPhase::Shop || owner < 0 || owner >= 4 ||
         choice < 0 || choice >= 3) return;
     const ItemKind kind = game.run.shop_stock[static_cast<std::size_t>(choice)];
     if (kind == ItemKind::None || game.run.coins[static_cast<std::size_t>(owner)] < price(kind))
         return;
     Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr || !insert_item(player->inventory, supply_item(kind))) return;
+    if (player == nullptr || player->health<=0 || game.run.shop_ready[static_cast<std::size_t>(owner)] ||
+        !accept_offer_item(game,*player,supply_item(kind),replace_slot,expected)) return;
     game.run.coins[static_cast<std::size_t>(owner)] -= price(kind);
     game.run.shop_stock[static_cast<std::size_t>(choice)] = ItemKind::None;
+    emit_sound(game,SoundId::Confirm,player->cell,false);
 }
 
 void advance_run(Game& game) {

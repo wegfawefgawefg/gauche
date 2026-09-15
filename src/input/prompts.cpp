@@ -101,8 +101,8 @@ InputPrompt action_prompt(Action action, int profile_id) {
         if (!pad && button.kind == ginput::DeviceKind::Mouse)
             return {"M" + std::to_string(button.code), false};
     }
-    if (pad && action == Action::Use)
-        for (const auto& binding : ginput::binds_for_axis_1d(*profile, 0)) {
+    if (pad && (action == Action::Use || action == Action::Reload))
+        for (const auto& binding : ginput::binds_for_axis_1d(*profile, action==Action::Use ? 0 : 1)) {
             ginput::DeviceAxis1D axis;
             bool decoded = ginput::decode_axis_1d(binding.device_axis, axis);
             if (!decoded && (binding.device_axis == static_cast<int>(Gubsy1DAnalog::GP_LEFT_TRIGGER) ||

@@ -56,7 +56,8 @@ void step_player(Game& game, int slot, const Input& incoming) {
     if (input.pickup || input.drop || input.interact || input.cancel_use) release_held_harpoon(game,player);
     if (input.pickup) {
         cancel_item_action(player);
-        pickup_or_drop(game, player);
+        // WEST: Objectives and mechanisms share pickup, before the empty-ground drop fallback.
+        if (!use_pickup_fixture(game,player)) pickup_or_drop(game, player);
         return;
     }
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))

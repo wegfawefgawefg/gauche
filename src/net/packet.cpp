@@ -23,6 +23,8 @@ void PacketWriter::input(const Input& value) {
     u8(static_cast<std::uint8_t>(value.interact));
     u8(static_cast<std::uint8_t>(value.confirm));
     i32(value.select);
+    i32(value.replace_slot); u8(static_cast<std::uint8_t>(value.replace_kind));
+    u64(value.offer_token);
 }
 
 std::uint8_t PacketReader::u8() {
@@ -62,10 +64,14 @@ Input PacketReader::input() {
     value.interact = u8() != 0;
     value.confirm = u8() != 0;
     value.select = i32();
+    value.replace_slot=i32(); value.replace_kind=static_cast<ItemKind>(u8());
+    value.offer_token=u64();
     if (value.move.x < -1 || value.move.x > 1 || value.move.y < -1 ||
         value.move.y > 1 || value.aim.x < -512 || value.aim.x > 512 ||
         value.aim.y < -512 || value.aim.y > 512 ||
-        value.select < -1 || value.select >= quick_slots) okay = false;
+        value.select < -1 || value.select >= quick_slots ||
+        value.replace_slot < -1 || value.replace_slot >= quick_slots ||
+        value.replace_kind >= ItemKind::Count) okay = false;
     return value;
 }
 bool PacketReader::finished() const { return okay && position == bytes.size(); }

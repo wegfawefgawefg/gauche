@@ -63,6 +63,7 @@ Item reachable_pickup_item(const Game& game, const Entity& player) {
 }
 
 GroundAction ground_action(const Game& game, const Entity& player) {
+    if (pickup_fixture(game,player)) return GroundAction::Interact;
     Item incoming = reachable_pickup_item(game,player);
     if (incoming.kind == ItemKind::None) return item_can_drop(*player.inventory.held()) ? GroundAction::Drop : GroundAction::None;
     Inventory candidate = player.inventory;

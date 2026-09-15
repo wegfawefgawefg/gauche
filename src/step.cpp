@@ -2,6 +2,7 @@
 #include "props/conveyor.hpp"
 #include "items/borrowed_summer.hpp"
 #include "game.hpp"
+#include "run/offers.hpp"
 #include "entities/echo_hound.hpp"
 #include "surfaces/interaction.hpp"
 #include "surfaces/temperature.hpp"
@@ -24,7 +25,8 @@ bool step_interlude(Game& game, const std::array<Input, 4>& inputs) {
                     player->inventory.selected = inputs[owner].select;
                 drop_player_item(game, *player);
             } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                choose_reward(game, static_cast<int>(owner), inputs[owner].select);
+                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
+            if (game.run.phase!=RunPhase::Reward) break;
         }
         return true;
     }
@@ -36,7 +38,7 @@ bool step_interlude(Game& game, const std::array<Input, 4>& inputs) {
                     player->inventory.selected = inputs[owner].select;
                 drop_player_item(game, *player);
             } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                buy_shop_item(game, static_cast<int>(owner), inputs[owner].select);
+                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
             if (inputs[owner].confirm) game.run.shop_ready[owner] = true;
         }
         advance_run(game);
@@ -62,9 +64,10 @@ void step_players(Game& game, const std::array<Input, 4>& inputs) {
                     player->inventory.selected = inputs[owner].select;
                 drop_player_item(game, *player);
             } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                choose_pending_reward(game, static_cast<int>(owner), inputs[owner].select);
+                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
             continue;
         }
+        if (inputs[owner].offer_token!=0) { cancel_item_action(*player); continue; }
         step_player(game, handle.slot, inputs[owner]);
     }
 }

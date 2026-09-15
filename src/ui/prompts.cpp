@@ -1,5 +1,6 @@
 #include "prompts.hpp"
 #include "text.hpp"
+#include "../input.hpp"
 #include <algorithm>
 #include <cmath>
 
@@ -44,4 +45,12 @@ float draw_prompt(SDL_Renderer* renderer, float x, float y, const InputPrompt& p
 void draw_action_hint(SDL_Renderer* renderer, float x, float y, Action action, std::string_view label) {
     const float width = draw_prompt(renderer, x, y, action_prompt(action));
     small_ui_text(renderer, x+width+5, y+2, label, 218, 198, 152);
+}
+
+void draw_modal_hint(SDL_Renderer* renderer, float x, float y, bool cancel, std::string_view label) {
+    const InputPrompt prompt=controller_input_active() ?
+        pad_button_prompt(cancel ? SDL_GAMEPAD_BUTTON_EAST : SDL_GAMEPAD_BUTTON_SOUTH) :
+        InputPrompt{cancel ? "Esc" : "Enter",false};
+    const float width=draw_prompt(renderer,x,y,prompt);
+    small_ui_text(renderer,x+width+5,y+2,label,218,198,152);
 }

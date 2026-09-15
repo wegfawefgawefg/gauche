@@ -266,7 +266,7 @@ void host_step(NetSession& session, Input local_input) {
     confirm_host_current(session.rollback);
     PacketWriter packet = begin_packet(WireKind::Canonical);
     packet.u32(session.timeline_revision);
-    const std::size_t count = std::min<std::size_t>(6, session.rollback.frames.size());
+    const std::size_t count = std::min(canonical_frames_per_packet, session.rollback.frames.size());
     packet.u8(static_cast<std::uint8_t>(count));
     for (std::size_t index = session.rollback.frames.size() - count;
          index < session.rollback.frames.size(); ++index) {

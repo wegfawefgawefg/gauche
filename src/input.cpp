@@ -49,8 +49,7 @@ void default_binds(BindsProfile& profile) {
     bind(profile, GubsyButton::GP_Y, Action::Inventory);
     bind(profile, GubsyButton::GP_BACK, Action::CompactDetails);
     bind(profile, GubsyButton::GP_RIGHT_STICK_BUTTON, Action::Compare);
-    bind(profile, GubsyButton::GP_B, Action::Reload);
-    bind(profile, GubsyButton::GP_A, Action::Interact);
+
     bind(profile, GubsyButton::GP_A, Action::Confirm);
     bind(profile, GubsyButton::GP_LEFT_SHOULDER, Action::PreviousSlot);
     bind(profile, GubsyButton::GP_RIGHT_SHOULDER, Action::NextSlot);
@@ -61,6 +60,9 @@ void default_binds(BindsProfile& profile) {
     (void)ginput::add_axis_1d_bind(profile,
         ginput::Axis1DBind{static_cast<int>(Gubsy1DAnalog::GP_RIGHT_TRIGGER), 0,
                            1.0F, 0.1F});
+
+    (void)ginput::add_axis_1d_bind(profile,
+        {static_cast<int>(Gubsy1DAnalog::GP_LEFT_TRIGGER),1,1.0F,0.1F});
 
     constexpr GubsyButton numbers[]{GubsyButton::KB_1, GubsyButton::KB_2,
         GubsyButton::KB_3, GubsyButton::KB_4, GubsyButton::KB_5, GubsyButton::KB_6};
@@ -154,6 +156,7 @@ void register_game_bindings(GubsyRuntime& runtime) {
     schema.add_axis_2d(0, "Analog Move", "Movement");
     schema.add_axis_2d(1, "Analog Aim", "Combat");
     schema.add_axis_1d(0, "Use Trigger", "Combat");
+    schema.add_axis_1d(1, "Reload Trigger", "Combat");
     gubsy_register_binds_schema(runtime, schema);
 
     const BindsProfile* existing = nullptr;
@@ -171,9 +174,16 @@ void register_game_bindings(GubsyRuntime& runtime) {
             ginput::button_binds_for_action(*existing, action_id(Action::Compare)).empty();
         const bool missing_details =
             ginput::button_binds_for_action(*existing, action_id(Action::CompactDetails)).empty();
-        if (old_controller || old_drop || missing_compare || missing_details) {
+        const bool old_faces=has_bind(*existing,GubsyButton::GP_B,Action::Reload) &&
+                             has_bind(*existing,GubsyButton::GP_A,Action::Interact);
+        if (old_controller || old_drop || missing_compare || missing_details || old_faces) {
             BindsProfile migrated = *existing;
             if (old_controller) migrate_old_controller_defaults(migrated);
+            if (old_faces) {
+                (void)ginput::remove_button_bind(migrated,{static_cast<int>(GubsyButton::GP_B),action_id(Action::Reload)});
+                (void)ginput::remove_button_bind(migrated,{static_cast<int>(GubsyButton::GP_A),action_id(Action::Interact)});
+                (void)ginput::add_axis_1d_bind(migrated,{static_cast<int>(Gubsy1DAnalog::GP_LEFT_TRIGGER),1,1.0F,0.1F});
+            }
             (void)ginput::remove_button_bind(migrated,
                 {static_cast<int>(GubsyButton::KB_Q), action_id(Action::Drop)});
             (void)ginput::remove_button_bind(migrated,
@@ -243,7 +253,9 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
     if (analog_aim != Cell{}) input.aim = analog_aim;
     input.pickup = down(runtime, Action::Pickup);
     input.drop = down(runtime, Action::Drop);
-    input.reload = down(runtime, Action::Reload);
+    input.reload = down(runtime, Action::Reload) ||
+        gubsy_lobby_player_axis_1d_down(runtime,0,1,
+            tuning==nullptr ? 0.35F : std::max(0.01F,tuning->trigger_threshold));
     input.interact = down(runtime, Action::Interact) && !input.pickup;
     input.confirm = down(runtime, Action::Confirm);
     for (int index = 0; index < quick_slots; ++index)

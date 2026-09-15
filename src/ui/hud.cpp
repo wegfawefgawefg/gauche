@@ -120,10 +120,11 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     Item ground = pointer.inside ? pickup_item_at(game,pointer.cell) : Item{};
     if (ground.kind == ItemKind::None) ground = reachable_pickup_item(game,player);
     const GroundAction action = ground_action(game, player);
+    const Entity* fixture=action==GroundAction::Interact ? pickup_fixture(game,player) : nullptr;
     if (action != GroundAction::None)
         draw_action_hint(renderer, width * .5F - 90, height - 74, Action::Pickup,
             action == GroundAction::Drop ? "DROP HELD" : action == GroundAction::Swap ? "SWAP HELD" :
-            action == GroundAction::Blocked ? "PACK FULL" : "PICK UP");
+            action == GroundAction::Blocked ? "PACK FULL" : fixture ? pickup_fixture_label(game,*fixture) : "PICK UP");
     if (const Entity* sled=ridden_sled(game,player)) {
         draw_action_hint(renderer,width*.5F-90,height-106,Action::Reload,"BRAKE / DISMOUNT");
         small_ui_text(renderer,width*.5F-90,height-92,sled->label_a==0 ? "SLED STOPPED / MOVE TO STEER" : "SLED COASTING / HEADING LOCKED",180,195,195);

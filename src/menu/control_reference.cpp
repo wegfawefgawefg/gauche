@@ -29,9 +29,11 @@ void control_reference(gauche_menu::ViewBuilder& ui, std::string_view parent,
         bind(Action::MoveDown) + " " + bind(Action::MoveRight));
     row("aim", "Aim", pad ? stick_prompt(1, id).label : "Mouse");
     row("use", "Use / draw bow", bind(Action::Use));
-    row("pickup", "Pick up / drop / swap", bind(Action::Pickup));
+    row("pickup", "Pick up / interact / drop / swap", bind(Action::Pickup));
     row("reload", "Reload / secondary", bind(Action::Reload));
-    row("interact", "Interact", bind(Action::Interact));
+    if (!pad) row("interact", "Interact", bind(Action::Interact));
+    row("confirm", "Menu confirm", pad ? pad_button_prompt(SDL_GAMEPAD_BUTTON_SOUTH).label : "Enter");
+    row("cancel", "Menu cancel", pad ? pad_button_prompt(SDL_GAMEPAD_BUTTON_EAST).label : "Esc");
     row("inventory", "Inventory", bind(Action::Inventory));
     row("compare", "Compare", bind(Action::Compare));
     row("details", "Item details", bind(Action::CompactDetails));

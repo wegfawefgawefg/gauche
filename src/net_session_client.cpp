@@ -24,7 +24,7 @@ void receive_welcome(NetSession& session, PacketReader& reader) {
 void receive_canonical(NetSession& session, PacketReader& reader) {
     const std::uint32_t revision = reader.u32();
     const std::uint8_t count = reader.u8();
-    if (count == 0 || count > 8) return;
+    if (count == 0 || count > canonical_frames_per_packet) return;
     std::vector<CanonicalFrame> frames;
     frames.reserve(count);
     for (int index = 0; index < count; ++index) frames.push_back(read_frame(reader));
@@ -42,8 +42,8 @@ void receive_correction(NetSession& session, PacketReader& reader) {
     const std::uint16_t chunks = reader.u16();
     const std::uint8_t count = reader.u8();
     if (id == 0 || id <= session.last_correction_id || id <= session.last_snapshot_id ||
-        revision < session.timeline_revision || chunks == 0 || chunks > 15 ||
-        index >= chunks || count == 0 || count > 8) return;
+        revision < session.timeline_revision || chunks == 0 || chunks > max_correction_chunks ||
+        index >= chunks || count == 0 || count > canonical_frames_per_packet) return;
     std::vector<CanonicalFrame> frames;
     frames.reserve(count);
     for (int offset = 0; offset < count; ++offset) frames.push_back(read_frame(reader));

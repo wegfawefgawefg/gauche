@@ -10,6 +10,7 @@
 #include "crystal_gallery.hpp"
 #include "boiler_room.hpp"
 #include "sluice.hpp"
+#include "salvage.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
 #include "../entities/seal_thief.hpp"
@@ -388,7 +389,17 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     spawn_entity(game, game.run.objective == ObjectiveKind::Key ? EntityKind::Key : EntityKind::Switch, objective);
     spawn_entity(game, EntityKind::Door, plan.door);
     spawn_entity(game, EntityKind::Exit, game.run.exit);
-    place_ground_item(game, game.run.spawn + Cell{0, 2}, ItemKind::Stick);
+    if (forest_floor(game.run.floor))
+        place_ground_item(game,game.run.spawn+Cell{0,2},ItemKind::Stick);
+    else {
+        // Reserve one ordinary equipment slot for a native combat tool before
+        // situational role supplies can consume the floor's entire budget.
+        const ItemKind weapon=roll_item_supply(game,LootSource::Weapon,false);
+        if (weapon!=ItemKind::None) {
+            place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
+            --budget.equipment;
+        }
+    }
     // Reserve crew budget before incidental encounters consume it.
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::Workfront && budget.threat>=5) {
@@ -413,10 +424,12 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             }
             if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
         }
+    bool salvage=false;
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;
         place_sluice_chamber(game,plan,room);
+        if (!salvage) salvage=place_salvage_pocket(game,plan,room);
         encounter(game, plan, room, budget);
         place_crystal_vein(game,plan,room);
         room_loot(game, room, budget);
@@ -428,7 +441,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
         supply(game, shrine, ItemKind::Bandage, 2, budget.healing);
         if (before == budget.healing) break;
     }
-    if (budget.equipment > 0) supply(game, shrine, ItemKind::Bow, 1, budget.equipment);
+    if (budget.equipment > 0) {
+        const ItemKind weapon=roll_item_supply(game,LootSource::Weapon,false);
+        if (weapon!=ItemKind::None) supply(game,shrine,weapon,supply_count(weapon),budget.equipment);
+    }
     if (budget.ammunition > 0) supply(game, shrine, ItemKind::Ammo, 1, budget.ammunition);
     while (budget.stashes > 0) {
         const int before = budget.stashes;

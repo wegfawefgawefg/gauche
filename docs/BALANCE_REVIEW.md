@@ -4,6 +4,31 @@
 Execution status lives in [MASTER_TASKS.md](MASTER_TASKS.md). This specification
 extends the [world interaction review](WORLD_INTERACTION_REVIEW.md).
 
+## Latest priority: worthwhile things to do in Ice and Industry
+
+The user's latest playtesting finds Ice and Industry/lava **barebones and boring
+compared with Forest**, which feels good. Catalog counts are not a substitute for
+interesting spaces and encounters. Resume game content after the bounded music
+pass; do not keep generating music indefinitely while these areas remain thin.
+
+There are too many items whose main identity is feeding something or clearing a
+very short, narrow status effect. The user still welcomes useless/joke finds
+(Pressure Valve was their example), but wants enough strong, broadly useful toys
+alongside them. Do not solve this by deleting all oddities or multiplying every
+item's damage. Audit actual frequency, slot cost, encounter value and the ratio
+of general-purpose gear to special-case items in the player's real supply.
+
+Fishing Line is specifically **fun to operate but lacks useful targets/situations**.
+Give existing toys worthwhile applications in the world: safely retrieving loot,
+traversing meaningful optional barriers, manipulating an encounter, accessing a
+reward, or combining with another item. A new tool and a new room should improve
+one another. Avoid another catalog of clever implementation with little reason
+for players to use it. Review repeated feed/remedy designs before adding more.
+
+First response: [optional salvage and native combat supplies](history/SALVAGE_POCKETS.md).
+This is an initial connection between existing systems, not completion of the
+Ice/Industry content-density or utility review.
+
 First implementation pass: [native supply/ammo/fist changes](history/SUPPLY_BALANCE.md).
 The starting-point findings below describe the pre-change behavior. Availability,
 SMG reserves/refills, general consumable bundles and baseline Fist are now changed;

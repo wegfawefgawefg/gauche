@@ -2,7 +2,7 @@
 #include "../game.hpp"
 
 enum class ItemOrigin { Shared, Forest, Ice, Industrial };
-enum class LootSource { Reward, Shop, Weapon, Cache, Secret, Workshop };
+enum class LootSource { Reward, Shop, Weapon, Cache, Secret, Workshop, Salvage };
 struct ItemSupply {
     ItemKind kind;
     ItemOrigin origin;

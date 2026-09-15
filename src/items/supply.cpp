@@ -19,16 +19,19 @@ Item supply_item(ItemKind kind) { return make_item(kind,supply_count(kind)); }
 ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import, ItemKind exclude) {
     // IMPORTS: One explicit chance per eligible offer/cache, not a shared fallback
     // full of stronger guns. Workshops always supply their own available tools.
-    const bool imported=allow_import && source!=LootSource::Workshop &&
+    const bool salvage=source==LootSource::Salvage;
+    const bool imported=allow_import && source!=LootSource::Workshop && !salvage &&
         random_u32(game)%(source==LootSource::Secret ? 500U : 2000U)==0;
     const Biome biome=floor_biome(game.run.floor);
-    const int stage=biome_stage(game.run.floor)+(source==LootSource::Secret ? 1 : 0);
-    const unsigned mask=1U<<static_cast<unsigned>(source);
+    const int stage=biome_stage(game.run.floor)+(source==LootSource::Secret || salvage ? 1 : 0);
+    // SALVAGE: Dangerous optional caches draw from the master weapon membership,
+    // with a one-stage preview and rarity weighting. Never a duplicate loot list.
+    const unsigned mask=1U<<static_cast<unsigned>(salvage ? LootSource::Weapon : source);
     const auto weight=[&](ItemKind kind, bool foreign) {
         const auto& entry=item_supply(kind);
         if (kind==exclude || (entry.sources&mask)==0 || entry.weight<=0 ||
             native_supply(kind,biome)==foreign || (!foreign && entry.stage>stage)) return 0;
-        return source==LootSource::Secret ? 12/entry.weight : entry.weight;
+        return source==LootSource::Secret || salvage ? 12/entry.weight : entry.weight;
     };
     // FALLBACK: A source without eligible imports still produces native content.
     for (int attempt=0;attempt<(imported ? 2 : 1);++attempt) {

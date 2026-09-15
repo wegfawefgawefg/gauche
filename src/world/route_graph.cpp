@@ -102,6 +102,11 @@ void describe_rooms(Game& game, FloorPlan& plan) {
             room.half_width = std::max(room.half_width,8);
             room.half_height = std::max(room.half_height,7);
         }
+        if (room.role==RoomRole::FishingHut) {
+            room.shape=RoomShape::Clearing;
+            room.half_width=std::max(room.half_width,8);
+            room.half_height=std::max(room.half_height,7);
+        }
         if (room.role == RoomRole::Bathhouse) room.shape = RoomShape::Courtyard;
         if (room.role == RoomRole::EchoTunnel) room.shape = RoomShape::BentHall;
         if (room.role == RoomRole::CrystalGallery) room.shape = RoomShape::Clearing;

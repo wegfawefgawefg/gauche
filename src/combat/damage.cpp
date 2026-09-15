@@ -1,3 +1,4 @@
+#include "../items/action.hpp"
 #include "../entities/mine_crew.hpp"
 #include "../game.hpp"
 #include "../entities/ember.hpp"
@@ -38,6 +39,10 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    // The overhead press swing is deliberately vulnerable; a blocked hit never
+    // reaches this path. An interrupted windup spends no tool condition.
+    if (entity.kind == EntityKind::Player && entity.label_b < 0 &&
+        entity.ground_item.kind == ItemKind::PressHammer) cancel_item_action(entity);
     hurt_mine_worker(game,slot,damage,attacker);
     interrupt_stoker(entity);
     interrupt_powder_monkey(entity);

@@ -104,12 +104,12 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | # | Item | Action, cost, failure or tradeoff; sound | Rarity / price |
 | --- | --- | --- | --- |
 | 1 | Rivet gun | Three-round traveling burst, 9 damage/rivet to 8; 12 loaded/24 spare, 1.5s reload. Stops at bodies, passes grates. Pneumatic rattle. | U / 30 |
-| 2 | Press hammer | 0.6s overhead windup, 32 damage and one-cell shove; 30 condition. Heavy swings crack slag and folded cover; easy to interrupt. Iron thud. | U / 25 |
+| 2 | Press hammer | Implemented: 0.6s overhead windup, 32 damage and one-cell shove; 30 repairable condition. Double damage to blocking props; dig power 1 preserves reinforced routes. Taking damage cancels the windup without wear. Iron thud. | U / 25 |
 | 3 | Arc torch | Hold to charge 0.3s, then adjacent 7-damage electric ticks every 0.25s; 8s total battery. Water/wire endangers the user. No instant full-room beam. Electrical spit. | R / 38 |
 | 4 | Slag scoop | Collect one safe crust/ash patch, or scoop a hot patch while taking a little heat unless protected. Holds three loads; secondary flings the oldest material to 3. Metal scrape, granular pour. | C / 10 |
 | 5 | Chain hook | Traveling hook to 5 catches a prop/cart and pulls it one cell per held beat; anchored targets pull the user instead. 24 casts, blocked lanes cut the line. Chain whip. | U / 22 |
 | 6 | Quarry charge | Implemented: place facing ordinary stone. Three-second fuse cuts up to three forward cells; 24 damage along the cut, at the charge and one cell behind. Stack 3. Dig-power-2 reinforcement, other materials and outer boundaries stop it. Water quenches into a recoverable charge; cold slows the fuse. No modifiers. Fuse scratch, deep crack. | U / 19 |
-| 7 | Rubber mallet | 0.15s swing, 3 damage, strong one-cell shove, 70 condition. Can settle a rattling machine without cutting it. Hollow rubber knock. | C / 9 |
+| 7 | Rubber mallet | Implemented: 0.15s swing, 3 damage and one-cell shove; 70 repairable condition. Tap a boiler to shed 40 pressure without cutting it or spending fuel; below 25 cancels its tell. Sealed outlets refuse. Shoving into a wall can crush. Hollow rubber knock. | C / 9 |
 | 8 | Bolt pouch | Fling five 2-damage bolts in a short fan; three handfuls. Bolts are cosmetic after impact; spent ammo is not infinitely recoverable. Tin scatter. | C / 7 |
 | 9 | Steam lance | Fill at fresh water, heat at a furnace; spends one fill on a two-cell 18-damage steaming thrust. Cold thrust only wets. Reusable, long 0.45s windup. Valve hiss. | U / 24 |
 | 10 | Nail board | 10-damage melee board, 35 condition; secondary lays it as a recoverable 16-damage ground trap, hurting the next grounded entrant including its owner. Flying enemies ignore it. Wood slap, nail crunch. | C / 11 |

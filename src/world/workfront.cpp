@@ -54,5 +54,8 @@ int populate_workfront(Game& game,const RoomPlan& room) {
     if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-5,2},ItemKind::ForemanWhistle);
     if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-5,1},ItemKind::QuarryCharge,2);
     if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-6,1},ItemKind::FuseScissors);
+    const auto tool_roll=random_u32(game)%4;
+    if (tool_roll<2) place_ground_item(game,room.center+Cell{-6,2},
+        tool_roll==0 ? ItemKind::PressHammer : ItemKind::RubberMallet);
     return 4;
 }

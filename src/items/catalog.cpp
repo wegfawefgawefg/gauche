@@ -40,7 +40,10 @@
 #include "ice_footing.hpp"
 #include "ice_projectiles.hpp"
 
+#include "industrial_melee.hpp"
+
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=industrial_melee_item(kind)) return item;
     if (const auto* item=quarry_charge_item(kind)) return item;
     if (const auto* item=fuse_scissors_item(kind)) return item;
     if (const auto* item=foreman_whistle_item(kind)) return item;

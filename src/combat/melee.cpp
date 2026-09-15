@@ -1,3 +1,4 @@
+#include "../items/industrial_melee.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "../entities/attacks.hpp"
@@ -37,7 +38,9 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if (tile == nullptr) break;
             if (item.kind == ItemKind::SkateBlade && !clear_attack_sight(game,origin,cell,false)) break;
             const bool blocked = !walkable(*tile);
+            const bool solid_contact = blocked || tile->prop.hp > 0;
             int prop_damage = pattern.damage;
+            if (item.kind == ItemKind::PressHammer && prop_blocks(tile->prop)) prop_damage *= 2;
             if (item.kind == ItemKind::Chisel && tile->prop.kind == PropKind::IceBlock) prop_damage *= 2;
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog))
@@ -51,12 +54,23 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if (hit >= 0 && hit != user_slot && !hit_once[static_cast<std::size_t>(hit)]) {
                 Entity& target = game.entities[static_cast<std::size_t>(hit)];
                 hit_once[static_cast<std::size_t>(hit)] = true;
+                // MACHINERY: A valve tap is a pressure interaction, not a blow
+                // followed by healing. Even an empty boiler cannot be cut by it.
+                if (item.kind == ItemKind::RubberMallet && tap_boiler(game,hit)) {
+                    emit_sound(game,SoundId::MalletImpact,cell);
+                    struck = true;
+                    if (!pattern.piercing) break;
+                    continue;
+                }
                 const bool blocked_hit = blocks_facing(target, origin);
-                emit_sound(game, item.kind == ItemKind::SkateBlade ? SoundId::SkateCut : SoundId::Punch1, cell);
+                emit_sound(game, item.kind == ItemKind::PressHammer ? SoundId::PressImpact :
+                    item.kind == ItemKind::RubberMallet ? SoundId::MalletImpact :
+                    item.kind == ItemKind::SkateBlade ? SoundId::SkateCut : SoundId::Punch1, cell);
                 damage_entity(game, hit, contact_damage(item, target, origin, pattern.damage), origin);
                 if (!blocked_hit && (item.flame_ticks > 0 || item.kind == ItemKind::Torch))
                     ignite_struck_actor(game, hit);
-                if (item.kind == ItemKind::WoodenMaul && !blocked_hit && target.health > 0)
+                if ((item.kind == ItemKind::WoodenMaul || item.kind == ItemKind::PressHammer ||
+                     item.kind == ItemKind::RubberMallet) && !blocked_hit && target.health > 0)
                     shove_actor(game, hit, direction, origin);
                 struck = true;
                 if (!pattern.piercing) break;
@@ -65,6 +79,9 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 pattern.damage * 2 : item.kind == ItemKind::Hatchet && wooden_terrain(*tile) ?
                 pattern.damage * 3 : pattern.damage;
             struck |= hit_terrain(game, cell, origin, terrain_damage, item.dig_power);
+            if (hit < 0 && solid_contact &&
+                (item.kind == ItemKind::PressHammer || item.kind == ItemKind::RubberMallet))
+                emit_sound(game,item.kind == ItemKind::PressHammer ? SoundId::PressImpact : SoundId::MalletImpact,cell);
             // CONTACT: An unsuccessful wall blow still costs its attack beat.
             struck |= blocked;
             if (blocked) break;

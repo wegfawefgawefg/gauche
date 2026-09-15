@@ -310,6 +310,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = use_eel_battery(game, user_slot, direction);
         cooldown = item_pattern(item).cooldown;
         break;
+    case ItemKind::PressHammer: case ItemKind::RubberMallet:
     case ItemKind::SkateBlade: case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
@@ -441,6 +442,11 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         case ItemKind::BearTrap: case ItemKind::Mine:
             emit_sound(game, SoundId::BlockLand, target); break;
         default: break;
+        }
+        if ((used_kind == ItemKind::PressHammer || used_kind == ItemKind::RubberMallet) && --item.durability <= 0) {
+            emit_sound(game,SoundId::WoodCrack,user.cell);
+            item = {};
+            return true;
         }
         if ((used_kind == ItemKind::SkateBlade || used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
             emit_sound(game, used_kind == ItemKind::SkateBlade ? SoundId::SkateBreak : used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);

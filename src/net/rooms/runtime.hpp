@@ -32,7 +32,7 @@ struct RoomRuntime {
     bool busy = false, active = false, host = false, cancel = false;
     std::string url, code, member, secret, token, name;
     MatchmakingRoom metadata;
-    std::uint64_t next_heartbeat_ms = 0;
+    std::uint64_t next_heartbeat_ms = 0, next_browse_ms = 0;
 };
 
 RoomResult perform_room_request(const RoomRequest& request);

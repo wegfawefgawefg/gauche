@@ -34,10 +34,13 @@ it does not claim that the missing integration is complete.
 ## Native room playtesting route
 
 Both players build the same revision (`libcurl4-openssl-dev` is now required on
-Debian/Ubuntu). Open **Play → Online Rooms**. Enter your name, host a room, and
-share its six-character code. The friend can refresh the room list or enter the
-code, then join and ready up; the host starts the run. Automatic connection tries
-punching before relay. Force Relay is available for connection diagnosis.
+Debian/Ubuntu). Open **Play → Host Game**. A generated name is filled in automatically (editable
+with a Shuffle button). Name the room, host it, and
+share its six-character code. The friend opens **Play → Join Game**, selects the room from the automatically
+refreshed public list or enters its code, then readies up; the host starts the run. Automatic connection tries
+punching before relay. Force Relay and direct IP/port entry live under **Advanced Connection Options**.
+See [Local Multiplayer Workshop](LOCAL_MULTIPLAYER.md) for four-window, split
+workspace and headless-bot launch scripts.
 
 The [public dashboard](https://45.77.123.14/) lists public rooms and refreshes every
 two seconds. The service setup, private credential locations and operation are

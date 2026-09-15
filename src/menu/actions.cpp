@@ -75,7 +75,12 @@ void back(MenuShell& menu) {
     case MenuScreen::Lobby:
         if (gubsy_get_lobby_state(*menu.runtime).online) leave_session(menu);
         show_menu_screen(page, MenuScreen::Main); break;
-    case MenuScreen::Rules: case MenuScreen::Host: case MenuScreen::Join:
+    case MenuScreen::DirectHost: case MenuScreen::DirectJoin:
+        show_menu_screen(page, MenuScreen::NetworkOptions); break;
+    case MenuScreen::Host:
+        if (menu.rooms.busy) leave_room_session(menu);
+        show_menu_screen(page, MenuScreen::Lobby); break;
+    case MenuScreen::Rules: case MenuScreen::NetworkOptions: case MenuScreen::Join:
     case MenuScreen::Players: show_menu_screen(page, MenuScreen::Lobby); break;
     case MenuScreen::Player: show_menu_screen(page, MenuScreen::Players); break;
     case MenuScreen::Settings: show_menu_screen(page, page.settings_return); break;
@@ -226,6 +231,11 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
         if (!set_controller_icons(next)) page.toast = "Could not save controller icon preference";
         page.dirty = true; return;
     }
+    if (action == "join" || action == "rooms") {
+        show_menu_screen(page, MenuScreen::Rooms);
+        room_action(menu, "room:browse"); return;
+    }
+    if (action == "host") page.room_status.clear();
     if (action == "play") { show_menu_screen(page, MenuScreen::Lobby); return; }
     if (action == "quick") { start_local(menu); return; }
     if (action == "quit") { menu.quit_requested = true; return; }
@@ -239,7 +249,9 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
     constexpr struct { std::string_view action; MenuScreen screen; } screens[]{
         {"players", MenuScreen::Players}, {"rules", MenuScreen::Rules},
         {"rooms", MenuScreen::Rooms}, {"party", MenuScreen::Party},
-        {"host", MenuScreen::Host}, {"join", MenuScreen::Join},
+        {"host", MenuScreen::Host}, {"join", MenuScreen::Rooms},
+        {"direct-host", MenuScreen::DirectHost}, {"direct-join", MenuScreen::DirectJoin},
+        {"network-options", MenuScreen::NetworkOptions},
         {"display", MenuScreen::Display}, {"audio", MenuScreen::Audio},
         {"controls", MenuScreen::Controls},
     };

@@ -72,7 +72,7 @@ std::filesystem::path user_data_root() {
     return result;
 }
 
-GubsyAppConfig app_config() {
+GubsyAppConfig app_config(int argc, char** argv) {
     GubsyAppConfig config;
     config.enable_mods = false;
     config.project_root = GAUCHE_SOURCE_DIR;
@@ -86,6 +86,12 @@ GubsyAppConfig app_config() {
     config.resizable_window = true;
     config.apply_display_settings = true;
     config.draw_fps_overlay = false;
+    if (const auto title = value_arg(argc, argv, "--window-title"); !title.empty()) config.window_title = title;
+    if (const auto width = number_arg(value_arg(argc, argv, "--window-width")); width && *width > 0) {
+        config.window_width = *width;
+        config.window_height = number_arg(value_arg(argc, argv, "--window-height")).value_or(540);
+        config.apply_display_settings = false;
+    }
     return config;
 }
 

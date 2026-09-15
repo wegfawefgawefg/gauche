@@ -12,7 +12,7 @@
 struct GameAudio;
 
 enum class MenuScreen {
-    Main, Lobby, Rules, Host, Join, Rooms, Party, Players, Player, Settings, Display, Audio,
+    Main, Lobby, Rules, Host, Join, Rooms, Party, DirectHost, DirectJoin, NetworkOptions, Players, Player, Settings, Display, Audio,
     Controls, ProfileEditor, Bindings, BindDetail, BindChoices, InputOptions,
     Pause, Death, Victory,
 };

@@ -29,25 +29,24 @@ void main_page(ViewBuilder& ui) {
 
 void lobby_page(ViewBuilder& ui, const FrontPage& page, int death_policy) {
     const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
-    frame(ui, "Custom Game", 840.0F, 615.0F);
-    const std::string status = lobby.last_error.empty() ?
-        (lobby.online ? (lobby.is_host ? "Hosting · " + lobby.advertised_endpoint :
-                        "Joined · " + lobby.status_message) : "Offline lobby") :
-        "Error · " + lobby.last_error;
-    ui.label("card", "status", status, 32.0F, 16.0F);
-    button(ui, "players", "Players  ·  " + std::to_string(lobby.local_players.size()) +
-           " local  ·  " + std::to_string(lobby.game_members.size()) + " remote", "players");
+    frame(ui, "Play", 710, 550);
+    if (page.room_active) {
+        button(ui, "party", "Return to Party", "party", 52);
+        button(ui, "leave", "Leave Room", "leave");
+    } else if (lobby.online) {
+        button(ui, "start", "Start Direct Game", "start", 52);
+        button(ui, "leave", "Leave Direct Session", "leave");
+    } else {
+        button(ui, "host", "Host Game", "host", 52);
+        button(ui, "join", "Join Game", "join", 52);
+        button(ui, "start", "Play Locally", "start", 46);
+    }
     constexpr const char* policies[]{"Next Floor", "Entrance", "No Respawn"};
     button(ui, "rules", std::string{"Game Rules  ·  "} +
-           policies[std::clamp(death_policy, 0, 2)], "rules");
-    button(ui, "online-rooms", page.room_active ? "Return to Party" : "Online Rooms",
-           page.room_active ? "party" : "rooms");
-    if ((!lobby.online || lobby.is_host) && !page.room_active)
-        button(ui, "host", lobby.online ? "Host Details" : "Host Game", "host");
-    if (!lobby.online) button(ui, "join", "Join Game", "join");
-    if (lobby.online) button(ui, "leave", "Leave Session", "leave");
-    if (!page.room_active) button(ui, "start", lobby.online ? "Start Hosted Run" : "Start Local Game", "start");
-    footer(ui, "players");
+           policies[std::clamp(death_policy, 0, 2)], "rules", 40);
+    button(ui, "players", "Player Setup", "players", 40);
+    button(ui, "network-options", "Advanced Connection Options", "network-options", 34);
+    footer(ui, page.room_active ? "party" : (lobby.online ? "start" : "host"));
 }
 
 void rules_page(ViewBuilder& ui, int policy) {
@@ -61,9 +60,9 @@ void rules_page(ViewBuilder& ui, int policy) {
     footer(ui, "policy-0");
 }
 
-void host_page(ViewBuilder& ui, const FrontPage& page) {
+void direct_host_page(ViewBuilder& ui, const FrontPage& page) {
     const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
-    frame(ui, "Host Game", 700.0F, 410.0F);
+    frame(ui, "Direct Host (LAN / IP)", 700.0F, 410.0F);
     ui.label("card", "host-help", lobby.online ? "Direct session is open" :
              "Open a direct UDP session for your friends.", 38.0F, 16.0F);
     ui.text_input("card", "host-port", "Port", "host-port", "menu", 48.0F);
@@ -73,9 +72,9 @@ void host_page(ViewBuilder& ui, const FrontPage& page) {
     footer(ui, "host-port");
 }
 
-void join_page(ViewBuilder& ui, const FrontPage& page) {
+void direct_join_page(ViewBuilder& ui, const FrontPage& page) {
     const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
-    frame(ui, "Join Game", 700.0F, 430.0F);
+    frame(ui, "Direct Join (LAN / IP)", 700.0F, 430.0F);
     ui.label("card", "join-help", lobby.direct_join_pending ? "Connecting to host…" :
              "Enter the host's address and UDP port.", 38.0F, 16.0F);
     ui.text_input("card", "join-host", "Host address", "join-host", "menu", 48.0F);
@@ -202,8 +201,11 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
     case MenuScreen::Rules: rules_page(ui, death_policy); break;
     case MenuScreen::Rooms: rooms_page(ui, page); break;
     case MenuScreen::Party: party_page(ui, page); break;
-    case MenuScreen::Host: host_page(ui, page); break;
-    case MenuScreen::Join: join_page(ui, page); break;
+    case MenuScreen::Host: online_host_page(ui, page); break;
+    case MenuScreen::DirectHost: direct_host_page(ui, page); break;
+    case MenuScreen::DirectJoin: direct_join_page(ui, page); break;
+    case MenuScreen::NetworkOptions: network_options_page(ui, page); break;
+    case MenuScreen::Join: rooms_page(ui, page); break;
     case MenuScreen::Players: players_page(ui, page); break;
     case MenuScreen::Player: player_page(ui, page); break;
     case MenuScreen::Settings: settings_page(ui); break;

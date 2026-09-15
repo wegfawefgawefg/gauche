@@ -14,4 +14,4 @@ std::optional<int> number_arg(std::string_view text);
 std::optional<float> decimal_arg(std::string_view text);
 DeathPolicy requested_death_policy(int argc, char** argv);
 std::filesystem::path user_data_root();
-GubsyAppConfig app_config();
+GubsyAppConfig app_config(int argc = 0, char** argv = nullptr);

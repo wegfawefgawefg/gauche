@@ -1,4 +1,5 @@
 #include "runtime.hpp"
+#include "names.hpp"
 #include "../../menu_shell.hpp"
 #include "../../menu/actions.hpp"
 #include "../party.hpp"
@@ -70,6 +71,7 @@ void configure_traversal(MenuShell& menu, const RoomResult& result) {
 void complete_request(MenuShell& menu, RoomResult result) {
     auto& room = menu.rooms;
     if (!result.okay) {
+        room.next_browse_ms = network_clock_ms() + 5000;
         menu.front.room_status = result.error.empty() ? "Room request failed" : result.error;
         if (result.operation == RoomOperation::Create || result.operation == RoomOperation::Attempt)
             leave_network_game(*menu.network);
@@ -83,6 +85,7 @@ void complete_request(MenuShell& menu, RoomResult result) {
     case RoomOperation::Browse:
         menu.front.rooms = std::move(result.rooms);
         menu.front.room_page = 0;
+        room.next_browse_ms = network_clock_ms() + 5000;
         menu.front.room_status = menu.front.rooms.empty() ? "No public Gauche rooms" : "Choose a room or enter its code";
         break;
     case RoomOperation::Create:
@@ -129,12 +132,18 @@ void complete_request(MenuShell& menu, RoomResult result) {
 
 void load_room_preferences(MenuShell& menu) {
     std::ifstream input(std::filesystem::path(menu.identity_path).parent_path() / "rooms.json");
-    if (!input) return;
-    auto data = nlohmann::json::parse(input, nullptr, false);
-    if (!data.is_object()) return;
-    if (data.contains("url") && data["url"].is_string()) menu.front.room_url = data["url"];
-    if (data.contains("name") && data["name"].is_string()) menu.front.player_name = data["name"];
-    if (data.contains("room") && data["room"].is_string()) menu.front.room_name = data["room"];
+    if (input) {
+        auto data = nlohmann::json::parse(input, nullptr, false);
+        if (data.is_object()) {
+            if (data.contains("url") && data["url"].is_string()) menu.front.room_url = data["url"];
+            if (data.contains("name") && data["name"].is_string()) menu.front.player_name = data["name"];
+            if (data.contains("room") && data["room"].is_string()) menu.front.room_name = data["room"];
+        }
+    }
+    if (menu.front.player_name.empty() || menu.front.player_name == "Player") {
+        menu.front.player_name = random_room_player_name();
+        save_preferences(menu);
+    }
 }
 
 void shutdown_room_session(MenuShell& menu) {
@@ -160,6 +169,10 @@ bool room_action(MenuShell& menu, std::string_view action) {
     auto& room = menu.rooms;
     auto& page = menu.front;
     if (!action.starts_with("room:")) return false;
+    if (action == "room:shuffle-name") {
+        page.player_name = random_room_player_name(); save_preferences(menu);
+        page.dirty = true; return true;
+    }
     if (action == "room:leave") { leave_room_session(menu); return true; }
     if (action == "room:next" || action == "room:previous") {
         const int last = std::max(0, (static_cast<int>(page.rooms.size()) - 1) / 4);
@@ -258,7 +271,14 @@ void update_room_session(MenuShell& menu) {
         else { room.active = false; room.code.clear(); }
         return;
     }
-    if (!room.active) return;
+    if (!room.active) {
+        if (page.screen == MenuScreen::Rooms && menu.front_visible &&
+            network_clock_ms() >= room.next_browse_ms) {
+            room.next_browse_ms = network_clock_ms() + 5000;
+            room_action(menu, "room:browse");
+        }
+        return;
+    }
     if (!room.host && menu.network->ready && room.member.empty() && !room.token.empty()) {
         submit(room, request_for(room, RoomOperation::Finalize)); return;
     }

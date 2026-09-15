@@ -7,43 +7,63 @@
 
 using namespace gauche_menu;
 
-void rooms_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Online Rooms", 1080, 700);
-    ui.layout_container("card", "rooms-body", glayout::ContainerKind::Row,
-        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Fill, 1}, 24);
-    for (const char* pane : {"room-connect", "room-browser"}) {
-        ui.layout_container("rooms-body", pane, glayout::ContainerKind::Column,
-            {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Fill, 1}, 8);
-        ui.scrolling(pane);
-    }
-    const auto action = [&](const char* pane, std::string id, std::string label,
-                            std::string command, float height = 42) {
-        ui.button(pane, id, std::move(label), std::move(command), "menu", height);
-        ui.spec(id).text_style.size = 19 * ui.scale();
-    };
-    ui.text_input("room-connect", "player-name", "Your name", "player-name", "menu", 40);
-    ui.text_input("room-connect", "room-name", "New room name", "room-name", "menu", 40);
-    action("room-connect", "room-create", "Host a New Room", "room:create");
-    ui.text_input("room-connect", "room-code", "Six-character room code", "room-code", "menu", 40);
-    action("room-connect", "room-join", "Join by Code", "room:join");
-    ui.text_input("room-connect", "room-url", "Room service", "room-url", "menu", 40);
-    action("room-connect", "room-relay", std::string("Connection  ·  ") +
-        (page.force_relay ? "Force relay" : "Automatic"), "room:relay", 36);
-    action("room-browser", "room-refresh", "Refresh Public Rooms", "room:browse");
-    const int first = page.room_page * 4;
-    for (int i = first; i < std::min(first + 4, static_cast<int>(page.rooms.size())); ++i) {
-        const auto& room = page.rooms[static_cast<std::size_t>(i)];
-        action("room-browser", "listed-room-" + room.room_code,
-            room.session_name + "  ·  " + room.host_name + "  ·  " +
-            std::to_string(room.current_players) + "/" + std::to_string(room.max_players) +
-            "  ·  " + room.room_code, "room:code:" + room.room_code, 58);
-    }
-    if (page.rooms.size() > 4) {
-        action("room-browser", "rooms-previous", "Previous rooms", "room:previous", 32);
-        action("room-browser", "rooms-next", "More rooms", "room:next", 32);
-    }
-    ui.label("card", "room-status", page.room_status, 42, 15);
+namespace {
+void player_name_row(ViewBuilder& ui) {
+    ui.layout_container("card", "name-row", glayout::ContainerKind::Row,
+        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Pixels, 44}, 12);
+    ui.text_input("name-row", "player-name", "Your name", "player-name", "menu", 44);
+    ui.layout("player-name").size.width = {glayout::LengthKind::Fill, 1};
+    ui.button("name-row", "shuffle-name", "Shuffle", "room:shuffle-name", "menu", 44);
+    ui.layout("shuffle-name").size.width = {glayout::LengthKind::Pixels, 128 * ui.scale()};
+}
+}
+
+void online_host_page(ViewBuilder& ui, const FrontPage& page) {
+    frame(ui, "Host Game", 720, 465);
+    ui.label("card", "host-help", "Friends can find your game in Join Game or use its room code.", 46, 17);
+    player_name_row(ui);
+    ui.text_input("card", "room-name", "Room name", "room-name", "menu", 46);
+    button(ui, "room-create", page.room_busy ? "Creating room…" : "Host Game", "room:create", 52);
+    ui.label("card", "room-status", page.room_status, 40, 15);
     footer(ui, "room-create");
+}
+
+void rooms_page(ViewBuilder& ui, const FrontPage& page) {
+    frame(ui, "Join Game", 850, 690);
+    player_name_row(ui);
+    ui.layout_container("card", "join-code-row", glayout::ContainerKind::Row,
+        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Pixels, 44}, 12);
+    ui.text_input("join-code-row", "room-code", "Room code", "room-code", "menu", 44);
+    ui.layout("room-code").size.width = {glayout::LengthKind::Fill, 1};
+    ui.button("join-code-row", "room-join", "Join by Code", "room:join", "menu", 44);
+    ui.layout("room-join").size.width = {glayout::LengthKind::Pixels, 190 * ui.scale()};
+    ui.label("card", "browser-heading", "Public Games", 30, 22);
+    ui.layout_container("card", "room-list", glayout::ContainerKind::Column,
+        {glayout::LengthKind::Fill, 1}, {glayout::LengthKind::Fill, 1}, 10);
+    ui.scrolling("room-list");
+    if (page.rooms.empty()) ui.label("room-list", "empty-rooms",
+        page.room_busy ? "Looking for games…" : "No public games yet. Ask your friend to host one.", 54, 17);
+    for (const auto& room : page.rooms) {
+        const std::string id = "listed-room-" + room.room_code;
+        ui.button("room-list", id, room.session_name + "  ·  " + room.host_name + "  ·  " +
+            std::to_string(room.current_players) + "/" + std::to_string(room.max_players) + " players",
+            "room:code:" + room.room_code, "menu", 54);
+        ui.spec(id).text_style.size = 19 * ui.scale();
+    }
+    button(ui, "room-refresh", "Refresh", "room:browse", 36);
+    ui.label("card", "room-status", page.room_status, 38, 15);
+    footer(ui, page.rooms.empty() ? "room-code" : "listed-room-" + page.rooms.front().room_code);
+}
+
+void network_options_page(ViewBuilder& ui, const FrontPage& page) {
+    frame(ui, "Advanced Connection Options", 750, 470);
+    ui.label("card", "advanced-help", "Normal hosting and joining handle connections automatically.", 44, 17);
+    ui.text_input("card", "room-url", "Room service", "room-url", "menu", 44);
+    button(ui, "room-relay", std::string("Connection  ·  ") +
+        (page.force_relay ? "Force relay" : "Automatic"), "room:relay", 42);
+    button(ui, "direct-host", "Host by IP / LAN", "direct-host", 42);
+    button(ui, "direct-join", "Join by IP / LAN", "direct-join", 42);
+    footer(ui, "room-url");
 }
 
 void party_page(ViewBuilder& ui, const FrontPage& page) {

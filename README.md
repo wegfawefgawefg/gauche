@@ -85,3 +85,8 @@ ctest --test-dir build-release --output-on-failure
 ```
 
 The detailed source comparison and design decisions are in [the port plan](docs/PORT_PLAN.md). The [forest content sketch](docs/FOREST_CONTENT_IDEAS.md) is an idea pool, not a promise that every listed item is implemented.
+
+For a controllable host plus three local bots, run `./scripts/multiplayer.sh`.
+See [the local multiplayer workshop](docs/LOCAL_MULTIPLAYER.md) for i3 layouts,
+headless clients, isolated profiles and logs. Normal internet play uses
+**Play → Host Game** / **Play → Join Game**, with no port entry required.

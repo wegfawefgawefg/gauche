@@ -4,6 +4,7 @@
 #include "graphics.hpp"
 #include "app/options.hpp"
 #include "debug/panels.hpp"
+#include "debug/multiplayer.hpp"
 #include "debug/playtest.hpp"
 #include "audio.hpp"
 #include "game.hpp"
@@ -34,10 +35,12 @@ constexpr double step_seconds = 1.0 / 60.0;
 } // namespace
 
 int main(int argc, char** argv) {
+    if (has_arg(argc, argv, "--headless")) return run_headless_client(argc, argv);
+    MultiplayerDebug multiplayer;
     const bool smoke = wants_smoke(argc, argv);
     const bool border_smoke = has_arg(argc, argv, "--smoke-border");
     GubsyRuntime host;
-    if (!init_gubsy_runtime(host, app_config()) || !gubsy_init_sdl_renderer(host)) {
+    if (!init_gubsy_runtime(host, app_config(argc, argv)) || !gubsy_init_sdl_renderer(host)) {
         std::fprintf(stderr, "Gubsy host failed: %s\n", SDL_GetError());
         cleanup_gubsy_runtime(host);
         return 1;
@@ -145,7 +148,8 @@ int main(int argc, char** argv) {
         constexpr struct { std::string_view name; MenuScreen screen; } pages[]{
             {"main", MenuScreen::Main}, {"lobby", MenuScreen::Lobby},
             {"rules", MenuScreen::Rules}, {"host", MenuScreen::Host},
-            {"join", MenuScreen::Join}, {"players", MenuScreen::Players},
+            {"join", MenuScreen::Rooms}, {"rooms", MenuScreen::Rooms},
+            {"network", MenuScreen::NetworkOptions}, {"players", MenuScreen::Players},
             {"settings", MenuScreen::Settings}, {"display", MenuScreen::Display},
             {"audio", MenuScreen::Audio}, {"controls", MenuScreen::Controls},
             {"profile", MenuScreen::ProfileEditor}, {"bindings", MenuScreen::Bindings},
@@ -160,6 +164,7 @@ int main(int argc, char** argv) {
             menu.front.profile_name = gubsy_get_binds_profiles(host).front().name;
         }
     }
+    init_multiplayer_debug(multiplayer, menu, argc, argv);
     Game& opening_game = network.role != NetRole::Solo ? network.rollback.game : game;
     play_song(audio, opening_game.started ? 1 : 0);
     if (opening_game.started) {
@@ -194,6 +199,10 @@ int main(int argc, char** argv) {
         while (SDL_PollEvent(&event)) {
             const bool editing_menu_text = menu.front_visible && menu.front.text_input_active;
             const bool capturing_bind = menu.front_visible && menu.front.capturing_bind;
+            if (multiplayer.bot && (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN ||
+                event.type == SDL_EVENT_GAMEPAD_BUTTON_UP || event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION ||
+                event.type == SDL_EVENT_KEY_DOWN || event.type == SDL_EVENT_KEY_UP ||
+                event.type == SDL_EVENT_MOUSE_BUTTON_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_UP)) continue;
             observe_input_device(event);
             gubsy_process_sdl_event(host, event);
             if (debug_event(event)) continue;
@@ -276,6 +285,7 @@ int main(int argc, char** argv) {
         const GubsyFrame menu_frame = gubsy_get_frame(host);
         update_menu_shell(menu, menu_input, smoke ? 1.0F / 60.0F : static_cast<float>(std::min(elapsed, .1)),
                           menu_frame.render_width, menu_frame.render_height);
+        update_multiplayer_debug(multiplayer, menu);
         process_playtest_requests(menu);
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
@@ -301,7 +311,7 @@ int main(int argc, char** argv) {
             if (ready && active.started && !active.game_over && simulating) {
                 std::array<Input, 4> inputs{};
                 for (Input& idle : inputs) idle.cancel_use = true;
-                if (!smoke && menu.playing && !menu.visible && !debug_captures_input()) {
+                if (!multiplayer.bot && !smoke && menu.playing && !menu.visible && !debug_captures_input()) {
                     Input& local = inputs[static_cast<std::size_t>(owner)];
                     local = read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
                                              camera_for(cosmetics, active, owner), input_reader);
@@ -309,6 +319,7 @@ int main(int argc, char** argv) {
                     local.cancel_use |= cancel_pending_use;
                     cancel_pending_use = false;
                 }
+                if (multiplayer.bot) inputs[static_cast<std::size_t>(owner)] = multiplayer_bot_input(multiplayer, active, owner);
                 if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
                 else step_solo_game(game, inputs);
                 const Entity* listener = get_entity(active,
@@ -413,7 +424,7 @@ int main(int argc, char** argv) {
         gubsy_present_frame(host);
         ++frames;
         if (!smoke) {
-            const int cap = gubsy_configured_frame_cap_fps(host);
+            const int cap = multiplayer.bot ? 30 : gubsy_configured_frame_cap_fps(host);
             if (cap > 0) {
                 const std::uint64_t target_ns = std::uint64_t{1'000'000'000} /
                     static_cast<std::uint64_t>(cap);

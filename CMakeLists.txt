@@ -143,7 +143,7 @@ set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/prop
 set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
 
 add_executable(gauche
-    src/main.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
+    src/main.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
     src/entities/shard_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
@@ -154,7 +154,7 @@ add_executable(gauche
     src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
-    src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
+    src/net/rooms/names.cpp src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
     src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp
     src/menu/actions.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3

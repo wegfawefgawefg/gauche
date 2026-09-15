@@ -128,26 +128,32 @@ general contact-shadow system and must retain its meaning.
 - Tall props: modest base contact and, where useful, a short directional silhouette.
   Falls may use an explicit impact warning alongside the animated shadow. Never
   rely on a faint atmospheric shadow as the only warning for instant crushing.
-- Loose debris: initially omit shadows on flat leaves, footprints, stains, petals
-  and tiny casings. Try a tiny contact mark on chunky rocks/wood or visibly bouncing
-  fragments only. Avoid making every scrap seem to hover or adding ground noise.
+- Loose debris: try tiny contact marks on sticks, twigs, selected leaves, casings
+  and other small scraps as well as chunky/bouncing pieces. Small size alone is
+  not a reason to exclude something. Compare styles and choose by appearance;
+  not every scrap needs one. Footprints and flat stains do not need shadows.
 - Smoke, flames, glows, flat surface effects and UI are not automatically shadow
   casters. Distant/offscreen/occluded objects should not reveal themselves through
   a detached shadow. Clip to appropriate visible ground; handle water and pits
   deliberately rather than painting onto nonexistent floor.
 
+Follow-up direction: these are stylized depth/height cues and can ignore lighting
+entirely. No source-light search, raycasts or per-light geometry is required. An
+optional strength adjustment using an already-available tile light value would
+be cheap, but is not physical cast-shadow computation and is not a requirement.
+Preserve ordinary world visibility/layering without coupling the marks to lights.
+
 Use a shared ground-shadow pass with simple style/footprint/height inputs and
 explicit opt-outs, not bespoke code for every enemy. Reuse/batch a few small
-shapes and cull offscreen work. Drawing every piece of debris adds overdraw and
-cost even if each individual shadow is cheap. Avoid new shadow raycasts per item
-or per-light silhouette geometry in the first pass; existing world lighting and
-occlusion still apply. Contact shadows are an art approximation, not a substitute
-for light-source-aware cast shadows.
+shapes and cull offscreen work. Be willing to try generous populations of tiny
+sprites; do not reject the look based on hypothetical performance concerns.
+Measure the actual renderer on representative scenes if cost becomes relevant,
+rather than promising an unmeasured hundreds-of-thousands-per-frame capacity.
 
 Keep shadow darkness restrained under Gauche's already-dark lighting and bound
 overlapping darkness where necessary. Prototype an ImGui toggle and static paired
-captures: lit floor, deep shade, clutter, flying actor, raised item and falling log.
-Compare readability and render cost before expanding coverage. Cosmetic shadow
+captures: lit floor, deep shade, clutter including small sticks/leaves, flying
+actor, raised item and falling log. Judge appearance first. Cosmetic shadow
 state stays local; height/fall state affecting gameplay remains authoritative.
 
 Water/ice reflections remain exploratory polish. Start with a clipped reflected

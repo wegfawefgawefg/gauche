@@ -270,8 +270,11 @@ behavior and balance playtesting remain the user's.
   Fifteen cold room roles host twenty enemy types, including [shard colonies](history/ICE_SHARDS.md),
   [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Regional items include
   [observatory optics](history/ICE_OPTICS.md). Twenty of twenty enemy behaviors, fifty of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](history/STORM_LANTERN.md) and [Echo Pebble](history/ICE_ECHO_PEBBLE.md) add directional light and recorded lures; [Harpoon Gun](history/ICE_HARPOON.md) adds traveling shots and held reeling. [Doorstops and sluices](history/ICE_SLUICES.md) add reusable gate jamming and reservoir chambers. [Borrowed Summer](history/BORROWED_SUMMER.md) adds moving warmth with shared thaw/fuel/enemy reactions. [Heat Siphon](history/HEAT_SIPHON.md) transfers finite fire/fuel into reusable flame charges. [Thaw Charges](history/THAW_CHARGE.md) open ice routes with a sealed fuse and dangerous steam. [Folded Bridges](history/FOLDED_BRIDGE.md) add burnable, individually breakable water crossings. [Tuning Forks](history/TUNING_FORK.md) shatter crystal veins and disrupt shard nodes through connected crystal. [Stillwater Bells](history/STILLWATER_BELL.md) calm stream currents, floating cargo and slippery ground. [Effigy Masks](history/EFFIGY_MASK.md) add a stationary rear gaze with finite wear, sharing effigy sight and cover rules. [Ice Anchors](history/ICE_ANCHOR.md) add breakable retreat points and real-cell tether returns. [Snow Shelters](history/SNOW_SHELTER.md) add two-section low cover, shared thawing and overhead throw rules. [Sleds](history/SLED.md) carry riders and loose cargo at real gameplay positions, with stopped steering, braking, recoverable wear and wood/fire interactions. Twenty Ice debris materials are implemented.
-- [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
-  that biome's blend as the catalog takes shape.
+- [x] Design a full industrial / mine / lava catalog to the same quotas.
+  See [the Underworks catalog](content/INDUSTRIAL.md): working mines and foundries,
+  twenty enemies, fifty regional finds, themed containers, eighteen room roles,
+  twenty debris materials and twenty ambient sources. These are design targets;
+  implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava
   catalog.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,

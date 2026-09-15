@@ -24,7 +24,7 @@ or sounds already exist. The current generator and content set are a prototype.
 | --- | --- |
 | Forest | Woods, grassy caves, animals, camps, canopy light, old structures. |
 | Ice | Cold terrain and encounters with their own hazards and room language. |
-| Industrial / mine / lava | Machinery, tunnels, heat, molten terrain; exact blend open. |
+| Industrial / mine / lava | The Underworks: still-working mines and foundries; excavation crews, heat, pressure and material transport. See [catalog](content/INDUSTRIAL.md). |
 | Fourth biome | Military / robot area is a candidate, **not decided**. |
 
 Desired progression is **Forest → Ice → Industrial/mine/lava → fourth biome**.

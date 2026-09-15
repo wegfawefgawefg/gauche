@@ -1,3 +1,4 @@
+#include "items/sled.hpp"
 #include "items/snow_shelter.hpp"
 #include "items/stillwater_bell.hpp"
 #include "items/tuning_fork.hpp"
@@ -337,6 +338,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         used = fire_weapon(game, user_slot, direction, item);
         return used;
     case ItemKind::IceAnchor: return false; // Placement/reeling belongs to the player action.
+    case ItemKind::Sled:
+        used=place_sled(game,user_slot,direction,item);
+        cooldown=item_pattern(item).cooldown;
+        break;
     case ItemKind::SnowShelter:
         used=place_snow_shelter(game,user_slot,direction);
         cooldown=item_pattern(item).cooldown;

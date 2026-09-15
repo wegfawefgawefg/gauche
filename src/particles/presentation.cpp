@@ -1,3 +1,4 @@
+#include "../items/sled.hpp"
 #include "../scenery/ice_render.hpp"
 #include "system.hpp"
 #include "gunfire.hpp"
@@ -100,8 +101,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         ++pose.steps;
         if (surface_wet(game.stage.at_or_border(entity.cell)) && wading_actor(entity))
             spawn_water_rings(cosmetics, entity.cell, true);
-        else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
-            entity.kind == EntityKind::ZombieStack)
+        else if (!ridden_sled(game,entity) && (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
+            entity.kind == EntityKind::ZombieStack))
             spawn_footprint(cosmetics, entity.cell, entity.kind,
                             (pose.steps & 1U) != 0, seed);
         pose.angle = static_cast<float>(visual_bits(seed) % 31U) - 15.0F;

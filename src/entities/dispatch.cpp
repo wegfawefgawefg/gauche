@@ -1,3 +1,4 @@
+#include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "dispatch.hpp"
 #include "gate.hpp"
@@ -51,6 +52,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::BellDiver: init_bell_diver(entity); break;
     case EntityKind::RimeSkater: init_rime_skater(entity); break;
     case EntityKind::PocketDoor: init_pocket_door(entity); break;
+    case EntityKind::Sled: init_sled(entity); break;
     case EntityKind::IceAnchor: init_ice_anchor(entity); break;
     case EntityKind::WaspNest: init_wasp_nest(entity); break;
     case EntityKind::Wasp: init_wasp(entity); break;
@@ -95,7 +97,8 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::IceAnchor: step_ice_anchor(game,slot); break;
-    case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::Sled: step_sled(game,slot); break;
+    case EntityKind::GroundItem: step_sled_cargo(game,slot); step_floating_item(game, slot); break;
     case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
     case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
     case EntityKind::IcicleSpider: step_icicle_spider(game,slot); break;

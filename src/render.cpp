@@ -183,7 +183,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (layer == 0) draw_gate(renderer,graphics,entity,camera,zoom,lighting);
             continue;
         }
-        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::IceAnchor || entity.kind == EntityKind::PocketDoor ||
+        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::Sled || entity.kind == EntityKind::IceAnchor || entity.kind == EntityKind::PocketDoor ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
             entity.kind == EntityKind::WaveVent ? 0 :
@@ -237,6 +237,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         for (int body = 0; body < bodies; ++body) {
             SDL_FRect body_rect = rect;
             double angle = pose != nullptr && pose->seen ? pose->angle : 0.0;
+            if (entity.kind==EntityKind::Sled) angle=entity.facing.x>0 ? 0 : entity.facing.x<0 ? 180 : entity.facing.y>0 ? 90 : -90;
             if (eats_meat(entity.kind) && entity.label_b == 1) {
                 body_rect.h *= .88F; body_rect.y += pixels * .12F;
                 angle += std::sin(static_cast<double>(game.tick % 60) * .65) * 7;

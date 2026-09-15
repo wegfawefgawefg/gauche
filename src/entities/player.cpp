@@ -1,3 +1,4 @@
+#include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "dispatch.hpp"
 #include "../items/effigy_mask.hpp"
@@ -35,7 +36,8 @@ void init_player(Entity& entity) {
     insert_item(entity.inventory, make_item(ItemKind::Bandage, 2));
 }
 
-void step_player(Game& game, int slot, const Input& input) {
+void step_player(Game& game, int slot, const Input& incoming) {
+    Input input=incoming;
     Entity& player = game.entities[static_cast<std::size_t>(slot)];
     if (input.select >= 0 && input.select < quick_slots) {
         if (input.select != player.inventory.selected) player.block_ticks = 0;
@@ -43,6 +45,7 @@ void step_player(Game& game, int slot, const Input& input) {
     }
     if (input.cancel_use || input.pickup || input.drop || input.interact) player.block_ticks = 0;
 
+    sled_player_input(game,slot,input);
     move_player(game, slot, input.move);
     // AIM: Explicit aim overrides movement, including an unsuccessful step.
     player.facing = facing_from_aim(input.aim, player.facing);

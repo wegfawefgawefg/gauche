@@ -1,3 +1,4 @@
+#include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
 #include "../items/effigy_mask.hpp"
 #include "../items/thaw_charge.hpp"
@@ -64,6 +65,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::None) return;
     step_vital_effects(game, slot);
     contact_surface(game, slot);
+    sled_contact(game,slot);
     step_keeper_lamp(game, slot);
     if (entity.kind == EntityKind::BoilerTank && entity.health > 0) step_boiler_tank(game,slot);
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
@@ -78,7 +80,7 @@ void step_entity_timers(Game& game, int slot) {
         if (game.tick % 30 == 0)
             damage_entity(game, slot, 2, entity.cell, false);
         if (entity.health > 0 && entity.scorch_ticks > 0 && game.tick % 90 == 0)
-            emit_sound(game, SoundId::FirePanic, entity.cell);
+            emit_sound(game, entity.kind==EntityKind::Sled ? SoundId::SledBurn : SoundId::FirePanic, entity.cell);
     }
     if (entity.burn_ticks > 0) {
         --entity.burn_ticks;

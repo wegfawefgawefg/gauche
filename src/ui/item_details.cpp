@@ -302,7 +302,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind==ItemKind::EffigyMask) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.kind==ItemKind::HeatSiphon) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::IceAnchor) {
+    if (item.kind == ItemKind::Sled) {
+        draw_action_hint(renderer,x+10,y+127,Action::Reload,"BRAKE / DISMOUNT");
+    } else if (item.kind == ItemKind::IceAnchor) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"RECOVER WITHIN 1 CELL");
     } else if (item.kind == ItemKind::EffigyMask) {
         draw_action_hint(renderer,x+10,y+127,Action::Use,"HOLD STILL / REAR GAZE");

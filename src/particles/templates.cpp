@@ -154,6 +154,10 @@ void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,
 void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
                         std::uint64_t seed) {
     switch (sound.sound) {
+    case SoundId::SledBreak:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::WoodChip,7,seed);
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::RopeFiber,3,seed+1);
+        break;
     case SoundId::SpiderCut: case SoundId::SpiderCatch: case SoundId::SpiderBurn:
         spray(cosmetics,sound.cell,seed,5,Sprite::DebrisRopeFiber,.055F,.004F);
         break;

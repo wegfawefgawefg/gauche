@@ -1,3 +1,4 @@
+#include "sled.hpp"
 #include "ground_interaction.hpp"
 #include "../props/doorstop.hpp"
 #include "pressure.hpp"
@@ -27,10 +28,13 @@ Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
     const Item wedge = recoverable_doorstop(prop);
     if (wedge.kind != ItemKind::None) return wedge;
     const Item spike = recoverable_spike(prop);
-    return spike.kind != ItemKind::None ? spike : removable_valve(game,cell);
+    if (spike.kind != ItemKind::None) return spike;
+    const Item valve=removable_valve(game,cell);
+    return valve.kind!=ItemKind::None ? valve : recoverable_sled(game,cell);
 }
 
 int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
+    if (kind == ItemKind::Sled) return release_sled(game,cell);
     if (kind == ItemKind::GroundingSpike) return release_grounding_spike(game,cell,player.cell);
     if (kind == ItemKind::EmergencyDoorstop) return release_doorstop(game,cell,player.cell);
     if (kind == ItemKind::PressureValve) return release_valve(game,cell,player.cell);

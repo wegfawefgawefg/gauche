@@ -1,3 +1,4 @@
+#include "../items/sled.hpp"
 #include "panel.hpp"
 #include "../items/fire_render.hpp"
 #include "presentation.hpp"
@@ -123,6 +124,10 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_action_hint(renderer, width * .5F - 90, height - 74, Action::Pickup,
             action == GroundAction::Drop ? "DROP HELD" : action == GroundAction::Swap ? "SWAP HELD" :
             action == GroundAction::Blocked ? "PACK FULL" : "PICK UP");
+    if (const Entity* sled=ridden_sled(game,player)) {
+        draw_action_hint(renderer,width*.5F-90,height-106,Action::Reload,"BRAKE / DISMOUNT");
+        small_ui_text(renderer,width*.5F-90,height-92,sled->label_a==0 ? "SLED STOPPED / MOVE TO STEER" : "SLED COASTING / HEADING LOCKED",180,195,195);
+    }
     if (ground.kind == ItemKind::None) return;
     const char* label = "GROUND";
     if (compact_details)

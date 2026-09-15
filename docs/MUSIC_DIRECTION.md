@@ -27,6 +27,12 @@ MASTER_TASKS.md remains the execution checklist.
 - The fourth biome's musical identity follows its eventual world identity;
   military/robot remains provisional. Forest, Ice and Underworks should each
   have their own harmonic, rhythmic and instrumental character.
+- Industry instrumentation candidates from the user: drums, war drums and horns.
+  Explore their weight and pulse without requiring every passage to be a march.
+- Use a full tonal range: deep frequencies, substantial middle voices such as
+  cellos, and higher detail. The score should not become exclusively small,
+  bright plucked sounds. Let low strings, bass and sustained voices carry phrases
+  as well as lighter instruments; these are options, not a mandatory orchestra.
 
 ## User-supplied references
 
@@ -40,6 +46,9 @@ Local folder: `/home/vega/Music/samples/`. Files found:
 - `Spyro 2 - Summer Forest.mp4`
 
 These filenames have been inventoried; their audio has **not yet been analyzed**.
+Keep the samples available as ongoing inspiration and return to them selectively
+while composing. The user explicitly says there is no need to investigate all
+tracks now or make reference analysis a prerequisite to writing music.
 Only audio matters for this task. The user authorizes extracting/chopping study
 sections, examining waveforms, amplitude distributions and time/frequency plots
 at multiple resolutions, and consulting online descriptions when useful.
@@ -55,6 +64,9 @@ suitable tools/libraries and using instrument synthesis, analog-style synthesis,
 Python DSP, samplers or a mixed workflow. MIDI may be useful as a score/control
 format; default MIDI playback is not the intended final timbre. No obligation to
 use only sine waves, the current effects synth or an in-game procedural sequencer.
+MIDI itself is entirely optional: a simple text note notation or an iterated
+composition script is equally acceptable. Choose the representation that helps
+write and revise the music; no format/framework requirement should hold it up.
 
 Start with a representative Forest composition and a small set of timbral
 sketches, then develop the full arrangement before multiplying it across zones.
@@ -74,6 +86,11 @@ footsteps, environmental sources and menu cues intelligible. Measure current and
 new files for perceived loudness, peaks and clipping; set deliberate per-track
 gain rather than treating peak normalization as equal perceived volume.
 Keep the user's saved master/music/SFX sliders functional and unchanged.
+Respect dynamic range: preserve quiet passages, stronger swells, expressive
+attacks and decays. A quieter overall mix must still have body and contrast;
+avoid flattening everything into constant loudness. Full low-to-high frequency
+coverage and loud-to-quiet musical movement are both desired, but need not occur
+all at once throughout every passage.
 
 Add biome-aware selection with multiple tracks, avoiding immediate repeats,
 gentle transitions and stable playback across menus/rooms. Handle boss entry,
@@ -91,3 +108,6 @@ biome tracks, the new compositions and the new mixing policy remain unimplemente
 Use offline listening/render/analysis checks for production and the user's
 playtesting for whether it feels right in play. Finishing a render or hitting a
 duration target does not certify musical quality.
+The user will do repeated listening and give feedback; provide editable musical
+passes that can improve through those listens, rather than treating the first
+render as final.

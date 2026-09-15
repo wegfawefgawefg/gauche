@@ -388,7 +388,8 @@ behavior and balance playtesting remain the user's.
   [Nozzle Elbows](history/NOZZLE_ELBOW.md) redirect future boiler/pump jets, preserve warned aim, share removable fittings with Pressure Valves, and retain handedness/condition through pickup and salvage.
   [Mold Thieves and casting floors](history/MOLD_THIEF.md) add real loose-metal theft, interruptible sealing, reusable breakable molds, exact cargo salvage and eight-use keys in optional paired workstations.
   [Steam Lances](history/STEAM_LANCE.md) add refillable two-cell scalding thrusts, shared kettle heating/cooling, interruptible bracing and lamp-alcove water/stove supplies.
-  Eighteen catalog enemy behaviors and twenty-three of fifty regional items implemented;
+  [Tar Flasks and material states](history/TAR_FLASK.md) add traveling three-bottle bundles, sticky fuel, cold-hardened crust, washing/pump transfer and tar-lane kiln variants.
+  Eighteen catalog enemy behaviors and twenty-four of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

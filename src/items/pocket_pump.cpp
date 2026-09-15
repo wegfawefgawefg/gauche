@@ -23,6 +23,7 @@ bool valid_pocket_pump(const Item& item) {
 }
 const char* pump_contents(const Item& item) {
     switch (static_cast<LiquidKind>(item.loaded)) {
+    case LiquidKind::Tar: return "TAR";
     case LiquidKind::Oil: return "OIL";
     case LiquidKind::Sap: return "SAP";
     case LiquidKind::Water: return "WATER";

@@ -79,6 +79,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SnowSplat: case SoundId::CrossbowShot: case SoundId::BowRelease:
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
+    case SoundId::TarThrow: case SoundId::TarSplash: case SoundId::TarClot: case SoundId::TarSoften:
     case SoundId::BarricadeUnfold:
     case SoundId::LanceFill: case SoundId::LanceReady: case SoundId::LanceCool: case SoundId::LanceWindup: case SoundId::LancePour: case SoundId::LanceScald: case SoundId::LanceSplash:
     case SoundId::MoldTongs: case SoundId::MoldSnatch: case SoundId::MoldCrank: case SoundId::MoldSeal:

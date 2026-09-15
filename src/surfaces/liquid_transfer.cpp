@@ -5,7 +5,7 @@
 #include <algorithm>
 
 bool pumpable_liquid(LiquidKind kind) {
-    return kind==LiquidKind::Water || kind==LiquidKind::Oil || kind==LiquidKind::Sap ||
+    return kind==LiquidKind::Tar || kind==LiquidKind::Water || kind==LiquidKind::Oil || kind==LiquidKind::Sap ||
         kind==LiquidKind::Honey || kind==LiquidKind::Rot || kind==LiquidKind::Brine || kind==LiquidKind::Coolant;
 }
 bool pumpable_spill(const Tile& tile) {

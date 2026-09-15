@@ -77,6 +77,9 @@ bool warm_surface(Game& game, Cell cell, int ticks) {
     tile->surface.warmth_ticks = static_cast<std::uint16_t>(std::clamp(
         std::max(ticks, static_cast<int>(tile->surface.warmth_ticks)), 1, 240));
     if (leech_drains_cell(game, cell)) return true;
+    if (tile->surface.liquid==LiquidKind::ClottedTar && tile->surface.liquid_ticks>0) {
+        tile->surface.liquid=LiquidKind::Tar;emit_sound(game,SoundId::TarSoften,cell);
+    }
     clear_snow(game, cell);
     melt_ice_cover(game, cell);
     thaw_lunch_tin(game, cell);
@@ -91,6 +94,10 @@ bool freeze_water(Game& game, Cell cell, int ticks) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || ticks <= 0 || warm_cell(game, cell)) return false;
     if ((tile->surface.liquid == LiquidKind::Brine || tile->surface.liquid == LiquidKind::Coolant) && tile->surface.liquid_ticks > 0) return false;
+    if (tile->surface.liquid==LiquidKind::Tar && tile->surface.liquid_ticks>0) {
+        tile->surface.liquid=LiquidKind::ClottedTar;emit_sound(game,SoundId::TarClot,cell);
+        return true; // Cooling this material hardens it without creating a water tile.
+    }
     // MEMORY: Refresh temporary ice without forgetting the pool or diver hole beneath it.
     if (tile->kind != TileKind::Ice || tile->freeze_ticks == 0) {
         if (!shallow_water(tile->kind)) return false;

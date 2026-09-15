@@ -22,7 +22,8 @@ void assembly_supplies(Game& game,const RoomPlan& room) {
     place_ground_item(game,room.center+Cell{2,0},ItemKind::BrakeShoe);
     for (Cell offset:{Cell{-4,-3},Cell{4,3}}) {
         const Cell cell=room.center+offset;
-        if (live_belt(game.stage.at_or_border(cell).prop) && entity_at(game,cell,false)<0)
-            place_ground_item(game,cell,offset.x<0 ? ItemKind::BoltPouch : ItemKind::NailBoard,offset.x<0 ? 3 : 1);
+        if (!live_belt(game.stage.at_or_border(cell).prop) || entity_at(game,cell,false)>=0) continue;
+        const ItemKind cargo=offset.x>0 ? ItemKind::NailBoard : random_u32(game)%3==0 ? ItemKind::TarFlask : ItemKind::BoltPouch;
+        place_ground_item(game,cell,cargo,offset.x<0 ? 3 : 1);
     }
 }

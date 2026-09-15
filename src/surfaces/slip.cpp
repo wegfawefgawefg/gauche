@@ -4,7 +4,7 @@
 bool bare_ice(const Tile& tile) {
     const bool sticky = tile.surface.liquid_ticks > 0 &&
         (tile.surface.liquid == LiquidKind::Sap || tile.surface.liquid == LiquidKind::Honey ||
-         tile.surface.liquid == LiquidKind::SpentSap);
+         tile.surface.liquid == LiquidKind::SpentSap || tar_liquid(tile.surface.liquid));
     return tile.kind == TileKind::Ice && !tile.surface.gritted && !sticky;
 }
 

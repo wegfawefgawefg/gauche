@@ -107,7 +107,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/harpoon.cpp src/projectiles/harpoon.cpp
     src/items/doorstop.cpp src/props/doorstop.cpp src/entities/gate.cpp src/world/sluice.cpp
     src/items/circuits.cpp src/props/circuits.cpp
-    src/items/candles.cpp src/props/candle.cpp src/items/coal.cpp src/props/stove.cpp src/items/kettle.cpp src/items/heated_water.cpp src/items/steam_lance.cpp
+    src/items/candles.cpp src/props/candle.cpp src/items/coal.cpp src/props/stove.cpp src/items/kettle.cpp src/items/heated_water.cpp src/items/steam_lance.cpp src/items/tar_flask.cpp
     src/items/brine.cpp src/props/lunch_tin.cpp
     src/items/heat_capsule.cpp src/items/cold_flask.cpp src/items/air_bladder.cpp src/world/floating_items.cpp
     src/items/quarry_tools.cpp src/items/ice_brick.cpp src/projectiles/ice_brick.cpp

@@ -6,6 +6,7 @@
 namespace {
 LightColor liquid_color(LiquidKind kind) {
     switch (kind) {
+    case LiquidKind::Tar: return {.42F,.29F,.21F};
     case LiquidKind::Oil: return {.68F,.48F,.20F};
     case LiquidKind::Sap: case LiquidKind::Honey: return {.94F,.67F,.23F};
     case LiquidKind::Rot: return {.61F,.76F,.28F};

@@ -26,9 +26,10 @@ bool populate_kiln_court(Game& game,const FloorPlan& plan,const RoomPlan& room) 
         actor->facing={-sign,0};
         place_prop(game.stage,crate,PropKind::Crate);
         place_prop(game.stage,log,PropKind::RottenLog);
+        const LiquidKind fuel=random_u32(game)%2==0 ? LiquidKind::Tar : LiquidKind::Oil;
         for (int x=3;x<=5;++x) {
             Tile& tile=*game.stage.at(at(x,-3));
-            tile.surface.liquid=LiquidKind::Oil;tile.surface.liquid_ticks=1800;
+            tile.surface.liquid=fuel;tile.surface.liquid_ticks=1800;
         }
         const bool foam=random_u32(game)%2==0;
         place_ground_item(game,tool,foam ? ItemKind::EmergencyFoam : ItemKind::CoolantCan,foam ? 2 : 1);

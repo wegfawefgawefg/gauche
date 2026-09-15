@@ -61,7 +61,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     const Entity& owner = game.entities[static_cast<std::size_t>(owner_slot)];
     const bool bomb = item.kind == ItemKind::Bomb;
     const bool rocket = item.kind == ItemKind::RocketLauncher;
-    const bool flask = item.kind == ItemKind::BrineFlask || item.kind == ItemKind::ColdFlask || forest_material_item(item.kind) != nullptr;
+    const bool flask = item.kind == ItemKind::TarFlask || item.kind == ItemKind::BrineFlask || item.kind == ItemKind::ColdFlask || forest_material_item(item.kind) != nullptr;
     Entity* shot = get_entity(game, spawn_entity(game, EntityKind::Projectile, owner.cell));
     if (shot == nullptr) return false;
     const ItemPattern pattern = item_pattern(item);

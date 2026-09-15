@@ -49,6 +49,12 @@ bool pour_surface(Game& game, Cell cell, LiquidKind kind, int ticks) {
     } else if (surface_wet(*tile)) return false;
     surface.liquid = kind;
     surface.liquid_ticks = static_cast<std::uint16_t>(std::clamp(ticks, 0, 3600));
+    if (kind==LiquidKind::Tar && ticks>0) {
+        if (hot_cell(game,cell)) ignite_surface(game,cell);
+        else if (tile->kind==TileKind::Ice) {
+            surface.liquid=LiquidKind::ClottedTar;emit_sound(game,SoundId::TarClot,cell);
+        }
+    }
     return true;
 }
 
@@ -61,7 +67,7 @@ bool ignite_surface(Game& game, Cell cell) {
     if (tile->kind == TileKind::Wall && !wood) return false;
     Surface& surface = tile->surface;
     if (surface.fire_ticks > 0) return false;
-    const bool fuel = surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap;
+    const bool fuel = (surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap || tar_liquid(surface.liquid)) && surface.liquid_ticks>0;
     const bool lit = light_candle(game,cell) || light_stove(game,cell);
     if (!wood && !fuel && !dry_growth(tile->prop)) return lit;
     const bool cloth_only = tile->prop.covered && !wood && !fuel;
@@ -70,6 +76,10 @@ bool ignite_surface(Game& game, Cell cell) {
     surface.smoke_ticks = std::max<std::uint16_t>(surface.smoke_ticks, 100);
     if (surface.liquid == LiquidKind::Oil) surface.liquid_ticks = 240;
     if (surface.liquid == LiquidKind::Sap) surface.liquid_ticks = 360;
+    if (tar_liquid(surface.liquid)) {
+        surface.liquid=LiquidKind::Tar;
+        surface.fire_ticks=surface.liquid_ticks=std::min<std::uint16_t>(240,surface.liquid_ticks);
+    }
     emit_sound(game, SoundId::FireCatch, cell);
     return true;
 }
@@ -103,6 +113,8 @@ void contact_surface(Game& game, int slot) {
 }
 
 int surface_step_delay(const Tile& tile) {
+    if (tile.surface.liquid_ticks==0) return 0;
+    if (tile.surface.liquid==LiquidKind::Tar) return 12;
     return tile.surface.liquid == LiquidKind::Sap || tile.surface.liquid == LiquidKind::Honey || tile.surface.liquid == LiquidKind::SpentSap ? 8 : 0;
 }
 

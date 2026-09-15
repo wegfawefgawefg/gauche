@@ -1,0 +1,26 @@
+[Unit]
+Description=Gauche room directory, NAT rendezvous and relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gauche-roomd
+Group=gauche-roomd
+EnvironmentFile=/etc/gauche-roomd.env
+ExecStart=/opt/gauche-roomd/gubsy-roomd --host=${ROOMD_PUBLIC_IP} --port=8788 --punch-port=8789 --relay-port=8790 --relay
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=512M
+TasksMax=256
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target

@@ -42,8 +42,10 @@
 
 #include "industrial_melee.hpp"
 #include "rivet_gun.hpp"
+#include "belt_tools.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=belt_tool_item(kind)) return item;
     if (const auto* item=rivet_gun_item(kind)) return item;
     if (const auto* item=industrial_melee_item(kind)) return item;
     if (const auto* item=quarry_charge_item(kind)) return item;

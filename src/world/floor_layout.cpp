@@ -1,4 +1,5 @@
 #include "workfront.hpp"
+#include "assembly.hpp"
 #include "../items/ice_anchor.hpp"
 #include "route.hpp"
 #include "water.hpp"
@@ -45,6 +46,7 @@ void generate_world_floor(Game& game, FloorLayout layout) {
         place_water_scenes(game, plan);
         place_ice_terrain(game, plan);
         place_workfront_terrain(game,plan);
+        place_assembly_belts(game,plan);
         place_water_currents(game,plan);
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;

@@ -1,3 +1,5 @@
+#include "../props/conveyor.hpp"
+#include "../entities/attacks.hpp"
 #include "system.hpp"
 #include "../world/water.hpp"
 #include "../props/stove.hpp"
@@ -33,6 +35,17 @@ float ambient_source_gain(const AmbientSource& source, const Game& game, Cell li
     if (source.prop!=PropKind::None && (!tile || tile->prop.kind!=source.prop || tile->prop.broken)) return 0;
     // CONDITIONS: No humming empty tanks, frozen water loops or dead chimneys.
     switch (source.cue) {
+    case AmbientCue::BeltRollers: {
+        bool rolling=false;
+        for (int y=-8;y<=8 && !rolling;++y) for (int x=-8;x<=8 && !rolling;++x) {
+            const Cell section=cell+Cell{x,y};
+            const auto& prop=game.stage.at_or_border(section).prop;
+            rolling=live_belt(prop) && !(prop.variant&belt_manual) && prop.growth_ticks==0 &&
+                clear_sight(game,listener,section);
+        }
+        if (!rolling) return 0;
+        break;
+    }
     case AmbientCue::BoilerIdle: if (!owner || owner->counter_b<=0) return 0; break;
     case AmbientCue::ChimneyDraft: if (!tile || !stove_lit(tile->prop)) return 0; break;
     case AmbientCue::IceGroan: if (!tile || tile->kind!=TileKind::Ice) return 0; break;

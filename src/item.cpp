@@ -1,3 +1,4 @@
+#include "items/belt_tools.hpp"
 #include "items/foreman_whistle.hpp"
 #include "items/quarry_charge.hpp"
 #include "items/fuse_scissors.hpp"
@@ -114,6 +115,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::BeltCrank: case ItemKind::BrakeShoe:
+        used=use_belt_tool(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::QuarryCharge:
         used=place_quarry_charge(game,user_slot); cooldown=30; break;
     case ItemKind::FuseScissors:

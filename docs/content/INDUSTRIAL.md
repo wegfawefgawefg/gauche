@@ -3,8 +3,8 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, six regional items, metal cover/bins and five
-new catalog debris materials. Track implementation in `../MASTER_TASKS.md`.
+Strikebreaker escorts, Rivet Gunners, eight regional items, metal cover/bins,
+assembly-room conveyors, six native catalog debris materials and roller ambience. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -36,9 +36,12 @@ Ordinary heat is local, never a passive biome-wide health tax.
   to the bars. Bombs, rockets and larger thrown objects still collide. Mining
   crews can cut blocked routes; Press Hammers break the mesh quickly. Short
   partitions avoid protected routes. A grate is not a bridge.
-* Powered belts move grounded actors, loose gameplay items and pushable fixtures
-  one cell per beat. Flying enemies ignore them. Occupancy stops motion; no
-  hidden pushing chains, overlap, diagonal movement or collision-free conveyors.
+* Implemented powered belts carry grounded actors, real loose items and boiler
+  vessels one cell every 20 ticks. Flying actors, grip/root effects, other anchored
+  fixtures, sled-linked bodies/cargo and trains remain stationary. Occupancy is
+  captured before movement: no hidden pushing chains, overlap or corner cutting.
+  Hand cranks move connected manual runs once per turn; shoes jam a run for 6s.
+  Cart and sled transport remain follow-up work when those carrier rules are ready.
 * Cold stops small fires, cools marked workpieces and stalls hot mechanisms.
   Sudden cooling of a pressurized vessel gives a visible steam warning; it does
   not silently convert a cold flask into an immediate explosion.
@@ -66,7 +69,7 @@ assets to make, not substitutes using the current generic sounds.
 | 3 | Shift foreman | Implemented: 110 HP; surveys, whistles for 0.6s, then advances behind three linked pickhands in separate lanes. Attacking him or killing two crew members rallies surviving crew against the attacker. Points, whistle, three-part “hup” cadence. | Implemented workfront; single roll 25% Foreman's Whistle, next 25% 5–9 gold, otherwise nothing. Chalk drops await its item. |
 | 4 | Powder monkey | Implemented: 42 HP, two charges; finds reachable dry cover, lights a real 2s Quarry Charge, spends 0.4s placing it, then scrambles away. Killed/displaced carriers leave the same bomb at its original cell. Cold slows the fuse; water/scissors recover it. Empty monkeys flee and use a 0.4s, 6-damage swipe when cornered. Cork pop, panicked chatter and fast steps. | Implemented reserved blasting alcove with scissors; 25% one unspent quarry charge, next 15% fuse scissors, otherwise nothing. Already-armed charge is separate and persists. |
 | 5 | Rail shunter | 120 HP, slow; pushes a separate cart down an existing rail after ringing a bell for 0.8s. Cart stops at obstruction, hurts on collision, spills real cargo when broken. Cut the route, brake the cart or flank the worker. Hand bell, wheel squeal. | Freight junction; 20% brake shoe, 20% rail switch key, 20% 4–8 gold. |
-| 6 | Rivet gunner | Implemented: 64 HP; braces for 0.5s and fires three physical 9-damage rivets along a fixed lane, 0.15s apart. 1.5s reload; damage/displacement/control effects spoil the burst. Seeks reachable firing lanes and can use grates. Pneumatic pop, brace, reload and death sounds. | Blasting-alcove side posts where safe (ordinary room spawn otherwise), plus incidental Industrial encounters. One roll: 25% rivet gun, next 20% ammo. Full assembly-line room remains pending. |
+| 6 | Rivet gunner | Implemented: 64 HP; braces for 0.5s and fires three physical 9-damage rivets along a fixed lane, 0.15s apart. 1.5s reload; damage/displacement/control effects spoil the burst. Seeks reachable firing lanes and can use grates. Pneumatic pop, brace, reload and death sounds. | Blasting-alcove side posts where safe (ordinary room spawn otherwise), plus incidental Industrial encounters. One roll: 25% rivet gun, next 20% ammo. Assembly rooms now supply working belts, cranks and brakes. |
 | 7 | Magnet crane | 90-HP anchored machine; sweeps a visible lifting head toward loose metal, pauses 0.75s, then pulls the first marked target one cell. Can grab its own allies' shields; never deletes inventory. Break its chain, de-energize it or use nonmetal bait. Relay clack, rising coil hum. | Scrap yard; 25% horseshoe magnet, 20% copper wire. |
 | 8 | Slag snail | 96 HP; lays a short hot trail, retreats into its shell before a slow two-cell lunge. Cold turns its trail into safe brittle crust and exposes a vulnerable body for 2s. Shell scrape and wet furnace burble. | Slag bank; 30% cinder sausage, 15% refractory paste. |
 | 9 | Pressure rat | 22 HP; gnaws a leaky outlet, visibly inflates for 0.6s, then rockets in one cardinal direction until a wall. Pops in a small steam cross; cooling deflates it and removes the burst. Rubber squeak, kettle whistle. | Pipe crawl; 25% raw meat, 10% rubber hose. |
@@ -121,7 +124,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 12 | Survey chalk | Draw three bright floor marks per use, six uses. Allies see them; crew uses marked work fronts when idle. Washes away; does not reveal unseen rooms. Chalk squeak. | C / 5 |
 | 13 | Pocket drill | Hold 0.4s to start, then cut adjacent diggable rock every 0.2s while still; 6s battery. Loud and slower to retarget than a pick. Mechanical chatter. | U / 27 |
 | 14 | Fuse scissors | Implemented: snip the shortest landed exposed fuse at your feet or ahead; recover that exact bomb into the pack. A full pack, airborne/expired fuse or sealed Prism/Thaw Charge rejects it without spending. Twelve snips; Durable 24, Fragile 6. Also works on Bomb, Firecracker and Pitch Bomb. Metallic click. | C / 8 |
-| 15 | Brake shoe | Jam one adjacent belt/cart mechanism for 6s; can break under a heavy impact. Four shoes. Does not stop trains. Rubber drag. | C / 10 |
+| 15 | Brake shoe | Implemented for belts: jam one adjacent straight run for 6s, four shoes; a hit of at least 16 damage snaps its brake. Already-jammed runs refuse without spending. Does not stop trains. Cart interaction awaits carts. Rubber drag. | C / 10; assembly supply and Industrial stock/rewards |
 | 16 | Rail switch key | Rotate a nearby existing rail junction; twelve turns. Cannot conjure track or remotely turn occupied points under a cart. Lever clack. | C / 9 |
 | 17 | Horseshoe magnet | Hold to draw one loose metal item along a clear five-cell lane. Also attracts a nearby active crane head toward the user. 15s active wear. Low metallic tremolo. | U / 18 |
 | 18 | Foundry tongs | Carry one hot loose object at arm's length; release places it ahead. Occupies held use and prevents attacks, preserving the exact item/heat. Forty handling wear. Tongs clink. | C / 12 |
@@ -131,7 +134,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 22 | Rubber hose | Connect two nearby outlets across up to four clear floor cells; redirects a finite supplied flow, does not generate pressure. Cut/fire breaks it. One recoverable coil. Rubber unroll. | U / 16 |
 | 23 | Hand bellows | Four short wind shoves, no damage; feeds exposed flame, moves ash and smoke, pushes moths. Walls block, actors stop as normal. Wheezy puff. | C / 10 |
 | 24 | Inspection mirror | Hold to look around one adjacent corner with a narrow reflected sight wedge. Cannot shoot through it; hard hits break its 12 condition. Tiny handle rattle. | U / 17 |
-| 25 | Belt crank | Temporarily drive a stopped adjacent belt while held, using the user's action beat. Requires power-free accessible mechanism; no automatic indefinite motion. Forty turns. Ratchet clicks. | C / 11 |
+| 25 | Belt crank | Implemented: hold to turn an adjacent unpowered straight run once per 0.2s beat. Forty turns (Durable eighty), one real step per turn. Brakes refuse; broken sections disconnect the drive. Powered runs cannot be accelerated with it. Ratchet clicks. | C / 11; assembly supply and Industrial stock/rewards |
 | 26 | Tar flask | Traveling throw to 5 leaves a short sticky fuel patch for 10s. Stack 3. Slows friends; cold clots it, fire makes a dangerous crossing. Thick glug. | C / 8 |
 | 27 | Coolant can | Pour three adjacent cells to quench/cool; four uses. Cools machines faster than water but leaves slippery residue. No lava swimming immunity. Watery metal glug. | C / 12 |
 | 28 | Refractory paste | Coat held tool for six contacts with hot objects, avoiding heat wear; does not give the player full fire immunity. Three applications. Gritty smear. | U / 14 |
@@ -176,7 +179,7 @@ foundry exit. Special layouts replace a floor only once their full route works.
 | Work front | Bent gallery, breakable interior spur, protected outer wall | Foreman and up to three pickhands, chalk marks, one side bypass. Their digging opens optional space. |
 | Blasting alcove | Two offset pockets around a thick rock seam | Powder monkey and exposed fuse, clear retreat bay, optional seam-cache reward. |
 | Rail junction | Broad T crossing with walkable margins | Shunter/cart, lever points, crate platform; no rails through party spawn or mandatory gate footprint. |
-| Assembly line | Two belt lanes joined by stationary islands | Rivet gunner behind breakable grates, crank, brake shoe supply; ordinary safe walking route. |
+| Assembly line | Implemented: two opposing belt lanes with stationary protected crossings, including a disconnected manual run | Reserved rivet gunner and short grates where safe, crank, brake shoes, and real coal cargo; dry ordinary route. Belts can be broken, hand-driven or braked. |
 | Scrap yard | Open yard, isolated metal piles, crane corner | Magnet crane, scrap effigy bait, scrap bin. Loose real metal is sparse; most litter is cosmetic. |
 | Slag bank | Curved hot basin with two dry shores | Snail, cooling splash source, brittle optional shortcut; no required lava crossing. |
 | Pipe crawl | Narrow alternate service lane parallel to main hall | Pressure rats, readable leaking outlet and cutoff valve. Can be bypassed or deliberately vented. |
@@ -242,7 +245,7 @@ sparks in addition to settled solids; no fragment-to-fragment simulation.
 | 8 | Steel washer | Implemented: grate destruction; longer roll before settling. |
 | 9 | Chain link | Broken hoist; heavy localized tumble. |
 | 10 | Copper strand | Cut cable; curled light drag. |
-| 11 | Rubber scrap | Hose/boots; springy bounce, high friction. |
+| 11 | Rubber scrap | Implemented for broken conveyor strips; high friction and short skid. Hose/boot sources remain pending. |
 | 12 | Ceramic shard | Plates/kiln; bright brief shard then muted rest. |
 | 13 | Slag glass | Snail/crust; broad dark reflective chip. |
 | 14 | Coal crumb | Fuel sack; brittle black pieces, little roll. |
@@ -266,7 +269,7 @@ emit both a gameplay noise event and a matching local sound.
 | 1 | Furnace breath | Low uneven loop at fueled furnace mouths. |
 | 2 | Distant picks | Sparse room-area taps beyond a work front. |
 | 3 | Chain sway | Hoist anchor loop, quiet and slow. |
-| 4 | Belt rollers | Loop only beside a powered visible belt. |
+| 4 | Belt rollers | Implemented: quiet local loop near visible powered rollers; fades out when the nearby drives are braked/broken. Falls off by distance, never produces gameplay noise. |
 | 5 | Coolant trickle | Wall tap into an actual shallow pool; footsteps make rings. |
 | 6 | Pipe drip | Positional irregular drops, 1–4s local cooldown. |
 | 7 | Exhaust hiss | Short periodic vent loop, matches fixture duty cycle. |

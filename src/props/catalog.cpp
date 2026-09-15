@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::Conveyor: return {Sprite::Conveyor,SoundId::BeltBreak,48,false,false};
     case PropKind::Grate: return {Sprite::GrateH,SoundId::GrateBreak,60,true,false};
     case PropKind::ScrapBin: return {Sprite::ScrapBin,SoundId::ScrapBreak,18,true,false};
     case PropKind::OreBin: return {Sprite::OreBin,SoundId::OreBreak,30,true,false};
@@ -65,5 +66,5 @@ bool prop_low_cover(const Prop& prop) {
 }
 
 bool prop_shoot_through(const Prop& prop) {
-    return prop.kind==PropKind::Grate && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::Grate || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
 }

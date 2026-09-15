@@ -1,4 +1,5 @@
 #include "interaction.hpp"
+#include "conveyor.hpp"
 #include "../items/folded_bridge.hpp"
 #include "../entities/icicle_spider.hpp"
 #include "candle.hpp"
@@ -123,6 +124,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
+    if (kind == PropKind::Conveyor) tile->prop.variant &= 7U;
     if (kind == PropKind::Grate) tile->prop.variant &= 1U;
     if (kind == PropKind::Stove) {
         tile->prop.variant = 1; tile->prop.growth_ticks = 3600;
@@ -140,8 +142,10 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
         tile->prop.broken) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
+    if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::Conveyor) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::Grate) emit_sound(game,SoundId::GrateHit,cell);
     else if (prop.kind == PropKind::ScrapBin) emit_sound(game,SoundId::ScrapHit,cell);
     else if (prop.kind == PropKind::OreBin) emit_sound(game,SoundId::OreHit,cell);

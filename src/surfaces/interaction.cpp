@@ -18,7 +18,7 @@ namespace {
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
     if (prop.covered) return true;
-    return prop.kind != PropKind::Grate && prop.kind != PropKind::ScrapBin && prop.kind != PropKind::OreBin && prop.kind != PropKind::CrystalGrowth && prop.kind != PropKind::Doorstop && prop.kind != PropKind::CopperWire && prop.kind != PropKind::GroundingSpike && prop.kind != PropKind::MaintenanceLocker && prop.kind != PropKind::Stove && prop.kind != PropKind::Candle && prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
+    return prop.kind != PropKind::Conveyor && prop.kind != PropKind::Grate && prop.kind != PropKind::ScrapBin && prop.kind != PropKind::OreBin && prop.kind != PropKind::CrystalGrowth && prop.kind != PropKind::Doorstop && prop.kind != PropKind::CopperWire && prop.kind != PropKind::GroundingSpike && prop.kind != PropKind::MaintenanceLocker && prop.kind != PropKind::Stove && prop.kind != PropKind::Candle && prop.kind != PropKind::FrozenLunchTin && prop.kind != PropKind::WeatherVane && prop.kind != PropKind::AlarmClock && prop.kind != PropKind::BeamLamp && prop.kind != PropKind::MirrorShard && prop.kind != PropKind::CrystalLens && prop.kind != PropKind::SnowCache && prop.kind != PropKind::ClayPot && prop.kind != PropKind::IceBlock;
 }
 
 } // namespace

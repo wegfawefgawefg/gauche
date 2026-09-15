@@ -1,4 +1,5 @@
 #include "system.hpp"
+#include "../props/conveyor.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -35,6 +36,7 @@ float debris_friction(DebrisKind kind) {
     case DebrisKind::OreFlake: return .86F;
     case DebrisKind::SteelWasher: return .91F;
     case DebrisKind::TinCurl: return .88F;
+    case DebrisKind::BeltRubber: return .66F;
     case DebrisKind::RivetCasing: return .90F;
     default: return light_material(kind) ? .92F : .83F;
     }
@@ -119,6 +121,15 @@ void step_debris(LooseDebris& debris, const Stage& stage, std::uint64_t tick, bo
         if (wind && light_material(p.kind) && (tick + i * 17) % 360 == 0 &&
             stage.at_or_border(cell_at(p.x, p.y)).kind == TileKind::Grass) {
             p.vx += .012F; p.vy -= .004F; p.settled = 0;
+        }
+        const Prop& belt=stage.at_or_border(cell_at(p.x,p.y)).prop;
+        if (live_belt(belt) && !(belt.variant&belt_manual) && belt.growth_ticks==0) {
+            const Cell direction=belt_direction(belt);
+            // Local roller drag wakes scraps; foot/rake impulses can still throw
+            // them sideways. No gameplay pickup or actor reads these positions.
+            p.vx+=(static_cast<float>(direction.x)*.05F-p.vx)*.35F;
+            p.vy+=(static_cast<float>(direction.y)*.05F-p.vy)*.35F;
+            p.settled=0;
         }
         if (p.settled > 0) { p.settled = static_cast<std::uint8_t>(std::min(255, p.settled + 1)); continue; }
         p.vx = std::clamp(p.vx, -.35F, .35F);

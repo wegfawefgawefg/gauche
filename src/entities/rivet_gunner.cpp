@@ -33,8 +33,9 @@ std::optional<Cell> firing_step(const Game& game,int slot,Cell target) {
         const Node n=queue[i];
         if (n.steps>0 && lane(game,n.cell,target)) {
             const Cell facing=cardinal_toward(n.cell,target,{});
+            const auto& cover=game.stage.at_or_border(n.cell+facing).prop;
             const int score=20-n.steps*3+(distance(n.cell,target)>=3 ? 4 : 0)+
-                (prop_shoot_through(game.stage.at_or_border(n.cell+facing).prop) ? 5 : 0);
+                (prop_blocks(cover) && prop_shoot_through(cover) ? 5 : 0);
             if (score>best_score) { best_score=score; best=n.first; }
         }
         if (n.steps==6) continue;

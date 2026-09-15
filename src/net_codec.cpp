@@ -9,7 +9,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(48);
+    writer.u32(49);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -81,7 +81,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 48) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 49) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -130,10 +130,11 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind >= PropKind::Count ||
             tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
-            tile.prop.growth_ticks > (tile.prop.kind == PropKind::GroundingSpike ? 180 : tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
-            (tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            tile.prop.growth_ticks > (tile.prop.kind == PropKind::Conveyor ? 360 : tile.prop.kind == PropKind::GroundingSpike ? 180 : tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
+            (tile.prop.kind != PropKind::Conveyor && tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if ((tile.prop.kind==PropKind::Grate || tile.prop.kind==PropKind::ScrapBin || tile.prop.kind==PropKind::OreBin) &&
             ((!tile.prop.broken && tile.prop.hp==0) || (tile.prop.kind==PropKind::Grate && tile.prop.variant>1))) reader.okay=false;
+        if (tile.prop.kind==PropKind::Conveyor && (tile.prop.variant>7 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_bridge_tile(tile)) reader.okay=false;
         if (tile.prop.kind == PropKind::SnowWindbreak && (tile.prop.variant>1 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind == PropKind::Doorstop && (tile.prop.variant > 1 ||

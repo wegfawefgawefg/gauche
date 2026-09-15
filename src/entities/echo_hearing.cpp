@@ -36,6 +36,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SpikeSink:
     case SoundId::FlareLaunch:
     case SoundId::BoilerWarn: case SoundId::BoilerVent:
+    case SoundId::BeltBreak:
     case SoundId::RivetFire:
     case SoundId::PistolShot: case SoundId::MusketShot: case SoundId::ShotgunShot:
     case SoundId::SmgShot: case SoundId::BlunderShot: case SoundId::RocketLaunch:
@@ -44,6 +45,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
     case SoundId::QuarryBurst:
+    case SoundId::BeltCrank: case SoundId::BrakeSnap: case SoundId::BeltHit:
     case SoundId::RivetImpact:
     case SoundId::StokerSpit:
     case SoundId::WorkCall:
@@ -73,6 +75,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SledDeploy: case SoundId::SledBreak:
     case SoundId::ShelterPack: case SoundId::ShelterBreak:
     case SoundId::AnchorSet: case SoundId::AnchorBreak:
+    case SoundId::BeltCarry: case SoundId::BrakeFit:
     case SoundId::RivetReload: case SoundId::GunnerBrace:
     case SoundId::MaskRaise:
     case SoundId::ForkWindup:

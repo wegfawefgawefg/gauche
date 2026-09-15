@@ -1,5 +1,6 @@
 #include "workfront.hpp"
 #include "rivet_post.hpp"
+#include "assembly.hpp"
 #include "route.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -79,7 +80,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -386,10 +387,19 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             const int crew=populate_workfront(game,room);
             if (crew>0) budget.threat-=crew>=5 ? 8 : 5;
         }
+    bool assembly=false;
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::AssemblyLine) {
+        assembly=true; assembly_supplies(game,room);
+        budget.equipment=std::max(0,budget.equipment-2);
+        if (budget.threat>=2) {
+            if (populate_rivet_post(game,plan,room)) budget.threat-=2;
+            else enemy(game,room,EntityKind::RivetGunner,2,budget);
+        }
+    }
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::BlastingAlcove) {
             enemy(game,room,EntityKind::PowderMonkey,2,budget);
-            if (budget.threat>=2) {
+            if (!assembly && budget.threat>=2) {
                 if (populate_rivet_post(game,plan,room)) budget.threat-=2;
                 else enemy(game,room,EntityKind::RivetGunner,2,budget);
             }

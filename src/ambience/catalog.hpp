@@ -11,7 +11,7 @@ enum class AmbientCue : std::size_t {
     IceGroan, UnderIce, ThawDrip, ThinWind, WindowWhistle, HangingChain,
     DistantBell, TimberCreak, SnowSettling, BoilerIdle, PressureHiss, PipeKnock,
     Waterwheel, SlushLap, GlassTinkle, ObservatoryMotor, ClothFlutter, FarIceCall,
-    ChimneyDraft, SubmergedKnock, Count,
+    ChimneyDraft, SubmergedKnock, BeltRollers, Count,
 };
 enum class AmbientMode { Loop, Enter, Occasional };
 struct AmbientSpec {
@@ -65,4 +65,5 @@ inline constexpr std::array<AmbientSpec, static_cast<std::size_t>(AmbientCue::Co
     {"far_ice_call", AmbientMode::Occasional, .12F, 0, 30, .015F, 50},
     {"chimney_draft", AmbientMode::Loop, .10F, 1, 9},
     {"submerged_knock", AmbientMode::Occasional, .14F, 1, 12, .020F, 40},
+    {"belt_rollers", AmbientMode::Loop, .11F, 1, 12},
 }};

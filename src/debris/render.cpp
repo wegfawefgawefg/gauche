@@ -13,7 +13,7 @@ constexpr std::array<Sprite, static_cast<std::size_t>(DebrisKind::Count)> sprite
     Sprite::DebrisSeedHusk, Sprite::DebrisFeather, Sprite::DebrisBoneChip,
     Sprite::DebrisPottery, Sprite::DebrisCloth, Sprite::DebrisBrassCase,
     Sprite::DebrisStoneChip, Sprite::DebrisStraw, Sprite::DebrisIceChip, Sprite::DebrisSnowClump, Sprite::DebrisMirrorChip, Sprite::DebrisCrystalSplinter, Sprite::DebrisFelt, Sprite::DebrisClockGear, Sprite::DebrisWoolTuft, Sprite::DebrisRopeFiber, Sprite::DebrisFishBone, Sprite::DebrisWicker, Sprite::DebrisFishingFloat, Sprite::DebrisGlobeGlass, Sprite::DebrisCopperCurl, Sprite::DebrisKelpScrap, Sprite::DebrisTinLid, Sprite::DebrisWax, Sprite::DebrisCharredWick, Sprite::DebrisCoal, Sprite::DebrisBrassRivet, Sprite::DebrisFlareCinder,
-    Sprite::DebrisBasaltChip, Sprite::DebrisOreFlake, Sprite::DebrisSteelWasher, Sprite::DebrisTinCurl, Sprite::DebrisRivetCasing,
+    Sprite::DebrisBasaltChip, Sprite::DebrisOreFlake, Sprite::DebrisSteelWasher, Sprite::DebrisTinCurl, Sprite::DebrisRivetCasing, Sprite::DebrisBeltRubber,
 };
 }
 

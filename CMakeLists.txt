@@ -80,6 +80,10 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/strikebreaker.cpp src/entities/breaker_render.cpp
     src/entities/rivet_gunner.cpp
     src/world/rivet_post.cpp
+    src/world/assembly.cpp
+    src/props/conveyor_render.cpp
+    src/props/conveyor.cpp
+    src/items/belt_tools.cpp
     src/items/rivet_gun.cpp
     src/items/industrial_melee.cpp
     src/entities/powder_monkey.cpp src/entities/powder_route.cpp

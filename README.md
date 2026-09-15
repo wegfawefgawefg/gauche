@@ -6,11 +6,33 @@ The current work is tracked in one place: [the master task list](docs/MASTER_TAS
 
 ## Build and run
 
-The project uses SDL3 and the pinned Gubsy host. CMake fetches dependencies when they are not available locally. From the repository root, build and launch with:
+The project uses SDL3 and the pinned Gubsy host. Building requires Git, CMake
+3.24 or newer, a C++20 compiler and a native build tool. The shell scripts also
+require Bash. CMake fetches the pinned engine/UI sources and missing SDL
+dependencies; the first build needs internet access. Native platform development
+libraries may still need installing. The UI needs FreeType and HarfBuzz, supplied
+by dependency targets or system development packages through pkg-config.
+
+Clone the repository, then build and launch from its root:
 
 ```sh
+git clone https://github.com/wegfawefgawefg/gauche.git
+cd gauche
 ./scripts/run.sh
 ```
+
+If already cloned, just run `./scripts/run.sh`. It configures CMake, builds the
+Release `gauche` target incrementally, and launches only if the build succeeds.
+It builds the **current local checkout**; it does not download new game commits.
+To update an unmodified checkout and play the latest pushed version:
+
+```sh
+git pull --ff-only
+./scripts/run.sh
+```
+
+These are Bash commands, not native PowerShell commands. Windows needs a suitable
+C++ build environment as well as Bash; merely installing Git Bash is insufficient.
 
 Set `GAUCHE_PRESET=dev` for a debug build. `./scripts/build.sh` builds without launching. Both scripts work from any current directory; `run.sh` passes game arguments through unchanged.
 

@@ -27,6 +27,14 @@ or sounds already exist. The current generator and content set are a prototype.
 | Industrial / mine / lava | Machinery, tunnels, heat, molten terrain; exact blend open. |
 | Fourth biome | Military / robot area is a candidate, **not decided**. |
 
+Desired progression is **Forest → Ice → Industrial/mine/lava → fourth biome**.
+The current Forest → Fire → Ice runtime order still needs changing. Preserve
+cross-biome utility: forest fire tools burn wooden obstacles and remain valuable
+in Ice; their usefulness drops in the hot industrial zone, where carried ice
+tools gain new uses. Inventory choices should anticipate the next area's
+materials and hazards, rather than simply replace old items with higher numbers.
+Give these carryover tools several concrete interactions in the next biome.
+
 Minimum content targets for **each** biome, to design and then implement:
 
 - **20 genuinely distinct enemy types.** Unique means different behavior,

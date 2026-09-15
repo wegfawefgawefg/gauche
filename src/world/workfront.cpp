@@ -7,6 +7,14 @@
 void place_workfront_terrain(Game& game,const FloorPlan& plan) {
     if (!industrial_floor(game.run.floor)) return;
     for (const RoomPlan& room:plan.rooms) {
+        if (room.role==RoomRole::BlastingAlcove) {
+            for (int y=-3;y<=-1;++y) for (int x=2;x<=4;++x) {
+                const Cell cell=room.center+Cell{x,y};
+                Tile* tile=game.stage.at(cell);
+                if (tile && !plan.protected_cell(cell)) *tile={TileKind::Wall,90,0,90,BreakRule::DigRequired,1};
+            }
+            continue;
+        }
         if (room.role!=RoomRole::Workfront) continue;
         // A short mining spur sits beside the protected central route. Excavation
         // reveals ordinary dry cells and leaves all required crossings intact.

@@ -126,6 +126,13 @@ void describe_rooms(Game& game, FloorPlan& plan) {
             room.half_width=9; room.half_height=7;
             break;
         }
+        for (std::size_t i=1;i<plan.rooms.size();++i) {
+            auto& room=plan.rooms[i];
+            if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room || room.role==RoomRole::Workfront) continue;
+            room.role=RoomRole::BlastingAlcove; room.shape=RoomShape::Clearing;
+            room.half_width=8; room.half_height=6;
+            break;
+        }
     }
 
 }
@@ -143,7 +150,7 @@ FloorPlan plan_floor(Game& game) {
             int degree = 0;
             for (RouteEdge edge : plan.edges)
                 if (edge.a == static_cast<int>(i) || edge.b == static_cast<int>(i)) ++degree;
-            if (degree != 1 || plan.rooms[i].role==RoomRole::Workfront) continue;
+            if (degree != 1 || plan.rooms[i].role==RoomRole::Workfront || plan.rooms[i].role==RoomRole::BlastingAlcove) continue;
             plan.secret_room = static_cast<int>(i);
             plan.rooms[i].role = RoomRole::Secret;
             break;
@@ -160,7 +167,7 @@ bool FloorPlan::protected_cell(Cell cell) const {
 const char* room_name(RoomRole role) {
     constexpr const char* names[]{"Trailhead", "Way out", "Clearing", "Thicket", "Brook",
         "Ruined court", "Den", "Hidden cache", "Old shrine", "Workshop", "Orchard", "Secret cache",
-        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery", "Work front"};
-    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::Workfront) + 1);
+        "Reservoir", "Fishing hut", "Bathhouse", "Ice quarry", "Observatory", "Shelter", "Echo tunnel", "Weather station", "Cliff path", "Memorial court", "Candle chapel", "Crystal gallery", "Service passages", "Boiler gallery", "Work front", "Blasting alcove"};
+    static_assert(std::size(names) == static_cast<std::size_t>(RoomRole::BlastingAlcove) + 1);
     return names[static_cast<std::size_t>(role)];
 }

@@ -59,6 +59,7 @@ enum class Sprite : std::size_t {
     ForemanWhistleItem,
     Stoker, StokerPack, StokerScoop, StokerSwing, CoalSpit, CoalSpitCold,
     QuarryCharge, QuarryChargeLit, QuarryChargeReady, FuseScissors,
+    PowderMonkey, PowderLight, PowderRun, PowderScratch,
     Count,
 };
 

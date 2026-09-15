@@ -1,4 +1,5 @@
 #include "mine_crew.hpp"
+#include "powder_monkey.hpp"
 #include "attacks.hpp"
 #include "ember.hpp"
 #include "bell_diver.hpp"
@@ -28,6 +29,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::PowderMonkey:
+        if (enemy.label_a==PowderStrike && enemy.cell==enemy.point_a) add(enemy.point_b);
+        break;
     case EntityKind::Ember:
         if (enemy.cell==enemy.point_a && enemy.label_a==StokerStrike) add(enemy.point_b);
         if (enemy.cell==enemy.point_a && enemy.label_a==StokerPack)

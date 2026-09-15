@@ -54,6 +54,7 @@ bool bleeds(EntityKind kind) {
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
     case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
+    case EntityKind::PowderMonkey:
     case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
         return true;
     default: return false;

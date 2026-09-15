@@ -1,3 +1,4 @@
+#include "powder_scene.hpp"
 #include "quarry_scene.hpp"
 #include "stoker_scene.hpp"
 #include "crew_scene.hpp"
@@ -252,6 +253,7 @@ int main(int argc, char** argv) {
         arrange_crew_scene(game,cosmetics,mode=="crew-cut",mode=="crew-alarm");
     if (mode=="stoker" || mode=="stoker-wet") arrange_stoker_scene(game,cosmetics,mode=="stoker-wet");
     if (mode=="quarry" || mode=="quarry-items") arrange_quarry_scene(game,cosmetics,mode=="quarry-items");
+    if (mode=="powder" || mode=="powder-run") arrange_powder_scene(game,cosmetics,mode=="powder-run");
     Entity& player = *get_entity(game, game.players[0]);
     player.owner = 0;
     if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }

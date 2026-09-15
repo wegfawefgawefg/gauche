@@ -78,7 +78,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -382,6 +382,11 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     for (const RoomPlan& room:plan.rooms)
         if (room.role==RoomRole::Workfront && budget.threat>=5 && populate_workfront(game,room)>0)
             budget.threat-=5;
+    for (const RoomPlan& room:plan.rooms)
+        if (room.role==RoomRole::BlastingAlcove) {
+            enemy(game,room,EntityKind::PowderMonkey,2,budget);
+            if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
+        }
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;

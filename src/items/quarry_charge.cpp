@@ -54,19 +54,28 @@ bool quarry_wall(const Stage& stage,Cell cell) {
         tile->break_rule!=BreakRule::Unbreakable &&
         (tile->break_rule==BreakRule::Damageable || tile->required_dig_power<=1);
 }
+Handle arm_quarry_charge(Game& game,int slot,Item item,Cell direction,int fuse_ticks) {
+    const auto& user=game.entities[static_cast<std::size_t>(slot)];
+    if (distance({},direction)!=1 || item.kind!=ItemKind::QuarryCharge || item.count<=0 ||
+        fuse_ticks<1 || fuse_ticks>180) return {};
+    const Tile& cover=game.stage.at_or_border(user.cell+direction);
+    if (!quarry_wall(game.stage,user.cell+direction) && !(prop_blocks(cover.prop) && cover.prop.hp>0)) return {};
+    for (const auto& actor:game.entities)
+        if (actor.kind==EntityKind::Projectile && actor.cell==user.cell &&
+            actor.label_a==static_cast<int>(ProjectileKind::QuarryCharge)) return {};
+    const Handle handle=spawn_entity(game,EntityKind::Projectile,user.cell);
+    auto* shot=get_entity(game,handle);
+    if (!shot) return {};
+    shot->label_a=static_cast<int>(ProjectileKind::QuarryCharge);
+    shot->timer_a=fuse_ticks; shot->point_a=user.cell; shot->facing=direction;
+    shot->entity_a={slot,user.generation}; shot->ground_item=item; shot->ground_item.count=1;
+    shot->sprite=Sprite::QuarryChargeLit; shot->light={2,180,{242,163,64}};
+    return handle;
+}
 bool place_quarry_charge(Game& game,int slot) {
     const auto& user=game.entities[static_cast<std::size_t>(slot)];
     if (!quarry_wall(game.stage,user.cell+user.facing)) return false;
-    for (const auto& actor:game.entities)
-        if (actor.kind==EntityKind::Projectile && actor.cell==user.cell &&
-            actor.label_a==static_cast<int>(ProjectileKind::QuarryCharge)) return false;
-    auto* shot=get_entity(game,spawn_entity(game,EntityKind::Projectile,user.cell));
-    if (!shot) return false;
-    shot->label_a=static_cast<int>(ProjectileKind::QuarryCharge);
-    shot->timer_a=180; shot->point_a=user.cell; shot->facing=user.facing;
-    shot->entity_a={slot,user.generation}; shot->ground_item=*user.inventory.held(); shot->ground_item.count=1;
-    shot->sprite=Sprite::QuarryChargeLit; shot->light={2,180,{242,163,64}};
-    return true;
+    return get_entity(game,arm_quarry_charge(game,slot,*user.inventory.held(),user.facing,180))!=nullptr;
 }
 void step_quarry_charge(Game& game,int slot) {
     auto& shot=game.entities[static_cast<std::size_t>(slot)];

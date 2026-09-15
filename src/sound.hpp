@@ -53,6 +53,7 @@ enum class SoundId : std::size_t {
     WorkCall, WorkAnswer, WorkSpent,
     StokerCough, StokerScoop, StokerSpit, StokerImpact, StokerHeave, StokerSwing, StokerDeath,
     QuarryPlace, QuarryFuse, QuarryBurst, FuseSnip, FuseDouse, ScissorsSpent,
+    PowderCork, PowderPanic, PowderWarn, PowderScratch, PowderDeath, PowderStep1, PowderStep2,
     Count,
 };
 
@@ -103,4 +104,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "work_call", "work_answer", "work_spent",
     "stoker_cough", "stoker_scoop", "stoker_spit", "stoker_impact", "stoker_heave", "stoker_swing", "stoker_death",
     "quarry_place", "quarry_fuse", "quarry_burst", "fuse_snip", "fuse_douse", "scissors_spent",
+    "powder_cork", "powder_panic", "powder_warn", "powder_scratch", "powder_death", "powder_step1", "powder_step2",
 };

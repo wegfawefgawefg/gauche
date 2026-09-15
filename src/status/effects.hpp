@@ -18,6 +18,8 @@ struct VitalEffects {
     RootKind root_kind = RootKind::Rope;
     std::uint16_t nausea = 0, nausea_wait = 0;
     std::uint16_t chill_guard = 0;
+    std::uint16_t summer_ticks = 0;
+    std::uint8_t summer_radius = 0;
     RecoveryKind recovery = RecoveryKind::Herbs;
 };
 

@@ -1,3 +1,4 @@
+#include "items/borrowed_summer.hpp"
 #include "props/doorstop.hpp"
 #include "items/echo_pebble.hpp"
 #include "items/circuits.hpp"
@@ -103,6 +104,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::BorrowedSummer:
+        used = use_borrowed_summer(game,user_slot); cooldown = item_pattern(item).cooldown;
+        break;
     case ItemKind::EmergencyDoorstop:
         used = place_doorstop(game,user.cell+direction,item); cooldown = item_pattern(item).cooldown;
         break;
@@ -418,7 +422,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);
             else if (used_kind == ItemKind::AirBladder) emit_sound(game, SoundId::AirEmpty, user.cell);
             else if (used_kind == ItemKind::GritPouch) emit_sound(game, SoundId::GritEmpty, user.cell);
-            else if (used_kind != ItemKind::PocketDoor) emit_sound(game, SoundId::BoxBreak, user.cell);
+            else if (used_kind != ItemKind::PocketDoor && used_kind != ItemKind::BorrowedSummer)
+                emit_sound(game, SoundId::BoxBreak, user.cell);
             item = {};
             return true;
         }

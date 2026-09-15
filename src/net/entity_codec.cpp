@@ -93,6 +93,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.sleep_ticks); writer.i32(entity.stun_ticks);
     writer.u16(entity.vitals.healing_left); writer.u16(entity.vitals.healing_wait);
     writer.u8(static_cast<std::uint8_t>(entity.vitals.recovery)); writer.u16(entity.vitals.chill_guard);
+    writer.u16(entity.vitals.summer_ticks); writer.u8(entity.vitals.summer_radius);
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
@@ -141,6 +142,9 @@ Entity read_entity(PacketReader& reader) {
     entity.sleep_ticks = reader.i32(); entity.stun_ticks = reader.i32();
     entity.vitals.healing_left = reader.u16(); entity.vitals.healing_wait = reader.u16();
     entity.vitals.recovery = static_cast<RecoveryKind>(reader.u8()); entity.vitals.chill_guard = reader.u16();
+    entity.vitals.summer_ticks=reader.u16(); entity.vitals.summer_radius=reader.u8();
+    if (entity.vitals.summer_ticks>240 || entity.vitals.summer_radius>2 ||
+        ((entity.vitals.summer_ticks==0)!=(entity.vitals.summer_radius==0))) reader.okay=false;
     entity.vitals.sleep_guard = reader.u16(); entity.vitals.stun_guard = reader.u16();
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
     entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();

@@ -105,6 +105,10 @@ void step_vital_effects(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     VitalEffects& effects = actor.vitals;
     if (actor.health <= 0) { effects = {}; return; }
+    if (effects.summer_ticks>0 && --effects.summer_ticks==0) {
+        effects.summer_radius=0;
+        emit_sound(game,SoundId::SummerFade,actor.cell);
+    }
     if (effects.traction > 0 && --effects.traction == 0) emit_sound(game,SoundId::CramponsRelease,actor.cell);
     if (effects.slide_momentum > 0) --effects.slide_momentum;
     if (effects.rooted > 0) --effects.rooted;

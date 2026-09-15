@@ -334,6 +334,8 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
             const Entity& entity = game.entities[slot];
             if (entity.kind == EntityKind::None || entity.health <= 0 ||
                 distance(entity.cell, focus) > 18) continue;
+            if (entity.vitals.summer_ticks>0 && game.tick%12==0)
+                spawn_summer_motes(cosmetics,entity.cell,game.tick+slot*17U);
             const bool fire = entity.kind == EntityKind::Campfire && entity.fire_tramples < 5;
             const bool burning = entity.scorch_ticks > 0 || entity.burn_ticks > 0;
             if (fire || burning) {

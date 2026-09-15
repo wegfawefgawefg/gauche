@@ -294,7 +294,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::EmergencyDoorstop) {
+    if (item.kind == ItemKind::BorrowedSummer) {
+        text(renderer,x+10,y+129,"4s MOVING CROSS | NO IMMUNITY",216,186,117);
+    } else if (item.kind == ItemKind::EmergencyDoorstop) {
         text(renderer,x+10,y+129,"PLACED | RECOVERABLE",167,197,199);
     } else if (item.kind==ItemKind::StormLantern) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"TOGGLE SHUTTER");

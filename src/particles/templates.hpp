@@ -18,3 +18,5 @@ void spawn_campfire_smoke(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);
 void spawn_flame(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, bool on_actor);
 void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
                            std::uint64_t seed);
+
+void spawn_summer_motes(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);

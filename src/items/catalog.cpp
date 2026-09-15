@@ -1,4 +1,5 @@
 #include "doorstop.hpp"
+#include "borrowed_summer.hpp"
 #include "harpoon.hpp"
 #include "echo_pebble.hpp"
 #include "circuits.hpp"
@@ -28,6 +29,7 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const RegionalItem* summer = borrowed_summer_item(kind)) return summer;
     if (const RegionalItem* wedge = doorstop_item(kind)) return wedge;
     if (const RegionalItem* harpoon = harpoon_item(kind)) return harpoon;
     if (const RegionalItem* echo = echo_pebble_item(kind)) return echo;

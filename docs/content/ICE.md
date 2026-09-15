@@ -120,7 +120,7 @@ same effective item definition as attacks, including rare attributes.
 | 45 | Thaw charge | Place a 2s fuse against a wall; opens only heat-fragile ice in a two-cell line. Steam hurts adjacent actors for 10. Stack 3. | Uncommon; 19 |
 | 46 | Effigy mask | Hold still while facing to draw watching effigies' attention as though another observer were present; consumes one of 12 charges per second. | Rare; 28 |
 | 47 | Snow globe | Implemented: break in the adjacent cell for 6s of radius-2 whiteout. Blocks sight for all sides, not shots; no damage/chill. Walls constrain spread. Stack 2; Big gives radius 3. | Uncommon; 20 |
-| 48 | Borrowed summer | A 4s moving warmth aura thaws surfaces and clears allied chill; cold creatures react to the real heat source. Two uses, no damage immunity. | Rare; 38 |
+| 48 | Borrowed summer | Implemented: a 4s moving radius-1 warm cross thaws ice, snow, props and friends/foes; ignites spilled oil. Cover stops reach, leeches can drain it, warmth attracts pilgrims. Two uses; Durable four, Big radius 2. No damage immunity. | Rare; 38 |
 | 49 | Stillwater bell | Ring to stop surface currents and active slips within 4 for 3s; does not stun actors or halt voluntary movement. Four uses. | Rare; 30 |
 | 50 | Emergency doorstop | Implemented: jam an adjacent open moving gate with a 25-HP recoverable wedge. Durable doubles HP; damage survives recovery. Closed gates/key locks reject it. Timed reservoir sluices open 3s/close 2s, warn before closing and wait for bodies to clear. | Uncommon; 21 |
 
@@ -173,7 +173,7 @@ for every prop. Furniture that looks like a source of wood should leave wood.
 | Fishing creel | Implemented: 35 smoked fish, 20 line, 15 air bladder, 30 empty; one roll on breaking | Fishing huts; 12 HP, blocking, burnable woven basket |
 | Frozen lunch tin | Implemented: 30 broth, 20 kelp, 20 poultice, 30 empty | Shelters; 16 HP, blocking, not fuel. Warmth or ordinary damage opens once. |
 | Maintenance locker | Implemented: 20 coal, 20 sealant, 15 valve, 15 ammo, 10 wire, 10 grounding spike, 10 empty | Boiler gallery; 24 HP, blocking nonflammable metal |
-| Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 10 storm lantern, 20 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |
+| Candle cabinet | Implemented: 35 stub, 20 wick, 15 wool, 10 storm lantern, 5 borrowed summer, 15 empty | Chapel alcoves; 18 HP, blocking, burnable wood. Shelter placement remains optional future work. |
 | Buried pack | 20 grit, 15 scoop, 20 bandage, 15 gold, 30 empty | Visible snow mound; no pixel hunting |
 | Lens case | Implemented: 30 shard, 20 lens, 15 three-piece black felt, 15 gold (3–6), 20 empty | Guarded observatory; 16 HP, blocking, breakable wood |
 | Locked expedition chest | 40 regional weapon, 35 regional utility, 25 medicine; plus 6–12 gold | Optional key branch |

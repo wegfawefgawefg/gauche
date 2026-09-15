@@ -269,7 +269,7 @@ behavior and balance playtesting remain the user's.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
   Fifteen cold room roles host twenty enemy types, including [shard colonies](history/ICE_SHARDS.md),
   [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Forty items include
-  [observatory optics](history/ICE_OPTICS.md). Twenty of twenty enemy behaviors, forty of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](history/STORM_LANTERN.md) and [Echo Pebble](history/ICE_ECHO_PEBBLE.md) add directional light and recorded lures; [Harpoon Gun](history/ICE_HARPOON.md) adds traveling shots and held reeling. [Doorstops and sluices](history/ICE_SLUICES.md) add reusable gate jamming and reservoir chambers. Twenty Ice debris materials are implemented.
+  [observatory optics](history/ICE_OPTICS.md). Twenty of twenty enemy behaviors, forty-one of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](history/STORM_LANTERN.md) and [Echo Pebble](history/ICE_ECHO_PEBBLE.md) add directional light and recorded lures; [Harpoon Gun](history/ICE_HARPOON.md) adds traveling shots and held reeling. [Doorstops and sluices](history/ICE_SLUICES.md) add reusable gate jamming and reservoir chambers. [Borrowed Summer](history/BORROWED_SUMMER.md) adds moving warmth with shared thaw/fuel/enemy reactions. Twenty Ice debris materials are implemented.
 - [ ] Design a full industrial / mine / lava catalog to the same quotas; settle
   that biome's blend as the catalog takes shape.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava

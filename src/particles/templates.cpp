@@ -371,3 +371,19 @@ void spawn_flame(Cosmetics& cosmetics, Cell cell, std::uint64_t seed, bool on_ac
     flame.life = flame.span = 24;
     add(cosmetics, flame);
 }
+
+void spawn_summer_motes(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
+    for (int index=0; index<2; ++index) {
+        const auto roll=bits(seed+static_cast<std::uint64_t>(index));
+        SpriteParticle mote;
+        mote.sprite=Sprite::SummerMote;
+        mote.layer=ParticleLayer::Foreground;
+        mote.x=static_cast<float>(cell.x)+0.15F+unit(roll)*0.7F;
+        mote.y=static_cast<float>(cell.y)+0.2F+unit(roll>>8)*0.5F;
+        mote.vy=-0.018F;
+        mote.width=mote.height=0.25F;
+        mote.self_glow={1.0F,0.85F,0.5F};
+        mote.life=mote.span=24;
+        add(cosmetics,mote);
+    }
+}

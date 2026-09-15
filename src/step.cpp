@@ -1,3 +1,4 @@
+#include "items/borrowed_summer.hpp"
 #include "game.hpp"
 #include "entities/echo_hound.hpp"
 #include "surfaces/interaction.hpp"
@@ -136,6 +137,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
         step_entity_timers(game, slot);
     step_players(game, inputs);
     step_hearth_aura(game);
+    step_summer_auras(game);
     if (game.run.phase == RunPhase::Reward) return;
 
     // ACTORS: Newborns wait a tick; cleanup follows every attack and hazard.

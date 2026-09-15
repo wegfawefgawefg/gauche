@@ -29,8 +29,10 @@ Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW
 - [ ] Audit/rename Storm Lantern as a readable fueled lamp, including all acquisition paths; add light-toy candidates and a creature/item/place field guide distinguishing operation from discoveries.
 - [ ] Revisit mimic frequency/threat/valuable loot and bear aggression/commitment; populate sleeping/fishing dens with nests, bones, droppings and fish ecology.
 - [ ] Make levers unmistakable through silhouette/state/sound and mechanism response; design biome-appropriate wall levers/protected-button variants.
-- [ ] Build grouped overhead reveal starting with hollow logs/root tunnels/ice arches; add directional ledges and slow steps. Assess true decks and multi-cell actor footprints separately.
+- [ ] Build grouped overhead reveal starting with hollow logs/root tunnels/ice arches; add directional ledges and slow steps. User follow-up: proceed on one gameplay plane, defer stacked decks and multi-cell moving enemies; neither is a prerequisite.
 - [ ] Build tall reactive props with sorting, light breakage, warned falling/crushing, melting and debris; proposed eight families per biome in scene candidates. Reflections remain exploratory.
+- [ ] Add smooth phase-based tipping/falling art with ground anchors, vertical offsets and clear impact cues; landed logs become connected blocking sections with explicit occupant/loot/terrain resolution, without requiring multi-cell actors.
+- [ ] Prototype selective shared contact shadows with a debug toggle/static comparisons: creatures, raised objects, flight and falls first; omit flat/tiny debris by default. Preserve dark negative space, distinguish contact/landing warnings, and inspect visibility/overdraw before expanding.
 - [ ] Add material routes: axe/fire root masses, shovel-soft and pick-hard walls, shallow-hole candidates, populated burnable-web caves and alternate/guaranteed solutions.
 - [ ] Implement Timber Forest connected-fuel variant and the requested bounded noninteractive fire performance check, including cosmetics/network load and deterministic propagation.
 - [ ] Expand fruit/berry sources, bushes and seed-pile stack yields; design contact-popping Snap Seeds and implement shared burning-arrow/fire/water interactions.

@@ -82,10 +82,11 @@ fade/dither it for each local viewer underneath. Restore on exit, keep entrances
 actors and collision legible, and retain the user's preferred dark canopy. Remote
 players must not fade unrelated overheads on another client's screen.
 
-True over/under crossings are a separate decision. Two actors sharing x/y on
-different decks require explicit layer state for occupancy, navigation, attacks,
-effects and snapshots. Entry direction may select a ramp but must not secretly
-change a tile's rules. Do not delay hollow-log passages for multi-deck machinery.
+Follow-up decision: proceed with walking-under/group fading; defer actual stacked
+walkable decks. Favor one-plane visual tricks, explicit ledges and slower steps.
+Two actors sharing x/y on different decks would require explicit layer state for
+occupancy, navigation, attacks, effects and snapshots. Entry direction must not
+secretly change a tile's rules. That complexity is not needed for hollow logs.
 
 Tall props can initially have one occupied base cell with a taller sorted sprite.
 Separate base occupancy, art height and falling footprint. Examples: column shakes
@@ -99,6 +100,55 @@ terrain/debris. Severe or instant crushing needs an escape opportunity. Shelter
 must affect ceiling falls consistently. Fixed supports must look immovable.
 Damage, drops, falling hit areas, water and light state are authoritative; shakes,
 petals and shards can be local. Room configurations matter as much as variants.
+
+Follow-up: falling/tipping presentation may animate smoothly, with a sensible
+vertical offset and rotation around the base. Keep the ground anchor clear. A
+fallen log may finish as several connected blocking tile/prop sections, without
+turning ordinary moving actors into multi-cell entities. Its committed direction,
+fall phase/timing and collision consequences are authoritative; interpolate the
+art from that phase. Explicitly define when the upright blocker clears, whether
+the fall sweeps a damaging footprint, and when the landed cells become solid.
+Resolve occupants, breakable props, loot and protected boundaries before creating
+the final obstruction; don't silently overwrite them or duplicate impact on replay.
+
+## Contact shadows and height cues: prototype direction
+
+The user asks whether shadows could add depth and communicate height. Prototype
+selective cheap contact shadows before adopting universal shadowing. Current
+source has an owl landing silhouette; that attack-destination marker is not a
+general contact-shadow system and must retain its meaning.
+
+- Grounded creatures and substantial raised pickups/props: small subdued shadows
+  at their real foot/base position. Keep sparse pixel silhouettes, not large soft
+  black puddles. Match width to footprint rather than the whole tall sprite.
+- Flying/bouncing/thrown things: a shadow at the ground projection plus a vertical
+  sprite offset makes height readable. Higher objects can have lighter/less tight
+  shadows; near-ground contact becomes tighter. A future landing warning is a
+  separate cue from the current ground projection.
+- Tall props: modest base contact and, where useful, a short directional silhouette.
+  Falls may use an explicit impact warning alongside the animated shadow. Never
+  rely on a faint atmospheric shadow as the only warning for instant crushing.
+- Loose debris: initially omit shadows on flat leaves, footprints, stains, petals
+  and tiny casings. Try a tiny contact mark on chunky rocks/wood or visibly bouncing
+  fragments only. Avoid making every scrap seem to hover or adding ground noise.
+- Smoke, flames, glows, flat surface effects and UI are not automatically shadow
+  casters. Distant/offscreen/occluded objects should not reveal themselves through
+  a detached shadow. Clip to appropriate visible ground; handle water and pits
+  deliberately rather than painting onto nonexistent floor.
+
+Use a shared ground-shadow pass with simple style/footprint/height inputs and
+explicit opt-outs, not bespoke code for every enemy. Reuse/batch a few small
+shapes and cull offscreen work. Drawing every piece of debris adds overdraw and
+cost even if each individual shadow is cheap. Avoid new shadow raycasts per item
+or per-light silhouette geometry in the first pass; existing world lighting and
+occlusion still apply. Contact shadows are an art approximation, not a substitute
+for light-source-aware cast shadows.
+
+Keep shadow darkness restrained under Gauche's already-dark lighting and bound
+overlapping darkness where necessary. Prototype an ImGui toggle and static paired
+captures: lit floor, deep shade, clutter, flying actor, raised item and falling log.
+Compare readability and render cost before expanding coverage. Cosmetic shadow
+state stays local; height/fall state affecting gameplay remains authoritative.
 
 Water/ice reflections remain exploratory polish. Start with a clipped reflected
 sprite pass and mild distortion if useful; full screen-space reflection is not
@@ -218,9 +268,14 @@ Boss choice remains open: room seals shortly after entry for a miniboss, or a
 large discoverable boss region embedded in the biome's fourth floor. Allow world
 interactions; decide per encounter whether digging out is valid escape. Handle
 party entry, split players and deterministic release. Giant bear, spider mother
-and wolf-leader fights are candidates. Large art does not mandate multi-cell
-collision; if 2x2 occupancy is needed, define navigation, narrow passages, targeting,
-shoves, hazards and snapshots. One hit overlapping four cells must not quadruple.
+and wolf-leader fights are candidates. Follow-up decision: keep moving enemies
+single-cell for now; large sprites, poses and varied attack areas offer plenty of
+scope. Their physical base must remain obvious so oversized art doesn't imply
+unhittable body area. Multi-cell entities are optional deferred work, not a boss
+prerequisite. Their primary cost is cross-system correctness, not necessarily slow
+execution. If revisited, centralize occupied-cell iteration for navigation, narrow
+passages, targeting, shoves, hazards and snapshots; never charge an overlapping hit
+four times. Fallen multi-section scenery can use existing tile/prop occupancy.
 
 ## Haunted-house follow-up (2026-09-15)
 

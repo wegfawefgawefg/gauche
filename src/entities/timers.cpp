@@ -1,3 +1,4 @@
+#include "audit_clerk.hpp"
 #include "walking_kiln.hpp"
 #include "../items/pocket_drill.hpp"
 #include "cable_crawler.hpp"
@@ -83,7 +84,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
-        interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
+        interrupt_audit_clerk(entity);interrupt_walking_kiln(entity);interrupt_yeti(entity); interrupt_arc_welder(entity); interrupt_magnet_crane(entity);
         cool_pressure_rat(entity);interrupt_cable_crawler(entity);interrupt_pocket_drill(entity);
     }
     step_shard_state(entity);

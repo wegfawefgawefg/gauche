@@ -1,3 +1,4 @@
+#include "pay_office.hpp"
 #include "kiln_court.hpp"
 #include "cable_trench.hpp"
 #include "cooling_works.hpp"
@@ -87,7 +88,7 @@ void rooted_watch(Game& game, const RoomPlan& room, Supplies& budget, bool guard
 
 void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies& budget) {
     const int round = (game.run.floor - 1) % 4;
-    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt) return;
+    if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
         room.role == RoomRole::IceQuarry || room.role == RoomRole::FishingHut)) {
         if (room.role == RoomRole::IceQuarry) enemy(game, room, EntityKind::IceMason, 2, budget);
@@ -406,6 +407,9 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
             --budget.equipment;
         }
+    }
+    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::PayOffice && budget.threat>=3) {
+        if (populate_pay_office(game,plan,room)) budget.threat-=3;
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::KilnCourt && budget.threat>=3) {
         if (populate_kiln_court(game,plan,room)) {budget.threat-=3;budget.equipment=std::max(0,budget.equipment-1);}

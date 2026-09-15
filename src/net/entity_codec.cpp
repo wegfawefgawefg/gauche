@@ -1,3 +1,4 @@
+#include "../entities/audit_clerk.hpp"
 #include "../entities/walking_kiln.hpp"
 #include "../items/pocket_drill.hpp"
 #include "../entities/cable_crawler.hpp"
@@ -219,6 +220,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+    if (!valid_audit_clerk(entity)) reader.okay=false;
     if (!valid_walking_kiln(entity)) reader.okay=false;
     if (!valid_cable_crawler(entity)) reader.okay=false;
     if (!valid_pressure_rat(entity)) reader.okay=false;

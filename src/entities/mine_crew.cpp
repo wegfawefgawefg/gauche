@@ -181,6 +181,7 @@ void step_mine_worker(Game& game,int slot) {
         return;
     }
     worker.entity_b={}; worker.attack_wait=0;
+    if (worker.label_c==InvestigateNoise && step_hearing(game,slot)) return;
     if (worker.kind==EntityKind::ShiftForeman) { direct_crew(game,slot); return; }
     if (worker.label_c==PlayerWorkOrder && worker.timer_c>0) {
         advance_worker(game,slot,worker.point_c);
@@ -196,4 +197,20 @@ void step_mine_worker(Game& game,int slot) {
         const Cell direction=leader->point_b,side{-direction.y,direction.x};
         advance_worker(game,slot,leader->cell+Cell{direction.x*4+side.x*worker.counter_b,direction.y*4+side.y*worker.counter_b});
     } else if (worker.move_wait==0 && distance(worker.cell,leader->cell)<=1) yield_lane(game,slot);
+}
+
+void alarm_mine_workers(Game& game,Cell origin,Handle threat) {
+    const Entity* culprit=get_entity(game,threat);
+    const bool identified=culprit && culprit->health>0;
+    const auto heard=audible_cells(game,origin,8);
+    make_noise(game,origin,8);
+    for (Entity& worker:game.entities)
+        if (mine_worker(worker.kind) && worker.health>0 &&
+            std::find(heard.begin(),heard.end(),worker.cell)!=heard.end()) {
+            if (identified) hostile(worker,threat);
+            else if (worker.attack_wait==0) {
+                interrupt_mine_worker(worker);
+                worker.point_c=origin;worker.label_c=InvestigateNoise;worker.timer_c=300;
+            }
+        }
 }

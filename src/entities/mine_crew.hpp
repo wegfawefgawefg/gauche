@@ -12,3 +12,5 @@ void interrupt_mine_worker(Entity& worker);
 void hurt_mine_worker(Game& game,int slot,int damage,Cell source);
 bool crew_diggable(const Tile& tile);
 std::optional<Cell> mine_route_step(const Game& game,int slot,Cell target);
+
+void alarm_mine_workers(Game& game,Cell origin,Handle threat);

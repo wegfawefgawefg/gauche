@@ -1,3 +1,4 @@
+#include "../entities/audit_clerk.hpp"
 #include "tension_spring.hpp"
 #include "interaction.hpp"
 #include "conveyor.hpp"
@@ -97,9 +98,11 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
 
 void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
     remove_prop_cover(game, cell, false);
+    const int deposited=prop.kind==PropKind::PayCage ? prop.growth_ticks : 0;
     prop.hp = 0;
     prop.broken = true;
     prop.growth_ticks = 0;
+    if (deposited>0) place_coins(game,cell,deposited);
     if (prop.kind == PropKind::SnowCache && game.stage.at(cell)->kind == TileKind::Snow)
         game.stage.at(cell)->kind = TileKind::Empty;
     const PropSpec spec = prop_spec(prop.kind);
@@ -147,9 +150,11 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
         tile->prop.broken) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
+    if (prop.kind==PropKind::PayCage) alarm_pay_clerks(game,cell,source);
     if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::PayCage) emit_sound(game,SoundId::PayRattle,cell);
     else if (prop.kind == PropKind::Conveyor) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade) emit_sound(game,SoundId::GrateHit,cell);
     else if (prop.kind == PropKind::ScrapBin) emit_sound(game,SoundId::ScrapHit,cell);

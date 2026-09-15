@@ -60,7 +60,7 @@ enum class SoundId : std::size_t {
     RivetFire, RivetImpact, RivetReload, GunnerBrace, GunnerDeath,
     BeltCarry, BeltCrank, BrakeFit, BrakeSnap, BeltHit, BeltBreak,
     YetiWarn, YetiThrow, YetiMiss, YetiDeath, TossLand, TossImpact,
-    ArcPrime, ArcPulse, ArcCut, ArcEmpty, WelderMask, WelderDeath, MagnetPull, MagnetSpent, CraneSlew, CraneCoil, CraneTug, CraneDeath, BarricadeUnfold, RatInflate, RatRush, RatBurst, RatDeath, CoolantPour, CoolantEmpty, CoolantSlip, CrawlerCharge, CrawlerPulse, CrawlerStep, CrawlerDeath, PocketDrillStart, PocketDrillWork, PocketDrillAir, PocketDrillEmpty, KilnStep, KilnDoor, KilnBreath, KilnFeed, KilnDeath, TensionSet, TensionReady, TensionLaunch, TensionBreak,
+    ArcPrime, ArcPulse, ArcCut, ArcEmpty, WelderMask, WelderDeath, MagnetPull, MagnetSpent, CraneSlew, CraneCoil, CraneTug, CraneDeath, BarricadeUnfold, RatInflate, RatRush, RatBurst, RatDeath, CoolantPour, CoolantEmpty, CoolantSlip, CrawlerCharge, CrawlerPulse, CrawlerStep, CrawlerDeath, PocketDrillStart, PocketDrillWork, PocketDrillAir, PocketDrillEmpty, KilnStep, KilnDoor, KilnBreath, KilnFeed, KilnDeath, TensionSet, TensionReady, TensionLaunch, TensionBreak, ClerkPaper, ClerkStamp, ClerkGasp, ClerkAlarm, ClerkDeath, PayRattle, PayDeposit, PayBreak,
     Count,
 };
 
@@ -118,5 +118,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "rivet_fire", "rivet_impact", "rivet_reload", "gunner_brace", "gunner_death",
     "belt_carry", "belt_crank", "brake_fit", "brake_snap", "belt_hit", "belt_break",
     "yeti_warn", "yeti_throw", "yeti_miss", "yeti_death", "toss_land", "toss_impact",
-    "arc_prime", "arc_pulse", "arc_cut", "arc_empty", "welder_mask", "welder_death", "magnet_pull", "magnet_spent", "crane_slew", "crane_coil", "crane_tug", "crane_death", "barricade_unfold", "rat_inflate", "rat_rush", "rat_burst", "rat_death", "coolant_pour", "coolant_empty", "coolant_slip", "crawler_charge", "crawler_pulse", "crawler_step", "crawler_death", "pocket_drill_start", "pocket_drill_work", "pocket_drill_air", "pocket_drill_empty", "kiln_step", "kiln_door", "kiln_breath", "kiln_feed", "kiln_death", "tension_set", "tension_ready", "tension_launch", "tension_break",
+    "arc_prime", "arc_pulse", "arc_cut", "arc_empty", "welder_mask", "welder_death", "magnet_pull", "magnet_spent", "crane_slew", "crane_coil", "crane_tug", "crane_death", "barricade_unfold", "rat_inflate", "rat_rush", "rat_burst", "rat_death", "coolant_pour", "coolant_empty", "coolant_slip", "crawler_charge", "crawler_pulse", "crawler_step", "crawler_death", "pocket_drill_start", "pocket_drill_work", "pocket_drill_air", "pocket_drill_empty", "kiln_step", "kiln_door", "kiln_breath", "kiln_feed", "kiln_death", "tension_set", "tension_ready", "tension_launch", "tension_break", "clerk_paper", "clerk_stamp", "clerk_gasp", "clerk_alarm", "clerk_death", "pay_rattle", "pay_deposit", "pay_break",
 };

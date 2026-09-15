@@ -31,6 +31,12 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::AuditClerk: {
+        place_coins(game,enemy.cell,enemy.counter_a);
+        const auto roll=random_u32(game)%100;
+        if (roll>=40 && roll<65) place_coins(game,enemy.cell,3+static_cast<int>(random_u32(game)%5));
+        break; // Punch card and inspector stamp remain unimplemented catalog drops.
+    }
     case EntityKind::WalkingKiln: {
         const auto roll=random_u32(game)%100;
         // Plate/biscuit catalog entries are still candidates, not substitute loot.

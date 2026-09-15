@@ -111,6 +111,7 @@ Sprite item_sprite(ItemKind kind) {
 }
 
 Sprite item_sprite(const Item& item) {
+    if (item.kind==ItemKind::GlowSlag) return item.loaded>0 ? Sprite::GlowSlag : Sprite::SlagCold;
     if (item.kind == ItemKind::EchoPebble) return item.loaded>0 ? Sprite::EchoPebbleReady : Sprite::EchoPebble;
     if (item.kind == ItemKind::HeatSiphon) return item.loaded>0 ? Sprite::SiphonCharged : Sprite::HeatSiphon;
     if (item.kind == ItemKind::StormLantern) return lantern_sprite(item);

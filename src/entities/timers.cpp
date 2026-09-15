@@ -1,3 +1,4 @@
+#include "../items/glow_slag.hpp"
 #include "rail_shunter.hpp"
 #include "tar_choir.hpp"
 #include "mold_thief.hpp"
@@ -146,6 +147,8 @@ void step_entity_timers(Game& game, int slot) {
     if (!(entity.kind==EntityKind::Player && entity.label_b<0 && entity.ground_item.kind==ItemKind::SteamLance))
         step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
     stow_effigy_mask(entity.ground_item,false);
+    if (entity.ground_item.kind==ItemKind::GlowSlag && (entity.kind==EntityKind::GroundItem || entity.kind==EntityKind::Projectile))
+        entity.sprite=item_sprite(entity.ground_item);
     if (entity.kind==EntityKind::GroundItem && entity.ground_item.kind==ItemKind::IceAnchor) {
         sync_ice_anchor(game,entity.ground_item);
         if (entity.ground_item.kind==ItemKind::None) { remove_entity(game,{slot,entity.generation}); return; }
@@ -158,6 +161,6 @@ void step_entity_timers(Game& game, int slot) {
         stow_effigy_mask(item,entity.health>0 && entity.sleep_ticks==0 && entity.stun_ticks==0 && index==entity.inventory.selected);
         step_lantern_fuel(game,item,entity.cell,entity.health>0 && index==entity.inventory.selected,true);
     }
-    if (entity.kind == EntityKind::GroundItem && entity.ground_item.flame_ticks > 0)
+    if (entity.kind == EntityKind::GroundItem && (entity.ground_item.flame_ticks > 0 || glowing_slag(entity.ground_item)))
         ignite_surface(game, entity.cell);
 }

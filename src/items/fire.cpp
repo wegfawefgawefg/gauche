@@ -1,3 +1,4 @@
+#include "glow_slag.hpp"
 #include "fire.hpp"
 #include "heated_water.hpp"
 #include "storm_lantern.hpp"
@@ -8,6 +9,7 @@
 
 LightEmitter item_light(const Item& item) {
     if (item.kind == ItemKind::StormLantern) return lantern_light(item);
+    if (item.kind==ItemKind::GlowSlag) return glowing_slag(item) ? LightEmitter{5,1000,{244,158,77}} : LightEmitter{};
     return item.flame_ticks > 0 ? LightEmitter{4, 950, {255, 133, 43}} : item.light;
 }
 
@@ -23,6 +25,7 @@ bool light_stick(Game& game, Item& item, Cell source) {
 void step_item_state(Game& game, Item& item, Cell cell, bool wet) {
     item.cooldown = std::max(0, item.cooldown - 1);
     step_heated_water(game,item,cell,wet);
+    step_glow_slag(game,item,cell,wet);
     if (item.flame_ticks <= 0) return;
     --item.flame_ticks;
     if (wet) {

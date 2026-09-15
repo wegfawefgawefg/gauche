@@ -23,10 +23,12 @@ bool populate_lamp_alcove(Game& game,const FloorPlan& plan,const RoomPlan& room)
         moth->counter_a=0;moth->sprite=Sprite::FurnaceMoth;
         spawn_entity(game,EntityKind::FurnaceMoth,second);
         game.stage.at(at(-4,2))->kind=TileKind::ShallowWater;
-        if (random_u32(game)%2==0) {
+        const auto supply=random_u32(game)%3;
+        if (supply==0) {
             Entity* gear=get_entity(game,spawn_entity(game,EntityKind::GroundItem,tool));
             gear->ground_item=make_item(ItemKind::SteamLance);gear->ground_item.loaded=1;gear->sprite=Sprite::SteamLance;
-        } else place_ground_item(game,tool,ItemKind::EmergencyFoam,2);
+        } else if (supply==1) place_ground_item(game,tool,ItemKind::EmergencyFoam,2);
+        else place_ground_item(game,tool,ItemKind::GlowSlag);
         return true;
     }
     return false;

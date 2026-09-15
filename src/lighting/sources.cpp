@@ -62,7 +62,8 @@ std::vector<LightSource> collect_light_sources(const Game& game,
         add_emitter(sources, cache, entity.cell, entity.light, source_scale * heat_scale(entity.cell),entity.facing);
         if (entity.scorch_ticks > 0 || entity.burn_ticks > 0)
             add(sources, cache, entity.cell, 3, 0.55F * heat_scale(entity.cell), {1.0F, 0.36F, 0.09F});
-        if (entity.kind == EntityKind::GroundItem)
+        if (entity.kind == EntityKind::GroundItem ||
+            (entity.kind==EntityKind::Projectile && entity.ground_item.kind==ItemKind::GlowSlag))
             add_emitter(sources, cache, entity.cell, item_light(entity.ground_item), heat_scale(entity.cell),entity.facing);
         if (entity.kind != EntityKind::GroundItem &&
             entity.inventory.selected >= 0 && entity.inventory.selected < quick_slots)

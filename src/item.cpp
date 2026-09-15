@@ -108,6 +108,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     switch (item.kind) {
     case ItemKind::PocketPump: return collect_pocket_pump(game,user_slot,direction);
     case ItemKind::ChainHook: return launch_chain_hook(game,user_slot,direction);
+    case ItemKind::GlowSlag:
     case ItemKind::InsulatedBoots:
     case ItemKind::RailSwitchKey:
     case ItemKind::MoldKey:

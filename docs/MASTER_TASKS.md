@@ -401,7 +401,8 @@ behavior and balance playtesting remain the user's.
   [Rail Shunters and freight carts](history/RAIL_SHUNTER.md) add warned shunting, real cargo, single-impact collisions, hook hauling, cart brakes, cuttable freight track and optional loaded sidings. Generated-floor checks also fixed [scrap-yard snapshot rejection](history/SCRAP_YARD_SNAPSHOT.md).
   [Rail Switch Keys and points](history/RAIL_POINTS.md) add redirectable T sidings, breakable selected exits, directional rail drawing and contextual key supplies.
   [Insulated Boots](history/INSULATED_BOOTS.md) add temporary floor-conduction immunity with slower steps, explicit direct-arc vulnerability, a saved HUD timer, contextual cable-trench supply and crawler drops.
-  All twenty initial catalog enemy behaviors and twenty-six of fifty regional items implemented;
+  [Glow Slag](history/GLOW_SLAG.md) adds recoverable thrown light/heat, finite reheating, moth/siphon theft, cold/water quenching and lamp-alcove acquisition.
+  All twenty initial catalog enemy behaviors and twenty-seven of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

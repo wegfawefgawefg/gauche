@@ -1,3 +1,4 @@
+#include "../items/glow_slag.hpp"
 #include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
 #include "../entities/furnace_moth.hpp"
@@ -25,7 +26,7 @@
 namespace {
 
 bool hot_item(const Item& item) {
-    return item.kind != ItemKind::None && (item.flame_ticks > 0 || item.kind == ItemKind::Torch);
+    return item.kind != ItemKind::None && (item.flame_ticks > 0 || item.kind == ItemKind::Torch || glowing_slag(item));
 }
 
 } // namespace
@@ -33,6 +34,7 @@ bool hot_item(const Item& item) {
 bool entity_has_flame(const Entity& actor) {
     if (actor.kind == EntityKind::None || actor.kind == EntityKind::SteamLeech) return false;
     if (actor.kind == EntityKind::GroundItem) return hot_item(actor.ground_item);
+    if (actor.kind==EntityKind::Projectile && glowing_slag(actor.ground_item)) return true;
     if (actor.health <= 0) return false;
     if (burning_flare(actor)) return true;
     if (actor.kind == EntityKind::CandleKeeper && actor.timer_b == 0) return true;
@@ -156,6 +158,8 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
         }
         // FUEL: Temporary burning sticks go out. Torches and living embers retain their flame.
         Item* exposed = actor.kind == EntityKind::GroundItem ? &actor.ground_item : actor.inventory.held();
+        Item* slag=actor.kind==EntityKind::Projectile ? &actor.ground_item : exposed;
+        if (slag && glowing_slag(*slag)) {slag->loaded=0;quenched=true;emit_sound(game,SoundId::GlowCool,cell);}
         if (exposed && exposed->flame_ticks > 0) {
             exposed->flame_ticks = 0;
             quenched = true;

@@ -88,6 +88,7 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor && item.kind != ItemKind::IceAnchor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
+    if (item.kind==ItemKind::GlowSlag && (item.loaded>1200 || item.spare!=0 || item.count>1)) reader.okay=false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
     if (!valid_nozzle_elbow(item)) reader.okay=false;
     if (!valid_pocket_pump(item)) reader.okay=false;

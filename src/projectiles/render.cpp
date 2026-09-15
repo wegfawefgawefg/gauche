@@ -100,7 +100,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (const Entity* victim=get_entity(game,shot.entity_b)) render_cell=victim->cell;
     rect.x += pixels * .17F; rect.y += pixels * .17F;
     rect.w = rect.h = pixels * .66F;
-    SDL_Texture* texture = texture_for(graphics, shot.sprite);
+    SDL_Texture* texture = texture_for(graphics, shot.ground_item.kind==ItemKind::GlowSlag ? item_sprite(shot.ground_item) : shot.sprite);
     const LightColor light = lit_sprite_color(lighting, render_cell);
     SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
     const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : blink ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :

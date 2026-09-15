@@ -22,7 +22,10 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::NozzleElbow) {
+    if (item.kind==ItemKind::GlowSlag) {
+        if (!item.loaded) return "COLD";
+        std::snprintf(result,sizeof(result),compact ? "%ds" : "GLOW %ds",(item.loaded+59)/60);
+    } else if (item.kind==ItemKind::NozzleElbow) {
         if (compact) std::snprintf(result,sizeof(result),"%dHP %s",item.durability,item.loaded ? "L" : "R");
         else std::snprintf(result,sizeof(result),"FITTING %d/%d HP",item.durability,item.max_durability);
     } else if (item.kind==ItemKind::PocketPump) {
@@ -79,6 +82,7 @@ std::string item_state_text(const Item& item, bool compact) {
 }
 
 int item_meter_capacity(const Item& item) {
+    if (item.kind==ItemKind::GlowSlag) return 1200;
     if (item.kind==ItemKind::PocketPump) return pump_capacity;
     if (item.kind==ItemKind::EffigyMask) return item.max_uses*60;
     if (item.kind==ItemKind::HeatSiphon) return 1800;
@@ -100,6 +104,7 @@ int item_meter_capacity(const Item& item) {
 }
 
 int item_meter_current(const Item& item) {
+    if (item.kind==ItemKind::GlowSlag) return item.loaded;
     if (item.kind==ItemKind::PocketPump) return item.spare;
     if (item.kind==ItemKind::EffigyMask) return effigy_mask_ticks(item);
     if (item.kind==ItemKind::HeatSiphon) return item.loaded;

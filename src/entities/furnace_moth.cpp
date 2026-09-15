@@ -1,3 +1,4 @@
+#include "../items/glow_slag.hpp"
 #include "furnace_moth.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
@@ -25,7 +26,7 @@ bool exposed_fuel(const Game& game,Cell cell) {
         if ((e.kind==EntityKind::Campfire && e.fire_tramples<5) || burning_flare(e) ||
             e.burn_ticks>0 || e.scorch_ticks>0) return true;
         const Item& item=e.kind==EntityKind::GroundItem ? e.ground_item : *e.inventory.held();
-        if (item.flame_ticks>0) return true;
+        if (item.flame_ticks>0 || glowing_slag(item)) return true;
     }
     return false;
 }

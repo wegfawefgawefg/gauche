@@ -38,7 +38,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
         loose->ground_item = item;
         loose->sprite = item_sprite(item);
     }
-    emit_sound(game, item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, cell);
+    emit_sound(game, item.kind == ItemKind::GlowSlag ? SoundId::GlowLand : item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, cell);
 }
 
 bool catch_boomerang(Game& game, int slot) {

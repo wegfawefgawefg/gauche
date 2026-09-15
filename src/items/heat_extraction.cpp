@@ -1,3 +1,4 @@
+#include "glow_slag.hpp"
 #include "heat_siphon.hpp"
 #include "flare.hpp"
 #include "../props/candle.hpp"
@@ -50,6 +51,11 @@ int extract_heat(Game& game, Cell cell, int limit) {
         if (actor.scorch_ticks>0) return take(actor.scorch_ticks,limit);
         Item* item=actor.kind==EntityKind::GroundItem ? &actor.ground_item : actor.inventory.held();
         if (item && item->flame_ticks>0) return take(item->flame_ticks,limit);
+        if (item && glowing_slag(*item)) {
+            const int amount=take(item->loaded,limit);
+            if (!item->loaded) emit_sound(game,SoundId::GlowCool,cell);
+            return amount;
+        }
     }
     return 0;
 }

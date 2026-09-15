@@ -3,6 +3,7 @@
 This is the **single live checklist**. [Content brief](CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](NEXT_TASKS.md): history. Preserve dark, readable lighting.
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
+- [ ] Implement [conditions and world feedback](CONDITIONS_AND_WORLD_FEEDBACK.md): water/campfire and owl bait fixes; ~50 conditions and useful splints; ice momentum/cold-water rescue; excavation crews and shoot-through barriers; optics/dev-mode gate; compound objectives, escape hazards, pursuer and team-pause policy. Modifier counts remain exploratory.
 ## Tile rules and damage feedback
 
 - [x] Give tiles one explicit break rule: **unbreakable**, **damageable**, or

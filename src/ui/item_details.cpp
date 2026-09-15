@@ -159,6 +159,10 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "SCENT 10s | NO DAMAGE");
     if (item.kind == ItemKind::RottenFruit)
         std::snprintf(line, sizeof(line), "NAUSEA 1 HP/s | WATER CURES");
+    if (item.kind == ItemKind::QuarryCharge)
+        std::snprintf(line,sizeof(line),"FUSE 3s | BACKBLAST 24");
+    if (item.kind == ItemKind::FuseScissors)
+        std::snprintf(line,sizeof(line),"LANDED FUSE | PACK SPACE");
     if (item.kind == ItemKind::ForemanWhistle)
         std::snprintf(line,sizeof(line),"WORK 4s | HEARD 8 | AIM %d",pattern.maximum);
     if (item.kind == ItemKind::WolfWhistle)

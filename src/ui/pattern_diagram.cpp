@@ -72,6 +72,12 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+    if (item.kind==ItemKind::QuarryCharge) {
+        layout.min_x=-2; layout.max_x=4; layout.columns=7;
+        layout.cell_size=std::min({16.0F,width/7.0F,height/static_cast<float>(layout.rows)});
+        layout.x=x+(width-7.0F*layout.cell_size)*.5F;
+        layout.y=y+(height-static_cast<float>(layout.rows)*layout.cell_size)*.5F;
+    }
     // GRID: The backing follows the effect's bounds instead of filling the whole card.
     for (int row = layout.min_y; row <= layout.max_y; ++row)
         for (int column = layout.min_x; column <= layout.max_x; ++column) {
@@ -91,6 +97,8 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         for (int dx=-7;dx<=7;++dx) for (int dy=-3;dy<=3;++dy)
             if (dx!=0 && std::abs(dx)+std::abs(dy)<=7 && std::abs(dy)<=std::abs(dx))
                 colored_cell(renderer,layout,dx,dy,PatternEffect::Utility,dx>0);
+    } else if (item.kind==ItemKind::QuarryCharge) {
+        for (int reach=-1;reach<=3;++reach) colored_cell(renderer,layout,reach,0,PatternEffect::Damage,false);
     } else if (item.kind==ItemKind::SnowShelter) {
         colored_cell(renderer,layout,1,0,PatternEffect::Utility,false);
         colored_cell(renderer,layout,1,1,PatternEffect::Utility,false);
@@ -136,7 +144,7 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
     SDL_FRect player{layout.x + static_cast<float>(-layout.min_x) * layout.cell_size,
                      layout.y + static_cast<float>(-layout.min_y) * layout.cell_size,
                      layout.cell_size, layout.cell_size};
-    const SDL_Color marker = pattern.minimum == 0 && pattern.maximum == 0 ?
+    const SDL_Color marker = item.kind==ItemKind::QuarryCharge || (pattern.minimum == 0 && pattern.maximum == 0) ?
         effect_color(pattern.effect) : SDL_Color{212, 207, 169, 255};
     SDL_SetRenderDrawColor(renderer, marker.r, marker.g, marker.b, 255);
     SDL_RenderFillRect(renderer, &player);

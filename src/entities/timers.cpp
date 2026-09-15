@@ -6,6 +6,8 @@
 #include "../items/flare.hpp"
 #include "../items/storm_lantern.hpp"
 #include "dispatch.hpp"
+#include "../items/quarry_charge.hpp"
+#include "../projectiles/exposed_fuse.hpp"
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
 #include "shard_colony.hpp"
@@ -47,7 +49,9 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::None) return;
     if (game.tick % static_cast<std::uint64_t>(movement_slow_factor(entity)) == 0)
         entity.move_wait = std::max(0, entity.move_wait - movement_recovery_rate(entity));
-    entity.timer_a = std::max(0, entity.timer_a - 1);
+    wet_landed_fuse(game,slot);
+    if (!exposed_fuse(entity) || entity.freeze_ticks==0 || game.tick%2!=0)
+        entity.timer_a = std::max(0, entity.timer_a - 1);
     entity.timer_b = std::max(0, entity.timer_b - 1);
     entity.timer_c = std::max(0, entity.timer_c - 1);
     if (entity.timer_c == 0) { entity.label_c = 0; entity.point_c = {}; }
@@ -60,6 +64,7 @@ void step_entity_timers(Game& game, int slot) {
     // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
     if (entity.kind == EntityKind::SteamLeech) entity.scorch_ticks = entity.burn_ticks = 0;
     step_thaw_charge(game,slot);
+    step_quarry_charge(game,slot);
     step_flare(game,slot);
     step_echo_pebble(game,slot);
     if (entity.kind == EntityKind::None) return;

@@ -122,6 +122,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::QuarryCharge)) return; // Physical fuse phase.
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::CoalSpit)) { step_coal_spit(game,slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::ThawCharge)) return; // Physical fuse phase.
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Harpoon)) { step_harpoon(game,slot); return; }

@@ -1,4 +1,6 @@
 #include "foreman_whistle.hpp"
+#include "quarry_charge.hpp"
+#include "fuse_scissors.hpp"
 #include "sled.hpp"
 #include "snow_shelter.hpp"
 #include "ice_anchor.hpp"
@@ -39,6 +41,8 @@
 #include "ice_projectiles.hpp"
 
 const RegionalItem* regional_item(ItemKind kind) {
+    if (const auto* item=quarry_charge_item(kind)) return item;
+    if (const auto* item=fuse_scissors_item(kind)) return item;
     if (const auto* item=foreman_whistle_item(kind)) return item;
     if (const auto* item=sled_item(kind)) return item;
     if (const auto* item=snow_shelter_item(kind)) return item;

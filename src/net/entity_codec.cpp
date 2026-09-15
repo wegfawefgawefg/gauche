@@ -1,4 +1,5 @@
 #include "../entities/ember.hpp"
+#include "../items/quarry_charge.hpp"
 #include "../entities/hearing.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
@@ -200,6 +201,7 @@ Entity read_entity(PacketReader& reader) {
          entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
     if (!valid_sled(entity)) reader.okay=false;
     if (!valid_ice_anchor(entity)) reader.okay=false;
+    if (!valid_quarry_charge(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||

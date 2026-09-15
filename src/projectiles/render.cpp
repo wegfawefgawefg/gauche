@@ -48,7 +48,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool hook = harpoon || widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool flare = shot.label_a == static_cast<int>(ProjectileKind::Flare);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
-    const bool thaw = shot.label_a == static_cast<int>(ProjectileKind::ThawCharge);
+    const bool thaw = shot.label_a == static_cast<int>(ProjectileKind::ThawCharge) || shot.label_a == static_cast<int>(ProjectileKind::QuarryCharge);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
@@ -114,7 +114,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < 3; ++i) {
             const float beat = static_cast<float>((game.tick + static_cast<std::uint64_t>(i * 5)) % 17) / 17;
-            SDL_SetRenderDrawColor(renderer, prism ? 186 : 255, static_cast<Uint8>(flare ? 65 : prism ? 218 : 180 - i * 25), flare ? 42 : prism ? 255 : 62,
+            SDL_SetRenderDrawColor(renderer, shot.freeze_ticks>0 ? 133 : prism ? 186 : 255, static_cast<Uint8>(shot.freeze_ticks>0 ? 211 : flare ? 65 : prism ? 218 : 180 - i * 25), shot.freeze_ticks>0 ? 235 : flare ? 42 : prism ? 255 : 62,
                 static_cast<Uint8>(230 * (1-beat)));
             SDL_RenderPoint(renderer, rect.x + rect.w * .68F + pixels * beat * (i == 1 ? -.18F : .12F),
                 rect.y + rect.h * .1F - pixels * beat * .35F);

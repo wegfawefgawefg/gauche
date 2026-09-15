@@ -44,5 +44,7 @@ int populate_workfront(Game& game,const RoomPlan& room) {
     place_ground_item(game,room.center+Cell{-5,-3},ItemKind::Pickaxe);
     place_prop(game.stage,room.center+Cell{-5,3},PropKind::Crate);
     if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-5,2},ItemKind::ForemanWhistle);
+    if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-5,1},ItemKind::QuarryCharge,2);
+    if (random_u32(game)%3==0) place_ground_item(game,room.center+Cell{-6,1},ItemKind::FuseScissors);
     return 4;
 }

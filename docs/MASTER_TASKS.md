@@ -282,7 +282,8 @@ behavior and balance playtesting remain the user's.
   shared digging, coordinated retaliation, seven poses and twelve sounds.
   [Foreman's Whistle](history/FOREMAN_WHISTLE.md) redirects idle workers until their leader calls again, with finite uses and themed drops/supplies/rewards.
   [Ember Stokers](history/EMBER_STOKER.md) replace the old hidden-pistol Ember with finite coal, traveling hot/cold pellets, a scoop recovery and an empty-sack shovel attack.
-  Three catalog enemy behaviors and one of fifty regional items implemented;
+  [Quarry Charges and Fuse Scissors](history/QUARRY_FUSES.md) add directional stone cutting, dangerous backblast, exact bomb recovery, and shared exposed-fuse water/cold rules.
+  Three catalog enemy behaviors and three of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

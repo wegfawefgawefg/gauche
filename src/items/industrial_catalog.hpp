@@ -3,4 +3,4 @@
 #include <array>
 
 // Only implemented regional finds enter stock/rewards. Shared guns remain separate.
-inline constexpr std::array industrial_finds{ItemKind::ForemanWhistle};
+inline constexpr std::array industrial_finds{ItemKind::ForemanWhistle,ItemKind::QuarryCharge,ItemKind::FuseScissors};

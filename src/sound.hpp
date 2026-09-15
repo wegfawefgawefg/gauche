@@ -52,6 +52,7 @@ enum class SoundId : std::size_t {
     CrewWhistle, CrewMarch, CrewHeave, CrewPick, CrewPick2, CrewWarn, CrewSwing, CrewComplain, CrewAlarm, CrewDeath, CrewStep1, CrewStep2,
     WorkCall, WorkAnswer, WorkSpent,
     StokerCough, StokerScoop, StokerSpit, StokerImpact, StokerHeave, StokerSwing, StokerDeath,
+    QuarryPlace, QuarryFuse, QuarryBurst, FuseSnip, FuseDouse, ScissorsSpent,
     Count,
 };
 
@@ -101,4 +102,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "crew_whistle", "crew_march", "crew_heave", "crew_pick", "crew_pick2", "crew_warn", "crew_swing", "crew_complain", "crew_alarm", "crew_death", "crew_step1", "crew_step2",
     "work_call", "work_answer", "work_spent",
     "stoker_cough", "stoker_scoop", "stoker_spit", "stoker_impact", "stoker_heave", "stoker_swing", "stoker_death",
+    "quarry_place", "quarry_fuse", "quarry_burst", "fuse_snip", "fuse_douse", "scissors_spent",
 };

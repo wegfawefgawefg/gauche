@@ -14,7 +14,7 @@ bool wading_actor(const Entity& actor) {
     case EntityKind::Wasp: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:
     case EntityKind::Bat: case EntityKind::FrostBat: case EntityKind::LanternMoth:
-    case EntityKind::Ember: case EntityKind::Train: case EntityKind::RailLayer:
+    case EntityKind::Train: case EntityKind::RailLayer:
         return false;
     default: return true;
     }

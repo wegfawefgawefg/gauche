@@ -2,7 +2,7 @@
 
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
-working Pickhand/Shift Foreman crews and their usable whistle. Track implementation in `../MASTER_TASKS.md`.
+working Pickhand/Shift Foreman crews, their usable whistle, and finite-coal Ember Stokers. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -57,7 +57,7 @@ assets to make, not substitutes using the current generic sounds.
 
 | # | Enemy | Behavior, tell, interruption and sound | Habitat; one-roll drops |
 | --- | --- | --- | --- |
-| 1 | Ember stoker | Expand existing Ember into a 48-HP worker: packs a coal spit for 0.5s, fires a traveling hot pellet, then must scoop from its finite coal sack. Water suppresses the next ignition. Cough, shovel scrape, furnace spit. | Furnace aisles; 25% two coal lumps, 15% slag scoop. |
+| 1 | Ember stoker | Implemented: 48 HP, six coal shots including the loaded one. Packs for 0.5s, spits a traveling 12-damage hot pellet to eight cells, scoops for 1s between shots. Water/cold spoil the next ignition: 4 damage, no fire. Empty sack uses a 0.5s shovel tell for 14 damage. Coal can refuel the reserve. Cough, shovel scrape, furnace spit. | Existing Industrial encounters/spawners; 25% up to two unspent coal lumps, otherwise nothing. Slag scoop drop and dedicated furnace aisles await implementation. |
 | 2 | Pickhand | Implemented: 80 HP; follows a separate lane at the foreman's work front, braces 0.6s, then cuts walls/props for 25 damage, dig power 1. Single weak hits provoke a complaint; a hit of at least 12 damage or accumulated 20 damage in 2s causes pursuit. Interrupted swings still need a new tell. Boot scurry, pick ring, mutter. | Implemented workfront; 20% pickaxe at 12 condition, next 20% 3–6 gold, otherwise nothing. Lunch tin drop awaits item implementation. |
 | 3 | Shift foreman | Implemented: 110 HP; surveys, whistles for 0.6s, then advances behind three linked pickhands in separate lanes. Attacking him or killing two crew members rallies surviving crew against the attacker. Points, whistle, three-part “hup” cadence. | Implemented workfront; single roll 25% Foreman's Whistle, next 25% 5–9 gold, otherwise nothing. Chalk drops await its item. |
 | 4 | Powder monkey | 42 HP; plants a visible two-second charge against cover, then runs for a safe cell. Cannot spawn bombs instantly under players; killed carriers leave the already-armed bomb ticking. Cold delays its exposed fuse, water quenches it. Cork pull, fuse fizz, panicked steps. | Blasting alcoves; 25% quarry charge, 15% fuse scissors. |

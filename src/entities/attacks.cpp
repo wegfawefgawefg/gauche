@@ -1,5 +1,6 @@
 #include "mine_crew.hpp"
 #include "attacks.hpp"
+#include "ember.hpp"
 #include "bell_diver.hpp"
 #include "steam_leech.hpp"
 #include "ice_mason.hpp"
@@ -27,6 +28,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Ember:
+        if (enemy.cell==enemy.point_a && enemy.label_a==StokerStrike) add(enemy.point_b);
+        if (enemy.cell==enemy.point_a && enemy.label_a==StokerPack)
+            for (int i=1;i<=8;++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::Pickhand: case EntityKind::ShiftForeman:
         if (enemy.label_a==CrewStrike && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;

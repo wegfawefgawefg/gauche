@@ -281,7 +281,8 @@ behavior and balance playtesting remain the user's.
   add Pickhands and Shift Foremen, a dry workfront on each Industrial stage,
   shared digging, coordinated retaliation, seven poses and twelve sounds.
   [Foreman's Whistle](history/FOREMAN_WHISTLE.md) redirects idle workers until their leader calls again, with finite uses and themed drops/supplies/rewards.
-  Two catalog enemy behaviors and one of fifty regional items implemented;
+  [Ember Stokers](history/EMBER_STOKER.md) replace the old hidden-pistol Ember with finite coal, traveling hot/cold pellets, a scoop recovery and an empty-sack shovel attack.
+  Three catalog enemy behaviors and one of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

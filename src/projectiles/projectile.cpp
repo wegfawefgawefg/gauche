@@ -1,4 +1,5 @@
 #include "projectile.hpp"
+#include "coal_spit.hpp"
 #include "harpoon.hpp"
 #include "../items/muffling.hpp"
 #include "frost.hpp"
@@ -33,6 +34,7 @@ void init_projectile(Entity& entity) {
 }
 
 int projectile_step_ticks(const Entity& entity) {
+    if (entity.label_a == static_cast<int>(ProjectileKind::CoalSpit)) return 5;
     if (entity.label_a == static_cast<int>(ProjectileKind::Harpoon)) return 3;
     if (entity.label_a == static_cast<int>(ProjectileKind::EchoPebble)) return 6;
     if (entity.label_a == static_cast<int>(ProjectileKind::Flare)) return 4;
@@ -120,6 +122,7 @@ Cell bomb_landing(const Game& game, Cell origin, Cell facing, int reach) {
 }
 
 void step_projectile(Game& game, int slot) {
+    if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::CoalSpit)) { step_coal_spit(game,slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::ThawCharge)) return; // Physical fuse phase.
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::Harpoon)) { step_harpoon(game,slot); return; }
     if (game.entities[static_cast<std::size_t>(slot)].label_a == static_cast<int>(ProjectileKind::EchoPebble)) return; // Physical timer phase.

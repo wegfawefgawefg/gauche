@@ -76,6 +76,7 @@ set(GAUCHE_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
+    src/projectiles/coal_spit.cpp
     src/items/foreman_whistle.cpp
     src/entities/mine_crew.cpp src/entities/mine_route.cpp
     src/items/effigy_mask.cpp src/items/ice_anchor.cpp src/items/snow_shelter.cpp src/items/sled.cpp

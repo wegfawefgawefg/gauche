@@ -1,3 +1,4 @@
+#include "../entities/ember.hpp"
 #include "../entities/hearing.hpp"
 #include "../items/sled.hpp"
 #include "../items/ice_anchor.hpp"
@@ -191,6 +192,12 @@ Entity read_entity(PacketReader& reader) {
         (entity.ground_item.kind != ItemKind::EchoPebble || entity.label_b < 0 || entity.label_b > 1 ||
          entity.counter_a < 0 || entity.counter_a > 20 || entity.counter_b < 0 || entity.counter_b > 3 ||
          entity.timer_a < 0 || entity.timer_a > 240 || entity.timer_b < 0 || entity.timer_b > 6)) reader.okay = false;
+    if (entity.kind==EntityKind::Ember && (entity.label_a<StokerReady || entity.label_a>StokerRest ||
+        entity.counter_a<0 || entity.counter_a>5 || entity.counter_b<0 || entity.counter_b>1 ||
+        entity.label_b<0 || entity.label_b>1)) reader.okay=false;
+    if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
+        (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
+         entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
     if (!valid_sled(entity)) reader.okay=false;
     if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;

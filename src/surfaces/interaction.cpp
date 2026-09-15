@@ -1,3 +1,4 @@
+#include "../entities/ember.hpp"
 #include "interaction.hpp"
 #include "temperature.hpp"
 #include "../entities/icicle_spider.hpp"
@@ -75,6 +76,7 @@ void contact_surface(Game& game, int slot) {
     if (tile == nullptr) return;
     if (wading_actor(actor) || actor.kind == EntityKind::RootTurret || actor.kind == EntityKind::WaspNest) {
         if (surface_wet(*tile)) {
+            damp_stoker(actor);
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) emit_sound(game, SoundId::WaterDouse, actor.cell);
             actor.burn_ticks = actor.scorch_ticks = 0;
             actor.vitals.nausea = actor.vitals.nausea_wait = 0;
@@ -84,7 +86,7 @@ void contact_surface(Game& game, int slot) {
                 apply_nausea(actor, 180);
             }
             if (actor.burn_ticks > 0 || actor.scorch_ticks > 0) ignite_surface(game, actor.cell);
-            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SteamLeech) {
+            if (tile->surface.fire_ticks > 0 && actor.kind != EntityKind::SteamLeech && actor.kind != EntityKind::Ember) {
                 if (actor.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, actor.cell);
                 actor.scorch_ticks = 300;
             }

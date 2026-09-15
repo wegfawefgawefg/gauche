@@ -1,3 +1,4 @@
+#include "stoker_scene.hpp"
 #include "crew_scene.hpp"
 #include "../src/game.hpp"
 #include "../src/items/fire.hpp"
@@ -248,6 +249,7 @@ int main(int argc, char** argv) {
     }
     if (mode.starts_with("work-whistle") || mode=="crew" || mode=="crew-cut" || mode=="crew-alarm")
         arrange_crew_scene(game,cosmetics,mode=="crew-cut",mode=="crew-alarm");
+    if (mode=="stoker" || mode=="stoker-wet") arrange_stoker_scene(game,cosmetics,mode=="stoker-wet");
     Entity& player = *get_entity(game, game.players[0]);
     player.owner = 0;
     if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }

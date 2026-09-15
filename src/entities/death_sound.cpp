@@ -3,6 +3,7 @@
 // MATERIAL AND VOICE: Keep species cues out of the health-damage pipeline.
 SoundId entity_death_sound(EntityKind kind) {
     switch (kind) {
+    case EntityKind::Ember: return SoundId::StokerDeath;
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: return SoundId::CrewDeath;
     case EntityKind::Sled: return SoundId::SledBreak;
     case EntityKind::IceAnchor: return SoundId::AnchorBreak;

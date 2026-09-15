@@ -1,5 +1,6 @@
 #include "../entities/mine_crew.hpp"
 #include "effects.hpp"
+#include "../entities/ember.hpp"
 #include "../entities/ice_mason.hpp"
 #include "../entities/glass_eel.hpp"
 #include "../entities/snow_burrower.hpp"
@@ -22,8 +23,9 @@
 
 // CHILL: A movement penalty, not an input lock. Flames and cold creatures resist it.
 bool apply_chill(Entity& actor, int ticks) {
+    if (ticks>0) damp_stoker(actor);
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0 ||
-        actor.burn_ticks > 0 || actor.scorch_ticks > 0 || actor.kind == EntityKind::Ember ||
+        actor.burn_ticks > 0 || actor.scorch_ticks > 0 ||
         actor.kind == EntityKind::FrostBat || actor.vitals.chill_guard > 0) return false;
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, ticks);
     interrupt_glass_eel(actor);
@@ -55,6 +57,7 @@ bool apply_sleep(Entity& actor, int ticks) {
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
     interrupt_mine_worker(actor);
+    interrupt_stoker(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
@@ -84,6 +87,7 @@ bool apply_stun(Entity& actor, int ticks) {
     interrupt_mirror_knight(actor);
     expose_snow_burrower(actor);
     interrupt_mine_worker(actor);
+    interrupt_stoker(actor);
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);

@@ -1,5 +1,6 @@
 #include "../entities/mine_crew.hpp"
 #include "../game.hpp"
+#include "../entities/ember.hpp"
 #include "../entities/icicle_spider.hpp"
 #include "../entities/boiler_porter.hpp"
 #include "../entities/boiler_tank.hpp"
@@ -37,6 +38,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
     hurt_mine_worker(game,slot,damage,attacker);
+    interrupt_stoker(entity);
     interrupt_whiteout_drummer(entity);
     interrupt_avalanche_ram(entity);
     interrupt_snow_effigy(entity);

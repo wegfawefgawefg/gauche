@@ -62,6 +62,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "industrial_lava", "industrial_lava_a", "industrial_lava_b",
     "pickhand", "pickhand_raise", "pickhand_swing", "shift_foreman", "foreman_whistle", "foreman_raise", "foreman_swing",
     "foreman_whistle_item",
+    "stoker", "stoker_pack", "stoker_scoop", "stoker_swing", "coal_spit", "coal_spit_cold",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

@@ -57,6 +57,7 @@ enum class Sprite : std::size_t {
     IndustrialLava, IndustrialLavaA, IndustrialLavaB,
     Pickhand, PickhandRaise, PickhandSwing, ShiftForeman, ForemanWhistle, ForemanRaise, ForemanSwing,
     ForemanWhistleItem,
+    Stoker, StokerPack, StokerScoop, StokerSwing, CoalSpit, CoalSpitCold,
     Count,
 };
 

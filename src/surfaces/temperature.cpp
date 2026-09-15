@@ -1,5 +1,7 @@
 #include "../items/flare.hpp"
 #include "temperature.hpp"
+#include "../entities/ember.hpp"
+#include "../projectiles/coal_spit.hpp"
 #include "../props/circuits.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
@@ -29,7 +31,7 @@ bool entity_has_flame(const Entity& actor) {
     if (burning_flare(actor)) return true;
     if (actor.kind == EntityKind::CandleKeeper && actor.timer_b == 0) return true;
     if ((actor.kind == EntityKind::Campfire && actor.fire_tramples < 5) ||
-        actor.kind == EntityKind::Ember || actor.burn_ticks > 0 || actor.scorch_ticks > 0) return true;
+        stoker_hot(actor) || actor.burn_ticks > 0 || actor.scorch_ticks > 0) return true;
     const Item* held = actor.inventory.held();
     return held && hot_item(*held);
 }
@@ -120,6 +122,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
     tile->surface.fire_ticks = 0;
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
+        if (damp_stoker(actor) || douse_coal_spit(actor)) quenched = true;
         if (douse_flare(game,actor)) quenched = true;
         if (douse_keeper_lamp(game,actor)) quenched = true;
         quenched |= actor.burn_ticks > 0 || actor.scorch_ticks > 0;

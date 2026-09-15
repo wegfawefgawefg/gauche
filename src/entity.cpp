@@ -105,7 +105,7 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
         emit_sound(game, tile->kind == TileKind::Snow ?
             (alternate ? SoundId::SnowStep2 : SoundId::SnowStep1) :
             (alternate ? SoundId::IceStep2 : SoundId::IceStep1), entity.cell);
-    } else if (mine_worker(entity.kind))
+    } else if (mine_worker(entity.kind) || entity.kind==EntityKind::Ember)
         emit_sound(game,(entity.cell.x+entity.cell.y+slot)%2==0 ? SoundId::CrewStep1 : SoundId::CrewStep2,entity.cell);
     else if (entity.kind == EntityKind::Player || entity.kind == EntityKind::Zombie ||
         entity.kind == EntityKind::Chicken || entity.kind == EntityKind::ZombieStack)

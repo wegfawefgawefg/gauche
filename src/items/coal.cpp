@@ -1,4 +1,5 @@
 #include "coal.hpp"
+#include "../entities/ember.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../props/stove.hpp"
 #include "../projectiles/recoverable.hpp"
@@ -14,6 +15,7 @@ const RegionalItem* coal_item(ItemKind kind) { return kind == ItemKind::CoalLump
 bool use_coal(Game& game, int slot, Cell direction) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     const Cell target = actor.cell+direction;
+    if (stoker_at(game,target)>=0) return feed_stoker(game,target);
     if (boiler_at(game,target) >= 0) return feed_boiler(game,target);
     const Prop& prop = game.stage.at_or_border(target).prop;
     // FULL: A full stove rejects fuel, rather than making a surprise throw at it.

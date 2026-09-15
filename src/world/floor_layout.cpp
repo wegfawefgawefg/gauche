@@ -1,3 +1,4 @@
+#include "../items/ice_anchor.hpp"
 #include "route.hpp"
 #include "water.hpp"
 #include "currents.hpp"
@@ -16,6 +17,7 @@ void generate_world_floor(Game& game, FloorLayout layout) {
     for (std::size_t owner = 0; owner < 4; ++owner) {
         if (const Entity* player = get_entity(game, game.players[owner])) {
             previous[owner] = *player;
+            for (Item& item : previous[owner].inventory.slots) sync_ice_anchor(game,item);
             joined[owner] = true;
         }
     }
@@ -70,6 +72,7 @@ void generate_world_floor(Game& game, FloorLayout layout) {
             for (Item& item : player->inventory.slots) {
                 item.flight = {};
                 fold_unused_door(item);
+                fold_ice_anchor(item);
             }
             player->light = previous[owner].light;
             player->self_light = previous[owner].self_light;

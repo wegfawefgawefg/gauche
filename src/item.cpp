@@ -335,6 +335,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::RocketLauncher: case ItemKind::Shotgun: case ItemKind::SMG:
         used = fire_weapon(game, user_slot, direction, item);
         return used;
+    case ItemKind::IceAnchor: return false; // Placement/reeling belongs to the player action.
     case ItemKind::EffigyMask: return false; // Continuous stationary use belongs to the player action.
     case ItemKind::IceBrick: return false; // Tap/hold release is owned by the player action step.
     case ItemKind::Bow: return false; // Draw/release is handled by the player action step.

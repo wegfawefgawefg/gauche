@@ -123,6 +123,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::IceBrick);
         else if (roll < 35) place_ground_item(game, enemy.cell, ItemKind::Chisel);
         else if (roll < 60) place_coins(game, enemy.cell, 2 + static_cast<int>(random_u32(game) % 3));
+        else if (roll < 70) place_ground_item(game, enemy.cell, ItemKind::IceAnchor);
         break;
     }
     case EntityKind::SteamLeech: {

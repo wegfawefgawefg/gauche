@@ -1,3 +1,4 @@
+#include "../items/ice_anchor.hpp"
 #include "../items/thaw_charge.hpp"
 #include "../entities/gate.hpp"
 #include "../projectiles/harpoon.hpp"
@@ -48,7 +49,7 @@ Item read_item(PacketReader& reader) {
     item.flight = {reader.i32(), reader.u32()};
     item.anchor = {reader.i32(), reader.u32()};
     if (item.anchor.slot < -1 || item.anchor.slot >= max_entities ||
-        (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor)) reader.okay = false;
+        (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor && item.kind != ItemKind::IceAnchor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun)) reader.okay = false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
@@ -188,6 +189,7 @@ Entity read_entity(PacketReader& reader) {
         (entity.ground_item.kind != ItemKind::EchoPebble || entity.label_b < 0 || entity.label_b > 1 ||
          entity.counter_a < 0 || entity.counter_a > 20 || entity.counter_b < 0 || entity.counter_b > 3 ||
          entity.timer_a < 0 || entity.timer_a > 240 || entity.timer_b < 0 || entity.timer_b > 6)) reader.okay = false;
+    if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_thaw_charge(entity)) reader.okay=false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||

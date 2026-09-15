@@ -1,3 +1,4 @@
+#include "items/ice_anchor_render.hpp"
 #include "scenery/ice_render.hpp"
 #include "combat/parry.hpp"
 #include "render.hpp"
@@ -182,13 +183,14 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (layer == 0) draw_gate(renderer,graphics,entity,camera,zoom,lighting);
             continue;
         }
-        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
+        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::IceAnchor || entity.kind == EntityKind::PocketDoor ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
             entity.kind == EntityKind::WaveVent ? 0 :
             entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
             entity.kind == EntityKind::Coins ? 1 : 2;
         if (entity_layer != layer) continue;
+        if (entity.kind==EntityKind::IceAnchor) draw_anchor_tether(renderer,game,entity,camera,zoom,lighting);
         if (entity.kind == EntityKind::Projectile) {
             draw_projectile(renderer, graphics, entity, game, camera, zoom, lighting);
             continue;

@@ -20,7 +20,10 @@ std::string item_cooldown_text(const Item& item) {
 std::string item_state_text(const Item& item, bool compact) {
     if (item.flight.slot >= 0) return item.kind == ItemKind::HarpoonGun ? "LINE OUT" : compact ? "OUT" : "IN FLIGHT";
     char result[32]{};
-    if (item.kind==ItemKind::EffigyMask) {
+    if (item.kind==ItemKind::IceAnchor) {
+        if (compact) std::snprintf(result,sizeof(result),"%dHP %s",item.durability,item.anchor.slot>=0 ? "SET" : "");
+        else std::snprintf(result,sizeof(result),"POINT %d/%d HP",item.durability,item.max_durability);
+    } else if (item.kind==ItemKind::EffigyMask) {
         std::snprintf(result,sizeof(result),compact ? "%.1fs" : "WEAR %.1fs LEFT",static_cast<double>(effigy_mask_ticks(item))/60);
     } else if (item.kind==ItemKind::HeatSiphon) {
         std::snprintf(result,sizeof(result),compact ? "%.1f/6" : "HEAT %.1f / 6 CHARGES",static_cast<double>(item.loaded)/300.0);

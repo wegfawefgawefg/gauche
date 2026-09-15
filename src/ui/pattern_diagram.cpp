@@ -85,6 +85,8 @@ void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
         for (int dx=-7;dx<=7;++dx) for (int dy=-3;dy<=3;++dy)
             if (dx!=0 && std::abs(dx)+std::abs(dy)<=7 && std::abs(dy)<=std::abs(dx))
                 colored_cell(renderer,layout,dx,dy,PatternEffect::Utility,dx>0);
+    } else if (item.kind == ItemKind::IceAnchor) {
+        for (int dx=1;dx<=5;++dx) colored_cell(renderer,layout,dx,0,PatternEffect::Utility,dx<5);
     } else if (pattern.minimum == 0 && pattern.maximum == 0 && pattern.blast_radius == 0)
         colored_cell(renderer, layout, 0, 0, pattern.effect, false);
     else if (pattern.conduction) {

@@ -1,3 +1,4 @@
+#include "../items/ice_anchor.hpp"
 #include "../items/effigy_mask.hpp"
 #include "../items/thaw_charge.hpp"
 #include "../items/echo_pebble.hpp"
@@ -115,10 +116,15 @@ void step_entity_timers(Game& game, int slot) {
     // PAYLOAD: A melee windup copy is not another burning object in the world.
     step_item_state(game, entity.ground_item, entity.cell, wet && entity.kind == EntityKind::GroundItem);
     stow_effigy_mask(entity.ground_item,false);
+    if (entity.kind==EntityKind::GroundItem && entity.ground_item.kind==ItemKind::IceAnchor) {
+        sync_ice_anchor(game,entity.ground_item);
+        if (entity.ground_item.kind==ItemKind::None) { remove_entity(game,{slot,entity.generation}); return; }
+    }
     step_lantern_fuel(game,entity.ground_item,entity.cell,entity.kind==EntityKind::GroundItem,false);
     for (int index=0;index<quick_slots;++index) {
         Item& item=entity.inventory.slots[static_cast<std::size_t>(index)];
         step_item_state(game,item,entity.cell,wet && wading_actor(entity));
+        sync_ice_anchor(game,item);
         stow_effigy_mask(item,entity.health>0 && entity.sleep_ticks==0 && entity.stun_ticks==0 && index==entity.inventory.selected);
         step_lantern_fuel(game,item,entity.cell,entity.health>0 && index==entity.inventory.selected,true);
     }

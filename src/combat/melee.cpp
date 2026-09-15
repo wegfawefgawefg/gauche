@@ -1,3 +1,4 @@
+#include "../items/ice_anchor.hpp"
 #include "../entities/attacks.hpp"
 #include "../items/catalog.hpp"
 #include "../traps/woodland.hpp"
@@ -43,6 +44,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if (item.flame_ticks > 0 || item.kind == ItemKind::Torch) ignite_surface(game, cell);
             struck |= hit_prop(game, cell, prop_damage, origin);
             struck |= hit_woodland_traps(game, cell, pattern.damage, origin);
+            struck |= hit_ice_anchor(game,cell,pattern.damage,origin);
             const int hit = entity_at(game, cell, true);
             if (hit >= 0 && hit != user_slot && !hit_once[static_cast<std::size_t>(hit)]) {
                 Entity& target = game.entities[static_cast<std::size_t>(hit)];

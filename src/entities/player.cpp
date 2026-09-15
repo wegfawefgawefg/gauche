@@ -1,3 +1,4 @@
+#include "../items/ice_anchor.hpp"
 #include "dispatch.hpp"
 #include "../items/effigy_mask.hpp"
 #include "../items/heat_siphon.hpp"
@@ -57,6 +58,7 @@ void step_player(Game& game, int slot, const Input& input) {
     if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
         interact_with_fixture(game, player.owner, player.cell + player.facing);
     if (input.drop) drop_player_item(game, player);
+    if (step_anchor_action(game,slot,input)) return;
     if (step_effigy_mask(game,slot,input)) return;
     if (step_harpoon_action(game,slot,input)) return;
     if (step_siphon_action(game,slot,input)) return;

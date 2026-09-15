@@ -6,6 +6,7 @@
 #include "items/ice_equipment.hpp"
 #include "game.hpp"
 #include "items/heat_siphon.hpp"
+#include "items/thaw_charge.hpp"
 #include "props/candle.hpp"
 #include "items/coal.hpp"
 #include "items/kettle.hpp"
@@ -105,6 +106,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::ThawCharge:
+        used=place_thaw_charge(game,user_slot); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::HeatSiphon: return draw_siphon_heat(game,user_slot);
     case ItemKind::BorrowedSummer:
         used = use_borrowed_summer(game,user_slot); cooldown = item_pattern(item).cooldown;

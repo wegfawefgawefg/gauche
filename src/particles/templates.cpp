@@ -176,6 +176,9 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::SiphonFlame:
         spawn_flame(cosmetics,sound.cell,seed,false);
         break;
+    case SoundId::ThawSteam:
+        spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
+        break;
     case SoundId::KettleScald:
         spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
         break;

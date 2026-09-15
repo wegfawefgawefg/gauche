@@ -26,6 +26,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     // Audio volume, local ambience and hounds' own calls cannot steer their hearing.
     int radius = 0;
     switch (sound) {
+    case SoundId::ThawBurst:
     case SoundId::BoilerBreak:
     case SoundId::Explosion: case SoundId::Explosion1: case SoundId::Explosion2:
     case SoundId::Explosion3: case SoundId::ThunderCrack: case SoundId::PrismBurst:
@@ -60,6 +61,7 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::SnowSplat: case SoundId::CrossbowShot: case SoundId::BowRelease:
     case SoundId::BoomerangHit: case SoundId::BoomerangLand: case SoundId::PrismLand:
         radius = 7; break;
+    case SoundId::ThawPlace: case SoundId::ThawFuse:
     case SoundId::SiphonDraw: case SoundId::SummerOpen:
     case SoundId::WireLay: case SoundId::WireCut: case SoundId::SpikePlant: case SoundId::SpikeBreak:
     case SoundId::FlareLand:

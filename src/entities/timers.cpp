@@ -1,3 +1,4 @@
+#include "../items/thaw_charge.hpp"
 #include "../items/echo_pebble.hpp"
 #include "../items/flare.hpp"
 #include "../items/storm_lantern.hpp"
@@ -55,6 +56,7 @@ void step_entity_timers(Game& game, int slot) {
 
     // HEAT FEEDER: Flames feed leeches; physical hits and scalds still hurt them.
     if (entity.kind == EntityKind::SteamLeech) entity.scorch_ticks = entity.burn_ticks = 0;
+    step_thaw_charge(game,slot);
     step_flare(game,slot);
     step_echo_pebble(game,slot);
     if (entity.kind == EntityKind::None) return;

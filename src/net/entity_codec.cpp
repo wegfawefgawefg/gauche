@@ -1,3 +1,4 @@
+#include "../items/thaw_charge.hpp"
 #include "../entities/gate.hpp"
 #include "../projectiles/harpoon.hpp"
 #include "../items/echo_pebble.hpp"
@@ -186,6 +187,7 @@ Entity read_entity(PacketReader& reader) {
         (entity.ground_item.kind != ItemKind::EchoPebble || entity.label_b < 0 || entity.label_b > 1 ||
          entity.counter_a < 0 || entity.counter_a > 20 || entity.counter_b < 0 || entity.counter_b > 3 ||
          entity.timer_a < 0 || entity.timer_a > 240 || entity.timer_b < 0 || entity.timer_b > 6)) reader.okay = false;
+    if (!valid_thaw_charge(entity)) reader.okay=false;
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
         entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||

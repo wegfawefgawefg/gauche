@@ -295,7 +295,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
     if (item.kind==ItemKind::HeatSiphon) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
-    if (item.kind == ItemKind::HeatSiphon) {
+    if (item.kind == ItemKind::ThawCharge) {
+        text(renderer,x+10,y+129,"2s FUSE | OPENS 2 ICE WALLS",216,186,117);
+    } else if (item.kind == ItemKind::HeatSiphon) {
         draw_action_hint(renderer,x+10,y+127,Action::Reload,"FLAME CONE");
     } else if (item.kind == ItemKind::BorrowedSummer) {
         text(renderer,x+10,y+129,"4s MOVING CROSS | NO IMMUNITY",216,186,117);

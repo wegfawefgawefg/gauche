@@ -48,6 +48,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool hook = harpoon || widow || fishing || shot.label_a == static_cast<int>(ProjectileKind::Hook);
     const bool flare = shot.label_a == static_cast<int>(ProjectileKind::Flare);
     const bool prism = shot.label_a == static_cast<int>(ProjectileKind::PrismBomb);
+    const bool thaw = shot.label_a == static_cast<int>(ProjectileKind::ThawCharge);
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool cracker = shot.label_a == static_cast<int>(ProjectileKind::Firecracker);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
@@ -108,7 +109,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
             x - static_cast<float>(shot.facing.x) * pixels * .65F,
             y - static_cast<float>(shot.facing.y) * pixels * .65F);
     }
-    if (flare || prism || bomb || cracker || pitch) {
+    if (thaw || flare || prism || bomb || cracker || pitch) {
         // FUSE: A few local sparks communicate danger without a debug attack grid.
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < 3; ++i) {

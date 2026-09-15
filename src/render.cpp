@@ -9,6 +9,7 @@
 #include "entities/drummer_render.hpp"
 #include "entities/warden_render.hpp"
 #include "entities/shard_render.hpp"
+#include "entities/boiler_render.hpp"
 #include "entities/flight_render.hpp"
 #include "entities/plant_render.hpp"
 #include "entities/wolf_render.hpp"
@@ -326,6 +327,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderRect(renderer, &held_rect);
             }
         }
+        draw_boiler_details(renderer,graphics,entity,rect,brightness);
         draw_brick_prepare(renderer, entity, rect, brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&
             entity.health < entity.max_health && entity.max_health < 1000000) {

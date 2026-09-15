@@ -229,7 +229,7 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float shift = (1.0F - ui.slide) * 220.0F;
     const bool shop_offer = game.run.phase == RunPhase::Shop && ui.offer_focus < 3 &&
         game.run.shop_stock[static_cast<std::size_t>(ui.offer_focus)] != ItemKind::None;
-    const Item loose = ui.compare_ground ? pickup_item_at(game,player->cell) : Item{};
+    const Item loose = ui.compare_ground ? reachable_pickup_item(game,*player) : Item{};
     const Item* ground = loose.kind != ItemKind::None ? &loose : nullptr;
     const bool comparing = ground != nullptr || has_reward_offer(game, owner) || shop_offer;
     if (comparing) {

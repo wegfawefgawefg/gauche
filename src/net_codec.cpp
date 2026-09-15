@@ -1,4 +1,5 @@
 #include "net_codec.hpp"
+#include "entities/boiler_tank.hpp"
 #include "props/cloth.hpp"
 #include "props/candle.hpp"
 #include "props/stove.hpp"
@@ -252,6 +253,7 @@ Entity read_entity(PacketReader& reader) {
         reader.okay = false;
     for (Item& item : entity.inventory.slots) item = read_item(reader);
     entity.ground_item = read_item(reader);
+    if (!valid_boiler_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
         entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||
         entity.spawn_wait < 0 || entity.owner >= 4 || entity.burn_ticks < 0 ||

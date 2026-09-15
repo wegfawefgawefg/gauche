@@ -1,4 +1,5 @@
 #include "recoverable.hpp"
+#include "../entities/boiler_tank.hpp"
 #include "../surfaces/temperature.hpp"
 #include "../item_pattern.hpp"
 #include "../combat/parry.hpp"
@@ -123,6 +124,8 @@ void step_recoverable(Game& game, int slot) {
     for (const Entity& actor : game.entities)
         if (actor.kind != EntityKind::None && actor.impassable && actor.hard_blocker && actor.cell == next)
             blocked = true;
+    const int tank = boiler_at(game,next);
+    if (tank >= 0) damage_entity(game,tank,shot.counter_b,shot.cell);
     hit_prop(game, next, shot.counter_b, shot.cell);
     if (blocked) {
         if (!boomerang) hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);

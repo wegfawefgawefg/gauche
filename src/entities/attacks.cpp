@@ -12,6 +12,8 @@
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
 #include "icicle_spider.hpp"
+#include "boiler_porter.hpp"
+#include "boiler_tank.hpp"
 #include "../props/interaction.hpp"
 
 #include <algorithm>
@@ -24,6 +26,13 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::BoilerPorter:
+        if (enemy.label_a == PorterBite && enemy.cell == enemy.point_a) add(enemy.point_b);
+        break;
+    case EntityKind::BoilerTank:
+        if (enemy.label_a == BoilerTell && enemy.cell == enemy.point_a)
+            for (int i=1;i<=4;++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
     case EntityKind::IcicleSpider:
         if (enemy.label_a == SpiderBite && enemy.cell == enemy.point_a) add(enemy.point_b);
         break;

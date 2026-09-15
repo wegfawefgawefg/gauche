@@ -16,6 +16,12 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
+    case PropKind::MaintenanceLocker:
+        if (roll < 20) item = ItemKind::CoalLump;
+        else if (roll < 40) item = ItemKind::Sealant;
+        else if (roll < 55) item = ItemKind::PressureValve;
+        else if (roll < 70) item = ItemKind::Ammo;
+        break;
     case PropKind::CandleCabinet:
         if (roll < 35) item = ItemKind::CandleStub;
         else if (roll < 55) item = ItemKind::WickSpool;
@@ -85,7 +91,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
                 distance(actor.cell, cell) <= 1)
                 apply_sleep(actor, 75);
     }
-    if (prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
+    if (prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
 }
 
@@ -114,6 +120,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::MaintenanceLocker) emit_sound(game,SoundId::StoveHit,cell);
     else if (prop.kind == PropKind::FrozenLunchTin) emit_sound(game, SoundId::TinHit, cell);
     else if (prop.kind == PropKind::FishingCreel) emit_sound(game, SoundId::CreelHit, cell);
     else if (prop.kind == PropKind::WeatherVane) emit_sound(game, SoundId::OpticHit, cell);

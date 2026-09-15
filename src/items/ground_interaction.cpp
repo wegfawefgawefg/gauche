@@ -1,4 +1,5 @@
 #include "ground_interaction.hpp"
+#include "pressure.hpp"
 #include "../props/candle.hpp"
 #include "../entities/candle_keeper.hpp"
 #include "../world/floating_items.hpp"
@@ -24,11 +25,17 @@ bool item_can_drop(const Item& item) {
 Item pickup_item_at(const Game& game, Cell cell) {
     const int slot = ground_slot(game,cell);
     if (slot >= 0) return game.entities[static_cast<std::size_t>(slot)].ground_item;
-    return candle_item(game.stage.at_or_border(cell).prop);
+    const Item candle = candle_item(game.stage.at_or_border(cell).prop);
+    return candle.kind != ItemKind::None ? candle : removable_valve(game,cell);
+}
+
+Item reachable_pickup_item(const Game& game, const Entity& player) {
+    const Item feet = pickup_item_at(game,player.cell);
+    return feet.kind != ItemKind::None ? feet : removable_valve(game,player.cell+player.facing);
 }
 
 GroundAction ground_action(const Game& game, const Entity& player) {
-    Item incoming = pickup_item_at(game,player.cell);
+    Item incoming = reachable_pickup_item(game,player);
     if (incoming.kind == ItemKind::None) return item_can_drop(*player.inventory.held()) ? GroundAction::Drop : GroundAction::None;
     Inventory candidate = player.inventory;
     if (transfer_item(candidate, incoming) > 0) return GroundAction::Pickup;
@@ -57,6 +64,11 @@ bool pickup_or_drop(Game& game, Entity& player) {
         if (slot < 0) return false;
         const int player_slot = static_cast<int>(&player - game.entities.data());
         keeper_candle_stolen(game,player.cell,{player_slot,player.generation});
+    }
+    if (slot < 0 && removable_valve(game,player.cell+player.facing).kind != ItemKind::None) {
+        if (ground_action(game,player) == GroundAction::Blocked) return false;
+        slot = release_valve(game,player.cell+player.facing,player.cell);
+        if (slot < 0) return false;
     }
     if (slot < 0) {
         if (!item_can_drop(*player.inventory.held())) return false;

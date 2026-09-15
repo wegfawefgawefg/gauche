@@ -162,6 +162,10 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::Wax,5,seed);
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::WoolTuft,3,seed+31);
         break;
+    case SoundId::BoilerBreak:
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::BrassRivet,7,seed);
+        scatter_material(cosmetics.debris,sound.cell,DebrisKind::CopperCurl,5,seed+17);
+        break;
     case SoundId::StoveSpent: case SoundId::CoalLand:
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::CoalCrumb,2,seed);
         break;

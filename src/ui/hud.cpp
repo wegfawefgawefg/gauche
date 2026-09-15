@@ -126,7 +126,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
                               width - 194.0F, height - 232.0F, 180.0F, 208.0F, "SELECTED");
     }
     Item ground = pointer.inside ? pickup_item_at(game,pointer.cell) : Item{};
-    if (ground.kind == ItemKind::None) ground = pickup_item_at(game,player.cell);
+    if (ground.kind == ItemKind::None) ground = reachable_pickup_item(game,player);
     const GroundAction action = ground_action(game, player);
     if (action != GroundAction::None)
         draw_action_hint(renderer, width * .5F - 90, height - 74, Action::Pickup,

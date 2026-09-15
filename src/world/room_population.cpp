@@ -4,9 +4,11 @@
 #include "ice_terrain.hpp"
 #include "lens_watch.hpp"
 #include "crystal_gallery.hpp"
+#include "boiler_room.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
 #include "../entities/seal_thief.hpp"
+#include "../entities/boiler_porter.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -49,7 +51,8 @@ Handle enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, Suppli
     if (cost > budget.threat) return {};
     if (const auto cell = room_space(game, room, kind)) {
         const Handle spawned = kind == EntityKind::BurrowWorm ?
-            spawn_burrow_worm(game, *cell) : spawn_entity(game, kind, *cell);
+            spawn_burrow_worm(game, *cell) : kind == EntityKind::BoilerPorter ?
+            spawn_boiler_porter(game,*cell) : spawn_entity(game, kind, *cell);
         if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
         return spawned;
     }
@@ -92,7 +95,7 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
     }
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Bathhouse || room.role == RoomRole::Shelter)) {
         if (room.role == RoomRole::Shelter) enemy(game, room, EntityKind::FrozenPilgrim, 2, budget);
-        else if (round % 2 == 1) enemy(game, room, EntityKind::GlassEel, 2, budget);
+        else if (round % 2 == 1) enemy(game, room, EntityKind::BoilerPorter, 3, budget);
         else enemy(game, room, EntityKind::SteamLeech, 2, budget);
         if (round >= 2) enemy(game, room, room.role == RoomRole::Shelter ?
             EntityKind::SteamLeech : EntityKind::FrozenPilgrim, 2, budget);
@@ -106,6 +109,12 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Supplies
         }
         if (!warden) enemy(game, room, EntityKind::MirrorKnight, 3, budget);
         if (round >= 2) enemy(game, room, EntityKind::FrostBat, 2, budget);
+        return;
+    }
+    if (ice_floor(game.run.floor) && room.role == RoomRole::BoilerGallery) {
+        place_maintenance_locker(game,plan,room);
+        enemy(game,room,EntityKind::BoilerPorter,3,budget);
+        if (round >= 2) enemy(game,room,EntityKind::SteamLeech,2,budget);
         return;
     }
     if (ice_floor(game.run.floor) && room.role == RoomRole::ServicePassage) {
@@ -240,6 +249,8 @@ void room_loot(Game& game, const RoomPlan& room, Supplies& budget) {
             supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
             supply(game, room, room.role == RoomRole::Shelter ? (round % 2 == 0 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
                 room.role == RoomRole::Shelter && round % 2 == 0 ? 1 : 2, budget.equipment);
+        } else if (room.role == RoomRole::BoilerGallery) {
+            supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment);
         } else if (room.role == RoomRole::ServicePassage) {
             supply(game,room,ItemKind::Lighter,1,budget.equipment);
         } else if (room.role == RoomRole::CrystalGallery) {

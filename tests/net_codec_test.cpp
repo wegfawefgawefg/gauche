@@ -2,6 +2,7 @@
 #include "../src/projectiles/projectile.hpp"
 #include "../src/entities/shard_colony.hpp"
 #include "../src/entities/icicle_spider.hpp"
+#include "../src/entities/boiler_tank.hpp"
 
 #include <cstdio>
 
@@ -89,6 +90,14 @@ int main() {
     }
     *original.stage.at({2,5}) = {TileKind::Wall,100,0};
     *original.stage.at({7,5}) = {TileKind::Wall,100,0};
+    Entity* tank = get_entity(original,spawn_entity(original,EntityKind::BoilerTank,{12,8}));
+    tank->counter_a = 89; tank->counter_b = 7011; tank->timer_b = 471;
+    tank->facing = {0,-1}; tank->ground_item = make_item(ItemKind::PressureValve);
+    Entity* porter = get_entity(original,spawn_entity(original,EntityKind::BoilerPorter,{11,8}));
+    porter->entity_a = {static_cast<int>(tank-original.entities.data()),tank->generation};
+    tank->entity_a = {static_cast<int>(porter-original.entities.data()),porter->generation};
+    porter->label_a = 1; porter->timer_a = 13; porter->point_a = porter->cell; porter->point_b = {13,8};
+    original.stage.tiles[14].prop = {PropKind::MaintenanceLocker,13,0,false};
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
     owner->inventory.slots[5] = make_item(ItemKind::CandleStub, 1, ItemAttribute::Durable);

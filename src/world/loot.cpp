@@ -31,6 +31,16 @@ void collect_coins(Game& game, Entity& player) {
 void drop_enemy_loot(Game& game, const Entity& enemy) {
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::BoilerPorter: {
+        const auto roll = random_u32(game)%100;
+        if (roll < 25) place_ground_item(game,enemy.cell,ItemKind::PressureValve);
+        else if (roll < 45) place_ground_item(game,enemy.cell,ItemKind::CoalLump,2);
+        break;
+    }
+    case EntityKind::BoilerTank:
+        if (enemy.ground_item.kind == ItemKind::PressureValve)
+            place_ground_item(game,enemy.cell,ItemKind::PressureValve);
+        break;
     case EntityKind::IcicleSpider: {
         const auto roll = random_u32(game)%100;
         if (roll < 20) place_ground_item(game,enemy.cell,ItemKind::FishingLine);
@@ -107,9 +117,12 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll < 60) place_coins(game, enemy.cell, 2 + static_cast<int>(random_u32(game) % 3));
         break;
     }
-    case EntityKind::SteamLeech:
-        if (random_u32(game) % 5 == 0) place_ground_item(game, enemy.cell, ItemKind::HeatCapsule);
+    case EntityKind::SteamLeech: {
+        const auto roll = random_u32(game)%100;
+        if (roll < 20) place_ground_item(game,enemy.cell,ItemKind::HeatCapsule);
+        else if (roll < 30) place_ground_item(game,enemy.cell,ItemKind::Sealant);
         break;
+    }
     case EntityKind::BellDiver: {
         const unsigned int roll = random_u32(game) % 100;
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::AirBladder);

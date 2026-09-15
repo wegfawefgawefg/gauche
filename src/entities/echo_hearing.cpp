@@ -25,15 +25,20 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     // Audio volume, local ambience and hounds' own calls cannot steer their hearing.
     int radius = 0;
     switch (sound) {
+    case SoundId::BoilerBreak:
     case SoundId::Explosion: case SoundId::Explosion1: case SoundId::Explosion2:
     case SoundId::Explosion3: case SoundId::ThunderCrack: case SoundId::PrismBurst:
         radius = 12; break;
+    case SoundId::BoilerWarn: case SoundId::BoilerVent:
     case SoundId::PistolShot: case SoundId::MusketShot: case SoundId::ShotgunShot:
     case SoundId::SmgShot: case SoundId::BlunderShot: case SoundId::RocketLaunch:
     case SoundId::LensFire: case SoundId::WardenFire: case SoundId::SmallLaser:
     case SoundId::WoodCrack: case SoundId::PotBreak: case SoundId::OpticBreak:
     case SoundId::ClockBreak: case SoundId::LampBreak: case SoundId::LensCaseBreak: case SoundId::IceBlockBreak:
         radius = 10; break;
+    case SoundId::PorterHeave: case SoundId::PorterWarn: case SoundId::PorterHit: case SoundId::PorterDeath:
+    case SoundId::BoilerRoll: case SoundId::LockerOpen: case SoundId::KettleReady:
+    case SoundId::SpiderCatch: case SoundId::SpiderDeath:
     case SoundId::DrumBeat1: case SoundId::DrumBeat2: case SoundId::DrumBeat3:
     case SoundId::VaneBreak: case SoundId::GlobeBreak: case SoundId::SealBark: case SoundId::CreelBreak:
     case SoundId::CoalLand: case SoundId::StoveBreak: case SoundId::StoveHit:
@@ -51,6 +56,8 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::FistWindup: case SoundId::StickWindup: case SoundId::PickaxeWindup:
     case SoundId::AxeSwing: case SoundId::SpearThrust: case SoundId::MaulSwing:
     case SoundId::RakeSweep: case SoundId::KnifeStab: case SoundId::TorchSwing:
+    case SoundId::ValveFit: case SoundId::ValveRemove: case SoundId::SealantPatch:
+    case SoundId::KettleFill: case SoundId::SpiderWeave: case SoundId::SpiderCut:
     case SoundId::ClawScratch: case SoundId::Punch1: case SoundId::ChiselJab: case SoundId::BlockLand:
     case SoundId::CreelHit: case SoundId::BumpWood: case SoundId::BumpStone:
         radius = 4; break;

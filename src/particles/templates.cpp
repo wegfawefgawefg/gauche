@@ -160,6 +160,12 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::SpiderDeath:
         spray(cosmetics,sound.cell,seed,8,Sprite::DebrisIceChip,.09F,.01F);
         break;
+    case SoundId::BoilerLeak:
+        spray(cosmetics,sound.cell,seed,3,Sprite::SteamPuff,.025F,-.001F);
+        break;
+    case SoundId::BoilerScald:
+        spray(cosmetics,sound.cell,seed,7,Sprite::SteamPuff,.06F,-.001F);
+        break;
     case SoundId::KettleScald:
         spray(cosmetics,sound.cell,seed,5,Sprite::SteamPuff,.045F,-.001F);
         break;

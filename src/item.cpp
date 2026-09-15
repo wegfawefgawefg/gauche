@@ -2,6 +2,7 @@
 #include "props/candle.hpp"
 #include "items/coal.hpp"
 #include "items/kettle.hpp"
+#include "items/pressure.hpp"
 #include "items/fish.hpp"
 #include "items/snow_globe.hpp"
 #include "items/optics.hpp"
@@ -97,6 +98,10 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::PressureValve: case ItemKind::Sealant:
+        cooldown = item_pattern(item).cooldown;
+        used = use_pressure_item(game,user_slot,direction);
+        break;
     case ItemKind::SteamKettle:
         cooldown = item_pattern(item).cooldown;
         used = use_kettle(game,user_slot,direction);
@@ -383,7 +388,8 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             return true;
         }
         if (item.max_uses > 0 && --item.uses <= 0) {
-            if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
+            if (used_kind == ItemKind::Sealant) emit_sound(game,SoundId::SealantEmpty,user.cell);
+            else if (used_kind == ItemKind::WickSpool) emit_sound(game, SoundId::WickEmpty, user.cell);
             else if (used_kind == ItemKind::FishingLine) emit_sound(game, SoundId::FishingEmpty, user.cell);
             else if (used_kind == ItemKind::MufflingFelt) emit_sound(game, SoundId::MuffleEmpty, user.cell);
             else if (used_kind == ItemKind::EelBattery) emit_sound(game, SoundId::BatteryEmpty, user.cell);

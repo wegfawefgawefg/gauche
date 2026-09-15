@@ -20,12 +20,16 @@
 #include "candle_keeper.hpp"
 #include "shard_colony.hpp"
 #include "icicle_spider.hpp"
+#include "boiler_porter.hpp"
+#include "boiler_tank.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../world/encounter.hpp"
 
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::BoilerPorter: init_boiler_porter(entity); break;
+    case EntityKind::BoilerTank: init_boiler_tank(entity); break;
     case EntityKind::IcicleSpider: init_icicle_spider(entity); break;
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
     case EntityKind::CandleKeeper: init_candle_keeper(entity); break;
@@ -88,6 +92,8 @@ void init_entity(Game& game, Entity& entity) {
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
     case EntityKind::GroundItem: step_floating_item(game, slot); break;
+    case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
+    case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
     case EntityKind::IcicleSpider: step_icicle_spider(game,slot); break;
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;
     case EntityKind::CandleKeeper: step_candle_keeper(game,slot); break;

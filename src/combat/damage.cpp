@@ -1,5 +1,7 @@
 #include "../game.hpp"
 #include "../entities/icicle_spider.hpp"
+#include "../entities/boiler_porter.hpp"
+#include "../entities/boiler_tank.hpp"
 #include "../entities/ice_mason.hpp"
 #include "../entities/glass_eel.hpp"
 #include "../entities/snow_burrower.hpp"
@@ -39,6 +41,8 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_candle_keeper(entity);
     interrupt_shard_node(entity);
     interrupt_icicle_spider(game,entity);
+    interrupt_boiler_porter(entity);
+    damage_boiler(game,slot);
     interrupt_seal_thief(entity);
     interrupt_fishing_widow(entity);
     interrupt_frozen_pilgrim(entity);

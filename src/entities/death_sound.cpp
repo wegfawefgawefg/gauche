@@ -3,6 +3,8 @@
 // MATERIAL AND VOICE: Keep species cues out of the health-damage pipeline.
 SoundId entity_death_sound(EntityKind kind) {
     switch (kind) {
+    case EntityKind::BoilerPorter: return SoundId::PorterDeath;
+    case EntityKind::BoilerTank: return SoundId::BoilerBreak;
     case EntityKind::IcicleSpider: return SoundId::SpiderDeath;
     case EntityKind::ShardColony: return SoundId::ShardBreak;
     case EntityKind::CandleKeeper: return SoundId::KeeperDeath;

@@ -163,7 +163,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
         if (ui.inventory_open && !offered && !shop) {
             const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
             if (player != nullptr)
-                ui.compare_ground = pickup_item_at(game,player->cell).kind != ItemKind::None;
+                ui.compare_ground = reachable_pickup_item(game,*player).kind != ItemKind::None;
         }
         ui.slot_focus = 0;
         ui.notice.clear();

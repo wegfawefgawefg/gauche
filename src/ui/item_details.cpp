@@ -196,6 +196,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::SteamKettle)
         std::snprintf(line,sizeof(line),item.loaded == 0 ? "FILL AT WATER | HEAT 1.5s" :
             item.loaded == 1 ? "COLD: DOUSE | WATER 5s" : "SCALD %d | WATER 5s",pattern.damage);
+    if (item.kind == ItemKind::PressureValve) std::snprintf(line,sizeof(line),"AIM LOCK | RECOVER BELOW 25");
+    if (item.kind == ItemKind::Sealant) std::snprintf(line,sizeof(line),"REPAIR 20 HP | PLUG 10s");
     if (item.kind == ItemKind::WickSpool)
         std::snprintf(line, sizeof(line), "CANDLE +30s | CAPACITY 80s");
     if (item.kind == ItemKind::FishingLine)
@@ -251,6 +253,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     text(renderer, x + 10.0F, y + 107.0F, line, 188, 187, 176);
     if (item.kind == ItemKind::SteamKettle)
         std::snprintf(line,sizeof(line),"REUSABLE | NOT STACKABLE");
+    else if (item.kind == ItemKind::PressureValve)
+        std::snprintf(line,sizeof(line),"ATTACHES | RECOVERABLE");
     else if (item.kind == ItemKind::Bow)
         std::snprintf(line, sizeof(line), "QUIVER %d ARROWS", item.loaded);
     else if (item_is_gun(item.kind))

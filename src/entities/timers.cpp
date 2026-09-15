@@ -2,6 +2,8 @@
 #include "snow_effigy.hpp"
 #include "candle_keeper.hpp"
 #include "shard_colony.hpp"
+#include "boiler_porter.hpp"
+#include "boiler_tank.hpp"
 #include "icicle_spider.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
@@ -53,6 +55,9 @@ void step_entity_timers(Game& game, int slot) {
     step_vital_effects(game, slot);
     contact_surface(game, slot);
     step_keeper_lamp(game, slot);
+    if (entity.kind == EntityKind::BoilerTank && entity.health > 0) step_boiler_tank(game,slot);
+    if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
+        interrupt_boiler_porter(entity);
     step_shard_state(entity);
     step_spider_strand(game,entity);
     thaw_snow_effigy(game, slot);

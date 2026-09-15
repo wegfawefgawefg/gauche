@@ -1,0 +1,22 @@
+# Original user messages
+
+Preserve user wording here independently of design interpretations and task lists.
+The `.txt` files contain message bodies without spelling corrections, reflow or
+editorial annotations. Whitespace within the original messages is intentional.
+Do not rewrite an old message when a later decision supersedes it; add a new entry.
+This archive is source material, not a second live checklist.
+
+## 2026-09-15
+
+- [Original screenshot-feedback message](2026-09-15-screenshot-feedback.txt), with
+  its two original attached images preserved as [Image #1](images/2026-09-15-feedback-1.png)
+  and [Image #2](images/2026-09-15-feedback-2.png). These led to the 1–13 discussion.
+- [Full 1–13 world-interaction message](2026-09-15-world-interactions.txt), including
+  2.a/2.b, A/B/C, all IDEA interludes and the closing request. Expanded into
+  [World interaction review](../WORLD_INTERACTION_REVIEW.md) and
+  [Scene candidates](../content/SCENE_CANDIDATES.md).
+- [Archive request and balance feedback](2026-09-15-balance-and-archive.txt):
+  Forest weapon pools, SMG refills, fists/gloves, augments, reward pacing and
+  preserving the fun of exploration. Expanded into [Balance review](../BALANCE_REVIEW.md).
+
+[MASTER_TASKS.md](../MASTER_TASKS.md) is the single live execution checklist.

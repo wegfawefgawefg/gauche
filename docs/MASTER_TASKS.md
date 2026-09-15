@@ -4,6 +4,17 @@ This is the **single live checklist**. [Content brief](CONTENT_FARM_BRIEF.md): s
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
 
+## Balance and original feedback (2026-09-15)
+
+[Verbatim user-message archive](user_messages/README.md) preserves the full 1–13 message, IDEA/A–C interludes, preceding screenshot notes and latest balance feedback. Keep originals intact; this file alone tracks execution. [Balance review](BALANCE_REVIEW.md) specifies the work below. Balance proceeds alongside content, preserving abundant toys and the enjoyable Forest experimentation.
+
+- [ ] Audit every normal loot source for biome identity/power/availability: SMG, machine guns and rockets must be exceptionally rare Forest imports; bows, blowguns and fitting woodland tools lead native pools. Evaluate aggregate biome/run chances and starting ammo, not just per-roll rates; exempt explicit debug loadouts.
+- [ ] Substantially reduce SMG Ammo refills (currently ninety spare rounds/use); set sensible per-weapon budgets, audit all-carried-gun/duplicate resupply and show actual quantities in item details.
+- [ ] Heavily nerf baseline Fist against acquired melee options while preserving crisp handling and a usable fallback; compare real attack cycles, safety and unlimited durability, not damage alone.
+- [ ] Design earned punching equipment/augments (heavy glove, lightning/light/heavy/fire/poison candidates), with explicit acquisition, slot/permanence, stacking, material interactions and counters.
+- [ ] Rebalance Hearth and existing artifacts/attributes/buffs for absolute strength, co-op/stacking, price and earliest availability; expand creative conditional augments and plan growth across the intended sixteen-floor run.
+- [ ] Rework shop/three-choice reward valuation so same-stage offers are meaningfully competitive; bundle/replace weak toy offers appropriately without making every toy overpowered. Review loot, ammo, melee and permanent-power balance during each content slice using focused calculations and human feedback.
+
 ## World interaction review (2026-09-15)
 
 Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.

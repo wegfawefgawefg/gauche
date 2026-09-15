@@ -1,4 +1,5 @@
 #include "ground_interaction.hpp"
+#include "../props/doorstop.hpp"
 #include "pressure.hpp"
 #include "../props/circuits.hpp"
 #include "../props/candle.hpp"
@@ -17,6 +18,29 @@ int ground_slot(const Game& game, Cell cell) {
     return -1;
 }
 
+Item fixture_item(const Game& game,Cell cell,bool allow_candle) {
+    const Prop& prop = game.stage.at_or_border(cell).prop;
+    if (allow_candle) {
+        const Item candle = candle_item(prop);
+        if (candle.kind != ItemKind::None) return candle;
+    }
+    const Item wedge = recoverable_doorstop(prop);
+    if (wedge.kind != ItemKind::None) return wedge;
+    const Item spike = recoverable_spike(prop);
+    return spike.kind != ItemKind::None ? spike : removable_valve(game,cell);
+}
+
+int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
+    if (kind == ItemKind::GroundingSpike) return release_grounding_spike(game,cell,player.cell);
+    if (kind == ItemKind::EmergencyDoorstop) return release_doorstop(game,cell,player.cell);
+    if (kind == ItemKind::PressureValve) return release_valve(game,cell,player.cell);
+    if (kind != ItemKind::CandleStub) return -1;
+    const int slot = release_candle(game,cell);
+    if (slot >= 0) keeper_candle_stolen(game,cell,
+        {static_cast<int>(&player-game.entities.data()),player.generation});
+    return slot;
+}
+
 } // namespace
 
 bool item_can_drop(const Item& item) {
@@ -26,17 +50,12 @@ bool item_can_drop(const Item& item) {
 Item pickup_item_at(const Game& game, Cell cell) {
     const int slot = ground_slot(game,cell);
     if (slot >= 0) return game.entities[static_cast<std::size_t>(slot)].ground_item;
-    const Item candle = candle_item(game.stage.at_or_border(cell).prop);
-    if (candle.kind != ItemKind::None) return candle;
-    const Item spike = recoverable_spike(game.stage.at_or_border(cell).prop);
-    return spike.kind != ItemKind::None ? spike : removable_valve(game,cell);
+    return fixture_item(game,cell,true);
 }
 
 Item reachable_pickup_item(const Game& game, const Entity& player) {
     const Item feet = pickup_item_at(game,player.cell);
-    if (feet.kind != ItemKind::None) return feet;
-    const Item spike = recoverable_spike(game.stage.at_or_border(player.cell+player.facing).prop);
-    return spike.kind != ItemKind::None ? spike : removable_valve(game,player.cell+player.facing);
+    return feet.kind != ItemKind::None ? feet : fixture_item(game,player.cell+player.facing,false);
 }
 
 GroundAction ground_action(const Game& game, const Entity& player) {
@@ -64,26 +83,16 @@ void drop_player_item(Game& game, Entity& player) {
 
 bool pickup_or_drop(Game& game, Entity& player) {
     int slot = ground_slot(game, player.cell);
-    if (slot < 0 && candle_item(game.stage.at_or_border(player.cell).prop).kind != ItemKind::None) {
-        if (ground_action(game,player) == GroundAction::Blocked) return false;
-        slot = release_candle(game,player.cell);
-        if (slot < 0) return false;
-        const int player_slot = static_cast<int>(&player - game.entities.data());
-        keeper_candle_stolen(game,player.cell,{player_slot,player.generation});
-    }
     if (slot < 0) {
-        const Cell cell = recoverable_spike(game.stage.at_or_border(player.cell).prop).kind != ItemKind::None ?
-            player.cell : player.cell+player.facing;
-        if (recoverable_spike(game.stage.at_or_border(cell).prop).kind != ItemKind::None) {
+        // PRIORITY: Match the HUD: loose item, fixture at feet, then reachable fixture ahead.
+        const Item feet = fixture_item(game,player.cell,true);
+        const Cell cell = feet.kind != ItemKind::None ? player.cell : player.cell+player.facing;
+        const Item incoming = feet.kind != ItemKind::None ? feet : fixture_item(game,cell,false);
+        if (incoming.kind != ItemKind::None) {
             if (ground_action(game,player) == GroundAction::Blocked) return false;
-            slot = release_grounding_spike(game,cell,player.cell);
+            slot = release_fixture(game,player,cell,incoming.kind);
             if (slot < 0) return false;
         }
-    }
-    if (slot < 0 && removable_valve(game,player.cell+player.facing).kind != ItemKind::None) {
-        if (ground_action(game,player) == GroundAction::Blocked) return false;
-        slot = release_valve(game,player.cell+player.facing,player.cell);
-        if (slot < 0) return false;
     }
     if (slot < 0) {
         if (!item_can_drop(*player.inventory.held())) return false;

@@ -122,7 +122,7 @@ same effective item definition as attacks, including rare attributes.
 | 47 | Snow globe | Implemented: break in the adjacent cell for 6s of radius-2 whiteout. Blocks sight for all sides, not shots; no damage/chill. Walls constrain spread. Stack 2; Big gives radius 3. | Uncommon; 20 |
 | 48 | Borrowed summer | A 4s moving warmth aura thaws surfaces and clears allied chill; cold creatures react to the real heat source. Two uses, no damage immunity. | Rare; 38 |
 | 49 | Stillwater bell | Ring to stop surface currents and active slips within 4 for 3s; does not stun actors or halt voluntary movement. Four uses. | Rare; 30 |
-| 50 | Emergency doorstop | Jam an adjacent moving gate open until the 25-HP wedge breaks; only works while that gate is open. Recoverable; no opening a locked gate for free. | Uncommon; 21 |
+| 50 | Emergency doorstop | Implemented: jam an adjacent open moving gate with a 25-HP recoverable wedge. Durable doubles HP; damage survives recovery. Closed gates/key locks reject it. Timed reservoir sluices open 3s/close 2s, warn before closing and wait for bodies to clear. | Uncommon; 21 |
 
 Do not introduce a permanent stat for each interaction. Use existing HP, movement
 beat, damage, cooldown, stack/use count and item condition. Add statuses only with

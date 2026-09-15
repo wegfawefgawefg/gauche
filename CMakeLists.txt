@@ -55,6 +55,7 @@ set(GAUCHE_CODEC_SOURCES
 set(GAUCHE_ENTITY_SOURCES
     src/items/storm_lantern.cpp src/items/echo_pebble.cpp
     src/items/harpoon.cpp src/projectiles/harpoon.cpp
+    src/items/doorstop.cpp src/props/doorstop.cpp src/entities/gate.cpp src/world/sluice.cpp
     src/items/circuits.cpp src/props/circuits.cpp
     src/items/candles.cpp src/props/candle.cpp src/items/coal.cpp src/props/stove.cpp src/items/kettle.cpp
     src/items/brine.cpp src/props/lunch_tin.cpp
@@ -150,7 +151,7 @@ add_executable(gauche
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
-    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
+    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp

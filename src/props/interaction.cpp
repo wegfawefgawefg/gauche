@@ -23,6 +23,7 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         else if (roll < 70) item = ItemKind::Ammo;
         else if (roll < 80) item = ItemKind::CopperWire;
         else if (roll < 90) item = ItemKind::GroundingSpike;
+        else if (roll < 95) item = ItemKind::EmergencyDoorstop;
         break;
     case PropKind::CandleCabinet:
         if (roll < 35) item = ItemKind::CandleStub;
@@ -123,6 +124,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Prop& prop = tile->prop;
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::Doorstop) emit_sound(game,SoundId::WedgeHit,cell);
     else if (prop.kind == PropKind::CopperWire) emit_sound(game,SoundId::WireCut,cell);
     else if (prop.kind == PropKind::GroundingSpike) emit_sound(game,SoundId::SpikePlant,cell);
     else if (prop.kind == PropKind::MaintenanceLocker) emit_sound(game,SoundId::StoveHit,cell);

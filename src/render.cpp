@@ -1,6 +1,7 @@
 #include "scenery/ice_render.hpp"
 #include "combat/parry.hpp"
 #include "render.hpp"
+#include "entities/gate_render.hpp"
 #include "world/floating_render.hpp"
 #include "entities/bell_diver.hpp"
 #include "entities/leech_render.hpp"
@@ -173,7 +174,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     for (std::size_t slot = 0; slot < game.entities.size(); ++slot) {
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
-            ((entity.kind == EntityKind::Door || entity.kind == EntityKind::EncounterGate) && entity.fixture_open)) continue;
+            (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
+        if (entity.kind == EntityKind::EncounterGate) {
+            if (layer == 0) draw_gate(renderer,graphics,entity,camera,zoom,lighting);
+            continue;
+        }
         const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::PocketDoor ||
             entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
             entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||

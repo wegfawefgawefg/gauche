@@ -5,6 +5,7 @@
 #include "lens_watch.hpp"
 #include "crystal_gallery.hpp"
 #include "boiler_room.hpp"
+#include "sluice.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/dispatch.hpp"
 #include "../entities/seal_thief.hpp"
@@ -373,6 +374,7 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
         if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;
+        place_sluice_chamber(game,plan,room);
         encounter(game, plan, room, budget);
         room_loot(game, room, budget);
     }

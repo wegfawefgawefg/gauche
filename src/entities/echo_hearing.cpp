@@ -46,6 +46,8 @@ void hear_world_action(Game& game, SoundId sound, Cell origin) {
     case SoundId::VaneBreak: case SoundId::GlobeBreak: case SoundId::SealBark: case SoundId::CreelBreak:
     case SoundId::CoalLand: case SoundId::StoveBreak: case SoundId::StoveHit:
     case SoundId::HarpoonFire: case SoundId::HarpoonImpact:
+    case SoundId::SluiceOpen: case SoundId::SluiceClose: case SoundId::SluiceWarning:
+    case SoundId::WedgeFit: case SoundId::WedgeLift: case SoundId::WedgeHit: case SoundId::WedgeBreak:
     case SoundId::RockImpact: case SoundId::ArrowImpact: case SoundId::IceNeedleHit:
     case SoundId::ShardCharge: case SoundId::ShardPulse: case SoundId::ShardBreak:
     case SoundId::KeeperScold: case SoundId::KeeperWarn: case SoundId::KeeperCast:

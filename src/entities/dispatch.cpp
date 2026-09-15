@@ -1,4 +1,5 @@
 #include "dispatch.hpp"
+#include "gate.hpp"
 #include "../world/floating_items.hpp"
 #include "pocket_door.hpp"
 #include "rime_skater.hpp"
@@ -128,6 +129,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::BrambleGuard: step_bramble_guard(game, slot); break;
     case EntityKind::SporeToad: step_spore_toad(game, slot); break;
     case EntityKind::CrateMimic: step_crate_mimic(game, slot); break;
+    case EntityKind::EncounterGate: step_gate(game,slot); break;
     case EntityKind::Encounter: step_encounter(game, slot); break;
     case EntityKind::ZombieStack: step_zombie_stack(game, slot); break;
     case EntityKind::Zombie: step_zombie(game, slot); break;

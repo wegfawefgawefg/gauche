@@ -1,3 +1,5 @@
+#include "../src/entities/gate.hpp"
+#include "../src/props/doorstop.hpp"
 #include "../src/projectiles/harpoon.hpp"
 #include "../src/items/echo_pebble.hpp"
 #include "../src/projectiles/projectile.hpp"
@@ -165,6 +167,11 @@ int main() {
     Entity* tether = get_entity(original,fisher_actor.inventory.held()->flight);
     tether->label_b = 1; tether->counter_a = 0; tether->timer_b = 7;
     tether->entity_b = original.players[0]; tether->fixture_open = true;
+    *original.stage.at({28,8})={TileKind::Ruin,0,0};
+    Entity* sluice=get_entity(original,spawn_entity(original,EntityKind::EncounterGate,{28,8}));
+    configure_timed_gate(*sluice); sluice->timer_a=74;
+    Item wedge=make_item(ItemKind::EmergencyDoorstop,1,ItemAttribute::Durable); wedge.durability=37;
+    place_doorstop(original,sluice->cell,wedge); request_gate(original,*sluice,false);
     const auto encoded = encode_game(original);
     Game restored;
     std::string error;

@@ -42,7 +42,7 @@ bool suitable(const Game& game, const FloorPlan& plan, Cell cell, bool blocking)
         if (entity.cell == cell) return false;
         if ((entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
              entity.kind == EntityKind::Switch || entity.kind == EntityKind::Exit ||
-             entity.kind == EntityKind::Door || entity.kind == EntityKind::Player) &&
+             entity.kind == EntityKind::Door || entity.kind == EntityKind::EncounterGate || entity.kind == EntityKind::Player) &&
             distance(cell, entity.cell) <= 2) return false;
     }
     // CLUTTER: Blocking scraps get breathing room; plants can form loose clusters.

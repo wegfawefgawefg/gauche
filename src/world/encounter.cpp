@@ -1,4 +1,5 @@
 #include "encounter.hpp"
+#include "../entities/gate.hpp"
 #include "ground_items.hpp"
 
 #include <algorithm>
@@ -33,9 +34,7 @@ bool gates_clear(const Game& game, Handle controller) {
 void gates(Game& game, Handle controller, bool open) {
     for (Entity& gate : game.entities) {
         if (gate.kind != EntityKind::EncounterGate || gate.entity_a != controller) continue;
-        gate.fixture_open = open;
-        gate.impassable = gate.hard_blocker = !open;
-        gate.light = open ? LightEmitter{} : LightEmitter{2, 400, {230, 78, 61}};
+        request_gate(game,gate,open);
     }
 }
 
@@ -109,7 +108,6 @@ void step_encounter(Game& game, int slot) {
         }
         if (controller.timer_a > 0) return;
         gates(game, handle, false);
-        emit_sound(game, SoundId::GateClose, controller.cell);
         controller.label_a = static_cast<int>(EncounterPhase::Fighting);
         if (controller.counter_b == 0 && living_enemies(game, handle) == 0)
             spawn_encounter_wave(game, slot);

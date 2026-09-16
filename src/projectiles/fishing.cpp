@@ -35,11 +35,15 @@ bool clear_line(const Game& game, const Entity& hook) {
     return true;
 }
 
+bool loose_cargo(const Entity& actor) {
+    return actor.kind==EntityKind::Coins ? actor.counter_a>0 : actor.kind==EntityKind::GroundItem &&
+        actor.ground_item.kind!=ItemKind::None && actor.ground_item.count>0;
+}
+
 int loose_at(const Game& game, Cell cell, int except = -1) {
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-        if (slot != except && actor.kind == EntityKind::GroundItem && actor.cell == cell &&
-            actor.ground_item.kind != ItemKind::None && actor.ground_item.count > 0) return slot;
+        if (slot!=except && actor.cell==cell && loose_cargo(actor)) return slot;
     }
     return -1;
 }
@@ -86,7 +90,7 @@ void reel_step(Game& game, int slot) {
     if (hook.label_b == FishingCargo) {
         Entity* cargo = get_entity(game, hook.entity_b);
         // OWNERSHIP: Pickup, displacement or another float releases the real item.
-        if (!cargo || cargo->kind != EntityKind::GroundItem || cargo->ground_item.count <= 0 || cargo->cell != hook.point_b || floating_item(*cargo)) {
+        if (!cargo || !loose_cargo(*cargo) || cargo->cell != hook.point_b || floating_item(*cargo)) {
             finish(game, slot, true); return;
         }
         if (loose_at(game, next, hook.entity_b.slot) >= 0) { finish(game, slot, true); return; }
@@ -134,7 +138,7 @@ void step_fishing_hook(Game& game, int slot) {
         owner->stun_ticks>0 || owner->sleep_ticks>0)) { finish(game,slot,true); return; }
     if (hook.label_b == FishingCargo) {
         const Entity* cargo = get_entity(game, hook.entity_b);
-        if (!cargo || cargo->kind != EntityKind::GroundItem || cargo->ground_item.count <= 0 || cargo->cell != hook.point_b || floating_item(*cargo)) {
+        if (!cargo || !loose_cargo(*cargo) || cargo->cell != hook.point_b || floating_item(*cargo)) {
             finish(game, slot, true); return;
         }
     }

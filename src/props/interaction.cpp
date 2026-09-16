@@ -1,3 +1,4 @@
+#include "tall_tree.hpp"
 #include "ice_pillar.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "tension_spring.hpp"
@@ -133,13 +134,13 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
     }
     if (prop.kind == PropKind::ChapelAltar || prop.kind == PropKind::ChapelUrn || prop.kind == PropKind::ScrapBin || prop.kind == PropKind::OreBin || prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
-    if (prop.kind==PropKind::BridgePlank) collapse_bridge_plank(game,cell,source);
+    if (bridge_prop(prop.kind)) collapse_bridge_plank(game,cell,source);
 }
 
 } // namespace
 
 bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
-    if (kind==PropKind::BridgePlank) return false; // Requires a complete supported span.
+    if (bridge_prop(kind)) return false; // Requires a complete supported span.
     Tile* tile = stage.at(cell);
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
@@ -168,6 +169,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
         tile->prop.broken) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
+    if (prop.kind==PropKind::TallTree) return hit_tall_tree(game,cell,damage,source);
     if (prop.kind==PropKind::IcePillar) return hit_ice_pillar(game,cell,damage,source);
     if (prop.kind==PropKind::StreetLamp) return hit_streetlamp(game,cell,damage,source);
     if (prop.kind==PropKind::PayCage) alarm_pay_clerks(game,cell,source);

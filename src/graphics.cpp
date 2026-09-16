@@ -84,6 +84,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "crane_operator", "crane_operator_work", "crane_operator_wait", "crane_operator_alarm", "crane_console",
     "widow_work_cast", "widow_work_reel", "pickhand_carry",
     "roof_log_far_a", "roof_log_far_b", "roof_log_far_c", "roof_log_near_a", "roof_log_near_b", "roof_log_near_c",
+    "tall_tree", "tall_tree_cut", "tall_tree_char", "tall_tree_stump", "fallen_log",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

@@ -75,7 +75,7 @@ bool ignite_surface(Game& game, Cell cell) {
     if (!wood && !wooden_roof(game.stage,cell) && !fuel && !dry_growth(tile->prop)) return lit;
     const bool cloth_only = tile->prop.covered && !wood && !fuel;
     remove_prop_cover(game, cell, true);
-    surface.fire_ticks = static_cast<std::uint16_t>(cloth_only ? 30 : wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);
+    surface.fire_ticks = static_cast<std::uint16_t>(cloth_only ? 30 : tile->prop.kind==PropKind::TallTree ? 600 : wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);
     surface.smoke_ticks = std::max<std::uint16_t>(surface.smoke_ticks, 100);
     if (surface.liquid == LiquidKind::Oil) surface.liquid_ticks = 240;
     if (surface.liquid == LiquidKind::Sap) surface.liquid_ticks = 360;

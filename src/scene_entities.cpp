@@ -1,3 +1,4 @@
+#include "props/tall_tree_render.hpp"
 #include "entities/boiler_feed_render.hpp"
 #include "entities/cutter_render.hpp"
 #include "props/ice_pillar_render.hpp"
@@ -73,7 +74,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     // LAYERS: Fixtures sit on the ground, pickups above them, then actors with held items.
     for (const BodyDraw& entry:body_draw_order(game,camera,zoom,layer)) {
         if (entry.prop) {
-            if (game.stage.at(entry.cell)->prop.kind==PropKind::IcePillar)
+            if (game.stage.at(entry.cell)->prop.kind==PropKind::TallTree)
+                draw_tall_tree(renderer,graphics,game,entry.cell,camera,zoom,lighting);
+            else if (game.stage.at(entry.cell)->prop.kind==PropKind::IcePillar)
                 draw_ice_pillar(renderer,graphics,game,entry.cell,camera,zoom,lighting);
             else draw_streetlamp(renderer,graphics,game,entry.cell,camera,zoom,lighting);
             continue;

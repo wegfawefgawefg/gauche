@@ -62,7 +62,7 @@ bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact 
         const auto contents=tile->contents;const auto count=tile->content_count;
         *tile = {TileKind::Rail, 0, 0};
         tile->contents=contents;tile->content_count=count;
-        tile->prop = broken_prop.kind==PropKind::BridgePlank ? Prop{} : broken_prop;
+        tile->prop = bridge_prop(broken_prop.kind) ? Prop{} : broken_prop;
         return true;
     }
     if ((tile->kind != TileKind::Wall && tile->kind != TileKind::Rail) || tile->hp == 0 || damage <= 0 ||

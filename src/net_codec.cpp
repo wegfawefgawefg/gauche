@@ -1,3 +1,4 @@
+#include "props/tall_tree.hpp"
 #include "entities/industrial_shift.hpp"
 #include "entities/boiler_feed.hpp"
 #include "entities/boiler_drive.hpp"
@@ -170,7 +171,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             tile.prop.hp > prop_max_health(tile.prop) ||
             (tile.prop.broken && (tile.prop.hp != 0 || tile.prop.growth_ticks != 0)) ||
             tile.prop.growth_ticks > (tile.prop.kind == PropKind::FoamCover ? 600 : tile.prop.kind == PropKind::PayCage ? 60000 : tile.prop.kind == PropKind::Conveyor ? 360 : tile.prop.kind == PropKind::GroundingSpike ? 180 : tile.prop.kind == PropKind::Stove ? stove_fuel_limit : tile.prop.kind == PropKind::Candle ? candle_fuel_ticks : tile.prop.kind == PropKind::IceBlock ? 600 : tile.prop.kind == PropKind::AlarmClock ? 480 : 180) ||
-            (tile.prop.kind != PropKind::IcePillar && tile.prop.kind != PropKind::StreetLamp && tile.prop.kind != PropKind::FoamCover && tile.prop.kind != PropKind::PayCage && tile.prop.kind != PropKind::TensionSpring && tile.prop.kind != PropKind::Conveyor && tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
+            (tile.prop.kind != PropKind::TallTree && tile.prop.kind != PropKind::IcePillar && tile.prop.kind != PropKind::StreetLamp && tile.prop.kind != PropKind::FoamCover && tile.prop.kind != PropKind::PayCage && tile.prop.kind != PropKind::TensionSpring && tile.prop.kind != PropKind::Conveyor && tile.prop.kind != PropKind::GroundingSpike && tile.prop.kind != PropKind::Stove && tile.prop.kind != PropKind::Candle && tile.prop.kind != PropKind::Shoot && tile.prop.kind != PropKind::IceBlock && tile.prop.kind != PropKind::AlarmClock && tile.prop.growth_ticks != 0)) reader.okay = false;
         if ((tile.prop.kind==PropKind::Grate || tile.prop.kind==PropKind::ScrapBin || tile.prop.kind==PropKind::OreBin) &&
             ((!tile.prop.broken && tile.prop.hp==0) || (tile.prop.kind==PropKind::Grate && tile.prop.variant>1))) reader.okay=false;
         if (tile.prop.kind==PropKind::RailPoints && (tile.prop.variant>3 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
@@ -179,6 +180,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind==PropKind::PayCage && (tile.prop.variant!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::TensionSpring && (tile.prop.variant>19 || tile.prop.growth_ticks>18 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::Barricade && (tile.prop.variant>3 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
+        if (!valid_tree_prop(tile.prop)) reader.okay=false;
         if (!valid_ice_pillar(tile.prop)) reader.okay=false;
         if (!valid_streetlamp(tile.prop)) reader.okay=false;
         if (!valid_bridge_tile(tile)) reader.okay=false;

@@ -134,6 +134,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/pressure_rat.cpp
     src/entities/magnet_crane.cpp src/entities/crane_operator.cpp
     src/entities/arc_welder.cpp
+    src/props/tall_tree.cpp src/props/tall_tree_render.cpp src/world/tall_trees.cpp
     src/props/ice_pillar.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp
     src/entities/brawler.cpp src/world/brawlers.cpp
     src/world/chasm.cpp src/world/chasm_render.cpp src/world/chasm_generation.cpp

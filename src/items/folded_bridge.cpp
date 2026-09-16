@@ -29,9 +29,10 @@ static_assert(static_cast<int>(TileKind::Count)<=16);
 TileKind bridge_underlay(const Prop& plank) { return static_cast<TileKind>((plank.variant>>1)&15U); }
 
 bool valid_bridge_tile(const Tile& tile) {
-    if (tile.kind!=TileKind::Bridge && tile.prop.kind!=PropKind::BridgePlank) return true;
-    return tile.kind==TileKind::Bridge && tile.prop.kind==PropKind::BridgePlank &&
-        !tile.prop.broken && tile.prop.hp>0 && (tile.prop.variant>>6)<3 && span(bridge_underlay(tile.prop));
+    if (tile.kind!=TileKind::Bridge && !bridge_prop(tile.prop.kind)) return true;
+    return tile.kind==TileKind::Bridge && bridge_prop(tile.prop.kind) &&
+        !tile.prop.broken && tile.prop.hp>0 && tile.prop.growth_ticks==0 &&
+        (tile.prop.kind!=PropKind::LogBridge || tile.prop.variant<32) && (tile.prop.variant>>6)<3 && span(bridge_underlay(tile.prop));
 }
 
 bool place_folded_bridge(Game& game, int slot) {
@@ -85,8 +86,24 @@ void collapse_bridge_plank(Game& game, Cell cell, Cell source) {
 
 void step_bridge_support(Game& game, Cell cell) {
     const Prop& plank=game.stage.at(cell)->prop;
-    if (plank.kind!=PropKind::BridgePlank || plank.broken) return;
+    if (!bridge_prop(plank.kind) || plank.broken) return;
     const Cell axis=(plank.variant&1U) ? Cell{0,1} : Cell{1,0};
+    if (plank.kind==PropKind::LogBridge) {
+        Cell first=cell,last=cell;
+        for (int n=0;n<3;++n) {
+            const auto& other=game.stage.at_or_border(first-axis).prop;
+            if (other.kind!=PropKind::LogBridge || other.broken || (other.variant&1U)!=(plank.variant&1U)) break;
+            first=first-axis;
+        }
+        for (int n=0;n<3;++n) {
+            const auto& other=game.stage.at_or_border(last+axis).prop;
+            if (other.kind!=PropKind::LogBridge || other.broken || (other.variant&1U)!=(plank.variant&1U)) break;
+            last=last+axis;
+        }
+        if (distance(first,last)>2 || !bridge_bank(game.stage.at_or_border(first-axis)) ||
+            !bridge_bank(game.stage.at_or_border(last+axis))) hit_prop(game,cell,plank.hp,cell);
+        return;
+    }
     const int index=plank.variant>>6;
     const Cell start=cell-Cell{axis.x*index,axis.y*index};
     if (!bridge_bank(game.stage.at_or_border(start-axis)) ||

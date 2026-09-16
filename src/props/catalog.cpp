@@ -3,6 +3,9 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::TallTree: return {Sprite::TallTree,SoundId::TreeFall,72,true,false};
+    case PropKind::FallenLog: return {Sprite::FallenLog,SoundId::WoodCrack,24,true,false};
+    case PropKind::LogBridge: return {Sprite::FallenLog,SoundId::WoodCrack,24,false,false};
     case PropKind::SteamDrive: return {Sprite::SteamDrive,SoundId::BeltBreak,40,false,false};
     case PropKind::WaterPipe: return {Sprite::WaterPipe,SoundId::PipeBreak,24,false,false};
     case PropKind::IcePillar: return {Sprite::IcePillar,SoundId::PillarFall,36,true,false};
@@ -68,7 +71,8 @@ PropSpec prop_spec(PropKind kind) {
 }
 
 bool prop_blocks(const Prop& prop) {
-    return prop.kind != PropKind::None && !prop.broken && prop_spec(prop.kind).blocking;
+    return prop.kind != PropKind::None && !prop.broken &&
+        !(prop.kind==PropKind::FallenLog && (prop.variant&4U)) && prop_spec(prop.kind).blocking;
 }
 
 int prop_max_health(const Prop& prop) {

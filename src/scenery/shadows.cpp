@@ -32,7 +32,7 @@ bool solid_prop(PropKind kind) {
     case PropKind::None: case PropKind::Leaves: case PropKind::Twigs:
     case PropKind::Nest: case PropKind::RootCover: case PropKind::BirdSeed:
     case PropKind::Thorns: case PropKind::SpiderStrand: case PropKind::CopperWire:
-    case PropKind::BridgePlank: case PropKind::Conveyor: return false;
+    case PropKind::LogBridge: case PropKind::BridgePlank: case PropKind::Conveyor: return false;
     default: return true;
     }
 }

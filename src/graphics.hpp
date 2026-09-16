@@ -79,6 +79,7 @@ enum class Sprite : std::size_t {
     CraneOperator, CraneOperatorWork, CraneOperatorWait, CraneOperatorAlarm, CraneConsole,
     WidowWorkCast, WidowWorkReel, PickhandCarry,
     RoofLogFarA, RoofLogFarB, RoofLogFarC, RoofLogNearA, RoofLogNearB, RoofLogNearC,
+    TallTree, TallTreeCut, TallTreeChar, TallTreeStump, FallenLog,
     Count,
 };
 

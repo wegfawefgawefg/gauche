@@ -1,3 +1,4 @@
+#include "tall_tree_render.hpp"
 #include "../entities/boiler_drive_render.hpp"
 #include "ice_pillar_render.hpp"
 #include "streetlamp_render.hpp"
@@ -32,6 +33,9 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                 SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
                 SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,prop.variant ? 90 : 0,nullptr,SDL_FLIP_NONE);
                 SDL_SetTextureColorModFloat(texture,1,1,1);continue;
+            }
+            if (prop.kind==PropKind::TallTree || prop.kind==PropKind::FallenLog || prop.kind==PropKind::LogBridge) {
+                draw_tree_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
             }
             if (prop.kind == PropKind::None || prop.broken) continue;
             if (prop.kind==PropKind::IcePillar) {draw_pillar_shadow(renderer,stage,cell,camera,zoom);continue;}

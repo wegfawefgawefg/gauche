@@ -15,6 +15,8 @@ namespace {
 
 // MIX: Leave room for combat tells and environmental sources at default sliders.
 constexpr float music_mix_gain = 0.12F;
+// Retain the test tracks on disk, but keep them out of normal and multiplayer play.
+constexpr bool placeholder_music_enabled = false;
 
 bool load_audio_asset(GameAudio& audio, MIX_Audio*& destination,
                       const std::filesystem::path& path, bool preload, std::string& error) {
@@ -84,7 +86,7 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
                 (std::string{menu_names[index]} + ".ogg"), true, error)) {
             shutdown_audio(audio); return false;
         }
-    for (int index = 0; index < 2; ++index) {
+    for (int index = 0; placeholder_music_enabled && index < 2; ++index) {
         const auto path = root / "music" / (index == 0 ? "title.ogg" : "playing.ogg");
         if (!load_audio_asset(audio, audio.songs[static_cast<std::size_t>(index)],
                               path, false, error)) {
@@ -127,7 +129,7 @@ void shutdown_audio(GameAudio& audio) {
 }
 
 void play_song(GameAudio& audio, int song) {
-    if (!audio.initialized || song < 0 || song >= 2 || song == audio.current_song) return;
+    if (!placeholder_music_enabled || !audio.initialized || song < 0 || song >= 2 || song == audio.current_song) return;
     MIX_StopTrack(audio.music_track, 0);
     MIX_SetTrackAudio(audio.music_track, audio.songs[static_cast<std::size_t>(song)]);
     MIX_SetTrackGain(audio.music_track,

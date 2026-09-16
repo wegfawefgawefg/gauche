@@ -66,6 +66,7 @@
 #include "world/wall_render.hpp"
 #include "world/ice_render.hpp"
 #include "world/ice_material_render.hpp"
+#include "entities/old_growth_render.hpp"
 #include "world/industrial_render.hpp"
 #include "world/encounter.hpp"
 
@@ -85,6 +86,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
         return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
     if (tile.material == TileMaterial::Timber)
         return tile.kind == TileKind::Wall ? Sprite::ForestTimber : Sprite::TimberBroken;
+    if (!arena && (tile.kind==TileKind::Snow || tile.kind==TileKind::Ice)) return ice_tile_sprite(tile,cell,tick);
     if (!arena && biome==Biome::Ice) {
         const Sprite native = ice_tile_sprite(tile, cell, tick);
         if (native != Sprite::Count) return native;
@@ -215,7 +217,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 if (lighting.active) draw_lit_tile(renderer,cap,rect,cell,lighting,tint);
                 else SDL_RenderTexture(renderer,cap,nullptr,&rect);
             }
-            if (!arena && biome==Biome::Ice) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
+            if (!arena && (biome==Biome::Ice || tile.kind==TileKind::Snow || tile.kind==TileKind::Ice)) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
             if (!arena && tile.kind == TileKind::Wall && !log_cap)
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
                     biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} :
@@ -277,6 +279,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_owl_landing(renderer, graphics, game, camera, zoom, lighting);
     draw_shard_links(renderer,game,camera,zoom,lighting);
     draw_gunner_aim(renderer,game,camera,zoom,lighting);
+    draw_old_growth_warning(renderer,game,camera,zoom,lighting);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,true);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,true);

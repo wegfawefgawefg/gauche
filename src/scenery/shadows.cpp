@@ -88,7 +88,7 @@ void entity_shadow(ShadowBatch& batch,const Game& game,const Entity& actor,ViewC
     const bool insect=actor.kind==EntityKind::Mosquito || actor.kind==EntityKind::Wasp || actor.kind==EntityKind::LanternMoth || actor.kind==EntityKind::FurnaceMoth;
     const float width=actor.kind==EntityKind::Train ? 1.3F : small ? .32F : insect ? .30F : .58F;
     const float height=actor.kind==EntityKind::Train ? .3F : small || insect ? .10F : .17F;
-    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width*(actor.kind==EntityKind::ForestSpider ? forest_spider_size(actor) : actor.kind==EntityKind::Bear ? bear_size(actor) : 1),pixels*height,(insect ? .22F : .38F)/(1+actor_toss_height(actor)));
+    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width*(actor.kind==EntityKind::ForestSpider ? forest_spider_size(actor) : actor.kind==EntityKind::Bear ? bear_size(actor) : actor.kind==EntityKind::OldGrowthBear ? 2.1F : 1),pixels*height,(insect ? .22F : .38F)/(1+actor_toss_height(actor)));
 }
 }
 

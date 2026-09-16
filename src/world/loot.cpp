@@ -146,6 +146,9 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     case EntityKind::Gnome:
         if(random_u32(game)%3==0)place_coins(game,enemy.cell,2+static_cast<int>(random_u32(game)%4));
         break;
+    case EntityKind::OldGrowthBear:
+        place_coins(game,enemy.cell,40);
+        [[fallthrough]];
     case EntityKind::GnomeHouse:
         if(enemy.ground_item.kind!=ItemKind::None) {
             if(auto* loose=get_entity(game,spawn_entity(game,EntityKind::GroundItem,nearby_ground_item_cell(game,enemy.cell)))) {

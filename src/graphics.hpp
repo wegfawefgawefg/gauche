@@ -107,6 +107,7 @@ enum class Sprite : std::size_t {
     MimicOpen, MimicGape, MimicSnap, MimicRecover, MimicJaws, MimicJawsClosed,
     GnomeStick, GnomeStickWalk, GnomeStickTell, GnomeStickHit, GnomeBow, GnomeBowWalk, GnomeBowTell, GnomeBowHit, GnomeCrossbow, GnomeCrossbowWalk, GnomeCrossbowTell, GnomeCrossbowHit, GnomeRider, GnomeRiderWalk, GnomeRiderTell, GnomeRiderHit,
     GnomeHouse, GnomeHouseClosed, GnomeHouseBlue, GnomeHouseBlueClosed, GnomeHouseOchre, GnomeHouseOchreClosed, TallMushroom, TallMushroomBlue, TallMushroomOchre,
+    OldGrowthBear, OldGrowthRear, OldGrowthSwipe, OldGrowthPaw, OldGrowthRush, OldGrowthStagger, TallTreeSnowCap,
     Count,
 };
 

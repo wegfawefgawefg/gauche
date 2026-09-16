@@ -30,6 +30,8 @@ void draw_tall_tree(SDL_Renderer* renderer,const GameGraphics& graphics,const Ga
         SDL_SetTextureAlphaMod(texture,255);SDL_SetTextureColorModFloat(texture,1,1,1);
     };
     draw(tree.hp<36 || tree.growth_ticks ? Sprite::TallTreeCut : Sprite::TallTree,nullptr,body,pivot);
+    if(tile.kind==TileKind::Snow && !tile.surface.fire_ticks && !tree_burn_height(tree))
+        draw(Sprite::TallTreeSnowCap,nullptr,body,pivot);
     const float burnt=static_cast<float>(tree_burn_height(tree))/12;
     if (burnt>0) {
         const SDL_FRect source{0,64*(1-burnt),32,64*burnt};

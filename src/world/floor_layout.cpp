@@ -1,6 +1,8 @@
 #include "fissures.hpp"
 #include "ant_colonies.hpp"
 #include "mushroom_settlements.hpp"
+#include "forest_boss.hpp"
+#include "forest_border.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -158,6 +160,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_industrial_links(game,plan);
         populate_ice_thaw(game,plan);
         populate_shelf_reward(game,plan);
+        place_forest_boss(game,plan,report);
+        capture("Forest boss clearing");
         populate_rooms(game,plan,report,&plan.report);
         capture("Inhabitants and loot");
         populate_open_sectors(game,plan,report);
@@ -186,6 +190,10 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         capture("Light towers");
         place_roof_scenes(game,plan);
         capture("Roof scenes");
+    }
+    if(!reactor && !freight && !haunted) {
+        place_forest_border(game,plan);
+        capture("Biome border scenery");
     }
     place_fissures(game,plan);
     place_lava_vents(game);

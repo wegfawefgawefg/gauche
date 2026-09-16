@@ -40,6 +40,7 @@
 #include "snake.hpp"
 #include "ant.hpp"
 #include "gnome.hpp"
+#include "old_growth_bear.hpp"
 #include "ant_hauling.hpp"
 #include "boiler_porter.hpp"
 #include "boiler_tank.hpp"
@@ -111,6 +112,15 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     case EntityKind::BoilerTank:
         if (enemy.label_a == BoilerTell && enemy.cell == enemy.point_a)
             for (int i=1;i<=4;++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
+    case EntityKind::OldGrowthBear:
+        if(enemy.cell==enemy.point_b) {
+            const Cell side{-enemy.facing.y,enemy.facing.x};
+            if(enemy.label_a==GrowthMaul)for(int reach=1;reach<=2;++reach)for(int lane=-1;lane<=1;++lane)
+                add(enemy.cell+Cell{enemy.facing.x*reach+side.x*lane,enemy.facing.y*reach+side.y*lane});
+            if(enemy.label_a==GrowthPaw || enemy.label_a==GrowthRush)for(int n=1;n<=enemy.counter_a;++n)
+                add(enemy.cell+Cell{enemy.facing.x*n,enemy.facing.y*n});
+        }
         break;
     case EntityKind::Gnome:
         if (enemy.label_a==GnomeTell && enemy.cell==enemy.point_a) {

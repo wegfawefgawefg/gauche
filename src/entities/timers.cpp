@@ -42,6 +42,7 @@
 #include "snake.hpp"
 #include "ant.hpp"
 #include "gnome.hpp"
+#include "old_growth_bear.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../world/lava.hpp"
@@ -121,6 +122,7 @@ void step_entity_timers(Game& game, int slot) {
     snake_timers(entity);
     ant_timers(entity);
     gnome_timers(entity);
+    old_growth_timers(entity);
     thaw_snow_effigy(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.

@@ -137,8 +137,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
             continue;
         }
-        if (entity.kind==EntityKind::Ant || entity.kind==EntityKind::Bear || entity.kind==EntityKind::ForestSpider) {
-            const float size=entity.kind==EntityKind::Ant ? ant_size(entity) : entity.kind==EntityKind::ForestSpider ? forest_spider_size(entity) : bear_size(entity);
+        if (entity.kind==EntityKind::Ant || entity.kind==EntityKind::Bear || entity.kind==EntityKind::ForestSpider || entity.kind==EntityKind::OldGrowthBear) {
+            const float size=entity.kind==EntityKind::OldGrowthBear ? 2.1F : entity.kind==EntityKind::Ant ? ant_size(entity) : entity.kind==EntityKind::ForestSpider ? forest_spider_size(entity) : bear_size(entity);
             rect.x-=pixels*(size-1)*.5F;rect.y-=pixels*(size-1);rect.w*=size;rect.h*=size;
         }
         if (entity.sprite==Sprite::ReactorCore) {

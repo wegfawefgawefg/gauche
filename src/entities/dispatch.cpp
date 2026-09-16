@@ -3,6 +3,7 @@
 #include "snake.hpp"
 #include "ant.hpp"
 #include "gnome.hpp"
+#include "old_growth_bear.hpp"
 #include "ant_hauling.hpp"
 #include "coal_cutter.hpp"
 #include "brawler.hpp"
@@ -69,6 +70,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::BoilerPorter: init_boiler_porter(entity); break;
     case EntityKind::BoilerTank: init_boiler_tank(entity); break;
     case EntityKind::Gnome: init_gnome(entity);break;
+    case EntityKind::OldGrowthBear: init_old_growth_bear(entity);break;
     case EntityKind::GnomeHouse: init_gnome_house(entity);break;
     case EntityKind::AntLoad: init_ant_load(entity);break;
     case EntityKind::Ant: init_ant(entity);break;
@@ -169,6 +171,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
     case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
     case EntityKind::Gnome: step_gnome(game,slot);break;
+    case EntityKind::OldGrowthBear: step_old_growth_bear(game,slot);break;
     case EntityKind::GnomeHouse: step_gnome_house(game,slot);break;
     case EntityKind::AntLoad: step_ant_load(game,slot);break;
     case EntityKind::Ant: step_ant(game,slot);break;

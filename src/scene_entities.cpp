@@ -6,6 +6,7 @@
 #include "items/cooking_render.hpp"
 #include "scene_entities.hpp"
 #include "entities/bear_family.hpp"
+#include "entities/forest_spider.hpp"
 #include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -124,8 +125,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
             continue;
         }
-        if (entity.kind==EntityKind::Bear) {
-            const float size=bear_size(entity);
+        if (entity.kind==EntityKind::Bear || entity.kind==EntityKind::ForestSpider) {
+            const float size=entity.kind==EntityKind::ForestSpider ? forest_spider_size(entity) : bear_size(entity);
             rect.x-=pixels*(size-1)*.5F;rect.y-=pixels*(size-1);rect.w*=size;rect.h*=size;
         }
         if (entity.sprite==Sprite::ReactorCore) {

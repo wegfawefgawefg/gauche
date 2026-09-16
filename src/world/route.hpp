@@ -7,7 +7,7 @@
 enum class RoomRole { Entrance, Exit, Clearing, Thicket, Brook, Ruins,
                       Den, Cache, Shrine, Workshop, Orchard, Secret,
                       Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel, CrystalGallery, ServicePassage, BoilerGallery, Workfront, BlastingAlcove, AssemblyLine, RepairBay, ScrapYard, CoolingWorks, CableTrench, KilnCourt, PayOffice, LampAlcove, SlagBank, AshLoft, HoistShaft, CastingFloor, SettlingTanks, FreightSiding };
-enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern, WorkHall, ExcavatedHall, BearHollow };
+enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern, WorkHall, ExcavatedHall, BearHollow, SpiderCave };
 
 struct RoomPlan {
     Cell grid{}, center{};
@@ -36,7 +36,14 @@ struct ForestDen {
     Cell along{},across{},spring{},cache{};
     std::vector<Cell> beds;
 };
+struct SpiderCave {
+    std::vector<int> rooms;
+    std::vector<Cell> webs,broods;
+    Cell entry{},cache{};
+    bool mother=false;
+};
 struct FloorPlan {
+    std::vector<SpiderCave> spider_caves;
     std::vector<ForestDen> forest_dens;
     std::vector<RoomPlan> rooms;
     std::vector<RouteEdge> edges;

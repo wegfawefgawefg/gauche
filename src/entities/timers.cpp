@@ -37,6 +37,7 @@
 #include "boiler_porter.hpp"
 #include "boiler_tank.hpp"
 #include "icicle_spider.hpp"
+#include "forest_spider.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../world/lava.hpp"
@@ -111,6 +112,7 @@ void step_entity_timers(Game& game, int slot) {
     }
     step_shard_state(entity);
     step_spider_strand(game,entity);
+    forest_spider_timers(entity);
     thaw_snow_effigy(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.

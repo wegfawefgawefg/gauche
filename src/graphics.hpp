@@ -98,6 +98,8 @@ enum class Sprite : std::size_t {
     IceSpikesA, IceSpikesB, IceSpikesC, SnowPileA, SnowPileB, SnowPileC,
     IcePillarForked, IcePillarForkedCracked, IcePillarBroad, IcePillarBroadCracked,
     IceArchFoot, IceArchCrown, IceArchShoulder, IceArchCrownV,
+    ForestSpider, ForestSpiderTell, ForestSpiderBite, ForestSpiderYoung, ForestSpiderYoungTell, ForestSpiderYoungBite, ForestSpiderMother, ForestSpiderMotherTell, ForestSpiderMotherBite, ForestWeb0, ForestWeb1, ForestWeb2,
+    ForestSpiderFangs, ForestSpiderFangsClosed,
     Count,
 };
 

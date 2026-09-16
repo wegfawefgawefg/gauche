@@ -64,7 +64,7 @@ void clear_spider_strand(Game& game, Entity& spider) {
 
 bool cut_spider_strand(Game& game, Cell cell, bool burned) {
     Tile* tile = game.stage.at(cell);
-    if (!tile || tile->prop.kind != PropKind::SpiderStrand) return false;
+    if (!tile || (tile->prop.kind != PropKind::SpiderStrand && tile->prop.kind!=PropKind::ForestWeb)) return false;
     for (Entity& spider : game.entities) {
         if (spider.kind != EntityKind::IcicleSpider || !spider.counter_a) continue;
         const auto cells = spider_strand_cells(spider);
@@ -80,9 +80,9 @@ bool cut_spider_strand(Game& game, Cell cell, bool burned) {
 
 void enter_spider_strand(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-    if (actor.kind == EntityKind::IcicleSpider) return;
+    if (actor.kind == EntityKind::IcicleSpider || actor.kind==EntityKind::ForestSpider) return;
     const Tile* tile = game.stage.at(actor.cell);
-    if (!tile || tile->prop.kind != PropKind::SpiderStrand) return;
+    if (!tile || (tile->prop.kind != PropKind::SpiderStrand && tile->prop.kind!=PropKind::ForestWeb)) return;
     // PREY: The first crossing consumes the entire line; standing still cannot retrigger it.
     for (Entity& spider : game.entities) {
         if (spider.kind != EntityKind::IcicleSpider || !spider.counter_a) continue;

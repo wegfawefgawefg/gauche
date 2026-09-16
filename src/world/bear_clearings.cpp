@@ -31,7 +31,7 @@ std::vector<std::size_t> populate_bear_clearings(Game& game,const FloorPlan& pla
     for (std::size_t i=0;i<plan.rooms.size();++i) {
         const auto& room=plan.rooms[i];
         if ((room.role==RoomRole::Den || room.role==RoomRole::Clearing || room.role==RoomRole::Thicket) &&
-            room.shape!=RoomShape::BearHollow && static_cast<int>(i)!=plan.objective_room) rooms.push_back(i);
+            room.shape!=RoomShape::BearHollow && room.shape!=RoomShape::SpiderCave && static_cast<int>(i)!=plan.objective_room) rooms.push_back(i);
     }
     for (std::size_t i=rooms.size();i>1;--i) std::swap(rooms[i-1],rooms[random_u32(game)%i]);
     // Independent habitat allowance: a filled scene replaces that room's generic

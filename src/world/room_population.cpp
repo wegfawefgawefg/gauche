@@ -1,5 +1,6 @@
 #include "industrial_population.hpp"
 #include "forest_den.hpp"
+#include "spider_cave.hpp"
 #include "bear_stream.hpp"
 #include "bear_clearings.hpp"
 #include "brawlers.hpp"
@@ -42,7 +43,7 @@ void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool g
 }
 
 void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
-    if (room.shape==RoomShape::ThawCavern || room.shape==RoomShape::BearHollow) return;
+    if (room.shape==RoomShape::ThawCavern || (room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave)) return;
     const int round = (game.run.floor - 1) % 4;
     if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
@@ -182,7 +183,7 @@ void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Roo
 }
 
 void encounter(Game& game,const FloorPlan& plan,const RoomPlan& room,RoomSupplies& budget) {
-    if (room.shape==RoomShape::ThawCavern || room.shape==RoomShape::BearHollow) return;
+    if (room.shape==RoomShape::ThawCavern || (room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave)) return;
     if (!budget.report || room.role>=RoomRole::Workfront) {room_encounter(game,plan,room,budget);return;}
     const auto occupants=[&]() {return std::count_if(game.entities.begin(),game.entities.end(),
         [](const Entity& entity){return entity.kind!=EntityKind::None && entity.health>0;});};
@@ -375,7 +376,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
-        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;
+        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;report->spider_caves=plan.spider_caves;
         report->industry_profile=plan.industry_profile;report->industrial_links=plan.industrial_links;
         report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
@@ -431,6 +432,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
     populate_forest_den(game,plan);
+    populate_spider_cave(game,plan);
     populate_bear_streams(game,plan,report);
     const auto bear_rooms=populate_bear_clearings(game,plan,report);
     if (forest_floor(game.run.floor)) {
@@ -438,7 +440,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
         for (std::size_t i=0;i<plan.rooms.size();++i) {
             const auto& room=plan.rooms[i];
             if (room.role!=RoomRole::Entrance && room.role!=RoomRole::Exit &&
-                room.role!=RoomRole::Secret && room.shape!=RoomShape::BearHollow &&
+                room.role!=RoomRole::Secret && room.shape!=RoomShape::BearHollow && room.shape!=RoomShape::SpiderCave &&
                 std::find(bear_rooms.begin(),bear_rooms.end(),i)==bear_rooms.end()) encounters.push_back(i);
         }
         // A growing floor needs a growing population. Shuffle allocation so deep
@@ -452,7 +454,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     for (const RoomPlan& room:plan.rooms) {
         if (forest_floor(game.run.floor)) room_light(game,room);
         if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit) continue;
-        if (room.shape==RoomShape::BearHollow) continue;
+        if (room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave) continue;
         place_crystal_vein(game,plan,room);
         room_loot(game,room,budget);
     }

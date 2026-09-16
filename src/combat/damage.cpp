@@ -29,6 +29,7 @@
 #include "../entities/ember.hpp"
 #include "../entities/powder_monkey.hpp"
 #include "../entities/icicle_spider.hpp"
+#include "../entities/forest_spider.hpp"
 #include "../entities/boiler_porter.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../entities/ice_mason.hpp"
@@ -100,6 +101,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_candle_keeper(entity);
     interrupt_shard_node(entity);
     interrupt_icicle_spider(game,entity);
+    interrupt_forest_spider(entity);
     interrupt_boiler_porter(entity);
     damage_boiler(game,slot);
     interrupt_seal_thief(entity);

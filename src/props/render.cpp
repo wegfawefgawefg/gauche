@@ -58,6 +58,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                 Sprite::IceBlockThaw : spec.sprite;
             if (prop.kind==PropKind::IceSpikes || prop.kind==PropKind::SnowPile)
                 sprite=static_cast<Sprite>(static_cast<int>(prop.kind==PropKind::IceSpikes ? Sprite::IceSpikesA : Sprite::SnowPileA)+prop.variant%3);
+            if (prop.kind==PropKind::ForestWeb) sprite=static_cast<Sprite>(static_cast<int>(Sprite::ForestWeb0)+prop.variant%3);
             if (prop.kind==PropKind::Crate)
                 sprite=prop.broken ? Sprite::CrateBroken : prop.hp<=6 ? Sprite::CrateSplintered :
                     prop.hp<prop_spec(PropKind::Crate).health ? Sprite::CrateBruised : Sprite::Crate;

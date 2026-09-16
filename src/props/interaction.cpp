@@ -161,6 +161,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind==PropKind::Pallet || kind==PropKind::PalletStack || kind==PropKind::BoundRocks || kind==PropKind::ContainerSide) tile->prop.variant &= 1U;
     if (kind==PropKind::IcePillar) tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));
+    if (kind==PropKind::ForestWeb) tile->prop.variant%=3;
     if (kind==PropKind::IceSpikes || kind==PropKind::SnowPile) tile->prop.variant%=3;
     if (kind==PropKind::StreetLamp) tile->prop.variant &= 3U;
     if (kind==PropKind::PoleWreck) tile->prop.variant &= 1U;
@@ -184,7 +185,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr || damage <= 0 || tile->prop.kind == PropKind::None ||
         tile->prop.broken) return false;
-    if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
+    if (tile->prop.kind == PropKind::SpiderStrand || tile->prop.kind==PropKind::ForestWeb) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
     if (prop.kind==PropKind::LightTower) return hit_light_tower(game,cell,damage);
     if (prop.kind==PropKind::TallTree) return hit_tall_tree(game,cell,damage,source);

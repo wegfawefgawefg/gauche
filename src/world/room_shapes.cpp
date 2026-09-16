@@ -1,6 +1,7 @@
 #include "route.hpp"
 #include "room_frame.hpp"
 #include "forest_den.hpp"
+#include "spider_cave.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_terrain.hpp"
 #include "ice_shelves.hpp"
@@ -17,6 +18,7 @@ bool inside_shape(const RoomPlan& world, int x, int y) {
     const int ax = std::abs(x), ay = std::abs(y);
     const int w = room.half_width, h = room.half_height;
     switch (room.shape) {
+    case RoomShape::SpiderCave: return (x*x+y*y<=w*h-4) || ((x+3)*(x+3)+(y-2)*(y-2)<h*h/2);
     case RoomShape::BearHollow: return ax*ax+ay*ay<=88 || (ax<=3 && ay<=h);
     case RoomShape::WorkHall: return !(ax==7 && ay>=4 && ay<=5);
     case RoomShape::ExcavatedHall: return ax<=7 || ay<=h-2-(ax-8);
@@ -131,6 +133,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     for (const RoomPlan& room : plan.rooms) carve_room(game, plan, room);
     for (RouteEdge edge : plan.edges) connect_rooms(game, plan, edge);
     carve_forest_den(game,plan);
+    carve_spider_cave(game,plan);
     connect_ice_shelves(game,plan);
     carve_ice_thaw(game,plan);
     carve_industrial_geometry(game,plan);

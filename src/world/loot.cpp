@@ -143,6 +143,10 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         break;
     }
     case EntityKind::BoilerTank: break; // The actual fitting was salvaged above.
+    case EntityKind::ForestSpider:
+        if (enemy.counter_b==2) {place_ground_item(game,enemy.cell,ItemKind::ThrowingNet,2);place_coins(game,enemy.cell,18);}
+        else if (enemy.counter_b==0 && random_u32(game)%3==0) place_ground_item(game,enemy.cell,ItemKind::RawMeat);
+        break;
     case EntityKind::IcicleSpider: {
         const auto roll = random_u32(game)%100;
         if (roll < 20) place_ground_item(game,enemy.cell,ItemKind::FishingLine);

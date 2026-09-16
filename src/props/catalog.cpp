@@ -47,6 +47,7 @@ PropSpec prop_spec(PropKind kind) {
     case PropKind::CopperWire: return {Sprite::WireJunction,SoundId::WireCut,4,false,false};
     case PropKind::GroundingSpike: return {Sprite::GroundingSpike,SoundId::SpikeBreak,8,false,false};
     case PropKind::MaintenanceLocker: return {Sprite::MaintenanceLocker,SoundId::LockerOpen,24,true,false};
+    case PropKind::ForestWeb: return {Sprite::ForestWeb0,SoundId::SpiderCut,1,false,false};
     case PropKind::SpiderStrand: return {Sprite::SpiderStrand,SoundId::SpiderCut,1,false,false};
     case PropKind::Stove: return {Sprite::Stove,SoundId::StoveBreak,40,true,false,{4,950,{255,168,78}}};
     case PropKind::CandleCabinet: return {Sprite::CandleCabinet,SoundId::CabinetOpen,18,true,false};

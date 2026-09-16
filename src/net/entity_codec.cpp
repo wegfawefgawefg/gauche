@@ -238,6 +238,8 @@ Entity read_entity(PacketReader& reader) {
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     if (entity.kind == EntityKind::IcicleSpider && (entity.label_a < 0 || entity.label_a > 5 ||
         entity.counter_a < 0 || entity.counter_a > 1)) reader.okay = false;
+    if (entity.kind==EntityKind::ForestSpider && (entity.counter_b<0 || entity.counter_b>2 ||
+        entity.label_a<0 || entity.label_a>2)) reader.okay=false;
     entity.birth_tick = reader.u64();
     entity.impassable = reader.u8() != 0;
     entity.hard_blocker = reader.u8() != 0;

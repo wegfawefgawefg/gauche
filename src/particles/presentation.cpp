@@ -111,6 +111,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
             entity.counter_b==ZombieRecover && entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
+        if (entity.kind==EntityKind::ForestSpider && entity.use_flash==10 && entity.use_flash>pose.use_flash)
+            spawn_forest_spider_bite(cosmetics,entity);
         if (((entity.kind==EntityKind::Wolf && entity.label_a==WolfRecover) ||
             (entity.kind==EntityKind::Dog && entity.label_a==DogRecover)) &&
             entity.use_flash==10 && entity.use_flash>pose.use_flash)

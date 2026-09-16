@@ -106,6 +106,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "forest_spider", "forest_spider_tell", "forest_spider_bite", "forest_spider_young", "forest_spider_young_tell", "forest_spider_young_bite", "forest_spider_mother", "forest_spider_mother_tell", "forest_spider_mother_bite", "forest_web_0", "forest_web_1", "forest_web_2",
     "forest_spider_fangs", "forest_spider_fangs_closed",
     "snake", "snake_coil", "snake_strike",
+    "root_0", "root_1", "root_2", "root_3", "root_4", "root_5", "root_6", "root_7", "root_8", "root_9", "root_10", "root_11", "root_12", "root_13", "root_14", "root_15", "root_cut",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

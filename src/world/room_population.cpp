@@ -2,6 +2,7 @@
 #include "forest_den.hpp"
 #include "spider_cave.hpp"
 #include "snake_tunnel.hpp"
+#include "root_maze.hpp"
 #include "bear_stream.hpp"
 #include "bear_clearings.hpp"
 #include "brawlers.hpp"
@@ -377,7 +378,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
-        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;report->spider_caves=plan.spider_caves;report->snake_tunnels=plan.snake_tunnels;
+        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;report->spider_caves=plan.spider_caves;report->snake_tunnels=plan.snake_tunnels;report->root_mazes=plan.root_mazes;
         report->industry_profile=plan.industry_profile;report->industrial_links=plan.industrial_links;
         report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
@@ -435,6 +436,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     populate_forest_den(game,plan);
     populate_spider_cave(game,plan);
     populate_snake_tunnel(game,plan);
+    populate_root_maze(game,plan);
     populate_bear_streams(game,plan,report);
     const auto bear_rooms=populate_bear_clearings(game,plan,report);
     if (forest_floor(game.run.floor)) {

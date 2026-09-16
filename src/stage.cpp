@@ -84,7 +84,7 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     const int previous = tile->hp;
     const bool freight=tile->kind==TileKind::Rail;
     const bool wood = wooden_terrain(*tile);
-    const Sprite material = freight ? Sprite::Rail : tile->material == TileMaterial::Tree ? Sprite::ForestTree :
+    const Sprite material = freight ? Sprite::Rail : (tile->material == TileMaterial::Tree || tile->material==TileMaterial::Root) ? Sprite::ForestTree :
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
         tile->material == TileMaterial::Ice ? ice_wall_sprite(*tile,cell) :
         game.run.phase == RunPhase::Arena ? Sprite::Wall :

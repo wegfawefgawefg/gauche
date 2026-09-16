@@ -16,12 +16,13 @@ struct RoomPlan {
     RoomRole role = RoomRole::Clearing;
     RoomShape shape = RoomShape::Clearing;
     bool mirrored = false;
+    bool landmark=false; // Population/scenery reserved by an overlay; retain base geometry.
     int shelf_variant=0;
     int turns=0; // Quarter turns; half_width/height remain world-aligned bounds.
 };
 
 inline bool reserved_habitat(const RoomPlan& room) {
-    return room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave || room.shape==RoomShape::SnakeTunnel;
+    return room.landmark || room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave || room.shape==RoomShape::SnakeTunnel;
 }
 
 struct RouteEdge { int a = 0, b = 0; };
@@ -51,7 +52,15 @@ struct SnakeTunnel {
     Cell axis{},entry{},cache{},island{},tree{};
     int crossing_length=0;
 };
+struct RootMaze {
+    int a=0,b=0,length=0;
+    Cell origin{},axis{},side{},entry{},cache{},plug{};
+    bool cross_link=false;
+    std::vector<Cell> roots,ground;
+    std::vector<RoofSpan> passages;
+};
 struct FloorPlan {
+    std::vector<RootMaze> root_mazes;
     std::vector<SnakeTunnel> snake_tunnels;
     std::vector<SpiderCave> spider_caves;
     std::vector<ForestDen> forest_dens;

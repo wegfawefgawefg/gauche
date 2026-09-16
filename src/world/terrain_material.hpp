@@ -2,7 +2,7 @@
 #include "../game.hpp"
 
 inline bool wooden_terrain(const Tile& tile) {
-    return tile.material == TileMaterial::Timber || tile.material == TileMaterial::Tree;
+    return tile.material == TileMaterial::Timber || tile.material == TileMaterial::Tree || tile.material==TileMaterial::Root;
 }
 
 inline Tile wood_tile(TileMaterial material) {

@@ -3,6 +3,7 @@
 #include "forest_den.hpp"
 #include "spider_cave.hpp"
 #include "snake_tunnel.hpp"
+#include "root_maze.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_terrain.hpp"
 #include "ice_shelves.hpp"
@@ -141,6 +142,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
     carve_snake_tunnel(game,plan);
+    carve_root_maze(game,plan);
     for (int y = 0; y < plan.height; ++y)
         for (int x = 0; x < plan.width; ++x)
             if (x == 0 || y == 0 || x == plan.width - 1 || y == plan.height - 1)

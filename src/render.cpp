@@ -29,6 +29,7 @@
 #include "render.hpp"
 #include "props/hit_render.hpp"
 #include "world/terrain_material.hpp"
+#include "world/root_material.hpp"
 #include "items/effigy_mask_render.hpp"
 #include "entities/gate_render.hpp"
 #include "world/floating_render.hpp"
@@ -199,8 +200,8 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             const auto deck=roof_ground(game.stage,cell);
             const int spring_turn=tile.kind==TileKind::Spring && tile.current>0 ? (tile.current+2)%4 : 0;
             const int turns=deck ? deck->quarter_turns : tile.kind==TileKind::Spring ?
-                spring_turn : log_support_turns(game.stage,cell);
-            const Sprite id = deck ? deck->sprite : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
+                spring_turn : tile.material==TileMaterial::Root ? root_turns(game.stage,cell) : log_support_turns(game.stage,cell);
+            const Sprite id = deck ? deck->sprite : tile.material==TileMaterial::Root && !log_cap ? root_sprite(game.stage,cell) : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};
             if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint,{0,0,1,1},turns);

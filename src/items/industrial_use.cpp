@@ -1,3 +1,4 @@
+#include "steel_toe.hpp"
 #include "glow_slag.hpp"
 #include "../projectiles/recoverable.hpp"
 #include "mold_key.hpp"
@@ -22,6 +23,8 @@ bool use_industrial_tool(Game& game, int user_slot, Cell direction, int range, i
     bool used=false;
     cooldown=0;
     switch (item.kind) {
+    case ItemKind::SteelToeCap:
+        used=use_steel_toe(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::GlowSlag:
         used=launch_recoverable(game,user_slot,*game.entities[static_cast<std::size_t>(user_slot)].inventory.held(),direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::InsulatedBoots:

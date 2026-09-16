@@ -40,6 +40,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         if (roll<20) place_ground_item(game,enemy.cell,ItemKind::BrakeShoe);
         else if (roll<40) place_ground_item(game,enemy.cell,ItemKind::RailSwitchKey);
         else if (roll<60) place_coins(game,enemy.cell,4+static_cast<int>(random_u32(game)%5));
+        else if (roll<75) place_ground_item(game,enemy.cell,ItemKind::SteelToeCap);
         break;
     }
     case EntityKind::TarChoir: drop_tar_choir(game,enemy);break;

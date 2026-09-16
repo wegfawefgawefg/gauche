@@ -251,6 +251,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                                 rect.y + pixels * 0.25F +
                                 static_cast<float>(held_facing.y) * forward,
                                 pixels * 0.5F, pixels * 0.5F};
+            if (held->kind==ItemKind::SteelToeCap) held_rect.y+=pixels*.2F;
             const double angle = std::atan2(static_cast<double>(held_facing.y),
                                             static_cast<double>(held_facing.x)) *
                                  180.0 / 3.141592653589793;
@@ -282,4 +283,3 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
     }
 }
-

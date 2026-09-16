@@ -53,6 +53,7 @@ std::string item_display_name(const Item& item) {
 }
 
 bool item_accepts_attribute(ItemKind kind, ItemAttribute attribute) {
+    if (kind==ItemKind::SteelToeCap && attribute==ItemAttribute::Long) return false;
     if ((kind==ItemKind::ArcTorch || kind==ItemKind::PocketDrill) && attribute==ItemAttribute::Long) return false;
     if (kind == ItemKind::EmergencyFoam || kind == ItemKind::QuarryCharge || kind == ItemKind::GroundingSpike) return attribute == ItemAttribute::None;
     const RegionalItem* spec = regional_item(kind);

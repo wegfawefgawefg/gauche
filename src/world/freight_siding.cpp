@@ -41,7 +41,7 @@ bool populate_freight_siding(Game& game,const FloorPlan& plan,const RoomPlan& ro
         if (load.kind==ItemKind::BoltPouch) load.count=3;
         else load.durability=12;
         get_entity(game,cart)->ground_item=load;
-        place_ground_item(game,at(-4,2),branch ? ItemKind::RailSwitchKey : ItemKind::BrakeShoe);
+        place_ground_item(game,at(-4,2),branch ? ItemKind::RailSwitchKey : random_u32(game)%2==0 ? ItemKind::BrakeShoe : ItemKind::SteelToeCap);
         return true;
     }
     return false;

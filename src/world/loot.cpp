@@ -35,6 +35,15 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
     drop_machine_fitting(game,enemy);
     // POCKETS: Money comes from plausible carriers and caches, not every animal kill.
     switch (enemy.kind) {
+    case EntityKind::FrostGoblin: case EntityKind::PipeGuard: {
+        const bool cold=enemy.kind==EntityKind::FrostGoblin;
+        const auto roll=random_u32(game)%100;
+        if (roll<10) place_ground_item(game,enemy.cell,cold ? ItemKind::Chisel : ItemKind::NailBoard);
+        else if (roll<25) place_ground_item(game,enemy.cell,ItemKind::Bandage);
+        else if (roll<40) place_ground_item(game,enemy.cell,cold ? ItemKind::WoolWrap : ItemKind::BoltPouch,cold ? 1 : 3);
+        else if (roll<75) place_coins(game,enemy.cell,2+static_cast<int>(random_u32(game)%3));
+        break;
+    }
     case EntityKind::RailShunter: {
         const auto roll=random_u32(game)%100;
         if (roll<20) place_ground_item(game,enemy.cell,ItemKind::BrakeShoe);

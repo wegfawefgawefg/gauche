@@ -70,6 +70,7 @@ enum class Sprite : std::size_t {
     RoofLogA, RoofLogB, RoofLogC, RoofLogEndA, RoofLogEndB, RoofLogEndC, RoofIceA, RoofIceB, RoofIceC, RoofIceEndA, RoofIceEndB, RoofIceEndC, RoofGantryA, RoofGantryB, RoofGantryC, RoofGantryEndA, RoofGantryEndB, RoofGantryEndC,
     ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax,
     IcePillar, IcePillarCracked, IceRubble,
+    FrostGoblin, FrostGoblinRaise, FrostGoblinSwing, PipeGuard, PipeGuardRaise, PipeGuardSwing,
     Count,
 };
 

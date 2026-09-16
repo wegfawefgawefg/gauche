@@ -1,3 +1,4 @@
+#include "brawlers.hpp"
 #include "freight_siding.hpp"
 #include "settling_tanks.hpp"
 #include "casting_floor.hpp"
@@ -374,6 +375,11 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             --budget.equipment;
         }
     }
+    RoomSupplies fighters{};
+    if (ice_floor(game.run.floor) || industrial_floor(game.run.floor)) {
+        fighters.threat=3+round;
+        budget.threat-=fighters.threat;
+    }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::FreightSiding && budget.threat>=3 && budget.equipment>=2) {
         if (populate_freight_siding(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
     }
@@ -442,6 +448,8 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             }
             if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
         }
+    place_brawlers(game,plan,fighters);
+    budget.threat+=fighters.threat;
     bool salvage=false;
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);

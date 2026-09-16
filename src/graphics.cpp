@@ -75,6 +75,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "roof_log_a", "roof_log_b", "roof_log_c", "roof_log_end_a", "roof_log_end_b", "roof_log_end_c", "roof_ice_a", "roof_ice_b", "roof_ice_c", "roof_ice_end_a", "roof_ice_end_b", "roof_ice_end_c", "roof_gantry_a", "roof_gantry_b", "roof_gantry_c", "roof_gantry_end_a", "roof_gantry_end_b", "roof_gantry_end_c",
     "chapel_pew", "chapel_altar", "chapel_runner", "chapel_urn", "chapel_pew_broken", "chapel_wax",
     "ice_pillar", "ice_pillar_cracked", "ice_rubble",
+    "frost_goblin", "frost_goblin_raise", "frost_goblin_swing", "pipe_guard", "pipe_guard_raise", "pipe_guard_swing",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

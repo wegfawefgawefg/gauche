@@ -1,3 +1,4 @@
+#include "brawler.hpp"
 #include "../items/coal.hpp"
 #include "rail_cart.hpp"
 #include "rail_shunter.hpp"
@@ -53,6 +54,7 @@
 void init_entity(Game& game, Entity& entity) {
     // Each kind owns its setup beside its step. Dispatch stays deliberately plain.
     switch (entity.kind) {
+    case EntityKind::FrostGoblin: case EntityKind::PipeGuard: init_brawler(entity); break;
     case EntityKind::RivetGunner: init_rivet_gunner(entity); break;
     case EntityKind::Strikebreaker: init_strikebreaker(entity); break;
     case EntityKind::PowderMonkey: init_powder_monkey(entity); break;
@@ -139,6 +141,7 @@ void init_entity(Game& game, Entity& entity) {
 
 void step_entity(Game& game, int slot) {
     switch (game.entities[static_cast<std::size_t>(slot)].kind) {
+    case EntityKind::FrostGoblin: case EntityKind::PipeGuard: step_brawler(game,slot); break;
     case EntityKind::RivetGunner: step_rivet_gunner(game,slot); break;
     case EntityKind::Strikebreaker: step_strikebreaker(game,slot); break;
     case EntityKind::PowderMonkey: step_powder_monkey(game,slot); break;

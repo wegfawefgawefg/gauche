@@ -1,3 +1,4 @@
+#include "../entities/brawler.hpp"
 #include "../entities/rail_cart.hpp"
 #include "../entities/rail_shunter.hpp"
 #include "../projectiles/tar_spit.hpp"
@@ -262,6 +263,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_arc_welder(entity)) reader.okay=false;
     if (!valid_pocket_drill(entity)) reader.okay=false;
     if (!valid_arc_torch(entity)) reader.okay=false;
+    if (!valid_brawler(entity)) reader.okay=false;
     if (!valid_actor_toss(entity) || !valid_yeti(entity)) reader.okay=false;
     if (!valid_rivet_gunner(entity)) reader.okay=false;
     if (!valid_rivet_action(entity)) reader.okay=false;

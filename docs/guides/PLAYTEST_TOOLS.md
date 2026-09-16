@@ -36,3 +36,28 @@ copying health from an absent previous player.
 Saved playtest settings version 1 is migrated to version 2 on load/save: old Fire
 indices now select Industrial, old Ice indices select Ice. The chosen row, start
 override and repeat target all migrate; actual saved loadout items stay intact.
+
+## World generation viewer
+
+Main menu → Dev → World Gen inspects standalone Forest floors 1-1–1-4 with the ordinary automatic generator and default starting kit. It does not simulate. The completed floor is retained separately from bounded pass snapshots; Play always copies the completed map, even while inspecting an earlier pass. F6/controller Back returns from play; Play again restores the original terrain, entities, loot and random state.
+
+| Action | Keyboard / mouse | Controller (physical Xbox labels) |
+| --- | --- | --- |
+| Change floor, same seed | Page Up / Page Down | LB / RB |
+| Next seed and regenerate | R | X |
+| Play finished map | Enter | A |
+| Exit inspection | Escape | B |
+| Fit map | F | Y |
+| Pan | WASD | Left stick |
+| Zoom | Wheel or minus / equals | D-pad up / down |
+| Previous / next pass | [ / ] | D-pad left / right |
+| Roof / crown visibility | O | Right stick click |
+| Fullbright | L | Left stick click |
+| Details | F1 | Start |
+| Room bounds | ImGui checkbox | Back |
+| Vignette | V | ImGui checkbox |
+| Copy current seed | C | ImGui button |
+
+ImGui Generation inspector edits the next seed, copies the completed map's seed/floor/build revision/settings, scrubs passes, highlights changed terrain/material/prop kinds, and shows recorded population outcomes. Room outlines reflect the selected pass; cyan is ordinary, gold is a reserved landmark. Current capture is coarse and capped at 24 complete Game snapshots (20 on ordinary Forest, about 19 MiB of base tile/entity storage in the checked sample). Generation retains no snapshots when the optional capture argument is absent.
+
+Eligibility/unselected roll explanations, per-component annotations, finer checkpoints, live quickplay/co-op generation reports, and additional biome selectors remain pending. The current retained report is explicitly labeled when shown during play; it is not presented as another session's generation data. `GAUCHE_DEV_MODE` defaults ON; OFF hides developer entry/hotkeys and manual gameplay zoom controls.

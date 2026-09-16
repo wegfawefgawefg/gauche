@@ -247,14 +247,15 @@ void draw_run_status(SDL_Renderer* renderer, const Game& game, float zoom) {
 void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                  const Game& game, int local_owner, float zoom,
                  const Cosmetics* cosmetics, const PointerState& pointer,
-                 bool show_hud, bool compact_details) {
+                 bool show_hud, bool compact_details, const WorldRenderOptions* inspection) {
     const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
-    const ViewCamera camera = cosmetics != nullptr ?
+    const ViewCamera camera = inspection ? inspection->camera : cosmetics != nullptr ?
         camera_for(*cosmetics, game, local_owner) :
         ViewCamera{player == nullptr ? Cell{32, 32} : player->cell};
     LightingCache local_lighting;
     LightingCache& lighting = cosmetics != nullptr ? cosmetics->lighting : local_lighting;
-    build_lighting(lighting, game, camera, zoom,
+    if (inspection && inspection->fullbright) lighting.active = false;
+    else build_lighting(lighting, game, camera, zoom,
                    cosmetics != nullptr ? std::span<const LightFlash>{cosmetics->flashes} :
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
@@ -279,10 +280,10 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,true);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,true);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Ground,player);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Ground,player, !inspection || inspection->roofs);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting, &game.stage);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Bodies,player);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Bodies,player, !inspection || inspection->roofs);
     draw_fissures(renderer,graphics,game,camera,zoom,lighting,true);
     draw_lava_eruptions(renderer,graphics,game,camera,zoom,true);
     draw_plant_lash(renderer, game, camera, zoom, lighting);
@@ -292,10 +293,13 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player != nullptr && debug_panels().world_items)
         draw_item_range_top(renderer, graphics, game, *player, camera, zoom, pointer);
     draw_surfaces(renderer, game, camera, zoom, lighting, true);
-    draw_overhead(renderer, graphics, game, cosmetics, camera, zoom, lighting);
-    draw_canopy_shafts(renderer, game, camera, zoom);
+    if (!inspection || inspection->overhead) {
+        draw_overhead(renderer, graphics, game, cosmetics, camera, zoom, lighting);
+        draw_canopy_shafts(renderer, game, camera, zoom);
+    }
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
+    if (inspection) return;
     draw_run_status(renderer, game, zoom);
     draw_reactor_status(renderer,game);
     if (player != nullptr) draw_encounter_status(renderer, game, *player);

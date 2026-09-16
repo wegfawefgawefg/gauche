@@ -1,4 +1,5 @@
 #include "fissures.hpp"
+#include "generation_trace.hpp"
 #include "light_towers.hpp"
 #include "lava_eruptions.hpp"
 #include "tall_trees.hpp"
@@ -26,7 +27,8 @@
 #include <array>
 #include <utility>
 
-void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report) {
+void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report, GenerationTrace* trace) {
+    if (trace) *trace = {};
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};
     std::array<bool, 4> joined{};
@@ -58,21 +60,32 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     const bool haunted = !reactor && !freight && (layout==FloorLayout::Automatic || layout==FloorLayout::HauntedHouse) &&
         make_haunted_floor(game, layout == FloorLayout::HauntedHouse);
     FloorPlan plan;
+    const auto capture = [&](const char* name) { if (trace) trace->capture(name,game,plan); };
+    capture("Special layout selection");
     if (!haunted && !freight && !reactor) {
         plan = plan_floor(game);
+        capture("Room and landmark plan");
         carve_floor(game, plan);
+        capture("Base terrain / rooms / landmark geometry");
         place_forest_terrain(game, plan);
+        capture("Forest terrain");
         place_water_scenes(game, plan);
+        capture("Water scenes");
         place_ice_terrain(game, plan);
+        capture("Ice terrain");
         place_workfront_terrain(game,plan);
+        capture("Workfront terrain");
         place_assembly_belts(game,plan);
+        capture("Assembly belts");
         place_water_currents(game,plan);
+        capture("Currents");
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         game.run.has_key = false;
         game.run.objective = (game.run.floor - 1) % 2 == 0 ? ObjectiveKind::Key : ObjectiveKind::Switch;
         place_chasms(game,plan);
         carve_shelf_reward(game,plan);
+        capture("Chasms and shelf routes");
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
@@ -116,16 +129,26 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_ice_thaw(game,plan);
         populate_shelf_reward(game,plan);
         populate_rooms(game,plan,report);
+        capture("Inhabitants and loot");
         // Reserve structures before loose clutter consumes their clear ground.
         place_shipping_containers(game,plan);
+        capture("Containers");
         place_ice_arches(game,plan);
+        capture("Ice spans");
         scatter_room_props(game,plan);
+        capture("Loose props");
         place_ice_pillars(game,plan);
+        capture("Ice pillars");
         place_tall_trees(game,plan);
+        capture("Tall trees");
         place_light_towers(game,plan);
+        capture("Light towers");
         place_roof_scenes(game,plan);
+        capture("Roof scenes");
     }
     place_fissures(game,plan);
     place_lava_vents(game);
+    capture("Fissures and lava vents");
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
+    capture("Finished");
 }

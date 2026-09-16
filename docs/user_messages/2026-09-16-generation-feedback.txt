@@ -99,3 +99,16 @@ it would also be nice if the world level generation was somehow steppable like f
 --- Inspector eligibility and actual rolls — 2026-09-16 ---
 
 maybe in this viewer on the left or something it shows me what elementes got rolled for this level? like 1-1 1-2, uh hmm and maybe i can see which is valid to roll also? that way i can see like, ah were missing BLA on 1-1 okay i see why it looks like this. okay i see 1-2 CAN ahve bla bla bla, in this case it has BLA
+
+
+--- Goal activation, shared carving, in-play diagnostics — 2026-09-16 ---
+
+okay i cleared our current goal. you can put the new goal now u just gave me :) then get to it  btw the sidebar thing. its nice if it shows what succeeded, but for the what this scene CAN roll stuff if its easier you can put that stuff in imgui too. cuz like, when we go and play the actual game, in the future ill be playing with buds or quickplay and ill wanna know gen details right.
+
+btw you can use polygon and line carvout/buildup more dynamically in scene and generation. idk how much we are using it. i assuem you were using it to generate the premade sets but i mean you can pull that into the world gen itself too so its more dynamic.
+
+but yeah. alright goal yrouself and do 1-1 through 1-4, and gimme the gen viewer :3
+
+--- Combat density clarification — 2026-09-16 ---
+
+i should give some important feedback btw. we do want the zones to have lots of combat lol.  kind of like the more recent pass. think gauntlet, and qud, right. there should be lots of things to hit and play with. it should be lively and full

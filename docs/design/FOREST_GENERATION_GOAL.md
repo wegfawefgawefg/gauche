@@ -1,8 +1,8 @@
 # Forest generation and inspection goal
 
-Proposed replacement for the paused full-game goal, 2026-09-16. Task status remains in [MASTER_TASKS.md](../MASTER_TASKS.md); original messages remain in [user notes](../user_messages/2026-09-16-generation-feedback.txt). Baseline tag: `forest-gen-baseline-2026-09-16` (`9d1559e`).
+Active replacement for the paused full-game goal, 2026-09-16. Task status remains in [MASTER_TASKS.md](../MASTER_TASKS.md); original messages remain in [user notes](../user_messages/2026-09-16-generation-feedback.txt). Baseline tag: `forest-gen-baseline-2026-09-16` (`9d1559e`).
 
-## Objective to activate
+## Active objective
 
 The inspector's sidebar must show the selected floor's eligible content and actual rolls/placements, with reasons for ineligibility, suppression and placement failure. Floor switching should make 1-1–1-4 eligibility differences visible; entries connect to map highlights and timeline events. Derive this from the generator's own rules and captured decisions.
 
@@ -13,3 +13,5 @@ Then iterate the Forest generator and its integrated content into a rich, varied
 The inspector also needs a generation timeline: step or scrub backward/forward through named pass checkpoints while retaining the camera, with optional finer per-component/every-N-iteration capture for selected loops. Show changes and annotations at the selected checkpoint so a destructive late pass can be identified. Use bounded checkpoint capture or deterministic replay rather than requiring per-mutation undo; inspection must preserve the completed floor and its random state.
 
 Use the pinned baseline for comparison. Follow the live checklist entries for this scope, preserve required progression, deterministic co-op and reasonable performance, and use code-generated art. Commit/push cohesive milestones. Verify through builds, bounded generation audits and focused render/system checks; no autonomous playthroughs or large new test suite. The user owns playtesting. Deliver the inspector early and continue incorporating their seed-specific feedback; initial feature presence alone does not establish replay variety or acceptance. Leave unrelated biome/music/catalog work deferred. Do not declare the Forest iteration complete until the scoped systems are integrated and the user accepts its variety and playtesting workflow.
+
+Clarifications (2026-09-16): generation eligibility/details may live in ImGui and should remain inspectable during ordinary play, including co-op/quickplay. Share runtime line/polygon carving and buildup between scene components and level-wide growth. Preserve the recent lively combat density: simple 1-1 means readable opposition, not sparse encounters. Gauntlet/Qud-style crowds, breakables and useful interactions belong throughout the zone.

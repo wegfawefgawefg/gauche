@@ -11,6 +11,7 @@
 #include "debug/supply_audit.hpp"
 #include "debug/multiplayer.hpp"
 #include "debug/playtest.hpp"
+#include "debug/worldgen.hpp"
 #include "audio.hpp"
 #include "game.hpp"
 #include "input.hpp"
@@ -162,7 +163,7 @@ int main(int argc, char** argv) {
             observe_input_device(device);
         }
         constexpr struct { std::string_view name; MenuScreen screen; } pages[]{
-            {"main", MenuScreen::Main}, {"lobby", MenuScreen::Lobby},
+            {"main", MenuScreen::Main}, {"dev", MenuScreen::Dev}, {"lobby", MenuScreen::Lobby},
             {"rules", MenuScreen::Rules}, {"host", MenuScreen::Host},
             {"join", MenuScreen::Rooms}, {"rooms", MenuScreen::Rooms},
             {"network", MenuScreen::NetworkOptions}, {"players", MenuScreen::Players},
@@ -222,6 +223,7 @@ int main(int argc, char** argv) {
             observe_input_device(event);
             gubsy_process_sdl_event(host, event);
             if (debug_event(event)) continue;
+            if (worldgen_event(event)) continue;
             if (process_menu_shell_event(menu, event, gubsy_get_frame(host))) continue;
             const Game& event_game = network.role == NetRole::Solo ? game : network.rollback.game;
             if (menu.playing && !menu.visible &&
@@ -259,9 +261,9 @@ int main(int argc, char** argv) {
                 if (button == SDL_GAMEPAD_BUTTON_START && menu.playing && !menu.visible)
                     open_game_menu(menu);
             }
-            if (event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
+            if (GAUCHE_DEV_MODE && event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
                 zoom = std::clamp(zoom + event.wheel.y * 0.25F, 0.5F, 8.0F);
-            if (event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&
+            if (GAUCHE_DEV_MODE && event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&
                 !event.key.repeat && (event.key.key == SDLK_MINUS ||
                                       event.key.key == SDLK_EQUALS))
                 zoom = std::clamp(zoom + (event.key.key == SDLK_EQUALS ? 0.25F : -0.25F),
@@ -302,7 +304,9 @@ int main(int argc, char** argv) {
         update_menu_shell(menu, menu_input, smoke ? 1.0F / 60.0F : static_cast<float>(std::min(elapsed, .1)),
                           menu_frame.render_width, menu_frame.render_height);
         update_multiplayer_debug(multiplayer, menu);
-        process_playtest_requests(menu);
+        if (!worldgen_viewer().active) process_playtest_requests(menu);
+        process_worldgen_requests(menu);
+        update_worldgen(static_cast<float>(std::min(elapsed,.1)));
         if (frames % 30 == 0) sync_audio_settings(audio, audio_settings_path);
         if (menu.quit_requested) running = false;
         const bool networked = network.role != NetRole::Solo;
@@ -387,7 +391,9 @@ int main(int argc, char** argv) {
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
-        if (active.started && (!networked || network.ready) && menu.playing) {
+        if (worldgen_viewer().active) {
+            draw_worldgen(frame.renderer,graphics);
+        } else if (active.started && (!networked || network.ready) && menu.playing) {
             render_game(frame.renderer, graphics, active, networked ? network.local_owner : 0,
                         zoom, &cosmetics,
                         read_pointer(frame, active, networked ? network.local_owner : 0,
@@ -410,6 +416,10 @@ int main(int argc, char** argv) {
             SDL_RenderDebugText(frame.renderer, 104.0F, 40.0F, "GAUCHE");
             SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F,
                                 networked ? network.status.c_str() : "PRESS ENTER TO START");
+        }
+        if (worldgen_viewer().playing) {
+            SDL_SetRenderDrawColor(frame.renderer,235,235,215,255);
+            SDL_RenderDebugText(frame.renderer,160,348,"F6 / controller Back: return to generation viewer");
         }
         if (menu.front.show_fps)
             draw_frame_rate(frame.renderer, gubsy_displayed_fps(host));

@@ -84,11 +84,12 @@ void draw_suspended_parts(SDL_Renderer* renderer,const GameGraphics& graphics,co
 
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, float zoom,
-                   const Cosmetics* cosmetics, const LightingCache& lighting, ScenePass pass,const Entity* viewer) {
+                   const Cosmetics* cosmetics, const LightingCache& lighting, ScenePass pass,const Entity* viewer,bool roofs) {
     const float pixels = tile_pixels(zoom);
     // Ground effects precede the shared ground-anchor order for raised bodies.
     for (const BodyDraw& entry:body_draw_order(game,camera,zoom,pass)) {
         if (entry.kind==BodyKind::RoofRow) {
+            if (!roofs) continue;
             const auto& roof=game.stage.roofs[entry.slot];
             draw_roof_row(renderer,graphics,game.stage,roof,entry.cell.y-roof.start.y,viewer,camera,zoom,lighting);
             continue;

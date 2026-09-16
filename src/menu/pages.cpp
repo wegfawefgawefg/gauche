@@ -18,10 +18,11 @@ namespace {
 using namespace gauche_menu;
 
 void main_page(ViewBuilder& ui) {
-    frame(ui, "GAUCHE", 560.0F, 430.0F);
+    frame(ui, "GAUCHE", 560.0F, 490.0F);
     button(ui, "quick", "Quick Run", "quick", 51.0F);
     button(ui, "play", "Play", "play", 51.0F);
     button(ui, "settings", "Settings", "settings", 51.0F);
+    if (GAUCHE_DEV_MODE) button(ui, "dev", "Dev", "dev", 42.0F);
     button(ui, "quit", "Quit", "quit", 51.0F);
     if (!playtest_summary().empty()) ui.label("card", "test-overrides", playtest_summary(), 52, 14);
     ui.focus_group("menu", "quick", "card");
@@ -197,6 +198,10 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
     ViewBuilder ui("gauche-menu", width, height);
     switch (page.screen) {
     case MenuScreen::Main: main_page(ui); break;
+    case MenuScreen::Dev:
+        frame(ui,"Dev",560,320);
+        button(ui,"worldgen","World Gen","worldgen",52);
+        footer(ui,"worldgen"); break;
     case MenuScreen::Lobby: lobby_page(ui, page, death_policy); break;
     case MenuScreen::Rules: rules_page(ui, death_policy); break;
     case MenuScreen::Rooms: rooms_page(ui, page); break;

@@ -1,4 +1,5 @@
 #include "panels.hpp"
+#include "worldgen.hpp"
 #include "playtest.hpp"
 #include "../input.hpp"
 
@@ -24,6 +25,7 @@ void init_debug_panels(SDL_Window* window, SDL_Renderer* renderer) {
 void shutdown_debug_panels() { shutdown_imgui_layer(); }
 
 bool debug_event(const SDL_Event& event) {
+    if (!GAUCHE_DEV_MODE) return false;
     if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat) {
         if (event.key.key == SDLK_F1) { panels.visible = !panels.visible; return true; }
         if (event.key.key == SDLK_F2 && panels.visible) { panels.selector = !panels.selector; return true; }
@@ -49,6 +51,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
         if (ImGui::Begin("Gauche Debug [F2]", &panels.selector, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::TextUnformatted("F1: hide/show all windows   F2: selector");
             if (ImGui::CollapsingHeader("Gameplay", ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Checkbox("Generation inspector", &worldgen_viewer().details);
                 ImGui::Checkbox("Combat overlays", &panels.combat);
                 ImGui::Checkbox("Player status", &panels.status);
                 ImGui::Checkbox("Levels / start override", &playtest_tools().levels);
@@ -87,6 +90,9 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
         }
         ImGui::End();
     }
-    if (panels.visible) draw_playtest_tools(game, offline);
+    if (panels.visible) {
+        draw_playtest_tools(game, offline && !worldgen_viewer().active);
+        if (worldgen_viewer().details) draw_worldgen_details();
+    }
     imgui_render_layer();
 }

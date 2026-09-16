@@ -2,6 +2,23 @@
 #include "hollow_tree.hpp"
 #include "../world/terrain_material.hpp"
 #include <algorithm>
+#include <cmath>
+
+float hollow_tree_opacity(const RoofSpan& roof,Cell viewer) {
+    if (!roof.hp) return 0;
+    const float rx=static_cast<float>(roof.length)*.5F,ry=static_cast<float>(roof.width)*.5F;
+    const float cx=static_cast<float>(roof.start.x)+rx-.5F,cy=static_cast<float>(roof.start.y)+ry-.5F;
+    // The crown is drawn height cells north of its ground footprint. Include
+    // that entire projection and the trunk between them, not only the interior.
+    const float y=static_cast<float>(viewer.y);
+    const float nearest_y=std::clamp(y,cy-static_cast<float>(roof.height),cy);
+    const float dx=(static_cast<float>(viewer.x)-cx)/rx,dy=(y-nearest_y)/ry;
+    const float outside=(std::sqrt(dx*dx+dy*dy)-1)*std::min(rx,ry);
+    // Keep a one-cell margin for the actor's sprite and the immediate approach;
+    // restore the crown over three more cells, instead of concealing one step out.
+    const float t=std::clamp((outside-1)/3,0.0F,1.0F);
+    return .14F+.86F*t*t*(3-2*t);
+}
 
 namespace {
 void crown(SDL_Renderer* renderer,SDL_Texture* texture,SDL_FRect rect,Cell cell,SDL_FRect uv,
@@ -24,8 +41,7 @@ void crown(SDL_Renderer* renderer,SDL_Texture* texture,SDL_FRect rect,Cell cell,
 }
 void draw_hollow_tree_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
     const RoofSpan& roof,int row,const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
-    const bool reveal=viewer && reveal_roof(roof,viewer->cell);
-    const float opacity=reveal ? .14F : 1;
+    const float opacity=viewer ? hollow_tree_opacity(roof,viewer->cell) : 1;
     const float condition=static_cast<float>(roof.hp)/static_cast<float>(roof_health(roof.kind));
     auto* leaves=texture_for(graphics,Sprite::GiantTreeCanopy);
     for (int x=0;x<roof.length;++x) {

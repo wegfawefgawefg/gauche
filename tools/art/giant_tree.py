@@ -2,11 +2,19 @@
 from pathlib import Path
 from PIL import Image,ImageDraw
 import random
+import math
 OUT=Path(__file__).resolve().parents[2]/'assets'/'graphics'
 r=random.Random(7241)
 size=320
 im=Image.new('RGBA',(size,size),'#253c29');p=ImageDraw.Draw(im)
-mask=Image.new('L',(size,size));m=ImageDraw.Draw(mask);m.ellipse((2,2,317,317),fill=255)
+mask=Image.new('L',(size,size));m=ImageDraw.Draw(mask)
+# An uneven crown leaves gaps around its lobes instead of covering a full disc.
+outline=[]
+for i in range(128):
+    angle=math.tau*i/128
+    radius=157*(.90+.04*math.sin(3*angle+.8)+.035*math.sin(7*angle)+.02*math.sin(11*angle+2))
+    outline.append((round((159.5+radius*math.cos(angle))/2)*2,round((159.5+radius*math.sin(angle))/2)*2))
+m.polygon(outline,fill=255)
 for y in range(-12,size+20,18):
     for x in range(-12,size+20,18):
         cx=x+r.randrange(-7,8);cy=y+r.randrange(-7,8);rad=r.randrange(11,24)

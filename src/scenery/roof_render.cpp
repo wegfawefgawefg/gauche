@@ -1,5 +1,4 @@
 #include "roof_render.hpp"
-#include "hollow_tree.hpp"
 #include "hollow_tree_render.hpp"
 #include "ice_arch_render.hpp"
 #include "../world/terrain_material.hpp"
@@ -7,9 +6,9 @@
 #include <array>
 
 bool reveal_roof(const RoofSpan& roof,Cell viewer) {
-    // Only the actual passage and this viewport's viewer reveal the group.
-    // Standing beside a support or just outside either entrance does not count.
-    if (roof.kind==RoofKind::HollowTree) return roof.hp>0 && tree_ellipse(roof,viewer,3);
+    // Giant crowns extend above/beyond their rooms; visibility follows their
+    // screen projection. Narrow passages still reveal only actual occupants.
+    if (roof.kind==RoofKind::HollowTree) return roof.hp>0 && hollow_tree_opacity(roof,viewer)<1;
     const Cell delta=viewer-roof.start;
     const int along=roof.vertical ? delta.y : delta.x;
     const int across=roof.vertical ? delta.x : delta.y;

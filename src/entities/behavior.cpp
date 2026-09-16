@@ -1,5 +1,6 @@
 #include "../props/interaction.hpp"
 #include "behavior.hpp"
+#include "../world/chasm.hpp"
 #include "../props/scarecrow.hpp"
 #include "../surfaces/interaction.hpp"
 
@@ -11,9 +12,9 @@ namespace {
 
 constexpr std::array<Cell, 4> neighbors{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
 
-bool open_neighbor(const Game& game, Cell cell) {
+bool open_neighbor(const Game& game,const Entity& actor, Cell cell) {
     const Tile* tile = game.stage.at(cell);
-    return tile != nullptr && walkable(*tile) && entity_at(game, cell, true) < 0;
+    return tile != nullptr && navigable_ground(actor,*tile) && entity_at(game, cell, true) < 0;
 }
 
 std::uint64_t sound_roll(std::uint64_t value) {
@@ -42,6 +43,9 @@ int nearest_player(const Game& game, Cell from, int radius) {
 
 bool willing_step(Game& game, int slot, Cell destination) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
+    if (game.stage.at_or_border(destination).kind==TileKind::Chasm && !gap_flyer(actor)) {
+        actor.move_wait=std::max(1,actor.move_interval);return false;
+    }
     if (!scarecrow_allows_step(game, actor, destination)) {
         actor.move_wait = std::max(1, actor.move_interval);
         return false;
@@ -56,7 +60,7 @@ void wander(Game& game, int slot) {
     std::array<Cell, 4> choices{};
     std::uint32_t count = 0;
     for (Cell side : neighbors)
-        if (open_neighbor(game, entity.cell + side)) choices[count++] = entity.cell + side;
+        if (open_neighbor(game,entity, entity.cell + side)) choices[count++] = entity.cell + side;
     if (count == 0) { entity.move_wait = std::max(1, entity.move_interval); return; }
     const std::uint32_t choice = random_u32(game) % (count + 1);
     if (choice == count) entity.move_wait = std::max(1, entity.move_interval / 2);
@@ -76,7 +80,7 @@ void approach(Game& game, int slot, Cell target) {
     // DETOUR: Failed move_entity calls set move_wait; never call one just to probe.
     const Cell choices[]{first, second, {-second.x, -second.y}, {-first.x, -first.y}};
     for (Cell side : choices) {
-        if (!open_neighbor(game, entity.cell + side)) continue;
+        if (!open_neighbor(game,entity, entity.cell + side)) continue;
         willing_step(game, slot, entity.cell + side);
         return;
     }

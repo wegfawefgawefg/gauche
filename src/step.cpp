@@ -1,4 +1,5 @@
 #include "scenery/roof.hpp"
+#include "world/chasm.hpp"
 #include "world/reactor.hpp"
 #include "combat/toss.hpp"
 #include "world/currents.hpp"
@@ -120,6 +121,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.impact_count = 0;
     game.shot_count = 0;
     game.sweep_count = 0;
+    game.fall_count=0;
     if (step_interlude(game, inputs)) return;
 
     step_temperature(game);
@@ -140,6 +142,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     step_water_currents(game);
     step_conveyors(game);
     step_traps(game);
+    step_chasm_contacts(game);
     sweep_dead(game);
     step_reactor(game);
 }

@@ -3,6 +3,7 @@
 #include "../items/fire.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../entities/steam_leech.hpp"
+#include "../world/chasm.hpp"
 
 namespace {
 constexpr RegionalItem flare{"Signal Flare","Fire to 8; lands and burns red for 15s. Contact burns for 4 HP/s. Water puts it out; heat melts ice.",
@@ -63,6 +64,7 @@ void step_flare(Game& game,int slot) {
         }
     }
     if (shot.label_b==0) return;
+    if (chasm_contact(game,slot)) return;
     const Tile* tile=game.stage.at(shot.cell);
     if (!tile || surface_wet(*tile)) { douse_flare(game,shot); return; }
     if (shot.timer_a==0) { finish(game,shot,SoundId::FlareSpent);return; }

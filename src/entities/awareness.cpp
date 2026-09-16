@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../world/chasm.hpp"
 #include "hearing.hpp"
 #include "foraging.hpp"
 
@@ -65,7 +66,7 @@ void flee(Game& game, int slot, Cell threat) {
     for (unsigned int i = 0; i < 4; ++i) {
         const Cell cell = entity.cell + sides[(i + offset) % 4];
         const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, true) >= 0) continue;
+        if (tile == nullptr || !navigable_ground(entity,*tile) || entity_at(game, cell, true) >= 0) continue;
         if (distance(cell, threat) > score) { best = cell; score = distance(cell, threat); }
     }
     if (best != entity.cell) willing_step(game, slot, best);

@@ -133,6 +133,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/arc_welder.cpp
     src/props/ice_pillar.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp
     src/entities/brawler.cpp src/world/brawlers.cpp
+    src/world/chasm.cpp src/world/chasm_render.cpp src/world/chasm_generation.cpp
     src/entities/yeti.cpp
     src/combat/toss.cpp
     src/entities/avalanche_ram.cpp

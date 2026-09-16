@@ -1,4 +1,5 @@
 #include "recoverable.hpp"
+#include "../world/chasm.hpp"
 #include "../items/lunch_tin.hpp"
 #include "../items/coal.hpp"
 #include "../entities/boiler_tank.hpp"
@@ -43,6 +44,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
     if (Entity* loose = get_entity(game, spawn_entity(game, EntityKind::GroundItem, cell))) {
         loose->ground_item = item;
         loose->sprite = item_sprite(item);
+        if (chasm_contact(game,static_cast<int>(loose-game.entities.data()))) return;
     }
     if (item.kind==ItemKind::LunchTin) {land_lunch_tin(game,impact);return;}
     emit_sound(game, item.kind == ItemKind::GlowSlag ? SoundId::GlowLand : item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, cell);

@@ -14,7 +14,7 @@
 #include <vector>
 
 enum class ParticleLayer : std::uint8_t { Ground, Flames, Foreground, Weather };
-enum class ParticleMotion : std::uint8_t { Still, Drift, Accelerate, Arc, Animated };
+enum class ParticleMotion : std::uint8_t { Still, Drift, Accelerate, Arc, Animated, Fall };
 
 struct SpriteParticle {
     Sprite sprite = Sprite::BloodSmall;

@@ -52,7 +52,7 @@ constexpr Cell operator-(Cell a, Cell b) { return {a.x - b.x, a.y - b.y}; }
 int distance(Cell a, Cell b);
 Cell cardinal_toward(Cell from, Cell to, Cell fallback);
 
-enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, IceHole, Bridge, Count };
+enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava, Ice, ShallowWater, Spring, Snow, IceHole, Bridge, Chasm, Count };
 enum class TileMaterial : std::uint8_t { Stone, Timber, Tree, Ice, Count };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
 enum class TileImpact : std::uint8_t { Strike, Blast, Train };
@@ -287,6 +287,7 @@ struct Run {
 };
 
 struct ReactorEvent {std::uint32_t tile=0;std::uint16_t due=0,warned_at=0;};
+struct FallEvent {Handle actor{};Cell cell{};Sprite sprite=Sprite::Player;};
 
 struct Game {
     Stage stage{};
@@ -308,6 +309,8 @@ struct Game {
     int shot_count = 0;
     std::array<SweepEvent, 32> sweeps{};
     int sweep_count = 0;
+    std::array<FallEvent,32> falls{};
+    int fall_count=0;
 };
 
 bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power = 0,

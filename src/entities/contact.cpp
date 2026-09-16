@@ -2,6 +2,7 @@
 #include "../game.hpp"
 #include "pocket_door.hpp"
 #include "../world/water.hpp"
+#include "../world/chasm.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../props/interaction.hpp"
 #include "../traps/woodland.hpp"
@@ -9,6 +10,7 @@
 #include <algorithm>
 
 void enter_actor_cell(Game& game, int slot) {
+    if (chasm_contact(game,slot)) return;
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.toss.ticks>0 || actor.health <= 0 || actor.move_interval == 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Train) return;

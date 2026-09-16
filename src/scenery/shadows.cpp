@@ -47,6 +47,7 @@ bool raised_scrap(DebrisKind kind) {
 }
 
 void entity_shadow(ShadowBatch& batch,const Game& game,const Entity& actor,ViewCamera camera,float zoom) {
+    if (game.stage.at_or_border(actor.cell).kind==TileKind::Chasm) return;
     switch (actor.kind) {
     case EntityKind::None: case EntityKind::RailLayer: case EntityKind::Trap:
     case EntityKind::Exit: case EntityKind::Encounter: case EntityKind::WaveVent:

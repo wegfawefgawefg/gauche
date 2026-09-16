@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "../world/chasm.hpp"
 #include "../props/scarecrow.hpp"
 
 #include <optional>
@@ -31,7 +32,7 @@ std::optional<Cell> next_route_cell(const Game& game, int slot, Cell target, int
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr || visited[index(cell)] != 0) continue;
             const bool dummy_goal = cell == target && walkable(tile->kind) && live_decoy(tile->prop);
-            if (!walkable(*tile) && !dummy_goal) continue;
+            if (!navigable_ground(game.entities[static_cast<std::size_t>(slot)],*tile) && !dummy_goal) continue;
             const Cell first = node.cell == origin ? cell : node.first;
             if (cell == target) return first;
             visited[index(cell)] = 1;

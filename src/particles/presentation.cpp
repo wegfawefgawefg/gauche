@@ -74,9 +74,11 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     const std::uint64_t seed = (game.tick << 16) ^ static_cast<std::uint64_t>(slot);
     const bool same = pose.seen && pose.generation == entity.generation &&
                       pose.kind == entity.kind;
+    const bool fell=std::any_of(game.falls.begin(),game.falls.begin()+game.fall_count,
+        [&](const FallEvent& event){return event.actor.slot==slot && event.actor.generation==pose.generation;});
     if (entity.kind == EntityKind::None) {
         // DEATH: The sweep removes an enemy in the same tick as its death sound.
-        if (pose.seen && pose.health > 0 && bleeds(pose.kind))
+        if (pose.seen && pose.health > 0 && bleeds(pose.kind) && !fell)
         {
             spawn_death(cosmetics, pose.cell, pose.kind,
                         hit_angle(game, pose.cell, pose.angle), seed);
@@ -120,7 +122,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             entity.counter_b==ZombieRecover && entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
     }
-    if (same && entity.health < pose.health && entity.health >= 0) {
+    if (same && entity.health < pose.health && entity.health >= 0 && !fell) {
         if (bleeds(entity.kind))
             spawn_hit(cosmetics, entity.cell, seed, pose.health - entity.health);
         else spawn_debris(cosmetics, entity.cell, seed);
@@ -361,6 +363,16 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         observe_entity(cosmetics, game, slot);
     for (int index = 0; index < game.sound_count; ++index)
         observe_sound(cosmetics, game.sounds[static_cast<std::size_t>(index)], focus);
+    for (int i=0;i<game.fall_count;++i) {
+        const auto key=(std::uint64_t{1}<<61)|(game.tick<<8)|(static_cast<std::uint64_t>(i)+1);
+        if (std::find(cosmetics.seen_events.begin(),cosmetics.seen_events.end(),key)!=cosmetics.seen_events.end()) continue;
+        cosmetics.seen_events[cosmetics.next_event++%cosmetics.seen_events.size()]=key;
+        const FallEvent& event=game.falls[static_cast<std::size_t>(i)];
+        SpriteParticle p;p.sprite=event.sprite;p.motion=ParticleMotion::Fall;
+        p.layer=ParticleLayer::Ground;p.x=static_cast<float>(event.cell.x)+.5F;
+        p.y=static_cast<float>(event.cell.y)+.5F;p.spin=3;
+        p.life=p.span=36;cosmetics.sprites.push_back(p);
+    }
     // TERRAIN: A replayed tile hit must not emit its fragments a second time.
     for (int index = 0; index < game.impact_count; ++index) {
         const auto key = (1ULL << 63) | (game.tick << 8) |

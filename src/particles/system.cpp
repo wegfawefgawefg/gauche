@@ -4,6 +4,9 @@
 
 void step_particles(Cosmetics& cosmetics) {
     for (SpriteParticle& particle : cosmetics.sprites) {
+        if (particle.motion==ParticleMotion::Fall) {
+            particle.width*=.94F;particle.height*=.94F;
+        }
         if (particle.motion == ParticleMotion::Accelerate) {
             particle.vx += particle.ax;
             particle.vy += particle.ay;

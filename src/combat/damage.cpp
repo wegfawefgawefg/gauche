@@ -48,6 +48,7 @@
 #include "../entities/behavior.hpp"
 #include "../item_pattern.hpp"
 #include "../world/loot.hpp"
+#include "../world/chasm.hpp"
 
 #include <algorithm>
 
@@ -60,6 +61,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
     entity.health = std::max(0, entity.health - damage);
+    if (finish_chasm_death(game,slot)) return;
     damage_machine_fitting(game,entity,damage);
     interrupt_rail_shunter(entity);hurt_rail_cart(game,entity,damage);
     interrupt_tar_singer(entity);

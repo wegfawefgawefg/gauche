@@ -1,4 +1,5 @@
 #include "ice_pillars.hpp"
+#include "chasm.hpp"
 #include "roof_scenes.hpp"
 #include "reactor.hpp"
 #include "workfront.hpp"
@@ -61,6 +62,7 @@ void generate_world_floor(Game& game, FloorLayout layout) {
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         game.run.has_key = false;
         game.run.objective = (game.run.floor - 1) % 2 == 0 ? ObjectiveKind::Key : ObjectiveKind::Switch;
+        place_chasms(game,plan);
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.

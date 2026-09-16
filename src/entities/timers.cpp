@@ -36,6 +36,7 @@
 #include "icicle_spider.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
+#include "../world/chasm.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
 #include "../world/encounter.hpp"
@@ -65,6 +66,7 @@ std::optional<Cell> free_entrance_cell(const Game& game) {
 } // namespace
 
 void step_entity_timers(Game& game, int slot) {
+    if (chasm_contact(game,slot)) return;
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None) return;
     if (game.tick % static_cast<std::uint64_t>(movement_slow_factor(entity)) == 0)

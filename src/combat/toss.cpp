@@ -3,6 +3,7 @@
 #include "../items/sled.hpp"
 #include "../surfaces/slip.hpp"
 #include "../world/water.hpp"
+#include "../world/chasm.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -17,6 +18,7 @@ void land(Game& game,int slot,bool impact) {
     const ActorToss flight=actor.toss;
     actor.toss={};
     if (actor.health<=0) return;
+    if (chasm_contact(game,slot)) return;
     const Tile* tile=game.stage.at(actor.cell);
     // Deep water is an actual hole, like a broken bridge. Flying species never
     // enter this system. A shortened flight does not teleport to a safe bank.
@@ -59,7 +61,7 @@ void step_actor_tosses(Game& game) {
         if (actor.toss.ticks%toss_beat!=0) continue;
         const Cell next=actor.cell+actor.toss.direction;
         const Tile* tile=game.stage.at(next);
-        const bool open=tile && (walkable(*tile) || tile->kind==TileKind::Water);
+        const bool open=tile && (walkable(*tile) || tile->kind==TileKind::Water || tile->kind==TileKind::Chasm);
         if (!open || entity_at(game,next,true)>=0) { land(game,slot,true); continue; }
         actor.cell=next;
         if (actor.toss.ticks==0) land(game,slot,false);

@@ -2,15 +2,17 @@
 #include "../props/interaction.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
+#include "../world/chasm.hpp"
 
 #include <array>
 
 namespace {
 constexpr RegionalItem bridge{"Folded Bridge",
-    "Three planks across water; dry banks at both ends. Burnable. Deep falls kill land creatures.",
+    "Three planks across water or a chasm; dry banks at both ends. Burnable. Unsupported falls kill.",
     Sprite::FoldedBridge,{1,3,0,0,45,PatternEffect::Utility,true},
     ItemAction::Material,24,1,true,0,0,0,0,0,SoundId::BridgeUnfold,30};
 bool water(TileKind kind) { return kind==TileKind::Water || shallow_water(kind); }
+bool span(TileKind kind) { return water(kind) || kind==TileKind::Chasm; }
 }
 
 const RegionalItem* folded_bridge_item(ItemKind kind) {
@@ -21,14 +23,15 @@ bool bridge_bank(const Tile& tile) {
     return walkable(tile.kind) && tile.kind!=TileKind::Bridge && tile.kind!=TileKind::Lava && !water(tile.kind);
 }
 
-// VARIANT: bit 0 vertical, 1..4 original water kind, 5 Durable, 6..7 segment index.
+// VARIANT: bit 0 vertical, 1..4 original terrain, 5 Durable, 6..7 segment index.
 // Indices always increase east/south so either placement direction shares anchors.
-TileKind bridge_water(const Prop& plank) { return static_cast<TileKind>((plank.variant>>1)&15U); }
+static_assert(static_cast<int>(TileKind::Count)<=16);
+TileKind bridge_underlay(const Prop& plank) { return static_cast<TileKind>((plank.variant>>1)&15U); }
 
 bool valid_bridge_tile(const Tile& tile) {
     if (tile.kind!=TileKind::Bridge && tile.prop.kind!=PropKind::BridgePlank) return true;
     return tile.kind==TileKind::Bridge && tile.prop.kind==PropKind::BridgePlank &&
-        !tile.prop.broken && tile.prop.hp>0 && (tile.prop.variant>>6)<3 && water(bridge_water(tile.prop));
+        !tile.prop.broken && tile.prop.hp>0 && (tile.prop.variant>>6)<3 && span(bridge_underlay(tile.prop));
 }
 
 bool place_folded_bridge(Game& game, int slot) {
@@ -45,7 +48,7 @@ bool place_folded_bridge(Game& game, int slot) {
     for (int step=1;step<=3;++step) {
         const Cell cell=user.cell+Cell{direction.x*step,direction.y*step};
         const Tile* tile=game.stage.at(cell);
-        if (!tile || !water(tile->kind) || (tile->prop.kind!=PropKind::None && !tile->prop.broken) ||
+        if (!tile || !span(tile->kind) || (tile->prop.kind!=PropKind::None && !tile->prop.broken) ||
             entity_at(game,cell,false)>=0) return false;
         cells[static_cast<std::size_t>(step-1)]=cell;
     }
@@ -63,7 +66,13 @@ bool place_folded_bridge(Game& game, int slot) {
 
 void collapse_bridge_plank(Game& game, Cell cell, Cell source) {
     Tile& tile=*game.stage.at(cell);
-    tile.kind=bridge_water(tile.prop); tile.prop={}; tile.surface={};
+    tile.kind=bridge_underlay(tile.prop); tile.prop={}; tile.surface={};
+    if (tile.kind==TileKind::Chasm) {
+        emit_sound(game,SoundId::BridgeBreak,cell);
+        for (int slot=0;slot<max_entities;++slot)
+            if (game.entities[static_cast<std::size_t>(slot)].cell==cell) chasm_contact(game,slot);
+        return;
+    }
     emit_sound(game,SoundId::BridgeSplash,cell);
     for (int slot=0;slot<max_entities;++slot) {
         const Entity& actor=game.entities[static_cast<std::size_t>(slot)];

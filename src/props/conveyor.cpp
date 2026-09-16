@@ -59,7 +59,7 @@ void advance(Game& game,const std::vector<Cell>& manual) {
             std::find(manual.begin(),manual.end(),actor.cell)==manual.end()) continue;
         const Cell to=actor.cell+belt_direction(prop);
         const Tile* tile=game.stage.at(to);
-        if (!tile || !walkable(*tile)) continue;
+        if (!tile || (!walkable(*tile) && tile->kind!=TileKind::Chasm)) continue;
         const auto index=static_cast<std::size_t>(to.y*game.stage.width+to.x);
         if (occupied[index]>0 || reserved[index]) continue;
         reserved[index]=true;
@@ -71,7 +71,7 @@ void advance(Game& game,const std::vector<Cell>& manual) {
         // Earlier entry effects can move another body or close a gate. Recheck
         // destinations before applying, without turning blockage into crushing.
         const Tile* tile=game.stage.at(move.to);
-        if (!tile || !walkable(*tile) || entity_at(game,move.to,true)>=0) continue;
+        if (!tile || (!walkable(*tile) && tile->kind!=TileKind::Chasm) || entity_at(game,move.to,true)>=0) continue;
         bool cargo=false;
         for (const Entity& other:game.entities)
             if (other.kind==EntityKind::GroundItem && other.cell==move.to) cargo=true;

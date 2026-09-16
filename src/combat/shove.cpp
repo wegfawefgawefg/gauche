@@ -31,7 +31,7 @@ bool shove_actor(Game& game, int target_slot, Cell direction, Cell source) {
     const Cell destination = target.cell + direction;
     const Tile* tile = game.stage.at(destination);
     const int blocker_slot = entity_at(game, destination, true);
-    const bool hard_tile = tile == nullptr || !walkable(*tile);
+    const bool hard_tile = tile == nullptr || (!walkable(*tile) && tile->kind!=TileKind::Chasm);
     const bool hard_actor = blocker_slot >= 0 &&
         game.entities[static_cast<std::size_t>(blocker_slot)].hard_blocker;
     if (hard_tile || hard_actor) {

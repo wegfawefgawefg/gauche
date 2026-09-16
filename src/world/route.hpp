@@ -74,9 +74,11 @@ struct TimberGrove {
     int turns=0,offset=0;
     std::vector<Cell> ground,firebreaks,trees;
 };
+struct SpiderGrowth { std::vector<Cell> ground; int component=-1,opened=0; };
 struct OpenSector { std::vector<Cell> ground; int component=-1; };
 struct FloorPlan {
     std::vector<OpenSector> open_sectors;
+    std::vector<SpiderGrowth> spider_growth;
     GenerationReport report;
     std::vector<TimberGrove> timber_groves;
     std::vector<GiantTree> giant_trees;

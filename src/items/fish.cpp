@@ -1,6 +1,9 @@
 #include "fish.hpp"
 
 namespace {
+constexpr RegionalItem river_fish{"River Fish", "Still twitching. Better cooked.",
+    Sprite::RiverFish, {0,0,0,0,60,PatternEffect::Heal,false,0,6},
+    ItemAction::Food,3,6,true,0,0,0,0,0,SoundId::FishEat};
 
 constexpr RegionalItem smoked_fish{"Smoked Fish", "Eat for 14 HP, or drop as bait. Eels follow fish through water. Feeding buys a pause, not a canceled shock.",
     Sprite::SmokedFish, {0,0,0,0,90,PatternEffect::Heal,false,0,14},
@@ -13,6 +16,7 @@ constexpr RegionalItem salted_kelp{"Salted Kelp", "Cure nausea for 3 HP. Can kil
 } // namespace
 
 const RegionalItem* fish_item(ItemKind kind) {
+    if (kind == ItemKind::RiverFish) return &river_fish;
     if (kind == ItemKind::SmokedFish) return &smoked_fish;
     return kind == ItemKind::SaltedKelp ? &salted_kelp : nullptr;
 }

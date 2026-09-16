@@ -1,4 +1,5 @@
 #include "../entities/rail_shunter.hpp"
+#include "../entities/bear_fishing.hpp"
 #include "../entities/tar_choir.hpp"
 #include "../entities/mold_thief.hpp"
 #include "../entities/emergency_pump.hpp"
@@ -54,6 +55,7 @@ bool apply_chill(Entity& actor, int ticks) {
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, ticks);
     interrupt_glass_eel(actor);
     chill_frozen_pilgrim(actor);
+    interrupt_bear_fishing(actor);
     actor.freeze_ticks = std::clamp(std::max(actor.freeze_ticks, ticks), 0, 600);
     return true;
 }
@@ -89,6 +91,7 @@ bool apply_sleep(Entity& actor, int ticks) {
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
+    interrupt_bear_fishing(actor);
     actor.sleep_ticks = std::max(actor.sleep_ticks, ticks);
     return true;
 }
@@ -127,6 +130,7 @@ bool apply_stun(Entity& actor, int ticks) {
     interrupt_ice_mason(actor);
     interrupt_glass_eel(actor);
     if (actor.kind == EntityKind::SteamLeech) release_steam_leech(actor, 90);
+    interrupt_bear_fishing(actor);
     actor.stun_ticks = std::max(actor.stun_ticks, ticks);
     return true;
 }

@@ -93,6 +93,7 @@ enum class Sprite : std::size_t {
     SleepZ,
     FallenLogBruised, FallenLogSplit, FallenLogBroken, WoodBruised, WoodSplit,
     BearBed, BonePile,
+    RiverFish, BearFishWatch, BearFishPaw, BearFishSwat, BearFishEat,
     Count,
 };
 

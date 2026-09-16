@@ -14,7 +14,7 @@ constexpr unsigned M=1U<<static_cast<unsigned>(LootSource::Workshop);
 // supplies still specify their actual contents. Weight/stage are native availability.
 // Role is the primary practical use, not every possible interaction. Portable
 // combat/survival/mobility counts separately from matching-scene tools and toys.
-constexpr std::array<ItemSupply, 156> entries{{
+constexpr std::array<ItemSupply, static_cast<std::size_t>(ItemKind::Count)> entries{{
     {ItemKind::None, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
     {ItemKind::Wall, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
     {ItemKind::Medkit, ItemOrigin::Shared, 3, 1, 1, R|S|C|T, ItemRole::Survival},
@@ -171,6 +171,7 @@ constexpr std::array<ItemSupply, 156> entries{{
     {ItemKind::LunchTin, ItemOrigin::Industrial, 5, 1, 1, R|S|C|T|M, ItemRole::Survival},
     {ItemKind::IceAxe, ItemOrigin::Ice, 8, 1, 1, R|S|C|T|W|M, ItemRole::Combat},
     {ItemKind::TuskPike, ItemOrigin::Ice, 6, 2, 1, R|S|C|T|W, ItemRole::Combat},
+    {ItemKind::RiverFish, ItemOrigin::Forest, 0, 1, 2, 0, ItemRole::Survival},
 }};
 constexpr bool valid_entries() {
     if (entries.size()!=static_cast<std::size_t>(ItemKind::Count)) return false;

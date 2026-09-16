@@ -1,5 +1,6 @@
 #include "industrial_population.hpp"
 #include "forest_den.hpp"
+#include "bear_stream.hpp"
 #include "brawlers.hpp"
 #include "room_supplies.hpp"
 #include "equipment_supply.hpp"
@@ -429,6 +430,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
     populate_forest_den(game,plan);
+    populate_bear_streams(game,plan,report);
     if (forest_floor(game.run.floor)) {
         std::vector<std::size_t> encounters;
         for (std::size_t i=0;i<plan.rooms.size();++i) {

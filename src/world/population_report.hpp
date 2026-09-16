@@ -9,6 +9,7 @@ struct RangedGroup { Cell gunner{},escort{}; bool added_gunner=false; };
 struct PopulationReport {
     std::vector<RoomPlan> rooms;
     std::vector<ForestDen> forest_dens;
+    std::vector<Cell> bear_fishers;
     std::vector<RangedGroup> ranged_groups;
     int shelf_rooms=0, shelf_links=0;
     std::vector<ShelfReward> shelf_rewards;

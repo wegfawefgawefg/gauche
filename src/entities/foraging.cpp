@@ -1,6 +1,7 @@
 #include "foraging.hpp"
 #include "behavior.hpp"
 #include "../surfaces/scent.hpp"
+#include "../surfaces/interaction.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -28,7 +29,8 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
         if (food.kind != EntityKind::GroundItem || food.ground_item.count <= 0) continue;
         const ItemKind kind = food.ground_item.kind;
         const bool honey = kind == ItemKind::HoneyPot && animal.kind == EntityKind::Bear;
-        if (!honey && kind != ItemKind::SmokedFish && kind != ItemKind::RawMeat && kind != ItemKind::CookedMeat) continue;
+        if (kind==ItemKind::RiverFish && surface_wet(game.stage.at_or_border(food.cell))) continue;
+        if (!honey && kind!=ItemKind::RiverFish && kind != ItemKind::SmokedFish && kind != ItemKind::RawMeat && kind != ItemKind::CookedMeat) continue;
         if (distance(animal.cell, food.cell) > (kind == ItemKind::SmokedFish || kind == ItemKind::CookedMeat || honey ? 9 : 6)) continue;
         const int occupant = entity_at(game, food.cell, true);
         if (occupant >= 0 && occupant != slot) continue;
@@ -41,7 +43,7 @@ bool step_foraging(Game& game, int slot, bool committed_attack) {
     for (int food_slot : candidates) {
         Entity& food = game.entities[static_cast<std::size_t>(food_slot)];
         if (animal.cell == food.cell) {
-            const bool fish = food.ground_item.kind == ItemKind::SmokedFish;
+            const bool fish = food.ground_item.kind == ItemKind::SmokedFish || food.ground_item.kind==ItemKind::RiverFish;
             --food.ground_item.count;
             if (food.ground_item.count == 0) remove_entity(game, {food_slot, food.generation});
             animal.health = std::min(animal.max_health, animal.health + 4);

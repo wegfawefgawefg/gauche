@@ -1,4 +1,5 @@
 #include "../entities/dog.hpp"
+#include "../entities/bear_fishing.hpp"
 #include "../entities/crane_operator.hpp"
 #include "../entities/brawler.hpp"
 #include "../entities/zombie.hpp"
@@ -64,6 +65,9 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         entity.kind == EntityKind::EncounterGate || entity.kind == EntityKind::WaveVent ||
         entity.kind == EntityKind::Coins || entity.kind == EntityKind::PocketDoor) return;
     remember_attacker(game, slot, attacker);
+    if (entity.kind==EntityKind::Bear && entity.counter_a==1) {
+        interrupt_bear_fishing(entity);entity.timer_b=300;
+    }
     entity.health = std::max(0, entity.health - damage);
     if (finish_chasm_death(game,slot)) return;
     damage_machine_fitting(game,entity,damage);

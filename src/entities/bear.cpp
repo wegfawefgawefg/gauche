@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "bear_fishing.hpp"
 #include "hearing.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
@@ -16,7 +17,10 @@ void init_bear(Entity& bear) {
 
 void step_bear(Game& game, int slot) {
     Entity& bear = game.entities[static_cast<std::size_t>(slot)];
-    if (step_foraging(game, slot, bear.label_a != 0 || bear.timer_b > 0)) return;
+    if (step_foraging(game, slot, bear.label_a != 0 || bear.timer_b > 0)) {
+        if (bear.counter_a==1) bear.sprite=bear.label_b==1 ? Sprite::BearFishEat : Sprite::Bear;
+        return;
+    }
     if (bear.label_a == 1) {
         if (bear.timer_a > 0) return;
         resolve_enemy_attack(game, slot, 24, SoundId::BearSlam);
@@ -28,7 +32,8 @@ void step_bear(Game& game, int slot) {
         if (bear.timer_a == 0) bear.label_a = 0;
         return;
     }
-    if (step_hearing(game, slot)) return;
+    if (step_hearing(game, slot)) {interrupt_bear_fishing(bear);return;}
+    if (step_bear_fishing(game,slot)) return;
     const auto target = enemy_target(game, bear.cell, bear.timer_b > 0 ? 8 : 3);
     if (!target || distance(bear.cell, bear.point_a) > 8) {
         if (distance(bear.cell, bear.point_a) > 1) pursue(game, slot, bear.point_a);

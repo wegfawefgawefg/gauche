@@ -23,6 +23,8 @@ void step_water_currents(Game& game) {
         if ((!cargo && !wading_actor(actor)) || actor.hard_blocker || actor.vitals.grip>0 ||
             actor.vitals.rooted>0 || floating_item(actor) || actor.kind==EntityKind::GlassEel ||
             actor.kind==EntityKind::SealThief || actor.kind==EntityKind::BellDiver) continue;
+        // Live shoals hold their place in the stream; casts can still retrieve them.
+        if (cargo && actor.ground_item.kind==ItemKind::RiverFish) continue;
         if (sled_cargo(game,actor) || ridden_sled(game,actor)) continue;
         const Cell flow=water_current(game.stage.at_or_border(actor.cell));
         if (flow==Cell{}) continue;

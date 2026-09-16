@@ -8,6 +8,7 @@
 
 ItemKind cooked_item(ItemKind kind) {
     switch (kind) {
+    case ItemKind::RiverFish: return ItemKind::SmokedFish;
     case ItemKind::RawMeat: return ItemKind::CookedMeat;
     case ItemKind::Egg: return ItemKind::FriedEgg;
     default: return ItemKind::None;

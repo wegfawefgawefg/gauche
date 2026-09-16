@@ -86,7 +86,7 @@ struct Entry { ItemKind kind; Definition definition; };
 
 // One explicit owner per kind. Legacy definitions remain in inventory/item_pattern.
 // Check order as well as count so enum additions cannot silently shift a lookup.
-constexpr std::array<Entry, 156> entries{{
+constexpr std::array<Entry, static_cast<std::size_t>(ItemKind::Count)> entries{{
     {ItemKind::None, nullptr},
     {ItemKind::Wall, nullptr},
     {ItemKind::Medkit, nullptr},
@@ -243,6 +243,7 @@ constexpr std::array<Entry, 156> entries{{
     {ItemKind::LunchTin, lunch_tin_item},
     {ItemKind::IceAxe, ice_melee_item},
     {ItemKind::TuskPike, ice_melee_item},
+    {ItemKind::RiverFish, fish_item},
 }};
 constexpr bool valid_entries() {
     if (entries.size() != static_cast<std::size_t>(ItemKind::Count)) return false;

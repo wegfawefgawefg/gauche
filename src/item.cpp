@@ -304,7 +304,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         break;
     case ItemKind::Medkit: case ItemKind::Bandage: case ItemKind::Bandaid:
     case ItemKind::RawMeat: case ItemKind::CookedMeat:
-    case ItemKind::SmokedFish: case ItemKind::Egg: case ItemKind::FriedEgg:
+    case ItemKind::RiverFish: case ItemKind::SmokedFish: case ItemKind::Egg: case ItemKind::FriedEgg:
         if (user.health > 0 && (user.health < user.max_health || hearth_meal_needed(game,user,used_kind))) {
             const ItemPattern pattern = item_pattern(item);
             user.health = std::min(user.max_health, user.health + pattern.heal);

@@ -197,7 +197,9 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             }
             const auto log_cap=tile.kind==TileKind::Wall ? log_far_support(game.stage,cell) : std::optional<Sprite>{};
             const auto deck=roof_ground(game.stage,cell);
-            const int turns=deck ? deck->quarter_turns : log_support_turns(game.stage,cell);
+            const int spring_turn=tile.kind==TileKind::Spring && tile.current>0 ? (tile.current+2)%4 : 0;
+            const int turns=deck ? deck->quarter_turns : tile.kind==TileKind::Spring ?
+                spring_turn : log_support_turns(game.stage,cell);
             const Sprite id = deck ? deck->sprite : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};

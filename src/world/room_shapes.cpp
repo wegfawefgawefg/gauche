@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "room_frame.hpp"
 #include "forest_den.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_terrain.hpp"
@@ -10,8 +11,9 @@
 
 namespace {
 
-bool inside_shape(const RoomPlan& room, int x, int y) {
-    if (room.mirrored) x = -x;
+bool inside_shape(const RoomPlan& world, int x, int y) {
+    const Cell local=room_local(world,{x,y});x=local.x;y=local.y;
+    const RoomPlan room=unturned_room(world);
     const int ax = std::abs(x), ay = std::abs(y);
     const int w = room.half_width, h = room.half_height;
     switch (room.shape) {
@@ -45,12 +47,15 @@ void floor_cell(Game& game, FloorPlan& plan, Cell cell, TileKind kind, bool rese
     if (reserve) plan.protected_cells[static_cast<std::size_t>(cell.y * plan.width + cell.x)] = 1;
 }
 
-TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
+TileKind room_floor(const Game& game, const RoomPlan& world, int x, int y) {
+    const Cell local=turn_cell({x,y},4-world.turns);x=local.x;y=local.y;
+    const RoomPlan room=unturned_room(world);
+    if (forest_floor(game.run.floor) && room.mirrored) x=-x;
     if (room.shape==RoomShape::WorkHall || room.shape==RoomShape::ExcavatedHall) return TileKind::Ruin;
     if (room.shape==RoomShape::ThawCavern) return ice_thaw_floor(room,x,y);
     if (room.shape==RoomShape::IceShelf) return ice_shelf_floor(room,x,y);
     const bool trail = std::abs(x) <= 1 || std::abs(y) <= 1;
-    if (trail) return TileKind::Empty;
+    if (trail && !socket_room(game,world)) return TileKind::Empty;
     if (ice_floor(game.run.floor)) return ice_room_floor(room, x, y);
     if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return TileKind::Ruin;
     if (room.role == RoomRole::Ruins || room.role == RoomRole::Workshop ||
@@ -68,11 +73,18 @@ TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
 void carve_room(Game& game, FloorPlan& plan, const RoomPlan& room) {
     for (int y = -room.half_height; y <= room.half_height; ++y)
         for (int x = -room.half_width; x <= room.half_width; ++x) {
-            // ROUTE: Authored alcoves surround a guaranteed dry central walking route.
-            const bool path = std::abs(x) <= 1 || std::abs(y) <= 1;
+            // Natural rooms keep their real outline; graph corridors reserve
+            // only the arms that lead to actual neighbors. Authored machinery
+            // keeps its existing service aisles until its components migrate.
+            const bool path = !socket_room(game,room) && (std::abs(x)<=1 || std::abs(y)<=1);
             if (!path && !inside_shape(room, x, y)) continue;
             floor_cell(game, plan, room.center + Cell{x, y}, room_floor(game, room, x, y), path);
         }
+    if (room.role==RoomRole::Entrance) {
+        // Four party spawn cells and the starting pickup must remain dry/free.
+        for (int y=-1;y<=2;++y) for (int x=-1;x<=3;++x)
+            floor_cell(game,plan,room.center+Cell{x,y},TileKind::Empty,true);
+    }
 }
 
 void corridor(Game& game, FloorPlan& plan, Cell from, Cell to, int half_width) {

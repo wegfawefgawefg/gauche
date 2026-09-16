@@ -17,6 +17,7 @@ struct RoomPlan {
     RoomShape shape = RoomShape::Clearing;
     bool mirrored = false;
     int shelf_variant=0;
+    int turns=0; // Quarter turns; half_width/height remain world-aligned bounds.
 };
 
 struct RouteEdge { int a = 0, b = 0; };

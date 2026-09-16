@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "room_frame.hpp"
 #include "forest_den.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_shelves.hpp"
@@ -204,6 +205,10 @@ FloorPlan plan_floor(Game& game) {
     plan_industrial_geometry(game,plan);
     plan_ice_shelves(game,plan);
     plan_ice_thaw(game,plan);
+    for (auto& room:plan.rooms) if (socket_room(game,room)) {
+        room.turns=static_cast<int>(random_u32(game)%4);
+        if (room.turns&1) std::swap(room.half_width,room.half_height);
+    }
     return plan;
 }
 

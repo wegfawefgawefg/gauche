@@ -3,6 +3,7 @@
 #include "route.hpp"
 
 #include <cstdlib>
+#include <algorithm>
 
 bool shallow_water(TileKind kind) {
     return kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::IceHole;
@@ -24,25 +25,38 @@ void place_water_scenes(Game& game, const FloorPlan& plan) {
     if (!forest_floor(game.run.floor)) return;
     for (const RoomPlan& room : plan.rooms) {
         if (room.role != RoomRole::Brook) continue;
-        // SPRING: An actual northern wall feeds a reachable pool beside the dry route.
-        bool placed = false;
-        for (int y = -room.half_height; y < -1 && !placed; ++y)
-            for (int x = -room.half_width + 1; x < room.half_width && !placed; ++x) {
-                const Cell cell = room.center + Cell{x, y};
-                Tile* tile = game.stage.at(cell);
-                if (tile == nullptr || !walkable(tile->kind) || plan.protected_cell(cell) ||
-                    game.stage.at_or_border(cell + Cell{0, -1}).kind != TileKind::Wall ||
-                    !walkable(game.stage.at_or_border(cell + Cell{0, 1}).kind)) continue;
-                for (int dy = 0; dy <= 3; ++dy)
-                    for (int dx = -2; dx <= 2; ++dx) {
-                        const Cell pool = cell + Cell{dx, dy};
-                        Tile* ground = game.stage.at(pool);
-                        if (ground == nullptr || plan.protected_cell(pool) ||
-                            !walkable(ground->kind) || std::abs(dx) + std::abs(dy - 1) > 3) continue;
-                        *ground = {TileKind::ShallowWater, 0, 0};
-                    }
-                *tile = {TileKind::Spring, 0, 0};
-                placed = true;
+        struct Source {Cell cell,flow;};
+        std::vector<Source> choices;
+        constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
+        for (int y=-room.half_height;y<=room.half_height;++y)
+            for (int x=-room.half_width;x<=room.half_width;++x) {
+                const Cell cell=room.center+Cell{x,y};
+                const Tile* tile=game.stage.at(cell);
+                if (!tile || !walkable(*tile) || plan.protected_cell(cell)) continue;
+                for (Cell flow:directions) {
+                    const Tile& next=game.stage.at_or_border(cell+flow);
+                    if (game.stage.at_or_border(cell-flow).kind==TileKind::Wall &&
+                        walkable(next) && !plan.protected_cell(cell+flow)) choices.push_back({cell,flow});
+                }
             }
+        if (choices.empty()) continue;
+        const auto source=choices[random_u32(game)%choices.size()];
+        const Cell across{-source.flow.y,source.flow.x};
+        const int reach=3+static_cast<int>(random_u32(game)%3);
+        const int width=1+static_cast<int>(random_u32(game)%2);
+        const auto code=static_cast<std::uint8_t>(source.flow.x>0 ? 1 : source.flow.y>0 ? 2 : source.flow.x<0 ? 3 : 4);
+        for (int along=0;along<=reach;++along) {
+            const int radius=along==0 ? 0 : along==reach ? 1 : width;
+            for (int side=-radius;side<=radius;++side) {
+                const Cell cell=source.cell+Cell{source.flow.x*along+across.x*side,source.flow.y*along+across.y*side};
+                Tile* tile=game.stage.at(cell);
+                if (!tile || !walkable(*tile) || plan.protected_cell(cell) ||
+                    std::abs(cell.x-room.center.x)>room.half_width ||
+                    std::abs(cell.y-room.center.y)>room.half_height) continue;
+                *tile={TileKind::ShallowWater};tile->current=code;
+            }
+        }
+        *game.stage.at(source.cell)={TileKind::Spring};
+        game.stage.at(source.cell)->current=code;
     }
 }

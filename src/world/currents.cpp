@@ -1,6 +1,7 @@
 #include "../items/sled.hpp"
 #include "currents.hpp"
 #include "route.hpp"
+#include "room_frame.hpp"
 #include "water.hpp"
 #include "floating_items.hpp"
 
@@ -50,8 +51,10 @@ void place_water_currents(Game& game, const FloorPlan& plan) {
                 const Cell cell=room.center+Cell{x,y};
                 Tile* tile=game.stage.at(cell);
                 if (!tile || !shallow_water(tile->kind) || tile->kind==TileKind::IceHole ||
-                    plan.protected_cell(cell) || !walkable(game.stage.at_or_border(cell+Cell{0,1}))) continue;
-                tile->current=2; // Spring/reservoir outflow toward the southern bank.
+                    plan.protected_cell(cell) || tile->current!=0) continue;
+                const Cell flow=turn_cell({0,1},room.turns);
+                if (!walkable(game.stage.at_or_border(cell+flow))) continue;
+                tile->current=static_cast<std::uint8_t>(flow.x>0 ? 1 : flow.y>0 ? 2 : flow.x<0 ? 3 : 4);
             }
     }
 }

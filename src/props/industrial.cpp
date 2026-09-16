@@ -55,7 +55,18 @@ void scatter_industrial_props(Game& game,const FloorPlan& plan) {
                 for (Cell side:{Cell{1,0},{-1,0},{0,1},{0,-1}})
                     if (prop_blocks(game.stage.at_or_border(cell+side).prop)) crowded=true;
                 if (crowded) continue;
-                place_prop(game.stage,cell,bin==0 ? PropKind::ScrapBin : PropKind::OreBin);
+                const bool freight=random_u32(game)%2==0;
+                const PropKind kind=bin==0 ? (freight ? PropKind::PalletStack : PropKind::ScrapBin) :
+                    (freight ? PropKind::BoundRocks : PropKind::OreBin);
+                const Prop before=game.stage.at(cell)->prop;
+                place_prop(game.stage,cell,kind);
+                if (!floor_reachable(game) || !floor_lock_required(game)) {
+                    game.stage.at(cell)->prop=before;continue;
+                }
+                if (freight) for (Cell side:{Cell{1,1},{-1,1},{1,-1},{-1,-1}}) {
+                    if (!free_space(game,plan,cell+side)) continue;
+                    place_prop(game.stage,cell+side,PropKind::Pallet);break;
+                }
                 break;
             }
         }

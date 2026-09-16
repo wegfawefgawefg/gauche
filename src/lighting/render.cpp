@@ -20,7 +20,7 @@ SDL_FColor blend(SDL_FColor a, SDL_FColor b, float t) {
 
 void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
                    SDL_FRect rect, Cell cell, const LightingCache& lighting,
-                   LightColor tint,SDL_FRect uv) {
+                   LightColor tint,SDL_FRect uv,int quarter_turns) {
     if (texture == nullptr) return;
     const SDL_FColor nw = vertex_color(light_at_corner(lighting, cell), tint);
     const SDL_FColor ne = vertex_color(light_at_corner(lighting, cell + Cell{1, 0}), tint);
@@ -35,10 +35,14 @@ void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
         for (int x = 0; x <= divisions; ++x) {
             const float u = static_cast<float>(x) / divisions;
             const float v = static_cast<float>(y) / divisions;
+            float tu=u,tv=v;
+            for (int turn=0;turn<(quarter_turns&3);++turn) {
+                const float old=tu;tu=tv;tv=1-old;
+            }
             vertices[static_cast<std::size_t>(y * stride + x)] = {
                 {rect.x + rect.w * u, rect.y + rect.h * v},
                 blend(blend(nw, ne, u), blend(sw, se, u), v),
-                {uv.x+u*uv.w,uv.y+v*uv.h}};
+                {uv.x+tu*uv.w,uv.y+tv*uv.h}};
         }
     static constexpr auto indices = [] {
         std::array<int, divisions * divisions * 6> result{};

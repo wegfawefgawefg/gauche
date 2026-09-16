@@ -16,9 +16,10 @@ void step_roofs(Game& game) {
         for (int along=0;along<roof.length;++along) for (int across=0;across<3;++across) {
             const Cell cell=roof_cell(roof,along,across);
             const Tile& tile=game.stage.at_or_border(cell);
+            const bool prop_support=((roof.kind==RoofKind::Gantry && tile.prop.kind==PropKind::Grate) ||
+                (roof.kind==RoofKind::Container && tile.prop.kind==PropKind::ContainerSide)) && !tile.prop.broken;
             if (across!=1 && ((tile.kind==TileKind::Wall &&
-                (roof.kind!=RoofKind::Log || wooden_terrain(tile))) ||
-                (roof.kind==RoofKind::Gantry && tile.prop.kind==PropKind::Grate && !tile.prop.broken))) ++supports;
+                (roof.kind!=RoofKind::Log || wooden_terrain(tile))) || prop_support)) ++supports;
             if (tile.surface.fire_ticks>0) {burning=true;effect=cell;}
             if (hot_cell(game,cell)) {
                 heated=true;
@@ -53,8 +54,8 @@ void step_roofs(Game& game) {
             // with blocking rubble or erase its pickups, liquids or ground props.
             if (game.impact_count<static_cast<int>(game.impacts.size()))
                 game.impacts[static_cast<std::size_t>(game.impact_count++)]={effect,effect,
-                    roof.kind==RoofKind::IceArch ? Sprite::IceBlock : roof.kind==RoofKind::Log ? Sprite::RottenLog : Sprite::GrateH,
-                    0,true,roof.kind==RoofKind::IceArch ? PropKind::IceBlock : roof.kind==RoofKind::Log ? PropKind::RottenLog : PropKind::Grate};
+                    roof.kind==RoofKind::IceArch ? Sprite::IceBlock : roof.kind==RoofKind::Log ? Sprite::RottenLog : roof.kind==RoofKind::Container ? Sprite::ContainerSide : Sprite::GrateH,
+                    0,true,roof.kind==RoofKind::IceArch ? PropKind::IceBlock : roof.kind==RoofKind::Log ? PropKind::RottenLog : roof.kind==RoofKind::Container ? PropKind::ContainerSide : PropKind::Grate};
         }
     }
 }

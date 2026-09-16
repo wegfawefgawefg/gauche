@@ -18,8 +18,11 @@ bool empty_site(const Game& game,const FloorPlan& plan,const RoofSpan& roof,bool
         const Tile* tile=game.stage.at(cell);
         if (!tile || cell.x<2 || cell.y<2 || cell.x>=game.stage.width-2 || cell.y>=game.stage.height-2 ||
             tile->prop.kind!=PropKind::None || tile->contents!=ItemKind::None || tile->surface.fire_ticks>0) return false;
-        for (const RoofSpan& other:game.stage.roofs)
-            if (distance(roof_cell(roof,roof.length/2,1),roof_cell(other,other.length/2,1))<12) return false;
+        for (const RoofSpan& other:game.stage.roofs) {
+            const int spacing=roof.kind==RoofKind::Container && other.kind==RoofKind::Container ? 4 : 12;
+            if (roof_covers(other,cell) ||
+                distance(roof_cell(roof,roof.length/2,1),roof_cell(other,other.length/2,1))<spacing) return false;
+        }
         const bool interior=along>=0 && along<roof.length;
         const bool wall=tile->kind==TileKind::Wall;
         if (wall) {
@@ -37,8 +40,9 @@ bool empty_site(const Game& game,const FloorPlan& plan,const RoofSpan& roof,bool
     }
     return !shortcut || (walls>0 && walls<roof.length);
 }
+}
 
-bool place(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcut) {
+bool place_roof_span(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcut) {
     if (game.stage.roofs.size()>=max_roof_spans || !empty_site(game,plan,roof,shortcut)) return false;
     std::vector<Tile> before;
     for (int along=0;along<roof.length;++along) for (int across=0;across<3;++across) {
@@ -49,7 +53,8 @@ bool place(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcut) {
         } else if (roof.kind==RoofKind::Log) tile=wood_tile(TileMaterial::Timber);
         else if (roof.kind==RoofKind::IceArch) {
             tile={TileKind::Wall,40,0,40,BreakRule::Damageable,0};tile.material=TileMaterial::Ice;
-        } else place_prop(game.stage,cell,PropKind::Grate,roof.vertical ? 0 : 1);
+        } else place_prop(game.stage,cell,roof.kind==RoofKind::Container ? PropKind::ContainerSide : PropKind::Grate,
+            roof.vertical ? 0 : 1);
     }
     // Run after objective/prop population. A shortcut may bypass ordinary rock,
     // never the required exit lock. Failed edits restore every affected tile.
@@ -62,12 +67,11 @@ bool place(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcut) {
     game.stage.roofs.push_back(roof);
     return true;
 }
-}
 
 void place_roof_scenes(Game& game,const FloorPlan& plan) {
     if (game.run.layout!=FloorLayout::Generated || plan.rooms.empty()) return;
     const RoofKind kind=forest_floor(game.run.floor) ? RoofKind::Log : ice_floor(game.run.floor) ? RoofKind::IceArch : RoofKind::Gantry;
-    const int desired=2+static_cast<int>(random_u32(game)%2);
+    const int desired=std::min(max_roof_spans,static_cast<int>(game.stage.roofs.size())+2+static_cast<int>(random_u32(game)%2));
     // Normal scenes get their own small budget, not the special-encounter budget.
     const int offset=static_cast<int>(random_u32(game)%static_cast<unsigned>(plan.rooms.size()));
     for (std::size_t i=0;i<plan.rooms.size() && static_cast<int>(game.stage.roofs.size())<desired;++i) {
@@ -80,7 +84,7 @@ void place_roof_scenes(Game& game,const FloorPlan& plan) {
             roof.start=room.center+Cell{
                 static_cast<int>(random_u32(game)%static_cast<unsigned>(room.half_width*2+1))-room.half_width,
                 static_cast<int>(random_u32(game)%static_cast<unsigned>(room.half_height*2+1))-room.half_height};
-            if (place(game,plan,roof,false)) break;
+            if (place_roof_span(game,plan,roof)) break;
         }
     }
     // Rare cross-room hollow timber opening. Ordinary roof scenes above are
@@ -92,6 +96,6 @@ void place_roof_scenes(Game& game,const FloorPlan& plan) {
         const int index=(start+i)%size;
         RoofSpan roof;roof.start={index%game.stage.width,index/game.stage.width};roof.length=7;
         roof.vertical=static_cast<std::uint8_t>(i%2);
-        if (place(game,plan,roof,true)) break;
+        if (place_roof_span(game,plan,roof,true)) break;
     }
 }

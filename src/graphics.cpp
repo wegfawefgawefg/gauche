@@ -91,6 +91,9 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "fissure_crack", "fissure_glow", "fissure_cooled", "fissure_steam_a", "fissure_steam_b", "fissure_lava_a", "fissure_lava_b",
     "crate_bruised", "crate_splintered", "crate_broken",
     "ice_axe", "tusk_pike", "ice_axe_arc", "tusk_pike_thrust",
+    "pallet", "pallet_stack", "pallet_broken", "bound_rocks", "bound_rocks_broken", "container_side", "container_side_broken", "container_floor", "log_floor",
+    "roof_container_a", "roof_container_b", "roof_container_c", "roof_container_end_a", "roof_container_end_b", "roof_container_end_c",
+    "roof_container_far_a", "roof_container_far_b", "roof_container_far_c", "roof_container_near_a", "roof_container_near_b", "roof_container_near_c",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

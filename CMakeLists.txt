@@ -210,7 +210,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
-set(GAUCHE_WORLD_SOURCES src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/scenery/roof.cpp
+set(GAUCHE_WORLD_SOURCES src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/world/shipping_yard.cpp src/scenery/roof.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp
     src/world/ice_shelves.cpp src/world/ice_thaw.cpp src/world/ice_material.cpp src/world/ice_material_render.cpp src/world/room_population.cpp src/world/industrial_population.cpp src/world/industrial_geometry.cpp src/debug/generation_audit.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/freight_exchange.cpp src/world/last_shift.cpp src/world/reactor.cpp src/world/reactor_render.cpp src/world/loot.cpp)

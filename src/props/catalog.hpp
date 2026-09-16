@@ -7,7 +7,7 @@
 #include <cstdint>
 
 enum class PropKind : std::uint8_t { None, Leaves, Twigs, Fern, TallGrass,
-    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, CandleCabinet, Stove, SpiderStrand, MaintenanceLocker, CopperWire, GroundingSpike, Doorstop, BridgePlank, CrystalGrowth, SnowWindbreak, Grate, ScrapBin, OreBin, Conveyor, Barricade, TensionSpring, PayCage, FoamCover, HoistWreck, RailPoints, StreetLamp, PoleWreck, ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax, IcePillar, IceRubble, WaterPipe, SteamDrive, TallTree, FallenLog, LogBridge, LightTower, TowerWreck, Count };
+    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, CandleCabinet, Stove, SpiderStrand, MaintenanceLocker, CopperWire, GroundingSpike, Doorstop, BridgePlank, CrystalGrowth, SnowWindbreak, Grate, ScrapBin, OreBin, Conveyor, Barricade, TensionSpring, PayCage, FoamCover, HoistWreck, RailPoints, StreetLamp, PoleWreck, ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax, IcePillar, IceRubble, WaterPipe, SteamDrive, TallTree, FallenLog, LogBridge, LightTower, TowerWreck, Pallet, PalletStack, BoundRocks, ContainerSide, Count };
 
 constexpr bool bridge_prop(PropKind kind) {return kind==PropKind::BridgePlank || kind==PropKind::LogBridge;}
 

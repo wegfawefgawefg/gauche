@@ -42,7 +42,9 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (prop.kind==PropKind::TallTree || prop.kind==PropKind::FallenLog || prop.kind==PropKind::LogBridge) {
                 draw_tree_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
             }
-            if (prop.kind == PropKind::None || (prop.broken && prop.kind!=PropKind::Crate)) continue;
+            const bool freight=prop.kind==PropKind::Pallet || prop.kind==PropKind::PalletStack ||
+                prop.kind==PropKind::BoundRocks || prop.kind==PropKind::ContainerSide;
+            if (prop.kind == PropKind::None || (prop.broken && prop.kind!=PropKind::Crate && !freight)) continue;
             if (prop.kind==PropKind::IcePillar) {draw_pillar_shadow(renderer,stage,cell,camera,zoom);continue;}
             if (prop.kind==PropKind::StreetLamp) {draw_streetlamp_shadow(renderer,stage,cell,camera,zoom);continue;}
             if (prop.kind==PropKind::PoleWreck) {draw_pole_wreck(renderer,prop,tile_rect(cell,camera,zoom),light_at_cell(lighting,cell));continue;}
@@ -56,6 +58,9 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (prop.kind==PropKind::Crate)
                 sprite=prop.broken ? Sprite::CrateBroken : prop.hp<=6 ? Sprite::CrateSplintered :
                     prop.hp<prop_spec(PropKind::Crate).health ? Sprite::CrateBruised : Sprite::Crate;
+            if (freight && prop.broken)
+                sprite=prop.kind==PropKind::BoundRocks ? Sprite::BoundRocksBroken :
+                    prop.kind==PropKind::ContainerSide ? Sprite::ContainerSideBroken : Sprite::PalletBroken;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             if (prop.kind==PropKind::Crate && !prop.broken && cosmetics) {
@@ -78,8 +83,8 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,game,cell,rect,light,tick); continue; }
             if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-            SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble) && (prop.variant&1U) ? 90 : 0, nullptr,
-                (prop.kind == PropKind::PayCage || prop.kind == PropKind::TensionSpring || prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind == PropKind::SnowWindbreak || prop.kind == PropKind::BridgePlank || prop.kind == PropKind::Doorstop || prop.kind == PropKind::GroundingSpike || prop.kind == PropKind::SpiderStrand || prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
+            SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble || prop.kind==PropKind::ContainerSide) && (prop.variant&1U) ? 90 : 0, nullptr,
+                (prop.kind==PropKind::ContainerSide || prop.kind == PropKind::PayCage || prop.kind == PropKind::TensionSpring || prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind == PropKind::SnowWindbreak || prop.kind == PropKind::BridgePlank || prop.kind == PropKind::Doorstop || prop.kind == PropKind::GroundingSpike || prop.kind == PropKind::SpiderStrand || prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
             SDL_SetTextureColorModFloat(texture, 1, 1, 1);
             if (prop.covered) {
                 SDL_Texture* cloth = texture_for(graphics, Sprite::FeltCover);

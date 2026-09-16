@@ -44,6 +44,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             if ((item.kind == ItemKind::Chisel || item.kind==ItemKind::IceAxe) && (tile->prop.kind == PropKind::IceBlock || tile->prop.kind == PropKind::IcePillar || tile->prop.kind == PropKind::IceRubble)) prop_damage *= 2;
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog ||
+                 tile->prop.kind==PropKind::Pallet || tile->prop.kind==PropKind::PalletStack ||
                  tile->prop.kind==PropKind::TallTree || tile->prop.kind==PropKind::FallenLog || tile->prop.kind==PropKind::LogBridge))
                 prop_damage *= 3;
             if (item.flame_ticks > 0 || item.kind == ItemKind::Torch) ignite_surface(game, cell);

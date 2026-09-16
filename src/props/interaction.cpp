@@ -157,6 +157,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
+    if (kind==PropKind::Pallet || kind==PropKind::PalletStack || kind==PropKind::BoundRocks || kind==PropKind::ContainerSide) tile->prop.variant &= 1U;
     if (kind==PropKind::StreetLamp) tile->prop.variant &= 3U;
     if (kind==PropKind::PoleWreck) tile->prop.variant &= 1U;
     if (kind == PropKind::RailPoints) tile->prop.variant &= 3U;
@@ -195,6 +196,9 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
             game.impacts[static_cast<std::size_t>(game.impact_count++)]=
                 {cell,source,Sprite::Crate,damage,false,PropKind::Crate};
     }
+    else if (prop.kind==PropKind::Pallet || prop.kind==PropKind::PalletStack) emit_sound(game,SoundId::CrateKnock1,cell);
+    else if (prop.kind==PropKind::BoundRocks) emit_sound(game,SoundId::OreHit,cell);
+    else if (prop.kind==PropKind::ContainerSide) emit_sound(game,SoundId::GrateHit,cell);
     else if (prop.kind == PropKind::SteamDrive) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::WaterPipe) emit_sound(game,SoundId::PipeHit,cell);
     else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);

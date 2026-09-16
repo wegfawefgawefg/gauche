@@ -190,13 +190,15 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 draw_tile_damage(renderer,tile,cell,rect,lighting);continue;
             }
             const auto log_cap=tile.kind==TileKind::Wall ? log_far_support(game.stage,cell) : std::optional<Sprite>{};
-            const Sprite id = tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
+            const auto deck=roof_ground(game.stage,cell);
+            const int turns=deck ? deck->quarter_turns : log_support_turns(game.stage,cell);
+            const Sprite id = deck ? deck->sprite : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};
-            if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
+            if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint,{0,0,1,1},turns);
             else {
                 SDL_SetTextureColorModFloat(texture, tint.red, tint.green, tint.blue);
-                SDL_RenderTexture(renderer, texture, nullptr, &rect);
+                SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,turns*90,nullptr,SDL_FLIP_NONE);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
             if (log_cap) {

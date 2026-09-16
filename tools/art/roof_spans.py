@@ -23,8 +23,8 @@ for family in ('log', 'ice', 'gantry'):
                     # One oval cut end across all three bands, with a real hollow.
                     top = -band*16
                     p.rectangle((0, 0, 10, 15), fill=(0, 0, 0, 0))
-                    p.ellipse((0, top, 14, top+47), fill='#90764b')
-                    p.ellipse((2, top+4, 12, top+43), fill='#b29b63')
+                    p.ellipse((0, top, 14, top+47), fill='#60543b')
+                    p.ellipse((2, top+4, 12, top+43), fill='#786544')
                     p.ellipse((3, top+7, 11, top+40), fill=INK)
                     p.ellipse((4, top+9, 10, top+38), fill=(0, 0, 0, 0))
             elif family == 'ice':
@@ -75,8 +75,8 @@ for end in ('far', 'near'):
         im.putalpha(mask.getchannel('A'))
     else:
         # Down-facing open arch: its clear center ends on the walkable column.
-        p.ellipse((2, 0, 45, 27), fill='#90764b')
-        p.ellipse((6, 2, 41, 28), fill='#b29b63')
+        p.ellipse((2, 0, 45, 27), fill='#60543b')
+        p.ellipse((6, 2, 41, 28), fill='#786544')
         p.ellipse((10, 3, 37, 29), fill=INK)
         p.ellipse((16, 6, 31, 26), fill=(0, 0, 0, 0))
         p.rectangle((16, 15, 31, 15), fill=(0, 0, 0, 0))
@@ -84,3 +84,12 @@ for end in ('far', 'near'):
         p.line((46, 2, 46, 15), fill=INK)
     for band in range(3):
         save(im.crop((band*16, 0, band*16+16, 16)), f'roof_log_{end}_{"abc"[band]}')
+
+# Hollow timber has its own wood-bottomed passage, continuous through the lips.
+im, p = canvas()
+p.rectangle((0, 0, 15, 15), fill='#4b4230')
+for y, bend in ((2, 1), (6, -1), (11, 1), (15, 0)):
+    p.line([(0, y), (5, y), (8, y+bend), (15, y+bend)], fill='#60513a')
+p.line((2, 8, 6, 8), fill='#38372a')
+p.line((10, 4, 14, 4), fill='#716044')
+save(im, 'log_floor')

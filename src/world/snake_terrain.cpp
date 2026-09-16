@@ -26,7 +26,7 @@ void pit(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Cell anchor,int parent,G
     const WeightedComponent sizes[]{{0,"Solid bank",3},{1,"Small hole",4},{2,"Wide hole",3},{3,"Open pit",biome_stage(game.run.floor)>=2 ? 2U : 0U}};
     const auto roll=roll_component(game,&plan.report,feature,parent,"Bank depression",anchor,sizes);
     const GenerationStep step{trace,game,plan,"Snake bank depression",feature,roll.record};
-    if(!roll.value){component_result(&plan.report,roll,"Unbroken bank");return;}
+    if(!roll.value){component_area(&plan.report,roll,"Unbroken bank");return;}
     const auto saved=game.stage.tiles;const auto protected_cells=plan.protected_cells;
     const auto routes=generation_walking_routes(game,plan);
     const int rx=roll.value,ry=1+static_cast<int>(random_u32(game)%static_cast<unsigned>(roll.value));
@@ -39,8 +39,8 @@ void pit(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Cell anchor,int parent,G
         if(paint_snake_cell(game,plan,c,TileKind::Chasm))changed.push_back(c);
     }
     if(!connected(game,plan,routes)) {
-        game.stage.tiles=saved;plan.protected_cells=protected_cells;component_result(&plan.report,roll,"Rolled back: bank route would disconnect");
-    } else component_result(&plan.report,roll,changed.empty() ? "No unreserved bank fit" : "Real fall hazard; required bank routes preserved",changed);
+        game.stage.tiles=saved;plan.protected_cells=protected_cells;component_area(&plan.report,roll,"Rolled back: bank route would disconnect");
+    } else component_area(&plan.report,roll,changed.empty() ? "No unreserved bank fit" : "Real fall hazard; required bank routes preserved",changed);
 }
 void link(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Cell a,Cell b,GenerationTrace* trace) {
     const Cell axis=cardinal_toward(a,b,{1,0}),side{-axis.y,axis.x};const int length=distance(a,b);
@@ -71,7 +71,7 @@ void link(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Cell a,Cell b,Generatio
         const auto route=roll_component(game,&plan.report,feature,mode.record,"Bank route",a,widths);
         std::vector<Cell> cells;ribbon(game,plan,tunnel,guide,route.value,cells);changed.insert(changed.end(),cells.begin(),cells.end());
         if(route.record>=0)plan.report.components[static_cast<std::size_t>(route.record)].guide.assign(guide.begin(),guide.end());
-        component_result(&plan.report,route,"Dry route through the link",cells);
+        component_area(&plan.report,route,"Dry route through the link",cells);
     }
     if(mode.value!=2) {
         const WeightedComponent counts[]{{1,"One cross-link",4},{2,"Two cross-links",3},{3,"Three cross-links",1}};
@@ -83,15 +83,15 @@ void link(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Cell a,Cell b,Generatio
             const std::array guide{center-scale(side,reach),center+scale(side,reach)};
             ribbon(game,plan,tunnel,guide,0,cells);
         }
-        changed.insert(changed.end(),cells.begin(),cells.end());component_result(&plan.report,count,"Dry transverse crossings",cells);
+        changed.insert(changed.end(),cells.begin(),cells.end());component_area(&plan.report,count,"Dry transverse crossings",cells);
     }
     if(!connected(game,plan,routes)) {
         game.stage.tiles=tiles;plan.protected_cells=protected_cells;tunnel.ground.resize(ground_count);
-        component_result(&plan.report,mode,"Rolled back: required room route or exit lock changed");
+        component_area(&plan.report,mode,"Rolled back: required room route or exit lock changed");
         if(mode.record>=0)for(auto& row:plan.report.components)if(row.parent==mode.record){row.result="Parent link rolled back";row.cells.clear();row.placed=0;}
         return;
     }
-    component_result(&plan.report,mode,"Link carved with connected dry routes",changed);
+    component_area(&plan.report,mode,"Link carved with connected dry routes",changed);
     if(mode.value==2) {
         // The original required sockets remain dry; the rest of this broad link
         // may break into independently sized holes instead of one giant rift.
@@ -116,6 +116,6 @@ void compose_snake_terrain(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Genera
         for(int n=0;n<count.value && !candidates.empty();++n) {
             const Cell anchor=candidates[random_u32(game)%candidates.size()];pit(game,plan,tunnel,anchor,count.record,trace);
         }
-        component_result(&plan.report,count,count.value ? "Bank depression rolls resolved below" : "No bank erosion");
+        component_area(&plan.report,count,count.value ? "Bank depression rolls resolved below" : "No bank erosion");
     }
 }

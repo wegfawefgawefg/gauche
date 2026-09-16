@@ -42,7 +42,7 @@ void carve_open_sectors(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         if (roll.record>=0) {auto& child=plan.report.components[static_cast<std::size_t>(roll.record)];child.guide.assign(polygon.begin(),polygon.end());child.guide_closed=true;}
         auto shape=raster_polygon(polygon,plan.width,plan.height);
         const auto spine=raster_line(a,b,2,plan.width,plan.height);
-        if (shape.truncated || spine.truncated) {component_result(&plan.report,roll,"Raster budget exceeded");continue;}
+        if (shape.truncated || spine.truncated) {component_area(&plan.report,roll,"Raster budget exceeded");continue;}
         shape.cells.insert(shape.cells.end(),spine.cells.begin(),spine.cells.end());
         struct Saved {Cell cell;Tile tile;};std::vector<Saved> saved;
         OpenSector sector;sector.component=roll.record;
@@ -56,10 +56,10 @@ void carve_open_sectors(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         const bool valid=sector.ground.size()>=32 && generation_lock_intact(game,plan);
         if (!valid) {
             for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
-            component_result(&plan.report,roll,sector.ground.size()<32 ? "Too little new ground" : "Would bypass exit lock or disconnect objective");
+            component_area(&plan.report,roll,sector.ground.size()<32 ? "Too little new ground" : "Would bypass exit lock or disconnect objective");
             continue;
         }
-        component_result(&plan.report,roll,"Walls opened; population pending",sector.ground);
+        component_area(&plan.report,roll,"Walls opened; population pending",sector.ground);
         auto& feature=plan.report.features.back();
         Cell low{plan.width,plan.height},high{};
         for (Cell cell:sector.ground) {low.x=std::min(low.x,cell.x);low.y=std::min(low.y,cell.y);high.x=std::max(high.x,cell.x+1);high.y=std::max(high.y,cell.y+1);}

@@ -22,10 +22,10 @@ struct Saved {Cell cell;Tile tile;};
 void finish(Game& game,FloorPlan& plan,ComponentRoll roll,const std::vector<Saved>& saved,const char* description) {
     if(!generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
         for(const auto& old:saved)*game.stage.at(old.cell)=old.tile;
-        component_result(&plan.report,roll,"Rolled back: required route or lock changed");return;
+        component_area(&plan.report,roll,"Rolled back: required route or lock changed");return;
     }
     std::vector<Cell> changed;for(const auto& old:saved)changed.push_back(old.cell);
-    component_result(&plan.report,roll,changed.empty() ? "No unreserved interior ground fit this component" : description,changed);
+    component_area(&plan.report,roll,changed.empty() ? "No unreserved interior ground fit this component" : description,changed);
 }
 void root_partition(Game& game,FloorPlan& plan,const GiantTree& tree,Cell a,Cell bend,Cell b,int width,
     const std::vector<std::uint8_t>& routes,GenerationTrace* trace,bool backbone=false) {
@@ -33,7 +33,7 @@ void root_partition(Game& game,FloorPlan& plan,const GiantTree& tree,Cell a,Cell
     const auto roll=roll_component(game,&plan.report,feature,tree.hollow_component,"Interior root branch",a,modes);
     const GenerationStep step{trace,game,plan,"Hollow root branch",feature,roll.record};
     if(roll.record>=0)plan.report.components[static_cast<std::size_t>(roll.record)].guide={a,bend,b};
-    if(!roll.value){component_result(&plan.report,roll,"Open branch; no root wall");return;}
+    if(!roll.value){component_area(&plan.report,roll,"Open branch; no root wall");return;}
     auto shape=raster_line(a,bend,width,plan.width,plan.height);
     auto next=raster_line(bend,b,width,plan.width,plan.height);shape.cells.insert(shape.cells.end(),next.cells.begin(),next.cells.end());
     std::vector<Cell> doors;
@@ -94,6 +94,6 @@ void compose_tree_hollow(Game& game,FloorPlan& plan,GiantTree& tree,GenerationTr
             const Cell cell=tree.canopy.start+Cell{x,y};
             if(tree_ellipse(tree.canopy,cell,3))interior.push_back(cell);
         }
-        component_result(&plan.report,{tree.hollow,tree.hollow_component},"Interior composed; branches and terrain pockets have independent rolls",interior);
+        component_area(&plan.report,{tree.hollow,tree.hollow_component},"Interior composed; branches and terrain pockets have independent rolls",interior);
     }
 }

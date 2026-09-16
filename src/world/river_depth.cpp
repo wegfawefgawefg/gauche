@@ -30,7 +30,7 @@ void deepen_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         {2,"Deep channel with fords",game.run.floor<3 ? 0U : 3U}};
     const auto depth=roll_component(game,&plan.report,GenerationFeature::River,river.component,"River depth",river.path.front(),depths);
     const GenerationStep checkpoint{trace,game,plan,"River depth and fords",GenerationFeature::River,depth.record};
-    if (!depth.value) {component_result(&plan.report,depth,"All crossings remain shallow");return;}
+    if (!depth.value) {component_area(&plan.report,depth,"All crossings remain shallow");return;}
     const Cell entrance=plan.rooms.front().center;
     const auto before=reachable(game.stage,entrance);
     const auto index=[&](Cell c){return static_cast<std::size_t>(c.y*plan.width+c.x);};
@@ -73,12 +73,12 @@ void deepen_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     }
     if (!connected || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
         for (Cell c:changed) game.stage.at(c)->kind=TileKind::ShallowWater;
-        component_result(&plan.report,depth,"Depth rejected: bank access or progression could not be preserved");return;
+        component_area(&plan.report,depth,"Depth rejected: bank access or progression could not be preserved");return;
     }
     std::erase_if(changed,[&](Cell c){return game.stage.at(c)->kind!=TileKind::DeepRiver;});
     const std::string result=changed.empty() ? "No deep cells survived crossing safeguards" :
         "Lethal without support; shallow crossings retained, "+std::to_string(fords.size())+" extra ford cells";
-    component_result(&plan.report,depth,result.c_str(),changed);
+    component_area(&plan.report,depth,result.c_str(),changed);
     if (depth.record>=0) {
         auto& row=plan.report.components[static_cast<std::size_t>(depth.record)];
         row.guide=river.path;row.guide_cell_centers=true;row.guide_closed=river.loop;

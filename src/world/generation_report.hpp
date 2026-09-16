@@ -26,6 +26,7 @@ struct ComponentDecision {
     int placed=0;
     Cell anchor{};
     std::vector<Cell> cells,guide,rejected_cells;
+    bool cells_are_area=false; // Terrain/fuel footprint, rather than discrete placement sites.
     bool guide_closed=false,guide_cell_centers=false;
     std::vector<ComponentOption> options;
 };

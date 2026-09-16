@@ -43,7 +43,7 @@ void place_forest_boss(Game& game,FloorPlan& plan,PopulationReport* population) 
         }
         if(sites.size()<70 || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
             for(const auto& old:saved)*game.stage.at(old.cell)=old.tile;
-            component_result(&plan.report,shape,"Rejected: insufficient dry fighting space or required route/lock");continue;
+            component_area(&plan.report,shape,"Rejected: insufficient dry fighting space or required route/lock");continue;
         }
         auto* boss=get_entity(game,spawn_entity(game,EntityKind::OldGrowthBear,center));
         if(!boss){for(const auto& old:saved)*game.stage.at(old.cell)=old.tile;feature_failed(plan,"Entity capacity exhausted");return;}
@@ -68,7 +68,7 @@ void place_forest_boss(Game& game,FloorPlan& plan,PopulationReport* population) 
         }
         changed.insert(changed.end(),props.begin(),props.end());changed.push_back(center);
         component_result(&plan.report,dressing,"Breakable remains; logs shelter against a maul but can be rushed through",props);
-        component_result(&plan.report,shape,"Old Growth placed; reward carried by boss; ordinary encounters retained",changed);
+        component_area(&plan.report,shape,"Old Growth placed; reward carried by boss; ordinary encounters retained",changed);
         decision.outcome=GenerationOutcome::Built;decision.variant="Old Growth: 640 HP, committed maul and rush";
         decision.reason="Forest 1-4 territorial boss; optional fight, native weapon and 40 gold on defeat. Exits remain independent.";
         Cell low{plan.width,plan.height},high{};for(Cell cell:sites){low.x=std::min(low.x,cell.x);low.y=std::min(low.y,cell.y);high.x=std::max(high.x,cell.x+1);high.y=std::max(high.y,cell.y+1);}decision.regions.push_back({low,high});

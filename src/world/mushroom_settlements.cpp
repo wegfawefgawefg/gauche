@@ -42,7 +42,7 @@ void populate_mushroom_settlements(Game& game,FloorPlan& plan,PopulationReport* 
         const auto footprint=raster_polygon(polygon,plan.width,plan.height);
         if(patch.record>=0){auto& row=plan.report.components[static_cast<std::size_t>(patch.record)];row.guide=polygon;row.guide_closed=true;}
         std::vector<Cell> ground;for(Cell c:footprint.cells)if(dry(game,c) && distance(c,game.run.spawn)>=12)ground.push_back(c);
-        if(ground.size()<35){component_result(&plan.report,patch,"Too little suitable dry ground");continue;}
+        if(ground.size()<35){component_area(&plan.report,patch,"Too little suitable dry ground");continue;}
         for(std::size_t i=ground.size();i>1;--i)std::swap(ground[i-1],ground[random_u32(game)%i]);
         const WeightedComponent settlements[]{{0,"Wild fungi; no houses",2},{1,"Isolated home",3},{3,"Small hamlet",5},{5,"Busy settlement",biome_stage(game.run.floor)>=3?3U:0U}};
         const auto village=roll_component(game,&plan.report,feature,patch.record,"Settlement size",anchor,settlements);
@@ -92,7 +92,7 @@ void populate_mushroom_settlements(Game& game,FloorPlan& plan,PopulationReport* 
         if(!floor_reachable(game) || !floor_lock_required(game))for(Cell at:blocking){game.stage.at(at)->prop={};--caps;changed.erase(std::remove(changed.begin(),changed.end(),at),changed.end());}
         built.push_back(anchor);++patches;
         const std::string result=std::to_string(homes.size())+" homes, "+std::to_string(local_people)+" residents; irregular fungi grown on suitable ground";
-        component_result(&plan.report,patch,result.c_str(),changed);
+        component_area(&plan.report,patch,result.c_str(),changed);
         plan.report.features.back().regions.push_back({anchor-Cell{radius,radius},anchor+Cell{radius+1,radius+1}});
     }
     if(report){auto& count=report->enemies[static_cast<std::size_t>(EntityKind::Gnome)];count.attempted+=residents;count.placed+=residents;}

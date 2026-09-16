@@ -82,6 +82,6 @@ void carve_snake_tunnel(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             if(seen[i] || !walkable(game.stage.at_or_border(c)))return true;
             seen[i]=true;return false;
         });
-        component_result(&plan.report,{tunnel.shape,tunnel.component},"Habitat links and bank erosion composed independently",tunnel.ground);
+        component_area(&plan.report,{tunnel.shape,tunnel.component},"Habitat links and bank erosion composed independently",tunnel.ground);
     }
 }

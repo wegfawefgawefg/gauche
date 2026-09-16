@@ -47,7 +47,7 @@ void place_forest_border(Game& game,FloorPlan& plan) {
             tile.kind=TileKind::Ice;++ice;changed.push_back(cell);
         }
     }
-    component_result(&plan.report,climate,"Connected cold approach; required walking lanes remain free of new slippery ground",changed);
+    component_area(&plan.report,climate,"Connected cold approach; required walking lanes remain free of new slippery ground",changed);
     auto& decision=plan.report.features.back();decision.candidate_count=static_cast<int>(queue.size());
     decision.outcome=changed.empty() ? GenerationOutcome::Failed : GenerationOutcome::Built;
     decision.reason="Local Forest-to-Ice scenery; Forest population and loot tables stay native. Snow can be cleared and frozen pools thawed.";

@@ -34,7 +34,7 @@ void connect(Game& game,FloorPlan& plan,TimberGrove& grove,Cell a,Cell b,bool ma
         }
     };
     carve(a,bend);carve(bend,b);
-    component_result(&plan.report,roll,roll.value ? "Bare mineral trail connects glades" : "Burnable ground connects glades",changed);
+    component_area(&plan.report,roll,roll.value ? "Bare mineral trail connects glades" : "Burnable ground connects glades",changed);
 }
 void glade(Game& game,FloorPlan& plan,TimberGrove& grove,Cell anchor,GenerationTrace* trace) {
     const WeightedComponent forms[]{{0,"Broad opening",grove.shape==0 ? 6U : 2U},{1,"Narrow reach",grove.shape==2 ? 7U : 2U},{2,"Small clearing",grove.shape==1 ? 6U : 2U}};
@@ -51,14 +51,14 @@ void glade(Game& game,FloorPlan& plan,TimberGrove& grove,Cell anchor,GenerationT
         if(!plan.protected_cell(cell))*game.stage.at(cell)={TileKind::Grass};
         clearing.ground.push_back(cell);
     }
-    component_result(&plan.report,roll,"Irregular opening cut through timber",clearing.ground);
+    component_area(&plan.report,roll,"Irregular opening cut through timber",clearing.ground);
     grove.glades.push_back(std::move(clearing));
 }
 void spring(Game& game,FloorPlan& plan,TimberGrove& grove,GenerationTrace* trace) {
     const WeightedComponent choices[]{{0,"Dry grove",2},{4,"Short wall spring",4},{7,"Long wall spring",3}};
     const auto roll=roll_component(game,&plan.report,feature,grove.component,"Grove spring",grove.center,choices);
     const GenerationStep step{trace,game,plan,"Grove spring",feature,roll.record};
-    if(!roll.value){component_result(&plan.report,roll,"No added spring");return;}
+    if(!roll.value){component_area(&plan.report,roll,"No added spring");return;}
     struct Source {Cell cell,flow;int direction;};std::vector<Source> sources;
     constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
     for(int y=-18;y<=18;++y)for(int x=-18;x<=18;++x)for(int d=0;d<4;++d) {
@@ -71,14 +71,14 @@ void spring(Game& game,FloorPlan& plan,TimberGrove& grove,GenerationTrace* trace
         }
         if(safe)sources.push_back({cell,flow,d+1});
     }
-    if(sources.empty()){component_result(&plan.report,roll,"No wall-backed pool fits off the bare routes");return;}
+    if(sources.empty()){component_area(&plan.report,roll,"No wall-backed pool fits off the bare routes");return;}
     const auto source=sources[random_u32(game)%sources.size()];const Cell side{-source.flow.y,source.flow.x};std::vector<Cell> placed;
     for(int i=0;i<roll.value;++i)for(int j=-1;j<=1;++j) {
         if((i==0 || i==roll.value-1) && j)continue;
         const Cell cell=source.cell+Cell{source.flow.x*i+side.x*j,source.flow.y*i+side.y*j};
         auto& tile=*game.stage.at(cell);tile={cell==source.cell ? TileKind::Spring : TileKind::ShallowWater};tile.current=static_cast<std::uint8_t>(source.direction);placed.push_back(cell);
     }
-    grove.spring=source.cell;component_result(&plan.report,roll,"Wall-backed source feeds a real shallow refuge",placed);
+    grove.spring=source.cell;component_area(&plan.report,roll,"Wall-backed source feeds a real shallow refuge",placed);
 }
 }
 

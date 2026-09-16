@@ -27,7 +27,7 @@ std::vector<Cell> cells(PacketReader& r) {
     points.reserve(n);for(std::uint32_t i=0;i<n&&r.okay;++i)points.push_back(cell(r));return points;
 }
 std::vector<std::uint8_t> encode(const GenerationReport& report,bool geometry) {
-    PacketWriter w;w.u16(2);w.u64(report.seed);w.u64(report.initial_rng);w.i32(report.floor);
+    PacketWriter w;w.u16(3);w.u64(report.seed);w.u64(report.initial_rng);w.i32(report.floor);
     string(w,report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision);
     w.u8(static_cast<std::uint8_t>(report.themes.major));w.u8(static_cast<std::uint8_t>(report.themes.minor));
     w.u8(report.components_truncated);w.u8(!geometry);
@@ -43,6 +43,7 @@ std::vector<std::uint8_t> encode(const GenerationReport& report,bool geometry) {
         w.u8(static_cast<std::uint8_t>(c.feature));w.i32(c.parent);
         string(w,c.slot);string(w,c.choice);string(w,c.result);w.u32(c.ticket);w.u32(c.total);w.i32(c.placed);w.cell(c.anchor);
         w.u8(c.guide_closed);w.u8(c.guide_cell_centers);
+        w.u8(c.cells_are_area);
         cells(w,c.cells,geometry);cells(w,c.guide,geometry);cells(w,c.rejected_cells,geometry);
         w.u16(static_cast<std::uint16_t>(c.options.size()));
         for(const auto& o:c.options){w.i32(o.value);string(w,o.name);w.u32(o.weight);}
@@ -62,7 +63,7 @@ std::vector<std::uint8_t> encode_generation_report(const GenerationReport& repor
 }
 std::shared_ptr<const GenerationReport> decode_generation_report(std::span<const std::uint8_t> bytes,const Game& game) {
     if(bytes.size()>generation_report_wire_limit)return {};
-    PacketReader r{bytes};const auto version=r.u16();if(version!=1 && version!=2)return {};
+    PacketReader r{bytes};const auto version=r.u16();if(version<1 || version>3)return {};
     auto report=std::make_shared<GenerationReport>();report->received=true;
     report->seed=r.u64();report->initial_rng=r.u64();report->floor=r.i32();report->revision=string(r);
     report->themes.major=static_cast<GenerationTheme>(r.u8());report->themes.minor=static_cast<GenerationTheme>(r.u8());
@@ -95,7 +96,10 @@ std::shared_ptr<const GenerationReport> decode_generation_report(std::span<const
         c.slot=string(r);c.choice=string(r);c.result=string(r);c.ticket=r.u32();c.total=r.u32();c.placed=r.i32();c.anchor=cell(r);
         const auto closed=r.u8(),centers=r.u8();if(closed>1 || centers>1 || c.placed<0 || c.placed>1'000'000)return {};
         c.guide_closed=closed!=0;c.guide_cell_centers=centers!=0;
+        if(version>=3){const auto area=r.u8();if(area>1)return {};c.cells_are_area=area!=0;}
         c.cells=cells(r);c.guide=cells(r);c.rejected_cells=cells(r);
+        // Legacy reports used guide presence to distinguish fills from markers.
+        if(version<3)c.cells_are_area=!c.guide.empty();
         if(omitted && (!c.cells.empty() || !c.guide.empty() || !c.rejected_cells.empty()))return {};
         const auto options=r.u16();if(!r.okay || options>64 || c.total>1'000'000)return {};
         if(options ? c.ticket>=c.total : (version<2 || c.total!=0 || c.ticket!=0 || c.choice.empty()))return {};

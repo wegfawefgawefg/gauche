@@ -36,7 +36,7 @@ void grow_spider_habitats(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         const bool early=biome_stage(game.run.floor)==1;
         const WeightedComponent modes[]{{0,"Contained cave",3},{1,"Outlying burrows",4},{2,"Branching infestation",early ? 1U : 5U}};
         const auto mode=roll_component(game,&plan.report,GenerationFeature::SpiderCave,-1,"Habitat reach",origin,modes);
-        if (!mode.value) {component_result(&plan.report,mode,"No outward growth");continue;}
+        if (!mode.value) {component_area(&plan.report,mode,"No outward growth");continue;}
         constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
         const GrowthSettings settings{mode.value==1 ? 3 : 6,mode.value==1 ? 4 : 7,4,8};
         const auto paths=branching_paths(game,origin,directions[random_u32(game)%4],settings);
@@ -51,11 +51,11 @@ void grow_spider_habitats(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             records[n]=branch.record;
             if (branch.record>=0) plan.report.components[static_cast<std::size_t>(branch.record)].guide=path.points;
             if (path.parent>=0 && reached[static_cast<std::size_t>(path.parent)].empty()) {
-                component_result(&plan.report,branch,"Parent branch rejected");continue;
+                component_area(&plan.report,branch,"Parent branch rejected");continue;
             }
             if (path.parent>=0 && std::find(reached[static_cast<std::size_t>(path.parent)].begin(),
                 reached[static_cast<std::size_t>(path.parent)].end(),path.points.front())==reached[static_cast<std::size_t>(path.parent)].end()) {
-                component_result(&plan.report,branch,"Fork lies beyond the surviving parent path");continue;
+                component_area(&plan.report,branch,"Fork lies beyond the surviving parent path");continue;
             }
             std::vector<Cell> proposed;bool truncated=false;
             for (std::size_t i=1;i<path.points.size();++i) {
@@ -70,7 +70,7 @@ void grow_spider_habitats(Game& game,FloorPlan& plan,GenerationTrace* trace) {
                 auto chamber=raster_polygon(polygon,plan.width,plan.height);
                 truncated|=chamber.truncated;proposed.insert(proposed.end(),chamber.cells.begin(),chamber.cells.end());
             }
-            if (truncated) {component_result(&plan.report,branch,"Raster budget exceeded");continue;}
+            if (truncated) {component_area(&plan.report,branch,"Raster budget exceeded");continue;}
             auto ground=connected_raster(path.points.front(),proposed,mask,plan.width,plan.height);
             struct Saved {Cell cell;Tile tile;};std::vector<Saved> saved;std::vector<Cell> opened;
             for (Cell cell:ground) if (auto* tile=game.stage.at(cell);tile->kind==TileKind::Wall) {
@@ -78,15 +78,15 @@ void grow_spider_habitats(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             }
             if (ground.size()<12 || !generation_lock_intact(game,plan)) {
                 for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
-                component_result(&plan.report,branch,ground.size()<12 ? "Blocked by protected terrain or hazards" : "Would bypass exit lock or disconnect objective");continue;
+                component_area(&plan.report,branch,ground.size()<12 ? "Blocked by protected terrain or hazards" : "Would bypass exit lock or disconnect objective");continue;
             }
             reached[n]=ground;
             // Population belongs to the surviving connected footprint, including
             // invaded existing floors. Do not fence it off as another room reservation.
             plan.spider_growth.push_back({std::move(ground),branch.record,static_cast<int>(opened.size())});
             all_opened.insert(all_opened.end(),opened.begin(),opened.end());
-            component_result(&plan.report,branch,"Connected habitat; population pending",plan.spider_growth.back().ground);
+            component_area(&plan.report,branch,"Connected habitat; population pending",plan.spider_growth.back().ground);
         }
-        component_result(&plan.report,mode,all_opened.empty() ? "No new walls opened; inspect surviving floor invasion" : "Outward habitat carved",all_opened);
+        component_area(&plan.report,mode,all_opened.empty() ? "No new walls opened; inspect surviving floor invasion" : "Outward habitat carved",all_opened);
     }
 }

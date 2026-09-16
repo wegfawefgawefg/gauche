@@ -69,7 +69,7 @@ void carve_snake_reward(Game& game,FloorPlan& plan,SnakeTunnel& tunnel,Generatio
             game.stage.tiles=saved;plan.protected_cells=protection;continue;
         }
         tunnel.island=island;tunnel.crossing_length=gap;tunnel.tree=island-scale(tunnel.axis,gap+2);
-        component_result(&plan.report,reward,"Optional isolated reward; gear need not be supplied here",footprint);
+        component_area(&plan.report,reward,"Optional isolated reward; gear need not be supplied here",footprint);
         const auto result=std::to_string(gap)+"-cell moat fitted against route approaches";
         component_result(&plan.report,width,result.c_str(),std::array{island});return;
     }

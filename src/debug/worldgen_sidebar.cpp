@@ -128,7 +128,7 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
         wrapped(renderer,y,c.slot+": "+c.choice,3);
         wrapped(renderer,y,c.result,3);
         text(renderer,y,c.options.empty() ? "Assignment (no roll)" :
-            "Cells "+std::to_string(c.placed)+" | ticket "+std::to_string(c.ticket)+"/"+std::to_string(c.total));
+            std::string(c.cells_are_area ? "Tiles " : "Sites ")+std::to_string(c.placed)+" | ticket "+std::to_string(c.ticket)+"/"+std::to_string(c.total));
     } else if(v.selected_feature>=0) {
         const auto& rule=generation_rules[static_cast<std::size_t>(v.selected_feature)];const auto* d=feature_decision(report,rule.feature);
         wrapped(renderer,y,rule.name,2);

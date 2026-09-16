@@ -52,7 +52,7 @@ void pocket(Game& game,FloorPlan& plan,const ForestDen& den,Cell anchor,Cell lin
         floor(game,plan,den,c);cells.push_back(c);
     }
     path(game,plan,den,link,anchor,2);
-    component_result(&plan.report,shape,"Connected polygon pocket; required corridor sockets retained",cells);
+    component_area(&plan.report,shape,"Connected polygon pocket; required corridor sockets retained",cells);
     if(shape.record>=0){auto& row=plan.report.components[static_cast<std::size_t>(shape.record)];row.guide=outline;row.guide_closed=true;}
 }
 
@@ -75,7 +75,7 @@ void ribs(Game& game,FloorPlan& plan,const ForestDen& den,int layout,GenerationT
         const WeightedComponent styles[]{{0,"Open floor",layout==0 ? 5U : 1U},{1,"Broken root rib",3},{2,"Root screen with a gap",layout==1 ? 6U : 3U}};
         const auto style=roll_component(game,&plan.report,feature,den.component,"Hollow root rib",origin,styles);
         const GenerationStep checkpoint{trace,game,plan,"Den interior root rib",feature,style.record};
-        if(!style.value){component_result(&plan.report,style,"Open floor retained");continue;}
+        if(!style.value){component_area(&plan.report,style,"Open floor retained");continue;}
         const Cell axis=random_u32(game)%2 ? den.along : den.across;
         const int length=3+static_cast<int>(random_u32(game)%4);
         const Cell a=origin-scale(axis,length),b=origin+scale(axis,length);
@@ -94,7 +94,7 @@ void ribs(Game& game,FloorPlan& plan,const ForestDen& den,int layout,GenerationT
         for(std::size_t i=0;i<before.size();++i)if(before[i] && walkable(game.stage.tiles[i]) && !after[i]){cut=true;break;}
         std::vector<Cell> cells;
         for(const auto& [cell,tile]:saved) {if(cut)*game.stage.at(cell)=tile;else cells.push_back(cell);}
-        component_result(&plan.report,style,cut ? "Rolled back: root rib isolated existing ground" :
+        component_area(&plan.report,style,cut ? "Rolled back: root rib isolated existing ground" :
             cells.empty() ? "No unreserved floor along this rib" : "Burnable cover; gap and surviving floor remain connected",cells);
     }
 }
@@ -141,7 +141,7 @@ void stream(Game& game,FloorPlan& plan,ForestDen& den,GenerationTrace* trace) {
     for(Cell c:cells){auto& tile=*game.stage.at(c);tile={TileKind::ShallowWater};tile.current=make_current(den.along);}
     den.spring=cells.empty() ? a : cells.front();
     if(!cells.empty())game.stage.at(den.spring)->kind=TileKind::Spring;
-    component_result(&plan.report,mode,cells.empty() ? "No unreserved water site" : "Shallow water and source; required dry crossings retained",cells);
+    component_area(&plan.report,mode,cells.empty() ? "No unreserved water site" : "Shallow water and source; required dry crossings retained",cells);
     if(mode.record>=0){auto& row=plan.report.components[static_cast<std::size_t>(mode.record)];row.guide=guide;row.rejected_cells=rejected;}
 }
 
@@ -197,7 +197,7 @@ void carve_forest_den(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         auto bank_cells=path(game,plan,den,a,shifted,bank.value);
         for(Cell c:path(game,plan,den,shifted,b,bank.value))
             if(std::find(bank_cells.begin(),bank_cells.end(),c)==bank_cells.end())bank_cells.push_back(c);
-        component_result(&plan.report,bank,"Bent dry bank joins the two footprints",bank_cells);
+        component_area(&plan.report,bank,"Bent dry bank joins the two footprints",bank_cells);
         if(bank.record>=0)plan.report.components[static_cast<std::size_t>(bank.record)].guide={a,shifted,b};
         if(trace)trace->capture_detail("Den connecting bank",feature,bank.record,game,plan);
         ribs(game,plan,den,layout.value,trace);
@@ -216,7 +216,7 @@ void carve_forest_den(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             if(tile && footprint(plan,den,edge) && tile->kind==TileKind::Wall && x*x+y*y<=4)
                 *tile=wood_tile(TileMaterial::Root);
         }
-        component_result(&plan.report,layout,"Connected terrain pockets, rolled banks and sleeping sites",ground);
+        component_area(&plan.report,layout,"Connected terrain pockets, rolled banks and sleeping sites",ground);
         if(trace)trace->capture_detail("Den root margins",feature,layout.record,game,plan);
     }
 }

@@ -113,7 +113,7 @@ void draw_live_generation_details(const Game& game) {
             ImGui::Checkbox("Show recorded map annotations",&live.overlay);
             ImGui::SameLine();
             if(ImGui::Button("Clear selection"))live.selected_feature=live.selected_component=-1;
-            ImGui::TextWrapped("Select a feature or child roll below. Gold: footprint; cyan: placed cells/guide; pink: empty attempt; orange: rejected cells. Marks stay at generation-time positions, even after actors move or scenery breaks. F1 hides the panel; the enabled overlay remains visible.");
+            ImGui::TextWrapped("Select a feature or child roll below. Gold: feature bounds; cyan: area outline or site crosses plus guide; pink: empty attempt; orange: rejected cells. Marks stay at generation-time positions, even after actors move or scenery breaks. F1 hides the panel; the enabled overlay remains visible.");
             ImGui::TextWrapped("%s Decisions describe generation, not what is still alive.",report.received ? "Recorded by the host and received with this world snapshot." : "Recorded when this floor was generated locally.");
             draw_generation_report(report,false);
         } else ImGui::TextWrapped("No generation report for this state. The host may have developer diagnostics disabled, or the attachment was unavailable. This window never substitutes an unrelated preview.");

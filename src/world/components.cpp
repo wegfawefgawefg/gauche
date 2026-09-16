@@ -1,4 +1,5 @@
 #include "components.hpp"
+#include <algorithm>
 
 ComponentRoll roll_component(Game& game,GenerationReport* report,GenerationFeature feature,
     int parent,const char* slot,Cell anchor,std::span<const WeightedComponent> choices) {
@@ -28,6 +29,17 @@ ComponentRoll roll_component(Game& game,GenerationReport* report,GenerationFeatu
 void component_result(GenerationReport* report,ComponentRoll roll,const char* result,std::span<const Cell> cells) {
     if (!report || roll.record<0 || static_cast<std::size_t>(roll.record)>=report->components.size()) return;
     auto& decision=report->components[static_cast<std::size_t>(roll.record)];
+    decision.cells_are_area=false;
     decision.result=result;decision.placed=static_cast<int>(cells.size());
     decision.cells.assign(cells.begin(),cells.end());
+}
+
+void component_area(GenerationReport* report,ComponentRoll roll,const char* result,std::span<const Cell> cells) {
+    component_result(report,roll,result,cells);
+    if(!report || roll.record<0 || static_cast<std::size_t>(roll.record)>=report->components.size())return;
+    auto& decision=report->components[static_cast<std::size_t>(roll.record)];
+    decision.cells_are_area=true;
+    std::sort(decision.cells.begin(),decision.cells.end(),[](Cell a,Cell b){return a.y==b.y ? a.x<b.x : a.y<b.y;});
+    decision.cells.erase(std::unique(decision.cells.begin(),decision.cells.end()),decision.cells.end());
+    decision.placed=static_cast<int>(decision.cells.size());
 }

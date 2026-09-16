@@ -103,7 +103,7 @@ void carve_forest_theme_patches(Game& game,FloorPlan& plan) {
                 if (theme==GenerationTheme::WetWoods) {tile={TileKind::ShallowWater};changed.push_back(cell);}
                 if (theme==GenerationTheme::Ruins && tile.kind!=TileKind::Ruin) {tile={TileKind::Ruin};changed.push_back(cell);}
             }
-            component_result(&plan.report,roll,patch.ground.empty() && changed.empty() ? "No suitable terrain; existing structures preserved" : "Terrain applied; scenery follows inhabitants",changed);
+            component_area(&plan.report,roll,patch.ground.empty() && changed.empty() ? "No suitable terrain; existing structures preserved" : "Terrain applied; scenery follows inhabitants",changed);
             plan.theme_patches.push_back(std::move(patch));
         }
     }

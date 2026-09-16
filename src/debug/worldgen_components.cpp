@@ -18,8 +18,8 @@ void component_tree(const GenerationReport& report,GenerationFeature feature,int
             (selected_component==static_cast<int>(i) ? ImGuiTreeNodeFlags_Selected : 0));
         if (ImGui::IsItemClicked()) selected_component=static_cast<int>(i);
         if (expanded) {
-            ImGui::TextWrapped("%s | %d recorded cells",component.result.c_str(),component.placed);
-            if (!component.rejected_cells.empty()) ImGui::Text("%zu skipped cells (orange crosses)",component.rejected_cells.size());
+            ImGui::TextWrapped("%s | %d recorded %s",component.result.c_str(),component.placed,component.cells_are_area ? "area tiles" : "sites");
+            if (!component.rejected_cells.empty()) ImGui::Text("%zu skipped cells (orange)",component.rejected_cells.size());
             if (component.options.empty()) ImGui::TextUnformatted("Recorded assignment; no additional dice roll");
             else ImGui::Text("Weighted ticket %u / %u",component.ticket,component.total);
             for (const auto& option:component.options)

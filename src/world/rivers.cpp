@@ -62,8 +62,8 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     const auto strength=roll_component(game,&plan.report,GenerationFeature::River,style.record,"Current strength",
         sources.empty() ? plan.rooms.front().center : sources.front().cell,strengths);
     const auto finish_flow=[&](bool built) {
-        if (!built) {component_result(&plan.report,strength,"No channel built");return;}
-        component_result(&plan.report,strength,strength.value==2 ?
+        if (!built) {component_area(&plan.report,strength,"No channel built");return;}
+        component_area(&plan.report,strength,strength.value==2 ?
             "Two pushes per second; supports and floating cargo travel twice as fast" :
             "One push per second; normal support/cargo drift",plan.rivers.back().channel);
         plan.report.features.back().variant+=strength.value==2 ? " / Fast current" : " / Gentle current";
@@ -75,7 +75,7 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         finish_flow(carve_forest_river_loop(game,plan,trace,allowed,style,strength.value));return;
     }
     if (sources.empty() || (drains.empty() && drops.empty())) {
-        component_result(&plan.report,style,"No eligible source/outlet pair");
+        component_area(&plan.report,style,"No eligible source/outlet pair");
         finish_flow(false);
         auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="No eligible source/outlet pair";return;
     }
@@ -88,7 +88,7 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         const auto& pool=outlet_roll.value==0 ? drains : drops;
         std::vector<Outlet> far;
         for (const auto& outlet:pool) if (distance(source,outlet.cell)>=30) far.push_back(outlet);
-        if (far.empty()) {component_result(&plan.report,outlet_roll,"No outlet at least 30 tiles from source");continue;}
+        if (far.empty()) {component_area(&plan.report,outlet_roll,"No outlet at least 30 tiles from source");continue;}
         const auto outlet=far[random_u32(game)%far.size()];
         if (outlet_roll.record>=0) plan.report.components[static_cast<std::size_t>(outlet_roll.record)].guide={source,outlet.cell};
         // Steer toward displaced waypoints. The cost field can bend around real
@@ -120,7 +120,7 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         costs[static_cast<std::size_t>(back.y*plan.width+back.x)]=0;
         auto path=route_cost_field(front,outlet.cell,plan.width,plan.height,costs);
         if (!path.empty()) path.insert(path.begin(),source);
-        if (path.size()<31) {component_result(&plan.report,outlet_roll,"No sufficiently long connected route to outlet");continue;}
+        if (path.size()<31) {component_area(&plan.report,outlet_roll,"No sufficiently long connected route to outlet");continue;}
         if (outlet_roll.record>=0) plan.report.components[static_cast<std::size_t>(outlet_roll.record)].guide=path;
         std::vector<int> owner(count,-1),bank_owner(count,-1);
         int width=1,remaining=0;
@@ -162,10 +162,10 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         game.stage.at(outlet.cell)->current=make_current(outlet.flow,strength.value);
         if (queue.size()!=river.channel.size() || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
             for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
-            component_result(&plan.report,outlet_roll,"Rolled back: disconnected water or required route/lock changed");continue;
+            component_area(&plan.report,outlet_roll,"Rolled back: disconnected water or required route/lock changed");continue;
         }
-        component_result(&plan.report,outlet_roll,"Connected shallow channel and standable banks",river.channel);
-        component_result(&plan.report,style,"River built",river.banks);
+        component_area(&plan.report,outlet_roll,"Connected shallow channel and standable banks",river.channel);
+        component_area(&plan.report,style,"River built",river.banks);
         auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Built;decision.reason="Shallow crossings remain walkable; bank/channel carving retained exit lock";
         decision.variant=std::string(styles[style.value].name)+" / "+ends[outlet_roll.value].name;
         Cell low{plan.width,plan.height},high{};
@@ -174,7 +174,7 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         for (Cell c:river.channel) plan.protected_cells[static_cast<std::size_t>(c.y*plan.width+c.x)]=1;
         plan.rivers.push_back(std::move(river));finish_flow(true);return;
     }
-    component_result(&plan.report,style,"All outlet attempts failed");
+    component_area(&plan.report,style,"All outlet attempts failed");
     finish_flow(false);
     auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="Six source/outlet attempts exhausted; see child reasons";
 }

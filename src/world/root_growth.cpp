@@ -45,7 +45,7 @@ void grow_giant_roots(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         const Cell center=tree.canopy.start+Cell{tree.canopy.length/2,tree.canopy.width/2};
         const WeightedComponent reaches[]{{0,"Compact root system",2},{1,"Wandering roots",4},{2,"Sprawling roots",game.run.floor==1 ? 1U : 5U}};
         const auto reach=roll_component(game,&plan.report,GenerationFeature::GiantTree,-1,"Outward roots",center,reaches);
-        if (!reach.value) {component_result(&plan.report,reach,"Existing shell and inner roots only");continue;}
+        if (!reach.value) {component_area(&plan.report,reach,"Existing shell and inner roots only");continue;}
         constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
         WeightedComponent headings[]{{0,"East",1},{1,"South",1},{2,"West",1},{3,"North",1}};
         const int stems=2+static_cast<int>(random_u32(game)%3);
@@ -76,7 +76,7 @@ void grow_giant_roots(Game& game,FloorPlan& plan,GenerationTrace* trace) {
                 if (path.parent>=0) {
                     const auto& prior=reached[static_cast<std::size_t>(path.parent)];
                     if (std::find(prior.begin(),prior.end(),path.points.front())==prior.end()) {
-                        component_result(&plan.report,branch,"Fork beyond surviving parent root");continue;
+                        component_area(&plan.report,branch,"Fork beyond surviving parent root");continue;
                     }
                 }
                 std::vector<Cell> proposed;bool truncated=false;
@@ -90,9 +90,9 @@ void grow_giant_roots(Game& game,FloorPlan& plan,GenerationTrace* trace) {
                     }
                     truncated|=segment.truncated;proposed.insert(proposed.end(),segment.cells.begin(),segment.cells.end());
                 }
-                if (truncated) {component_result(&plan.report,branch,"Raster budget exceeded");continue;}
+                if (truncated) {component_area(&plan.report,branch,"Raster budget exceeded");continue;}
                 auto connected=connected_raster(path.points.front(),proposed,eligible,plan.width,plan.height);
-                if (connected.empty()) {component_result(&plan.report,branch,"No connected eligible terrain");continue;}
+                if (connected.empty()) {component_area(&plan.report,branch,"No connected eligible terrain");continue;}
                 struct Saved {Cell cell;Tile tile;};std::vector<Saved> saved;std::vector<Cell> changed,skipped;
                 int mineral=0,raised=0,walking=0;
                 for (Cell cell:connected) {
@@ -107,17 +107,17 @@ void grow_giant_roots(Game& game,FloorPlan& plan,GenerationTrace* trace) {
                 if (branch.record>=0) plan.report.components[static_cast<std::size_t>(branch.record)].rejected_cells=skipped;
                 if (!generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
                     for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
-                    component_result(&plan.report,branch,"Rolled back: required route or lock changed");continue;
+                    component_area(&plan.report,branch,"Rolled back: required route or lock changed");continue;
                 }
                 reached[n]=std::move(connected);
                 all_changed.insert(all_changed.end(),changed.begin(),changed.end());
                 const std::string result=std::to_string(mineral)+" mineral walls rooted; "+std::to_string(raised)+
                     " floor cells raised; "+std::to_string(walking)+" walking-route cells kept open; "+std::to_string(skipped.size())+" skipped cells";
-                component_result(&plan.report,branch,result.c_str(),changed);
+                component_area(&plan.report,branch,result.c_str(),changed);
             }
         }
         changed_world|=!all_changed.empty();
-        component_result(&plan.report,reach,all_changed.empty() ? "No terrain converted; inspect stem/branch results" : "Actual root material; cut or burn to open",all_changed);
+        component_area(&plan.report,reach,all_changed.empty() ? "No terrain converted; inspect stem/branch results" : "Actual root material; cut or burn to open",all_changed);
     }
     if (changed_world) for (std::size_t i=0;i<routes.size();++i)
         if (routes[i]) plan.protected_cells[i]=1;

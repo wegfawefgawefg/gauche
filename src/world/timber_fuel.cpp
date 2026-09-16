@@ -43,8 +43,8 @@ void dress_timber_grove(Game& game,FloorPlan& plan,TimberGrove& grove,Generation
                 plants.value==1 ? PropKind::TallGrass : plants.value==2 ? PropKind::Fern : PropKind::Puffball;
             if(place_prop(game.stage,cell,kind,static_cast<std::uint8_t>(random_u32(game)%3)))covered.push_back(cell);
         }
-        component_result(&plan.report,plants,"Patch fitted to remaining ground; mineral breaks stay bare",covered);
-        component_result(&plan.report,amount,"Independent per-cell fuel roll",covered);
+        component_area(&plan.report,plants,"Patch fitted to remaining ground; mineral breaks stay bare",covered);
+        component_area(&plan.report,amount,"Independent per-cell fuel roll",covered);
     }
     // Connective trails have low fuel too, without repainting the glade choices.
     for(Cell cell:grove.ground) {

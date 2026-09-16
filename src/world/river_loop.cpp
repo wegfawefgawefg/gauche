@@ -47,7 +47,7 @@ bool carve_forest_river_loop(Game& game,FloorPlan& plan,GenerationTrace* trace,
             if (separation<=5) costs[index(c)]=10U+static_cast<unsigned>(separation*8);
         }
         auto path=route_closed_cost_field(guide,plan.width,plan.height,costs);
-        if (path.size()<24 || path.size()>200) {component_result(&plan.report,form,"No closed route through eligible terrain");continue;}
+        if (path.size()<24 || path.size()>200) {component_area(&plan.report,form,"No closed route through eligible terrain");continue;}
         std::vector<std::uint8_t> channel(allowed.size()),banks(allowed.size());
         for (std::size_t i=0;i<path.size();++i) {
             const int radius=(i/5)%3==1 ? 1 : 0;
@@ -72,14 +72,14 @@ bool carve_forest_river_loop(Game& game,FloorPlan& plan,GenerationTrace* trace,
         }
         if (queue.size()!=river.channel.size() || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
             for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
-            component_result(&plan.report,form,"Rolled back: disconnected current or required route/lock changed");continue;
+            component_area(&plan.report,form,"Rolled back: disconnected current or required route/lock changed");continue;
         }
-        component_result(&plan.report,form,"Closed current; side channels feed the loop",river.channel);
+        component_area(&plan.report,form,"Closed current; side channels feed the loop",river.channel);
         if (form.record>=0) {
             auto& child=plan.report.components[static_cast<std::size_t>(form.record)];
             child.guide=path;child.guide_cell_centers=true;
         }
-        component_result(&plan.report,style,"Circulating channel built; shallow walking crossings retained",river.banks);
+        component_area(&plan.report,style,"Circulating channel built; shallow walking crossings retained",river.banks);
         auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Built;
         decision.variant=std::string("Circulating river / ")+sizes[form.value].name;
         decision.reason="Intentional closed current; later population places rideable supports";
@@ -87,6 +87,6 @@ bool carve_forest_river_loop(Game& game,FloorPlan& plan,GenerationTrace* trace,
         for (Cell c:river.channel) {plan.protected_cells[index(c)]=1;low.x=std::min(low.x,c.x);low.y=std::min(low.y,c.y);high.x=std::max(high.x,c.x+1);high.y=std::max(high.y,c.y+1);}
         decision.regions.push_back({low,high});plan.rivers.push_back(std::move(river));return true;
     }
-    component_result(&plan.report,style,"No eligible closed current survived carving");
+    component_area(&plan.report,style,"No eligible closed current survived carving");
     auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="Circulating route attempts exhausted; see child reasons";return false;
 }

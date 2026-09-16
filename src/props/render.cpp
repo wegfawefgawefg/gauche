@@ -1,3 +1,4 @@
+#include "../entities/boiler_drive_render.hpp"
 #include "ice_pillar_render.hpp"
 #include "streetlamp_render.hpp"
 #include "render.hpp"
@@ -11,8 +12,9 @@
 #include <algorithm>
 #include <cmath>
 
-void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stage& stage,
+void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game,
                  ViewCamera camera, float zoom, const LightingCache& lighting,std::uint64_t tick) {
+    const Stage& stage=game.stage;
     const int radius_x = static_cast<int>(320.0F / tile_pixels(zoom)) + 2;
     const int radius_y = static_cast<int>(180.0F / tile_pixels(zoom)) + 2;
     const int center_x = static_cast<int>(std::floor(camera.x));
@@ -21,6 +23,9 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
         for (int x = std::max(0, center_x - radius_x); x < std::min(stage.width, center_x + radius_x); ++x) {
             const Cell cell{x, y};
             const Prop& prop = stage.at(cell)->prop;
+            if (prop.kind==PropKind::SteamDrive) {
+                draw_steam_drive(renderer,graphics,game,cell,tile_rect(cell,camera,zoom),light_at_cell(lighting,cell),tick);continue;
+            }
             if (prop.kind==PropKind::WaterPipe) {
                 const auto light=light_at_cell(lighting,cell);const auto rect=tile_rect(cell,camera,zoom);
                 SDL_Texture* texture=texture_for(graphics,prop.broken ? Sprite::WaterPipeBroken : Sprite::WaterPipe);
@@ -49,7 +54,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
                 rect.x += rect.w*.35F; rect.y += rect.h*.4F; rect.w *= .55F; rect.h *= .55F;
             }
             if (prop.kind==PropKind::RailPoints) {draw_rail_points(renderer,graphics,prop,rect,light);continue;}
-            if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,stage,cell,rect,light,tick); continue; }
+            if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,game,cell,rect,light,tick); continue; }
             if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble) && (prop.variant&1U) ? 90 : 0, nullptr,

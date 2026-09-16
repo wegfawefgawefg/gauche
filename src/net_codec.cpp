@@ -1,4 +1,5 @@
 #include "entities/boiler_feed.hpp"
+#include "entities/boiler_drive.hpp"
 #include "props/ice_pillar.hpp"
 #include "scenery/roof.hpp"
 #include "world/reactor.hpp"
@@ -14,7 +15,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(62);
+    writer.u32(63);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -98,13 +99,16 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.i32(feed.tank.slot);writer.u32(feed.tank.generation);
         writer.cell(feed.mount);writer.cell(feed.source);writer.cell(feed.delivery);
         writer.u16(feed.water);writer.u16(feed.dry_ticks);
+        writer.cell(feed.drive);writer.i32(feed.cutter.slot);writer.u32(feed.cutter.generation);
+        writer.u8(static_cast<std::uint8_t>(feed.belts.size()));
+        for (Cell cell:feed.belts) writer.cell(cell);
     }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 62) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 63) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -185,6 +189,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
+        if (tile.prop.kind==PropKind::SteamDrive && (tile.prop.variant!=0 || tile.prop.growth_ticks!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::WaterPipe && (tile.prop.variant>1 || tile.prop.growth_ticks!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!reader.okay) {
             const auto index=static_cast<std::size_t>(&tile-result.stage.tiles.data());
@@ -298,7 +303,12 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     for (int i=0;i<feed_count;++i) {
         BoilerFeed feed;feed.tank={reader.i32(),reader.u32()};
         feed.mount=reader.cell();feed.source=reader.cell();feed.delivery=reader.cell();
-        feed.water=reader.u16();feed.dry_ticks=reader.u16();result.boiler_feeds.push_back(feed);
+        feed.water=reader.u16();feed.dry_ticks=reader.u16();
+        feed.drive=reader.cell();feed.cutter={reader.i32(),reader.u32()};
+        const auto sections=reader.u8();
+        if (sections>max_driven_belts) {error="Too many driven belts";return false;}
+        for (int n=0;n<sections;++n) feed.belts.push_back(reader.cell());
+        result.boiler_feeds.push_back(feed);
     }
     if (!valid_boiler_feeds(result)) {error="Invalid boiler feed";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.

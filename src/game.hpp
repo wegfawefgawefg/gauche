@@ -298,6 +298,10 @@ struct BoilerFeed {
     Handle tank{};
     Cell mount{},source{},delivery{};
     std::uint16_t water=0,dry_ticks=0;
+    Cell drive{};
+    Handle cutter{};
+    std::vector<Cell> belts{}; // Ordered loading -> drive; excludes the dry cargo intake.
+
 };
 
 struct Game {

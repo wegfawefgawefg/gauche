@@ -42,7 +42,7 @@ float ambient_source_gain(const AmbientSource& source, const Game& game, Cell li
         for (int y=-8;y<=8 && !rolling;++y) for (int x=-8;x<=8 && !rolling;++x) {
             const Cell section=cell+Cell{x,y};
             const auto& prop=game.stage.at_or_border(section).prop;
-            rolling=live_belt(prop) && !(prop.variant&belt_manual) && prop.growth_ticks==0 &&
+            rolling=belt_powered(game,section) && prop.growth_ticks==0 &&
                 clear_sight(game,listener,section);
         }
         if (!rolling) return 0;

@@ -24,6 +24,10 @@ void draw_cutter_details(SDL_Renderer* renderer,const GameGraphics& graphics,con
         working ? LightColor{.8F,.7F,.25F} : LightColor{.22F,.26F,.23F};
     SDL_SetRenderDrawColorFloat(renderer,light.red*color.red,light.green*color.green,light.blue*color.blue,1);
     SDL_RenderFillRect(renderer,&lamp);
+    if (cutter.label_a==CutterUnpowered) {
+        for (int x:{8,11}) SDL_RenderLine(renderer,rect.x+pixel*static_cast<float>(x),rect.y+pixel*6,
+            rect.x+pixel*static_cast<float>(x),rect.y+pixel*9);
+    }
     if (cutter.label_a==CutterBlocked) {
         SDL_RenderLine(renderer,rect.x+pixel*8,rect.y+pixel*6,rect.x+pixel*11,rect.y+pixel*9);
         SDL_RenderLine(renderer,rect.x+pixel*11,rect.y+pixel*6,rect.x+pixel*8,rect.y+pixel*9);

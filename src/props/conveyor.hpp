@@ -5,8 +5,9 @@
 constexpr int belt_manual=4;
 constexpr int belt_beat=20;
 bool live_belt(const Prop& prop);
+bool belt_powered(const Game& game,Cell cell);
 Cell belt_direction(const Prop& prop);
-std::vector<Cell> belt_run(const Stage& stage,Cell cell);
+std::vector<Cell> belt_run(const Game& game,Cell cell);
 void step_belt_timer(Prop& prop);
 void step_conveyors(Game& game);
 bool crank_belt(Game& game,Cell cell);

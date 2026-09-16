@@ -1,4 +1,5 @@
 #include "coal_cutter.hpp"
+#include "boiler_drive.hpp"
 #include "../props/conveyor.hpp"
 #include <algorithm>
 
@@ -7,7 +8,7 @@
 // toward the next lump. Coal belongs to the wall, never an infinite machine stock.
 namespace {
 void state(Game& game,Entity& cutter,CutterState next) {
-    if (cutter.label_a!=next && next!=CutterWorking)
+    if (cutter.label_a!=next && next!=CutterWorking && next!=CutterUnpowered)
         emit_sound(game,next==CutterBlocked ? SoundId::CutterJam : SoundId::CutterEmpty,cutter.cell);
     cutter.label_a=next;
     if (next!=CutterWorking) cutter.timer_a=0;
@@ -33,6 +34,7 @@ void step_coal_cutter(Game& game,int slot) {
     if (!ore || ore->kind!=TileKind::Wall || ore->contents!=ItemKind::CoalLump || ore->content_count==0) {
         cutter.counter_a=0;state(game,cutter,CutterExhausted);return;
     }
+    if (!cutter_powered(game,cutter)) {state(game,cutter,CutterUnpowered);return;}
     if (ore->hp==0 || ore->break_rule==BreakRule::Unbreakable ||
         (ore->break_rule==BreakRule::DigRequired && ore->required_dig_power>2) || !outlet_clear(game,outlet)) {
         state(game,cutter,CutterBlocked);return;
@@ -60,6 +62,6 @@ void step_coal_cutter(Game& game,int slot) {
 bool valid_coal_cutter(const Entity& cutter) {
     return cutter.kind!=EntityKind::CoalCutter || (cutter.health>0 && cutter.health<=100 && cutter.max_health==100 &&
         cutter.impassable && cutter.hard_blocker && cutter.move_interval==0 && distance({},cutter.facing)==1 &&
-        cutter.label_a>=CutterWorking && cutter.label_a<=CutterExhausted && cutter.timer_a>=0 && cutter.timer_a<=60 &&
+        cutter.label_a>=CutterWorking && cutter.label_a<=CutterUnpowered && cutter.timer_a>=0 && cutter.timer_a<=60 &&
         cutter.counter_a>=0 && cutter.counter_a<30 && cutter.ground_item.kind==ItemKind::None);
 }

@@ -174,6 +174,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::SteamDrive) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::WaterPipe) emit_sound(game,SoundId::PipeHit,cell);
     else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);
     else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);

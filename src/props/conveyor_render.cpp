@@ -1,9 +1,10 @@
 #include "conveyor_render.hpp"
 #include "conveyor.hpp"
-void draw_conveyor(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,Cell cell,
+void draw_conveyor(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,Cell cell,
                    SDL_FRect rect,LightColor light,std::uint64_t tick) {
+    const Stage& stage=game.stage;
     const Prop& prop=stage.at_or_border(cell).prop;
-    const bool stopped=prop.growth_ticks>0 || (prop.variant&belt_manual)!=0;
+    const bool stopped=prop.growth_ticks>0 || !belt_powered(game,cell);
     const Cell outgoing=belt_direction(prop);
     Cell incoming{};
     for (Cell side:{Cell{1,0},{-1,0},{0,1},{0,-1}}) {

@@ -222,6 +222,10 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));
         }
         mix(hash,feed.water);mix(hash,feed.dry_ticks);
+        mix(hash,static_cast<std::uint64_t>(feed.drive.x));mix(hash,static_cast<std::uint64_t>(feed.drive.y));
+        mix(hash,static_cast<std::uint64_t>(feed.cutter.slot));mix(hash,feed.cutter.generation);
+        mix(hash,feed.belts.size());
+        for (Cell cell:feed.belts) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
     }
     return hash;
 }

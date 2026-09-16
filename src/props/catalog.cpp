@@ -3,6 +3,7 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::SteamDrive: return {Sprite::SteamDrive,SoundId::BeltBreak,40,false,false};
     case PropKind::WaterPipe: return {Sprite::WaterPipe,SoundId::PipeBreak,24,false,false};
     case PropKind::IcePillar: return {Sprite::IcePillar,SoundId::PillarFall,36,true,false};
     case PropKind::IceRubble: return {Sprite::IceRubble,SoundId::IceBlockBreak,12,true,false};
@@ -88,6 +89,6 @@ bool prop_shoot_through(const Prop& prop) {
 }
 
 bool prop_cuttable_metal(const Prop& prop) {
-    return !prop.broken && (prop.kind==PropKind::WaterPipe || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+    return !prop.broken && (prop.kind==PropKind::SteamDrive || prop.kind==PropKind::WaterPipe || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
         prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

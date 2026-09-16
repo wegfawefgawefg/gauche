@@ -240,7 +240,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_reactor_hazards(renderer,graphics,game,camera,zoom);
     draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
-    draw_props(renderer, graphics, game.stage, camera, zoom, lighting,game.tick);
+    draw_props(renderer, graphics, game, camera, zoom, lighting,game.tick);
     draw_boiler_feeds(renderer,graphics,game,camera,zoom,lighting);
     for (const Entity& actor : game.entities)
         if (actor.kind == EntityKind::LensWarden) draw_warden_charge(renderer, graphics, game, actor, camera, zoom, lighting);
@@ -284,7 +284,7 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     LightingCache lighting;
     build_lighting(lighting, scene, camera, 2.0F);
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
-    draw_props(renderer, graphics, scene.stage, camera, 2.0F, lighting);
+    draw_props(renderer, graphics, scene, camera, 2.0F, lighting);
     for (int layer = 0; layer < 3; ++layer)
         draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting, layer);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

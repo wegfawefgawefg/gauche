@@ -119,6 +119,8 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
         }
         const Cell mount=link.unload+along;
         floor(game,plan,mount);
+        floor(game,plan,mount+along);place_prop(game.stage,mount+along,PropKind::SteamDrive);
+        floor(game,plan,mount+across);floor(game,plan,mount+along+across);
         for (int i=1;i<=3;++i) {
             const Cell cell=mount-times(across,i);floor(game,plan,cell);
             if (i==3) *game.stage.at(cell)={TileKind::Spring};
@@ -131,20 +133,27 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
 
 void populate_industrial_links(Game& game,const FloorPlan& plan) {
     for (const auto& link:plan.industrial_links) {
-        if (Entity* cutter=get_entity(game,spawn_entity(game,EntityKind::CoalCutter,link.load+link.across)))
+        const Handle cutter_handle=spawn_entity(game,EntityKind::CoalCutter,link.load+link.across);
+        if (Entity* cutter=get_entity(game,cutter_handle))
             cutter->facing=link.across;
         const Cell mount=link.unload+link.along;
         const Handle tank_handle=spawn_entity(game,EntityKind::BoilerTank,mount);
         if (Entity* tank=get_entity(game,tank_handle)) {
             tank->counter_b=0;tank->facing=link.along;
-            game.boiler_feeds.push_back({tank_handle,mount,mount-times(link.across,3),link.unload,600,0});
+            BoilerFeed feed{tank_handle,mount,mount-times(link.across,3),link.unload,600,0};
+            feed.drive=mount+link.along;feed.cutter=cutter_handle;
+            feed.belts.assign(link.belt.begin(),link.belt.end()-1);game.boiler_feeds.push_back(feed);
         }
         place_ground_item(game,link.load-link.along,ItemKind::BoltPouch,3);
-        place_ground_item(game,mount+link.along,ItemKind::Sealant);
+        place_ground_item(game,mount+link.across,ItemKind::Sealant);
+        place_ground_item(game,mount+link.along+link.across,ItemKind::BeltCrank);
+        // Two of the initial eight coal are already at the hopper: the line
+        // starts cold, then warms itself without requiring a powered fuel belt.
+        place_ground_item(game,link.unload,ItemKind::CoalLump,2);
         constexpr ItemKind cargo[]{ItemKind::CoalLump,ItemKind::CoalLump};
         for (std::size_t i=0;i<std::size(cargo);++i) {
             const Cell cell=link.belt[i*6];
-            if (live_belt(game.stage.at_or_border(cell).prop)) place_ground_item(game,cell,cargo[i],4);
+            if (live_belt(game.stage.at_or_border(cell).prop)) place_ground_item(game,cell,cargo[i],i==0 ? 2 : 4);
         }
         place_ground_item(game,link.load-link.across,ItemKind::BrakeShoe);
         for (Cell end:{link.load,link.unload}) {

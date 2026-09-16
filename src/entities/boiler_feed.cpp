@@ -1,4 +1,5 @@
 #include "boiler_feed.hpp"
+#include "boiler_drive.hpp"
 #include "boiler_tank.hpp"
 #include "../items/sled.hpp"
 #include "../surfaces/interaction.hpp"
@@ -86,7 +87,10 @@ bool step_boiler_feed(Game& game,Entity& tank) {
         }
         if (feed->water>0) {
             feed->dry_ticks=0;
-            if (game.tick%3==0) tank.counter_a=std::min(100,tank.counter_a+1);
+            // A working engine draws steam instead of cycling through hazard
+            // jets. A sealed or broken drive leaves pressure to the relief vent.
+            const int limit=live_steam_drive(game,*feed) && tank.cell==feed->mount && tank.timer_b==0 ? 60 : 100;
+            if (game.tick%3==0 && tank.counter_a<limit) ++tank.counter_a;
         } else dry_fire(game,tank,*feed);
     } else {
         feed->dry_ticks=0;
@@ -101,11 +105,11 @@ bool consume_boiler_water(Game& game,const Entity& tank,bool rupture) {
     const int amount=std::min(static_cast<int>(feed->water),rupture ? boiler_water_limit : 120);
     feed->water=static_cast<std::uint16_t>(feed->water-amount);return amount>0;
 }
-bool repair_water_pipe(Game& game,Cell cell) {
+bool repair_feed_fixture(Game& game,Cell cell) {
     Tile* tile=game.stage.at(cell);
-    if (!tile || !walkable(tile->kind) || tile->prop.kind!=PropKind::WaterPipe ||
-        tile->prop.hp>=prop_spec(PropKind::WaterPipe).health) return false;
-    tile->prop.hp=static_cast<std::uint8_t>(std::min(prop_spec(PropKind::WaterPipe).health,static_cast<int>(tile->prop.hp)+20));
+    if (!tile || !walkable(tile->kind) || (tile->prop.kind!=PropKind::WaterPipe && tile->prop.kind!=PropKind::SteamDrive && tile->prop.kind!=PropKind::Conveyor) ||
+        tile->prop.hp>=prop_spec(tile->prop.kind).health) return false;
+    tile->prop.hp=static_cast<std::uint8_t>(std::min(prop_spec(tile->prop.kind).health,static_cast<int>(tile->prop.hp)+20));
     tile->prop.broken=false;return true;
 }
 bool valid_boiler_feeds(const Game& game) {
@@ -120,5 +124,5 @@ bool valid_boiler_feeds(const Game& game) {
         if (tank && tank->kind!=EntityKind::BoilerTank) return false;
         for (std::size_t j=0;j<i;++j) if (game.boiler_feeds[j].tank==feed.tank) return false;
     }
-    return true;
+    return valid_boiler_drives(game);
 }

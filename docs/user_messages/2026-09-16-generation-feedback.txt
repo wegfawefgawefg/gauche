@@ -95,3 +95,7 @@ that way i can give feedback and playtest zones. this is gonna be really useful 
 --- Generation timeline and pass stepping — 2026-09-16 ---
 
 it would also be nice if the world level generation was somehow steppable like forward and backward? so i could see whats causing what. like scrub through time. not saying we record every modification but we obviously have PASSES right. so it would be nice to be able to step through the passes at the very least, maybe through each n in each pass assuming its loops.  not saying id use that all the time but it would make investigation dramatically easier right. then i can see okay why is the world fucked up in this way, scrub back. wow it looks good at pass 80%, oh the last step ruined everything. like that right.
+
+--- Inspector eligibility and actual rolls — 2026-09-16 ---
+
+maybe in this viewer on the left or something it shows me what elementes got rolled for this level? like 1-1 1-2, uh hmm and maybe i can see which is valid to roll also? that way i can see like, ah were missing BLA on 1-1 okay i see why it looks like this. okay i see 1-2 CAN ahve bla bla bla, in this case it has BLA

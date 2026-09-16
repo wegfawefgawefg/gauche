@@ -196,6 +196,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         if (random_u32(game) % 4 == 0) place_ground_item(game, enemy.cell, ItemKind::RawMeat);
         break;
     case EntityKind::FishingWidow: {
+        if (enemy.label_b!=0) {drop_scavenged_items(game,enemy);break;}
         const auto roll = random_u32(game) % 100;
         if (roll < 20) place_ground_item(game, enemy.cell, ItemKind::FishingLine);
         else if (roll < 40) place_ground_item(game, enemy.cell, ItemKind::SmokedFish);

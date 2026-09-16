@@ -1,4 +1,5 @@
 #include "fishing_widow.hpp"
+#include "fishing_work.hpp"
 #include "attacks.hpp"
 #include "behavior.hpp"
 #include "hearing.hpp"
@@ -40,14 +41,19 @@ void init_fishing_widow(Entity& widow) {
 }
 
 void interrupt_fishing_widow(Entity& widow) {
-    if (widow.kind != EntityKind::FishingWidow || widow.health <= 0 ||
-        (widow.label_a != WidowWindup && widow.label_a != WidowLine)) return;
+    if (widow.kind != EntityKind::FishingWidow || widow.health <= 0) return;
+    if (widow.label_b==1) {
+        widow.label_a=WidowWorkWait;widow.timer_a=90;widow.entity_a={};
+        widow.sprite=Sprite::WidowUntangle;return;
+    }
+    if (widow.label_a != WidowWindup && widow.label_a != WidowLine) return;
     widow.label_a = WidowUntangle; widow.timer_a = 90;
     widow.entity_a = {};
     widow.sprite = Sprite::WidowUntangle;
 }
 
 void step_fishing_widow(Game& game, int slot) {
+    if (step_fishing_work(game,slot)) return;
     Entity& widow = game.entities[static_cast<std::size_t>(slot)];
     if (widow.label_a == WidowWindup || widow.label_a == WidowLine) {
         if (widow.cell != widow.point_a) { interrupt_fishing_widow(widow); return; }

@@ -143,7 +143,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/whiteout_drummer.cpp src/items/snow_globe.cpp src/surfaces/whiteout.cpp
     src/entities/death_sound.cpp
     src/entities/seal_thief.cpp src/entities/seal_route.cpp
-    src/items/fish.cpp src/entities/fishing_widow.cpp src/projectiles/widow_hook.cpp
+    src/items/fish.cpp src/entities/fishing_widow.cpp src/entities/fishing_work.cpp src/world/stream_work.cpp src/projectiles/widow_hook.cpp
     src/items/muffling.cpp
     src/entities/echo_hound.cpp src/entities/echo_hearing.cpp
     src/entities/mirror_knight.cpp

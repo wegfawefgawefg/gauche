@@ -1,4 +1,5 @@
 #include "ice_thaw.hpp"
+#include "stream_work.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "../items/supply.hpp"
@@ -137,6 +138,7 @@ void populate_ice_thaw(Game& game,const FloorPlan& plan) {
                     place_prop(game.stage,cell,offset==0 ? PropKind::FishingCreel : PropKind::SnowCache);
             }
         }
+        populate_stream_work(game,channel);
         // A small guaranteed habitat population; ordinary room encounters skip
         // these two rooms rather than duplicating their aquatic specialists.
         spawn_entity(game,EntityKind::GlassEel,channel.eel);

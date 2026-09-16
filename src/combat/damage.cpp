@@ -37,6 +37,7 @@
 #include "../entities/echo_hound.hpp"
 #include "../entities/frozen_pilgrim.hpp"
 #include "../entities/fishing_widow.hpp"
+#include "../entities/fishing_work.hpp"
 #include "../entities/seal_thief.hpp"
 #include "../entities/whiteout_drummer.hpp"
 #include "../entities/avalanche_ram.hpp"
@@ -96,6 +97,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_boiler_porter(entity);
     damage_boiler(game,slot);
     interrupt_seal_thief(entity);
+    rouse_fishing_worker(game,entity);
     interrupt_fishing_widow(entity);
     interrupt_frozen_pilgrim(entity);
     interrupt_echo_hound(entity);

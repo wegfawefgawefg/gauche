@@ -2,7 +2,7 @@
 from pathlib import Path
 from PIL import Image,ImageDraw
 root=Path(__file__).resolve().parents[2]/'assets/graphics'
-for name in ['fishing_widow','widow_windup','widow_reel','widow_untangle']:
+for name in ['fishing_widow','widow_windup','widow_reel','widow_untangle','widow_work_cast','widow_work_reel']:
     im=Image.new('RGBA',(16,16));p=ImageDraw.Draw(im)
     warn=name=='widow_windup';reel=name=='widow_reel';rest=name=='widow_untangle'
     # VEIL: Wide woven hat above a narrow slit; ragged skirt stays a single dark mass.
@@ -13,7 +13,12 @@ for name in ['fishing_widow','widow_windup','widow_reel','widow_untangle']:
     p.polygon([(4,8),(8,8),(10,13),(8,14),(6,13),(3,14),(2,12)],fill='#42564e')
     p.line([(4,9),(3,12)],fill='#7c8370')
     p.line([(4,14),(3,15)],fill='#948f77');p.line([(8,14),(10,15)],fill='#948f77')
-    if warn:
+    if name.startswith('widow_work_'):
+        p.line([(8,9),(11,10),(12,9)],fill='#c1b7a1')
+        p.line([(10,11),(12,7),(15,5 if name=='widow_work_cast' else 8)],fill='#ad9670')
+        p.point((11,10),fill='#b6a477')
+        p.point((15,6 if name=='widow_work_cast' else 9),fill='#b78459')
+    elif warn:
         p.line([(8,9),(11,7),(11,4)],fill='#c1b7a1')
         p.line([(10,8),(12,2),(14,1)],fill='#ad9670')
         p.line([(14,1),(15,3),(15,5)],fill='#82958b')

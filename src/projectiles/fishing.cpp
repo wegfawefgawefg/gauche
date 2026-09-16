@@ -1,4 +1,5 @@
 #include "fishing.hpp"
+#include "../entities/fishing_widow.hpp"
 #include "../item_pattern.hpp"
 #include "../world/floating_items.hpp"
 
@@ -128,6 +129,9 @@ void step_fishing_hook(Game& game, int slot) {
     const Entity* owner = get_entity(game, hook.entity_a);
     if (!owner || owner->health <= 0 || owner->cell != hook.point_a || hook.timer_a == 0 ||
         !clear_line(game, hook)) { finish(game, slot, true); return; }
+    if (owner->kind==EntityKind::FishingWidow && (owner->label_a!=WidowWorkLine ||
+        owner->entity_a!=Handle{slot,hook.generation} || owner->freeze_ticks>0 ||
+        owner->stun_ticks>0 || owner->sleep_ticks>0)) { finish(game,slot,true); return; }
     if (hook.label_b == FishingCargo) {
         const Entity* cargo = get_entity(game, hook.entity_b);
         if (!cargo || cargo->kind != EntityKind::GroundItem || cargo->ground_item.count <= 0 || cargo->cell != hook.point_b || floating_item(*cargo)) {

@@ -143,6 +143,16 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         break;
     }
     case EntityKind::BoilerTank: break; // The actual fitting was salvaged above.
+    case EntityKind::Gnome:
+        if(random_u32(game)%3==0)place_coins(game,enemy.cell,2+static_cast<int>(random_u32(game)%4));
+        break;
+    case EntityKind::GnomeHouse:
+        if(enemy.ground_item.kind!=ItemKind::None) {
+            if(auto* loose=get_entity(game,spawn_entity(game,EntityKind::GroundItem,nearby_ground_item_cell(game,enemy.cell)))) {
+                loose->ground_item=enemy.ground_item;loose->sprite=item_sprite(loose->ground_item);
+            }
+        }
+        break;
     case EntityKind::Snake:
         if (random_u32(game)%3==0) place_ground_item(game,enemy.cell,ItemKind::RawMeat);
         break;

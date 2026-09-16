@@ -5,7 +5,7 @@
 
 // Local observations only: shared immutably with an inspected/played Game and
 // omitted from hashes and network snapshots. Received snapshots have no report.
-enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, AntColonies, Count };
+enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, AntColonies, MushroomSettlements, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
 struct FeatureDecision {
@@ -54,6 +54,7 @@ inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::ForestEncounters,"Ordinary Forest encounters",Biome::Forest,{1,1,1,1}},
     GenerationRule{GenerationFeature::Themes,"Floor identity / modifiers",Biome::Forest,{1,1,1,1}},
     GenerationRule{GenerationFeature::AntColonies,"Ant colonies / food routes",Biome::Forest,{6,4,4,4}},
+    GenerationRule{GenerationFeature::MushroomSettlements,"Mushroom woods / settlements",Biome::Forest,{8,5,4,4}},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {

@@ -36,7 +36,7 @@ std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float z
             for (int x=std::max(0,cx-rx);x<std::min(game.stage.width,cx+rx);++x) {
                 const auto& prop=game.stage.at({x,y})->prop;
                 if (!prop.broken && (prop.kind==PropKind::LightTower || prop.kind==PropKind::TallTree ||
-                    prop.kind==PropKind::StreetLamp || prop.kind==PropKind::IcePillar))
+                    prop.kind==PropKind::TallMushroom || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::IcePillar))
                     order.push_back({0,{x,y},BodyKind::Prop,2});
             }
         for (std::size_t slot=0;slot<game.stage.roofs.size();++slot) {

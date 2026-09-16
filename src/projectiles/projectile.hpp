@@ -5,7 +5,7 @@ enum class ProjectileKind { Arrow, Bomb, Flask, Rocket, Hook, Drill, Blink, Rock
 constexpr int bomb_fuse_ticks = 150;
 void init_projectile(Entity& entity);
 void step_projectile(Game& game, int slot);
-bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach);
+bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach, int damage_override=-1);
 int projectile_step_ticks(const Entity& entity);
 
 bool projectile_blocked(const Game& game, Cell cell,bool overhead=false,bool through_grates=false);

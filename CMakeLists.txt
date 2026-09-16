@@ -123,7 +123,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/alarms.cpp src/props/alarm_clock.cpp
     src/items/fishing_line.cpp src/projectiles/fishing.cpp
     src/entities/shard_colony.cpp src/entities/shard_links.cpp src/world/crystal_gallery.cpp
-    src/entities/icicle_spider.cpp src/entities/forest_spider.cpp src/entities/snake.cpp src/entities/ant.cpp src/entities/ant_hauling.cpp src/entities/ant_hauling_render.cpp src/entities/spider_strand.cpp src/entities/spider_site.cpp
+    src/entities/icicle_spider.cpp src/entities/forest_spider.cpp src/entities/snake.cpp src/entities/gnome.cpp src/entities/gnome_render.cpp src/entities/ant.cpp src/entities/ant_hauling.cpp src/entities/ant_hauling_render.cpp src/entities/spider_strand.cpp src/entities/spider_site.cpp
     src/entities/boiler_porter.cpp src/entities/boiler_tank.cpp src/entities/boiler_splash.cpp src/items/pressure.cpp src/world/boiler_room.cpp
     src/entities/candle_keeper.cpp src/entities/keeper_tending.cpp src/world/chapel.cpp
     src/entities/snow_effigy.cpp
@@ -220,7 +220,7 @@ set(GAUCHE_ENTITY_SOURCES
 
 set(GAUCHE_WORLD_SOURCES src/world/generation_trace.cpp src/world/routed_path.cpp src/world/rivers.cpp src/world/river_population.cpp src/world/root_growth.cpp src/world/growth_paths.cpp src/world/growth_carving.cpp src/world/spider_growth.cpp src/world/spider_growth_population.cpp src/world/raster.cpp src/world/open_sectors.cpp src/world/components.cpp src/world/landmark_supplies.cpp src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/world/ice_arches.cpp src/scenery/ice_arch.cpp src/world/shipping_yard.cpp src/scenery/roof.cpp src/scenery/hollow_tree.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp src/world/forest_den.cpp src/world/spider_cave.cpp src/world/snake_tunnel.cpp src/world/root_maze.cpp src/world/giant_tree.cpp src/world/four_room_block.cpp src/world/timber_grove.cpp src/world/bear_stream.cpp src/world/bear_clearings.cpp
-    src/world/ice_shelves.cpp src/world/ice_thaw.cpp src/world/ice_material.cpp src/world/ice_material_render.cpp src/world/room_population.cpp src/world/forest_encounters.cpp src/world/generation_themes.cpp src/world/forest_theme_layers.cpp src/world/ant_colonies.cpp src/world/ant_crew.cpp src/world/industrial_population.cpp src/world/industrial_geometry.cpp src/debug/generation_audit.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
+    src/world/ice_shelves.cpp src/world/ice_thaw.cpp src/world/ice_material.cpp src/world/ice_material_render.cpp src/world/room_population.cpp src/world/forest_encounters.cpp src/world/generation_themes.cpp src/world/forest_theme_layers.cpp src/world/mushroom_settlements.cpp src/world/ant_colonies.cpp src/world/ant_crew.cpp src/world/industrial_population.cpp src/world/industrial_geometry.cpp src/debug/generation_audit.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/freight_exchange.cpp src/world/last_shift.cpp src/world/reactor.cpp src/world/reactor_render.cpp src/world/loot.cpp)
 
 set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)

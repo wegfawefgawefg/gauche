@@ -9,6 +9,8 @@
 #include "entities/bear_family.hpp"
 #include "entities/forest_spider.hpp"
 #include "entities/ant.hpp"
+#include "entities/gnome.hpp"
+#include "entities/gnome_render.hpp"
 #include "entities/ant_hauling_render.hpp"
 #include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
@@ -97,7 +99,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             continue;
         }
         if (entry.kind==BodyKind::Prop) {
-            if (game.stage.at(entry.cell)->prop.kind==PropKind::LightTower)
+            if (game.stage.at(entry.cell)->prop.kind==PropKind::TallMushroom)
+                draw_tall_mushroom(renderer,graphics,game,entry.cell,camera,zoom,lighting,viewer);
+            else if (game.stage.at(entry.cell)->prop.kind==PropKind::LightTower)
                 draw_light_tower(renderer,graphics,game,entry.cell,camera,zoom,lighting);
             else if (game.stage.at(entry.cell)->prop.kind==PropKind::TallTree)
                 draw_tall_tree(renderer,graphics,game,entry.cell,camera,zoom,lighting);
@@ -108,6 +112,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         const std::size_t slot=entry.slot;
         const Entity& entity = game.entities[slot];
+        if (hidden_gnome(entity)) continue;
         if (entity.max_health>0 && entity.health<=0 && game.stage.at_or_border(entity.cell).kind==TileKind::Chasm) continue;
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
@@ -123,6 +128,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::WhiteoutDrummer) draw_drummer_warning(renderer, game, entity, camera, zoom, lighting);
         draw_ant_ropes(renderer,game,entity,camera,zoom,lighting);
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
+        if (entity.kind==EntityKind::GnomeHouse) {rect.x-=rect.w*.5F;rect.y-=rect.h;rect.w*=2;rect.h*=2;}
+        if (entity.kind==EntityKind::Gnome) {const float size=entity.counter_a==GnomeRider ? 1.15F : .7F;rect.x+=rect.w*(1-size)*.5F;rect.y+=rect.h*(1-size);rect.w*=size;rect.h*=size;}
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0)) {

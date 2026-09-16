@@ -54,5 +54,9 @@ unsigned themed_feature_denominator(const GenerationRule& rule,int floor,Generat
         if (rule.feature==GenerationFeature::GiantTree || rule.feature==GenerationFeature::RootMaze) boost(3);
     }
     if (has_theme(themes,GenerationTheme::Ants) && rule.feature==GenerationFeature::AntColonies) boost(1);
+    if (rule.feature==GenerationFeature::MushroomSettlements) {
+        if (has_theme(themes,GenerationTheme::GnomeWoods)) boost(1);
+        else if (has_theme(themes,GenerationTheme::Mushrooms)) boost(2);
+    }
     return value;
 }

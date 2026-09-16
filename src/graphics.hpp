@@ -105,6 +105,8 @@ enum class Sprite : std::size_t {
     Root0, Root1, Root2, Root3, Root4, Root5, Root6, Root7, Root8, Root9, Root10, Root11, Root12, Root13, Root14, Root15, RootCut,
     GiantTreeCanopy, GiantTreeBark,
     MimicOpen, MimicGape, MimicSnap, MimicRecover, MimicJaws, MimicJawsClosed,
+    GnomeStick, GnomeStickWalk, GnomeStickTell, GnomeStickHit, GnomeBow, GnomeBowWalk, GnomeBowTell, GnomeBowHit, GnomeCrossbow, GnomeCrossbowWalk, GnomeCrossbowTell, GnomeCrossbowHit, GnomeRider, GnomeRiderWalk, GnomeRiderTell, GnomeRiderHit,
+    GnomeHouse, GnomeHouseClosed, GnomeHouseBlue, GnomeHouseBlueClosed, GnomeHouseOchre, GnomeHouseOchreClosed, TallMushroom, TallMushroomBlue, TallMushroomOchre,
     Count,
 };
 

@@ -78,7 +78,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     case PropKind::Twigs: first = DebrisKind::Twig; second = DebrisKind::PineNeedle; break;
     case PropKind::Fern: first = DebrisKind::FernLeaf; second = DebrisKind::Root; break;
     case PropKind::TallGrass: first = DebrisKind::GrassBlade; second = DebrisKind::SeedHusk; break;
-    case PropKind::Puffball: first = DebrisKind::MushroomCap; second = DebrisKind::Spore; break;
+    case PropKind::TallMushroom: case PropKind::Puffball: first = DebrisKind::MushroomCap; second = DebrisKind::Spore; break;
     case PropKind::Nest: first = DebrisKind::Twig; second = DebrisKind::Feather; break;
     case PropKind::ClayPot: first = second = DebrisKind::Pottery; break;
     default: break;

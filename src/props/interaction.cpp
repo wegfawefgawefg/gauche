@@ -139,12 +139,12 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =
             {cell, source, spec.sprite, spec.health, true, prop.kind};
-    if (prop.kind == PropKind::Puffball) {
+    if (prop.kind == PropKind::Puffball || prop.kind==PropKind::TallMushroom) {
         // SPORES: Breaking a mushroom beside an enemy can buy a short escape.
         for (Entity& actor : game.entities)
             if (actor.health > 0 && actor.move_interval > 0 && !actor.hard_blocker &&
-                distance(actor.cell, cell) <= 1)
-                apply_sleep(actor, 75);
+                distance(actor.cell, cell) <= (prop.kind==PropKind::TallMushroom ? 2 : 1))
+                apply_sleep(actor, prop.kind==PropKind::TallMushroom ? 120 : 75);
     }
     if (prop.kind == PropKind::ChapelAltar || prop.kind == PropKind::ChapelUrn || prop.kind == PropKind::ScrapBin || prop.kind == PropKind::OreBin || prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
@@ -161,6 +161,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind==PropKind::Pallet || kind==PropKind::PalletStack || kind==PropKind::BoundRocks || kind==PropKind::ContainerSide) tile->prop.variant &= 1U;
     if (kind==PropKind::IcePillar) tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));
+    if (kind==PropKind::TallMushroom) tile->prop.variant%=6;
     if (kind==PropKind::ForestWeb) tile->prop.variant%=3;
     if (kind==PropKind::IceSpikes || kind==PropKind::SnowPile) tile->prop.variant%=3;
     if (kind==PropKind::StreetLamp) tile->prop.variant &= 3U;

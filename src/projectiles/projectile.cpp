@@ -64,7 +64,7 @@ int projectile_step_ticks(const Entity& entity) {
     return entity.label_a != static_cast<int>(ProjectileKind::Arrow) ? 8 : 3;
 }
 
-bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach) {
+bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direction, int reach, int damage_override) {
     const Entity& owner = game.entities[static_cast<std::size_t>(owner_slot)];
     const bool bomb = item.kind == ItemKind::Bomb;
     const bool rocket = item.kind == ItemKind::RocketLauncher;
@@ -76,7 +76,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     shot->label_b = bomb || rocket ? pattern.blast_radius :
         (pattern.piercing || has_artifact(owner, ArtifactKind::AllPiercing) ? 1 : 0);
     shot->counter_a = std::clamp(reach, 1, pattern.maximum);
-    shot->counter_b = pattern.damage;
+    shot->counter_b = damage_override<0 ? pattern.damage : std::clamp(damage_override,1,pattern.damage);
     shot->attack_interval = shot->counter_a;
     shot->timer_b = projectile_step_ticks(*shot);
     shot->timer_a = bomb ? bomb_fuse_ticks : shot->counter_a * shot->timer_b + 3;

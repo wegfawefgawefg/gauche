@@ -27,6 +27,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
         for (int x = std::max(0, center_x - radius_x); x < std::min(stage.width, center_x + radius_x); ++x) {
             const Cell cell{x, y};
             const Prop& prop = stage.at(cell)->prop;
+            if (prop.kind==PropKind::TallMushroom) continue; // Raised caps use ground-anchor body ordering.
             if (prop.kind==PropKind::SteamDrive) {
                 draw_steam_drive(renderer,graphics,game,cell,tile_rect(cell,camera,zoom),light_at_cell(lighting,cell),tick);continue;
             }

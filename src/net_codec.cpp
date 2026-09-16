@@ -202,6 +202,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             (tile.prop.variant>2 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::IceArchFoot && (tile.prop.variant!=0 || tile.prop.growth_ticks!=0 ||
             (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
+        if (tile.prop.kind==PropKind::TallMushroom && (tile.prop.variant>5 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::ForestWeb && (tile.prop.variant>2 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_ice_pillar(tile.prop)) reader.okay=false;
         if (!valid_streetlamp(tile.prop)) reader.okay=false;

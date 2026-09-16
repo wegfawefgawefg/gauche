@@ -1,5 +1,6 @@
 #include "fissures.hpp"
 #include "ant_colonies.hpp"
+#include "mushroom_settlements.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -166,6 +167,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         // Ambient colonies use remaining capacity after all ordinary fighters.
         populate_ant_colonies(game,plan,report);
         capture("Ant colonies and food routes");
+        populate_mushroom_settlements(game,plan,report);
+        capture("Mushroom woods and households");
         dress_forest_theme_patches(game,plan);
         capture("Floor identity scenery");
         // Reserve structures before loose clutter consumes their clear ground.

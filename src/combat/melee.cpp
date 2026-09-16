@@ -46,7 +46,11 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog))
                 prop_damage *= 3;
             if (item.flame_ticks > 0 || item.kind == ItemKind::Torch) ignite_surface(game, cell);
-            struck |= hit_prop(game, cell, prop_damage, origin);
+            // WICKS: Using a torch on a candle lights it instead of crushing the wax.
+            // Actual weapons, including burning sticks, still deal their physical blow.
+            if (item.kind == ItemKind::Torch && tile->prop.kind == PropKind::Candle && !tile->prop.broken)
+                struck = true;
+            else struck |= hit_prop(game, cell, prop_damage, origin);
             struck |= hit_ground_traps(game, cell, pattern.damage, origin);
             struck |= hit_sled(game,cell,pattern.damage,origin);
             struck |= hit_ice_anchor(game,cell,pattern.damage,origin);

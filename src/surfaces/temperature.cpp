@@ -205,6 +205,8 @@ void step_temperature(Game& game) {
     for (Cell flame : flames) {
         bool thawed = false;
         for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+            // WICKS: Exposed flames reach nearby candles; colored lights do not.
+            if (!drained(flame + offset)) light_candle(game, flame + offset);
             clear_snow(game, flame + offset);
             melt_ice_cover(game, flame + offset);
             thaw_lunch_tin(game, flame + offset);

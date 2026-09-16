@@ -67,9 +67,9 @@ bool ignite_surface(Game& game, Cell cell) {
         tile->break_rule != BreakRule::Unbreakable;
     if (tile->kind == TileKind::Wall && !wood) return false;
     Surface& surface = tile->surface;
-    if (surface.fire_ticks > 0) return false;
-    const bool fuel = (surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap || tar_liquid(surface.liquid)) && surface.liquid_ticks>0;
     const bool lit = light_candle(game,cell) || light_stove(game,cell);
+    if (surface.fire_ticks > 0) return lit;
+    const bool fuel = (surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap || tar_liquid(surface.liquid)) && surface.liquid_ticks>0;
     if (!wood && !wooden_roof(game.stage,cell) && !fuel && !dry_growth(tile->prop)) return lit;
     const bool cloth_only = tile->prop.covered && !wood && !fuel;
     remove_prop_cover(game, cell, true);

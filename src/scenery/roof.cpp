@@ -1,4 +1,5 @@
 #include "roof.hpp"
+#include "ice_arch.hpp"
 #include "../surfaces/temperature.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/terrain_material.hpp"
@@ -10,6 +11,7 @@ void step_roofs(Game& game) {
     if (game.tick%15!=0) return;
     for (RoofSpan& roof:game.stage.roofs) {
         if (!roof.hp) continue;
+        if (roof.kind==RoofKind::IceArch) {step_ice_arch(game,roof);continue;}
         bool heated=false,burning=false;
         int supports=0;
         Cell effect=roof_cell(roof,roof.length/2,1);

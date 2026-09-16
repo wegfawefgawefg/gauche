@@ -75,7 +75,7 @@ void step_ice_pillar(Game& game,Cell cell) {
         return; // The committed fall cannot be cancelled or shortened by more hits/heat.
     }
     if (game.tick%30!=0 || !warm_cell(game,cell)) return;
-    if (prop.kind==PropKind::IceRubble) {
+    if (prop.kind==PropKind::IceRubble || prop.kind==PropKind::IceArchFoot) {
         prop.hp=static_cast<std::uint8_t>(std::max(0,static_cast<int>(prop.hp)-4));
     } else {
         prop.variant=static_cast<std::uint8_t>(prop.variant+4);

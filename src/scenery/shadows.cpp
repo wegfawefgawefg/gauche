@@ -1,5 +1,6 @@
 #include "../combat/toss.hpp"
 #include "shadows.hpp"
+#include "roof.hpp"
 #include "../entities/bear_family.hpp"
 #include "../debug/panels.hpp"
 #include "../entities/bell_diver.hpp"
@@ -108,6 +109,15 @@ void draw_contact_shadows(SDL_Renderer* renderer,const Game& game,
                 batch.add(rect.x+pixels*.5F,rect.y+pixels*.82F,pixels*.64F,pixels*.16F,.32F);
             }
     }
+    if (options.shadow_props)
+        for (const auto& roof:game.stage.roofs) {
+            if (roof.kind!=RoofKind::IceArch || !roof.hp) continue;
+            for (int a=1;a<roof.length-1;++a) {
+                const auto rect=tile_rect(roof_cell(roof,a,1),camera,zoom);
+                batch.add(rect.x+pixels*.5F,rect.y+pixels*.7F,
+                    pixels*(roof.vertical ? .28F : 1.0F),pixels*(roof.vertical ? 1.0F : .22F),.16F);
+            }
+        }
     if (options.shadow_debris && cosmetics)
         for (const LoosePiece& p:cosmetics->debris.pieces) {
             if (!raised_scrap(p.kind)) continue;

@@ -74,12 +74,13 @@ struct Tile {
     std::uint8_t content_count = 0;
 };
 
-enum class RoofKind : std::uint8_t { Log, FrozenLog, Gantry, Container, Count };
+enum class RoofKind : std::uint8_t { Log, FrozenLog, Gantry, Container, IceArch, Count };
 // Ground and its contents remain independent. One connected roof fades together.
 struct RoofSpan {
     Cell start{};
     RoofKind kind = RoofKind::Log;
     std::uint8_t length = 5, vertical = 0, hp = 40;
+    std::uint8_t height = 0; // Ice arches only, 2–4 tiles above their two feet.
 };
 
 struct Stage {

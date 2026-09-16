@@ -44,7 +44,7 @@ void step_prop_growth(Game& game) {
             if (prop.kind==PropKind::LightTower) {step_light_tower(game,cell);continue;}
             if (prop.kind==PropKind::TallTree) {step_tall_tree(game,cell);continue;}
             if (prop.kind==PropKind::IceSpikes || prop.kind==PropKind::SnowPile) {step_ice_clutter(game,cell);continue;}
-            if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble) {step_ice_pillar(game,cell);continue;}
+            if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble || prop.kind==PropKind::IceArchFoot) {step_ice_pillar(game,cell);continue;}
             if (prop.kind==PropKind::StreetLamp) {step_streetlamp(game,cell);continue;}
             if (prop.kind == PropKind::FoamCover) { step_foam_cover(game,cell); continue; }
             if (prop.kind == PropKind::TensionSpring) { step_tension_spring(game,cell); continue; }

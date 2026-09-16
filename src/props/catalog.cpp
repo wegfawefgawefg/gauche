@@ -7,6 +7,7 @@ PropSpec prop_spec(PropKind kind) {
     case PropKind::Pallet: return {Sprite::Pallet,SoundId::CrateBreak,12,false,false};
     case PropKind::PalletStack: return {Sprite::PalletStack,SoundId::CrateBreak,28,true,false};
     case PropKind::BoundRocks: return {Sprite::BoundRocks,SoundId::OreBreak,48,true,false};
+    case PropKind::IceArchFoot: return {Sprite::IceRubble,SoundId::IceBlockBreak,40,true,false};
     case PropKind::IceSpikes: return {Sprite::IceSpikesA,SoundId::IceBlockBreak,1,false,false};
     case PropKind::SnowPile: return {Sprite::SnowPileA,SoundId::SnowScrape,2,false,true};
     case PropKind::BearBed: return {Sprite::BearBed,SoundId::LeavesCrunch,6,false,false};

@@ -94,7 +94,7 @@ std::uint64_t game_hash(const Game& game) {
     mix(hash,game.stage.roofs.size());
     for (const RoofSpan& roof:game.stage.roofs) {
         mix(hash,static_cast<std::uint64_t>(roof.start.x));mix(hash,static_cast<std::uint64_t>(roof.start.y));
-        mix(hash,static_cast<std::uint64_t>(roof.kind));mix(hash,roof.length);mix(hash,roof.vertical);mix(hash,roof.hp);
+        mix(hash,static_cast<std::uint64_t>(roof.kind));mix(hash,roof.length);mix(hash,roof.vertical);mix(hash,roof.hp);mix(hash,roof.height);
     }
     for (const Entity& entity : game.entities) {
         mix(hash, static_cast<std::uint64_t>(entity.kind));

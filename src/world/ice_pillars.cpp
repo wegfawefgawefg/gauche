@@ -1,4 +1,5 @@
 #include "ice_pillars.hpp"
+#include "../scenery/roof.hpp"
 #include "../props/interaction.hpp"
 #include "../surfaces/interaction.hpp"
 #include <algorithm>
@@ -81,6 +82,7 @@ void place_ice_pillars(Game& game,const FloorPlan& plan) {
         int count=0;
         for (Cell cell:choices) {
             if (count==desired) break;
+            if (std::any_of(game.stage.roofs.begin(),game.stage.roofs.end(),[&](const RoofSpan& roof){return roof_covers(roof,cell);})) continue;
             if (std::any_of(placed.begin(),placed.end(),[&](Cell old){return distance(cell,old)<spacing;})) continue;
             int open=0;
             for (Cell d:{Cell{1,0},Cell{0,1},Cell{-1,0},Cell{0,-1}})

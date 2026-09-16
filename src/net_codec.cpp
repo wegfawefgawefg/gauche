@@ -48,7 +48,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     writer.u8(static_cast<std::uint8_t>(game.stage.roofs.size()));
     for (const RoofSpan& roof:game.stage.roofs) {
         writer.cell(roof.start);writer.u8(static_cast<std::uint8_t>(roof.kind));
-        writer.u8(roof.length);writer.u8(roof.vertical);writer.u8(roof.hp);
+        writer.u8(roof.length);writer.u8(roof.vertical);writer.u8(roof.hp);writer.u8(roof.height);
     }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
@@ -200,6 +200,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (!valid_tree_prop(tile.prop)) reader.okay=false;
         if ((tile.prop.kind==PropKind::IceSpikes || tile.prop.kind==PropKind::SnowPile) &&
             (tile.prop.variant>2 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
+        if (tile.prop.kind==PropKind::IceArchFoot && (tile.prop.variant!=0 || tile.prop.growth_ticks!=0 ||
+            (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_ice_pillar(tile.prop)) reader.okay=false;
         if (!valid_streetlamp(tile.prop)) reader.okay=false;
         if (!valid_bridge_tile(tile)) reader.okay=false;
@@ -230,7 +232,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     result.stage.roofs.resize(roof_count);
     for (RoofSpan& roof:result.stage.roofs) {
         roof.start=reader.cell();roof.kind=static_cast<RoofKind>(reader.u8());
-        roof.length=reader.u8();roof.vertical=reader.u8();roof.hp=reader.u8();
+        roof.length=reader.u8();roof.vertical=reader.u8();roof.hp=reader.u8();roof.height=reader.u8();
         if (!valid_roof(result.stage,roof)) reader.okay=false;
     }
     Run& run = result.run;

@@ -1,4 +1,5 @@
 #include "roof_render.hpp"
+#include "ice_arch_render.hpp"
 #include "../world/terrain_material.hpp"
 #include <algorithm>
 #include <array>
@@ -9,7 +10,8 @@ bool reveal_roof(const RoofSpan& roof,Cell viewer) {
     const Cell delta=viewer-roof.start;
     const int along=roof.vertical ? delta.y : delta.x;
     const int across=roof.vertical ? delta.x : delta.y;
-    return roof.hp>0 && along>=0 && along<roof.length && across==1;
+    return roof.hp>0 && along>=0 && along<roof.length && across==1 &&
+        (roof.kind!=RoofKind::IceArch || (along>0 && along<roof.length-1));
 }
 
 std::optional<Sprite> log_far_support(const Stage& stage,Cell cell) {
@@ -23,11 +25,12 @@ std::optional<Sprite> log_far_support(const Stage& stage,Cell cell) {
     return {};
 }
 
-void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const RoofSpan& roof,int row,
+void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,const RoofSpan& roof,int row,
                    const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     constexpr std::array<Sprite,4> bodies{Sprite::RoofLogA,Sprite::RoofFrozenLogA,Sprite::RoofGantryA,Sprite::RoofContainerA};
     constexpr std::array<Sprite,4> ends{Sprite::RoofLogEndA,Sprite::RoofFrozenLogEndA,Sprite::RoofGantryEndA,Sprite::RoofContainerEndA};
     if (!roof.hp || row<0 || row>=(roof.vertical ? roof.length : 3)) return;
+    if (roof.kind==RoofKind::IceArch) {draw_ice_arch_row(renderer,graphics,stage,roof,row,viewer,camera,zoom,lighting);return;}
     const bool reveal=viewer && reveal_roof(roof,viewer->cell);
     const float condition=static_cast<float>(roof.hp)/static_cast<float>(roof_health(roof.kind));
     for (int column=0;column<(roof.vertical ? 3 : roof.length);++column) {
@@ -60,7 +63,7 @@ void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& 
                 const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     for (const auto& roof:game.stage.roofs)
         for (int row=0;row<(roof.vertical ? roof.length : 3);++row)
-            draw_roof_row(renderer,graphics,roof,row,viewer,camera,zoom,lighting);
+            draw_roof_row(renderer,graphics,game.stage,roof,row,viewer,camera,zoom,lighting);
 }
 
 std::optional<RoofGround> roof_ground(const Stage& stage,Cell cell) {

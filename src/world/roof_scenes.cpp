@@ -1,4 +1,5 @@
 #include "roof_scenes.hpp"
+#include "ice_arches.hpp"
 #include "terrain_material.hpp"
 #include "../scenery/roof.hpp"
 #include "../props/interaction.hpp"
@@ -43,6 +44,7 @@ bool empty_site(const Game& game,const FloorPlan& plan,const RoofSpan& roof,bool
 }
 
 bool place_roof_span(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcut) {
+    if (roof.kind==RoofKind::IceArch) return !shortcut && place_ice_arch(game,plan,roof);
     if (game.stage.roofs.size()>=max_roof_spans || !empty_site(game,plan,roof,shortcut)) return false;
     std::vector<Tile> before;
     for (int along=0;along<roof.length;++along) for (int across=0;across<3;++across) {

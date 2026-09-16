@@ -97,6 +97,7 @@ enum class Sprite : std::size_t {
     BearCub, BearMother, BearFather, BearOld,
     IceSpikesA, IceSpikesB, IceSpikesC, SnowPileA, SnowPileB, SnowPileC,
     IcePillarForked, IcePillarForkedCracked, IcePillarBroad, IcePillarBroadCracked,
+    IceArchFoot, IceArchCrown, IceArchShoulder, IceArchCrownV,
     Count,
 };
 

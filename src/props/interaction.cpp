@@ -212,7 +212,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     else if (prop.kind == PropKind::SteamDrive) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::WaterPipe) emit_sound(game,SoundId::PipeHit,cell);
     else if (prop.kind == PropKind::SnowPile) emit_sound(game,SoundId::SnowScrape,cell);
-    else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);
+    else if (prop.kind == PropKind::IceRubble || prop.kind == PropKind::IceArchFoot) emit_sound(game,SoundId::IceBlockHit,cell);
     else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);
     else if (prop.kind == PropKind::TowerWreck || prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
     else if (prop.kind == PropKind::FoamCover) emit_sound(game,SoundId::FoamTear,cell);

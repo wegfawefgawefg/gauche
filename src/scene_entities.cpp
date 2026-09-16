@@ -88,7 +88,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     for (const BodyDraw& entry:body_draw_order(game,camera,zoom,pass)) {
         if (entry.kind==BodyKind::RoofRow) {
             const auto& roof=game.stage.roofs[entry.slot];
-            draw_roof_row(renderer,graphics,roof,entry.cell.y-roof.start.y,viewer,camera,zoom,lighting);
+            draw_roof_row(renderer,graphics,game.stage,roof,entry.cell.y-roof.start.y,viewer,camera,zoom,lighting);
             continue;
         }
         if (entry.kind==BodyKind::Prop) {

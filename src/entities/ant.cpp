@@ -1,11 +1,12 @@
 #include "ant.hpp"
+#include "ant_hauling.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include <algorithm>
 
 namespace {
 Sprite ant_pose(const Entity& ant,int pose=0) {
-    const auto base=ant.counter_a==AntCaptain ? Sprite::AntCaptain : Sprite::Ant;
+    const auto base=ant.counter_a==AntCaptain ? Sprite::AntCaptain : ant.counter_a==AntPuller ? Sprite::AntPuller : Sprite::Ant;
     return static_cast<Sprite>(static_cast<int>(base)+pose);
 }
 void rest(Entity& ant,int ticks) {
@@ -28,12 +29,13 @@ void show_work(Entity& ant,std::uint64_t tick) {
 
 // ANT: counter_a role; counter_b carried sugar units; label_a phase;
 // timer_a phase/handling delay; timer_b remembered threat lifetime;
-// entity_a nest, entity_b threat (generation-qualified); point_a/b bite origin/target.
+// entity_a nest (load for pullers), entity_b threat (generation-qualified);
+// label_b puller side; point_a/b bite origin/target.
 // NEST: counter_a delivered units; timer_a alarm, timer_b whistle work boost;
 // entity_a attacker, entity_b finite sugar source. SUGAR: counter_a remaining units,
 // entity_a owning nest. Colony links never use room encounter ownership.
 void set_ant_role(Entity& ant,AntRole role) {
-    ant.counter_a=role;ant.health=ant.max_health=role==AntPorter ? 40 : role==AntCaptain ? 28 : 12;
+    ant.counter_a=role;ant.health=ant.max_health=role==AntPorter ? 40 : role==AntCaptain ? 28 : role==AntPuller ? 24 : 12;
     ant.move_interval=role==AntPorter ? 20 : 14;ant.sprite=ant_pose(ant);
 }
 void init_ant(Entity& ant) {ant.impassable=true;set_ant_role(ant,AntWorker);}
@@ -44,8 +46,9 @@ void init_ant_sugar(Entity& sugar) {
     sugar.sprite=Sprite::AntSugar;sugar.health=sugar.max_health=16;sugar.counter_a=60;
     sugar.impassable=true;sugar.hard_blocker=true;
 }
-float ant_size(const Entity& ant) {return ant.counter_a==AntPorter ? 1.35F : ant.counter_a==AntCaptain ? 1.F : .7F;}
+float ant_size(const Entity& ant) {return ant.counter_a==AntPorter ? 1.35F : ant.counter_a==AntCaptain || ant.counter_a==AntPuller ? 1.F : .7F;}
 void ant_timers(Entity& ant) {
+    if (ant.kind==EntityKind::AntLoad && (ant.sleep_ticks || ant.stun_ticks || ant.freeze_ticks || ant.vitals.rooted || ant.toss.ticks)) interrupt_ant_load(ant);
     if (ant.kind!=EntityKind::Ant) return;
     if ((ant.label_a==AntWindup || ant.label_a==AntWhistling) &&
         (ant.sleep_ticks || ant.stun_ticks || ant.vitals.rooted || ant.toss.ticks)) rest(ant,40);
@@ -57,19 +60,21 @@ void step_ant_sugar(Entity& sugar) {
 }
 void hurt_ant_colony(Game& game,int slot,Cell attacker) {
     auto& victim=game.entities[static_cast<std::size_t>(slot)];
-    if (victim.kind!=EntityKind::Ant && victim.kind!=EntityKind::AntNest && victim.kind!=EntityKind::AntSugar) return;
+    if (victim.kind!=EntityKind::Ant && victim.kind!=EntityKind::AntNest && victim.kind!=EntityKind::AntSugar && victim.kind!=EntityKind::AntLoad) return;
     if (victim.kind==EntityKind::Ant) rest(victim,36);
+    interrupt_ant_load(victim);
     const int from=entity_at(game,attacker,true);
     if (from<0 || from==slot) return;
     const auto& threat=game.entities[static_cast<std::size_t>(from)];
-    const Handle colony=victim.kind==EntityKind::AntNest ? Handle{slot,victim.generation} : victim.entity_a;
-    if (threat.kind==EntityKind::Ant && threat.entity_a==colony) return;
+    const Handle colony=ant_colony(game,victim);
+    if (threat.kind==EntityKind::Ant && ant_colony(game,threat)==colony) return;
     const Handle handle{from,threat.generation};
+    if (colony.slot<0) {victim.entity_b=handle;victim.timer_b=600;return;}
     if (auto* nest=get_entity(game,colony);active(nest,EntityKind::AntNest)) {
         nest->entity_a=handle;nest->timer_a=600;
     }
     // Copy the alarm now: killing the nest must not erase its defenders' memory.
-    for (auto& ant:game.entities) if (ant.kind==EntityKind::Ant && ant.health>0 && ant.entity_a==colony) {
+    for (auto& ant:game.entities) if (ant.kind==EntityKind::Ant && ant.health>0 && ant_colony(game,ant)==colony) {
         ant.entity_b=handle;ant.timer_b=600;
     }
 }
@@ -82,7 +87,7 @@ void step_ant(Game& game,int slot) {
         rest(ant,ant.counter_a==AntPorter ? 72 : 48);ant.sprite=ant_pose(ant,3);return;
     }
     if (ant.label_a==AntRecovery && ant.timer_a) return;
-    auto* nest=get_entity(game,ant.entity_a);
+    auto* nest=get_entity(game,ant_colony(game,ant));
     const bool home=active(nest,EntityKind::AntNest);
     if (home && nest->timer_a && get_entity(game,nest->entity_a)) {ant.entity_b=nest->entity_a;ant.timer_b=600;}
     const auto* threat=ant.timer_b ? get_entity(game,ant.entity_b) : nullptr;
@@ -102,6 +107,7 @@ void step_ant(Game& game,int slot) {
         ant.label_a=AntWorking;ant.timer_a=420;ant.sprite=ant_pose(ant);return;
     }
     ant.label_a=AntWorking;
+    if (ant.counter_a==AntPuller) {step_ant_puller(game,slot);return;}
     if (!home) {
         if (!ant.move_wait && game.tick%45==0) wander(game,slot);
         show_work(ant,game.tick);return;

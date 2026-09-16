@@ -101,7 +101,7 @@ enum class Sprite : std::size_t {
     ForestSpider, ForestSpiderTell, ForestSpiderBite, ForestSpiderYoung, ForestSpiderYoungTell, ForestSpiderYoungBite, ForestSpiderMother, ForestSpiderMotherTell, ForestSpiderMotherBite, ForestWeb0, ForestWeb1, ForestWeb2,
     ForestSpiderFangs, ForestSpiderFangsClosed,
     Snake, SnakeCoil, SnakeStrike,
-    Ant, AntWalk, AntTell, AntBite, AntCarry, AntCaptain, AntCaptainWalk, AntCaptainTell, AntCaptainBite, AntCaptainCarry, AntNest, AntSugar, AntSugarLow, AntSugarEmpty,
+    Ant, AntWalk, AntTell, AntBite, AntCarry, AntCaptain, AntCaptainWalk, AntCaptainTell, AntCaptainBite, AntCaptainCarry, AntNest, AntSugar, AntSugarLow, AntSugarEmpty, AntPuller, AntPullerWalk, AntPullerTell, AntPullerBite, AntPullerCarry, AntLoad, AntLoadFull,
     Root0, Root1, Root2, Root3, Root4, Root5, Root6, Root7, Root8, Root9, Root10, Root11, Root12, Root13, Root14, Root15, RootCut,
     GiantTreeCanopy, GiantTreeBark,
     MimicOpen, MimicGape, MimicSnap, MimicRecover, MimicJaws, MimicJawsClosed,

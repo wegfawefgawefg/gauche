@@ -1,4 +1,5 @@
 #include "ant_colonies.hpp"
+#include "ant_crew.hpp"
 #include "feature_roll.hpp"
 #include "components.hpp"
 #include "population_report.hpp"
@@ -80,19 +81,21 @@ void populate_ant_colonies(Game& game,FloorPlan& plan,PopulationReport* report) 
         }
         const WeightedComponent captains[]{{0,"No captain",2},{1,"Whistle captain",biome_stage(game.run.floor)>=2 ? 5U : 0U}};
         const auto captain=roll_component(game,&plan.report,feature,pile.record,"Colony leader",nest_cell,captains);
-        bool leader=false;
+        bool leader=false;Handle leader_handle{};
         if (captain.value) for (Cell d:{Cell{2,0},{0,2},{-2,0},{0,-2}}) {
             const Cell c=nest_cell+d;if (!site(game,plan,c)) continue;
             if (auto* ant=get_entity(game,spawn_entity(game,EntityKind::Ant,c))) {
-                set_ant_role(*ant,AntCaptain);ant->entity_a=nest_handle;placed.push_back(c);leader=true;break;
+                set_ant_role(*ant,AntCaptain);ant->entity_a=nest_handle;placed.push_back(c);leader=true;leader_handle={static_cast<int>(ant-game.entities.data()),ant->generation};break;
             }
         }
         component_result(&plan.report,captain,leader ? "Captain placed" : captain.value ? "No free captain site" : "Workers run without a captain");
+        workers+=place_ant_crew(game,plan,nest_handle,leader_handle,pile.record);
         // Keep the established trail open through later blocking scenery passes.
         for (Cell c:route) plan.protected_cells[static_cast<std::size_t>(c.y*plan.width+c.x)]=1;
         nests.push_back(nest_cell);bodies+=workers+static_cast<int>(leader);sugar_units+=source->counter_a;
         if (pile.record>=0) plan.report.components[static_cast<std::size_t>(pile.record)].guide=route;
         component_result(&plan.report,pile,"Finite food route established; workers fetch and deliver",placed);
+        for (const auto& e:game.entities) if (e.kind==EntityKind::AntLoad && e.impassable) cost[static_cast<std::size_t>(e.cell.y*plan.width+e.cell.x)]=0;
         cost[static_cast<std::size_t>(nest_cell.y*plan.width+nest_cell.x)]=0;
         cost[static_cast<std::size_t>(source->cell.y*plan.width+source->cell.x)]=0;
         plan.report.features.back().regions.push_back({nest_cell-Cell{2,2},nest_cell+Cell{3,3}});

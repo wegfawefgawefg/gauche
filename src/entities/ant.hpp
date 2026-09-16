@@ -1,6 +1,6 @@
 #pragma once
 #include "../game.hpp"
-enum AntRole { AntWorker, AntPorter, AntCaptain };
+enum AntRole { AntWorker, AntPorter, AntCaptain, AntPuller };
 enum AntPhase { AntWorking, AntWindup, AntRecovery, AntWhistling };
 void init_ant(Entity& ant);
 void set_ant_role(Entity& ant,AntRole role);

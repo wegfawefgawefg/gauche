@@ -239,7 +239,9 @@ Entity read_entity(PacketReader& reader) {
     if (entity.timer_a < 0 || entity.timer_b < 0) reader.okay = false;
     if (entity.kind == EntityKind::IcicleSpider && (entity.label_a < 0 || entity.label_a > 5 ||
         entity.counter_a < 0 || entity.counter_a > 1)) reader.okay = false;
-    if (entity.kind==EntityKind::Ant && (entity.counter_a<0 || entity.counter_a>2 || entity.counter_b<0 || entity.counter_b>3 || entity.label_a<0 || entity.label_a>3)) reader.okay=false;
+    if (entity.kind==EntityKind::Ant && (entity.counter_a<0 || entity.counter_a>3 || entity.counter_b<0 || entity.counter_b>3 || entity.label_a<0 || entity.label_a>3)) reader.okay=false;
+    if (entity.kind==EntityKind::Ant && entity.counter_a==3 && (entity.label_b<0 || entity.label_b>1)) reader.okay=false;
+    if (entity.kind==EntityKind::AntLoad && (entity.counter_a<0 || entity.counter_a>12 || entity.label_a<0 || entity.label_a>3 || (entity.label_a==2 && (distance(entity.point_a,entity.point_b)!=1 || entity.facing!=entity.point_b-entity.point_a)))) reader.okay=false;
     if ((entity.kind==EntityKind::AntNest || entity.kind==EntityKind::AntSugar) && (entity.counter_a<0 || entity.counter_a>4096)) reader.okay=false;
     if (entity.kind==EntityKind::Snake && (entity.label_a<0 || entity.label_a>2)) reader.okay=false;
     if (entity.kind==EntityKind::ForestSpider && (entity.counter_b<0 || entity.counter_b>2 ||

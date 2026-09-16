@@ -36,3 +36,19 @@ for phase,name in enumerate(['ant_sugar','ant_sugar_low','ant_sugar_empty']):
     for x,y in cubes:
         p.rectangle((x,y,x+3,y+3),fill='#c5bb94');p.line([(x,y+3),(x,y),(x+3,y)],fill='#eee3be');p.point((x+3,y+3),fill='#8d8565')
     p.point((6,14),fill='#c5bb94');save(im,name)
+# Medium ants wear a pale rope harness; the bundled sled is a one-cell body.
+from pathlib import Path
+from PIL import Image, ImageDraw
+for suffix in ('', '_walk', '_tell', '_bite', '_carry'):
+    im=Image.open(Path(__file__).resolve().parents[2]/'assets'/'graphics'/('ant'+suffix+'.png')).convert('RGBA');p=ImageDraw.Draw(im)
+    p.line([(4,7),(7,10),(11,7)],fill='#d4c7a1');p.line([(5,6),(10,6)],fill='#95805e')
+    save(im,'ant_puller'+suffix)
+for full in (False,True):
+    im,p=canvas()
+    p.rectangle((1,3,14,14),fill='#382c25');p.rectangle((2,4,13,13),fill='#886444')
+    for y in (6,9,12):p.line([(2,y),(13,y)],fill='#543e2d')
+    if full:
+        p.polygon([(3,8),(4,2),(11,1),(13,7),(12,12),(4,12)],fill='#c0b582')
+        p.line([(4,8),(5,3),(10,2)],fill='#e5d8a7');p.line([(8,2),(7,7),(8,12)],fill='#786c49')
+    for x in (4,11):p.line([(x,3),(x,14)],fill='#b19b70');p.point((x,14),fill='#ded1a3')
+    save(im,'ant_load_full' if full else 'ant_load')

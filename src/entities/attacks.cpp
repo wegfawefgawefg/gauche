@@ -39,6 +39,7 @@
 #include "forest_spider.hpp"
 #include "snake.hpp"
 #include "ant.hpp"
+#include "ant_hauling.hpp"
 #include "boiler_porter.hpp"
 #include "boiler_tank.hpp"
 #include "../props/interaction.hpp"
@@ -109,6 +110,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     case EntityKind::BoilerTank:
         if (enemy.label_a == BoilerTell && enemy.cell == enemy.point_a)
             for (int i=1;i<=4;++i) add(enemy.cell+Cell{enemy.point_b.x*i,enemy.point_b.y*i});
+        break;
+    case EntityKind::AntLoad:
+        if (enemy.label_a==LoadWarn && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;
     case EntityKind::Ant:
         if (enemy.label_a==AntWindup && enemy.cell==enemy.point_a) add(enemy.point_b);

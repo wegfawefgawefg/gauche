@@ -9,6 +9,7 @@
 #include "entities/bear_family.hpp"
 #include "entities/forest_spider.hpp"
 #include "entities/ant.hpp"
+#include "entities/ant_hauling_render.hpp"
 #include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -120,6 +121,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             continue;
         }
         if (entity.kind == EntityKind::WhiteoutDrummer) draw_drummer_warning(renderer, game, entity, camera, zoom, lighting);
+        draw_ant_ropes(renderer,game,entity,camera,zoom,lighting);
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.

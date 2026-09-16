@@ -7,7 +7,7 @@
 #include <cstdint>
 
 enum class PropKind : std::uint8_t { None, Leaves, Twigs, Fern, TallGrass,
-    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, CandleCabinet, Stove, SpiderStrand, MaintenanceLocker, CopperWire, GroundingSpike, Doorstop, BridgePlank, CrystalGrowth, SnowWindbreak, Grate, ScrapBin, OreBin, Conveyor, Barricade, TensionSpring, PayCage, FoamCover, HoistWreck, RailPoints, StreetLamp, PoleWreck, ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax, IcePillar, IceRubble, Count };
+    Puffball, RottenLog, Crate, Nest, ClayPot, Shoot, RootCover, LanternPlant, BirdSeed, Thorns, Scarecrow, StrawDecoy, IceBlock, SnowCache, MirrorShard, CrystalLens, BeamLamp, LensCase, AlarmClock, FishingCreel, WeatherVane, FrozenLunchTin, Candle, CandleCabinet, Stove, SpiderStrand, MaintenanceLocker, CopperWire, GroundingSpike, Doorstop, BridgePlank, CrystalGrowth, SnowWindbreak, Grate, ScrapBin, OreBin, Conveyor, Barricade, TensionSpring, PayCage, FoamCover, HoistWreck, RailPoints, StreetLamp, PoleWreck, ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax, IcePillar, IceRubble, WaterPipe, Count };
 
 // STORAGE: One compact prop per tile, independent of actor slots and inventories.
 struct Prop {

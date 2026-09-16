@@ -21,6 +21,13 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
         for (int x = std::max(0, center_x - radius_x); x < std::min(stage.width, center_x + radius_x); ++x) {
             const Cell cell{x, y};
             const Prop& prop = stage.at(cell)->prop;
+            if (prop.kind==PropKind::WaterPipe) {
+                const auto light=light_at_cell(lighting,cell);const auto rect=tile_rect(cell,camera,zoom);
+                SDL_Texture* texture=texture_for(graphics,prop.broken ? Sprite::WaterPipeBroken : Sprite::WaterPipe);
+                SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
+                SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,prop.variant ? 90 : 0,nullptr,SDL_FLIP_NONE);
+                SDL_SetTextureColorModFloat(texture,1,1,1);continue;
+            }
             if (prop.kind == PropKind::None || prop.broken) continue;
             if (prop.kind==PropKind::IcePillar) {draw_pillar_shadow(renderer,stage,cell,camera,zoom);continue;}
             if (prop.kind==PropKind::StreetLamp) {draw_streetlamp_shadow(renderer,stage,cell,camera,zoom);continue;}

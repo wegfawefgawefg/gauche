@@ -1,3 +1,4 @@
+#include "entities/boiler_feed_render.hpp"
 #include "scenery/roof_render.hpp"
 #include "world/chasm_render.hpp"
 #include "world/reactor_render.hpp"
@@ -240,6 +241,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting,game.tick);
+    draw_boiler_feeds(renderer,graphics,game,camera,zoom,lighting);
     for (const Entity& actor : game.entities)
         if (actor.kind == EntityKind::LensWarden) draw_warden_charge(renderer, graphics, game, actor, camera, zoom, lighting);
     if (cosmetics != nullptr)

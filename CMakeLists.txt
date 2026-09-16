@@ -125,6 +125,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/audit_clerk.cpp src/world/pay_office.cpp
     src/items/tension_spring.cpp src/props/tension_spring.cpp
     src/items/emergency_foam.cpp
+    src/entities/boiler_feed.cpp src/entities/boiler_feed_render.cpp
     src/entities/coal_cutter.cpp src/entities/cutter_render.cpp
     src/entities/rail_cart.cpp src/entities/rail_shunter.cpp src/entities/freight_render.cpp src/world/freight_siding.cpp src/props/rail_points.cpp src/props/rail_render.cpp src/items/rail_switch_key.cpp src/items/insulated_boots.cpp src/items/glow_slag.cpp src/items/steel_toe.cpp src/items/lunch_tin.cpp src/props/streetlamp.cpp src/props/streetlamp_render.cpp src/world/streetlights.cpp src/scene_entities.cpp
     src/entities/tar_choir.cpp src/entities/choir_render.cpp src/projectiles/tar_spit.cpp src/world/settling_tanks.cpp

@@ -1,3 +1,4 @@
+#include "entities/boiler_feed_render.hpp"
 #include "entities/cutter_render.hpp"
 #include "props/ice_pillar_render.hpp"
 #include "items/cooking_render.hpp"
@@ -286,6 +287,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         draw_effigy_mask(renderer,graphics,entity,rect,brightness);
         draw_boiler_details(renderer,graphics,entity,rect,brightness);
+        draw_boiler_water(renderer,graphics,game,entity,rect,brightness);
         draw_brick_prepare(renderer, entity, rect, brightness);
         draw_cooking(renderer,graphics,entity,rect,brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&

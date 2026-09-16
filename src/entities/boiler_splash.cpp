@@ -1,4 +1,5 @@
 #include "boiler_tank.hpp"
+#include "boiler_feed.hpp"
 #include "attacks.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
@@ -22,6 +23,7 @@ std::vector<Cell> boiler_splash_cells(const Game& game, Cell source, Cell direct
 
 void boiler_splash(Game& game, int slot, bool rupture) {
     const Entity& tank = game.entities[static_cast<std::size_t>(slot)];
+    if (!consume_boiler_water(game,tank,rupture)) return;
     const Cell source = tank.cell;
     const bool hot = tank.counter_a >= 25;
     const int damage = hot ? (rupture ? 24 : 18) : 0;

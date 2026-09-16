@@ -1,5 +1,6 @@
 #include "../items/machine_fittings.hpp"
 #include "boiler_tank.hpp"
+#include "boiler_feed.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
 
@@ -65,10 +66,11 @@ void reduce_boiler_pressure(Entity& tank,int amount) {
 void step_boiler_tank(Game& game, int slot) {
     Entity& tank = game.entities[static_cast<std::size_t>(slot)];
     const Tile& tile = game.stage.at_or_border(tank.cell);
-    if (tank.counter_b > 0) {
+    const bool installed=step_boiler_feed(game,tank);
+    if (!installed && tank.counter_b > 0) {
         --tank.counter_b;
         if (game.tick%3 == 0) tank.counter_a = std::min(100,tank.counter_a+1);
-    } else if (game.tick%6 == 0) tank.counter_a = std::max(0,tank.counter_a-1);
+    } else if (!installed && game.tick%6 == 0) tank.counter_a = std::max(0,tank.counter_a-1);
     // COOLING: Water condenses pressure without deleting the remaining coal supply.
     if (surface_wet(tile)) tank.counter_a = std::max(0,tank.counter_a-2);
     const bool leaking = tank.health < tank.max_health && tank.timer_b == 0;

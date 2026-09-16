@@ -117,6 +117,13 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
             *ore={TileKind::Wall,480,0,480,BreakRule::DigRequired,1};
             ore->contents=ItemKind::CoalLump;ore->content_count=16;reserve(plan,face);
         }
+        const Cell mount=link.unload+along;
+        floor(game,plan,mount);
+        for (int i=1;i<=3;++i) {
+            const Cell cell=mount-times(across,i);floor(game,plan,cell);
+            if (i==3) *game.stage.at(cell)={TileKind::Spring};
+            else place_prop(game.stage,cell,PropKind::WaterPipe,static_cast<std::uint8_t>(across.y!=0));
+        }
         // Keep both ends approachable without stepping onto the moving lane.
         for (Cell end:{link.load,link.unload}) for (int side:{-1,1}) floor(game,plan,end+times(across,side));
     }
@@ -126,10 +133,18 @@ void populate_industrial_links(Game& game,const FloorPlan& plan) {
     for (const auto& link:plan.industrial_links) {
         if (Entity* cutter=get_entity(game,spawn_entity(game,EntityKind::CoalCutter,link.load+link.across)))
             cutter->facing=link.across;
-        constexpr ItemKind cargo[]{ItemKind::CoalLump,ItemKind::BoltPouch,ItemKind::CoalLump};
+        const Cell mount=link.unload+link.along;
+        const Handle tank_handle=spawn_entity(game,EntityKind::BoilerTank,mount);
+        if (Entity* tank=get_entity(game,tank_handle)) {
+            tank->counter_b=0;tank->facing=link.along;
+            game.boiler_feeds.push_back({tank_handle,mount,mount-times(link.across,3),link.unload,600,0});
+        }
+        place_ground_item(game,link.load-link.along,ItemKind::BoltPouch,3);
+        place_ground_item(game,mount+link.along,ItemKind::Sealant);
+        constexpr ItemKind cargo[]{ItemKind::CoalLump,ItemKind::CoalLump};
         for (std::size_t i=0;i<std::size(cargo);++i) {
-            const Cell cell=link.belt[i*3];
-            if (live_belt(game.stage.at_or_border(cell).prop)) place_ground_item(game,cell,cargo[i],i==1 ? 3 : 4);
+            const Cell cell=link.belt[i*6];
+            if (live_belt(game.stage.at_or_border(cell).prop)) place_ground_item(game,cell,cargo[i],4);
         }
         place_ground_item(game,link.load-link.across,ItemKind::BrakeShoe);
         for (Cell end:{link.load,link.unload}) {

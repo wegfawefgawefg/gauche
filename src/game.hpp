@@ -292,11 +292,20 @@ struct Run {
 struct ReactorEvent {std::uint32_t tile=0;std::uint16_t due=0,warned_at=0;};
 struct FallEvent {Handle actor{};Cell cell{};Sprite sprite=Sprite::Player;};
 
+// Installed boiler plumbing: fixed mount, adjacent cargo intake, three-cell
+// straight spring feed. Handles prevent a destroyed tank slot binding a new actor.
+struct BoilerFeed {
+    Handle tank{};
+    Cell mount{},source{},delivery{};
+    std::uint16_t water=0,dry_ticks=0;
+};
+
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
     std::vector<FlightContact> flight_contacts;
     std::vector<ReactorEvent> reactor_front;
+    std::vector<BoilerFeed> boiler_feeds;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

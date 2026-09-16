@@ -215,5 +215,13 @@ std::uint64_t game_hash(const Game& game) {
     for (const ReactorEvent& event:game.reactor_front) {
         mix(hash,event.tile);mix(hash,event.due);mix(hash,event.warned_at);
     }
+    mix(hash,game.boiler_feeds.size());
+    for (const auto& feed:game.boiler_feeds) {
+        mix(hash,static_cast<std::uint64_t>(feed.tank.slot));mix(hash,feed.tank.generation);
+        for (Cell cell:{feed.mount,feed.source,feed.delivery}) {
+            mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));
+        }
+        mix(hash,feed.water);mix(hash,feed.dry_ticks);
+    }
     return hash;
 }

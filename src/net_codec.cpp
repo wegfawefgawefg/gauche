@@ -1,3 +1,4 @@
+#include "entities/boiler_feed.hpp"
 #include "props/ice_pillar.hpp"
 #include "scenery/roof.hpp"
 #include "world/reactor.hpp"
@@ -13,7 +14,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(61);
+    writer.u32(62);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -92,12 +93,18 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     for (const ReactorEvent& event:game.reactor_front) {
         writer.u32(event.tile);writer.u16(event.due);writer.u16(event.warned_at);
     }
+    writer.u8(static_cast<std::uint8_t>(game.boiler_feeds.size()));
+    for (const auto& feed:game.boiler_feeds) {
+        writer.i32(feed.tank.slot);writer.u32(feed.tank.generation);
+        writer.cell(feed.mount);writer.cell(feed.source);writer.cell(feed.delivery);
+        writer.u16(feed.water);writer.u16(feed.dry_ticks);
+    }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 61) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 62) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -178,6 +185,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if ((tile.prop.kind == PropKind::Stove || tile.prop.kind == PropKind::AlarmClock) && (tile.prop.variant > 1 || (!tile.prop.broken && tile.prop.hp == 0))) reader.okay = false;
         if (tile.hp > tile.max_hp || tile.break_rule > BreakRule::DigRequired)
             reader.okay = false;
+        if (tile.prop.kind==PropKind::WaterPipe && (tile.prop.variant>1 || tile.prop.growth_ticks!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!reader.okay) {
             const auto index=static_cast<std::size_t>(&tile-result.stage.tiles.data());
             error="Invalid snapshot tile at " + std::to_string(index % static_cast<std::size_t>(result.stage.width)) +
@@ -285,6 +293,14 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     for (std::uint32_t i=0;i<front_count;++i)
         result.reactor_front.push_back({reader.u32(),reader.u16(),reader.u16()});
     if (!valid_reactor(result)) {error="Invalid reactor state";return false;}
+    const auto feed_count=reader.u8();
+    if (feed_count>4) {error="Too many boiler feeds";return false;}
+    for (int i=0;i<feed_count;++i) {
+        BoilerFeed feed;feed.tank={reader.i32(),reader.u32()};
+        feed.mount=reader.cell();feed.source=reader.cell();feed.delivery=reader.cell();
+        feed.water=reader.u16();feed.dry_ticks=reader.u16();result.boiler_feeds.push_back(feed);
+    }
+    if (!valid_boiler_feeds(result)) {error="Invalid boiler feed";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = result.entities[static_cast<std::size_t>(slot)];

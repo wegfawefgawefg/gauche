@@ -1,4 +1,5 @@
 #include "pressure.hpp"
+#include "../entities/boiler_feed.hpp"
 #include "../entities/boiler_tank.hpp"
 
 #include <algorithm>
@@ -6,7 +7,7 @@
 namespace {
 constexpr RegionalItem valve{"Pressure Valve", "Fit a tank: vents point away from you. Recover below 25 pressure. A started warning keeps its aim.",
     Sprite::PressureValve,{1,1,0,0,30,PatternEffect::Utility},ItemAction::Material,18,1,true,0,0,0,0,0,SoundId::ValveFit};
-constexpr RegionalItem sealant{"Sealant", "Repair 20 HP; plug a tank for 10s. Pressure keeps building. Three portions. Reopening may vent.",
+constexpr RegionalItem sealant{"Sealant", "Restore 20 HP to a pipe or tank. Tank repair plugs its vent for 10s; pressure builds. Three portions.",
     Sprite::Sealant,{1,1,0,0,45,PatternEffect::Utility},ItemAction::Material,9,1,false,3,0,0,0,0,SoundId::SealantPatch};
 }
 
@@ -17,6 +18,7 @@ const RegionalItem* pressure_item(ItemKind kind) {
 
 bool use_pressure_item(Game& game, int slot, Cell direction) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
+    if (actor.inventory.held()->kind==ItemKind::Sealant && repair_water_pipe(game,actor.cell+direction)) return true;
     const int target = boiler_at(game,actor.cell+direction);
     if (target < 0) return false;
     Entity& tank = game.entities[static_cast<std::size_t>(target)];

@@ -74,6 +74,7 @@ enum class Sprite : std::size_t {
     WolfCrouch, WolfLunge, WolfFangs, WolfFangsClosed,
     IceRockA, IceRockB, IceClearA, IceClearB, IceCloudA, IceCloudB, PackedSnowA, PackedSnowB,
     CoalCutter, CutterTeeth, CoalSeam,
+    WaterPipe, WaterPipeBroken, SpringIntake,
     Count,
 };
 

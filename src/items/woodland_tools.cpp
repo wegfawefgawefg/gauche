@@ -6,8 +6,8 @@ namespace {
 // TOOLS: Distinct ways to change the room or preserve carried equipment.
 constexpr RegionalItem claws{"Digging Claws", "200 quick scratches for digging and fighting. Dig power 1; 8 damage. Pierces a snail's shell.",
     Sprite::DiggingClaws, {1, 1, 0, 8, 18, PatternEffect::Damage},
-    ItemAction::Melee, 17, 1, false, 200, 0, 0, 0, 1, SoundId::ClawScratch};
-constexpr RegionalItem resin{"Resin Glue", "Fully repair the carried item with the most condition lost. Cannot restore uses or ammo.",
+    ItemAction::Melee, 17, 1, false, 0, 0, 0, 0, 1, SoundId::ClawScratch, 200};
+constexpr RegionalItem resin{"Resin Glue", "Mend your most worn equipment, including sticks and digging tools. Restores condition, not ammo, fuel or charges.",
     Sprite::ResinGlue, {0, 0, 0, 0, 60, PatternEffect::Utility},
     ItemAction::Material, 14, 3, true, 0, 0, 0, 0, 0, SoundId::ResinRepair};
 constexpr RegionalItem seeds{"Seed Bag", "Dry ground grows 40-HP cover in 3s. Cut or burn it. Won't grow under actors.",
@@ -38,6 +38,14 @@ int resin_repair_slot(const Inventory& inventory) {
         if (missing > lost) { best = slot; lost = missing; }
     }
     return best;
+}
+
+std::string resin_repair_text(const Inventory& inventory) {
+    const int slot=resin_repair_slot(inventory);
+    if (slot<0) return "NO WORN EQUIPMENT";
+    const Item& target=inventory.slots[static_cast<std::size_t>(slot)];
+    return std::string(item_name(target.kind))+" "+std::to_string(target.durability)+" -> "+
+        std::to_string(target.max_durability);
 }
 
 bool use_woodland_tool(Game& game, int slot, Cell direction) {

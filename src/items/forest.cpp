@@ -11,10 +11,10 @@ constexpr RegionalItem rock{"Throwing Rock", "Flies along a line, hits for 8 dam
     ItemAction::Throw, 3, 6, true, 0, 0, 0, 60, 0, SoundId::RockThrow};
 constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Triple damage to timber, trees, crates and logs; cannot dig stone.",
     Sprite::Hatchet, {1, 1, 0, 16, 35, PatternEffect::Damage, false, 1},
-    ItemAction::Melee, 14, 1, false, 35, 0, 0, 60, 0, SoundId::AxeSwing};
+    ItemAction::Melee, 14, 1, false, 0, 0, 0, 60, 0, SoundId::AxeSwing, 35};
 constexpr RegionalItem spear{"Hunting Spear", "Thrust through two cells, piercing actors along the shaft.",
     Sprite::HuntingSpear, {1, 2, 0, 12, 28, PatternEffect::Damage, false, 0, 0, true},
-    ItemAction::Melee, 15, 1, false, 45, 0, 0, 60, 0, SoundId::SpearThrust};
+    ItemAction::Melee, 15, 1, false, 0, 0, 0, 60, 0, SoundId::SpearThrust, 45};
 constexpr RegionalItem crossbow{"Crossbow", "One traveling bolt, 32 damage on impact. Deliberate mechanical reload.",
     Sprite::Crossbow, {1, 14, 0, 32, 40, PatternEffect::Damage, true},
     ItemAction::Gun, 30, 1, false, 0, 1, 16, 75, 0, SoundId::CrossbowShot};
@@ -23,13 +23,13 @@ constexpr RegionalItem blunderbuss{"Blunderbuss", "Three short lanes, 10 damage 
     ItemAction::Gun, 32, 1, false, 0, 2, 14, 85, 0, SoundId::BlunderShot};
 constexpr RegionalItem maul{"Wooden Maul", "A slow 28-damage blow that shoves. An immovable surface crushes the victim.",
     Sprite::WoodenMaul, {1, 1, 0, 28, 60, PatternEffect::Damage},
-    ItemAction::Melee, 23, 1, false, 24, 0, 0, 60, 0, SoundId::MaulSwing};
-constexpr RegionalItem rake{"Rake", "Pull loose debris into a pile. Sweep three cells of brittle growth; 400 uses.",
+    ItemAction::Melee, 23, 1, false, 0, 0, 0, 60, 0, SoundId::MaulSwing, 24};
+constexpr RegionalItem rake{"Rake", "Pull loose debris into a pile. Sweep three cells of brittle growth; 400 repairable condition.",
     Sprite::Rake, {1, 1, 0, 7, 24, PatternEffect::Damage, false, 1},
-    ItemAction::Melee, 9, 1, false, 400, 0, 0, 60, 0, SoundId::RakeSweep};
+    ItemAction::Melee, 9, 1, false, 0, 0, 0, 60, 0, SoundId::RakeSweep, 400};
 constexpr RegionalItem knife{"Flint Knife", "Fast 7-damage stab. Double damage against sleepers or from behind.",
     Sprite::FlintKnife, {1, 1, 0, 7, 12, PatternEffect::Damage},
-    ItemAction::Melee, 12, 1, false, 60, 0, 0, 60, 0, SoundId::KnifeStab};
+    ItemAction::Melee, 12, 1, false, 0, 0, 0, 60, 0, SoundId::KnifeStab, 60};
 
 } // namespace
 

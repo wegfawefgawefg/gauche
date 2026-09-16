@@ -176,13 +176,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (item.kind == ItemKind::Firecracker)
         std::snprintf(line, sizeof(line), "STUN 0.5s | HEARD 10");
     if (item.kind == ItemKind::ResinGlue) {
-        const int repair = resin_repair_slot(player.inventory);
-        if (repair < 0) std::snprintf(line, sizeof(line), "NOTHING NEEDS REPAIR");
-        else {
-            const Item& target = player.inventory.slots[static_cast<std::size_t>(repair)];
-            std::snprintf(line, sizeof(line), "%s %d -> %d", item_name(target.kind),
-                target.durability, target.max_durability);
-        }
+        std::snprintf(line,sizeof(line),"%s",resin_repair_text(player.inventory).c_str());
     }
     if (item.kind == ItemKind::AirBladder)
         std::snprintf(line, sizeof(line), "SHOVE 1 | FLOAT UP TO 16");

@@ -31,16 +31,21 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
         emit_sound(game, SoundId::BlockLand, target); break;
     default: break;
     }
-    if (used_kind==ItemKind::NailBoard && --item.durability<=0) {emit_sound(game,SoundId::NailBreak,user.cell);item={};return;}
-    if ((used_kind == ItemKind::PressHammer || used_kind == ItemKind::RubberMallet) && --item.durability <= 0) {
-        emit_sound(game,SoundId::WoodCrack,user.cell);
-        item = {};
-        return;
-    }
-    if ((used_kind == ItemKind::SkateBlade || used_kind == ItemKind::Chisel || used_kind == ItemKind::SnowScoop) && --item.durability <= 0) {
-        emit_sound(game, used_kind == ItemKind::SkateBlade ? SoundId::SkateBreak : used_kind == ItemKind::SnowScoop ? SoundId::ScoopBreak : SoundId::ChiselBreak, user.cell);
-        item = {};
-        return;
+    // WEAR: Physical swings spend condition once per action, even across several
+    // targets. Placed equipment and shields lose condition through their own damage rules.
+    if (item.max_durability > 0 && (item_is_melee(used_kind) || used_kind==ItemKind::SnowScoop) &&
+        --item.durability <= 0) {
+        SoundId sound=SoundId::BoxBreak;
+        switch (used_kind) {
+        case ItemKind::NailBoard: sound=SoundId::NailBreak;break;
+        case ItemKind::PressHammer: case ItemKind::RubberMallet: sound=SoundId::WoodCrack;break;
+        case ItemKind::SkateBlade: sound=SoundId::SkateBreak;break;
+        case ItemKind::SnowScoop: sound=SoundId::ScoopBreak;break;
+        case ItemKind::Chisel: sound=SoundId::ChiselBreak;break;
+        default: break;
+        }
+        emit_sound(game,sound,user.cell);
+        item={};return;
     }
     if (item.max_uses > 0 && --item.uses <= 0) {
         if (used_kind == ItemKind::SteelToeCap) emit_sound(game,SoundId::ToeSpent,user.cell);

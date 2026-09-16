@@ -46,8 +46,8 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
         kind == ItemKind::RawMeat || kind == ItemKind::CookedMeat;
     switch (kind) {
     case ItemKind::Buckler: item.max_durability = 30; break;
-    case ItemKind::Stick: item.max_uses = 18; break;
-    case ItemKind::Pickaxe: item.max_uses = 32; break;
+    case ItemKind::Stick: item.max_durability = 18; break;
+    case ItemKind::Pickaxe: item.max_durability = 32; break;
     case ItemKind::Pistol: item.loaded = 12; item.spare = 48; break;
     case ItemKind::Musket: item.loaded = 1; item.spare = 12; break;
     case ItemKind::Bow: item.loaded = 20; item.spare = 0; break;

@@ -1,3 +1,4 @@
+#include "../items/woodland_tools.hpp"
 #include "../items/sled.hpp"
 #include "panel.hpp"
 #include "../items/fire_render.hpp"
@@ -110,6 +111,11 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     const Item& held = *player.inventory.held();
     if (quiet) return;
     if (held.kind != ItemKind::None) {
+        if (compact_details && held.kind==ItemKind::ResinGlue) {
+            if (resin_repair_slot(player.inventory)>=0)
+                draw_action_hint(renderer,width-194,height-83,Action::Use,"REPAIR");
+            small_ui_text(renderer,width-194,height-66,resin_repair_text(player.inventory),218,179,97);
+        }
         if (compact_details)
             draw_compact_item_details(renderer, graphics, held,
                                       width - 194.0F, height - 53.0F, 180.0F, "SELECTED");

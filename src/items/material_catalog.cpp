@@ -3,7 +3,7 @@
 namespace {
 constexpr RegionalItem torch{"Torch", "A portable flame. Strike and ignite dry growth, oil or sap. 90 swings.",
     Sprite::Torch, {1, 1, 0, 6, 35, PatternEffect::Damage},
-    ItemAction::Melee, 8, 1, false, 90, 0, 0, 0, 0, SoundId::TorchSwing, 0, {5, 900, {255, 167, 74}}};
+    ItemAction::Melee, 8, 1, false, 0, 0, 0, 0, 0, SoundId::TorchSwing, 90, {5, 900, {255, 167, 74}}};
 constexpr RegionalItem lighter{"Lighter", "A tiny spark, 20 uses. Try oil, sap, or dry growth.",
     Sprite::Lighter, {1, 1, 0, 0, 25, PatternEffect::Utility},
     ItemAction::Material, 6, 1, false, 20, 0, 0, 0, 0, SoundId::LighterSpark};

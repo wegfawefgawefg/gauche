@@ -28,9 +28,17 @@ void init_playtest_tools(const std::filesystem::path& path) {
         item.kind = static_cast<ItemKind>(kind); item.attribute = static_cast<ItemAttribute>(attribute);
         item.light.shape = shape == 2 ? LightShape::Beam : LightShape::Cone;
         item.muffled_uses = static_cast<std::uint8_t>(std::clamp(muffled, 0, 6));
+        // Versions 1/2 stored these physical tools' wear in the uses column.
+        if (version<=2) switch (item.kind) {
+        case ItemKind::Stick: case ItemKind::Pickaxe: case ItemKind::Hatchet:
+        case ItemKind::HuntingSpear: case ItemKind::WoodenMaul: case ItemKind::Rake:
+        case ItemKind::FlintKnife: case ItemKind::Torch: case ItemKind::DiggingClaws:
+            item.durability=item.uses;item.uses=0;break;
+        default: break;
+        }
         normalize_test_item(item);
     }
-    if (!input || (version != 1 && version != 2)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
+    if (!input || (version < 1 || version > 3)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
     loaded.selected_level = std::clamp(loaded.selected_level, 0, static_cast<int>(test_levels.size())-1);
     loaded.starting_level = std::clamp(loaded.starting_level, 0, static_cast<int>(test_levels.size())-1);
     loaded.repeat_level = std::clamp(loaded.repeat_level, 0, static_cast<int>(test_levels.size())-1);
@@ -56,7 +64,7 @@ void save_playtest_tools() {
     auto temporary = state.path; temporary += ".tmp";
     std::ofstream out(temporary);
     const auto& kit = state.loadout;
-    out << 2 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
+    out << 3 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
         << ' ' << state.repeat << ' ' << state.repeat_level << ' ' << state.override_loadout
         << ' ' << kit.health << ' ' << kit.step_ticks << ' ' << kit.gold << ' ' << kit.artifacts
         << ' ' << kit.inventory.selected << '\n';

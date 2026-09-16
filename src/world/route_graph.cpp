@@ -150,22 +150,28 @@ void describe_rooms(Game& game, FloorPlan& plan) {
             room.half_width=9; room.half_height=7;
             break;
         }
-        if (random_u32(game)%3!=0) for (std::size_t i=1;i<plan.rooms.size();++i) {
-            auto& room=plan.rooms[i];
+        // Ordinary installations are a rotation, not one rare roll shared by the
+        // whole catalog. Keep separate rooms for work crews, blasting and belts.
+        std::array installations{RoomRole::RepairBay,RoomRole::CoolingWorks,RoomRole::CableTrench,
+            RoomRole::KilnCourt,RoomRole::PayOffice,RoomRole::LampAlcove,RoomRole::SlagBank,
+            RoomRole::AshLoft,RoomRole::HoistShaft,RoomRole::CastingFloor,RoomRole::SettlingTanks,
+            RoomRole::FreightSiding,RoomRole::ScrapYard};
+        for (std::size_t i=installations.size();i>1;--i)
+            std::swap(installations[i-1],installations[random_u32(game)%i]);
+        std::vector<std::size_t> candidates;
+        for (std::size_t i=1;i<plan.rooms.size();++i) {
+            const auto role=plan.rooms[i].role;
             if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
-                room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine) continue;
-            const auto choice=random_u32(game)%12;
-            room.role=choice==0 ? RoomRole::RepairBay : choice==1 ? RoomRole::CoolingWorks : choice==2 ? RoomRole::CableTrench : choice==3 ? RoomRole::KilnCourt : choice==4 ? RoomRole::PayOffice : choice==5 ? RoomRole::LampAlcove : choice==6 ? RoomRole::SlagBank : choice==7 ? RoomRole::AshLoft : choice==8 ? RoomRole::HoistShaft : choice==9 ? RoomRole::CastingFloor : choice==10 ? RoomRole::SettlingTanks : RoomRole::FreightSiding;room.shape=RoomShape::Clearing;
-            room.half_width=8;room.half_height=7;
-            break;
+                role==RoomRole::Workfront || role==RoomRole::BlastingAlcove || role==RoomRole::AssemblyLine) continue;
+            candidates.push_back(i);
         }
-        if (random_u32(game)%2==0) for (std::size_t i=1;i<plan.rooms.size();++i) {
-            auto& room=plan.rooms[i];
-            if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
-                room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove ||
-                room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) continue;
-            room.role=RoomRole::ScrapYard;room.shape=RoomShape::Clearing;
-            room.half_width=8;room.half_height=7;break;
+        for (std::size_t i=candidates.size();i>1;--i)
+            std::swap(candidates[i-1],candidates[random_u32(game)%i]);
+        const std::size_t count=std::min(candidates.size(),static_cast<std::size_t>(2+(game.run.floor-1)%4/2));
+        for (std::size_t i=0;i<count;++i) {
+            RoomPlan& room=plan.rooms[candidates[i]];
+            room.role=installations[i];room.shape=RoomShape::Clearing;
+            room.half_width=8;room.half_height=7;
         }
     }
 

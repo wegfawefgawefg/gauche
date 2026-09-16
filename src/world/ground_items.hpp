@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 
-void place_ground_item(Game& game, Cell cell, ItemKind kind, int count = 1);
+Handle place_ground_item(Game& game, Cell cell, ItemKind kind, int count = 1);
 
 inline Cell nearby_ground_item_cell(const Game& game, Cell origin) {
     // PLACEMENT: Search nearest tiles in a fixed order so every peer agrees.

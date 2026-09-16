@@ -17,7 +17,7 @@
 #include <array>
 #include <utility>
 
-void generate_world_floor(Game& game, FloorLayout layout) {
+void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report) {
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};
     std::array<bool, 4> joined{};
@@ -101,6 +101,6 @@ void generate_world_floor(Game& game, FloorLayout layout) {
     if (reactor) populate_last_shift(game);
     else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
-    else { populate_rooms(game, plan); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
+    else { populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

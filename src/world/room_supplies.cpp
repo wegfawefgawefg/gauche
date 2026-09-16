@@ -39,13 +39,17 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind
 }
 
 Handle spawn_room_enemy(Game& game, const RoomPlan& room, EntityKind kind, int cost, RoomSupplies& budget) {
-    if (cost > budget.threat) return {};
+    PlacementCount* count=budget.report ? &budget.report->enemies[static_cast<std::size_t>(kind)] : nullptr;
+    if (cost > budget.threat) {if (count) ++count->budget_blocked;return {};}
+    if (count) ++count->attempted;
     if (const auto cell = room_space(game, room, kind)) {
         const Handle spawned = kind == EntityKind::BurrowWorm ?
             spawn_burrow_worm(game, *cell) : kind == EntityKind::BoilerPorter ?
             spawn_boiler_porter(game,*cell) : spawn_entity(game, kind, *cell);
-        if (get_entity(game, spawned) != nullptr) budget.threat -= cost;
+        if (get_entity(game, spawned) != nullptr) {budget.threat -= cost;if (count) ++count->placed;}
+        else if (count) ++count->rejected;
         return spawned;
     }
+    if (count) ++count->rejected;
     return {};
 }

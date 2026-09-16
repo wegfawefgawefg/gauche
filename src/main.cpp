@@ -7,6 +7,7 @@
 #include <gubsy/settings/top_level_settings.hpp>
 #include "app/options.hpp"
 #include "debug/panels.hpp"
+#include "debug/generation_audit.hpp"
 #include "debug/multiplayer.hpp"
 #include "debug/playtest.hpp"
 #include "audio.hpp"
@@ -38,6 +39,7 @@ constexpr double step_seconds = 1.0 / 60.0;
 } // namespace
 
 int main(int argc, char** argv) {
+    if (has_arg(argc,argv,"--audit-generation")) return run_generation_audit();
     if (has_arg(argc, argv, "--headless")) return run_headless_client(argc, argv);
     MultiplayerDebug multiplayer;
     const bool smoke = wants_smoke(argc, argv);

@@ -35,6 +35,7 @@ void carve_floor(Game& game, FloorPlan& plan);
 void place_forest_terrain(Game& game, const FloorPlan& plan);
 void place_room_gates(Game& game, FloorPlan& plan);
 bool floor_lock_required(const Game& game);
-void populate_rooms(Game& game, const FloorPlan& plan);
+struct PopulationReport;
+void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report=nullptr);
 void scatter_room_props(Game& game, const FloorPlan& plan);
 const char* room_name(RoomRole role);

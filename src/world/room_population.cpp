@@ -1,22 +1,7 @@
+#include "industrial_population.hpp"
 #include "brawlers.hpp"
-#include "freight_siding.hpp"
-#include "settling_tanks.hpp"
-#include "casting_floor.hpp"
 #include "room_supplies.hpp"
-#include "hoist_shaft.hpp"
-#include "ash_loft.hpp"
-#include "slag_bank.hpp"
-#include "lamp_alcove.hpp"
-#include "pay_office.hpp"
-#include "kiln_court.hpp"
-#include "cable_trench.hpp"
-#include "cooling_works.hpp"
-#include "scrap_yard.hpp"
-#include "repair_bay.hpp"
-#include "workfront.hpp"
 #include "../items/supply.hpp"
-#include "rivet_post.hpp"
-#include "assembly.hpp"
 #include "route.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -52,7 +37,7 @@ void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool g
     }
 }
 
-void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
+void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
     const int round = (game.run.floor - 1) % 4;
     if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
@@ -191,12 +176,35 @@ void encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupp
     }
 }
 
-void supply(Game& game, const RoomPlan& room, ItemKind kind, int count, int& remaining) {
-    if (remaining <= 0) return;
-    if (const auto cell = room_space(game, room)) {
-        place_ground_item(game, *cell, kind, count);
-        --remaining;
+void encounter(Game& game,const FloorPlan& plan,const RoomPlan& room,RoomSupplies& budget) {
+    if (!budget.report || room.role>=RoomRole::Workfront) {room_encounter(game,plan,room,budget);return;}
+    const auto occupants=[&]() {return std::count_if(game.entities.begin(),game.entities.end(),
+        [](const Entity& entity){return entity.kind!=EntityKind::None && entity.health>0;});};
+    const auto before=occupants();
+    int blocked=0;
+    for (const auto& count:budget.report->enemies) blocked+=count.budget_blocked;
+    room_encounter(game,plan,room,budget);
+    auto& result=budget.report->scenes[static_cast<std::size_t>(room.role)];
+    ++result.attempted;
+    if (occupants()>before) ++result.placed;
+    else {
+        int after=0;
+        for (const auto& count:budget.report->enemies) after+=count.budget_blocked;
+        if (after>blocked || budget.threat<2) ++result.budget_blocked;
+        else ++result.rejected;
     }
+}
+
+void supply(Game& game, const RoomPlan& room, ItemKind kind, int count, int& remaining, PopulationReport* report) {
+    auto* tally=report ? &report->supplies[static_cast<std::size_t>(kind)] : nullptr;
+    if (remaining<=0) {if (tally) ++tally->budget_blocked;return;}
+    if (tally) ++tally->attempted;
+    if (const auto cell=room_space(game,room)) {
+        if (get_entity(game,place_ground_item(game,*cell,kind,count))) {
+            --remaining;if (tally) ++tally->placed;return;
+        }
+    }
+    if (tally) ++tally->rejected;
 }
 
 void stash(Game& game, const RoomPlan& room, RoomSupplies& budget) {
@@ -214,54 +222,54 @@ void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
         if (room.role == RoomRole::Cache || room.role == RoomRole::Observatory ||
             room.role == RoomRole::Secret || room.role == RoomRole::Shrine) stash(game, room, budget);
         if (room.role == RoomRole::Shrine && random_u32(game)%3==0)
-            supply(game,room,ItemKind::BorrowedSummer,1,budget.equipment);
+            supply(game,room,ItemKind::BorrowedSummer,1,budget.equipment,budget.report);
         if (room.role == RoomRole::IceQuarry && random_u32(game)%3==0)
-            supply(game,room,ItemKind::ThawCharge,2,budget.equipment);
+            supply(game,room,ItemKind::ThawCharge,2,budget.equipment,budget.report);
         if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
             if (room.role == RoomRole::IceQuarry) supply(game, room, round % 2 == 0 ? ItemKind::Chisel : ItemKind::IceBrick,
-                round % 2 == 0 ? 1 : 2, budget.equipment);
+                round % 2 == 0 ? 1 : 2, budget.equipment,budget.report);
             else {
-                supply(game, room, ItemKind::GritPouch, 1, budget.equipment);
-                supply(game, room, ItemKind::SaltedKelp, 2, budget.healing);
+                supply(game, room, ItemKind::GritPouch, 1, budget.equipment,budget.report);
+                supply(game, room, ItemKind::SaltedKelp, 2, budget.healing,budget.report);
             }
         } else if (room.role == RoomRole::FishingHut) {
-            supply(game, room, ItemKind::SmokedFish, 2, budget.healing);
+            supply(game, room, ItemKind::SmokedFish, 2, budget.healing,budget.report);
             constexpr ItemKind fishing_tools[]{ItemKind::FishingLine,ItemKind::AirBladder,ItemKind::HarpoonGun,ItemKind::FoldedBridge};
-            supply(game,room,fishing_tools[round % 4],1,budget.equipment);
+            supply(game,room,fishing_tools[round % 4],1,budget.equipment,budget.report);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
             if (room.role == RoomRole::Bathhouse) {
-                supply(game,room,ItemKind::CoalLump,4,budget.ammunition);
-                supply(game,room,ItemKind::SteamKettle,1,budget.equipment);
+                supply(game,room,ItemKind::CoalLump,4,budget.ammunition,budget.report);
+                supply(game,room,ItemKind::SteamKettle,1,budget.equipment,budget.report);
             }
-            supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing);
+            supply(game, room, room.role == RoomRole::Shelter ? ItemKind::HotBroth : ItemKind::IcePoultice, 2, budget.healing,budget.report);
             supply(game, room, room.role == RoomRole::Shelter ? (round%3==0 ? ItemKind::SnowShelter : round%3==1 ? ItemKind::SnowScoop : ItemKind::WoolWrap) : ItemKind::HeatCapsule,
-                room.role == RoomRole::Shelter && round%3!=2 ? 1 : 2, budget.equipment);
+                room.role == RoomRole::Shelter && round%3!=2 ? 1 : 2, budget.equipment,budget.report);
         } else if (room.role == RoomRole::BoilerGallery) {
-            if (random_u32(game)%4==0) supply(game,room,ItemKind::HeatSiphon,1,budget.equipment);
-            supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment);
+            if (random_u32(game)%4==0) supply(game,room,ItemKind::HeatSiphon,1,budget.equipment,budget.report);
+            supply(game,room,round%2 == 0 ? ItemKind::PressureValve : ItemKind::Sealant,1,budget.equipment,budget.report);
         } else if (room.role == RoomRole::ServicePassage) {
-            supply(game,room,round%2==0 ? ItemKind::CopperWire : ItemKind::GroundingSpike,1,budget.equipment);
+            supply(game,room,round%2==0 ? ItemKind::CopperWire : ItemKind::GroundingSpike,1,budget.equipment,budget.report);
         } else if (room.role == RoomRole::CrystalGallery) {
-            supply(game,room,round%2==0 ? ItemKind::TuningFork : ItemKind::IceBrick,round%2==0 ? 1 : 2,budget.equipment);
+            supply(game,room,round%2==0 ? ItemKind::TuningFork : ItemKind::IceBrick,round%2==0 ? 1 : 2,budget.equipment,budget.report);
         } else if (room.role == RoomRole::Chapel) {
-            supply(game,room,ItemKind::BrineFlask,2,budget.equipment);
+            supply(game,room,ItemKind::BrineFlask,2,budget.equipment,budget.report);
         } else if (room.role == RoomRole::MemorialCourt) {
-            supply(game, room, round%2==0 ? ItemKind::EffigyMask : ItemKind::HeatCapsule, round%2==0 ? 1 : 2, budget.equipment);
+            supply(game, room, round%2==0 ? ItemKind::EffigyMask : ItemKind::HeatCapsule, round%2==0 ? 1 : 2, budget.equipment,budget.report);
         } else if (room.role == RoomRole::CliffPath) {
-            supply(game, room, round%4==0 ? ItemKind::IceAnchor : round%4==1 ? ItemKind::Crampons : round%4==2 ? ItemKind::Sled : ItemKind::WoolWrap, 1, budget.equipment);
+            supply(game, room, round%4==0 ? ItemKind::IceAnchor : round%4==1 ? ItemKind::Crampons : round%4==2 ? ItemKind::Sled : ItemKind::WoolWrap, 1, budget.equipment,budget.report);
         } else if (room.role == RoomRole::WeatherStation) {
-            supply(game, room, round%3==0 ? ItemKind::StormLantern : round%3==1 ? ItemKind::SignalFlare : ItemKind::SnowGlobe, 1, budget.equipment);
+            supply(game, room, round%3==0 ? ItemKind::StormLantern : round%3==1 ? ItemKind::SignalFlare : ItemKind::SnowGlobe, 1, budget.equipment,budget.report);
         } else if (room.role == RoomRole::EchoTunnel) {
             constexpr ItemKind quiet_tools[]{ItemKind::IceNeedle, ItemKind::MufflingFelt, ItemKind::AlarmClock, ItemKind::EchoPebble};
-            supply(game, room, quiet_tools[round % 4], round % 4 == 0 ? 3 : 1, budget.equipment);
+            supply(game, room, quiet_tools[round % 4], round % 4 == 0 ? 3 : 1, budget.equipment,budget.report);
         } else if (room.role == RoomRole::Secret || room.role == RoomRole::Cache) {
             const ItemKind kind=roll_item_supply(game,room.role==RoomRole::Secret ? LootSource::Secret : LootSource::Cache);
-            supply(game,room,kind,supply_count(kind),budget.equipment);
-            supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
+            supply(game,room,kind,supply_count(kind),budget.equipment,budget.report);
+            supply(game, room, ItemKind::Ammo, 2, budget.ammunition,budget.report);
         } else if (room.role == RoomRole::Observatory || room.role == RoomRole::Shrine) {
             supply(game, room, room.role == RoomRole::Observatory ? (round % 2 == 0 ? ItemKind::LensCarbine : ItemKind::PrismBomb) : ItemKind::ColdFlask,
-                room.role == RoomRole::Observatory ? 1 : 2, budget.equipment);
-            supply(game, room, ItemKind::Ammo, 2, budget.ammunition);
+                room.role == RoomRole::Observatory ? 1 : 2, budget.equipment,budget.report);
+            supply(game, room, ItemKind::Ammo, 2, budget.ammunition,budget.report);
         }
         return;
     }
@@ -272,10 +280,10 @@ void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
             const LootSource source=room.role==RoomRole::Secret ? LootSource::Secret :
                 room.role==RoomRole::Workshop ? LootSource::Workshop : LootSource::Cache;
             const ItemKind kind=roll_item_supply(game,source);
-            supply(game,room,kind,supply_count(kind),budget.equipment);
-            supply(game,room,ItemKind::Ammo,1,budget.ammunition);
-            if (random_u32(game)%2==0) supply(game,room,ItemKind::LunchTin,1,budget.healing);
-            else supply(game,room,ItemKind::Bandage,2,budget.healing);
+            supply(game,room,kind,supply_count(kind),budget.equipment,budget.report);
+            supply(game,room,ItemKind::Ammo,1,budget.ammunition,budget.report);
+            if (random_u32(game)%2==0) supply(game,room,ItemKind::LunchTin,1,budget.healing,budget.report);
+            else supply(game,room,ItemKind::Bandage,2,budget.healing,budget.report);
         }
         return;
     }
@@ -288,47 +296,47 @@ void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
             const ItemKind kind=roll_item_supply(game,LootSource::Secret);
             place_ground_item(game,*cell,kind,supply_count(kind));
         }
-        supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
+        supply(game, room, ItemKind::Ammo, 1, budget.ammunition,budget.report);
         break;
     case RoomRole::Workshop: {
         const ItemKind kind=roll_item_supply(game,LootSource::Workshop,false);
-        supply(game,room,kind,supply_count(kind),budget.equipment);
-        supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
+        supply(game,room,kind,supply_count(kind),budget.equipment,budget.report);
+        supply(game, room, ItemKind::Ammo, 1, budget.ammunition,budget.report);
         break;
     }
     case RoomRole::Cache: {
         const ItemKind kind=roll_item_supply(game,LootSource::Cache);
-        supply(game,room,kind,supply_count(kind),budget.equipment);
+        supply(game,room,kind,supply_count(kind),budget.equipment,budget.report);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
             const ItemKind remedy = healing[random_u32(game) % std::size(healing)];
-            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing);
+            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing,budget.report);
         }
         break;
     }
     case RoomRole::Brook:
         supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::WaterFlask : ItemKind::MushroomSpores,
-               2, budget.equipment);
+               2, budget.equipment,budget.report);
         break;
     case RoomRole::Thicket: {
         constexpr ItemKind forest_tools[]{ItemKind::Torch, ItemKind::Lighter, ItemKind::OilFlask, ItemKind::SapJar,
             ItemKind::SeedBag, ItemKind::LanternSeed, ItemKind::BitterRoot, ItemKind::Chili, ItemKind::ThornCaltrops};
-        supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment);
+        supply(game, room, forest_tools[random_u32(game) % std::size(forest_tools)], 1, budget.equipment,budget.report);
         break;
     }
     case RoomRole::Shrine:
-        supply(game, room, ItemKind::Medkit, 1, budget.healing);
+        supply(game, room, ItemKind::Medkit, 1, budget.healing,budget.report);
         break;
     case RoomRole::Orchard: case RoomRole::Clearing:
-        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::BirdSeed : ItemKind::Rake, 1, budget.equipment);
+        supply(game, room, random_u32(game) % 2 == 0 ? ItemKind::BirdSeed : ItemKind::Rake, 1, budget.equipment,budget.report);
         {
             constexpr ItemKind healing[]{ItemKind::Bandage, ItemKind::HerbBag, ItemKind::FungalBread};
             const ItemKind remedy = healing[random_u32(game) % std::size(healing)];
-            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing);
+            supply(game, room, remedy, remedy == ItemKind::Bandage ? 2 : 1, budget.healing,budget.report);
         }
         break;
     default:
-        if (random_u32(game) % 3 == 0) supply(game, room, ItemKind::Ammo, 1, budget.ammunition);
+        if (random_u32(game) % 3 == 0) supply(game, room, ItemKind::Ammo, 1, budget.ammunition,budget.report);
         break;
     }
 }
@@ -354,9 +362,11 @@ void room_light(Game& game, const RoomPlan& room) {
 
 } // namespace
 
-void populate_rooms(Game& game, const FloorPlan& plan) {
+void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report) {
     const int round = (game.run.floor - 1) % 4;
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
+    budget.report=report;
+    if (report) for (const RoomPlan& room:plan.rooms) ++report->scenes[static_cast<std::size_t>(room.role)].planned;
     game.run.roof_lights = {};
     game.run.roof_light_count = 0;
     // LANDMARKS: Reserve objectives before any scatter or encounter placement.
@@ -375,104 +385,55 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             --budget.equipment;
         }
     }
-    RoomSupplies fighters{};
+    RoomSupplies fighters{};fighters.report=report;
     if (ice_floor(game.run.floor) || industrial_floor(game.run.floor)) {
         fighters.threat=6+round*2;
         // Keep the previous specialist allowance; extra ordinary combat must
         // not replace the crews and scenes that make these biomes distinct.
         budget.threat-=3+round;
     }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::FreightSiding && budget.threat>=3 && budget.equipment>=2) {
-        if (populate_freight_siding(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
+    // Installations contain both inhabitants and their working tools. Incidental
+    // encounters and the starting weapon cannot silently evict that whole scene.
+    if (industrial_floor(game.run.floor)) {
+        RoomSupplies installations{16+round*3,0,0,6+round,0,report};
+        populate_industrial_rooms(game,plan,installations);
     }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::SettlingTanks && budget.threat>=3 && budget.equipment>=2) {
-        if (populate_settling_tanks(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CastingFloor && budget.threat>=2 && budget.equipment>=2) {
-        if (populate_casting_floor(game,plan,room)) {budget.threat-=2;budget.equipment-=2;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::HoistShaft && budget.threat>=3 && budget.equipment>=2) {
-        if (populate_hoist_shaft(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::AshLoft && budget.threat>=2 && budget.equipment>=2) {
-        if (populate_ash_loft(game,plan,room)) {budget.threat-=2;budget.equipment-=2;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::SlagBank && budget.threat>=2 && budget.equipment>0) {
-        if (populate_slag_bank(game,plan,room)) {budget.threat-=2;--budget.equipment;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::LampAlcove && budget.threat>=2 && budget.equipment>0) {
-        if (populate_lamp_alcove(game,plan,room)) {budget.threat-=2;--budget.equipment;}
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::PayOffice && budget.threat>=3) {
-        if (populate_pay_office(game,plan,room)) budget.threat-=3;
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::KilnCourt && budget.threat>=3) {
-        if (populate_kiln_court(game,plan,room)) {budget.threat-=3;budget.equipment=std::max(0,budget.equipment-1);}
-        else spawn_room_enemy(game,room,EntityKind::WalkingKiln,3,budget);
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CableTrench && budget.threat>=2) {
-        if (populate_cable_trench(game,plan,room)) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-1);}
-        else spawn_room_enemy(game,room,EntityKind::CableCrawler,2,budget);
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::CoolingWorks && budget.threat>=3) {
-        if (populate_cooling_works(game,plan,room)) {budget.threat-=3;budget.equipment=std::max(0,budget.equipment-1);}
-        else spawn_room_enemy(game,room,EntityKind::PressureRat,1,budget);
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::RepairBay && budget.threat>=2) {
-        if (get_entity(game,populate_repair_bay(game,plan,room))) budget.threat-=2;
-        else spawn_room_enemy(game,room,EntityKind::ArcWelder,2,budget);
-    }
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::ScrapYard && budget.threat>=2) {
-        if (get_entity(game,populate_scrap_yard(game,plan,room))) {budget.threat-=2;budget.equipment=std::max(0,budget.equipment-2);}
-        else spawn_room_enemy(game,room,EntityKind::MagnetCrane,2,budget);
-    }
-    // Reserve crew budget before incidental encounters consume it.
-    for (const RoomPlan& room:plan.rooms)
-        if (room.role==RoomRole::Workfront && budget.threat>=5) {
-            const int crew=populate_workfront(game,room);
-            if (crew>0) budget.threat-=crew>=5 ? 8 : 5;
+    if (!forest_floor(game.run.floor)) {
+        // Fit terrain-changing side scenes before actors claim their footprints.
+        bool salvage=false;
+        std::vector<std::size_t> encounters;
+        for (std::size_t i=0;i<plan.rooms.size();++i) {
+            const RoomPlan& room=plan.rooms[i];
+            room_light(game,room);
+            if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit) continue;
+            place_sluice_chamber(game,plan,room);
+            if (!salvage) salvage=place_salvage_pocket(game,plan,room);
+            encounters.push_back(i);
         }
-    bool assembly=false;
-    for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::AssemblyLine) {
-        assembly=true; assembly_supplies(game,room);
-        budget.equipment=std::max(0,budget.equipment-2);
-        if (budget.threat>=2) {
-            if (populate_rivet_post(game,plan,room)) budget.threat-=2;
-            else spawn_room_enemy(game,room,EntityKind::RivetGunner,2,budget);
-        }
+        for (std::size_t i=encounters.size();i>1;--i)
+            std::swap(encounters[i-1],encounters[random_u32(game)%i]);
+        for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
-    for (const RoomPlan& room:plan.rooms)
-        if (room.role==RoomRole::BlastingAlcove) {
-            spawn_room_enemy(game,room,EntityKind::PowderMonkey,2,budget);
-            if (!assembly && budget.threat>=2) {
-                if (populate_rivet_post(game,plan,room)) budget.threat-=2;
-                else spawn_room_enemy(game,room,EntityKind::RivetGunner,2,budget);
-            }
-            if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
-        }
-    bool salvage=false;
-    for (const RoomPlan& room : plan.rooms) {
-        room_light(game, room);
-        if (room.role == RoomRole::Entrance || room.role == RoomRole::Exit) continue;
-        place_sluice_chamber(game,plan,room);
-        if (!salvage) salvage=place_salvage_pocket(game,plan,room);
-        encounter(game, plan, room, budget);
+    for (const RoomPlan& room:plan.rooms) {
+        if (forest_floor(game.run.floor)) room_light(game,room);
+        if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit) continue;
+        if (forest_floor(game.run.floor)) encounter(game,plan,room,budget);
         place_crystal_vein(game,plan,room);
-        room_loot(game, room, budget);
+        room_loot(game,room,budget);
     }
     place_brawlers(game,plan,fighters);
     // SUPPLIES: A sparse role roll must not accidentally remove all healing or new equipment.
     const RoomPlan& shrine = plan.rooms[static_cast<std::size_t>(plan.objective_room)];
     while (budget.healing > 0) {
         const int before = budget.healing;
-        supply(game, shrine, ItemKind::Bandage, 2, budget.healing);
+        supply(game, shrine, ItemKind::Bandage, 2, budget.healing,budget.report);
         if (before == budget.healing) break;
     }
     if (budget.equipment > 0) {
         const ItemKind weapon=roll_item_supply(game,LootSource::Weapon,false);
-        if (weapon!=ItemKind::None) supply(game,shrine,weapon,supply_count(weapon),budget.equipment);
+        if (weapon!=ItemKind::None) supply(game,shrine,weapon,supply_count(weapon),budget.equipment,budget.report);
     }
-    if (budget.ammunition > 0) supply(game, shrine, ItemKind::Ammo, 1, budget.ammunition);
+    if (budget.ammunition > 0) supply(game, shrine, ItemKind::Ammo, 1, budget.ammunition,budget.report);
     while (budget.stashes > 0) {
         const int before = budget.stashes;
         stash(game, shrine, budget);

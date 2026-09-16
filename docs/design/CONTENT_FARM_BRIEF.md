@@ -6,7 +6,7 @@ or sounds already exist. The current generator and content set are a prototype.
 
 ## Inspirations and shape
 
-Music has its own [composition and mixing brief](MUSIC_DIRECTION.md): original,
+Music has its own [composition and mixing brief](../music/MUSIC_DIRECTION.md): original,
 quietly mixed, atmospheric but place-specific exploration tracks around 3:30,
 several per zone, plus boss candidates, menu music and event jingles. User-supplied
 audio references live in `/home/vega/Music/samples/`; Forest begins with a
@@ -30,7 +30,7 @@ Fable-like woodland direction. These are additional work beyond ambient/SFX quot
 | --- | --- |
 | Forest | Woods, grassy caves, animals, camps, canopy light, old structures. |
 | Ice | Cold terrain and encounters with their own hazards and room language. |
-| Industrial / mine / lava | The Underworks: still-working mines and foundries; excavation crews, heat, pressure and material transport. See [catalog](content/INDUSTRIAL.md). |
+| Industrial / mine / lava | The Underworks: still-working mines and foundries; excavation crews, heat, pressure and material transport. See [catalog](../content/INDUSTRIAL.md). |
 | Fourth biome | Military / robot area is a candidate, **not decided**. |
 
 Desired progression is **Forest → Ice → Industrial/mine/lava → fourth biome**.
@@ -148,7 +148,7 @@ loot sources, and completion condition. Each prop/debris family should say
 what breaks it, what remains, and how the fragments move.
 
 The existing [forest content sketch](FOREST_CONTENT_IDEAS.md) is a smaller
-candidate pool for the first floor. The [master task list](MASTER_TASKS.md)
+candidate pool for the first floor. The [master task list](../MASTER_TASKS.md)
 tracks all open work; this brief captures the larger content ambition and
 unresolved choices.
 

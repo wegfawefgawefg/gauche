@@ -1,7 +1,7 @@
 # Balance while building content
 
-2026-09-15. Source: [verbatim user feedback](user_messages/2026-09-15-balance-and-archive.txt).
-Execution status lives in [MASTER_TASKS.md](MASTER_TASKS.md). This specification
+2026-09-15. Source: [verbatim user feedback](../user_messages/2026-09-15-balance-and-archive.txt).
+Execution status lives in [MASTER_TASKS.md](../MASTER_TASKS.md). This specification
 extends the [world interaction review](WORLD_INTERACTION_REVIEW.md).
 
 ## Latest priority: worthwhile things to do in Ice and Industry
@@ -25,14 +25,14 @@ reward, or combining with another item. A new tool and a new room should improve
 one another. Avoid another catalog of clever implementation with little reason
 for players to use it. Review repeated feed/remedy designs before adding more.
 
-First response: [optional salvage and native combat supplies](history/SALVAGE_POCKETS.md).
+First response: [optional salvage and native combat supplies](../features/SALVAGE_POCKETS.md).
 This is an initial connection between existing systems, not completion of the
 Ice/Industry content-density or utility review.
 
-First implementation pass: [native supply/ammo/fist changes](history/SUPPLY_BALANCE.md).
+First implementation pass: [native supply/ammo/fist changes](../features/SUPPLY_BALANCE.md).
 The starting-point findings below describe the pre-change behavior. Availability,
 SMG reserves/refills, general consumable bundles and baseline Fist are now changed;
-Hearth now uses [finite cooked-meal sharing](history/HEARTH_BALANCE.md).
+Hearth now uses [finite cooked-meal sharing](../features/HEARTH_BALANCE.md).
 Offer-value matching, acquisition timing, augments and broader balance remain pending.
 
 ## Preserve what is working

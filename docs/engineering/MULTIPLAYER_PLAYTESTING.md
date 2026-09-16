@@ -26,7 +26,7 @@ it does not claim that the missing integration is complete.
   replay reader, richer ImGui diagnostics and cross-machine validation remain.
 - Networking retry/timeout counters now use monotonic elapsed time. Snapshot
   transfers are paced and retain progress on retries. See the implemented
-  [foundation milestone](history/NETWORK_FOUNDATION.md) and its validation limits.
+  [foundation milestone](NETWORK_FOUNDATION.md) and its validation limits.
 - Friendly fire is currently enabled by behavior: melee and bullets do not
   exclude teammates. There is no lobby disable setting. Requested rule is ON
   by default, with a host-controlled pre-run option to disable it.
@@ -39,12 +39,12 @@ with a Shuffle button). Name the room, host it, and
 share its six-character code. The friend opens **Play → Join Game**, selects the room from the automatically
 refreshed public list or enters its code, then readies up; the host starts the run. Automatic connection tries
 punching before relay. Force Relay and direct IP/port entry live under **Advanced Connection Options**.
-See [Local Multiplayer Workshop](LOCAL_MULTIPLAYER.md) for four-window, split
+See [Local Multiplayer Workshop](../guides/LOCAL_MULTIPLAYER.md) for four-window, split
 workspace and headless-bot launch scripts.
 
 The [public dashboard](https://45.77.123.14/) lists public rooms and refreshes every
 two seconds. The service setup, private credential locations and operation are
-recorded in [services/roomd/README.md](../services/roomd/README.md).
+recorded in [services/roomd/README.md](../../services/roomd/README.md).
 
 Existing direct/lossy session checks pass, and the native relay handshake was
 checked without running a gameplay session. This is the first internet-room

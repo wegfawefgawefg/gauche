@@ -1,11 +1,11 @@
 # World interaction and playtest review
 
 Expanded from the user's brother's playtest and follow-up, 2026-09-15.
-[Original wording and attachments](user_messages/README.md) are archived separately;
+[Original wording and attachments](../user_messages/README.md) are archived separately;
 [later balance feedback](BALANCE_REVIEW.md) expands progression and reward requirements.
-[MASTER_TASKS.md](MASTER_TASKS.md) owns execution status. This is the design
+[MASTER_TASKS.md](../MASTER_TASKS.md) owns execution status. This is the design
 specification, not another checklist or a claim of implementation.
-[Scene candidates](content/SCENE_CANDIDATES.md) defines proposed new count targets.
+[Scene candidates](../content/SCENE_CANDIDATES.md) defines proposed new count targets.
 
 ## Principles: revisit old content, not just add more
 

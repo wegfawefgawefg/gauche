@@ -1,6 +1,6 @@
 # Scene and ecology candidates
 
-Companion to [world interaction review](../WORLD_INTERACTION_REVIEW.md).
+Companion to [world interaction review](../design/WORLD_INTERACTION_REVIEW.md).
 Candidates, not implemented content or another checklist. Master tasks owns status.
 
 Proposed starting targets for the user's “n per zone”: **8 tall prop families,
@@ -43,7 +43,7 @@ meaningful traversable cells after clearing, and defined interactions at crossin
 A trunk simply drawn over unchanged stone is not a burnable shortcut. Similar
 materials may also occur inside a landmark, but this quota counts separate
 cross-room placement rules, not a second count for the same room prefab.
-See [placement and solvability rules](../WORLD_INTERACTION_REVIEW.md#cross-room-features-and-layered-generation).
+See [placement and solvability rules](../design/WORLD_INTERACTION_REVIEW.md#cross-room-features-and-layered-generation).
 
 ## Tall props: eight families per area
 

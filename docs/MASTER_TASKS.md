@@ -1,63 +1,63 @@
 # Gauche master task list
 
-This is the **single live checklist**. [Content brief](CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](NEXT_TASKS.md): history. Preserve dark, readable lighting.
+This is the **single live checklist**. [Content brief](design/CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](design/FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](archive/NEXT_TASKS.md): history. Preserve dark, readable lighting.
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
 
 ## Balance and original feedback (2026-09-15)
 
-[Verbatim user-message archive](user_messages/README.md) preserves the full 1–13 message, IDEA/A–C interludes, preceding screenshot notes and latest balance feedback. Keep originals intact; this file alone tracks execution. [Balance review](BALANCE_REVIEW.md) specifies the work below. Balance proceeds alongside content, preserving abundant toys and the enjoyable Forest experimentation.
+[Verbatim user-message archive](user_messages/README.md) preserves the full 1–13 message, IDEA/A–C interludes, preceding screenshot notes and latest balance feedback. Keep originals intact; this file alone tracks execution. [Balance review](design/BALANCE_REVIEW.md) specifies the work below. Balance proceeds alongside content, preserving abundant toys and the enjoyable Forest experimentation.
 
 - [ ] Priority from latest playtesting: Ice and Industry/lava feel barebones and boring beside Forest. Improve encounters, meaningful optional spaces, useful gear and interactions; catalog quotas alone do not establish a good biome. Keep content work moving after the current bounded music batch.
-- [ ] Audit the excess feed/fuel and narrow short-status-removal items against broadly useful tools/weapons and actual acquisition frequency. Preserve some odd/useless toys (the user welcomes these), while adding worthwhile applications for fun tools such as Fishing Line. See the latest priority in [balance review](BALANCE_REVIEW.md).
-- [x] First practical-use pass: optional Ice salvage islands and hot Industrial pockets, valuable native weapon rewards derived from the master table, a matching three-cell bridge span and real-item fishing retrieval. Reserve one Ice/Industry equipment slot for a native combat tool before role-specific supplies spend the budget; remove their Forest Stick/forced Bow fallback. See [salvage pockets](history/SALVAGE_POCKETS.md). Broader biome/loot review remains open.
+- [ ] Audit the excess feed/fuel and narrow short-status-removal items against broadly useful tools/weapons and actual acquisition frequency. Preserve some odd/useless toys (the user welcomes these), while adding worthwhile applications for fun tools such as Fishing Line. See the latest priority in [balance review](design/BALANCE_REVIEW.md).
+- [x] First practical-use pass: optional Ice salvage islands and hot Industrial pockets, valuable native weapon rewards derived from the master table, a matching three-cell bridge span and real-item fishing retrieval. Reserve one Ice/Industry equipment slot for a native combat tool before role-specific supplies spend the budget; remove their Forest Stick/forced Bow fallback. See [salvage pockets](features/SALVAGE_POCKETS.md). Broader biome/loot review remains open.
 
 - [ ] Audit every normal loot source for biome identity/power/availability: SMG, machine guns and rockets must be exceptionally rare Forest imports; bows, blowguns and fitting woodland tools lead native pools. Evaluate aggregate biome/run chances and starting ammo, not just per-roll rates; exempt explicit debug loadouts.
-- [x] Substantially reduce SMG Ammo refills: now eighteen spare rounds/use, reduced starting reserves, per-weapon budgets, explicit all-carried-gun/duplicate behavior and actual quantities in details. See [first supply balance pass](history/SUPPLY_BALANCE.md); human tuning remains ongoing.
+- [x] Substantially reduce SMG Ammo refills: now eighteen spare rounds/use, reduced starting reserves, per-weapon budgets, explicit all-carried-gun/duplicate behavior and actual quantities in details. See [first supply balance pass](features/SUPPLY_BALANCE.md); human tuning remains ongoing.
 - [ ] Audit underpowered throwables: tune actual damage/utility and useful acquisition stack sizes together with recoverability, timing, price and slot value; apply quantities consistently across drops/containers/rewards/shops and preserve stack merging.
 - [x] Heavily nerf baseline Fist: damage 10→4 with its three-tick windup/twelve-tick cooldown preserved. Real damage/timing checked; live feel and encounter balance remain human feedback work.
 - [ ] Design earned punching equipment/augments (heavy glove, lightning/light/heavy/fire/poison candidates), with explicit acquisition, slot/permanence, stacking, material interactions and counters.
-- [x] Replace Hearth's unlimited stacking regeneration with finite cooked-meal sharing: +3 HP to the eater and eligible nearby friends, once per consumed portion; no recipient multiplication or passive recovery. Inventory/offer text and focused co-op checks are in place; see [Hearth balance](history/HEARTH_BALANCE.md).
+- [x] Replace Hearth's unlimited stacking regeneration with finite cooked-meal sharing: +3 HP to the eater and eligible nearby friends, once per consumed portion; no recipient multiplication or passive recovery. Inventory/offer text and focused co-op checks are in place; see [Hearth balance](features/HEARTH_BALANCE.md).
 - [ ] Continue artifact/attribute/buff balance for absolute strength, price and earliest availability, including Hearth acquisition/offer value; expand creative conditional augments and plan growth across the intended sixteen-floor run.
 - [ ] Rework shop/three-choice reward valuation so same-stage offers are meaningfully competitive; bundle/replace weak toy offers appropriately without making every toy overpowered. Review loot, ammo, melee and permanent-power balance during each content slice using focused calculations and human feedback.
 
 ## Content architecture maintenance
 
-- [x] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. The 140-entry table checks enum order/count at compile time, including explicit legacy entries. See [item catalog maintenance](history/ITEM_CATALOG_MAINTENANCE.md).
-- [x] Replace duplicated general loot memberships with one explicit item-supply catalog, referenced by rewards/shops/caches/secrets/workshops; keep themed room, enemy and container sources explicit. Native stage/weight rules, rare imports and shared bundle previews/purchases are integrated; see [supply balance](history/SUPPLY_BALANCE.md).
-- [x] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Industry one-shot tool dispatch and shared successful-use completion have separate owners; substantive behaviors remain in their domain modules. Keep ordinary switches and split further when growth warrants it. See [item catalog maintenance](history/ITEM_CATALOG_MAINTENANCE.md).
+- [x] Keep item definitions in their domain modules with one catalog referencing them; replace the growing provider-search chain with direct item-kind lookup as the catalog expands. The 140-entry table checks enum order/count at compile time, including explicit legacy entries. See [item catalog maintenance](engineering/ITEM_CATALOG_MAINTENANCE.md).
+- [x] Replace duplicated general loot memberships with one explicit item-supply catalog, referenced by rewards/shops/caches/secrets/workshops; keep themed room, enemy and container sources explicit. Native stage/weight rules, rare imports and shared bundle previews/purchases are integrated; see [supply balance](features/SUPPLY_BALANCE.md).
+- [x] Split item-use routing, substantive behavior and completion/resource handling by responsibility as needed. Industry one-shot tool dispatch and shared successful-use completion have separate owners; substantive behaviors remain in their domain modules. Keep ordinary switches and split further when growth warrants it. See [item catalog maintenance](engineering/ITEM_CATALOG_MAINTENANCE.md).
 
 ## World interaction review (2026-09-15)
 
-Latest direction: [expanded specification/source audit](WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.
+Latest direction: [expanded specification/source audit](design/WORLD_INTERACTION_REVIEW.md), [scene candidates/counts](content/SCENE_CANDIDATES.md). Supersedes conflicting Rabbit/Swap Seed advice and reopens quality judgments below; implemented counts do not certify readability or balance. This remains the single live checklist.
 
 All counts are starting baselines, never content ceilings. Newer proposed per-biome targets: eight tall prop families, eight small-life types and six multi-room landmarks. Boss/unique-floor quotas were previously unset; provisional planning proposal is three boss encounter designs and two unique whole-floor designs per biome, with final counts/rosters open. Boss alternatives need not all appear in one run; multi-room landmarks are distinct from whole-floor uniques.
 
 Layering follow-up adds **six proposed cross-room feature families per biome**, separate from rooms/landmarks: rare post-geometry formations crossing existing room boundaries, such as burnable buried logs opening shortcuts. Usually absent; initially at most one major feature per ordinary floor, with run-level rarity rather than independent per-tile rolls.
 
-[Level-feature distinctions](LEVEL_FEATURES.md) clarify floor variants, triggered disasters and infrastructure. Reactor exit meltdown is an objective-triggered event; Timber Forest is a variant that enables wildfire; a station is a landmark attached to map-crossing railway infrastructure. Categories compose and do not imply new arbitrary quotas or separate engine frameworks.
+[Level-feature distinctions](design/LEVEL_FEATURES.md) clarify floor variants, triggered disasters and infrastructure. Reactor exit meltdown is an objective-triggered event; Timber Forest is a variant that enables wildfire; a station is a landmark attached to map-crossing railway infrastructure. Categories compose and do not imply new arbitrary quotas or separate engine frameworks.
 
 - [ ] Rework haunted-house pressure: weaker/simpler ordinary zombies in larger crowds, readable delayed swipes, spawn/crowd budgets and solo/co-op pacing coordinated with the Fist nerf. Preserve the mode's promising foundation.
 - [ ] Give haunted houses crowd-control tools: build/repair barriers, blockable routes, zombie breach behavior and marked lever fire/spike lanes with costs/cooldowns, friendly-fire rules and no stranded-wave softlocks.
-- [ ] Add distinct haunted-house layouts, meaningful internal rooms, outside hut/outbuildings and compound candidates; define encounter boundaries, placement/supply budgets and debug variant/repeat access. See the [house follow-up](WORLD_INTERACTION_REVIEW.md#haunted-house-follow-up-2026-09-15).
-- [x] Repair shop/three-choice transactional replacement: NO ROOM slot picker, explicit exchange confirmation, cancellation and atomic co-op stock/cost validation; South/Enter confirm, East/Escape cancel, West gameplay pickup/interact including keys, LT default reload. No attack-trigger purchases; corrected Pack/Continue and Equip/Drop mouse regions. Angled titles and static captures are in place; see [offer exchanges](history/OFFER_EXCHANGES.md).
+- [ ] Add distinct haunted-house layouts, meaningful internal rooms, outside hut/outbuildings and compound candidates; define encounter boundaries, placement/supply budgets and debug variant/repeat access. See the [house follow-up](design/WORLD_INTERACTION_REVIEW.md#haunted-house-follow-up-2026-09-15).
+- [x] Repair shop/three-choice transactional replacement: NO ROOM slot picker, explicit exchange confirmation, cancellation and atomic co-op stock/cost validation; South/Enter confirm, East/Escape cancel, West gameplay pickup/interact including keys, LT default reload. No attack-trigger purchases; corrected Pack/Continue and Equip/Drop mouse regions. Angled titles and static captures are in place; see [offer exchanges](features/OFFER_EXCHANGES.md).
 - [ ] Finish shop/reward arrival presentation: merchant/cart, distinct arrival cues/music and fitting animation. Continue the separate offer valuation/artifact balance pass; the transactional repair does not complete this presentation work.
 - [ ] Audit every enemy's notice/windup/strike/recovery, attack effects and first-hit counterplay; prioritize snail, zombie swipe and legacy circle/gun enemies. Rework inherited art/behavior; compare current Stoker to the reported older build.
-- [x] Replace Rabbit Charm retreat with persistent held movement speed; no charges, no teleport, no haste multiplication, ordinary roots/slowing/hazards preserved. See [movement toys](history/MOVEMENT_TOYS.md).
+- [x] Replace Rabbit Charm retreat with persistent held movement speed; no charges, no teleport, no haste multiplication, ordinary roots/slowing/hazards preserved. See [movement toys](features/MOVEMENT_TOYS.md).
 - [ ] Design separately themed escape, hop, leap, moving-flight and optional reactive dodge alongside useful gaps/tar/pits and solvable required routes; the Rabbit change does not implement these terrain/generation candidates.
-- [x] Replace Swap Seed with thrown impact-destination Blink Seed: delayed arc, legal near-side landing, hazards, matching flashes, native supply and serialized flight. Revalidate moving/occupied/dead-caster and sealed-arena cases; actor swapping remains a separate future candidate. See [movement toys](history/MOVEMENT_TOYS.md).
+- [x] Replace Swap Seed with thrown impact-destination Blink Seed: delayed arc, legal near-side landing, hazards, matching flashes, native supply and serialized flight. Revalidate moving/occupied/dead-caster and sealed-arena cases; actor swapping remains a separate future candidate. See [movement toys](features/MOVEMENT_TOYS.md).
 - [ ] Audit/rename Storm Lantern as a readable fueled lamp, including all acquisition paths; add light-toy candidates and a creature/item/place field guide distinguishing operation from discoveries.
 - [ ] Revisit mimic frequency/threat/valuable loot and bear aggression/commitment; populate sleeping/fishing dens with nests, bones, droppings and fish ecology.
 - [ ] Make levers unmistakable through silhouette/state/sound and mechanism response; design biome-appropriate wall levers/protected-button variants.
 - [ ] Build grouped overhead reveal starting with hollow logs/root tunnels/ice arches; add directional ledges and slow steps. User follow-up: proceed on one gameplay plane, defer stacked decks and multi-cell moving enemies; neither is a prerequisite.
 - [ ] Build tall reactive props with sorting, light breakage, warned falling/crushing, melting and debris; proposed eight families per biome in scene candidates. Reflections remain exploratory.
 - [ ] Add smooth phase-based tipping/falling art with ground anchors, vertical offsets and clear impact cues; landed logs become connected blocking sections with explicit occupant/loot/terrain resolution, without requiring multi-cell actors.
-- [x] Prototype shared stylized height/contact shadows independent of lights: creatures, pickups, solid props, projectile flight/falling survivors and most loose debris including sticks/leaves/casings. Footprints/flat stains/wisps stay excluded, existing owl landing warnings remain separate. F1 Presentation toggles, matching static comparisons and dense software-render measurements are in place; see [contact shadows](history/CONTACT_SHADOWS.md). Live visual feedback and future tall-object coverage remain iterative content work.
+- [x] Prototype shared stylized height/contact shadows independent of lights: creatures, pickups, solid props, projectile flight/falling survivors and most loose debris including sticks/leaves/casings. Footprints/flat stains/wisps stay excluded, existing owl landing warnings remain separate. F1 Presentation toggles, matching static comparisons and dense software-render measurements are in place; see [contact shadows](features/CONTACT_SHADOWS.md). Live visual feedback and future tall-object coverage remain iterative content work.
 - [ ] Add material routes: axe/fire root masses, shovel-soft and pick-hard walls, shallow-hole candidates, populated burnable-web caves and alternate/guaranteed solutions.
 - [ ] Implement Timber Forest connected-fuel variant and the requested bounded noninteractive fire performance check, including cosmetics/network load and deterministic propagation.
-- [ ] Implement Industrial reactor-exit event: crank/activation and gate-opening rules, clear warning, bounded radioactive-fire spread and/or structural-blast variants, intentional escape routes and authoritative co-op/pause/reconnect state. Expand the existing conditions-brief task using [level-feature rules](LEVEL_FEATURES.md).
+- [ ] Implement Industrial reactor-exit event: crank/activation and gate-opening rules, clear warning, bounded radioactive-fire spread and/or structural-blast variants, intentional escape routes and authoritative co-op/pause/reconnect state. Expand the existing conditions-brief task using [level-feature rules](design/LEVEL_FEATURES.md).
 - [ ] Build rare infrastructure fitting over base geometry: station plus active trains, Forest two-way road with occasional cars/trucks and breakable streetlights. Define geometry cutting versus live ramming, route lanes/endpoints, warnings, protected-objective intersections, compatible population and final validation; share large-feature rarity budgets.
-- [ ] Design/implement rare fire-engine response event: approach siren/lights, legal entry/parking, firefighters disembarking, finite buckets, reachable fire targets, truck refill and tank/stream/hydrant supply options. Shared wetting/quench rules, crowd yielding and co-op state; very rare Ice freezing-water and joke fire-spraying variants stay explicit candidates. See [response crew](LEVEL_FEATURES.md#rare-fire-response-crew).
+- [ ] Design/implement rare fire-engine response event: approach siren/lights, legal entry/parking, firefighters disembarking, finite buckets, reachable fire targets, truck refill and tank/stream/hydrant supply options. Shared wetting/quench rules, crowd yielding and co-op state; very rare Ice freezing-water and joke fire-spraying variants stay explicit candidates. See [response crew](design/LEVEL_FEATURES.md#rare-fire-response-crew).
 - [ ] Add biome-boundary scenery/material profiles: snowy/icy Forest 4, woodland remnants in Ice 1, thaw/water/heat in Ice 4 and residual ice in Industrial 1. Retain primary biome identity and native loot/enemy policy; audit local material rules separately from global climate.
 - [ ] Give uniques/landmarks/cross-room features/events biome-stage placement windows plus environmental requirements and whole-window rarity caps; e.g. a transition feature eligible across Forest 3–4/Ice 1 rather than everywhere in either biome. Add forced profile/event inspection to debug tools.
 - [ ] Add compact dwelling scenes: Forest house, isolated tent, hovel, tree house/hut with one-plane entrances and overhead reveal. Reuse appropriate structures with biome-specific frequency/context, including potentially common tent camps in the provisional military fourth biome; supply fitting inhabitants/furnishings/loot without treating every small dwelling as a unique floor.
@@ -66,7 +66,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
 - [ ] Add multi-room landmark reservation, sockets, internal population/loot and debug selection; proposed six per biome, including legal 1x2/1x3/2x2 regions and overhead groups.
 - [ ] Design/implement rare cross-room feature placement after base geometry and before ordinary population: six proposed families per biome in [scene candidates](content/SCENE_CANDIDATES.md#cross-room-features-six-proposed-families-per-area). Use actual material/terrain edits, useful conditional links, deterministic floor/run budgets, explicit overlap/lock-bypass rules, final solvability checks and forced-feature debug inspection.
 - [ ] Add frozen loot/creatures and fragile-ice crack propagation, bounded deterministic updates, release-once contents, falls/rescue and melting effects; distinguish IceFlag from pickups.
-- [x] Add the first territorial throwing Yeti: committed grab windup, real-cell airborne tosses, wall-impact counterplay, shared height/shadows and Ice cliff placement. See [Yeti notes](history/ICE_YETI.md).
+- [x] Add the first territorial throwing Yeti: committed grab windup, real-cell airborne tosses, wall-impact counterplay, shared height/shadows and Ice cliff placement. See [Yeti notes](features/ICE_YETI.md).
 - [ ] Revisit Ice threat compositions and readable archetypes: throwing yeti, king yeti, mammoth and penguin candidates; beam/boiler enemies must also function outside authored sets.
 - [ ] Choose/implement biome-fourth-floor boss areas/minibosses, world interactions, digging escape policy, co-op entry/release and meaningful rewards; giant bear/spider mother/wolf leader candidates.
 - [ ] Implement requested ~two-minute floor ghost with warning, timer/pause/reward/shop/reconnect policy and unique-floor exceptions; haunted house does not implement this.
@@ -75,7 +75,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
 
 ## Conditions and world feedback
 
-- [ ] Implement [conditions and world feedback](CONDITIONS_AND_WORLD_FEEDBACK.md): water/campfire and owl bait fixes; ~50 conditions and useful splints; ice momentum/cold-water rescue; excavation crews and shoot-through barriers; optics/dev-mode gate; compound objectives, escape hazards, pursuer and team-pause policy. Modifier counts remain exploratory.
+- [ ] Implement [conditions and world feedback](design/CONDITIONS_AND_WORLD_FEEDBACK.md): water/campfire and owl bait fixes; ~50 conditions and useful splints; ice momentum/cold-water rescue; excavation crews and shoot-through barriers; optics/dev-mode gate; compound objectives, escape hazards, pursuer and team-pause policy. Modifier counts remain exploratory.
 ## Tile rules and damage feedback
 
 - [x] Give tiles one explicit break rule: **unbreakable**, **damageable**, or
@@ -270,7 +270,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
   seals the exit and starts classic Call of Duty Zombies-inspired survival
   waves; a defined completion condition releases the party. Author its layout
   and co-op entry/reconnect behavior deliberately.
-- [x] Add the [Freight Exchange](history/FREIGHT_EXCHANGE.md), an authored
+- [x] Add the [Freight Exchange](features/FREIGHT_EXCHANGE.md), an authored
   Industry 3-2 floor with two loaded cart lines, connected switch points,
   sorting belt/sleeper, crane salvage, guarded control booth and hoist cache.
   Seeded one-in-five selection at this one stage; explicit dev selection,
@@ -316,7 +316,7 @@ and 50 biome-specific items per biome**. Across four biomes this is at least
 80 enemies, 80 debris types, and 200 items, plus a small shared item pool.
 Distinct behavior, encounter role, silhouette, sound, and sensible drops matter
 more than different colors or HP values. Room, tile, prop, hazard, and container
-variety belongs to every biome too. Runtime order is now Forest → Ice → Industrial/mine/lava, with named biome rules, migrated debug selections and matching visuals/stock/populations ([progression notes](history/BIOME_ORDER.md)). Adding the fourth biome remains pending. Preserve cross-biome fire/ice utility as specified in the [content brief](CONTENT_FARM_BRIEF.md).
+variety belongs to every biome too. Runtime order is now Forest → Ice → Industrial/mine/lava, with named biome rules, migrated debug selections and matching visuals/stock/populations ([progression notes](features/BIOME_ORDER.md)). Adding the fourth biome remains pending. Preserve cross-biome fire/ice utility as specified in the [content brief](design/CONTENT_FARM_BRIEF.md).
 
 - [x] Design a full forest catalog to those quotas, including enemies with
   tells and drop tables, strange or weak-but-useful items, prop/debris families,
@@ -331,7 +331,7 @@ patterns, descriptions, sounds, room/reward/shop pools and rare attributes.
 Traveling weapons, digging/route tools, heat/liquids, bait/hearing, traps/roots,
 food/remedies, decoys/wards, lanterns/parries, conductive thunder and linked
 Pocket Doors have concrete interactions. See the [catalog](content/FOREST.md)
-and [implementation notes](IMPLEMENTATION_DECISIONS.md) for the actual rules.
+and [implementation notes](engineering/IMPLEMENTATION_DECISIONS.md) for the actual rules.
 Natural sap sources and broader forest ecology/generation remain unfinished.
 
 Forest enemy slice: all twenty catalog adversaries have bespoke behavior,
@@ -347,61 +347,61 @@ behavior and balance playtesting remain the user's.
   cues, container pools and four-floor room progression. Heat, water, footing,
   sound and reflection are shared interactions; implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the ice catalog.
-  Fifteen cold room roles host twenty-one enemy types, including [shard colonies](history/ICE_SHARDS.md),
-  [Pilgrims](history/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](history/ICE_HEARING.md). Regional items include
-  [observatory optics](history/ICE_OPTICS.md). Twenty-one enemy behaviors (initial twenty plus [territorial Yeti](history/ICE_YETI.md)), fifty of fifty items; [circuit tools](history/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](history/STORM_LANTERN.md) and [Echo Pebble](history/ICE_ECHO_PEBBLE.md) add directional light and recorded lures; [Harpoon Gun](history/ICE_HARPOON.md) adds traveling shots and held reeling. [Doorstops and sluices](history/ICE_SLUICES.md) add reusable gate jamming and reservoir chambers. [Borrowed Summer](history/BORROWED_SUMMER.md) adds moving warmth with shared thaw/fuel/enemy reactions. [Heat Siphon](history/HEAT_SIPHON.md) transfers finite fire/fuel into reusable flame charges. [Thaw Charges](history/THAW_CHARGE.md) open ice routes with a sealed fuse and dangerous steam. [Folded Bridges](history/FOLDED_BRIDGE.md) add burnable, individually breakable water crossings. [Tuning Forks](history/TUNING_FORK.md) shatter crystal veins and disrupt shard nodes through connected crystal. [Stillwater Bells](history/STILLWATER_BELL.md) calm stream currents, floating cargo and slippery ground. [Effigy Masks](history/EFFIGY_MASK.md) add a stationary rear gaze with finite wear, sharing effigy sight and cover rules. [Ice Anchors](history/ICE_ANCHOR.md) add breakable retreat points and real-cell tether returns. [Snow Shelters](history/SNOW_SHELTER.md) add two-section low cover, shared thawing and overhead throw rules. [Sleds](history/SLED.md) carry riders and loose cargo at real gameplay positions, with stopped steering, braking, recoverable wear and wood/fire interactions. Twenty Ice debris materials are implemented.
+  Fifteen cold room roles host twenty-one enemy types, including [shard colonies](features/ICE_SHARDS.md),
+  [Pilgrims](features/ICE_PILGRIM.md), Lens Wardens and [Echo Hounds](features/ICE_HEARING.md). Regional items include
+  [observatory optics](features/ICE_OPTICS.md). Twenty-one enemy behaviors (initial twenty plus [territorial Yeti](features/ICE_YETI.md)), fifty of fifty items; [circuit tools](features/ICE_CIRCUITS.md) connect shocks and grounding. [Storm Lantern](features/STORM_LANTERN.md) and [Echo Pebble](features/ICE_ECHO_PEBBLE.md) add directional light and recorded lures; [Harpoon Gun](features/ICE_HARPOON.md) adds traveling shots and held reeling. [Doorstops and sluices](features/ICE_SLUICES.md) add reusable gate jamming and reservoir chambers. [Borrowed Summer](features/BORROWED_SUMMER.md) adds moving warmth with shared thaw/fuel/enemy reactions. [Heat Siphon](features/HEAT_SIPHON.md) transfers finite fire/fuel into reusable flame charges. [Thaw Charges](features/THAW_CHARGE.md) open ice routes with a sealed fuse and dangerous steam. [Folded Bridges](features/FOLDED_BRIDGE.md) add burnable, individually breakable water crossings. [Tuning Forks](features/TUNING_FORK.md) shatter crystal veins and disrupt shard nodes through connected crystal. [Stillwater Bells](features/STILLWATER_BELL.md) calm stream currents, floating cargo and slippery ground. [Effigy Masks](features/EFFIGY_MASK.md) add a stationary rear gaze with finite wear, sharing effigy sight and cover rules. [Ice Anchors](features/ICE_ANCHOR.md) add breakable retreat points and real-cell tether returns. [Snow Shelters](features/SNOW_SHELTER.md) add two-section low cover, shared thawing and overhead throw rules. [Sleds](features/SLED.md) carry riders and loose cargo at real gameplay positions, with stopped steering, braking, recoverable wear and wood/fire interactions. Twenty Ice debris materials are implemented.
 - [x] Design a full industrial / mine / lava catalog to the same quotas.
   See [the Underworks catalog](content/INDUSTRIAL.md): working mines and foundries,
   twenty enemies, fifty regional finds, themed containers, eighteen room roles,
   twenty debris materials and twenty ambient sources. These are design targets;
   implementation remains below.
 - [ ] Implement, asset, sound, test, and playtest the industrial / mine / lava
-  catalog. [Native terrain art](history/INDUSTRIAL_TERRAIN.md) replaces the tinted
-  Forest tiles and repeating lava waves. [Mine crews](history/MINE_CREWS.md)
+  catalog. [Native terrain art](features/INDUSTRIAL_TERRAIN.md) replaces the tinted
+  Forest tiles and repeating lava waves. [Mine crews](features/MINE_CREWS.md)
   add Pickhands and Shift Foremen, a dry workfront on each Industrial stage,
   shared digging, coordinated retaliation, seven poses and twelve sounds.
-  [Foreman's Whistle](history/FOREMAN_WHISTLE.md) redirects idle workers until their leader calls again, with finite uses and themed drops/supplies/rewards.
-  [Ember Stokers](history/EMBER_STOKER.md) replace the old hidden-pistol Ember with finite coal, traveling hot/cold pellets, a scoop recovery and an empty-sack shovel attack.
-  [Quarry Charges and Fuse Scissors](history/QUARRY_FUSES.md) add directional stone cutting, dangerous backblast, exact bomb recovery, and shared exposed-fuse water/cold rules.
-  [Powder Monkeys](history/POWDER_MONKEY.md) light finite physical charges, flee their backblast, and leave armed charges behind when killed. A reserved blasting alcove and nearby scissors make those interactions available.
-  [Press Hammers and Rubber Mallets](history/INDUSTRIAL_HAMMERS.md) add interruptible heavy blows, low-damage shoves, cover breaking and boiler pressure relief. Both wear down and accept resin repairs.
-  [Strikebreakers](history/STRIKEBREAKER.md) guard later workfronts with finite frontal shields and delayed shove/hammer combinations. Traveling direct hits now retain shooter attribution separately from impact direction.
-  [Industrial grates and bins](history/INDUSTRIAL_GRATES.md) add shoot-through cover, themed container drops and four native loose-debris materials, placed outside protected routes.
-  [Rivet Guns and Gunners](history/RIVET_GUNNERS.md) add committed three-round traveling bursts, a braced enemy with a long reload, safe side firing posts, finite player magazines and local ejected casings.
-  [Arc Torches](history/ARC_TORCH.md) add finite sustained electrical attacks, metal cutting and shared water/wire/grounding interactions; available through the master Industrial supply table.
-  [Conveyors and assembly rooms](history/CONVEYORS.md) add deterministic roller transport, safe stationary crossings, hand-cranked runs, six-second brakes, powered-belt debris drag and positional roller ambience.
-  [Arc Welders and repair bays](history/ARC_WELDER.md) add a visor-down warning, committed electrical lane sweep, metal cutting and wet/dry/grounding encounter choices.
-  [Horseshoe Magnets](history/HORSESHOE_MAGNET.md) pull real loose steel gear while moving, preserve item state, and connect native scrap-bin drops to hot salvage pockets.
-  [Magnet Cranes and scrap yards](history/MAGNET_CRANE.md) add overhead committed grabs, metal-gear targeting, magnet bait, cold/heavy-hit interruption and optional hot sorting lanes.
-  [Folding Barricades](history/FOLDING_BARRICADE.md) add atomic three-section lane blocking, narrow-shot/overhead passage, independent panel damage and shared metal-cutting counters.
-  [Pressure Rats](history/PRESSURE_RAT.md) add a visible inflation tell, fixed rush, obstacle-triggered steam burst and shared cold/water/control counters.
-  [Coolant Cans and cooling works](history/COOLANT_CAN.md) connect quenching, pressure reduction, lava crossings, slippery conductive residue and an alternate maintenance encounter; this also fixes sorting-yard footprints that previously always fell back to a lone crane.
-  [Industry ambience and scraps](history/INDUSTRIAL_ATMOSPHERE.md) add seven local/offline cue families, state-dependent machine sounds, nail/chain debris, and an audit of existing copper/coal sources. Ten of twenty catalog debris materials and eight of twenty ambient families are integrated.
-  [Cable Crawlers and cable trenches](history/CABLE_CRAWLER.md) add finite wire laying, wall-biased movement, warned pulses through live circuits, severing/grounding counters, and an optional wet/dry encounter.
-  [Pocket Drills](history/POCKET_DRILL.md) add sustained stationary cutting, finite battery, real noise and shared wall/prop/wire interactions, with movement/aim reprime and hurt/control cancellation.
-  [Walking Kilns and kiln courts](history/WALKING_KILN.md) add warned flame rows, cold interruption, an exposed mouth, finite fuel and actual wood/coal consumption beside optional oil/stock encounters.
-  [Tension Springs](history/TENSION_SPRING.md) add stackable underfoot launch pads, real airborne gap crossings and pursuer traps, heat/destruction counters and supplies at optional hot salvage banks.
-  [Audit Clerks and pay offices](history/AUDIT_CLERK.md) add real loose-gold collection, finite breakable pay cages, interruptible alarms and existing-worker responses without reinforcements spawning.
-  [Emergency Foam](history/EMERGENCY_FOAM.md) adds traveling sealed cans, a visible expansion delay, shared fire/fuse quenching and temporary shot-blocking soft cover, with kiln-court supplies.
-  [Furnace Moths and lamp alcoves](history/FURNACE_MOTH.md) add finite heat theft, light lures, warned committed dives, cold/cover counters and paired flame/electric-light scenes. Dropped lit sticks now work with shared heat extraction.
-  [Bolt Pouches](history/BOLT_POUCH.md) add stackable five-bolt fans, close-range concentration, grate passage, parries and finite flight. Assembly cargo and scrap bins provide three-handful bundles.
-  [Slag Snails and slag banks](history/SLAG_SNAIL.md) add armored crawlers, fixed warned lunges, exposed recovery/cold states, short hot trails and crackable cooled crust beside optional lava-bank supplies.
-  [Chain Hooks](history/CHAIN_HOOK.md) add held cargo/prop hauling, safe fixed-anchor pulls, loaded sled transport and scrap-yard supplies.
-  [Nail Boards](history/NAIL_BOARD.md) add melee/ground-trap conversion with shared condition, safe recovery, heat/destruction and assembly-belt acquisition.
-  [Ash Sleepers and ash lofts](history/ASH_SLEEPER.md) add noise-triggered waking, warned swipes, quiet/wet settling and manual-belt encounters with useful cargo.
-  [Hand Bellows](history/HAND_BELLOWS.md) add directional actor/cargo pushes, gas drift, finite flame fanning and ash/debris disturbance; ash lofts can supply them.
-  [Counterweights and hoist shafts](history/COUNTERWEIGHT.md) add warned overhead impacts, baitable prop/creature crushing, cold/heavy-hit interruption and persistent cuttable wrecks.
-  [Pocket Pumps](history/POCKET_PUMP.md) add finite spill transport, exact partial quantities, shared water/coolant interactions, tank UI and cooling-works supplies.
-  [Emergency Pumps](history/EMERGENCY_PUMP.md) add mobile finite-liquid pressure jets, refillable spill collection, warned lane attacks, retained tank salvage and water/oil cooling-works variants.
-  [Nozzle Elbows](history/NOZZLE_ELBOW.md) redirect future boiler/pump jets, preserve warned aim, share removable fittings with Pressure Valves, and retain handedness/condition through pickup and salvage.
-  [Mold Thieves and casting floors](history/MOLD_THIEF.md) add real loose-metal theft, interruptible sealing, reusable breakable molds, exact cargo salvage and eight-use keys in optional paired workstations.
-  [Steam Lances](history/STEAM_LANCE.md) add refillable two-cell scalding thrusts, shared kettle heating/cooling, interruptible bracing and lamp-alcove water/stove supplies.
-  [Tar Flasks and material states](history/TAR_FLASK.md) add traveling three-bottle bundles, sticky fuel, cold-hardened crust, washing/pump transfer and tar-lane kiln variants.
-  [Tar Choirs and settling tanks](history/TAR_CHOIR.md) add linked warning/cough rhythms, traveling tar, cover/control disruption, surviving solo singers and paired material basins with practical counter-tools.
-  [Rail Shunters and freight carts](history/RAIL_SHUNTER.md) add warned shunting, real cargo, single-impact collisions, hook hauling, cart brakes, cuttable freight track and optional loaded sidings. Generated-floor checks also fixed [scrap-yard snapshot rejection](history/SCRAP_YARD_SNAPSHOT.md).
-  [Rail Switch Keys and points](history/RAIL_POINTS.md) add redirectable T sidings, breakable selected exits, directional rail drawing and contextual key supplies.
-  [Insulated Boots](history/INSULATED_BOOTS.md) add temporary floor-conduction immunity with slower steps, explicit direct-arc vulnerability, a saved HUD timer, contextual cable-trench supply and crawler drops.
-  [Glow Slag](history/GLOW_SLAG.md) adds recoverable thrown light/heat, finite reheating, moth/siphon theft, cold/water quenching and lamp-alcove acquisition.
+  [Foreman's Whistle](features/FOREMAN_WHISTLE.md) redirects idle workers until their leader calls again, with finite uses and themed drops/supplies/rewards.
+  [Ember Stokers](features/EMBER_STOKER.md) replace the old hidden-pistol Ember with finite coal, traveling hot/cold pellets, a scoop recovery and an empty-sack shovel attack.
+  [Quarry Charges and Fuse Scissors](features/QUARRY_FUSES.md) add directional stone cutting, dangerous backblast, exact bomb recovery, and shared exposed-fuse water/cold rules.
+  [Powder Monkeys](features/POWDER_MONKEY.md) light finite physical charges, flee their backblast, and leave armed charges behind when killed. A reserved blasting alcove and nearby scissors make those interactions available.
+  [Press Hammers and Rubber Mallets](features/INDUSTRIAL_HAMMERS.md) add interruptible heavy blows, low-damage shoves, cover breaking and boiler pressure relief. Both wear down and accept resin repairs.
+  [Strikebreakers](features/STRIKEBREAKER.md) guard later workfronts with finite frontal shields and delayed shove/hammer combinations. Traveling direct hits now retain shooter attribution separately from impact direction.
+  [Industrial grates and bins](features/INDUSTRIAL_GRATES.md) add shoot-through cover, themed container drops and four native loose-debris materials, placed outside protected routes.
+  [Rivet Guns and Gunners](features/RIVET_GUNNERS.md) add committed three-round traveling bursts, a braced enemy with a long reload, safe side firing posts, finite player magazines and local ejected casings.
+  [Arc Torches](features/ARC_TORCH.md) add finite sustained electrical attacks, metal cutting and shared water/wire/grounding interactions; available through the master Industrial supply table.
+  [Conveyors and assembly rooms](features/CONVEYORS.md) add deterministic roller transport, safe stationary crossings, hand-cranked runs, six-second brakes, powered-belt debris drag and positional roller ambience.
+  [Arc Welders and repair bays](features/ARC_WELDER.md) add a visor-down warning, committed electrical lane sweep, metal cutting and wet/dry/grounding encounter choices.
+  [Horseshoe Magnets](features/HORSESHOE_MAGNET.md) pull real loose steel gear while moving, preserve item state, and connect native scrap-bin drops to hot salvage pockets.
+  [Magnet Cranes and scrap yards](features/MAGNET_CRANE.md) add overhead committed grabs, metal-gear targeting, magnet bait, cold/heavy-hit interruption and optional hot sorting lanes.
+  [Folding Barricades](features/FOLDING_BARRICADE.md) add atomic three-section lane blocking, narrow-shot/overhead passage, independent panel damage and shared metal-cutting counters.
+  [Pressure Rats](features/PRESSURE_RAT.md) add a visible inflation tell, fixed rush, obstacle-triggered steam burst and shared cold/water/control counters.
+  [Coolant Cans and cooling works](features/COOLANT_CAN.md) connect quenching, pressure reduction, lava crossings, slippery conductive residue and an alternate maintenance encounter; this also fixes sorting-yard footprints that previously always fell back to a lone crane.
+  [Industry ambience and scraps](features/INDUSTRIAL_ATMOSPHERE.md) add seven local/offline cue families, state-dependent machine sounds, nail/chain debris, and an audit of existing copper/coal sources. Ten of twenty catalog debris materials and eight of twenty ambient families are integrated.
+  [Cable Crawlers and cable trenches](features/CABLE_CRAWLER.md) add finite wire laying, wall-biased movement, warned pulses through live circuits, severing/grounding counters, and an optional wet/dry encounter.
+  [Pocket Drills](features/POCKET_DRILL.md) add sustained stationary cutting, finite battery, real noise and shared wall/prop/wire interactions, with movement/aim reprime and hurt/control cancellation.
+  [Walking Kilns and kiln courts](features/WALKING_KILN.md) add warned flame rows, cold interruption, an exposed mouth, finite fuel and actual wood/coal consumption beside optional oil/stock encounters.
+  [Tension Springs](features/TENSION_SPRING.md) add stackable underfoot launch pads, real airborne gap crossings and pursuer traps, heat/destruction counters and supplies at optional hot salvage banks.
+  [Audit Clerks and pay offices](features/AUDIT_CLERK.md) add real loose-gold collection, finite breakable pay cages, interruptible alarms and existing-worker responses without reinforcements spawning.
+  [Emergency Foam](features/EMERGENCY_FOAM.md) adds traveling sealed cans, a visible expansion delay, shared fire/fuse quenching and temporary shot-blocking soft cover, with kiln-court supplies.
+  [Furnace Moths and lamp alcoves](features/FURNACE_MOTH.md) add finite heat theft, light lures, warned committed dives, cold/cover counters and paired flame/electric-light scenes. Dropped lit sticks now work with shared heat extraction.
+  [Bolt Pouches](features/BOLT_POUCH.md) add stackable five-bolt fans, close-range concentration, grate passage, parries and finite flight. Assembly cargo and scrap bins provide three-handful bundles.
+  [Slag Snails and slag banks](features/SLAG_SNAIL.md) add armored crawlers, fixed warned lunges, exposed recovery/cold states, short hot trails and crackable cooled crust beside optional lava-bank supplies.
+  [Chain Hooks](features/CHAIN_HOOK.md) add held cargo/prop hauling, safe fixed-anchor pulls, loaded sled transport and scrap-yard supplies.
+  [Nail Boards](features/NAIL_BOARD.md) add melee/ground-trap conversion with shared condition, safe recovery, heat/destruction and assembly-belt acquisition.
+  [Ash Sleepers and ash lofts](features/ASH_SLEEPER.md) add noise-triggered waking, warned swipes, quiet/wet settling and manual-belt encounters with useful cargo.
+  [Hand Bellows](features/HAND_BELLOWS.md) add directional actor/cargo pushes, gas drift, finite flame fanning and ash/debris disturbance; ash lofts can supply them.
+  [Counterweights and hoist shafts](features/COUNTERWEIGHT.md) add warned overhead impacts, baitable prop/creature crushing, cold/heavy-hit interruption and persistent cuttable wrecks.
+  [Pocket Pumps](features/POCKET_PUMP.md) add finite spill transport, exact partial quantities, shared water/coolant interactions, tank UI and cooling-works supplies.
+  [Emergency Pumps](features/EMERGENCY_PUMP.md) add mobile finite-liquid pressure jets, refillable spill collection, warned lane attacks, retained tank salvage and water/oil cooling-works variants.
+  [Nozzle Elbows](features/NOZZLE_ELBOW.md) redirect future boiler/pump jets, preserve warned aim, share removable fittings with Pressure Valves, and retain handedness/condition through pickup and salvage.
+  [Mold Thieves and casting floors](features/MOLD_THIEF.md) add real loose-metal theft, interruptible sealing, reusable breakable molds, exact cargo salvage and eight-use keys in optional paired workstations.
+  [Steam Lances](features/STEAM_LANCE.md) add refillable two-cell scalding thrusts, shared kettle heating/cooling, interruptible bracing and lamp-alcove water/stove supplies.
+  [Tar Flasks and material states](features/TAR_FLASK.md) add traveling three-bottle bundles, sticky fuel, cold-hardened crust, washing/pump transfer and tar-lane kiln variants.
+  [Tar Choirs and settling tanks](features/TAR_CHOIR.md) add linked warning/cough rhythms, traveling tar, cover/control disruption, surviving solo singers and paired material basins with practical counter-tools.
+  [Rail Shunters and freight carts](features/RAIL_SHUNTER.md) add warned shunting, real cargo, single-impact collisions, hook hauling, cart brakes, cuttable freight track and optional loaded sidings. Generated-floor checks also fixed [scrap-yard snapshot rejection](engineering/SCRAP_YARD_SNAPSHOT.md).
+  [Rail Switch Keys and points](features/RAIL_POINTS.md) add redirectable T sidings, breakable selected exits, directional rail drawing and contextual key supplies.
+  [Insulated Boots](features/INSULATED_BOOTS.md) add temporary floor-conduction immunity with slower steps, explicit direct-arc vulnerability, a saved HUD timer, contextual cable-trench supply and crawler drops.
+  [Glow Slag](features/GLOW_SLAG.md) adds recoverable thrown light/heat, finite reheating, moth/siphon theft, cold/water quenching and lamp-alcove acquisition.
   All twenty initial catalog enemy behaviors and twenty-seven of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
@@ -445,11 +445,11 @@ the available art reference; new source scripts keep a small explicit palette.
 
 ## Music and musical cues
 
-Direction and local reference inventory: [music brief](MUSIC_DIRECTION.md).
+Direction and local reference inventory: [music brief](music/MUSIC_DIRECTION.md).
 
-- [x] Initial music loudness fix: measured the old assets and lowered the runtime mix from 0.4125 to 0.12 (about 10.7 dB) in playback/settings paths, preserving saved sliders. Human mix feedback remains part of soundtrack iteration; see [first previews](history/MUSIC_SKETCHES.md).
-- [x] Make original Forest timbral/composition sketches: two Forest directions plus an Industry drum/horn sketch are available on the [first listening page](../assets/music/sketches/index.html). The user's listens found these too cheesy/melodic and the sampled strings too artificial. Preserve them; [the revised brief](MUSIC_DIRECTION.md) calls for negative space, held gestures, material percussion and stranger feedback timbres.
-- [x] Make a broader second comparison pass from scratch: nine atmosphere/title/threat studies and six title/entry/clear/win/loss/shop cues, with a 2:51 comparison reel and [listening gallery](../assets/music/atmosphere/index.html). Custom feedback/material synthesis, editable scores and encoded checks are included. These remain previews awaiting listens, not completed soundtrack quotas or installed playback; see [pass 02](history/ATMOSPHERE_STUDIES.md).
+- [x] Initial music loudness fix: measured the old assets and lowered the runtime mix from 0.4125 to 0.12 (about 10.7 dB) in playback/settings paths, preserving saved sliders. Human mix feedback remains part of soundtrack iteration; see [first previews](music/MUSIC_SKETCHES.md).
+- [x] Make original Forest timbral/composition sketches: two Forest directions plus an Industry drum/horn sketch are available on the [first listening page](../assets/music/sketches/index.html). The user's listens found these too cheesy/melodic and the sampled strings too artificial. Preserve them; [the revised brief](music/MUSIC_DIRECTION.md) calls for negative space, held gestures, material percussion and stranger feedback timbres.
+- [x] Make a broader second comparison pass from scratch: nine atmosphere/title/threat studies and six title/entry/clear/win/loss/shop cues, with a 2:51 comparison reel and [listening gallery](../assets/music/atmosphere/index.html). Custom feedback/material synthesis, editable scores and encoded checks are included. These remain previews awaiting listens, not completed soundtrack quotas or installed playback; see [pass 02](music/ATMOSPHERE_STUDIES.md).
 - [x] Respond to pass-02 listens: preserve the approved Shop Arrives cue; treat the other pipe studies as unapproved material for one Ice song only. [Pass 03](../tools/music/contrasts/README.md) supplies that 3:30 arrangement candidate plus four sketches with different instrument/rhythm families, awaiting listens. Stop music iteration here for now and return to game content as requested.
 - [ ] Integrate the approved `assets/music/atmosphere/shop_arrives.ogg` on shop arrival, with local presentation-state deduplication and appropriate music handoff; preserve the approved audio unchanged.
 - [ ] Build a reproducible offline composition/instrument/render workflow; MIDI, text notation or composition scripts are all optional choices. Develop changing passages, distinctive biome character and seamless loop tails, with deep/mid/high voices (including cello candidates), preserved dynamic range and Industry drum/horn candidates. Install suitable synthesis/audio tools as needed.
@@ -466,7 +466,7 @@ Direction and local reference inventory: [music brief](MUSIC_DIRECTION.md).
   (80 across four), with thematic assets, placement rules, volume and falloff.
   Include continuous water/wind/machinery, occasional wildlife/distant events,
   and unsettling one-shot creaks, screams or other discoveries. This is an
-  additional quota: Forest and [Ice](history/ICE_AMBIENCE.md) each have twenty implemented cues; other biomes remain.
+  additional quota: Forest and [Ice](features/ICE_AMBIENCE.md) each have twenty implemented cues; other biomes remain.
 - [x] Add positional looping sources with per-source gain, near/far falloff,
   smooth enter/exit fades, sensible voice limits and listener-aware mixing.
 - [x] Add point/area triggers: enter once, optionally rearm after leaving or a
@@ -631,17 +631,17 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 
 ## Suggested order
 
-- [ ] Prioritize [internet multiplayer playtesting](MULTIPLAYER_PLAYTESTING.md): Splonks/Gubsy room discovery, punch/relay fallback, party lifecycle, saved desync evidence, FPS-independent transport timing and friendly-fire ON by default with a lobby opt-out.
+- [ ] Prioritize [internet multiplayer playtesting](engineering/MULTIPLAYER_PLAYTESTING.md): Splonks/Gubsy room discovery, punch/relay fallback, party lifecycle, saved desync evidence, FPS-independent transport timing and friendly-fire ON by default with a lobby opt-out.
 Then finish active playtest fixes and biome content. Keep Rust as the parity
 reference and current C++ lighting as the visual baseline. The user owns live
 playtesting; use builds and focused static captures for implementation checks.
 ## Playtest tools and stage presentation
 
-- [x] Implement the [playtest tools specification](PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.
+- [x] Implement the [playtest tools specification](guides/PLAYTEST_TOOLS.md): ImGui level/unique selection, saved temporary start override, independent repeat toggle, immediate/spawn loadout editor with actual item options and progression presets.
 - [x] Controller icon override in settings; set this user’s preference to Xbox.
 - [x] Small upper-right angled stage announcement, subtle entrance and fade.
 
-- [x] [HUD and frame pacing](history/HUD_FRAME_PACING.md): shared angled slot/HP panels, exclusive game cursor, high refresh rendering with 60 Hz simulation. Desktop flicker/144 Hz feel awaits user feedback.
+- [x] [HUD and frame pacing](engineering/HUD_FRAME_PACING.md): shared angled slot/HP panels, exclusive game cursor, high refresh rendering with 60 Hz simulation. Desktop flicker/144 Hz feel awaits user feedback.
 
 ### Multiplayer recovery and local layout feedback (2026-09-15)
 

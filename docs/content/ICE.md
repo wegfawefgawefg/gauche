@@ -209,7 +209,7 @@ materials remain optional content, not extra physics systems.
 ## Twenty ambient cues and small scenes
 
 Twenty cues are implemented with nine local scenery fittings and conditional
-source playback; see [implementation and verification](../history/ICE_AMBIENCE.md).
+source playback; see [implementation and verification](../features/ICE_AMBIENCE.md).
 The table below retains scene direction for further authored-room work.
 
 Produce new offline source scripts and committed audio. Positional loops use
@@ -267,7 +267,7 @@ Weather-station slice: courtyard geometry with snowy edges, a central ruin floor
 a drummer with an early frost bat or later Echo Hound, and Snow Globe supplies
 within floor budgets. Sparse 18-HP weather vanes are nonblocking metal props,
 not fuel or guaranteed loot. Existing route protection constrains placement.
-See [weather implementation](../history/ICE_WEATHER.md) for synced obscuration,
+See [weather implementation](../features/ICE_WEATHER.md) for synced obscuration,
 interrupt rules and the distinction between action cues and ambient audio.
 
 ## Beyond the initial roster
@@ -277,4 +277,4 @@ the ram. Committed adjacent grab, 0.6s warning, four-cell throw, wall-impact
 damage and ice landing slips. It shuffles locally instead of chasing. Heavy
 hits interrupt it; a side-step, facing shield or active grip provides counterplay.
 Drops two Raw Meat and independently 25% Crampons. See
-[Yeti implementation and limits](../history/ICE_YETI.md).
+[Yeti implementation and limits](../features/ICE_YETI.md).

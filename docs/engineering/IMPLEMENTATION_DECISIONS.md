@@ -21,7 +21,7 @@
 
 
 Earlier completed content notes are archived in
-[early content implementation](history/EARLY_CONTENT_IMPLEMENTATION.md).
+[early content implementation](../features/EARLY_CONTENT_IMPLEMENTATION.md).
 
 ## Camera, facing and cursor feedback
 
@@ -345,7 +345,7 @@ or playtest claim; each drawn tile now submits 25 vertices and 32 triangles.
 ## Forest item implementation
 
 Completed tool, plant, remedy, bait, flight, trap, hearing and mixture details
-are in [forest item implementation](history/FOREST_ITEMS_IMPLEMENTATION.md).
+are in [forest item implementation](../features/FOREST_ITEMS_IMPLEMENTATION.md).
 
 ## Shield lantern
 
@@ -414,12 +414,12 @@ remain: Wolf Whistle, Pocket Door, Straw Decoy, Scarecrow and Thunder Acorn.
 ## Forest wards and decoys
 
 Scarecrow and straw-decoy implementation notes, validation and limits are in
-[Forest item implementation history](history/FOREST_ITEMS_IMPLEMENTATION.md).
+[Forest item implementation history](../features/FOREST_ITEMS_IMPLEMENTATION.md).
 
 ## Recent forest finds
 
 Wolf Whistle and Thunder Acorn notes and validation are in
-[Forest item implementation history](history/FOREST_ITEMS_IMPLEMENTATION.md).
+[Forest item implementation history](../features/FOREST_ITEMS_IMPLEMENTATION.md).
 
 ## Pocket door
 
@@ -474,7 +474,7 @@ No live playtest or broad new test suite ran.
 
 ## Ice implementation
 
-See [ice implementation notes](history/ICE_IMPLEMENTATION.md) for terrain,
+See [ice implementation notes](../features/ICE_IMPLEMENTATION.md) for terrain,
 footing, skaters and regional item progress. The live checklist remains MASTER_TASKS.md.
 
-See [observatory optics](history/ICE_OPTICS.md) for beams, mirrors and lenses.
+See [observatory optics](../features/ICE_OPTICS.md) for beams, mirrors and lenses.

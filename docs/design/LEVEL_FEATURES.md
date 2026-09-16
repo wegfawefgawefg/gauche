@@ -1,10 +1,10 @@
 # Level features: geography, variants, infrastructure and events
 
 2026-09-15 clarification of the user's layered-generation ideas. Implementation
-status belongs in [MASTER_TASKS.md](MASTER_TASKS.md). These are descriptive
+status belongs in [MASTER_TASKS.md](../MASTER_TASKS.md). These are descriptive
 categories that can combine, not a requirement for five separate frameworks.
 Existing context: [world review](WORLD_INTERACTION_REVIEW.md),
-[scene candidates](content/SCENE_CANDIDATES.md),
+[scene candidates](../content/SCENE_CANDIDATES.md),
 [objective/disaster rules](CONDITIONS_AND_WORLD_FEEDBACK.md#objectives-escape-pressure-and-floor-modifiers).
 
 ## What the examples are

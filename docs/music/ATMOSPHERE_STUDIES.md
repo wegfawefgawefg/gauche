@@ -2,7 +2,7 @@
 
 The first three drafts sounded too cheesy, melodic and artificially orchestral
 to the user. This pass starts new compositions, preserving the original OGGs
-unchanged. The revised direction is recorded in [the music brief](../MUSIC_DIRECTION.md).
+unchanged. The revised direction is recorded in [the music brief](MUSIC_DIRECTION.md).
 
 ## Listening artifacts
 

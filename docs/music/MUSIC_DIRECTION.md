@@ -29,7 +29,7 @@ Preserve those drafts, but start the next compositions from scratch:
   exploration style is settled. The user needs enough alternatives to say
   “more like this, less like that.”
 
-Pass 02 delivers [15 original atmosphere studies and cues](history/ATMOSPHERE_STUDIES.md)
+Pass 02 delivers [15 original atmosphere studies and cues](ATMOSPHERE_STUDIES.md)
 with a local listening gallery and comparison reel. These are audition sketches;
 listening feedback, full-length development and game integration remain open.
 
@@ -45,7 +45,7 @@ musical identities. Do not use that pipe texture as the whole game's soundtrack.
 the other pass-02 pieces are accepted for use as-is. Their material may become
 **one developed Ice song**, which needs more happening/real development.
 
-Pass 03 provides [one 3:30 Ice candidate and four contrasting studies](../tools/music/contrasts/README.md).
+Pass 03 provides [one 3:30 Ice candidate and four contrasting studies](../../tools/music/contrasts/README.md).
 Separate the dominant instruments, rhythm, register, space and composition—not
 just presets within one resonant drone. The user then asked to finish the current
 small music batch and return to game content. Further music iteration waits for
@@ -145,7 +145,7 @@ appropriate. A paused/resumed game or a reconnect should not restart cues in a
 burst. Track selection/playback remains local presentation state, outside
 gameplay RNG, hashes and snapshots.
 
-First preview milestone: [three original sketches](history/MUSIC_SKETCHES.md)
+First preview milestone: [three original sketches](MUSIC_SKETCHES.md)
 and their local listening page are available for the user's feedback. These
 shorter arrangements are not completion of the full song catalog.
 `audio.cpp` still loads only `title.ogg` and `playing.ogg`; their measured loudness

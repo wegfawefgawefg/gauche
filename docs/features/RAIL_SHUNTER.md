@@ -89,6 +89,6 @@ stale handles and malformed snapshots.
 All 128 sampled Industry floors retained exit reachability and required locks,
 decoded successfully and produced matching hashes. Eight contained complete
 freight rooms. This wider check also exposed and fixed an older
-[scrap-yard snapshot bug](SCRAP_YARD_SNAPSHOT.md). All eleven sounds loaded under
+[scrap-yard snapshot bug](../engineering/SCRAP_YARD_SNAPSHOT.md). All eleven sounds loaded under
 SDL dummy audio, and a static software-render capture was inspected. Player
 feedback is still needed for difficulty, pacing and readability in motion.

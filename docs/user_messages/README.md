@@ -17,10 +17,10 @@ This archive is source material, not a second live checklist.
   and [Image #2](images/2026-09-15-feedback-2.png). These led to the 1–13 discussion.
 - [Full 1–13 world-interaction message](2026-09-15-world-interactions.txt), including
   2.a/2.b, A/B/C, all IDEA interludes and the closing request. Expanded into
-  [World interaction review](../WORLD_INTERACTION_REVIEW.md) and
+  [World interaction review](../design/WORLD_INTERACTION_REVIEW.md) and
   [Scene candidates](../content/SCENE_CANDIDATES.md).
 - [Archive request and balance feedback](2026-09-15-balance-and-archive.txt):
   Forest weapon pools, SMG refills, fists/gloves, augments, reward pacing and
-  preserving the fun of exploration. Expanded into [Balance review](../BALANCE_REVIEW.md).
+  preserving the fun of exploration. Expanded into [Balance review](../design/BALANCE_REVIEW.md).
 
 [MASTER_TASKS.md](../MASTER_TASKS.md) is the single live execution checklist.

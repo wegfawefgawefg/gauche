@@ -1,7 +1,7 @@
 # Gauche C++ port plan
 
 Original architectural blueprint. Current open work is tracked in the
-[Gauche master task list](MASTER_TASKS.md).
+[Gauche master task list](../MASTER_TASKS.md).
 
 ## Target
 
@@ -66,7 +66,7 @@ Place forest room stamps on an expandable tile canvas. Choose them by required
 door sockets and room role, then populate each from its tagged local loot/enemy
 pools under a floor-wide supply and threat budget. Room stamps may vary in
 size; trim and pad the final bounds after the graph is embedded.
-See [the forest content sketch](FOREST_CONTENT_IDEAS.md) for candidate rooms,
+See [the forest content sketch](../design/FOREST_CONTENT_IDEAS.md) for candidate rooms,
 items, artifacts, hazards, and rewards.
 
 Use the tile grid for terrain and simple movement/collision queries. Put

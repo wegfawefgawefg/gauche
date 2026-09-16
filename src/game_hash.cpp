@@ -232,5 +232,10 @@ std::uint64_t game_hash(const Game& game) {
         for (Handle handle:{shift.tank,shift.foreman,shift.hauler}) {mix(hash,static_cast<std::uint64_t>(handle.slot));mix(hash,handle.generation);}
         for (Cell cell:{shift.origin,shift.direction}) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
     }
+    mix(hash,game.lava_vents.size());
+    for (const auto& vent:game.lava_vents) {
+        for (Cell cell:{vent.source,vent.target}) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
+        mix(hash,vent.ticks);mix(hash,static_cast<std::uint64_t>(vent.phase));
+    }
     return hash;
 }

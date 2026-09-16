@@ -135,6 +135,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/magnet_crane.cpp src/entities/crane_operator.cpp
     src/entities/arc_welder.cpp
     src/world/lava.cpp src/world/lava_render.cpp
+    src/world/lava_eruptions.cpp src/world/lava_eruption_render.cpp
     src/props/light_tower.cpp src/props/light_tower_render.cpp src/world/light_towers.cpp
     src/props/tall_tree.cpp src/props/tall_tree_render.cpp src/world/tall_trees.cpp
     src/props/ice_pillar.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp

@@ -1,4 +1,5 @@
 #include "light_towers.hpp"
+#include "lava_eruptions.hpp"
 #include "tall_trees.hpp"
 #include "ice_pillars.hpp"
 #include "industrial_geometry.hpp"
@@ -108,5 +109,6 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
     else { populate_industrial_links(game,plan); populate_ice_thaw(game,plan); populate_shelf_reward(game,plan); populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_tall_trees(game,plan); place_light_towers(game,plan); place_roof_scenes(game,plan); }
+    place_lava_vents(game);
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

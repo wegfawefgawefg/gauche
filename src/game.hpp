@@ -310,6 +310,15 @@ struct IndustrialShift {
     Cell origin{},direction{};
 };
 
+enum class LavaPhase : std::uint8_t { Cooling, Swelling, Airborne };
+// A small floor-local hazard list; target commits before the visible warning.
+// No retargeting during windup/flight, and no cosmetic random state is consulted.
+struct LavaVent {
+    Cell source{},target{};
+    std::uint16_t ticks=360;
+    LavaPhase phase=LavaPhase::Cooling;
+};
+
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
@@ -317,6 +326,7 @@ struct Game {
     std::vector<ReactorEvent> reactor_front;
     std::vector<BoilerFeed> boiler_feeds;
     std::vector<IndustrialShift> industrial_shifts;
+    std::vector<LavaVent> lava_vents;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

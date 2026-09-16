@@ -1,3 +1,4 @@
+#include "world/lava_eruptions.hpp"
 #include "props/light_tower.hpp"
 #include "props/tall_tree.hpp"
 #include "entities/industrial_shift.hpp"
@@ -18,7 +19,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(64);
+    writer.u32(65);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -111,12 +112,17 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         for (Handle handle:{shift.tank,shift.foreman,shift.hauler}) {writer.i32(handle.slot);writer.u32(handle.generation);}
         writer.cell(shift.origin);writer.cell(shift.direction);
     }
+    writer.u8(static_cast<std::uint8_t>(game.lava_vents.size()));
+    for (const auto& vent:game.lava_vents) {
+        writer.cell(vent.source);writer.cell(vent.target);
+        writer.u16(vent.ticks);writer.u8(static_cast<std::uint8_t>(vent.phase));
+    }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 64) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 65) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -329,6 +335,14 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         shift.origin=reader.cell();shift.direction=reader.cell();result.industrial_shifts.push_back(shift);
     }
     if (!valid_industrial_shifts(result)) {error="Invalid industrial shift";return false;}
+    const auto vents=reader.u8();
+    if (vents>max_lava_vents) {error="Too many lava vents";return false;}
+    for (int i=0;i<vents;++i) {
+        LavaVent vent;vent.source=reader.cell();vent.target=reader.cell();
+        vent.ticks=reader.u16();vent.phase=static_cast<LavaPhase>(reader.u8());
+        result.lava_vents.push_back(vent);
+    }
+    if (!valid_lava_vents(result)) {error="Invalid lava vent";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = result.entities[static_cast<std::size_t>(slot)];

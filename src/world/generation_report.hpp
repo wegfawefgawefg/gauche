@@ -4,7 +4,7 @@
 
 // Local observations only: shared immutably with an inspected/played Game and
 // omitted from hashes and network snapshots. Received snapshots have no report.
-enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, Count };
+enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
 struct FeatureDecision {
@@ -49,6 +49,7 @@ inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::RootMaze,"Root maze",Biome::Forest,{8,4,4,4}},
     GenerationRule{GenerationFeature::OpenSectors,"Open sectors",Biome::Forest,{3,2,1,2}},
     GenerationRule{GenerationFeature::River,"Cross-room river",Biome::Forest,{2,2,2,3}},
+    GenerationRule{GenerationFeature::ForestEncounters,"Ordinary Forest encounters",Biome::Forest,{1,1,1,1}},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {
@@ -65,7 +66,7 @@ inline const char* generation_outcome_name(GenerationOutcome outcome) {
     case GenerationOutcome::Selected:return "Selected / finding space";
     case GenerationOutcome::Failed:return "Selected / placement failed";
     case GenerationOutcome::Reserved:return "Footprint reserved";
-    case GenerationOutcome::Built:return "Geometry built";
+    case GenerationOutcome::Built:return "Built / applied";
     case GenerationOutcome::Suppressed:return "Suppressed";
     }
     return "Unknown";

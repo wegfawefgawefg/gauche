@@ -147,6 +147,13 @@ void draw_worldgen_details(const Game& live_game) {
         }
         if (ImGui::BeginTabItem("Population")) {
         ImGui::SeparatorText("Recorded population results (finished map)");
+        if (v.original->generation_report) {
+            const auto* packs=feature_decision(*v.original->generation_report,GenerationFeature::ForestEncounters);
+            if (packs && packs->outcome==GenerationOutcome::Built) {
+                ImGui::TextWrapped("%s",packs->variant.c_str());
+                ImGui::TextWrapped("Ordinary packs only; landmark populations, wildlife and specialists are separate. See Rolls for member placements and failures.");
+            }
+        }
         ImGui::Text("Giant trees %zu | Timber groves %zu",v.population.giant_trees.size(),v.population.timber_groves.size());
         ImGui::Text("Snake tunnels %zu | Spider caves %zu",v.population.snake_tunnels.size(),v.population.spider_caves.size());
         ImGui::Text("Root mazes %zu | Bear dens %zu",v.population.root_mazes.size(),v.population.forest_dens.size());

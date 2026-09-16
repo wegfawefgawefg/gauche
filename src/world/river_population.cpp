@@ -12,7 +12,7 @@ void populate_forest_river(Game& game,FloorPlan& plan,PopulationReport* report) 
         std::vector<Cell> occupied;
         const int budget=std::clamp(static_cast<int>(river.path.size()/12),3,12);
         const WeightedComponent enemies[]{{static_cast<int>(EntityKind::Mosquito),"Mosquito",3},{static_cast<int>(EntityKind::Bat),"Bat",2},
-            {static_cast<int>(EntityKind::Zombie),"Zombie",2},{static_cast<int>(EntityKind::ForagerGoblin),"Forager",game.run.floor==1 ? 0U : 2U}};
+            {static_cast<int>(EntityKind::Zombie),"Zombie",2},{static_cast<int>(EntityKind::Wolf),"Wolf",game.run.floor==1 ? 0U : 2U}};
         for (Cell c:sites) {
             if (static_cast<int>(occupied.size())>=budget) break;
             const auto* tile=game.stage.at(c);

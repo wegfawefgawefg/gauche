@@ -1,5 +1,6 @@
 #include "industrial_population.hpp"
 #include "forest_den.hpp"
+#include "forest_encounters.hpp"
 #include "giant_tree.hpp"
 #include "timber_grove.hpp"
 #include "spider_cave.hpp"
@@ -30,21 +31,6 @@
 #include <vector>
 
 namespace {
-
-void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool guarded) {
-    const Handle root_handle = spawn_room_enemy(game, room, EntityKind::RootTurret, 2, budget);
-    const Entity* root = get_entity(game, root_handle);
-    if (root == nullptr || !guarded || budget.threat < 2) return;
-    for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
-        const Cell cell = root->cell + side;
-        const Tile* tile = game.stage.at(cell);
-        if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, false) >= 0 ||
-            distance(cell, game.run.spawn) < 4) continue;
-        Entity* guard = get_entity(game, spawn_entity(game, EntityKind::BrambleGuard, cell));
-        if (guard != nullptr) { guard->entity_a = root_handle; budget.threat -= 2; }
-        break;
-    }
-}
 
 void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
     if (room.shape==RoomShape::ThawCavern || reserved_habitat(room)) return;
@@ -135,54 +121,6 @@ void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Roo
         spawn_room_enemy(game, room, hazard, cost, budget);
         if (round >= 2) spawn_room_enemy(game, room, hazard, cost, budget);
         return;
-    }
-    switch (room.role) {
-    case RoomRole::Thicket:
-        if (round > 0 && random_u32(game) % 3 == 0) { spawn_room_enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
-        if (random_u32(game) % 3 == 0) rooted_watch(game, room, budget, round > 0);
-        else spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Wolf : EntityKind::Boar, 2, budget);
-        if (round > 0) spawn_room_enemy(game, room, EntityKind::ThornSnail, 2, budget);
-        break;
-    case RoomRole::Brook:
-        spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::SporeToad : EntityKind::LanternMoth, 1, budget);
-        if (round > 0) spawn_room_enemy(game, room, random_u32(game) % 2 == 0 ? EntityKind::Bat : EntityKind::Mosquito, 1, budget);
-        if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Bunny, *cell);
-        break;
-    case RoomRole::Ruins:
-        if (random_u32(game) % 3 == 0) spawn_room_enemy(game, room, EntityKind::CarrionCrow, 1, budget);
-        spawn_room_enemy(game, room, round >= 2 ? EntityKind::ZombieStack : EntityKind::Zombie,
-              round >= 2 ? 3 : 1, budget);
-        break;
-    case RoomRole::Den:
-        if (round > 0 && random_u32(game) % 3 == 0) { spawn_room_enemy(game, room, EntityKind::BurrowWorm, 3, budget); break; }
-        if (random_u32(game) % 3 == 0) spawn_room_enemy(game, room, EntityKind::CarrionCrow, 1, budget);
-        spawn_room_enemy(game, room, EntityKind::Wolf, 2, budget);
-        if (round > 0) spawn_room_enemy(game, room, EntityKind::Den, 4, budget);
-        break;
-    case RoomRole::Cache:
-        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::CrateMimic, 2, budget);
-        else spawn_room_enemy(game, room, EntityKind::ThornSnail, 2, budget);
-        break;
-    case RoomRole::Shrine:
-        if (random_u32(game) % 2 == 0) { rooted_watch(game, room, budget, round > 0); break; }
-        spawn_room_enemy(game, room, round > 0 ? EntityKind::Bear : EntityKind::Wolf,
-              round > 0 ? 3 : 2, budget);
-        break;
-    case RoomRole::Orchard:
-        if (round > 0 || random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::WaspNest, 3, budget);
-        if (const auto cell = room_space(game, room)) spawn_chicken_family(game, *cell);
-        break;
-    case RoomRole::Workshop:
-        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::ForagerGoblin, 1, budget);
-        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::Woodpecker, 2, budget);
-        if (round > 0 && random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::CrateMimic, 2, budget);
-        if (const auto cell = room_space(game, room)) spawn_entity(game, EntityKind::Dog, *cell);
-        break;
-    case RoomRole::Clearing:
-        if (random_u32(game) % 2 == 0) spawn_room_enemy(game, room, EntityKind::Owl, 2, budget);
-        else spawn_room_enemy(game, room, EntityKind::Mosquito, 1, budget);
-        break;
-    default: break;
     }
 }
 
@@ -451,13 +389,11 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report,
                 room.role!=RoomRole::Secret && !reserved_habitat(room) &&
                 std::find(bear_rooms.begin(),bear_rooms.end(),i)==bear_rooms.end()) encounters.push_back(i);
         }
-        // A growing floor needs a growing population. Shuffle allocation so deep
-        // branches don't become empty after early rooms spend the shared budget.
-        budget.threat=std::max(budget.threat,static_cast<int>(encounters.size())*2+round*3);
         for (std::size_t i=encounters.size();i>1;--i)
             std::swap(encounters[i-1],encounters[random_u32(game)%i]);
-        for (const auto i:encounters) encounter(game,plan,plan.rooms[i],budget);
-    }
+        populate_forest_encounters(game,plan,encounters,report,decisions);
+    } else populate_forest_encounters(game,plan,{},report,decisions);
+
     place_field_equipment(game,plan,budget,starter);
     for (const RoomPlan& room:plan.rooms) {
         if (forest_floor(game.run.floor)) room_light(game,room);

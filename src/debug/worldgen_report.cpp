@@ -42,7 +42,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
                     ImGui::Text("Roll %u of [0,%u); 0 selects",decision->roll,decision->denominator);
                 if (decision->candidate_count>=0) {
                     const bool block=rule.feature==GenerationFeature::GiantTree || rule.feature==GenerationFeature::TimberGrove;
-                    ImGui::TextWrapped("%d %s",decision->candidate_count,block ? "weighted block entries (weighted by existing corners)" : "eligible adjacent room pairs");
+                    ImGui::TextWrapped("%d %s",decision->candidate_count,block ? "weighted block entries (weighted by existing corners)" : rule.feature==GenerationFeature::ForestEncounters ? "eligible ordinary rooms" : "eligible placement candidates");
                 }
                 if (!decision->variant.empty()) ImGui::TextWrapped("Variant: %s",decision->variant.c_str());
                 if (!decision->regions.empty()) {
@@ -72,7 +72,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: six large Forest landmarks, open sectors and rivers, plus their recorded child rolls. Ordinary room-role rolls and later removals remain untraced.");
+    ImGui::TextWrapped("Coverage: large Forest landmarks, sectors, rivers and ordinary encounter composition. Room-role assignment and later removals remain untraced.");
 }
 
 void draw_live_generation_details(const Game& game) {

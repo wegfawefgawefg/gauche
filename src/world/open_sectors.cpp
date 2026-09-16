@@ -76,7 +76,7 @@ void populate_open_sectors(Game& game,FloorPlan& plan,PopulationReport* report) 
         for (std::size_t i=sites.size();i>1;--i) std::swap(sites[i-1],sites[random_u32(game)%i]);
         const unsigned late=game.run.floor==1 ? 0U : 2U;
         const WeightedComponent fighters[]{{static_cast<int>(EntityKind::Bat),"Bat",3},{static_cast<int>(EntityKind::Mosquito),"Mosquito",2},
-            {static_cast<int>(EntityKind::Zombie),"Zombie",2},{static_cast<int>(EntityKind::Wolf),"Wolf",late},{static_cast<int>(EntityKind::ForagerGoblin),"Forager",late}};
+            {static_cast<int>(EntityKind::Zombie),"Zombie",2},{static_cast<int>(EntityKind::Wolf),"Wolf",late},{static_cast<int>(EntityKind::Boar),"Boar",late}};
         const int wanted=std::clamp(static_cast<int>(sites.size()/50),2,8);
         std::vector<Cell> occupied;
         for (Cell cell:sites) {

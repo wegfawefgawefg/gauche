@@ -55,32 +55,57 @@ std::vector<Cell> place_group(Game& game,GenerationReport* report,int parent,Cel
 }
 void specialist(Game& game,const RoomPlan& room,int parent,PopulationReport* population,GenerationReport* report) {
     const int stage=biome_stage(game.run.floor);
-    Options choices;option(choices,EntityKind::None,"No specialist",6);
+    Options choices;option(choices,EntityKind::None,"No specialist",stage>=3 ? 3U : 6U);
     // Specialists have their own allowance; passive or conditional inhabitants
     // never spend the ordinary pack's slots. Their existing behavior stays intact.
     if (stage>=2) switch(room.role) {
     case RoomRole::Thicket:
         option(choices,EntityKind::RootTurret,"Root watch",3);
         option(choices,EntityKind::ThornSnail,"Thorn snail",2);
+        option(choices,EntityKind::WaspNest,"Wasp nest",2);
         option(choices,EntityKind::BurrowWorm,"Burrow worm",stage>=3 ? 2U : 0U);break;
     case RoomRole::Den:
         option(choices,EntityKind::Den,"Wolf den",3);
         option(choices,EntityKind::BurrowWorm,"Burrow worm",stage>=3 ? 2U : 0U);break;
-    case RoomRole::Ruins:option(choices,EntityKind::ZombieStack,"Zombie stack",stage>=3 ? 4U : 0U);break;
+    case RoomRole::Ruins:
+        option(choices,EntityKind::ZombieStack,"Zombie stack",stage>=3 ? 4U : 0U);
+        option(choices,EntityKind::Spawner,"Undead source",stage>=3 ? 2U : 0U);break;
     case RoomRole::Cache:case RoomRole::Workshop:option(choices,EntityKind::CrateMimic,"Mimic",3);break;
     case RoomRole::Shrine:
         option(choices,EntityKind::RootTurret,"Root watch",2);
         option(choices,EntityKind::Bear,"Lone bear",1);break;
     case RoomRole::Orchard:option(choices,EntityKind::WaspNest,"Wasp nest",3);break;
     case RoomRole::Brook:option(choices,EntityKind::SporeToad,"Spore toad",3);break;
+    case RoomRole::Clearing:
+        option(choices,EntityKind::Owl,"Owl perch",2);
+        option(choices,EntityKind::ThornSnail,"Thorn snail",2);
+        option(choices,EntityKind::RootTurret,"Root watch",2);break;
     default:option(choices,EntityKind::Owl,"Owl perch",2);break;
     }
     const auto roll=roll_component(game,report,feature,parent,"Specialist",room.center,choices);
     const auto kind=static_cast<EntityKind>(roll.value);
     if (kind==EntityKind::None) {component_result(report,roll,"No additional specialist");return;}
-    RoomSupplies allowance{4,0,0,0,0,population};
-    // Species init owns its links, especially segmented worms and root guards.
-    const Handle handle=spawn_room_enemy(game,room,kind,2,allowance);
+    // Stationary threats need a broad, unoccupied ring so they cannot close a
+    // narrow crossing. Species init still owns segmented worms and root links.
+    auto sites=room_spaces(game,room,kind);
+    const bool stationary=kind==EntityKind::RootTurret || kind==EntityKind::Den ||
+        kind==EntityKind::Spawner || kind==EntityKind::WaspNest;
+    std::erase_if(sites,[&](Cell c){
+        if(!approach(game,c))return true;
+        if(stationary)for(int y=-1;y<=1;++y)for(int x=-1;x<=1;++x) {
+            const Cell adjacent=c+Cell{x,y};
+            if(!walkable(game.stage.at_or_border(adjacent)) || entity_at(game,adjacent,false)>=0)return true;
+        }
+        return false;
+    });
+    auto* tally=population ? &population->enemies[static_cast<std::size_t>(kind)] : nullptr;
+    if(tally)++tally->attempted;
+    Handle handle{};
+    if(!sites.empty()) {
+        const Cell cell=sites[random_u32(game)%sites.size()];
+        handle=kind==EntityKind::BurrowWorm ? spawn_burrow_worm(game,cell) : spawn_entity(game,kind,cell);
+    }
+    if(tally){if(get_entity(game,handle))++tally->placed;else ++tally->rejected;}
     const auto* entity=get_entity(game,handle);
     if (!entity) {component_result(report,roll,"No suitable cell or entity capacity");return;}
     const Cell cell=entity->cell;

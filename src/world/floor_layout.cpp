@@ -3,6 +3,7 @@
 #include "mushroom_settlements.hpp"
 #include "forest_boss.hpp"
 #include "forest_border.hpp"
+#include "forest_outskirts.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -169,6 +170,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_spider_growth(game,plan,report);
         populate_river_rafts(game,plan);
         capture("Cross-room inhabitants and scenery");
+        populate_forest_outskirts(game,plan,report,trace);
+        capture("Outlying Forest encounters");
         // Ambient colonies use remaining capacity after all ordinary fighters.
         populate_ant_colonies(game,plan,report);
         capture("Ant colonies and food routes");

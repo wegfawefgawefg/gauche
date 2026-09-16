@@ -227,5 +227,10 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash,feed.belts.size());
         for (Cell cell:feed.belts) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
     }
+    mix(hash,game.industrial_shifts.size());
+    for (const auto& shift:game.industrial_shifts) {
+        for (Handle handle:{shift.tank,shift.foreman,shift.hauler}) {mix(hash,static_cast<std::uint64_t>(handle.slot));mix(hash,handle.generation);}
+        for (Cell cell:{shift.origin,shift.direction}) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
+    }
     return hash;
 }

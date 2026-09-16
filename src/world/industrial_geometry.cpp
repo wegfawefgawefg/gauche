@@ -1,4 +1,5 @@
 #include "industrial_geometry.hpp"
+#include "industrial_shift.hpp"
 #include "ground_items.hpp"
 #include "../props/interaction.hpp"
 #include "../props/conveyor.hpp"
@@ -126,6 +127,7 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
             if (i==3) *game.stage.at(cell)={TileKind::Spring};
             else place_prop(game.stage,cell,PropKind::WaterPipe,static_cast<std::uint8_t>(across.y!=0));
         }
+        carve_industrial_shift(game,plan,link);
         // Keep both ends approachable without stepping onto the moving lane.
         for (Cell end:{link.load,link.unload}) for (int side:{-1,1}) floor(game,plan,end+times(across,side));
     }
@@ -144,6 +146,7 @@ void populate_industrial_links(Game& game,const FloorPlan& plan) {
             feed.drive=mount+link.along;feed.cutter=cutter_handle;
             feed.belts.assign(link.belt.begin(),link.belt.end()-1);game.boiler_feeds.push_back(feed);
         }
+        if (get_entity(game,tank_handle)) populate_industrial_shift(game,link,tank_handle);
         place_ground_item(game,link.load-link.along,ItemKind::BoltPouch,3);
         place_ground_item(game,mount+link.across,ItemKind::Sealant);
         place_ground_item(game,mount+link.along+link.across,ItemKind::BeltCrank);

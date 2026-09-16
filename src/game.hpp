@@ -304,12 +304,19 @@ struct BoilerFeed {
 
 };
 
+// A finite manual seam and its loading crew share a real boiler/belt installation.
+struct IndustrialShift {
+    Handle tank{},foreman{},hauler{};
+    Cell origin{},direction{};
+};
+
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
     std::vector<FlightContact> flight_contacts;
     std::vector<ReactorEvent> reactor_front;
     std::vector<BoilerFeed> boiler_feeds;
+    std::vector<IndustrialShift> industrial_shifts;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

@@ -1,4 +1,5 @@
 #include "mine_crew.hpp"
+#include "industrial_shift.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "hearing.hpp"
@@ -69,8 +70,10 @@ void advance_worker(Game& game,int slot,Cell target) {
 void choose_order(Game& game,Entity& leader) {
     int best=-10000;
     Cell direction=leader.facing;
-    const unsigned int first=random_u32(game)%4;
-    for (unsigned int i=0;i<4;++i) {
+    const auto* shift=worker_shift(game,leader);
+    if (shift) direction=shift->direction;
+    const unsigned int first=shift ? 0 : random_u32(game)%4;
+    for (unsigned int i=0;!shift && i<4;++i) {
         const Cell side=sides[(first+i)%4];
         int score=0;
         for (int reach=1;reach<=6;++reach) {
@@ -89,6 +92,9 @@ void choose_order(Game& game,Entity& leader) {
 }
 void direct_crew(Game& game,int slot) {
     Entity& leader=game.entities[static_cast<std::size_t>(slot)];
+    if (const auto* shift=worker_shift(game,leader);shift && !shift_has_ore(game,*shift)) {
+        leader.sprite=idle_sprite(leader);leader.move_wait=30;return;
+    }
     if (leader.timer_b==0 || leader.label_b==0) { choose_order(game,leader); return; }
     if (leader.move_wait>0) return;
     const Cell direction=leader.point_b;
@@ -192,8 +198,16 @@ void step_mine_worker(Game& game,int slot) {
         if (!step_hearing(game,slot) && worker.move_wait==0) yield_lane(game,slot);
         return;
     }
+    if (leader->label_a!=CrewWhistle && leader->attack_wait==0 && leader->sleep_ticks==0 && leader->stun_ticks==0) {
+        if (const auto* shift=worker_shift(game,worker);shift && step_shift_hauler(game,slot,*shift)) return;
+    }
     if (worker.label_b==1 && leader->label_b==1 && leader->label_a!=CrewWhistle && leader->attack_wait==0 &&
         leader->sleep_ticks==0 && leader->stun_ticks==0) {
+        if (const auto* shift=worker_shift(game,worker)) {
+            if (const auto target=shift_ore_target(game,*shift,worker.counter_b)) advance_worker(game,slot,*target);
+            else worker.move_wait=18;
+            return;
+        }
         const Cell direction=leader->point_b,side{-direction.y,direction.x};
         advance_worker(game,slot,leader->cell+Cell{direction.x*4+side.x*worker.counter_b,direction.y*4+side.y*worker.counter_b});
     } else if (worker.move_wait==0 && distance(worker.cell,leader->cell)<=1) yield_lane(game,slot);

@@ -77,7 +77,7 @@ enum class Sprite : std::size_t {
     WaterPipe, WaterPipeBroken, SpringIntake,
     SteamDrive, SteamDriveOff, SteamDriveBroken,
     CraneOperator, CraneOperatorWork, CraneOperatorWait, CraneOperatorAlarm, CraneConsole,
-    WidowWorkCast, WidowWorkReel,
+    WidowWorkCast, WidowWorkReel, PickhandCarry,
     Count,
 };
 

@@ -15,7 +15,14 @@ def worker(name,leader=False,pose='idle'):
     p.point((6,2),fill='#f3d798')
     if leader:
         p.line([(4,8),(5,10)],fill='#caaf66');p.rectangle((9,9,10,10),fill='#644737')
-    if pose=='raise':
+    if pose=='carry':
+        p.polygon([(3,8),(11,8),(12,12),(3,12),(2,10)],fill='#423e32')
+        p.line([(3,9),(11,9),(10,12),(4,12),(3,9)],fill='#aa8f62')
+        p.polygon([(4,8),(5,6),(7,7),(9,6),(11,8)],fill='#343d39')
+        p.point((6,7),fill='#819086');p.point((9,7),fill='#66776b')
+        p.line([(2,8),(3,10),(5,10)],fill='#b69b76')
+        p.line([(12,8),(12,10),(10,10)],fill='#b69b76')
+    elif pose=='raise':
         p.line([(11,8),(13,5)],fill='#9b8461',width=2)
         p.line([(13,8),(13,1)],fill='#8e6a46')
         if not leader: p.line([(9,1),(14,1),(15,3)],fill='#a8ada4')
@@ -34,3 +41,5 @@ def worker(name,leader=False,pose='idle'):
 worker('pickhand');worker('pickhand_raise',pose='raise');worker('pickhand_swing',pose='swing')
 worker('shift_foreman',True);worker('foreman_whistle',True,'whistle')
 worker('foreman_raise',True,'raise');worker('foreman_swing',True,'swing')
+
+worker('pickhand_carry',pose='carry')

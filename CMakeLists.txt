@@ -96,7 +96,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/quarry_charge.cpp src/items/fuse_scissors.cpp src/projectiles/exposed_fuse.cpp
     src/projectiles/coal_spit.cpp
     src/items/foreman_whistle.cpp
-    src/entities/mine_crew.cpp src/entities/mine_route.cpp
+    src/entities/mine_crew.cpp src/entities/industrial_shift.cpp src/world/industrial_shift.cpp src/entities/mine_route.cpp
     src/items/effigy_mask.cpp src/items/ice_anchor.cpp src/items/snow_shelter.cpp src/items/sled.cpp
     src/items/stillwater_bell.cpp src/world/currents.cpp
     src/items/tuning_fork.cpp

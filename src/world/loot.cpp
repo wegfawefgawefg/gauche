@@ -118,6 +118,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
             place_ground_item(game,enemy.cell,ItemKind::CoalLump,std::min(2,enemy.counter_a+enemy.counter_b));
         break;
     case EntityKind::Pickhand: {
+        drop_scavenged_items(game,enemy);
         const auto roll=random_u32(game)%100;
         if (roll<20) {
             const Handle handle=spawn_entity(game,EntityKind::GroundItem,nearby_ground_item_cell(game,enemy.cell));

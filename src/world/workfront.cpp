@@ -29,6 +29,16 @@ void place_workfront_terrain(Game& game,const FloorPlan& plan) {
 
 int populate_workfront(Game& game,const RoomPlan& room) {
     if (room.role!=RoomRole::Workfront) return 0;
+    // The connected loading shift already fills a workfront at this end.
+    for (const auto& shift:game.industrial_shifts) {
+        const Entity* leader=get_entity(game,shift.foreman);
+        if (!leader || std::abs(leader->cell.x-room.center.x)>=room.half_width ||
+            std::abs(leader->cell.y-room.center.y)>=room.half_height) continue;
+        int workers=0;
+        for (const Entity& actor:game.entities)
+            if (actor.entity_a==shift.foreman && (mine_worker(actor.kind) || actor.kind==EntityKind::Strikebreaker)) ++workers;
+        return workers;
+    }
     const Cell origin=room.center+Cell{-2,-3};
     const Cell locations[]{origin,origin+Cell{1,-1},origin+Cell{1,0},origin+Cell{1,1}};
     int available=0;

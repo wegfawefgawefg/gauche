@@ -1,3 +1,4 @@
+#include "entities/industrial_shift.hpp"
 #include "entities/boiler_feed.hpp"
 #include "entities/boiler_drive.hpp"
 #include "props/ice_pillar.hpp"
@@ -15,7 +16,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(63);
+    writer.u32(64);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -103,12 +104,17 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u8(static_cast<std::uint8_t>(feed.belts.size()));
         for (Cell cell:feed.belts) writer.cell(cell);
     }
+    writer.u8(static_cast<std::uint8_t>(game.industrial_shifts.size()));
+    for (const auto& shift:game.industrial_shifts) {
+        for (Handle handle:{shift.tank,shift.foreman,shift.hauler}) {writer.i32(handle.slot);writer.u32(handle.generation);}
+        writer.cell(shift.origin);writer.cell(shift.direction);
+    }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 63) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 64) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -311,6 +317,14 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         result.boiler_feeds.push_back(feed);
     }
     if (!valid_boiler_feeds(result)) {error="Invalid boiler feed";return false;}
+    const auto shifts=reader.u8();
+    if (shifts>4) {error="Too many industrial shifts";return false;}
+    for (int i=0;i<shifts;++i) {
+        IndustrialShift shift;
+        shift.tank={reader.i32(),reader.u32()};shift.foreman={reader.i32(),reader.u32()};shift.hauler={reader.i32(),reader.u32()};
+        shift.origin=reader.cell();shift.direction=reader.cell();result.industrial_shifts.push_back(shift);
+    }
+    if (!valid_industrial_shifts(result)) {error="Invalid industrial shift";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = result.entities[static_cast<std::size_t>(slot)];

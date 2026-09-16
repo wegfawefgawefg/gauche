@@ -1,4 +1,6 @@
 #include "roof_render.hpp"
+#include "hollow_tree.hpp"
+#include "hollow_tree_render.hpp"
 #include "ice_arch_render.hpp"
 #include "../world/terrain_material.hpp"
 #include <algorithm>
@@ -7,6 +9,7 @@
 bool reveal_roof(const RoofSpan& roof,Cell viewer) {
     // Only the actual passage and this viewport's viewer reveal the group.
     // Standing beside a support or just outside either entrance does not count.
+    if (roof.kind==RoofKind::HollowTree) return roof.hp>0 && tree_ellipse(roof,viewer,3);
     const Cell delta=viewer-roof.start;
     const int along=roof.vertical ? delta.y : delta.x;
     const int across=roof.vertical ? delta.x : delta.y;
@@ -29,7 +32,8 @@ void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Sta
                    const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     constexpr std::array<Sprite,4> bodies{Sprite::RoofLogA,Sprite::RoofFrozenLogA,Sprite::RoofGantryA,Sprite::RoofContainerA};
     constexpr std::array<Sprite,4> ends{Sprite::RoofLogEndA,Sprite::RoofFrozenLogEndA,Sprite::RoofGantryEndA,Sprite::RoofContainerEndA};
-    if (!roof.hp || row<0 || row>=(roof.vertical ? roof.length : 3)) return;
+    if (!roof.hp || row<0 || row>=roof_rows(roof)) return;
+    if (roof.kind==RoofKind::HollowTree) {draw_hollow_tree_row(renderer,graphics,stage,roof,row,viewer,camera,zoom,lighting);return;}
     if (roof.kind==RoofKind::IceArch) {draw_ice_arch_row(renderer,graphics,stage,roof,row,viewer,camera,zoom,lighting);return;}
     const bool reveal=viewer && reveal_roof(roof,viewer->cell);
     const float condition=static_cast<float>(roof.hp)/static_cast<float>(roof_health(roof.kind));
@@ -62,7 +66,7 @@ void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Sta
 void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
                 const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     for (const auto& roof:game.stage.roofs)
-        for (int row=0;row<(roof.vertical ? roof.length : 3);++row)
+        for (int row=0;row<roof_rows(roof);++row)
             draw_roof_row(renderer,graphics,game.stage,roof,row,viewer,camera,zoom,lighting);
 }
 

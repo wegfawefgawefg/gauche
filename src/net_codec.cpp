@@ -20,7 +20,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(66);
+    writer.u32(67);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -48,7 +48,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
     writer.u8(static_cast<std::uint8_t>(game.stage.roofs.size()));
     for (const RoofSpan& roof:game.stage.roofs) {
         writer.cell(roof.start);writer.u8(static_cast<std::uint8_t>(roof.kind));
-        writer.u8(roof.length);writer.u8(roof.vertical);writer.u8(roof.hp);writer.u8(roof.height);
+        writer.u8(roof.length);writer.u8(roof.vertical);writer.u8(roof.hp);writer.u8(roof.height);writer.u8(roof.width);
     }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
@@ -128,7 +128,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 66) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 67) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -233,7 +233,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     result.stage.roofs.resize(roof_count);
     for (RoofSpan& roof:result.stage.roofs) {
         roof.start=reader.cell();roof.kind=static_cast<RoofKind>(reader.u8());
-        roof.length=reader.u8();roof.vertical=reader.u8();roof.hp=reader.u8();roof.height=reader.u8();
+        roof.length=reader.u8();roof.vertical=reader.u8();roof.hp=reader.u8();roof.height=reader.u8();roof.width=reader.u8();
         if (!valid_roof(result.stage,roof)) reader.okay=false;
     }
     Run& run = result.run;

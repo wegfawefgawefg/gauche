@@ -11,7 +11,8 @@
 namespace {
 Cell scale(Cell cell,int n) {return {cell.x*n,cell.y*n};}
 bool eligible(const FloorPlan& plan,int index) {
-    return index!=0 && index!=plan.exit_room && index!=plan.secret_room && index!=plan.objective_room;
+    return index!=0 && index!=plan.exit_room && index!=plan.secret_room && index!=plan.objective_room &&
+        !reserved_habitat(plan.rooms[static_cast<std::size_t>(index)]);
 }
 void reserve(FloorPlan& plan,Cell cell) {
     plan.protected_cells[static_cast<std::size_t>(cell.y*plan.width+cell.x)]=1;

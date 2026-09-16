@@ -1,6 +1,7 @@
 #include "route.hpp"
 #include "room_frame.hpp"
 #include "forest_den.hpp"
+#include "giant_tree.hpp"
 #include "spider_cave.hpp"
 #include "snake_tunnel.hpp"
 #include "root_maze.hpp"
@@ -204,6 +205,7 @@ FloorPlan plan_floor(Game& game) {
             break;
         }
     }
+    plan_giant_tree(game,plan);
     plan_forest_den(game,plan);
     plan_spider_cave(game,plan);
     plan_snake_tunnel(game,plan);

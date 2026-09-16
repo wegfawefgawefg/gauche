@@ -1,6 +1,7 @@
 #include "route.hpp"
 #include "room_frame.hpp"
 #include "forest_den.hpp"
+#include "giant_tree.hpp"
 #include "spider_cave.hpp"
 #include "snake_tunnel.hpp"
 #include "root_maze.hpp"
@@ -141,6 +142,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     carve_ice_thaw(game,plan);
     carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
+    carve_giant_tree(game,plan);
     carve_snake_tunnel(game,plan);
     carve_root_maze(game,plan);
     for (int y = 0; y < plan.height; ++y)

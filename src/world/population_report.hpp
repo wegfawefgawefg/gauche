@@ -14,6 +14,7 @@ struct PopulationReport {
     std::vector<SpiderCave> spider_caves;
     std::vector<SnakeTunnel> snake_tunnels;
     std::vector<RootMaze> root_mazes;
+    std::vector<GiantTree> giant_trees;
     std::vector<Cell> bear_fishers;
     std::vector<RangedGroup> ranged_groups;
     int shelf_rooms=0, shelf_links=0;

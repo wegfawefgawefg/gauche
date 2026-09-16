@@ -1,4 +1,5 @@
 #include "scene_order.hpp"
+#include "scenery/roof.hpp"
 #include "entities/bell_diver.hpp"
 #include <algorithm>
 #include <cmath>
@@ -41,10 +42,10 @@ std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float z
         for (std::size_t slot=0;slot<game.stage.roofs.size();++slot) {
             const auto& roof=game.stage.roofs[slot];
             if (!roof.hp) continue;
-            const int rows=roof.vertical ? roof.length : 3;
+            const int rows=roof_rows(roof);
             for (int row=0;row<rows;++row) {
                 const Cell cell=roof.start+Cell{0,row};
-                if (cell.y<cy-ry || cell.y>cy+ry) continue;
+                if (cell.y<cy-ry || cell.y>cy+ry+roof.height) continue;
                 // A long roof is a sequence of ground rows. Its front cannot
                 // hide a pillar rooted farther south; occupants at a row are
                 // still covered by that row and use the normal group reveal.

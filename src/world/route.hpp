@@ -59,7 +59,16 @@ struct RootMaze {
     std::vector<Cell> roots,ground;
     std::vector<RoofSpan> passages;
 };
+struct GiantTree {
+    std::array<int,4> rooms{};
+    RoofSpan canopy{};
+    Cell cache{};
+    bool spiders=false;
+    std::vector<Cell> entrances,ground;
+    std::vector<RoofSpan> passages;
+};
 struct FloorPlan {
+    std::vector<GiantTree> giant_trees;
     std::vector<RootMaze> root_mazes;
     std::vector<SnakeTunnel> snake_tunnels;
     std::vector<SpiderCave> spider_caves;

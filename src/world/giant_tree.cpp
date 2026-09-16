@@ -1,4 +1,5 @@
 #include "giant_tree.hpp"
+#include "four_room_block.hpp"
 #include "terrain_material.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -11,14 +12,6 @@
 namespace {
 constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
 Cell scale(Cell c,int n) {return {c.x*n,c.y*n};}
-int room_at(const FloorPlan& plan,Cell grid) {
-    for (int i=0;i<static_cast<int>(plan.rooms.size());++i) if (plan.rooms[static_cast<std::size_t>(i)].grid==grid) return i;
-    return -1;
-}
-bool eligible(const FloorPlan& plan,int i) {
-    return i!=0 && i!=plan.exit_room && i!=plan.objective_room && i!=plan.secret_room &&
-        !reserved_habitat(plan.rooms[static_cast<std::size_t>(i)]);
-}
 void shuffle(Game& game,std::vector<Cell>& cells) {
     for (std::size_t i=cells.size();i>1;--i) std::swap(cells[i-1],cells[random_u32(game)%i]);
 }
@@ -70,40 +63,10 @@ void inner_roots(Game& game,const FloorPlan& plan,const GiantTree& tree,Cell cen
 
 void plan_giant_tree(Game& game,FloorPlan& plan) {
     if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 10U : 5U)!=0) return;
-    Cell low{7,7},high{};
-    for (const auto& room:plan.rooms) {
-        low.x=std::min(low.x,room.grid.x);low.y=std::min(low.y,room.grid.y);
-        high.x=std::max(high.x,room.grid.x);high.y=std::max(high.y,room.grid.y);
-    }
-    std::vector<Cell> choices;
-    for (int y=low.y;y<high.y;++y) for (int x=low.x;x<high.x;++x) {
-        int present=0;bool clear=true;
-        for (Cell d:{Cell{0,0},Cell{1,0},Cell{0,1},Cell{1,1}}) {
-            const int i=room_at(plan,Cell{x,y}+d);if (i<0) continue;
-            ++present;if (!eligible(plan,i)) clear=false;
-        }
-        if (clear && present>=2) for (int weight=0;weight<present;++weight) choices.push_back({x,y});
-    }
-    if (choices.empty()) return;
-    const Cell grid=choices[random_u32(game)%choices.size()];
-    GiantTree tree;int index=0;
-    // Reserve four real planning cells. Missing corners become connected rooms
-    // within existing world bounds; no objective or other landmark is displaced.
-    for (Cell d:{Cell{0,0},Cell{1,0},Cell{0,1},Cell{1,1}}) {
-        const Cell at_grid=grid+d;int i=room_at(plan,at_grid);
-        if (i<0) {
-            RoomPlan room;room.grid=at_grid;room.center={(at_grid.x-low.x)*22+12,(at_grid.y-low.y)*22+12};
-            room.half_width=room.half_height=8;room.depth=plan.rooms.back().depth+1;
-            i=static_cast<int>(plan.rooms.size());plan.rooms.push_back(room);
-        }
-        tree.rooms[static_cast<std::size_t>(index++)]=i;
-        auto& room=plan.rooms[static_cast<std::size_t>(i)];room.landmark=true;room.role=RoomRole::Den;
-    }
-    for (int a:tree.rooms) for (int b:tree.rooms) if (a<b && distance(plan.rooms[static_cast<std::size_t>(a)].grid,plan.rooms[static_cast<std::size_t>(b)].grid)==1) {
-        bool connected=false;for (auto edge:plan.edges) if ((edge.a==a&&edge.b==b)||(edge.a==b&&edge.b==a)) connected=true;
-        if (!connected) plan.edges.push_back({a,b});
-    }
-    const Cell center{(grid.x-low.x)*22+23,(grid.y-low.y)*22+23};
+    GiantTree tree;
+    const auto chosen=reserve_four_rooms(game,plan,tree.rooms);
+    if (!chosen) return;
+    const Cell center=*chosen;
     tree.canopy.kind=RoofKind::HollowTree;tree.canopy.hp=160;
     tree.canopy.length=static_cast<std::uint8_t>(33+2*(random_u32(game)%3));
     tree.canopy.width=static_cast<std::uint8_t>(33+2*(random_u32(game)%3));

@@ -67,7 +67,14 @@ struct GiantTree {
     std::vector<Cell> entrances,ground;
     std::vector<RoofSpan> passages;
 };
+struct TimberGrove {
+    std::array<int,4> rooms{};
+    Cell center{},entry{},cache{},spring{};
+    int turns=0,offset=0;
+    std::vector<Cell> ground,firebreaks,trees;
+};
 struct FloorPlan {
+    std::vector<TimberGrove> timber_groves;
     std::vector<GiantTree> giant_trees;
     std::vector<RootMaze> root_mazes;
     std::vector<SnakeTunnel> snake_tunnels;

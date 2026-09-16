@@ -1,6 +1,7 @@
 #include "industrial_population.hpp"
 #include "forest_den.hpp"
 #include "giant_tree.hpp"
+#include "timber_grove.hpp"
 #include "spider_cave.hpp"
 #include "snake_tunnel.hpp"
 #include "root_maze.hpp"
@@ -379,7 +380,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
-        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;report->spider_caves=plan.spider_caves;report->snake_tunnels=plan.snake_tunnels;report->root_mazes=plan.root_mazes;report->giant_trees=plan.giant_trees;
+        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;report->spider_caves=plan.spider_caves;report->snake_tunnels=plan.snake_tunnels;report->root_mazes=plan.root_mazes;report->giant_trees=plan.giant_trees;report->timber_groves=plan.timber_groves;
         report->industry_profile=plan.industry_profile;report->industrial_links=plan.industrial_links;
         report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
@@ -435,6 +436,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
     populate_giant_tree(game,plan);
+    populate_timber_grove(game,plan);
     populate_forest_den(game,plan);
     populate_spider_cave(game,plan);
     populate_snake_tunnel(game,plan);

@@ -36,12 +36,12 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                                             direction.y * reach + sideways.y * lane};
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
-            if (item.kind == ItemKind::SkateBlade && !clear_attack_sight(game,origin,cell,false)) break;
+            if ((item.kind == ItemKind::SkateBlade || item.kind==ItemKind::IceAxe || item.kind==ItemKind::TuskPike) && !clear_attack_sight(game,origin,cell,false,item.kind==ItemKind::IceAxe)) break;
             const bool blocked = !walkable(*tile) && tile->kind!=TileKind::Chasm;
             const bool solid_contact = blocked || tile->prop.hp > 0;
             int prop_damage = pattern.damage;
             if (item.kind == ItemKind::PressHammer && prop_blocks(tile->prop)) prop_damage *= 2;
-            if (item.kind == ItemKind::Chisel && (tile->prop.kind == PropKind::IceBlock || tile->prop.kind == PropKind::IcePillar || tile->prop.kind == PropKind::IceRubble)) prop_damage *= 2;
+            if ((item.kind == ItemKind::Chisel || item.kind==ItemKind::IceAxe) && (tile->prop.kind == PropKind::IceBlock || tile->prop.kind == PropKind::IcePillar || tile->prop.kind == PropKind::IceRubble)) prop_damage *= 2;
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog ||
                  tile->prop.kind==PropKind::TallTree || tile->prop.kind==PropKind::FallenLog || tile->prop.kind==PropKind::LogBridge))
@@ -68,7 +68,8 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                     continue;
                 }
                 const bool blocked_hit = blocks_facing(target, origin);
-                emit_sound(game, item.kind == ItemKind::PressHammer ? SoundId::PressImpact :
+                emit_sound(game, item.kind==ItemKind::IceAxe ? SoundId::IceAxeHit :
+                    item.kind==ItemKind::TuskPike ? SoundId::TuskPikeHit : item.kind == ItemKind::PressHammer ? SoundId::PressImpact :
                     item.kind == ItemKind::RubberMallet ? SoundId::MalletImpact :
                     item.kind == ItemKind::NailBoard ? SoundId::NailStep :
                     item.kind == ItemKind::SkateBlade ? SoundId::SkateCut : SoundId::Punch1, cell);
@@ -76,12 +77,13 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
                 if (!blocked_hit && (item.flame_ticks > 0 || item.kind == ItemKind::Torch))
                     ignite_struck_actor(game, hit);
                 if ((item.kind == ItemKind::WoodenMaul || item.kind == ItemKind::PressHammer ||
-                     item.kind == ItemKind::RubberMallet) && !blocked_hit && target.health > 0)
+                     item.kind == ItemKind::RubberMallet ||
+                     (item.kind==ItemKind::TuskPike && reach==pattern.maximum)) && !blocked_hit && target.health > 0)
                     shove_actor(game, hit, direction, origin);
                 struck = true;
                 if (!pattern.piercing) break;
             }
-            const int terrain_damage = item.kind == ItemKind::Chisel && tile->material == TileMaterial::Ice ?
+            const int terrain_damage = (item.kind == ItemKind::Chisel || item.kind==ItemKind::IceAxe) && tile->material == TileMaterial::Ice ?
                 pattern.damage * 2 : item.kind == ItemKind::Hatchet && wooden_terrain(*tile) ?
                 pattern.damage * 3 : pattern.damage;
             struck |= hit_terrain(game, cell, origin, terrain_damage, item.dig_power);

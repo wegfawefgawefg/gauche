@@ -90,6 +90,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "lava_glob",
     "fissure_crack", "fissure_glow", "fissure_cooled", "fissure_steam_a", "fissure_steam_b", "fissure_lava_a", "fissure_lava_b",
     "crate_bruised", "crate_splintered", "crate_broken",
+    "ice_axe", "tusk_pike", "ice_axe_arc", "tusk_pike_thrust",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

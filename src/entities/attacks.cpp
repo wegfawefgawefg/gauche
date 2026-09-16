@@ -288,8 +288,8 @@ bool clear_shot_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
     return trace_sight(game,from,to,smoke_blocks,true,true);
 }
 
-bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks) {
-    return trace_sight(game, from, to, smoke_blocks, true);
+bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks, bool terrain_target) {
+    return trace_sight(game, from, to, smoke_blocks, true, false, terrain_target);
 }
 
 bool clear_heat_sight(const Game& game, Cell from, Cell to) {

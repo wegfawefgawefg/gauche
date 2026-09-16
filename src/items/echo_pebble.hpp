@@ -3,7 +3,8 @@
 #include <array>
 
 struct EchoVoice { SoundId sound; const char* name; int radius; };
-inline constexpr std::array<EchoVoice,22> echo_voices{{
+inline constexpr std::array<EchoVoice,24> echo_voices{{
+    {SoundId::IceAxeSwing,"Ice axe",4}, {SoundId::TuskPikeThrust,"Tusk pike",4},
     EchoVoice{SoundId::ForkRing,"Tuning fork",10},
     EchoVoice{SoundId::PistolShot,"Pistol",10}, {SoundId::MusketShot,"Musket",10},
     {SoundId::ShotgunShot,"Shotgun",10}, {SoundId::SmgShot,"SMG",10},

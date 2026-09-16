@@ -252,7 +252,9 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "DMG %d | CIRCUIT %d", pattern.damage, pattern.blast_radius);
     if (item.kind == ItemKind::RivetGun)
         std::snprintf(line,sizeof(line),"BURST 3 x %d | GAP 0.15s",pattern.damage);
-    if (item.kind == ItemKind::Chisel)
+    if (item.kind==ItemKind::TuskPike)
+        std::snprintf(line,sizeof(line),"DMG %d | TIP AT %d: SHOVE 1",pattern.damage,pattern.maximum);
+    if (item.kind == ItemKind::Chisel || item.kind==ItemKind::IceAxe)
         std::snprintf(line, sizeof(line), "DMG %d | ICE %d | DIG 1", pattern.damage, pattern.damage * 2);
     if (item.kind == ItemKind::IceBrick)
         std::snprintf(line, sizeof(line), "THROW %d | COVER 35 HP", pattern.damage);

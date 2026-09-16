@@ -119,6 +119,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
     if (same && (entity.attack_wait > pose.attack_wait ||
                  entity.use_flash > pose.use_flash)) {
         pose.angle = attack_angle(entity.facing);
+        if (entity.kind==EntityKind::Player && entity.use_flash==8 && entity.use_flash>pose.use_flash)
+            spawn_ice_weapon_swing(cosmetics,entity);
         if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
             entity.counter_b==ZombieRecover && entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);

@@ -325,6 +325,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
         cooldown = item_pattern(item).cooldown;
         break;
     case ItemKind::NailBoard: case ItemKind::PressHammer: case ItemKind::RubberMallet:
+    case ItemKind::IceAxe: case ItemKind::TuskPike:
     case ItemKind::SkateBlade: case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:

@@ -1,3 +1,4 @@
+#include "ice_melee.hpp"
 #include "lunch_tin.hpp"
 #include "steel_toe.hpp"
 #include "glow_slag.hpp"
@@ -85,7 +86,7 @@ struct Entry { ItemKind kind; Definition definition; };
 
 // One explicit owner per kind. Legacy definitions remain in inventory/item_pattern.
 // Check order as well as count so enum additions cannot silently shift a lookup.
-constexpr std::array<Entry, 154> entries{{
+constexpr std::array<Entry, 156> entries{{
     {ItemKind::None, nullptr},
     {ItemKind::Wall, nullptr},
     {ItemKind::Medkit, nullptr},
@@ -240,6 +241,8 @@ constexpr std::array<Entry, 154> entries{{
     {ItemKind::GlowSlag, glow_slag_item},
     {ItemKind::SteelToeCap, steel_toe_item},
     {ItemKind::LunchTin, lunch_tin_item},
+    {ItemKind::IceAxe, ice_melee_item},
+    {ItemKind::TuskPike, ice_melee_item},
 }};
 constexpr bool valid_entries() {
     if (entries.size() != static_cast<std::size_t>(ItemKind::Count)) return false;

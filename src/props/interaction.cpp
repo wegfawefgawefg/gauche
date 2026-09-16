@@ -72,7 +72,8 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     case PropKind::FishingCreel:
         if (roll < 35) item = ItemKind::SmokedFish;
         else if (roll < 55) item = ItemKind::FishingLine;
-        else if (roll < 70) item = ItemKind::AirBladder;
+        else if (roll < 60) item = ItemKind::AirBladder;
+        else if (roll < 70) item = ItemKind::TuskPike;
         else if (roll < 80) item = ItemKind::FoldedBridge;
         else if (roll < 90) item = ItemKind::Sled;
         break;

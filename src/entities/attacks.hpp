@@ -12,6 +12,6 @@ EnemyAttack enemy_attack(const Entity& enemy);
 void resolve_enemy_attack(Game& game, int slot, int damage, SoundId sound, int sleep = 0);
 bool clear_shot_sight(const Game& game, Cell from, Cell to, bool smoke_blocks = true);
 bool clear_sight(const Game& game, Cell from, Cell to, bool smoke_blocks = true);
-bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks = true);
+bool clear_attack_sight(const Game& game, Cell from, Cell to, bool smoke_blocks = true, bool terrain_target = false);
 bool clear_heat_sight(const Game& game, Cell from, Cell to);
 int enemy_defense(Game& game, int slot, int damage, Cell source, bool blockable);

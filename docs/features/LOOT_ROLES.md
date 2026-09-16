@@ -20,7 +20,7 @@ Each kind counts once, including items with multiple applications.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Shared | 3 | 3 | 1 | 2 | 1 | 10 |
 | Forest | 28 | 5 | 5 | 13 | 4 | 55 |
-| Ice | 12 | 6 | 7 | 23 | 2 | 50 |
+| Ice | 14 | 6 | 7 | 23 | 2 | 52 |
 | Industry | 17 | 5 | 4 | 9 | 1 | 36 |
 | Fourth biome | 0 | 0 | 0 | 0 | 0 | 0 |
 
@@ -29,7 +29,7 @@ Within each biome's minimum fifty native items, target at least **18 combat,
 flexible and include oddities. Thus at least thirty items offer broadly useful
 combat, survival or movement choices. Existing toys stay in the catalog.
 
-Current gaps: Forest needs one survival and one mobility option; Ice needs six
+Current gaps: Forest needs one survival and one mobility option; Ice needs four
 combat options; Industry needs one combat, one survival, two mobility and one
 contextual option as part of fourteen further items. The fourth biome needs its
 full catalog. Prioritize readable weapons and practical consumable stacks over
@@ -84,3 +84,10 @@ bundles, safe equipment placement, no-space behavior and snapshot round trips.
 The existing 128-floor generation audit passed routes, required locks,
 repeatability, report neutrality and snapshots. Human balance, repeated scene
 supplies and the full enemy/container import audit remain open.
+
+Ice weapon follow-up: Ice Axe and Tusk Pike add two native combat choices to
+ordinary supply and fitting quarry/fishing scenes. Their 120/100 condition is
+repairable; the axe cleaves and digs ice, while the pike shoves only at its tip.
+A generation-only 64-floor sample placed 30 axes and 21 pikes. Four-direction
+combat, blocking, crush/fall, wear, repair, snapshot and static render checks
+passed, along with the 128-floor generation audit. Human balance remains open.

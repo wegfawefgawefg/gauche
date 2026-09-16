@@ -39,6 +39,7 @@ bool magnetic_item(ItemKind kind) {
     case ItemKind::BearTrap: case ItemKind::Mine: case ItemKind::Pickaxe:
     case ItemKind::Hatchet: case ItemKind::Rake: case ItemKind::DiggingClaws:
     case ItemKind::RopeHook: case ItemKind::SpringTrap: case ItemKind::ReflectingPan:
+    case ItemKind::IceAxe: // Steel head; the tusk pike is bone, cord and wood.
     case ItemKind::Chisel: case ItemKind::SnowScoop: case ItemKind::SkateBlade:
     case ItemKind::Crampons: case ItemKind::GroundingSpike: case ItemKind::HarpoonGun:
     case ItemKind::EmergencyDoorstop: case ItemKind::TuningFork: case ItemKind::IceAnchor:

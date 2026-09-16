@@ -37,6 +37,7 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
         --item.durability <= 0) {
         SoundId sound=SoundId::BoxBreak;
         switch (used_kind) {
+        case ItemKind::IceAxe: case ItemKind::TuskPike: sound=SoundId::IceToolBreak;break;
         case ItemKind::NailBoard: sound=SoundId::NailBreak;break;
         case ItemKind::PressHammer: case ItemKind::RubberMallet: sound=SoundId::WoodCrack;break;
         case ItemKind::SkateBlade: sound=SoundId::SkateBreak;break;

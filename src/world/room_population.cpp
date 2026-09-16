@@ -229,15 +229,17 @@ void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
         if (room.role == RoomRole::IceQuarry && random_u32(game)%3==0)
             supply(game,room,ItemKind::ThawCharge,2,budget.equipment,budget.report);
         if (room.role == RoomRole::Reservoir || room.role == RoomRole::IceQuarry) {
-            if (room.role == RoomRole::IceQuarry) supply(game, room, round % 2 == 0 ? ItemKind::Chisel : ItemKind::IceBrick,
-                round % 2 == 0 ? 1 : 2, budget.equipment,budget.report);
+            if (room.role == RoomRole::IceQuarry) {
+                const ItemKind tool=round%3==0 ? ItemKind::IceAxe : round%3==1 ? ItemKind::Chisel : ItemKind::IceBrick;
+                supply(game,room,tool,tool==ItemKind::IceBrick ? 2 : 1,budget.equipment,budget.report);
+            }
             else {
                 supply(game, room, ItemKind::GritPouch, 1, budget.equipment,budget.report);
                 supply(game, room, ItemKind::SaltedKelp, 2, budget.healing,budget.report);
             }
         } else if (room.role == RoomRole::FishingHut) {
             supply(game, room, ItemKind::SmokedFish, 2, budget.healing,budget.report);
-            constexpr ItemKind fishing_tools[]{ItemKind::FishingLine,ItemKind::AirBladder,ItemKind::HarpoonGun,ItemKind::FoldedBridge};
+            constexpr ItemKind fishing_tools[]{ItemKind::FishingLine,ItemKind::TuskPike,ItemKind::HarpoonGun,ItemKind::FoldedBridge};
             supply(game,room,fishing_tools[round % 4],1,budget.equipment,budget.report);
         } else if (room.role == RoomRole::Shelter || room.role == RoomRole::Bathhouse) {
             if (room.role == RoomRole::Bathhouse) {

@@ -127,6 +127,20 @@ void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
     spray(cosmetics, cell, seed, 8, Sprite::Ruin, 0.1F, 0.018F);
 }
 
+void spawn_ice_weapon_swing(Cosmetics& cosmetics,const Entity& user) {
+    const auto& item=*user.inventory.held();
+    if (item.kind!=ItemKind::IceAxe && item.kind!=ItemKind::TuskPike) return;
+    SpriteParticle trail;
+    trail.sprite=item.kind==ItemKind::IceAxe ? Sprite::IceAxeArc : Sprite::TuskPikeThrust;
+    trail.layer=ParticleLayer::Foreground;
+    // A short stroke around the weapon, not a prediction of hits behind cover.
+    trail.x=static_cast<float>(user.cell.x)+.5F+static_cast<float>(user.facing.x)*.7F;
+    trail.y=static_cast<float>(user.cell.y)+.5F+static_cast<float>(user.facing.y)*.7F;
+    trail.width=trail.height=1.1F;
+    trail.angle=user.facing.x<0 ? 180 : user.facing.y>0 ? 90 : user.facing.y<0 ? -90 : 0;
+    trail.alpha=.7F;trail.life=trail.span=8;add(cosmetics,trail);
+}
+
 void spawn_wolf_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
     SpriteParticle bite;
     bite.sprite=Sprite::WolfFangs;bite.next_sprite=Sprite::WolfFangsClosed;

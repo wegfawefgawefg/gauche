@@ -377,8 +377,10 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
     }
     RoomSupplies fighters{};
     if (ice_floor(game.run.floor) || industrial_floor(game.run.floor)) {
-        fighters.threat=3+round;
-        budget.threat-=fighters.threat;
+        fighters.threat=6+round*2;
+        // Keep the previous specialist allowance; extra ordinary combat must
+        // not replace the crews and scenes that make these biomes distinct.
+        budget.threat-=3+round;
     }
     for (const RoomPlan& room:plan.rooms) if (room.role==RoomRole::FreightSiding && budget.threat>=3 && budget.equipment>=2) {
         if (populate_freight_siding(game,plan,room)) {budget.threat-=3;budget.equipment-=2;}
@@ -448,8 +450,6 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
             }
             if (const auto cell=room_space(game,room)) place_ground_item(game,*cell,ItemKind::FuseScissors);
         }
-    place_brawlers(game,plan,fighters);
-    budget.threat+=fighters.threat;
     bool salvage=false;
     for (const RoomPlan& room : plan.rooms) {
         room_light(game, room);
@@ -460,6 +460,7 @@ void populate_rooms(Game& game, const FloorPlan& plan) {
         place_crystal_vein(game,plan,room);
         room_loot(game, room, budget);
     }
+    place_brawlers(game,plan,fighters);
     // SUPPLIES: A sparse role roll must not accidentally remove all healing or new equipment.
     const RoomPlan& shrine = plan.rooms[static_cast<std::size_t>(plan.objective_room)];
     while (budget.healing > 0) {

@@ -4,7 +4,7 @@
 #include "../entities/seal_thief.hpp"
 #include "../surfaces/interaction.hpp"
 
-std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind) {
+std::vector<Cell> room_spaces(const Game& game, const RoomPlan& room, EntityKind kind) {
     const int width = room.half_width * 2 + 1;
     std::vector<bool> seen(static_cast<std::size_t>(width * (room.half_height * 2 + 1)), false);
     std::vector<Cell> queue{room.center}, choices;
@@ -28,6 +28,11 @@ std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind
             choices.push_back(cell);
         for (Cell side : sides) queue.push_back(cell + side);
     }
+    return choices;
+}
+
+std::optional<Cell> room_space(Game& game, const RoomPlan& room, EntityKind kind) {
+    const auto choices=room_spaces(game,room,kind);
     // ISLANDS: Required supplies never roll onto a bank isolated by water or lava.
     if (choices.empty()) return std::nullopt;
     return choices[random_u32(game) % choices.size()];
@@ -44,4 +49,3 @@ Handle spawn_room_enemy(Game& game, const RoomPlan& room, EntityKind kind, int c
     }
     return {};
 }
-

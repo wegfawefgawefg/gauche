@@ -51,7 +51,8 @@ struct SpiderCave {
 struct SnakeTunnel {
     std::vector<int> rooms;
     Cell axis{},entry{},cache{},island{},tree{};
-    int crossing_length=0;
+    int crossing_length=0,shape=0,component=-1,prize_component=-1;
+    std::vector<Cell> ground;
 };
 struct RootMaze {
     int a=0,b=0,length=0;

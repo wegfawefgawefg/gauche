@@ -61,6 +61,7 @@ std::vector<std::uint8_t> generation_walking_routes(const Game& game,const Floor
     for (const auto& tree:plan.giant_trees) {
         mark(open,tree.cache);for (Cell mouth:tree.entrances) mark(open,mouth);
     }
+    for (const auto& tunnel:plan.snake_tunnels) {mark(open,tunnel.entry);mark(open,tunnel.cache);}
     const auto shut=walking_parents(game,plan.rooms.front().center,plan.door);
     // This second route must not stop at a cell marked by a different BFS tree.
     const Cell objective=plan.rooms[static_cast<std::size_t>(plan.objective_room)].center;

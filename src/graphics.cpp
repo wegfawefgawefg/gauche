@@ -74,6 +74,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "debris_bent_nail", "debris_chain_link", "cable_crawler", "crawler_charge", "pocket_drill", "walking_kiln", "kiln_open", "kiln_cooled", "tension_spring", "audit_clerk", "clerk_stamp", "clerk_alarm", "pay_cage", "emergency_foam", "foam_cover", "furnace_moth", "furnace_moth_hot", "bolt_pouch", "slag_snail", "slag_snail_tucked", "slag_snail_cooled", "chain_hook", "nail_board", "ash_mound", "ash_whirl", "hand_bellows", "counterweight", "weight_block", "pocket_pump", "emergency_pump", "nozzle_elbow", "mold_thief", "mold_open", "mold_closed", "mold_key", "steam_lance", "lance_hot", "tar_flask", "tar_singer", "tar_gob", "rail_cart", "rail_shunter", "rail_switch_key", "rail_points", "insulated_boots", "glow_slag", "slag_cold", "streetlamp", "steel_toe", "lunch_tin", "lunch_empty", "reactor_core", "reactor_flame",
     "roof_log_a", "roof_log_b", "roof_log_c", "roof_log_end_a", "roof_log_end_b", "roof_log_end_c", "roof_ice_a", "roof_ice_b", "roof_ice_c", "roof_ice_end_a", "roof_ice_end_b", "roof_ice_end_c", "roof_gantry_a", "roof_gantry_b", "roof_gantry_c", "roof_gantry_end_a", "roof_gantry_end_b", "roof_gantry_end_c",
     "chapel_pew", "chapel_altar", "chapel_runner", "chapel_urn", "chapel_pew_broken", "chapel_wax",
+    "ice_pillar", "ice_pillar_cracked", "ice_rubble",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

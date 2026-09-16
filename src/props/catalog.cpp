@@ -3,6 +3,8 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::IcePillar: return {Sprite::IcePillar,SoundId::PillarFall,36,true,false};
+    case PropKind::IceRubble: return {Sprite::IceRubble,SoundId::IceBlockBreak,12,true,false};
     case PropKind::ChapelPew: return {Sprite::ChapelPew,SoundId::WoodCrack,16,true,false};
     case PropKind::ChapelAltar: return {Sprite::ChapelAltar,SoundId::CabinetOpen,24,true,false};
     case PropKind::ChapelRunner: return {Sprite::ChapelRunner,SoundId::DecoyTear,3,false,false};

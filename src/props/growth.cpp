@@ -1,3 +1,4 @@
+#include "ice_pillar.hpp"
 #include "../items/emergency_foam.hpp"
 #include "streetlamp.hpp"
 #include "tension_spring.hpp"
@@ -37,6 +38,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble) {step_ice_pillar(game,cell);continue;}
             if (prop.kind==PropKind::StreetLamp) {step_streetlamp(game,cell);continue;}
             if (prop.kind == PropKind::FoamCover) { step_foam_cover(game,cell); continue; }
             if (prop.kind == PropKind::TensionSpring) { step_tension_spring(game,cell); continue; }

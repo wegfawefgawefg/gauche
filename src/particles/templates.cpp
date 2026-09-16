@@ -235,7 +235,7 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::WaterDouse:
         spawn_campfire_smoke(cosmetics, sound.cell, seed);
         break;
-    case SoundId::ColdQuench: case SoundId::IceThaw:
+    case SoundId::PillarMelt: case SoundId::ColdQuench: case SoundId::IceThaw:
         shockwave(cosmetics, sound.cell, 100, 145, 155);
         break;
     case SoundId::AirInflate:

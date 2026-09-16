@@ -63,7 +63,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     case PropKind::MirrorShard: first = second = DebrisKind::MirrorChip; break;
     case PropKind::CrystalLens: first = second = DebrisKind::CrystalSplinter; break;
     case PropKind::SnowWindbreak: case PropKind::SnowCache: first = second = DebrisKind::SnowClump; break;
-    case PropKind::IceBlock: first = second = DebrisKind::IceChip; break;
+    case PropKind::IcePillar: case PropKind::IceRubble: case PropKind::IceBlock: first = second = DebrisKind::IceChip; break;
     case PropKind::StrawDecoy: case PropKind::Scarecrow: first = DebrisKind::Straw; second = DebrisKind::Cloth; break;
     case PropKind::BirdSeed: first = second = DebrisKind::SeedHusk; break;
     case PropKind::Thorns: first = DebrisKind::Twig; second = DebrisKind::PineNeedle; break;

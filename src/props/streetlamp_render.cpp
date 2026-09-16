@@ -13,7 +13,7 @@ std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float z
     for (int y=std::max(0,cy-ry);y<std::min(game.stage.height,cy+ry);++y)
         for (int x=std::max(0,cx-rx);x<std::min(game.stage.width,cx+rx);++x) {
             const Prop& prop=game.stage.at({x,y})->prop;
-            if (prop.kind==PropKind::StreetLamp && !prop.broken) order.push_back({0,{x,y},true});
+            if ((prop.kind==PropKind::StreetLamp || prop.kind==PropKind::IcePillar) && !prop.broken) order.push_back({0,{x,y},true});
         }
     // Foot position owns depth. Ties keep actor slot order and put props first.
     std::stable_sort(order.begin(),order.end(),[](const BodyDraw& a,const BodyDraw& b) {

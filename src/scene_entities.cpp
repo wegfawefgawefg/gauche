@@ -1,3 +1,4 @@
+#include "props/ice_pillar_render.hpp"
 #include "scene_entities.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -68,7 +69,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float pixels = tile_pixels(zoom);
     // LAYERS: Fixtures sit on the ground, pickups above them, then actors with held items.
     for (const BodyDraw& entry:body_draw_order(game,camera,zoom,layer)) {
-        if (entry.prop) {draw_streetlamp(renderer,graphics,game,entry.cell,camera,zoom,lighting);continue;}
+        if (entry.prop) {
+            if (game.stage.at(entry.cell)->prop.kind==PropKind::IcePillar)
+                draw_ice_pillar(renderer,graphics,game,entry.cell,camera,zoom,lighting);
+            else draw_streetlamp(renderer,graphics,game,entry.cell,camera,zoom,lighting);
+            continue;
+        }
         const std::size_t slot=entry.slot;
         const Entity& entity = game.entities[slot];
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||

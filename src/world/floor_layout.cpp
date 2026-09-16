@@ -1,3 +1,4 @@
+#include "ice_pillars.hpp"
 #include "roof_scenes.hpp"
 #include "reactor.hpp"
 #include "workfront.hpp"
@@ -98,6 +99,6 @@ void generate_world_floor(Game& game, FloorLayout layout) {
     if (reactor) populate_last_shift(game);
     else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
-    else { populate_rooms(game, plan); scatter_room_props(game, plan); place_roof_scenes(game,plan); }
+    else { populate_rooms(game, plan); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

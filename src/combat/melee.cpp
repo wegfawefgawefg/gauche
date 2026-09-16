@@ -41,7 +41,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             const bool solid_contact = blocked || tile->prop.hp > 0;
             int prop_damage = pattern.damage;
             if (item.kind == ItemKind::PressHammer && prop_blocks(tile->prop)) prop_damage *= 2;
-            if (item.kind == ItemKind::Chisel && tile->prop.kind == PropKind::IceBlock) prop_damage *= 2;
+            if (item.kind == ItemKind::Chisel && (tile->prop.kind == PropKind::IceBlock || tile->prop.kind == PropKind::IcePillar || tile->prop.kind == PropKind::IceRubble)) prop_damage *= 2;
             if (item.kind == ItemKind::Hatchet &&
                 (tile->prop.kind == PropKind::Crate || tile->prop.kind == PropKind::RottenLog))
                 prop_damage *= 3;

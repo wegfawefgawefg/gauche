@@ -1,3 +1,4 @@
+#include "ice_pillar.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "tension_spring.hpp"
 #include "streetlamp.hpp"
@@ -167,11 +168,13 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
         tile->prop.broken) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
+    if (prop.kind==PropKind::IcePillar) return hit_ice_pillar(game,cell,damage,source);
     if (prop.kind==PropKind::StreetLamp) return hit_streetlamp(game,cell,damage,source);
     if (prop.kind==PropKind::PayCage) alarm_pay_clerks(game,cell,source);
     if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);
     else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);
     else if (prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
     else if (prop.kind == PropKind::FoamCover) emit_sound(game,SoundId::FoamTear,cell);

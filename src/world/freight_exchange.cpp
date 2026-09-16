@@ -109,5 +109,5 @@ void populate_freight_exchange(Game& game) {
     // Actual worn salvage attracts the crane; the supplied hook can recover it.
     const Handle scrap=spawn_entity(game,EntityKind::GroundItem,{13,12});
     Entity& pick=*get_entity(game,scrap);pick.ground_item=make_item(ItemKind::Pickaxe);
-    pick.ground_item.uses=6;pick.sprite=Sprite::Pickaxe;
+    pick.ground_item.durability=6;pick.sprite=Sprite::Pickaxe;
 }

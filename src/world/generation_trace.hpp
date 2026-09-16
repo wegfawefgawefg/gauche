@@ -9,6 +9,7 @@ struct GenerationCheckpoint {
     std::string name;
     std::unique_ptr<Game> game;
     std::vector<RoomPlan> rooms;
+    GenerationReport report;
 };
 struct GenerationTrace {
     static constexpr std::size_t limit = 24;
@@ -16,6 +17,6 @@ struct GenerationTrace {
     bool truncated = false;
     void capture(const char* name, const Game& game, const FloorPlan& plan) {
         if (checkpoints.size() >= limit) { truncated = true; return; }
-        checkpoints.push_back({name, std::make_unique<Game>(game), plan.rooms});
+        checkpoints.push_back({name, std::make_unique<Game>(game), plan.rooms, plan.report});
     }
 };

@@ -61,11 +61,24 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         make_haunted_floor(game, layout == FloorLayout::HauntedHouse);
     FloorPlan plan;
     const auto capture = [&](const char* name) { if (trace) trace->capture(name,game,plan); };
+    plan.report.seed=game.run.seed;plan.report.floor=game.run.floor;plan.report.initial_rng=game.rng;
+    if (haunted || freight || reactor) for (const auto& rule:generation_rules) {
+        FeatureDecision decision;decision.feature=rule.feature;
+        decision.denominator=feature_denominator(rule,game.run.floor);
+        decision.outcome=decision.denominator ? GenerationOutcome::Suppressed : GenerationOutcome::Ineligible;
+        decision.reason=decision.denominator ? "Whole-floor unique replaces ordinary landmark planning" :
+            "Outside this feature's biome/stage window";
+        plan.report.features.push_back(std::move(decision));
+    }
     capture("Special layout selection");
     if (!haunted && !freight && !reactor) {
         plan = plan_floor(game);
         capture("Room and landmark plan");
         carve_floor(game, plan);
+        for (auto& decision:plan.report.features) if (decision.outcome==GenerationOutcome::Reserved) {
+            decision.outcome=GenerationOutcome::Built;
+            decision.reason="Landmark geometry carved; this does not guarantee every later prop or loot placement";
+        }
         capture("Base terrain / rooms / landmark geometry");
         place_forest_terrain(game, plan);
         capture("Forest terrain");
@@ -150,5 +163,6 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     place_lava_vents(game);
     capture("Fissures and lava vents");
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
+    game.generation_report=std::make_shared<const GenerationReport>(plan.report);
     capture("Finished");
 }

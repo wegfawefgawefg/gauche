@@ -1,4 +1,5 @@
 #include "timber_grove.hpp"
+#include "feature_roll.hpp"
 #include "four_room_block.hpp"
 #include "room_frame.hpp"
 #include "terrain_material.hpp"
@@ -110,12 +111,14 @@ void fuel_beds(Game& game,TimberGrove& grove) {
 }
 
 void plan_timber_grove(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 9U : 4U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::TimberGrove)) return;
     TimberGrove grove;
-    const auto center=reserve_four_rooms(game,plan,grove.rooms);if (!center) return;
+    const auto center=reserve_four_rooms(game,plan,grove.rooms,&plan.report.features.back().candidate_count);
+    if (!center) { feature_failed(plan,"No eligible four-room block; objectives and earlier habitats are excluded"); return; }
     grove.center=*center;grove.turns=static_cast<int>(random_u32(game)%4);
     grove.offset=static_cast<int>(random_u32(game)%7)-3;
     plan.timber_groves.push_back(grove);
+    feature_reserved(plan,grove.rooms,"Rotation "+std::to_string(grove.turns)+" / offset "+std::to_string(grove.offset));
 }
 
 void carve_timber_grove(Game& game,FloorPlan& plan) {

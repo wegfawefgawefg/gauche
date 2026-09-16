@@ -228,11 +228,11 @@ set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/prop
 set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
 
 add_compile_definitions(GAUCHE_DEV_MODE=$<BOOL:${GAUCHE_DEV_MODE}>)
-set_source_files_properties(src/debug/worldgen_draw.cpp PROPERTIES
-    COMPILE_DEFINITIONS GAUCHE_GENERATOR_REVISION="${GAUCHE_GENERATOR_REVISION}")
+file(CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/generation_build.hpp"
+    CONTENT "#pragma once\n#define GAUCHE_GENERATOR_REVISION \"@GAUCHE_GENERATOR_REVISION@\"\n" @ONLY)
 
 add_executable(gauche
-    src/main.cpp src/debug/worldgen.cpp src/debug/worldgen_draw.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
+    src/main.cpp src/debug/worldgen.cpp src/debug/worldgen_draw.cpp src/debug/worldgen_report.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
     src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
     src/entities/shard_render.cpp src/entities/crane_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/hit_render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
@@ -253,7 +253,7 @@ if(WIN32)
 endif()
 target_compile_definitions(gauche PRIVATE
     GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(gauche PRIVATE "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
+target_include_directories(gauche PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
 
 if(MSVC)
     target_compile_options(gauche PRIVATE /W4 /permissive-)
@@ -285,7 +285,7 @@ add_executable(gauche_render_scene EXCLUDE_FROM_ALL
     tools/render_scene.cpp ${GAUCHE_CAPTURE_SOURCES})
 target_link_libraries(gauche_render_scene PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
-target_include_directories(gauche_render_scene PRIVATE "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
+target_include_directories(gauche_render_scene PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
 target_compile_definitions(gauche_render_scene PRIVATE GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 if(WIN32)
     target_link_libraries(gauche_render_scene PRIVATE ws2_32)

@@ -12,7 +12,7 @@ bool eligible(const FloorPlan& plan,int i) {
 }
 }
 
-std::optional<Cell> reserve_four_rooms(Game& game,FloorPlan& plan,std::array<int,4>& rooms) {
+std::optional<Cell> reserve_four_rooms(Game& game,FloorPlan& plan,std::array<int,4>& rooms,int* weighted_candidates) {
     Cell low{7,7},high{};
     for (const auto& room:plan.rooms) {
         low.x=std::min(low.x,room.grid.x);low.y=std::min(low.y,room.grid.y);
@@ -27,6 +27,7 @@ std::optional<Cell> reserve_four_rooms(Game& game,FloorPlan& plan,std::array<int
         }
         if (clear && present>=2) for (int weight=0;weight<present;++weight) choices.push_back({x,y});
     }
+    if (weighted_candidates) *weighted_candidates=static_cast<int>(choices.size());
     if (choices.empty()) return std::nullopt;
     const Cell grid=choices[random_u32(game)%choices.size()];
     int index=0;

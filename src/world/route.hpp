@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.hpp"
+#include "generation_report.hpp"
 
 #include <vector>
 
@@ -74,6 +75,7 @@ struct TimberGrove {
     std::vector<Cell> ground,firebreaks,trees;
 };
 struct FloorPlan {
+    GenerationReport report;
     std::vector<TimberGrove> timber_groves;
     std::vector<GiantTree> giant_trees;
     std::vector<RootMaze> root_mazes;

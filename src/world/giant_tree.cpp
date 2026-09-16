@@ -1,4 +1,5 @@
 #include "giant_tree.hpp"
+#include "feature_roll.hpp"
 #include "four_room_block.hpp"
 #include "terrain_material.hpp"
 #include "ground_items.hpp"
@@ -62,10 +63,10 @@ void inner_roots(Game& game,const FloorPlan& plan,const GiantTree& tree,Cell cen
 }
 
 void plan_giant_tree(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 10U : 5U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::GiantTree)) return;
     GiantTree tree;
-    const auto chosen=reserve_four_rooms(game,plan,tree.rooms);
-    if (!chosen) return;
+    const auto chosen=reserve_four_rooms(game,plan,tree.rooms,&plan.report.features.back().candidate_count);
+    if (!chosen) { feature_failed(plan,"No eligible four-room block; objectives and earlier habitats are excluded"); return; }
     const Cell center=*chosen;
     tree.canopy.kind=RoofKind::HollowTree;tree.canopy.hp=160;
     tree.canopy.length=static_cast<std::uint8_t>(33+2*(random_u32(game)%3));
@@ -75,6 +76,7 @@ void plan_giant_tree(Game& game,FloorPlan& plan) {
     tree.cache=center+scale(directions[random_u32(game)%4],4+static_cast<int>(random_u32(game)%3));
     tree.spiders=random_u32(game)%3==0;
     plan.giant_trees.push_back(tree);
+    feature_reserved(plan,tree.rooms,tree.spiders ? "Spider hollow" : "Forager hollow");
 }
 
 void carve_giant_tree(Game& game,FloorPlan& plan) {

@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "generation_build.hpp"
 #include "../input.hpp"
 #include <imgui.h>
 #include <algorithm>
@@ -23,6 +24,16 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
         render_game(renderer,graphics,game,0,v.zoom,nullptr,PointerState{},false,false,&v.render);
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
     if (v.rooms) for (const auto& room:selected.rooms) room_box(renderer,room,v);
+    if (v.selected_feature>=0) {
+        const auto* decision=feature_decision(selected.report,static_cast<GenerationFeature>(v.selected_feature));
+        if (decision) for (const auto& region:decision->regions) {
+            auto box=tile_rect(region.low,v.render.camera,v.zoom);
+            box.w=static_cast<float>(region.high.x-region.low.x)*tile_pixels(v.zoom);
+            box.h=static_cast<float>(region.high.y-region.low.y)*tile_pixels(v.zoom);
+            SDL_SetRenderDrawColor(renderer,255,210,80,65);SDL_RenderFillRect(renderer,&box);
+            SDL_SetRenderDrawColor(renderer,255,230,90,255);SDL_RenderRect(renderer,&box);
+        }
+    }
     if (v.changes && v.checkpoint>0) {
         const auto& before=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game->stage;
         for (int y=0;y<game.stage.height;++y) for (int x=0;x<game.stage.width;++x) {
@@ -47,9 +58,10 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 }
 
-void draw_worldgen_details() {
+void draw_worldgen_details(const Game& live_game) {
     auto& v=worldgen_viewer();
-    if (!v.original || (!v.active && !v.details)) return;
+    if (!v.active) { draw_live_generation_details(live_game); return; }
+    if (!v.original) return;
     ImGui::SetNextWindowPos({16,100},ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize({350,480},ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Generation inspector",&v.details)) {
@@ -61,7 +73,8 @@ void draw_worldgen_details() {
             SDL_SetClipboardText(recipe.c_str());
         }
         ImGui::TextUnformatted("Standalone floor / automatic layout / default kit");
-        if (!v.active) ImGui::TextWrapped("Retained inspected floor, not a live network generation report.");
+        if (ImGui::BeginTabBar("generation-sections")) {
+        if (ImGui::BeginTabItem("View / timeline")) {
         ImGui::BeginDisabled(!v.active);
         ImGui::InputScalar("Next seed",ImGuiDataType_U64,&v.seed);
         if (ImGui::Button("Generate seed")) v.regenerate_requested=true;
@@ -86,6 +99,13 @@ void draw_worldgen_details() {
         }
         ImGui::EndDisabled();
         if (v.trace.truncated) ImGui::TextUnformatted("Checkpoint limit reached; Play still uses finished map.");
+        ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Rolls")) {
+            draw_generation_report(v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)].report,true);
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Population")) {
         ImGui::SeparatorText("Recorded population results (finished map)");
         ImGui::Text("Giant trees %zu | Timber groves %zu",v.population.giant_trees.size(),v.population.timber_groves.size());
         ImGui::Text("Snake tunnels %zu | Spider caves %zu",v.population.snake_tunnels.size(),v.population.spider_caves.size());
@@ -98,7 +118,10 @@ void draw_worldgen_details() {
             if (s.rejected || s.budget_blocked || s.fallbacks)
                 ImGui::Text("  rejected %d | budget %d | fallback %d",s.rejected,s.budget_blocked,s.fallbacks);
         }
-        ImGui::TextWrapped("Eligibility and unselected rolls are not captured yet. These counts describe actual generated content only.");
+        ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+        }
     }
     ImGui::End();
 }

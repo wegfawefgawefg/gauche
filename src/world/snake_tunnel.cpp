@@ -1,4 +1,5 @@
 #include "snake_tunnel.hpp"
+#include "feature_roll.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "../items/supply.hpp"
@@ -79,10 +80,11 @@ bool safe_tree(Game& game,Cell root,Cell dir,int gap) {
 }
 
 void plan_snake_tunnel(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 6U : 3U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::SnakeTunnel)) return;
     std::vector<RouteEdge> choices;
     for (auto edge:plan.edges) if (eligible(plan,edge.a) && eligible(plan,edge.b)) choices.push_back(edge);
-    if (choices.empty()) return;
+    if (choices.empty()) { feature_failed(plan,"No adjacent eligible room pair after objective and earlier habitat reservations"); return; }
+    plan.report.features.back().candidate_count=static_cast<int>(choices.size());
     auto edge=choices[random_u32(game)%choices.size()];
     if (plan.rooms[static_cast<std::size_t>(edge.a)].depth>plan.rooms[static_cast<std::size_t>(edge.b)].depth) std::swap(edge.a,edge.b);
     SnakeTunnel tunnel;tunnel.rooms={edge.a,edge.b};
@@ -100,6 +102,7 @@ void plan_snake_tunnel(Game& game,FloorPlan& plan) {
         room.half_height=7+static_cast<int>(random_u32(game)%3);
     }
     plan.snake_tunnels.push_back(tunnel);
+    feature_reserved(plan,tunnel.rooms,std::to_string(tunnel.rooms.size())+" connected rooms");
 }
 
 void carve_snake_tunnel(Game& game,FloorPlan& plan) {

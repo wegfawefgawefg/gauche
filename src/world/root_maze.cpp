@@ -1,4 +1,5 @@
 #include "root_maze.hpp"
+#include "feature_roll.hpp"
 #include "terrain_material.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -69,14 +70,15 @@ void hollow_roots(Game& game,const FloorPlan& plan,RootMaze& maze) {
 }
 
 void plan_root_maze(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 8U : 4U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::RootMaze)) return;
     std::vector<RouteEdge> shortcuts,connected;
     for (int a=1;a<static_cast<int>(plan.rooms.size());++a) for (int b=a+1;b<static_cast<int>(plan.rooms.size());++b) {
         if (!eligible(plan,a) || !eligible(plan,b) || distance(plan.rooms[static_cast<std::size_t>(a)].grid,plan.rooms[static_cast<std::size_t>(b)].grid)!=1) continue;
         (linked(plan,a,b) ? connected : shortcuts).push_back({a,b});
     }
     const auto& choices=shortcuts.empty() ? connected : shortcuts;
-    if (choices.empty()) return;
+    if (choices.empty()) { feature_failed(plan,"No adjacent eligible room pair after objective and earlier habitat reservations"); return; }
+    plan.report.features.back().candidate_count=static_cast<int>(choices.size());
     auto pair=choices[random_u32(game)%choices.size()];
     if (plan.rooms[static_cast<std::size_t>(pair.a)].depth>plan.rooms[static_cast<std::size_t>(pair.b)].depth) std::swap(pair.a,pair.b);
     RootMaze maze;maze.a=pair.a;maze.b=pair.b;maze.cross_link=!linked(plan,pair.a,pair.b);
@@ -90,6 +92,7 @@ void plan_root_maze(Game& game,FloorPlan& plan) {
         auto& room=plan.rooms[static_cast<std::size_t>(i)];room.landmark=true;room.role=RoomRole::Den;
     }
     plan.root_mazes.push_back(maze);
+    feature_reserved(plan,std::array{maze.a,maze.b},maze.cross_link ? "New shortcut" : "Existing route branch");
 }
 
 void carve_root_maze(Game& game,FloorPlan& plan) {

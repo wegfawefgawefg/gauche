@@ -191,6 +191,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
 
 FloorPlan plan_floor(Game& game) {
     FloorPlan plan;
+    plan.report.seed=game.run.seed;plan.report.floor=game.run.floor;plan.report.initial_rng=game.rng;
     grow_route(game, plan);
     choose_objectives(game, plan);
     describe_rooms(game, plan);

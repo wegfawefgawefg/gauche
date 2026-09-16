@@ -10,7 +10,7 @@ struct WorldGenViewer {
     bool exit_requested=false;
     bool regenerate_requested=false, play_requested=false, details=true;
     bool rooms=true, changes=false;
-    int floor=1, checkpoint=0;
+    int floor=1, checkpoint=0, selected_feature=-1;
     std::uint64_t seed=1;
     float zoom=1.0F;
     WorldRenderOptions render{};
@@ -25,4 +25,6 @@ void process_worldgen_requests(MenuShell& menu);
 bool worldgen_event(const SDL_Event& event);
 void update_worldgen(float seconds);
 void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics);
-void draw_worldgen_details();
+void draw_worldgen_details(const Game& game);
+void draw_generation_report(const GenerationReport& report,bool inspection);
+void draw_live_generation_details(const Game& game);

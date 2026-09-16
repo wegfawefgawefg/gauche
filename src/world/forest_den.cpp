@@ -1,4 +1,5 @@
 #include "forest_den.hpp"
+#include "feature_roll.hpp"
 #include "bear_clearings.hpp"
 #include "terrain_material.hpp"
 #include "ground_items.hpp"
@@ -29,11 +30,12 @@ Cell site(const FloorPlan& plan,const ForestDen& den,int room,int along,int acro
 }
 
 void plan_forest_den(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 4U : 3U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::BearDen)) return;
     std::vector<RouteEdge> choices;
     for (const auto edge:plan.edges)
         if (eligible(plan,edge.a) && eligible(plan,edge.b)) choices.push_back(edge);
-    if (choices.empty()) return;
+    if (choices.empty()) { feature_failed(plan,"No adjacent eligible room pair after objective and earlier habitat reservations"); return; }
+    plan.report.features.back().candidate_count=static_cast<int>(choices.size());
     auto edge=choices[random_u32(game)%choices.size()];
     // Put the sleeping hollow deeper in the route; the broad stream bank is its
     // approach. Existing corridors remain usable even if this is a through area.
@@ -49,6 +51,7 @@ void plan_forest_den(Game& game,FloorPlan& plan) {
         room.half_width=room.half_height=9;
     }
     plan.forest_dens.push_back(den);
+    feature_reserved(plan,std::array{den.a,den.b},"Stream approach / sleeping hollow");
 }
 
 void carve_forest_den(Game& game,FloorPlan& plan) {

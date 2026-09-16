@@ -11,6 +11,9 @@
 #include <array>
 #include <cstdint>
 #include <vector>
+#include <memory>
+
+struct GenerationReport;
 
 struct Cell {
     int x = 0;
@@ -333,6 +336,8 @@ struct Fissure {
 };
 
 struct Game {
+    // Local generation evidence. Immutable, and intentionally absent from codecs/hashes.
+    std::shared_ptr<const GenerationReport> generation_report;
     Stage stage{};
     std::array<Entity, max_entities> entities{};
     std::vector<FlightContact> flight_contacts;

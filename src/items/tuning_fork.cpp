@@ -3,7 +3,7 @@
 #include "../entities/hearing.hpp"
 
 namespace {
-constexpr RegionalItem fork{"Tuning Fork",
+constexpr RegionalItem tuning_fork_def{"Tuning Fork",
     "Vibration crosses touching crystal. Shatters weak growths; disrupts shard nodes. Gaps, stone and felt stop it.",
     Sprite::TuningFork,{1,8,0,8,48,PatternEffect::Damage,true},
     ItemAction::Material,22,1,false,24,0,0,0,0,SoundId::ForkRing};
@@ -14,7 +14,7 @@ bool crystal(const Prop& prop) {
 }
 
 const RegionalItem* tuning_fork_item(ItemKind kind) {
-    return kind==ItemKind::TuningFork ? &fork : nullptr;
+    return kind==ItemKind::TuningFork ? &tuning_fork_def : nullptr;
 }
 
 bool ring_tuning_fork(Game& game, int slot, Cell direction) {

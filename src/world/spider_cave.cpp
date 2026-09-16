@@ -1,4 +1,5 @@
 #include "spider_cave.hpp"
+#include "feature_roll.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "../items/supply.hpp"
@@ -29,10 +30,11 @@ void shuffle(Game& game,std::vector<Cell>& cells) {
 }
 
 void plan_spider_cave(Game& game,FloorPlan& plan) {
-    if (!forest_floor(game.run.floor) || random_u32(game)%(game.run.floor==1 ? 5U : 3U)!=0) return;
+    if (!roll_generation_feature(game,plan,GenerationFeature::SpiderCave)) return;
     std::vector<RouteEdge> choices;
     for (auto edge:plan.edges) if (eligible(plan,edge.a) && eligible(plan,edge.b)) choices.push_back(edge);
-    if (choices.empty()) return;
+    if (choices.empty()) { feature_failed(plan,"No adjacent eligible room pair after objective and earlier habitat reservations"); return; }
+    plan.report.features.back().candidate_count=static_cast<int>(choices.size());
     auto edge=choices[random_u32(game)%choices.size()];
     if (plan.rooms[static_cast<std::size_t>(edge.a)].depth>plan.rooms[static_cast<std::size_t>(edge.b)].depth) std::swap(edge.a,edge.b);
     SpiderCave cave;cave.rooms={edge.a,edge.b};
@@ -50,6 +52,7 @@ void plan_spider_cave(Game& game,FloorPlan& plan) {
         room.half_width=7+static_cast<int>(random_u32(game)%3);room.half_height=7+static_cast<int>(random_u32(game)%3);
     }
     plan.spider_caves.push_back(cave);
+    feature_reserved(plan,cave.rooms,cave.mother ? "Mother chamber" : "Brood cave");
 }
 
 void carve_spider_cave(Game& game,FloorPlan& plan) {

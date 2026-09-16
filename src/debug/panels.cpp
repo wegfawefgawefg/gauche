@@ -92,7 +92,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
     }
     if (panels.visible) {
         draw_playtest_tools(game, offline && !worldgen_viewer().active);
-        if (worldgen_viewer().details) draw_worldgen_details();
+        if (worldgen_viewer().details) draw_worldgen_details(game);
     }
     imgui_render_layer();
 }

@@ -129,7 +129,7 @@ void connect_rooms(Game& game, FloorPlan& plan, RouteEdge edge) {
 
 } // namespace
 
-void carve_floor(Game& game, FloorPlan& plan) {
+void carve_floor(Game& game, FloorPlan& plan,GenerationTrace* trace) {
     game.stage.width = plan.width;
     game.stage.height = plan.height;
     game.stage.tiles.assign(static_cast<std::size_t>(plan.width * plan.height),
@@ -143,7 +143,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     carve_ice_thaw(game,plan);
     carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
-    carve_giant_tree(game,plan);
+    carve_giant_tree(game,plan,trace);
     carve_timber_grove(game,plan);
     carve_snake_tunnel(game,plan);
     carve_root_maze(game,plan);

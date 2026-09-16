@@ -65,6 +65,7 @@ struct GiantTree {
     RoofSpan canopy{};
     Cell cache{};
     bool spiders=false;
+    int hollow=0,hollow_component=-1;
     std::vector<Cell> entrances,ground;
     std::vector<RoofSpan> passages;
 };
@@ -108,7 +109,8 @@ struct FloorPlan {
 };
 
 FloorPlan plan_floor(Game& game);
-void carve_floor(Game& game, FloorPlan& plan);
+struct GenerationTrace;
+void carve_floor(Game& game, FloorPlan& plan,GenerationTrace* trace=nullptr);
 void place_forest_terrain(Game& game, const FloorPlan& plan);
 void place_room_gates(Game& game, FloorPlan& plan);
 bool floor_lock_required(const Game& game);

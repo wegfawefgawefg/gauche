@@ -83,7 +83,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     if (!haunted && !freight && !reactor) {
         plan = plan_floor(game);
         capture("Room and landmark plan");
-        carve_floor(game, plan);
+        carve_floor(game, plan,trace);
         for (auto& decision:plan.report.features) if (decision.outcome==GenerationOutcome::Reserved) {
             decision.outcome=GenerationOutcome::Built;
             decision.reason="Landmark geometry carved; this does not guarantee every later prop or loot placement";

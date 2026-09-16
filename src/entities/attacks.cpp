@@ -257,7 +257,8 @@ static bool trace_sight(const Game& game, Cell from, Cell to, bool smoke_blocks,
     Cell cell = from;
     const auto open = [&game, smoke_blocks, solid_target, through_grates, solid_terrain_target, to](Cell at) {
         const Tile* tile = game.stage.at(at);
-        if (tile == nullptr || (!walkable(tile->kind) && !(solid_terrain_target && at==to)) ||
+        // Missing floor blocks footing, not vision or an attack through the air.
+        if (tile == nullptr || (!walkable(tile->kind) && tile->kind!=TileKind::Chasm && !(solid_terrain_target && at==to)) ||
             (prop_blocks(tile->prop) && !(through_grates && prop_shoot_through(tile->prop)) && !(solid_target && at == to)) ||
             (smoke_blocks && obscures_sight(tile->surface))) return false;
         // FIXTURES: Closed doors and anchored blockers interrupt sight through a corridor.

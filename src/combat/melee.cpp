@@ -37,7 +37,7 @@ bool strike_melee(Game& game, int user_slot, Cell direction, const Item& item) {
             const Tile* tile = game.stage.at(cell);
             if (tile == nullptr) break;
             if (item.kind == ItemKind::SkateBlade && !clear_attack_sight(game,origin,cell,false)) break;
-            const bool blocked = !walkable(*tile);
+            const bool blocked = !walkable(*tile) && tile->kind!=TileKind::Chasm;
             const bool solid_contact = blocked || tile->prop.hp > 0;
             int prop_damage = pattern.damage;
             if (item.kind == ItemKind::PressHammer && prop_blocks(tile->prop)) prop_damage *= 2;

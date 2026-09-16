@@ -68,6 +68,7 @@
 namespace {
 
 Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome, bool arena) {
+    if (tile.kind==TileKind::Wall && tile.contents==ItemKind::CoalLump) return Sprite::CoalSeam;
     if (tile.surface.still_ticks>0) tick=0;
     if (tile.kind == TileKind::Ice && tile.freeze_ticks > 0)
         return tile.freeze_ticks <= 120 ? Sprite::ThawingWater : Sprite::FrozenWater;

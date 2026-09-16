@@ -1,0 +1,31 @@
+"""Native 16px stationary cutter, separate turning head, exposed coal face."""
+from underworks_palette import *
+im,p=canvas()
+p.rectangle((1,10,14,14),fill=INK)
+for x in range(2,14,3):
+    p.rectangle((x,11,x+1,13),fill=IRON)
+p.rectangle((2,2,13,11),fill=INK)
+p.rectangle((3,3,12,10),fill=IRON)
+p.line((3,2,11,2),fill=STEEL)
+p.rectangle((3,3,5,4),fill=GOLD)
+p.rectangle((7,5,11,9),fill=INK)
+p.line((8,6,10,6),fill=DARK)
+p.line((8,8,10,8),fill=DARK)
+p.line((2,9,5,9),fill=BRASS)
+p.rectangle((5,11,9,13),fill=INK)
+p.point((12,3),fill=LIGHT)
+save(im,'coal_cutter')
+im,p=canvas((8,8))
+p.polygon([(0,2),(3,1),(5,2),(7,3),(7,4),(5,5),(3,6),(0,5)],fill=INK)
+p.polygon([(1,2),(3,2),(6,3),(6,4),(3,5),(1,5)],fill=STEEL)
+p.line((3,2,2,5),fill=BRASS)
+p.line((5,3,4,5),fill=IRON)
+p.point((6,3),fill=LIGHT)
+save(im,'cutter_teeth')
+im,p=canvas();p.rectangle((0,0,15,15),fill='#343c35')
+for points in [[(0,1),(6,0),(5,5),(0,6)],[(8,0),(15,2),(15,6),(7,5)],[(0,9),(6,6),(8,11),(4,15),(0,14)],[(10,8),(15,7),(15,15),(8,15)]]:
+    p.polygon(points,fill='#485047');p.line(points[:2],fill='#636859')
+for points in [[(0,7),(5,5),(9,7),(15,5),(15,8),(9,10),(5,8),(0,10)],[(6,1),(7,1),(9,5),(8,7),(6,5)],[(8,10),(11,10),(13,15),(10,15)]]:
+    p.polygon(points,fill='#1c231f')
+p.line((1,7,5,6),fill='#72766c');p.line((10,8,14,7),fill='#59625c')
+save(im,'coal_seam')

@@ -1,3 +1,4 @@
+#include "entities/cutter_render.hpp"
 #include "props/ice_pillar_render.hpp"
 #include "items/cooking_render.hpp"
 #include "scene_entities.hpp"
@@ -234,6 +235,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::IceMason) draw_mason_block(renderer, graphics, entity, rect, brightness);
         if (entity.kind == EntityKind::RootTurret) draw_root_head(renderer, entity, rect, brightness);
+        draw_cutter_details(renderer,graphics,entity,rect,brightness);
         draw_freight_details(renderer,graphics,entity,rect,brightness);
         draw_mold_details(renderer,graphics,entity,rect,brightness);
         draw_machine_fitting(renderer,graphics,entity,rect,brightness);

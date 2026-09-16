@@ -110,6 +110,13 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
             const auto variant=static_cast<std::uint8_t>(direction.x>0 ? 0 : direction.y>0 ? 1 : direction.x<0 ? 2 : 3);
             place_prop(game.stage,cell,PropKind::Conveyor,variant);
         }
+        const Cell machine=link.load+across;
+        floor(game,plan,machine);
+        const Cell face=machine+across;
+        if (auto* ore=game.stage.at(face)) {
+            *ore={TileKind::Wall,480,0,480,BreakRule::DigRequired,1};
+            ore->contents=ItemKind::CoalLump;ore->content_count=16;reserve(plan,face);
+        }
         // Keep both ends approachable without stepping onto the moving lane.
         for (Cell end:{link.load,link.unload}) for (int side:{-1,1}) floor(game,plan,end+times(across,side));
     }
@@ -117,6 +124,8 @@ void carve_industrial_geometry(Game& game,FloorPlan& plan) {
 
 void populate_industrial_links(Game& game,const FloorPlan& plan) {
     for (const auto& link:plan.industrial_links) {
+        if (Entity* cutter=get_entity(game,spawn_entity(game,EntityKind::CoalCutter,link.load+link.across)))
+            cutter->facing=link.across;
         constexpr ItemKind cargo[]{ItemKind::CoalLump,ItemKind::BoltPouch,ItemKind::CoalLump};
         for (std::size_t i=0;i<std::size(cargo);++i) {
             const Cell cell=link.belt[i*3];
@@ -126,7 +135,7 @@ void populate_industrial_links(Game& game,const FloorPlan& plan) {
         for (Cell end:{link.load,link.unload}) {
             const Cell bin=end+times(link.across,2);
             const Cell lamp=end-times(link.across,2);
-            if (walkable(game.stage.at_or_border(bin))) place_prop(game.stage,bin,PropKind::OreBin);
+            if (end!=link.load && walkable(game.stage.at_or_border(bin))) place_prop(game.stage,bin,PropKind::OreBin);
             if (walkable(game.stage.at_or_border(lamp))) place_prop(game.stage,lamp,PropKind::StreetLamp);
         }
     }

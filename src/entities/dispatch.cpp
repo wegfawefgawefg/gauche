@@ -1,3 +1,4 @@
+#include "coal_cutter.hpp"
 #include "brawler.hpp"
 #include "../items/coal.hpp"
 #include "rail_cart.hpp"
@@ -69,6 +70,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::RailShunter: init_rail_shunter(entity);break;
     case EntityKind::TarChoir: init_tar_singer(game,entity);break;
     case EntityKind::MoldThief: init_mold_thief(entity);break;
+    case EntityKind::CoalCutter: init_coal_cutter(entity);break;
     case EntityKind::CastingMold: init_casting_mold(entity);break;
     case EntityKind::EmergencyPump: init_emergency_pump(entity); break;
     case EntityKind::Counterweight: init_counterweight(entity); break;
@@ -159,6 +161,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::RailShunter: step_rail_shunter(game,slot);break;
     case EntityKind::TarChoir: step_tar_singer(game,slot);break;
     case EntityKind::MoldThief: step_mold_thief(game,slot);break;
+    case EntityKind::CoalCutter: step_coal_cutter(game,slot);break;
     case EntityKind::CastingMold: break;
     case EntityKind::EmergencyPump: step_emergency_pump(game,slot); break;
     case EntityKind::Counterweight: step_counterweight(game,slot); break;

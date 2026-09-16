@@ -38,6 +38,7 @@
 #include "icicle_spider.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
+#include "../world/lava.hpp"
 #include "../world/chasm.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../surfaces/temperature.hpp"
@@ -128,9 +129,7 @@ void step_entity_timers(Game& game, int slot) {
     entity.sleep_ticks = std::max(0, entity.sleep_ticks - 1);
     entity.stun_ticks = std::max(0, entity.stun_ticks - 1);
     const Tile* ground = game.stage.at(entity.cell);
-    if (entity.toss.ticks==0 && ground != nullptr && ground->kind == TileKind::Lava &&
-        entity.kind != EntityKind::SlagSnail && entity.kind != EntityKind::Ember && entity.kind != EntityKind::SteamLeech && game.tick % 30 == 0)
-        damage_entity(game, slot, 5, entity.cell, false);
+    contact_lava(game,slot,false);
 
     // RESPAWN: A blocked entrance delays return instead of overlapping a fixture.
     if (entity.kind == EntityKind::Player && entity.health == 0 &&

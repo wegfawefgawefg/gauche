@@ -86,6 +86,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "roof_log_far_a", "roof_log_far_b", "roof_log_far_c", "roof_log_near_a", "roof_log_near_b", "roof_log_near_c",
     "tall_tree", "tall_tree_cut", "tall_tree_char", "tall_tree_stump", "fallen_log",
     "light_tower", "tower_buckled", "tower_foot", "tower_wreck", "tower_lamps",
+    "lava_flow_0", "lava_flow_1", "lava_flow_2", "lava_flow_3", "lava_flow_4", "lava_flow_5", "lava_flow_6", "lava_flow_7",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

@@ -45,7 +45,7 @@ Distinct ordinary floors and living machinery:
 
 Environmental response and loot quality:
 
-- [ ] **LAVA-1:** Animate lava with code-made crust/flow/bubbles and positional sound. Audit contact damage/ignition timing; entry must give immediate readable feedback and continued exposure clear consequences.
+- [x] **LAVA-1:** Native eight-frame flow spans an eight-tile patch, with pool-edge crust and staggered bubbling. Grounded arrivals take 5 damage immediately with a positional sizzle and visible scorch; remaining in lava adds 5 per half-second alongside the existing short afterburn. Flight/toss transit and heat-native actors are exempt; landings make contact. Existing budgeted positional bubbling silences when water/coolant turns its source to stone. Build, direct contact/landing/quench/immunity/snapshot checks, sound decode, five static ordinary-pool views and 128-floor generation audit passed. Eight code-made art frames regenerate identically; no autonomous playthrough.
 - [ ] **LAVA-2:** Add warned bubbling eruptions/fireballs with safe intervals and occasional ignition of eligible adjacent material. Define cooling/extinguishing interactions and deterministic active-hazard budgets.
 - [ ] **LAVA-3:** Place steam and lava fissures in ordinary Industry routes/work areas, with visible idle/pressure/release/cooling states. Connect at least one fissure scene to water/heat tools and a useful route or reward.
 - [ ] **LOOT-1:** Classify biome items as dependable combat/survival/mobility, contextual utility, or oddity/toy; publish separate counts and set minimum subtargets within the 50-item baseline. Identify missing useful roles before adding further feed/fuel/brief-status-removal items; retain strange toys.

@@ -81,6 +81,7 @@ enum class Sprite : std::size_t {
     RoofLogFarA, RoofLogFarB, RoofLogFarC, RoofLogNearA, RoofLogNearB, RoofLogNearC,
     TallTree, TallTreeCut, TallTreeChar, TallTreeStump, FallenLog,
     LightTower, TowerBuckled, TowerFoot, TowerWreck, TowerLamps,
+    LavaFlow0, LavaFlow1, LavaFlow2, LavaFlow3, LavaFlow4, LavaFlow5, LavaFlow6, LavaFlow7,
     Count,
 };
 

@@ -1,6 +1,7 @@
 #include "entities/boiler_feed_render.hpp"
 #include "scenery/roof_render.hpp"
 #include "world/chasm_render.hpp"
+#include "world/lava_render.hpp"
 #include "world/reactor_render.hpp"
 #include "scene_entities.hpp"
 #include "props/rail_render.hpp"
@@ -181,6 +182,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             const bool arena=game.run.phase==RunPhase::Arena;
             const Biome biome=floor_biome(game.run.floor);
             if (draw_chasm(renderer,game,cell,rect,lighting)) continue;
+            if (draw_lava(renderer,graphics,game,cell,rect,lighting)) continue;
             if (draw_freight_track(renderer,graphics,game.stage,cell,rect,lighting)) {
                 draw_tile_damage(renderer,tile,cell,rect,lighting);continue;
             }

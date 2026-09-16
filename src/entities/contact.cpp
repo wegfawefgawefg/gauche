@@ -2,6 +2,7 @@
 #include "../game.hpp"
 #include "pocket_door.hpp"
 #include "../world/water.hpp"
+#include "../world/lava.hpp"
 #include "../world/chasm.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../props/interaction.hpp"
@@ -14,6 +15,8 @@ void enter_actor_cell(Game& game, int slot) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.toss.ticks>0 || actor.health <= 0 || actor.move_interval == 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Train) return;
+    contact_lava(game,slot,true);
+    if (actor.health<=0) return;
     contact_surface(game, slot);
     if (!wading_actor(actor)) return; // Airborne actors do not stomp props or campfires.
     step_on_prop(game, slot);

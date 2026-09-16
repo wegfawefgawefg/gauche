@@ -65,6 +65,7 @@ enum class SoundId : std::size_t {
     PipeHit, PipeBreak, PipeLeak, BoilerDryWarn, BoilerDryFire,
     TreeChop, TreeCreak, TreeFall,
     TowerGroan, TowerCrash,
+    LavaSizzle,
     Count,
 };
 
@@ -127,4 +128,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "pipe_hit", "pipe_break", "pipe_leak", "boiler_dry_warn", "boiler_dry_fire",
     "tree_chop", "tree_creak", "tree_fall",
     "tower_groan", "tower_crash",
+    "lava_sizzle",
 };

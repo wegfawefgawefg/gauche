@@ -5,7 +5,7 @@
 
 namespace {
 constexpr RegionalItem pump{"Pocket Pump",
-    "Use: collect spills. Secondary: pour. Holds one liquid, three pours. Starts full of water.",
+    "Use: collect spills. Secondary: pour. Holds one liquid, three pours. Starts full of water; calms fissures.",
     Sprite::PocketPump,{1,1,0,0,30,PatternEffect::Utility},ItemAction::Material,23,1,false,0,0,0,0,0,SoundId::PumpDraw};
 void worked(Game& game,Entity& user,Item& item,SoundId sound,Cell cell) {
     item.cooldown=item_pattern(item).cooldown;user.use_flash=8;

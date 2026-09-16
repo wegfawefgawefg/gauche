@@ -1,3 +1,4 @@
+#include "world/fissure_render.hpp"
 #include "world/lava_eruption_render.hpp"
 #include "entities/boiler_feed_render.hpp"
 #include "scenery/roof_render.hpp"
@@ -247,6 +248,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     draw_surfaces(renderer, game, camera, zoom, lighting, false);
     draw_reactor_hazards(renderer,graphics,game,camera,zoom);
+    draw_fissures(renderer,graphics,game,camera,zoom,lighting,false);
     draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
     draw_props(renderer, graphics, game, camera, zoom, lighting,game.tick);
@@ -271,6 +273,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,false);
+    draw_fissures(renderer,graphics,game,camera,zoom,lighting,true);
     draw_lava_eruptions(renderer,graphics,game,camera,zoom,true);
     draw_roofs(renderer,graphics,game,player,camera,zoom,lighting);
     draw_plant_lash(renderer, game, camera, zoom, lighting);

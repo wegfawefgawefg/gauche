@@ -8,7 +8,7 @@
 
 namespace {
 constexpr RegionalItem siphon{"Heat Siphon",
-    "Use: drain fire ahead. Secondary: flame cone. Partial heat weakens shots. Burns friends too.",
+    "Use: drain fire or pressurized fissures ahead. Secondary: flame cone. Partial heat weakens shots. Burns friends too.",
     Sprite::HeatSiphon,{1,2,0,8,45,PatternEffect::Damage,false,1,0,false,true},
     ItemAction::Material,34,1,false,0,0,0,0,0,SoundId::SiphonDraw};
 }

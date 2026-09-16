@@ -1,3 +1,4 @@
+#include "../world/fissures.hpp"
 #include "field.hpp"
 #include "../world/reactor.hpp"
 #include "../items/fire.hpp"
@@ -53,6 +54,10 @@ std::vector<LightSource> collect_light_sources(const Game& game,
                     covered |= game.stage.at_or_border(Cell{x, y} + side).surface.fire_ticks > 0;
             if (!covered) add(sources, cache, {x, y}, 3, .65F * heat_scale({x, y}), tile.surface.reactor_fire ? LightColor{.52F,1,.24F} : LightColor{1, .42F, .14F});
         }
+
+    for (const auto& f:game.fissures)
+        if (f.kind==FissureKind::Lava && fissure_hot(game,f.center))
+            add(sources,cache,f.center,3,(f.phase==FissurePhase::Release ? .8F : .3F)*heat_scale(f.center),{1,.35F,.08F});
 
     // ACTORS: Each entity owns its emitter; a dead actor no longer illuminates.
     for (const Entity& entity : game.entities) {

@@ -1,3 +1,4 @@
+#include "world/fissures.hpp"
 #include "world/lava_eruptions.hpp"
 #include "props/light_tower.hpp"
 #include "props/tall_tree.hpp"
@@ -19,7 +20,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(65);
+    writer.u32(66);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -117,12 +118,17 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.cell(vent.source);writer.cell(vent.target);
         writer.u16(vent.ticks);writer.u8(static_cast<std::uint8_t>(vent.phase));
     }
+    writer.u8(static_cast<std::uint8_t>(game.fissures.size()));
+    for (const auto& f:game.fissures) {
+        writer.cell(f.center);writer.cell(f.axis);writer.u8(static_cast<std::uint8_t>(f.kind));
+        writer.u8(static_cast<std::uint8_t>(f.phase));writer.u16(f.ticks);writer.u16(f.heat);
+    }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 65) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 66) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -343,6 +349,13 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         result.lava_vents.push_back(vent);
     }
     if (!valid_lava_vents(result)) {error="Invalid lava vent";return false;}
+    const auto fissures=reader.u8();
+    if (fissures>max_fissures) {error="Too many fissures";return false;}
+    for (int i=0;i<fissures;++i) {
+        Fissure f;f.center=reader.cell();f.axis=reader.cell();f.kind=static_cast<FissureKind>(reader.u8());
+        f.phase=static_cast<FissurePhase>(reader.u8());f.ticks=reader.u16();f.heat=reader.u16();result.fissures.push_back(f);
+    }
+    if (!valid_fissures(result)) {error="Invalid fissure";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = result.entities[static_cast<std::size_t>(slot)];

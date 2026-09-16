@@ -319,6 +319,16 @@ struct LavaVent {
     LavaPhase phase=LavaPhase::Cooling;
 };
 
+enum class FissureKind : std::uint8_t { Steam,Lava };
+enum class FissurePhase : std::uint8_t { Idle,Pressure,Release,Cooling };
+// Three connected floor cracks share one pressure cycle and drainable heat store.
+struct Fissure {
+    Cell center{},axis{1,0};
+    FissureKind kind=FissureKind::Steam;
+    FissurePhase phase=FissurePhase::Idle;
+    std::uint16_t ticks=240,heat=0;
+};
+
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
@@ -327,6 +337,7 @@ struct Game {
     std::vector<BoilerFeed> boiler_feeds;
     std::vector<IndustrialShift> industrial_shifts;
     std::vector<LavaVent> lava_vents;
+    std::vector<Fissure> fissures;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

@@ -6,7 +6,7 @@
 
 namespace {
 constexpr RegionalItem can{"Coolant Can",
-    "Four three-cell pours. Douse fire, chill actors, drain boiler pressure. Cools lava to stone. Residue slips and conducts shocks for 10s.",
+    "Four three-cell pours. Douse fire, chill actors, drain boiler pressure. Cools lava to stone and calms fissures. Residue slips and conducts shocks for 10s.",
     Sprite::CoolantCan,{1,1,0,0,45,PatternEffect::Utility,false,1},
     ItemAction::Material,12,1,false,4,0,0,0,0,SoundId::CoolantPour};
 }

@@ -1,3 +1,4 @@
+#include "world/fissures.hpp"
 #include "world/lava_eruptions.hpp"
 #include "scenery/roof.hpp"
 #include "world/chasm.hpp"
@@ -145,6 +146,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     step_traps(game);
     step_chasm_contacts(game);
     step_lava_eruptions(game);
+    step_fissures(game);
     sweep_dead(game);
     step_reactor(game);
 }

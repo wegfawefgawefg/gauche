@@ -1,3 +1,4 @@
+#include "../world/fissures.hpp"
 #include "../traps/nail_board.hpp"
 #include "../game.hpp"
 #include "pocket_door.hpp"
@@ -16,6 +17,8 @@ void enter_actor_cell(Game& game, int slot) {
     if (actor.toss.ticks>0 || actor.health <= 0 || actor.move_interval == 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Train) return;
     contact_lava(game,slot,true);
+    if (actor.health<=0) return;
+    contact_fissure(game,slot);
     if (actor.health<=0) return;
     contact_surface(game, slot);
     if (!wading_actor(actor)) return; // Airborne actors do not stomp props or campfires.

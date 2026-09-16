@@ -1,3 +1,4 @@
+#include "../world/fissures.hpp"
 #include "../world/ice_material.hpp"
 #include "../items/glow_slag.hpp"
 #include "../entities/ash_sleeper.hpp"
@@ -49,6 +50,7 @@ bool flame_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return false;
     if (prop_has_flame(tile->prop) || tile->kind == TileKind::Lava || tile->surface.fire_ticks > 0) return !leech_drains_cell(game, cell);
+    if (fissure_flame(game,cell)) return !leech_drains_cell(game,cell);
     // SOURCES: A lamp's color is not heat. Only exposed flames melt cold projectiles.
     for (const Entity& actor : game.entities) {
         if (actor.cell == cell && entity_has_flame(actor)) return !leech_drains_cell(game, cell);
@@ -58,15 +60,15 @@ bool flame_cell(const Game& game, Cell cell) {
 
 bool hot_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
-    return tile && ((tile->surface.warmth_ticks > 0 && !leech_drains_cell(game, cell)) || flame_cell(game, cell));
+    return tile && (((tile->surface.warmth_ticks > 0 || fissure_hot(game,cell)) && !leech_drains_cell(game, cell)) || flame_cell(game, cell));
 }
 
 bool warm_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile && tile->surface.warmth_ticks > 0 && !leech_drains_cell(game, cell)) return true;
-    // REACH: A capsule already paints its area. Only actual flames warm adjacent cells.
+    // REACH: A capsule already paints its area. Flames and pressurized fissures warm adjacent cells.
     for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}})
-        if (flame_cell(game, cell + offset)) return true;
+        if (flame_cell(game, cell + offset) || (fissure_hot(game,cell+offset) && !leech_drains_cell(game,cell+offset))) return true;
     return false;
 }
 
@@ -127,7 +129,7 @@ bool thaw_water(Game& game, Cell cell) {
 void quench_cell(Game& game, Cell cell, SoundId sound) {
     Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return;
-    bool quenched = tile->surface.fire_ticks > 0;
+    bool quenched = cool_fissure(game,cell) || tile->surface.fire_ticks > 0;
     cool_grounding_spike(game,cell);
     douse_candle(game,cell);
     douse_stove(game,cell);
@@ -199,6 +201,9 @@ void step_temperature(Game& game) {
         }
     for (const Entity& actor : game.entities)
         if (entity_has_flame(actor) && !drained(actor.cell)) flames.push_back(actor.cell);
+    for (const auto& f:game.fissures) for (int n=-1;n<=1;++n) {
+        const Cell cell=fissure_cell(f,n);if (fissure_flame(game,cell) && !drained(cell)) flames.push_back(cell);
+    }
     for (Cell flame : flames) {
         bool thawed = false;
         for (Cell offset : {Cell{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {

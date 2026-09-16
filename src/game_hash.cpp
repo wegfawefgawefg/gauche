@@ -237,5 +237,10 @@ std::uint64_t game_hash(const Game& game) {
         for (Cell cell:{vent.source,vent.target}) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
         mix(hash,vent.ticks);mix(hash,static_cast<std::uint64_t>(vent.phase));
     }
+    mix(hash,game.fissures.size());
+    for (const auto& f:game.fissures) {
+        for (Cell cell:{f.center,f.axis}) {mix(hash,static_cast<std::uint64_t>(cell.x));mix(hash,static_cast<std::uint64_t>(cell.y));}
+        mix(hash,static_cast<std::uint64_t>(f.kind));mix(hash,static_cast<std::uint64_t>(f.phase));mix(hash,f.ticks);mix(hash,f.heat);
+    }
     return hash;
 }

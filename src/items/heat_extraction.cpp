@@ -1,3 +1,4 @@
+#include "../world/fissures.hpp"
 #include "glow_slag.hpp"
 #include "heat_siphon.hpp"
 #include "flare.hpp"
@@ -18,6 +19,7 @@ template<class T> int take(T& fuel, int limit) {
 int extract_heat(Game& game, Cell cell, int limit) {
     Tile* tile=game.stage.at(cell);
     if (!tile || limit<=0) return 0;
+    if (const int amount=extract_fissure_heat(game,cell,limit);amount>0) return amount;
     // ONE SOURCE: Prefer exposed fuel, then floor flame, then a burning body/item.
     // Cold coal, permanent torches, living embers and lava cannot be bottled.
     Prop& prop=tile->prop;

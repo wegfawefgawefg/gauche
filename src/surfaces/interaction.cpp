@@ -22,7 +22,7 @@ namespace {
 
 bool dry_growth(const Prop& prop) {
     if (prop.broken || prop.kind == PropKind::None) return false;
-    if (prop.kind==PropKind::FoamCover) return false;
+    if (prop.kind==PropKind::FoamCover || prop.kind==PropKind::LightTower || prop.kind==PropKind::TowerWreck) return false;
     if (prop.covered) return true;
     if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble) return false;
     if (prop.kind == PropKind::ChapelUrn || prop.kind == PropKind::ChapelWax) return false;

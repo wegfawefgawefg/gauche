@@ -37,8 +37,8 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     case PropKind::ChapelRunner: first=second=DebrisKind::Cloth;break;
     case PropKind::ChapelUrn: first=second=DebrisKind::Pottery;break;
     case PropKind::ChapelWax: first=DebrisKind::Wax;second=DebrisKind::CharredWick;break;
-    case PropKind::StreetLamp: first=DebrisKind::MirrorChip;second=DebrisKind::CopperCurl;break;
-    case PropKind::PoleWreck: first=DebrisKind::TinCurl;second=DebrisKind::SteelWasher;break;
+    case PropKind::LightTower: case PropKind::StreetLamp: first=DebrisKind::MirrorChip;second=DebrisKind::CopperCurl;break;
+    case PropKind::TowerWreck: case PropKind::PoleWreck: first=DebrisKind::TinCurl;second=DebrisKind::SteelWasher;break;
     case PropKind::Conveyor: first=DebrisKind::BeltRubber; second=DebrisKind::SteelWasher; break;
     case PropKind::Barricade: case PropKind::Grate: first = DebrisKind::SteelWasher; second = DebrisKind::TinCurl; break;
     case PropKind::ScrapBin: first = DebrisKind::TinCurl; second = DebrisKind::CopperCurl; break;

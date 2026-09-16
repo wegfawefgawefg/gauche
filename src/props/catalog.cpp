@@ -3,6 +3,8 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::LightTower: return {Sprite::LightTower,SoundId::TowerCrash,100,true,false,{9,1250,{238,205,149}}};
+    case PropKind::TowerWreck: return {Sprite::TowerWreck,SoundId::PoleBreak,30,true,false};
     case PropKind::TallTree: return {Sprite::TallTree,SoundId::TreeFall,72,true,false};
     case PropKind::FallenLog: return {Sprite::FallenLog,SoundId::WoodCrack,24,true,false};
     case PropKind::LogBridge: return {Sprite::FallenLog,SoundId::WoodCrack,24,false,false};
@@ -85,14 +87,14 @@ int prop_max_health(const Prop& prop) {
 }
 
 bool prop_low_cover(const Prop& prop) {
-    return (prop.kind==PropKind::PoleWreck || prop.kind==PropKind::FoamCover || prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::TowerWreck || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::FoamCover || prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
 }
 
 bool prop_shoot_through(const Prop& prop) {
-    return (prop.kind==PropKind::PoleWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::TowerWreck || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
 }
 
 bool prop_cuttable_metal(const Prop& prop) {
-    return !prop.broken && (prop.kind==PropKind::SteamDrive || prop.kind==PropKind::WaterPipe || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+    return !prop.broken && (prop.kind==PropKind::LightTower || prop.kind==PropKind::TowerWreck || prop.kind==PropKind::SteamDrive || prop.kind==PropKind::WaterPipe || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
         prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

@@ -1,3 +1,4 @@
+#include "light_tower.hpp"
 #include "tall_tree.hpp"
 #include "ice_pillar.hpp"
 #include "../entities/audit_clerk.hpp"
@@ -169,6 +170,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
         tile->prop.broken) return false;
     if (tile->prop.kind == PropKind::SpiderStrand) return cut_spider_strand(game,cell);
     Prop& prop = tile->prop;
+    if (prop.kind==PropKind::LightTower) return hit_light_tower(game,cell,damage);
     if (prop.kind==PropKind::TallTree) return hit_tall_tree(game,cell,damage,source);
     if (prop.kind==PropKind::IcePillar) return hit_ice_pillar(game,cell,damage,source);
     if (prop.kind==PropKind::StreetLamp) return hit_streetlamp(game,cell,damage,source);
@@ -180,7 +182,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     else if (prop.kind == PropKind::WaterPipe) emit_sound(game,SoundId::PipeHit,cell);
     else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);
     else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);
-    else if (prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
+    else if (prop.kind == PropKind::TowerWreck || prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
     else if (prop.kind == PropKind::FoamCover) emit_sound(game,SoundId::FoamTear,cell);
     else if (prop.kind == PropKind::PayCage) emit_sound(game,SoundId::PayRattle,cell);
     else if (prop.kind == PropKind::Conveyor) emit_sound(game,SoundId::BeltHit,cell);

@@ -1,3 +1,4 @@
+#include "light_tower.hpp"
 #include "tall_tree.hpp"
 #include "ice_pillar.hpp"
 #include "../items/emergency_foam.hpp"
@@ -39,6 +40,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind==PropKind::LightTower) {step_light_tower(game,cell);continue;}
             if (prop.kind==PropKind::TallTree) {step_tall_tree(game,cell);continue;}
             if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble) {step_ice_pillar(game,cell);continue;}
             if (prop.kind==PropKind::StreetLamp) {step_streetlamp(game,cell);continue;}
@@ -64,6 +66,8 @@ void step_prop_growth(Game& game) {
 }
 
 LightEmitter prop_light(const Prop& prop) {
+    if (prop.kind==PropKind::LightTower && prop.growth_ticks>0 &&
+        (prop.growth_ticks<=tower_fall_ticks || prop.growth_ticks%12<6)) return {};
     if (prop.kind==PropKind::StreetLamp && prop.growth_ticks>0 && prop.growth_ticks%12<6) return {};
     if (prop.kind == PropKind::GroundingSpike)
         return !prop.broken && prop.variant == 1 ? LightEmitter{2,450,{245,117,61}} : LightEmitter{};

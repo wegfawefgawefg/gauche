@@ -80,6 +80,7 @@ enum class Sprite : std::size_t {
     WidowWorkCast, WidowWorkReel, PickhandCarry,
     RoofLogFarA, RoofLogFarB, RoofLogFarC, RoofLogNearA, RoofLogNearB, RoofLogNearC,
     TallTree, TallTreeCut, TallTreeChar, TallTreeStump, FallenLog,
+    LightTower, TowerBuckled, TowerFoot, TowerWreck, TowerLamps,
     Count,
 };
 

@@ -24,7 +24,7 @@ int run_generation_audit() {
     std::puts("biome,category,name_or_kind_id,planned,attempted,placed,budget_blocked,rejected,fallbacks,actual");
     for (int biome=1;biome<=2;++biome) {
         PopulationReport totals;
-        int shelf_floors=0,shelf_rewards=0,thaw_channels=0;
+        int shelf_floors=0,shelf_rewards=0,thaw_channels=0,work_halls=0,excavations=0,industrial_links=0,belt_cells=0;
         std::array<int,static_cast<std::size_t>(EntityKind::Count)> bodies{};
         std::array<int,static_cast<std::size_t>(ItemKind::Count)> items{};
         for (int seed=1;seed<=64;++seed) {
@@ -40,6 +40,9 @@ int run_generation_audit() {
                 std::fprintf(stderr,"Generation audit failed: biome=%d seed=%d floor=%d %s\n",
                     biome,seed,game->run.floor,error.c_str());return 1;
             }
+            work_halls+=report.industry_profile==1;excavations+=report.industry_profile==2;
+            industrial_links+=static_cast<int>(report.industrial_links.size());
+            for (const auto& link:report.industrial_links) belt_cells+=static_cast<int>(link.belt.size())-1;
             thaw_channels+=static_cast<int>(report.thaw_channels.size());
             shelf_floors+=report.shelf_links>0;shelf_rewards+=static_cast<int>(report.shelf_rewards.size());
             totals.shelf_rooms+=report.shelf_rooms;totals.shelf_links+=report.shelf_links;
@@ -55,6 +58,10 @@ int run_generation_audit() {
             for (std::size_t i=0;i<totals.enemies.size();++i) add(totals.enemies[i],report.enemies[i]);
             for (std::size_t i=0;i<totals.supplies.size();++i) add(totals.supplies[i],report.supplies[i]);
         }
+        row(biome,"geometry","work_hall_floors",{},0,0,work_halls);
+        row(biome,"geometry","excavation_floors",{},0,0,excavations);
+        row(biome,"geometry","industrial_links",{},0,0,industrial_links);
+        row(biome,"geometry","linked_belt_cells",{},0,0,belt_cells);
         row(biome,"geometry","thaw_channels",{},0,0,thaw_channels);
         row(biome,"geometry","shelf_floors",{},0,0,shelf_floors);
         row(biome,"geometry","shelf_rooms",{},0,0,totals.shelf_rooms);

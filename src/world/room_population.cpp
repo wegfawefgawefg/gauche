@@ -369,6 +369,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
+        report->industry_profile=plan.industry_profile;report->industrial_links=plan.industrial_links;
         report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
         for (const RoomPlan& room:plan.rooms) {

@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "industrial_geometry.hpp"
 #include "ice_shelves.hpp"
 #include "ice_thaw.hpp"
 #include "ice_terrain.hpp"
@@ -198,6 +199,7 @@ FloorPlan plan_floor(Game& game) {
             break;
         }
     }
+    plan_industrial_geometry(game,plan);
     plan_ice_shelves(game,plan);
     plan_ice_thaw(game,plan);
     return plan;

@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "industrial_geometry.hpp"
 #include "ice_terrain.hpp"
 #include "ice_shelves.hpp"
 #include "ice_thaw.hpp"
@@ -13,6 +14,8 @@ bool inside_shape(const RoomPlan& room, int x, int y) {
     const int ax = std::abs(x), ay = std::abs(y);
     const int w = room.half_width, h = room.half_height;
     switch (room.shape) {
+    case RoomShape::WorkHall: return !(ax==7 && ay>=4 && ay<=5);
+    case RoomShape::ExcavatedHall: return ax<=7 || ay<=h-2-(ax-8);
     case RoomShape::IceShelf: return true;
     case RoomShape::ThawCavern: return ax+ay<=18;
     case RoomShape::Clearing: return ax <= w && ay <= h && ax + ay <= w + h - 3;
@@ -41,6 +44,7 @@ void floor_cell(Game& game, FloorPlan& plan, Cell cell, TileKind kind, bool rese
 }
 
 TileKind room_floor(const Game& game, const RoomPlan& room, int x, int y) {
+    if (room.shape==RoomShape::WorkHall || room.shape==RoomShape::ExcavatedHall) return TileKind::Ruin;
     if (room.shape==RoomShape::ThawCavern) return ice_thaw_floor(room,x,y);
     if (room.shape==RoomShape::IceShelf) return ice_shelf_floor(room,x,y);
     const bool trail = std::abs(x) <= 1 || std::abs(y) <= 1;
@@ -114,6 +118,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     for (RouteEdge edge : plan.edges) connect_rooms(game, plan, edge);
     connect_ice_shelves(game,plan);
     carve_ice_thaw(game,plan);
+    carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
     for (int y = 0; y < plan.height; ++y)
         for (int x = 0; x < plan.width; ++x)

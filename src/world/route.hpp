@@ -7,7 +7,7 @@
 enum class RoomRole { Entrance, Exit, Clearing, Thicket, Brook, Ruins,
                       Den, Cache, Shrine, Workshop, Orchard, Secret,
                       Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel, CrystalGallery, ServicePassage, BoilerGallery, Workfront, BlastingAlcove, AssemblyLine, RepairBay, ScrapYard, CoolingWorks, CableTrench, KilnCourt, PayOffice, LampAlcove, SlagBank, AshLoft, HoistShaft, CastingFloor, SettlingTanks, FreightSiding };
-enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern };
+enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern, WorkHall, ExcavatedHall };
 
 struct RoomPlan {
     Cell grid{}, center{};
@@ -25,12 +25,19 @@ struct ThawChannel {
     int a=0,b=0;
     Cell along{},across{},source{},mouth{},bank{},prize{},frozen{},eel{};
 };
+struct IndustrialLink {
+    int a=0,b=0;
+    Cell along{},across{},middle{},load{},unload{};
+    std::vector<Cell> belt;
+};
 struct FloorPlan {
     std::vector<RoomPlan> rooms;
     std::vector<RouteEdge> edges;
     std::vector<ShelfReward> shelf_rewards;
     int shelf_links=0;
     std::vector<ThawChannel> thaw_channels;
+    int industry_profile=0;
+    std::vector<IndustrialLink> industrial_links;
     std::vector<std::uint8_t> protected_cells;
     int exit_room = 0, objective_room = 0;
     int width = 0, height = 0;

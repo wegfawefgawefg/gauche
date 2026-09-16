@@ -1,4 +1,5 @@
 #include "ice_pillars.hpp"
+#include "industrial_geometry.hpp"
 #include "ice_shelves.hpp"
 #include "ice_thaw.hpp"
 #include "chasm.hpp"
@@ -104,6 +105,6 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     if (reactor) populate_last_shift(game);
     else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
-    else { populate_ice_thaw(game,plan); populate_shelf_reward(game,plan); populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
+    else { populate_industrial_links(game,plan); populate_ice_thaw(game,plan); populate_shelf_reward(game,plan); populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

@@ -42,7 +42,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
                 rect.x += rect.w*.35F; rect.y += rect.h*.4F; rect.w *= .55F; rect.h *= .55F;
             }
             if (prop.kind==PropKind::RailPoints) {draw_rail_points(renderer,graphics,prop,rect,light);continue;}
-            if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,prop,rect,light,tick); continue; }
+            if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,stage,cell,rect,light,tick); continue; }
             if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
             SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
             SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble) && (prop.variant&1U) ? 90 : 0, nullptr,

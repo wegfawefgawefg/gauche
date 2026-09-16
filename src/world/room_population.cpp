@@ -375,7 +375,7 @@ void room_light(Game& game, const RoomPlan& room) {
 
 } // namespace
 
-void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report) {
+void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report,GenerationReport* decisions) {
     const int round = (game.run.floor - 1) % 4;
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
@@ -435,11 +435,11 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
             std::swap(encounters[i-1],encounters[random_u32(game)%i]);
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
-    populate_giant_tree(game,plan);
-    populate_timber_grove(game,plan);
+    populate_giant_tree(game,plan,decisions);
+    populate_timber_grove(game,plan,decisions);
     populate_forest_den(game,plan);
     populate_spider_cave(game,plan);
-    populate_snake_tunnel(game,plan);
+    populate_snake_tunnel(game,plan,decisions);
     populate_root_maze(game,plan);
     populate_bear_streams(game,plan,report);
     const auto bear_rooms=populate_bear_clearings(game,plan,report);

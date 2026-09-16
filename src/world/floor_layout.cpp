@@ -141,7 +141,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_industrial_links(game,plan);
         populate_ice_thaw(game,plan);
         populate_shelf_reward(game,plan);
-        populate_rooms(game,plan,report);
+        populate_rooms(game,plan,report,&plan.report);
         capture("Inhabitants and loot");
         // Reserve structures before loose clutter consumes their clear ground.
         place_shipping_containers(game,plan);

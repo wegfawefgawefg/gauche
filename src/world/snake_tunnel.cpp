@@ -1,8 +1,6 @@
 #include "snake_tunnel.hpp"
+#include "landmark_supplies.hpp"
 #include "feature_roll.hpp"
-#include "ground_items.hpp"
-#include "loot.hpp"
-#include "../items/supply.hpp"
 #include "../props/interaction.hpp"
 #include "../props/tall_tree.hpp"
 #include <algorithm>
@@ -148,18 +146,9 @@ void carve_snake_tunnel(Game& game,FloorPlan& plan) {
     }
 }
 
-void populate_snake_tunnel(Game& game,const FloorPlan& plan) {
+void populate_snake_tunnel(Game& game,const FloorPlan& plan,GenerationReport* report) {
     for (const auto& tunnel:plan.snake_tunnels) {
-        const bool tree=tunnel.crossing_length>0 && safe_tree(game,tunnel.tree,tunnel.axis,tunnel.crossing_length);
-        place_ground_item(game,tunnel.entry,ItemKind::HuntingHorn);
-        place_ground_item(game,tunnel.cache,ItemKind::ThrowingNet,2);
-        place_coins(game,tunnel.cache-tunnel.axis,14+static_cast<int>(random_u32(game)%15));
-        if (tree) place_ground_item(game,tunnel.tree-tunnel.axis,ItemKind::Hatchet);
-        if (tunnel.crossing_length>0) {
-            const auto prize=roll_item_supply(game,LootSource::Weapon,false);
-            place_ground_item(game,tunnel.island,prize,supply_count(prize));
-            place_coins(game,tunnel.island+tunnel.axis,30+static_cast<int>(random_u32(game)%21));
-        }
+        if (tunnel.crossing_length>0) safe_tree(game,tunnel.tree,tunnel.axis,tunnel.crossing_length);
         std::vector<Cell> banks;
         const Cell first=plan.rooms[static_cast<std::size_t>(tunnel.rooms.front())].center;
         const Cell last=plan.rooms[static_cast<std::size_t>(tunnel.rooms.back())].center;
@@ -183,6 +172,10 @@ void populate_snake_tunnel(Game& game,const FloorPlan& plan) {
         for (Cell c:banks) if (vacant(game,c) && random_u32(game)%7==0)
             place_prop(game.stage,c,random_u32(game)%4==0 ? PropKind::BonePile :
                 random_u32(game)%2 ? PropKind::Leaves : PropKind::Fern,static_cast<std::uint8_t>(random_u32(game)));
+        auto supply_ground=banks;supply_ground.push_back(tunnel.cache);supply_ground.push_back(tunnel.entry);
+        compose_landmark_supplies(game,report,GenerationFeature::SnakeTunnel,supply_ground,tunnel.cache);
+        if (tunnel.crossing_length>0)
+            compose_landmark_supplies(game,report,GenerationFeature::SnakeTunnel,std::array{tunnel.island},tunnel.island,true);
         for (int index:tunnel.rooms) if (game.run.roof_light_count<static_cast<int>(game.run.roof_lights.size()))
             game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)]=
                 {plan.rooms[static_cast<std::size_t>(index)].center,{10,1400,{204,205,149}}};

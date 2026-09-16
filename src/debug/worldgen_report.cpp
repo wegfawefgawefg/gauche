@@ -33,7 +33,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         const int id=static_cast<int>(rule.feature);
         ImGui::PushID(id);
         const std::string label=std::string{rule.name}+" - "+generation_outcome_name(outcome);
-        if (ImGui::Selectable(label.c_str(),v.selected_feature==id)) v.selected_feature=id;
+        if (ImGui::Selectable(label.c_str(),v.selected_feature==id)) {v.selected_feature=id;v.selected_component=-1;}
         if (v.selected_feature==id) {
             if (!decision) ImGui::TextWrapped("This planner has not run at this checkpoint.");
             else {
@@ -67,11 +67,12 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
                     }
                     ImGui::EndDisabled();
                 }
+                draw_component_decisions(report,rule.feature,inspection);
             }
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: six large Forest landmarks. Ordinary room-role rolls, child components and later removals are not traced yet.");
+    ImGui::TextWrapped("Coverage: six large Forest landmarks. Supply/scenery child rolls cover giant trees, groves and snake tunnels; ordinary room-role rolls and later removals remain untraced.");
 }
 
 void draw_live_generation_details(const Game& game) {

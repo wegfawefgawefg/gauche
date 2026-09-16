@@ -1,13 +1,11 @@
 #include "giant_tree.hpp"
+#include "landmark_supplies.hpp"
 #include "feature_roll.hpp"
 #include "four_room_block.hpp"
 #include "terrain_material.hpp"
-#include "ground_items.hpp"
-#include "loot.hpp"
 #include "../scenery/hollow_tree.hpp"
 #include "../entities/forest_spider.hpp"
 #include "../props/interaction.hpp"
-#include "../items/supply.hpp"
 #include <algorithm>
 
 namespace {
@@ -109,14 +107,8 @@ void carve_giant_tree(Game& game,FloorPlan& plan) {
     }
 }
 
-void populate_giant_tree(Game& game,const FloorPlan& plan) {
+void populate_giant_tree(Game& game,const FloorPlan& plan,GenerationReport* report) {
     for (const auto& tree:plan.giant_trees) {
-        place_ground_item(game,tree.entrances.front(),ItemKind::Hatchet);
-        place_ground_item(game,tree.entrances.back(),ItemKind::Torch);
-        const auto weapon=roll_item_supply(game,LootSource::Weapon,false);
-        place_ground_item(game,tree.cache,weapon,supply_count(weapon));
-        place_coins(game,tree.cache+Cell{1,0},35+static_cast<int>(random_u32(game)%26));
-        place_ground_item(game,tree.cache+Cell{-1,0},ItemKind::BlinkSeed,2);
         auto ground=tree.ground;shuffle(game,ground);std::vector<Cell> occupied,nests;
         const int groups=4+static_cast<int>(random_u32(game)%3);
         for (Cell c:ground) {
@@ -152,6 +144,7 @@ void populate_giant_tree(Game& game,const FloorPlan& plan) {
                 place_prop(game.stage,c,prop,static_cast<std::uint8_t>(random_u32(game)%3));
             }
         }
+        compose_landmark_supplies(game,report,GenerationFeature::GiantTree,tree.ground,tree.cache);
         for (Cell d:{Cell{-6,-4},Cell{6,-4},Cell{0,6}}) if (game.run.roof_light_count<static_cast<int>(game.run.roof_lights.size()))
             game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)]=
                 {tree.canopy.start+Cell{tree.canopy.length/2,tree.canopy.width/2}+d,{10,1300,{199,211,141}}};

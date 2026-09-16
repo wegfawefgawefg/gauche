@@ -15,10 +15,23 @@ struct FeatureDecision {
     std::string reason,variant;
     std::vector<GenerationRegion> regions;
 };
+struct ComponentOption { int value=0; std::string name; unsigned weight=0; };
+struct ComponentDecision {
+    GenerationFeature feature{};
+    int parent=-1;
+    std::string slot,choice,result;
+    unsigned ticket=0,total=0;
+    int placed=0;
+    Cell anchor{};
+    std::vector<Cell> cells;
+    std::vector<ComponentOption> options;
+};
 struct GenerationReport {
     std::uint64_t seed=1,initial_rng=1;
     int floor=1;
     std::vector<FeatureDecision> features;
+    std::vector<ComponentDecision> components;
+    bool components_truncated=false;
 };
 struct GenerationRule {
     GenerationFeature feature;

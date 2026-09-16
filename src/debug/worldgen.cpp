@@ -18,6 +18,7 @@ void fit_worldgen(WorldGenViewer& v) {
 void regenerate_worldgen(WorldGenViewer& v) {
     v.original=std::make_unique<Game>();
     v.population={};
+    v.selected_component=-1;
     Game& game=*v.original;
     game.rng=v.seed==0 ? 1 : v.seed;
     game.run.seed=game.rng;

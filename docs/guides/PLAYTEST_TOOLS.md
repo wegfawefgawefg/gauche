@@ -65,3 +65,5 @@ The Rolls tab now covers the six large Forest landmarks: the same registry drive
 F1 → Generation inspector also reads the current locally generated game's immutable report during ordinary play, rather than a previous preview. Reports are excluded from gameplay hashes and snapshot serialization; received network snapshots explicitly show unavailable diagnostics. Ordinary room/child-component rolls, later removal attribution, fine checkpoints, network report transfer and other biome selectors remain pending.
 
 `GAUCHE_DEV_MODE` defaults ON; OFF hides developer entry/hotkeys and manual gameplay zoom controls.
+
+Giant-tree, timber-grove and snake-tunnel entries now expand into child component rolls: interior pockets, supplies, props and rewards. Each shows its local choice weights, selected ticket, result and recorded cells. Focus a site to inspect it; the map marks placed cells or the anchor of an empty/failed slot. The observation cap is 256 child entries per generation and never changes generation behavior. Item membership/rarity stays in the master supply tables.

@@ -1,12 +1,10 @@
 #include "timber_grove.hpp"
+#include "landmark_supplies.hpp"
 #include "feature_roll.hpp"
 #include "four_room_block.hpp"
 #include "room_frame.hpp"
 #include "terrain_material.hpp"
-#include "ground_items.hpp"
-#include "loot.hpp"
 #include "../props/interaction.hpp"
-#include "../items/supply.hpp"
 #include <algorithm>
 #include <cstdlib>
 
@@ -145,15 +143,8 @@ void carve_timber_grove(Game& game,FloorPlan& plan) {
     }
 }
 
-void populate_timber_grove(Game& game,const FloorPlan& plan) {
+void populate_timber_grove(Game& game,const FloorPlan& plan,GenerationReport* report) {
     for (const auto& grove:plan.timber_groves) {
-        place_ground_item(game,grove.entry,ItemKind::Hatchet);
-        place_ground_item(game,grove.entry+turn_cell({0,1},grove.turns),ItemKind::WaterFlask);
-        place_ground_item(game,grove.entry+turn_cell({0,-1},grove.turns),ItemKind::Firecracker,3);
-        const auto weapon=roll_item_supply(game,LootSource::Weapon,false);
-        place_ground_item(game,grove.cache,weapon,supply_count(weapon));
-        place_ground_item(game,grove.cache+turn_cell({1,0},grove.turns),ItemKind::ResinGlue,2);
-        place_coins(game,grove.cache+turn_cell({0,1},grove.turns),30+static_cast<int>(random_u32(game)%26));
         auto ground=grove.ground;shuffle(game,ground);std::vector<Cell> occupied;
         const int wanted=12+static_cast<int>(random_u32(game)%9);
         for (Cell cell:ground) {
@@ -169,6 +160,7 @@ void populate_timber_grove(Game& game,const FloorPlan& plan) {
                 roll==5 ? EntityKind::RootTurret : roll==6 ? EntityKind::Woodpecker : EntityKind::Wolf,cell);
             occupied.push_back(cell);
         }
+        compose_landmark_supplies(game,report,GenerationFeature::TimberGrove,grove.ground,grove.cache);
         for (Cell cell:{grove.entry,grove.cache}) if (game.run.roof_light_count<static_cast<int>(game.run.roof_lights.size()))
             game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)]={cell,{12,1500,{211,194,136}}};
     }

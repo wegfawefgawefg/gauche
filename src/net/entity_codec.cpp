@@ -1,3 +1,4 @@
+#include "../entities/dog.hpp"
 #include "../entities/fishing_work.hpp"
 #include "../entities/crane_operator.hpp"
 #include "../entities/coal_cutter.hpp"
@@ -274,7 +275,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_arc_torch(entity)) reader.okay=false;
     if (!valid_brawler(entity)) reader.okay=false;
     if (!valid_zombie_swipe(entity)) reader.okay=false;
-    if (!valid_wolf_bite(entity)) reader.okay=false;
+    if (!valid_wolf_bite(entity) || !valid_dog_bite(entity)) reader.okay=false;
     if (!valid_cooking_state(entity)) reader.okay=false;
     if (!valid_actor_toss(entity) || !valid_yeti(entity)) reader.okay=false;
     if (!valid_rivet_gunner(entity)) reader.okay=false;

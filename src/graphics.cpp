@@ -94,6 +94,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "pallet", "pallet_stack", "pallet_broken", "bound_rocks", "bound_rocks_broken", "container_side", "container_side_broken", "container_floor", "log_floor",
     "roof_container_a", "roof_container_b", "roof_container_c", "roof_container_end_a", "roof_container_end_b", "roof_container_end_c",
     "roof_container_far_a", "roof_container_far_b", "roof_container_far_c", "roof_container_near_a", "roof_container_near_b", "roof_container_near_c",
+    "dog_body", "dog_crouch", "dog_bite",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

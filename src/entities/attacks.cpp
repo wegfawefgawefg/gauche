@@ -1,3 +1,4 @@
+#include "dog.hpp"
 #include "brawler.hpp"
 #include "zombie.hpp"
 #include "wolf.hpp"
@@ -224,6 +225,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
                     if (std::abs(x) + std::abs(y) <= radius) add(enemy.cell + Cell{x, y});
             attack.sleep = true;
         }
+        break;
+    case EntityKind::Dog:
+        if (enemy.label_a==DogWindup && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;
     case EntityKind::Wolf:
         if (enemy.label_a==WolfBiteWindup && enemy.cell+enemy.facing==enemy.point_b && enemy.vitals.rooted==0)

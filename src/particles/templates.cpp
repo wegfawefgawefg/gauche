@@ -141,7 +141,7 @@ void spawn_ice_weapon_swing(Cosmetics& cosmetics,const Entity& user) {
     trail.alpha=.7F;trail.life=trail.span=8;add(cosmetics,trail);
 }
 
-void spawn_wolf_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
+void spawn_canine_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
     SpriteParticle bite;
     bite.sprite=Sprite::WolfFangs;bite.next_sprite=Sprite::WolfFangsClosed;
     bite.motion=ParticleMotion::Animated;bite.layer=ParticleLayer::Foreground;

@@ -1,3 +1,4 @@
+#include "../entities/dog.hpp"
 #include "../items/sled.hpp"
 #include "../entities/zombie.hpp"
 #include "../entities/wolf.hpp"
@@ -35,7 +36,7 @@ float hit_angle(const Game& game, Cell target, float fallback) {
         if (sound.sound != SoundId::ZombieScratch1 && sound.sound != SoundId::Punch1 &&
             sound.sound != SoundId::SmallLaser && sound.sound != SoundId::Explosion &&
             sound.sound != SoundId::Explosion1 && sound.sound != SoundId::BearSlam &&
-            sound.sound != SoundId::BoarHit && sound.sound != SoundId::WolfBite && sound.sound != SoundId::WolfSnap &&
+            sound.sound != SoundId::BoarHit && sound.sound != SoundId::WolfBite && sound.sound != SoundId::WolfSnap && sound.sound != SoundId::DogSnap &&
             sound.sound != SoundId::PilgrimSlash && sound.sound != SoundId::KnightSlash && sound.sound != SoundId::MasonJab && sound.sound != SoundId::BatBite && sound.sound != SoundId::SkaterHit && sound.sound != SoundId::DiverStrike && sound.sound != SoundId::MimicBite) continue;
         closest = length;
         source = sound.cell;
@@ -124,9 +125,10 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
             entity.counter_b==ZombieRecover && entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
-        if (entity.kind==EntityKind::Wolf && entity.label_a==WolfRecover &&
+        if (((entity.kind==EntityKind::Wolf && entity.label_a==WolfRecover) ||
+            (entity.kind==EntityKind::Dog && entity.label_a==DogRecover)) &&
             entity.use_flash==10 && entity.use_flash>pose.use_flash)
-            spawn_wolf_bite(cosmetics,entity.point_b,entity.facing);
+            spawn_canine_bite(cosmetics,entity.point_b,entity.facing);
     }
     if (same && entity.health < pose.health && entity.health >= 0 && !fell) {
         if (bleeds(entity.kind))

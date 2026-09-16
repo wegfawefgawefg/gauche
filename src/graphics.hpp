@@ -89,6 +89,7 @@ enum class Sprite : std::size_t {
     Pallet, PalletStack, PalletBroken, BoundRocks, BoundRocksBroken, ContainerSide, ContainerSideBroken, ContainerFloor, LogFloor,
     RoofContainerA, RoofContainerB, RoofContainerC, RoofContainerEndA, RoofContainerEndB, RoofContainerEndC,
     RoofContainerFarA, RoofContainerFarB, RoofContainerFarC, RoofContainerNearA, RoofContainerNearB, RoofContainerNearC,
+    DogBody, DogCrouch, DogBite,
     Count,
 };
 

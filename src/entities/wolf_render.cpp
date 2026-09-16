@@ -1,12 +1,16 @@
 #include "wolf_render.hpp"
 #include "wolf_call.hpp"
 #include "wolf.hpp"
+#include "dog.hpp"
 #include "hearing.hpp"
 
-void pose_wolf(const Entity& wolf,SDL_FRect& rect,double& angle) {
-    if (wolf.kind!=EntityKind::Wolf || wolf.label_a==WolfHunt) return;
+void pose_canine(const Entity& wolf,SDL_FRect& rect,double& angle) {
+    const bool wolf_bite=wolf.kind==EntityKind::Wolf && wolf.label_a!=WolfHunt;
+    const bool dog_bite=wolf.kind==EntityKind::Dog && wolf.label_a!=DogHunt;
+    if (!wolf_bite && !dog_bite) return;
     angle=wolf.facing.y>0 ? 90 : wolf.facing.y<0 ? -90 : 0;
-    const float lean=wolf.label_a==WolfBiteWindup ? -.07F : wolf.use_flash>0 ? .12F : 0;
+    const bool windup=wolf_bite ? wolf.label_a==WolfBiteWindup : wolf.label_a==DogWindup;
+    const float lean=windup ? -.07F : wolf.use_flash>0 ? .12F : 0;
     rect.x+=rect.w*lean*static_cast<float>(wolf.facing.x);
     rect.y+=rect.h*lean*static_cast<float>(wolf.facing.y);
 }

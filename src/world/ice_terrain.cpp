@@ -2,6 +2,7 @@
 #include "ice_material.hpp"
 
 #include <cstdlib>
+#include <algorithm>
 
 TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
     const int ax = std::abs(x), ay = std::abs(y);
@@ -45,19 +46,22 @@ void place_ice_terrain(Game& game, const FloorPlan& plan) {
     place_ice_materials(game,plan);
     for (const RoomPlan& room : plan.rooms) {
         if (room.role != RoomRole::Reservoir && room.role != RoomRole::FishingHut) continue;
-        Cell first{};
-        int holes = 0;
-        // ACCESS: Two shallow openings on the same side of the reserved dry crossing.
-        // Holes never replace a mandatory path, a gate, a wall or the spawn area.
-        for (int y = -2; y >= -room.half_height + 1 && holes < 2; --y)
-            for (int x = -2; x >= -room.half_width + 1 && holes < 2; --x) {
-                const Cell cell = room.center + Cell{x, y};
-                Tile* tile = game.stage.at(cell);
-                if (tile == nullptr || tile->kind != TileKind::Ice || plan.protected_cell(cell)) continue;
-                if (holes > 0 && distance(first, cell) < 2) continue;
-                *tile = {TileKind::IceHole, 0, 0};
-                if (holes == 0) first = cell;
-                ++holes;
+        std::vector<Cell> candidates,placed;
+        // Choose among real icy banks instead of taking the first two cells of
+        // a fixed upper-left scan. Required routes and authored thaw pockets win.
+        for (int y=-room.half_height+1;y<room.half_height;++y)
+            for (int x=-room.half_width+1;x<room.half_width;++x) {
+                const Cell cell=room.center+Cell{x,y};
+                const Tile* tile=game.stage.at(cell);
+                if (tile && tile->kind==TileKind::Ice && !plan.protected_cell(cell)) candidates.push_back(cell);
             }
+        for (std::size_t i=candidates.size();i>1;--i)
+            std::swap(candidates[i-1],candidates[random_u32(game)%i]);
+        const std::size_t desired=2+random_u32(game)%2;
+        for (const Cell cell:candidates) {
+            if (placed.size()==desired) break;
+            if (std::any_of(placed.begin(),placed.end(),[cell](Cell old) {return distance(old,cell)<3;})) continue;
+            *game.stage.at(cell)={TileKind::IceHole};placed.push_back(cell);
+        }
     }
 }

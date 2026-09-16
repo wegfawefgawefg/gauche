@@ -10,7 +10,7 @@
 namespace {
 bool eligible(const FloorPlan& plan,int i) {
     return i!=0 && i!=plan.exit_room && i!=plan.objective_room && i!=plan.secret_room &&
-        plan.rooms[static_cast<std::size_t>(i)].shape!=RoomShape::BearHollow;
+        !reserved_habitat(plan.rooms[static_cast<std::size_t>(i)]);
 }
 void reserve(FloorPlan& plan,Cell c) {
     if (c.x>=0 && c.y>=0 && c.x<plan.width && c.y<plan.height)

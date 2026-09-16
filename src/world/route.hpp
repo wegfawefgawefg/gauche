@@ -7,7 +7,7 @@
 enum class RoomRole { Entrance, Exit, Clearing, Thicket, Brook, Ruins,
                       Den, Cache, Shrine, Workshop, Orchard, Secret,
                       Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel, CrystalGallery, ServicePassage, BoilerGallery, Workfront, BlastingAlcove, AssemblyLine, RepairBay, ScrapYard, CoolingWorks, CableTrench, KilnCourt, PayOffice, LampAlcove, SlagBank, AshLoft, HoistShaft, CastingFloor, SettlingTanks, FreightSiding };
-enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern, WorkHall, ExcavatedHall, BearHollow, SpiderCave };
+enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf, ThawCavern, WorkHall, ExcavatedHall, BearHollow, SpiderCave, SnakeTunnel };
 
 struct RoomPlan {
     Cell grid{}, center{};
@@ -19,6 +19,10 @@ struct RoomPlan {
     int shelf_variant=0;
     int turns=0; // Quarter turns; half_width/height remain world-aligned bounds.
 };
+
+inline bool reserved_habitat(const RoomPlan& room) {
+    return room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave || room.shape==RoomShape::SnakeTunnel;
+}
 
 struct RouteEdge { int a = 0, b = 0; };
 struct ShelfReward { Cell island{},bank{},direction{}; };
@@ -42,7 +46,13 @@ struct SpiderCave {
     Cell entry{},cache{};
     bool mother=false;
 };
+struct SnakeTunnel {
+    std::vector<int> rooms;
+    Cell axis{},entry{},cache{},island{},tree{};
+    int crossing_length=0;
+};
 struct FloorPlan {
+    std::vector<SnakeTunnel> snake_tunnels;
     std::vector<SpiderCave> spider_caves;
     std::vector<ForestDen> forest_dens;
     std::vector<RoomPlan> rooms;

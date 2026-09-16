@@ -15,7 +15,7 @@ SoundId entity_death_sound(EntityKind kind) {
     case EntityKind::IceAnchor: return SoundId::AnchorBreak;
     case EntityKind::BoilerPorter: return SoundId::PorterDeath;
     case EntityKind::BoilerTank: return SoundId::BoilerBreak;
-    case EntityKind::ForestSpider: return SoundId::AnimalCrush1;
+    case EntityKind::Snake: case EntityKind::ForestSpider: return SoundId::AnimalCrush1;
     case EntityKind::IcicleSpider: return SoundId::SpiderDeath;
     case EntityKind::ShardColony: return SoundId::ShardBreak;
     case EntityKind::CandleKeeper: return SoundId::KeeperDeath;

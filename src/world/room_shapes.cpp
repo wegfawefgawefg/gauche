@@ -2,6 +2,7 @@
 #include "room_frame.hpp"
 #include "forest_den.hpp"
 #include "spider_cave.hpp"
+#include "snake_tunnel.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_terrain.hpp"
 #include "ice_shelves.hpp"
@@ -18,6 +19,7 @@ bool inside_shape(const RoomPlan& world, int x, int y) {
     const int ax = std::abs(x), ay = std::abs(y);
     const int w = room.half_width, h = room.half_height;
     switch (room.shape) {
+    case RoomShape::SnakeTunnel: return x*x*h*h+y*y*w*w<=w*w*h*h;
     case RoomShape::SpiderCave: return (x*x+y*y<=w*h-4) || ((x+3)*(x+3)+(y-2)*(y-2)<h*h/2);
     case RoomShape::BearHollow: return ax*ax+ay*ay<=88 || (ax<=3 && ay<=h);
     case RoomShape::WorkHall: return !(ax==7 && ay>=4 && ay<=5);
@@ -138,6 +140,7 @@ void carve_floor(Game& game, FloorPlan& plan) {
     carve_ice_thaw(game,plan);
     carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
+    carve_snake_tunnel(game,plan);
     for (int y = 0; y < plan.height; ++y)
         for (int x = 0; x < plan.width; ++x)
             if (x == 0 || y == 0 || x == plan.width - 1 || y == plan.height - 1)

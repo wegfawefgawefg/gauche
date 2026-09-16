@@ -1,5 +1,6 @@
 #include "crane_operator.hpp"
 #include "forest_spider.hpp"
+#include "snake.hpp"
 #include "coal_cutter.hpp"
 #include "brawler.hpp"
 #include "../items/coal.hpp"
@@ -64,6 +65,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: init_mine_worker(entity); break;
     case EntityKind::BoilerPorter: init_boiler_porter(entity); break;
     case EntityKind::BoilerTank: init_boiler_tank(entity); break;
+    case EntityKind::Snake: init_snake(entity); break;
     case EntityKind::ForestSpider: init_forest_spider(entity); break;
     case EntityKind::IcicleSpider: init_icicle_spider(entity); break;
     case EntityKind::ShardColony: init_shard_node(game,entity); break;
@@ -157,6 +159,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::GroundItem: step_sled_cargo(game,slot); step_floating_item(game, slot); step_ground_coal(game,slot); break;
     case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
     case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
+    case EntityKind::Snake: step_snake(game,slot); break;
     case EntityKind::ForestSpider: step_forest_spider(game,slot); break;
     case EntityKind::IcicleSpider: step_icicle_spider(game,slot); break;
     case EntityKind::ShardColony: step_shard_colony(game,slot); break;

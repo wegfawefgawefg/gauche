@@ -2,6 +2,7 @@
 #include "room_frame.hpp"
 #include "forest_den.hpp"
 #include "spider_cave.hpp"
+#include "snake_tunnel.hpp"
 #include "industrial_geometry.hpp"
 #include "ice_shelves.hpp"
 #include "ice_thaw.hpp"
@@ -204,6 +205,7 @@ FloorPlan plan_floor(Game& game) {
     }
     plan_forest_den(game,plan);
     plan_spider_cave(game,plan);
+    plan_snake_tunnel(game,plan);
     plan_industrial_geometry(game,plan);
     plan_ice_shelves(game,plan);
     plan_ice_thaw(game,plan);

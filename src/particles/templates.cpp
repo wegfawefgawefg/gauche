@@ -141,13 +141,13 @@ void spawn_ice_weapon_swing(Cosmetics& cosmetics,const Entity& user) {
     trail.alpha=.7F;trail.life=trail.span=8;add(cosmetics,trail);
 }
 
-void spawn_forest_spider_bite(Cosmetics& cosmetics,const Entity& spider) {
+void spawn_fang_bite(Cosmetics& cosmetics,Cell target,Cell facing,float size) {
     SpriteParticle bite;
     bite.sprite=Sprite::ForestSpiderFangs;bite.next_sprite=Sprite::ForestSpiderFangsClosed;
     bite.motion=ParticleMotion::Animated;bite.layer=ParticleLayer::Foreground;
-    bite.x=static_cast<float>(spider.point_b.x)+.5F;bite.y=static_cast<float>(spider.point_b.y)+.5F;
-    bite.width=bite.height=spider.counter_b==1 ? .5F : spider.counter_b==2 ? 1.1F : .8F;
-    bite.angle=spider.facing.x<0 ? 90 : spider.facing.x>0 ? -90 : spider.facing.y<0 ? 180 : 0;
+    bite.x=static_cast<float>(target.x)+.5F;bite.y=static_cast<float>(target.y)+.5F;
+    bite.width=bite.height=size;
+    bite.angle=facing.x<0 ? 90 : facing.x>0 ? -90 : facing.y<0 ? 180 : 0;
     bite.life=bite.span=14;add(cosmetics,bite);
 }
 

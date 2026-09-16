@@ -16,7 +16,7 @@ void set_forest_spider_role(Entity& spider,ForestSpiderRole role) {
     spider.counter_b=role;
     spider.health=spider.max_health=role==SpiderYoung ? 8 : role==SpiderMother ? 160 : 30;
     spider.move_interval=role==SpiderYoung ? 14 : role==SpiderMother ? 26 : 20;
-    spider.sprite=pose(spider,0);spider.point_c=spider.cell;
+    spider.sprite=pose(spider,0);spider.counter_a=spider.cell.x;spider.label_b=spider.cell.y;
 }
 void init_forest_spider(Entity& spider) {
     spider.impassable=true;set_forest_spider_role(spider,SpiderAdult);recover(spider,30);
@@ -52,6 +52,6 @@ void step_forest_spider(Game& game,int slot) {
             spider.label_a=ForestSpiderTell;spider.timer_a=spider.counter_b==SpiderMother ? 60 : 36;
             spider.sprite=pose(spider,1);spider.self_light={24,12,8};emit_sound(game,SoundId::SpiderWarn,spider.cell);
         } else pursue(game,slot,target->cell);
-    } else if (distance(spider.cell,spider.point_c)>5) approach(game,slot,spider.point_c);
+    } else if (distance(spider.cell,{spider.counter_a,spider.label_b})>5) approach(game,slot,{spider.counter_a,spider.label_b});
     else if ((game.tick+spider.generation)%90==0) wander(game,slot);
 }

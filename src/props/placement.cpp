@@ -81,7 +81,7 @@ void scatter_room_props(Game& game, const FloorPlan& plan) {
         // Dense patches and quieter gaps, scaled to the real room footprint.
         const int patches = cold ? 3 : room.role == RoomRole::Thicket ? 9 :
             3+room.half_width*room.half_height/18;
-        if (room.shape==RoomShape::BearHollow || room.shape==RoomShape::SpiderCave) continue;
+        if (reserved_habitat(room)) continue;
         for (int patch = 0; patch < patches; ++patch) {
             const Cell anchor = room.center + Cell{
                 static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_width * 2)) - room.half_width,

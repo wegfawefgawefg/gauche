@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "room_decisions.hpp"
 #include "forest_theme_layers.hpp"
 #include "room_frame.hpp"
 #include "forest_den.hpp"
@@ -133,10 +134,12 @@ void describe_rooms(Game& game, FloorPlan& plan) {
         if (room.role == RoomRole::WeatherStation) room.shape = RoomShape::Courtyard;
         if (room.role == RoomRole::Observatory) room.shape = RoomShape::Pillars;
     }
+    const auto before_objectives=plan.rooms;
     plan.rooms[0].role = RoomRole::Entrance;
     plan.rooms[0].shape = RoomShape::Clearing;
     plan.rooms[static_cast<std::size_t>(plan.exit_room)].role = RoomRole::Exit;
     plan.rooms[static_cast<std::size_t>(plan.objective_room)].role = RoomRole::Shrine;
+    record_room_revisions(plan,before_objectives,"Required objective");
     if (industrial_floor(game.run.floor)) {
         for (std::size_t i=1;i<plan.rooms.size();++i) {
             if (static_cast<int>(i)==plan.exit_room || static_cast<int>(i)==plan.objective_room ||
@@ -196,7 +199,9 @@ FloorPlan plan_floor(Game& game) {
     select_generation_themes(game,plan);
     grow_route(game, plan);
     choose_objectives(game, plan);
+    begin_room_decisions(plan);
     describe_rooms(game, plan);
+    auto previous_rooms=plan.rooms;
     if (random_u32(game) % 2 == 0) {
         for (std::size_t i = 1; i < plan.rooms.size(); ++i) {
             if (static_cast<int>(i) == plan.exit_room || static_cast<int>(i) == plan.objective_room) continue;
@@ -209,19 +214,35 @@ FloorPlan plan_floor(Game& game) {
             break;
         }
     }
+    record_room_revisions(plan,previous_rooms,"Secret leaf selection");
+    previous_rooms=plan.rooms;
     plan_giant_tree(game,plan);
+    record_room_revisions(plan,previous_rooms,"Giant tree reservation");
+    previous_rooms=plan.rooms;
     plan_timber_grove(game,plan);
+    record_room_revisions(plan,previous_rooms,"Timber grove reservation");
+    previous_rooms=plan.rooms;
     plan_forest_den(game,plan);
+    record_room_revisions(plan,previous_rooms,"Bear den reservation");
+    previous_rooms=plan.rooms;
     plan_spider_cave(game,plan);
+    record_room_revisions(plan,previous_rooms,"Spider cave reservation");
+    previous_rooms=plan.rooms;
     plan_snake_tunnel(game,plan);
+    record_room_revisions(plan,previous_rooms,"Snake tunnel reservation");
+    previous_rooms=plan.rooms;
     plan_root_maze(game,plan);
+    record_room_revisions(plan,previous_rooms,"Root maze reservation");
     plan_industrial_geometry(game,plan);
     plan_ice_shelves(game,plan);
     plan_ice_thaw(game,plan);
+    previous_rooms=plan.rooms;
     for (auto& room:plan.rooms) if (socket_room(game,room)) {
         room.turns=static_cast<int>(random_u32(game)%4);
         if (room.turns&1) std::swap(room.half_width,room.half_height);
     }
+    record_room_revisions(plan,previous_rooms,"Socket orientation");
+    finish_room_decisions(plan);
     return plan;
 }
 

@@ -59,14 +59,16 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
             if (!decision) ImGui::TextWrapped("This planner has not run at this checkpoint.");
             else {
                 ImGui::TextWrapped("%s",decision->reason.c_str());
-                if (decision->denominator && outcome!=GenerationOutcome::Suppressed && rule.feature!=GenerationFeature::Themes)
+                if (decision->denominator && outcome!=GenerationOutcome::Suppressed && rule.feature!=GenerationFeature::Themes && rule.feature!=GenerationFeature::RoomComposition)
                     ImGui::Text("Roll %u of [0,%u); 0 selects",decision->roll,decision->denominator);
+                if (rule.feature==GenerationFeature::RoomComposition && decision->denominator)
+                    ImGui::TextUnformatted("Required planning pass; assignments do not consume extra rolls");
                 const auto base=feature_denominator(rule,report.floor);
                 if (base && decision->denominator && base!=decision->denominator)
                     ImGui::Text("Actual 1/%u; base 1/%u before theme",decision->denominator,base);
                 if (decision->candidate_count>=0) {
                     const bool block=rule.feature==GenerationFeature::GiantTree || rule.feature==GenerationFeature::TimberGrove;
-                    ImGui::TextWrapped("%d %s",decision->candidate_count,block ? "weighted block entries (weighted by existing corners)" : rule.feature==GenerationFeature::ForestEncounters ? "eligible ordinary rooms" : "eligible placement candidates");
+                    ImGui::TextWrapped("%d %s",decision->candidate_count,block ? "weighted block entries (weighted by existing corners)" : rule.feature==GenerationFeature::ForestEncounters ? "eligible ordinary rooms" : rule.feature==GenerationFeature::RoomComposition ? "planned rooms" : "eligible placement candidates");
                 }
                 if (!decision->variant.empty()) ImGui::TextWrapped("Variant: %s",decision->variant.c_str());
                 if (!decision->regions.empty()) {
@@ -89,7 +91,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: floor identities, base Forest room roles, landmarks, sectors, rivers and ordinary encounters. Later role overrides/removals remain partially untraced.");
+    ImGui::TextWrapped("Coverage: floor identities, Forest room roles and reassignment sources, landmarks, sectors, rivers and ordinary encounters. Later prop/actor removal attribution remains partial.");
 }
 
 void draw_live_generation_details(const Game& game) {

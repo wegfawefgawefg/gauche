@@ -100,7 +100,7 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
     if(!v.sidebar_visible)return;
     SDL_SetRenderDrawColor(renderer,12,17,18,245);const SDL_FRect panel{0,24,width,297};SDL_RenderFillRect(renderer,&panel);
     SDL_SetRenderDrawColor(renderer,v.sidebar_focus ? 255 : 145,v.sidebar_focus ? 226 : 170,130,255);
-    text(renderer,29,v.sidebar_children ? "CHILD ROLLS" : "FLOOR ROLLS");
+    text(renderer,29,v.sidebar_children ? "CHILD CHOICES" : "FLOOR ROLLS");
     text(renderer,40,v.sidebar_focus ? "D-pad select | A focus" : "Back/Tab: browse rolls");
     const auto rows=children(report,v.selected_feature);
     const int count=v.sidebar_children ? static_cast<int>(rows.size()) : static_cast<int>(generation_rules.size());
@@ -127,7 +127,8 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
         const auto& c=report.components[static_cast<std::size_t>(rows[static_cast<std::size_t>(selected_row(rows,v.selected_component))])];
         wrapped(renderer,y,c.slot+": "+c.choice,3);
         wrapped(renderer,y,c.result,3);
-        text(renderer,y,"Cells "+std::to_string(c.placed)+" | ticket "+std::to_string(c.ticket)+"/"+std::to_string(c.total));
+        text(renderer,y,c.options.empty() ? "Assignment (no roll)" :
+            "Cells "+std::to_string(c.placed)+" | ticket "+std::to_string(c.ticket)+"/"+std::to_string(c.total));
     } else if(v.selected_feature>=0) {
         const auto& rule=generation_rules[static_cast<std::size_t>(v.selected_feature)];const auto* d=feature_decision(report,rule.feature);
         wrapped(renderer,y,rule.name,2);

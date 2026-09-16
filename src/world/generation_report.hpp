@@ -5,7 +5,7 @@
 
 // Immutable generation observations, excluded from gameplay hashes/plain state
 // snapshots. Developer network snapshots may attach a bounded copy.
-enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, AntColonies, MushroomSettlements, ForestBoss, ForestBorder, ForestOutskirts, ForestFinds, Count };
+enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, AntColonies, MushroomSettlements, ForestBoss, ForestBorder, ForestOutskirts, ForestFinds, RoomComposition, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
 struct FeatureDecision {
@@ -22,7 +22,7 @@ struct ComponentDecision {
     GenerationFeature feature{};
     int parent=-1;
     std::string slot,choice,result;
-    unsigned ticket=0,total=0;
+    unsigned ticket=0,total=0; // Empty options and zero total/ticket record an assignment, not a roll.
     int placed=0;
     Cell anchor{};
     std::vector<Cell> cells,guide,rejected_cells;
@@ -63,6 +63,7 @@ inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::ForestBorder,"Snowbound Forest border",Biome::Forest,{0,0,0,1}},
     GenerationRule{GenerationFeature::ForestOutskirts,"Outlying Forest encounters",Biome::Forest,{1,1,1,1},true},
     GenerationRule{GenerationFeature::ForestFinds,"Late Forest finds",Biome::Forest,{1,1,1,1},true},
+    GenerationRule{GenerationFeature::RoomComposition,"Room roles / reservations",Biome::Forest,{1,1,1,1}},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {

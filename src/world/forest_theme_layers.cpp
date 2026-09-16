@@ -58,7 +58,7 @@ RoomRole themed_forest_role(Game& game,FloorPlan& plan,Cell center) {
         {static_cast<int>(RoomRole::Workshop),"Workshop",wood ? 4U : 2U},
         {static_cast<int>(RoomRole::Orchard),"Orchard",2},
     };
-    const auto roll=roll_component(game,&plan.report,feature,plan.theme_component,"Base room role",center,choices);
+    const auto roll=roll_component(game,&plan.report,GenerationFeature::RoomComposition,-1,"Base room role",center,choices);
     component_result(&plan.report,roll,"Base role selected; later objective, secret or landmark reservations take precedence",std::array{center});
     return static_cast<RoomRole>(roll.value);
 }

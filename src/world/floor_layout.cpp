@@ -5,6 +5,7 @@
 #include "forest_border.hpp"
 #include "forest_outskirts.hpp"
 #include "loose_finds.hpp"
+#include "room_decisions.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -85,7 +86,9 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     if (!haunted && !freight && !reactor) {
         plan = plan_floor(game);
         capture("Room and landmark plan");
+        const auto planned_rooms=plan.rooms;
         carve_floor(game, plan,trace);
+        record_room_revisions(plan,planned_rooms,"Geometry validation / reservation rollback");
         for (auto& decision:plan.report.features) if (decision.outcome==GenerationOutcome::Reserved) {
             decision.outcome=GenerationOutcome::Built;
             decision.reason="Landmark geometry carved; this does not guarantee every later prop or loot placement";

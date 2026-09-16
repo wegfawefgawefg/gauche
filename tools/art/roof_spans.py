@@ -1,7 +1,7 @@
 """Three-tile-wide log, ice and steel roofs, hand drawn in 16px sections.
 
-The A/B/C bands join across a span. Open end caps expose the passage lip;
-the renderer rotates the whole arrangement for north/south tunnels.
+The A/B/C bands join across a span. Horizontal ends expose the passage lip.
+North/south logs use a closed far dome and a near arch, not rotated side holes.
 """
 from underworks_palette import *
 
@@ -57,3 +57,30 @@ for family in ('log', 'ice', 'gantry'):
                     p.line((0, 0, 0, 15), fill=STEEL)
                     bolts(p, [(1, 3), (1, 12)])
             save(im, f'roof_{family}{"_end" if end else ""}_{"abc"[band]}')
+
+# Upright timber stays on the same 3-column footprint as its support walls.
+# Draw the complete cap first so the arc joins exactly across tile boundaries.
+for end in ('far', 'near'):
+    im, p = canvas((48, 16))
+    for band, color in enumerate(('#393d2b', '#686045', '#4b4930')):
+        p.rectangle((band*16, 0, band*16+15, 15), fill=color)
+    for x, bend in ((3, 2), (9, -1), (15, 1), (21, 2), (28, -1), (35, 1), (43, -2)):
+        p.line([(x, 0), (x, 7), (x+bend, 10), (x+bend, 15)], fill='#83704d' if 16<=x<32 else '#555437')
+    if end == 'far':
+        mask, q = canvas((48, 16))
+        q.ellipse((0, 0, 47, 25), fill='white')
+        q.rectangle((0, 12, 47, 15), fill='white')
+        p.arc((0, 0, 47, 25), 180, 360, fill=INK, width=2)
+        p.arc((3, 2, 44, 26), 185, 350, fill='#83704d')
+        im.putalpha(mask.getchannel('A'))
+    else:
+        # Down-facing open arch: its clear center ends on the walkable column.
+        p.ellipse((2, 0, 45, 27), fill='#90764b')
+        p.ellipse((6, 2, 41, 28), fill='#b29b63')
+        p.ellipse((10, 3, 37, 29), fill=INK)
+        p.ellipse((16, 6, 31, 26), fill=(0, 0, 0, 0))
+        p.rectangle((16, 15, 31, 15), fill=(0, 0, 0, 0))
+        p.line((1, 2, 1, 15), fill=INK)
+        p.line((46, 2, 46, 15), fill=INK)
+    for band in range(3):
+        save(im.crop((band*16, 0, band*16+16, 16)), f'roof_log_{end}_{"abc"[band]}')

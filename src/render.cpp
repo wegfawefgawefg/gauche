@@ -184,7 +184,8 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (draw_freight_track(renderer,graphics,game.stage,cell,rect,lighting)) {
                 draw_tile_damage(renderer,tile,cell,rect,lighting);continue;
             }
-            const Sprite id = tile_sprite(tile, game.tick, cell, biome, arena);
+            const auto log_cap=tile.kind==TileKind::Wall ? log_far_support(game.stage,cell) : std::optional<Sprite>{};
+            const Sprite id = tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};
             if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint);
@@ -193,8 +194,13 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderTexture(renderer, texture, nullptr, &rect);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
+            if (log_cap) {
+                SDL_Texture* cap=texture_for(graphics,*log_cap);
+                if (lighting.active) draw_lit_tile(renderer,cap,rect,cell,lighting,tint);
+                else SDL_RenderTexture(renderer,cap,nullptr,&rect);
+            }
             if (!arena && biome==Biome::Ice) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
-            if (!arena && tile.kind == TileKind::Wall)
+            if (!arena && tile.kind == TileKind::Wall && !log_cap)
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
                     biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} :
                     biome==Biome::Industrial ? LightColor{1.05F,.88F,1.08F} : tint);

@@ -1,4 +1,5 @@
 #include "brawler.hpp"
+#include "zombie.hpp"
 #include "rail_shunter.hpp"
 #include "tar_choir.hpp"
 #include "emergency_pump.hpp"
@@ -45,6 +46,9 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.cells[static_cast<std::size_t>(attack.count++)] = cell;
     };
     switch (enemy.kind) {
+    case EntityKind::Zombie: case EntityKind::ZombieStack:
+        if (enemy.counter_b==ZombieWindup && enemy.cell+enemy.facing==enemy.point_b) add(enemy.point_b);
+        break;
     case EntityKind::FrostGoblin: case EntityKind::PipeGuard:
         if (enemy.label_a==BrawlerWindup && enemy.cell==enemy.point_a) add(enemy.point_b);
         break;

@@ -1,6 +1,7 @@
 #include "behavior.hpp"
 #include "hearing.hpp"
 #include "dispatch.hpp"
+#include "zombie.hpp"
 
 #include <array>
 
@@ -18,6 +19,8 @@ bool topple_zombie_stack(Game& game, int slot) {
     if (stack.kind != EntityKind::ZombieStack || stack.counter_a <= 1) return false;
     --stack.counter_a;
     stack.health = stack.max_health;
+    stack.counter_b=ZombieReady;
+    stack.sprite=Sprite::Zombie;
     stack.label_a = 1;
     stack.timer_a = 12;
     stack.attack_wait = 60;
@@ -55,6 +58,7 @@ void release_survivor(Game& game, Entity& stack) {
 void step_zombie_stack(Game& game, int slot) {
     Entity& stack = game.entities[static_cast<std::size_t>(slot)];
     if (stack.label_a == 0) {
+        if (step_zombie_swipe(game,slot) || begin_zombie_swipe(game,slot,false)) return;
         if (step_hearing(game, slot)) return;
         const auto target = enemy_target(game, stack.cell, stack.encounter.slot >= 0 ? 60 : 8);
         if (target.has_value()) {
@@ -65,7 +69,7 @@ void step_zombie_stack(Game& game, int slot) {
             }
         }
         else wander(game, slot);
-        bite(game, slot, 8);
+        if (begin_zombie_swipe(game,slot,false)) return;
         maybe_growl(game, slot, SoundId::ZombieGrowl2);
         return;
     }

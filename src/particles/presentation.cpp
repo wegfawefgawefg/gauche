@@ -1,4 +1,5 @@
 #include "../items/sled.hpp"
+#include "../entities/zombie.hpp"
 #include "../scenery/ice_render.hpp"
 #include "system.hpp"
 #include "gunfire.hpp"
@@ -116,7 +117,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
                  entity.use_flash > pose.use_flash)) {
         pose.angle = attack_angle(entity.facing);
         if ((entity.kind == EntityKind::Zombie || entity.kind == EntityKind::ZombieStack) &&
-            entity.attack_wait > pose.attack_wait)
+            entity.counter_b==ZombieRecover && entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_zombie_scratch(cosmetics, entity.cell, entity.facing, seed);
     }
     if (same && entity.health < pose.health && entity.health >= 0) {

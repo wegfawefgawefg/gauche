@@ -375,7 +375,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report,
     }
     populate_giant_tree(game,plan,decisions);
     populate_timber_grove(game,plan,decisions);
-    populate_forest_den(game,plan);
+    populate_forest_den(game,plan,decisions);
     populate_spider_cave(game,plan);
     populate_snake_tunnel(game,plan,decisions);
     populate_root_maze(game,plan);

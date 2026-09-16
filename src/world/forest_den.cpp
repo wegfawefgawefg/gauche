@@ -1,11 +1,6 @@
 #include "forest_den.hpp"
 #include "feature_roll.hpp"
-#include "bear_clearings.hpp"
 #include "terrain_material.hpp"
-#include "ground_items.hpp"
-#include "loot.hpp"
-#include "../items/supply.hpp"
-#include "../props/interaction.hpp"
 #include <algorithm>
 #include <cstdlib>
 
@@ -99,43 +94,5 @@ void carve_forest_den(Game& game,FloorPlan& plan) {
                 if (tile.kind==TileKind::Wall && (x+y)%3!=0) tile=wood_tile(TileMaterial::Tree);
             }
         }
-    }
-}
-
-void populate_forest_den(Game& game,const FloorPlan& plan) {
-    for (const auto& den:plan.forest_dens) {
-        populate_bear_beds(game,den.beds,random_u32(game)%3!=0);
-        // Optional clusters compose around the terrain and beds; they do not
-        // repeat a row of identical bones at the same offsets in every hollow.
-        for (int index:{den.a,den.b}) for (int cluster=0;cluster<5;++cluster) {
-            const Cell anchor=site(plan,den,index,static_cast<int>(random_u32(game)%15)-7,
-                static_cast<int>(random_u32(game)%15)-7);
-            const bool remains=index==den.b && random_u32(game)%3==0;
-            const int pieces=3+static_cast<int>(random_u32(game)%5);
-            for (int i=0;i<pieces;++i) {
-                const Cell cell=anchor+Cell{static_cast<int>(random_u32(game)%5)-2,static_cast<int>(random_u32(game)%5)-2};
-                const auto& tile=game.stage.at_or_border(cell);
-                if ((tile.kind!=TileKind::Grass && tile.kind!=TileKind::Empty) ||
-                    tile.prop.kind!=PropKind::None || entity_at(game,cell,false)>=0 || cell==den.cache) continue;
-                const auto kind=remains ? PropKind::BonePile : random_u32(game)%4==0 ? PropKind::Puffball :
-                    random_u32(game)%2==0 ? PropKind::TallGrass : PropKind::Leaves;
-                place_prop(game.stage,cell,kind,static_cast<std::uint8_t>(random_u32(game)));
-            }
-        }
-        for (int index:{den.a,den.b}) for (int along:{-6,-3,3,6}) {
-            const Cell cell=site(plan,den,index,along,6);
-            if (walkable(game.stage.at_or_border(cell)) && entity_at(game,cell,false)<0)
-                place_prop(game.stage,cell,along<0 ? PropKind::Fern : PropKind::RottenLog);
-        }
-        // A stolen tool stash gives the sleeping chamber a reason to enter.
-        const auto tool=roll_item_supply(game,LootSource::Weapon,false);
-        place_ground_item(game,den.cache,tool,supply_count(tool));
-        place_coins(game,den.cache-den.along,12+static_cast<int>(random_u32(game)%9));
-        place_ground_item(game,site(plan,den,den.a,-5,-3),ItemKind::HoneyPot);
-        place_ground_item(game,site(plan,den,den.b,-5,-3),ItemKind::RawMeat);
-        spawn_entity(game,EntityKind::Bunny,site(plan,den,den.a,3,-4));
-        if (game.run.roof_light_count<static_cast<int>(game.run.roof_lights.size()))
-            game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)]=
-                {site(plan,den,den.a,0,2),{7,1250,{220,218,164}}};
     }
 }

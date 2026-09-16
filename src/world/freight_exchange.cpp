@@ -80,7 +80,7 @@ void populate_freight_exchange(Game& game) {
     fixture(game,{32,25},PropKind::RailPoints,0);
     fixture(game,{32,11},PropKind::RailPoints,2);
     for (Cell cell:{Cell{10,9},Cell{33,13},Cell{51,9},Cell{29,24},Cell{49,27},Cell{12,39}})
-        fixture(game,cell,PropKind::BeamLamp);
+        fixture(game,cell,cell.x==29 || cell.x==51 ? PropKind::StreetLamp : PropKind::BeamLamp);
     Item hammer=make_item(ItemKind::PressHammer);hammer.durability=12;
     freight_pair(game,{9,25},{1,0},hammer);
     freight_pair(game,{54,11},{-1,0},make_item(ItemKind::BoltPouch,3));

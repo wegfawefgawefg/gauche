@@ -1,3 +1,4 @@
+#include "streetlamp_render.hpp"
 #include "render.hpp"
 #include "rail_render.hpp"
 #include "conveyor_render.hpp"
@@ -20,6 +21,8 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Stag
             const Cell cell{x, y};
             const Prop& prop = stage.at(cell)->prop;
             if (prop.kind == PropKind::None || prop.broken) continue;
+            if (prop.kind==PropKind::StreetLamp) {draw_streetlamp_shadow(renderer,stage,cell,camera,zoom);continue;}
+            if (prop.kind==PropKind::PoleWreck) {draw_pole_wreck(renderer,prop,tile_rect(cell,camera,zoom),light_at_cell(lighting,cell));continue;}
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
             const Sprite sprite = prop.kind==PropKind::Grate ? (prop.variant==1 ? Sprite::GrateV : Sprite::GrateH) : prop.kind==PropKind::SnowWindbreak ? (prop.variant==1 ? Sprite::SnowWallV : Sprite::SnowWallH) : prop.kind == PropKind::BridgePlank ? ((prop.variant&1U) ? Sprite::BridgePlankV : Sprite::BridgePlankH) : prop.kind == PropKind::GroundingSpike && prop.variant>0 ?

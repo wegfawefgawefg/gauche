@@ -3,6 +3,8 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::StreetLamp: return {Sprite::StreetLamp,SoundId::PoleFall,32,true,false,{7,1100,{236,190,118}}};
+    case PropKind::PoleWreck: return {Sprite::StreetLamp,SoundId::PoleBreak,20,true,false};
     case PropKind::RailPoints: return {Sprite::RailPoints,SoundId::PointsBreak,24,false,false};
     case PropKind::HoistWreck: return {Sprite::WeightBlock,SoundId::WeightBreak,80,true,false};
     case PropKind::FoamCover: return {Sprite::FoamCover,SoundId::FoamCollapse,12,true,false};
@@ -69,14 +71,14 @@ int prop_max_health(const Prop& prop) {
 }
 
 bool prop_low_cover(const Prop& prop) {
-    return (prop.kind==PropKind::FoamCover || prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::PoleWreck || prop.kind==PropKind::FoamCover || prop.kind==PropKind::SnowWindbreak || prop.kind==PropKind::Barricade) && !prop.broken && prop.hp>0;
 }
 
 bool prop_shoot_through(const Prop& prop) {
-    return (prop.kind==PropKind::PayCage || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
+    return (prop.kind==PropKind::PoleWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind==PropKind::Conveyor) && !prop.broken && prop.hp>0;
 }
 
 bool prop_cuttable_metal(const Prop& prop) {
-    return !prop.broken && (prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
+    return !prop.broken && (prop.kind==PropKind::StreetLamp || prop.kind==PropKind::PoleWreck || prop.kind==PropKind::RailPoints || prop.kind==PropKind::HoistWreck || prop.kind==PropKind::PayCage || prop.kind==PropKind::TensionSpring || prop.kind==PropKind::Grate || prop.kind==PropKind::Barricade ||
         prop.kind==PropKind::ScrapBin || prop.kind==PropKind::OreBin);
 }

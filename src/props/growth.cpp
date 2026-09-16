@@ -1,4 +1,5 @@
 #include "../items/emergency_foam.hpp"
+#include "streetlamp.hpp"
 #include "tension_spring.hpp"
 #include "growth.hpp"
 #include "conveyor.hpp"
@@ -36,6 +37,7 @@ void step_prop_growth(Game& game) {
             const Cell cell{x, y};
             Tile& tile = *game.stage.at(cell);
             Prop& prop = tile.prop;
+            if (prop.kind==PropKind::StreetLamp) {step_streetlamp(game,cell);continue;}
             if (prop.kind == PropKind::FoamCover) { step_foam_cover(game,cell); continue; }
             if (prop.kind == PropKind::TensionSpring) { step_tension_spring(game,cell); continue; }
             if (prop.kind == PropKind::Conveyor) { step_belt_timer(prop); continue; }
@@ -58,6 +60,7 @@ void step_prop_growth(Game& game) {
 }
 
 LightEmitter prop_light(const Prop& prop) {
+    if (prop.kind==PropKind::StreetLamp && prop.growth_ticks>0 && prop.growth_ticks%12<6) return {};
     if (prop.kind == PropKind::GroundingSpike)
         return !prop.broken && prop.variant == 1 ? LightEmitter{2,450,{245,117,61}} : LightEmitter{};
     if ((prop.kind == PropKind::Candle || prop.kind == PropKind::Stove) && !prop_has_flame(prop)) return {};

@@ -1,3 +1,4 @@
+#include "../world/streetlights.hpp"
 #include "industrial.hpp"
 #include "interaction.hpp"
 #include <array>
@@ -42,6 +43,7 @@ void scatter_industrial_props(Game& game,const FloorPlan& plan) {
     // partitions have open ends; they are cover, never an extra mandatory lock.
     for (const RoomPlan& room:plan.rooms) {
         if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit || room.role==RoomRole::Shrine) continue;
+        place_streetlights(game,plan,room);
         if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove) partition(game,plan,room);
         for (int bin=0;bin<2;++bin) {
             for (int attempt=0;attempt<12;++attempt) {

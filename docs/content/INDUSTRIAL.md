@@ -205,13 +205,19 @@ chance to replace its generated map with connected loading halls, two loaded
 cart routes and switch points, a crane salvaging worn gear, a sorting belt near
 an Ash Sleeper, a guarded control booth and a Counterweight over a coin cache.
 The entrance supplies a Rail Switch Key, Chain Hook and Rubber Mallet; cart
-cargo is a worn Press Hammer and a three-use Bolt Pouch stack. Breakable lamps
-mark work areas, dry crossings remain open, and ordinary interior walls can be
+cargo is a worn Press Hammer and a three-use Bolt Pouch stack. Four small lamps
+and two tall streetlights mark work areas; dry crossings remain open, and ordinary interior walls can be
 dug. A required switch opens the sealed exit; all living online players gather
 there through the usual rule. Rewards, shop and Industry 3-3 follow normally.
 Debug Levels can force, start at or repeat it. See
 [implementation/checks](../features/FREIGHT_EXCHANGE.md). It is a whole-floor
 layout, not a multi-room overlay or the reactor event below.
+
+Tall streetlights also appear in compatible ordinary workrooms: 32 HP, a one-second
+warning/fall, then 40 damage along three cells away from the final hit. Walls,
+surviving cover and quest fixtures stop the fall; survivors and loot are not buried.
+Landed 20-HP metal sections block walking but allow shots and can be cut apart.
+The light goes out, leaving local glass and copper debris.
 
 Unique candidate: **The Last Shift**. A mostly authored central foundry has a
 clearly labeled emergency shutdown. Activating it cuts power to the exit but

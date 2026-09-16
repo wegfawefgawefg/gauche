@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "generation_overlay.hpp"
 #include <imgui.h>
 #include <algorithm>
 
@@ -6,14 +7,15 @@ namespace {
 void component_tree(const GenerationReport& report,GenerationFeature feature,int parent,bool inspection,int depth) {
     if (depth>8) return;
     auto& viewer=worldgen_viewer();
+    int& selected_component=inspection ? viewer.selected_component : live_generation_inspector().selected_component;
     for (std::size_t i=0;i<report.components.size();++i) {
         const auto& component=report.components[i];
         if (component.feature!=feature || component.parent!=parent) continue;
         ImGui::PushID(static_cast<int>(i));
         const std::string label=component.slot+": "+component.choice;
         const bool expanded=ImGui::TreeNodeEx(label.c_str(),ImGuiTreeNodeFlags_OpenOnArrow|
-            (viewer.selected_component==static_cast<int>(i) ? ImGuiTreeNodeFlags_Selected : 0));
-        if (ImGui::IsItemClicked()) viewer.selected_component=static_cast<int>(i);
+            (selected_component==static_cast<int>(i) ? ImGuiTreeNodeFlags_Selected : 0));
+        if (ImGui::IsItemClicked()) selected_component=static_cast<int>(i);
         if (expanded) {
             ImGui::TextWrapped("%s | %d recorded cells",component.result.c_str(),component.placed);
             if (!component.rejected_cells.empty()) ImGui::Text("%zu skipped cells (orange crosses)",component.rejected_cells.size());
@@ -32,7 +34,7 @@ void component_tree(const GenerationReport& report,GenerationFeature feature,int
                     viewer.render.camera={static_cast<float>(low.x+high.x)*.5F,static_cast<float>(low.y+high.y)*.5F};
                     viewer.zoom=std::min(400.0F/(8.0F*static_cast<float>(high.x-low.x+4)),240.0F/(8.0F*static_cast<float>(high.y-low.y+4)));
                 }
-                viewer.selected_component=static_cast<int>(i);
+                selected_component=static_cast<int>(i);
             }
             ImGui::EndDisabled();
             component_tree(report,feature,static_cast<int>(i),inspection,depth+1);

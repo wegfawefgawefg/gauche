@@ -42,23 +42,24 @@ struct GenerationRule {
     const char* name;
     Biome biome;
     std::array<unsigned,4> denominators;
+    bool fine_steps=false; // This feature emits bounded GenerationStep checkpoints.
 };
 inline constexpr std::array generation_rules{
-    GenerationRule{GenerationFeature::GiantTree,"Giant tree",Biome::Forest,{10,5,5,5}},
-    GenerationRule{GenerationFeature::TimberGrove,"Timber grove",Biome::Forest,{9,4,4,4}},
+    GenerationRule{GenerationFeature::GiantTree,"Giant tree",Biome::Forest,{10,5,5,5},true},
+    GenerationRule{GenerationFeature::TimberGrove,"Timber grove",Biome::Forest,{9,4,4,4},true},
     GenerationRule{GenerationFeature::BearDen,"Connected bear den",Biome::Forest,{4,3,3,3}},
-    GenerationRule{GenerationFeature::SpiderCave,"Spider cave",Biome::Forest,{5,3,3,3}},
-    GenerationRule{GenerationFeature::SnakeTunnel,"Snake tunnel",Biome::Forest,{6,3,3,3}},
+    GenerationRule{GenerationFeature::SpiderCave,"Spider cave",Biome::Forest,{5,3,3,3},true},
+    GenerationRule{GenerationFeature::SnakeTunnel,"Snake tunnel",Biome::Forest,{6,3,3,3},true},
     GenerationRule{GenerationFeature::RootMaze,"Root maze",Biome::Forest,{8,4,4,4}},
-    GenerationRule{GenerationFeature::OpenSectors,"Open sectors",Biome::Forest,{3,2,1,2}},
-    GenerationRule{GenerationFeature::River,"Cross-room river",Biome::Forest,{2,2,2,3}},
+    GenerationRule{GenerationFeature::OpenSectors,"Open sectors",Biome::Forest,{3,2,1,2},true},
+    GenerationRule{GenerationFeature::River,"Cross-room river",Biome::Forest,{2,2,2,3},true},
     GenerationRule{GenerationFeature::ForestEncounters,"Ordinary Forest encounters",Biome::Forest,{1,1,1,1}},
     GenerationRule{GenerationFeature::Themes,"Floor identity / modifiers",Biome::Forest,{1,1,1,1}},
     GenerationRule{GenerationFeature::AntColonies,"Ant colonies / food routes",Biome::Forest,{6,4,4,4}},
     GenerationRule{GenerationFeature::MushroomSettlements,"Mushroom woods / settlements",Biome::Forest,{8,5,4,4}},
     GenerationRule{GenerationFeature::ForestBoss,"Old Growth boss clearing",Biome::Forest,{0,0,0,1}},
     GenerationRule{GenerationFeature::ForestBorder,"Snowbound Forest border",Biome::Forest,{0,0,0,1}},
-    GenerationRule{GenerationFeature::ForestOutskirts,"Outlying Forest encounters",Biome::Forest,{1,1,1,1}},
+    GenerationRule{GenerationFeature::ForestOutskirts,"Outlying Forest encounters",Biome::Forest,{1,1,1,1},true},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {

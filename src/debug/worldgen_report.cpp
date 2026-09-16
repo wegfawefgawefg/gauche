@@ -1,9 +1,14 @@
 #include "worldgen.hpp"
+#include "generation_overlay.hpp"
+#include "generation_build.hpp"
 #include <imgui.h>
 #include <algorithm>
 
 void draw_generation_report(const GenerationReport& report,bool inspection) {
     auto& v=worldgen_viewer();
+    auto& live=live_generation_inspector();
+    int& selected_feature=inspection ? v.selected_feature : live.selected_feature;
+    int& selected_component=inspection ? v.selected_component : live.selected_component;
     ImGui::SeparatorText("Generation rules / recorded decisions");
     ImGui::TextWrapped("Base selection chances per ordinary floor. Placement can still fail; selected rows show actual theme-adjusted chances.");
     if (const auto* themes=feature_decision(report,GenerationFeature::Themes);
@@ -47,8 +52,8 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         const int id=static_cast<int>(rule.feature);
         ImGui::PushID(id);
         const std::string label=std::string{rule.name}+" - "+generation_outcome_name(outcome);
-        if (ImGui::Selectable(label.c_str(),v.selected_feature==id)) {v.selected_feature=id;v.selected_component=-1;}
-        if (v.selected_feature==id) {
+        if (ImGui::Selectable(label.c_str(),selected_feature==id)) {selected_feature=id;selected_component=-1;}
+        if (selected_feature==id) {
             if (!decision) ImGui::TextWrapped("This planner has not run at this checkpoint.");
             else {
                 ImGui::TextWrapped("%s",decision->reason.c_str());
@@ -94,12 +99,23 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
 
 void draw_live_generation_details(const Game& game) {
     auto& v=worldgen_viewer();
+    auto& live=bind_live_generation_report(game);
     ImGui::SetNextWindowSize({420,570},ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Generation inspector",&v.details)) {
         if (game.generation_report) {
             const auto& report=*game.generation_report;
             ImGui::Text("Current floor %d | run seed %llu",report.floor,static_cast<unsigned long long>(report.seed));
             ImGui::Text("Planner RNG %llu",static_cast<unsigned long long>(report.initial_rng));
+            ImGui::TextWrapped("Build: %s",GAUCHE_GENERATOR_REVISION);
+            if(ImGui::Button("Copy floor diagnostics")) {
+                const std::string text="floor "+std::to_string(report.floor)+" | run seed "+std::to_string(report.seed)+
+                    " | planner RNG "+std::to_string(report.initial_rng)+" | build " GAUCHE_GENERATOR_REVISION;
+                SDL_SetClipboardText(text.c_str());
+            }
+            ImGui::Checkbox("Show recorded map annotations",&live.overlay);
+            ImGui::SameLine();
+            if(ImGui::Button("Clear selection"))live.selected_feature=live.selected_component=-1;
+            ImGui::TextWrapped("Select a feature or child roll below. Gold: footprint; cyan: placed cells/guide; pink: empty attempt; orange: rejected cells. Marks stay at generation-time positions, even after actors move or scenery breaks. F1 hides the panel; the enabled overlay remains visible.");
             ImGui::TextWrapped("Recorded when this floor was generated locally. Decisions survive gameplay; they are not a census of what is still alive.");
             draw_generation_report(report,false);
         } else ImGui::TextWrapped("No local generation report for this state. Received network snapshots do not carry diagnostics yet; this window will not substitute an unrelated preview.");

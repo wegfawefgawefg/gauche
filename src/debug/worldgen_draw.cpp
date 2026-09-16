@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "generation_overlay.hpp"
 #include "generation_build.hpp"
 #include "../input.hpp"
 #include <imgui.h>
@@ -24,42 +25,7 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
         render_game(renderer,graphics,game,0,v.zoom,nullptr,PointerState{},false,false,&v.render);
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
     if (v.rooms) for (const auto& room:selected.rooms) room_box(renderer,room,v);
-    if (v.selected_feature>=0) {
-        const auto* decision=feature_decision(selected.report,static_cast<GenerationFeature>(v.selected_feature));
-        if (decision) for (const auto& region:decision->regions) {
-            auto box=tile_rect(region.low,v.render.camera,v.zoom);
-            box.w=static_cast<float>(region.high.x-region.low.x)*tile_pixels(v.zoom);
-            box.h=static_cast<float>(region.high.y-region.low.y)*tile_pixels(v.zoom);
-            SDL_SetRenderDrawColor(renderer,255,210,80,65);SDL_RenderFillRect(renderer,&box);
-            SDL_SetRenderDrawColor(renderer,255,230,90,255);SDL_RenderRect(renderer,&box);
-        }
-    }
-    if (v.selected_component>=0 && static_cast<std::size_t>(v.selected_component)<selected.report.components.size()) {
-        const auto& child=selected.report.components[static_cast<std::size_t>(v.selected_component)];
-        SDL_SetRenderDrawColor(renderer,child.placed ? 90 : 255,child.placed ? 255 : 100,210,255);
-        const auto mark=[&](Cell cell) {
-            const auto box=tile_rect(cell,v.render.camera,v.zoom);
-            SDL_RenderLine(renderer,box.x,box.y,box.x+box.w,box.y+box.h);
-            SDL_RenderLine(renderer,box.x+box.w,box.y,box.x,box.y+box.h);
-        };
-        if (child.cells.empty()) mark(child.anchor);
-        else for (Cell cell:child.cells) {
-            if (child.guide.empty()) mark(cell);
-            else {
-                SDL_SetRenderDrawColor(renderer,90,240,210,100);
-                const auto box=tile_rect(cell,v.render.camera,v.zoom);SDL_RenderFillRect(renderer,&box);
-            }
-        }
-        SDL_SetRenderDrawColor(renderer,255,140,90,190);
-        for (Cell cell:child.rejected_cells) mark(cell);
-        SDL_SetRenderDrawColor(renderer,child.placed ? 90 : 255,child.placed ? 255 : 100,210,255);
-        for (std::size_t i=1;!child.guide.empty() && i<child.guide.size()+(child.guide_closed ? 1U : 0U);++i) {
-            const auto a=tile_rect(child.guide[i-1],v.render.camera,v.zoom);
-            const auto b=tile_rect(child.guide[i%child.guide.size()],v.render.camera,v.zoom);
-            const float offset=child.guide_closed && !child.guide_cell_centers ? 0.0F : a.w*.5F;
-            SDL_RenderLine(renderer,a.x+offset,a.y+offset,b.x+offset,b.y+offset);
-        }
-    }
+    draw_generation_annotations(renderer,selected.report,v.selected_feature,v.selected_component,v.render.camera,v.zoom);
     if ((v.changes || v.actor_changes) && v.checkpoint>0)
         draw_worldgen_changes(renderer,v,*v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game,game);
     SDL_SetRenderDrawColor(renderer,10,14,18,240);
@@ -132,10 +98,17 @@ void draw_worldgen_details(const Game& live_game) {
         }
         if (ImGui::BeginTabItem("Capture")) {
             ImGui::Checkbox("Fine steps (next capture)",&v.capture_options.details);
-            const int ids[]{-1,static_cast<int>(GenerationFeature::OpenSectors),static_cast<int>(GenerationFeature::River),static_cast<int>(GenerationFeature::SpiderCave),static_cast<int>(GenerationFeature::GiantTree)};
-            const char* labels[]{"All instrumented features","Sector attempts","River attempts","Spider branches","Giant-tree roots"};
-            int current=0;for (int i=1;i<5;++i) if (ids[i]==v.capture_options.feature) current=i;
-            if (ImGui::Combo("Fine scope",&current,labels,5)) v.capture_options.feature=ids[current];
+            const char* scope="All instrumented features";
+            for(const auto& rule:generation_rules)
+                if(rule.fine_steps && static_cast<int>(rule.feature)==v.capture_options.feature)scope=rule.name;
+            if(ImGui::BeginCombo("Fine scope",scope)) {
+                if(ImGui::Selectable("All instrumented features",v.capture_options.feature<0))v.capture_options.feature=-1;
+                for(const auto& rule:generation_rules)if(rule.fine_steps) {
+                    const int id=static_cast<int>(rule.feature);
+                    if(ImGui::Selectable(rule.name,v.capture_options.feature==id))v.capture_options.feature=id;
+                }
+                ImGui::EndCombo();
+            }
             ImGui::SliderInt("Every N attempts",&v.capture_options.every,1,16);
             if (ImGui::Button("Recapture same map")) recapture_worldgen(v);
             ImGui::TextWrapped("Same seed/floor and camera. Capture changes inspection only. T toggles fine capture. Other generator loops remain coarse.");

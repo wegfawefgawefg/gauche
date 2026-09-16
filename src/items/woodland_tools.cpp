@@ -4,9 +4,9 @@
 namespace {
 
 // TOOLS: Distinct ways to change the room or preserve carried equipment.
-constexpr RegionalItem claws{"Digging Claws", "Quick dig-power-1 scratches. Only 18 uses; 8 damage. Pierces a snail's shell.",
+constexpr RegionalItem claws{"Digging Claws", "200 quick scratches for digging and fighting. Dig power 1; 8 damage. Pierces a snail's shell.",
     Sprite::DiggingClaws, {1, 1, 0, 8, 18, PatternEffect::Damage},
-    ItemAction::Melee, 17, 1, false, 18, 0, 0, 0, 1, SoundId::ClawScratch};
+    ItemAction::Melee, 17, 1, false, 200, 0, 0, 0, 1, SoundId::ClawScratch};
 constexpr RegionalItem resin{"Resin Glue", "Fully repair the carried item with the most condition lost. Cannot restore uses or ammo.",
     Sprite::ResinGlue, {0, 0, 0, 0, 60, PatternEffect::Utility},
     ItemAction::Material, 14, 3, true, 0, 0, 0, 0, 0, SoundId::ResinRepair};

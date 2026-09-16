@@ -177,6 +177,11 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::SiphonDraw:
         spray(cosmetics,sound.cell,seed,3,Sprite::SummerMote,.02F,-.001F);
         break;
+    case SoundId::CoalBurn:
+        spawn_flame(cosmetics,sound.cell,seed,false);
+        spawn_campfire_smoke(cosmetics,sound.cell,seed+71);
+        spray(cosmetics,sound.cell,seed+13,4,Sprite::SummerMote,.045F,-.002F);
+        break;
     case SoundId::SiphonFlame:
         spawn_flame(cosmetics,sound.cell,seed,false);
         break;

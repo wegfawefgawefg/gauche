@@ -184,6 +184,9 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::BrassRivet,7,seed);
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::CopperCurl,5,seed+17);
         break;
+    case SoundId::CoalBurn:
+        cosmetics.flashes.push_back({{sound.cell,3,.6F,{1,.48F,.13F}},15,15});
+        break;
     case SoundId::StoveSpent: case SoundId::CoalLand:
         scatter_material(cosmetics.debris,sound.cell,DebrisKind::CoalCrumb,2,seed);
         break;

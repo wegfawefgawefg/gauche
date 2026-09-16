@@ -1,3 +1,4 @@
+#include "../items/coal.hpp"
 #include "rail_cart.hpp"
 #include "rail_shunter.hpp"
 #include "tar_choir.hpp"
@@ -144,7 +145,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: step_mine_worker(game,slot); break;
     case EntityKind::IceAnchor: step_ice_anchor(game,slot); break;
     case EntityKind::Sled: step_sled(game,slot); break;
-    case EntityKind::GroundItem: step_sled_cargo(game,slot); step_floating_item(game, slot); break;
+    case EntityKind::GroundItem: step_sled_cargo(game,slot); step_floating_item(game, slot); step_ground_coal(game,slot); break;
     case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
     case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
     case EntityKind::IcicleSpider: step_icicle_spider(game,slot); break;

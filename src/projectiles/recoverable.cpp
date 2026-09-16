@@ -1,11 +1,11 @@
 #include "recoverable.hpp"
 #include "../items/lunch_tin.hpp"
+#include "../items/coal.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../surfaces/temperature.hpp"
 #include "../item_pattern.hpp"
 #include "../combat/parry.hpp"
 #include "../props/interaction.hpp"
-#include "../world/ground_items.hpp"
 
 #include <algorithm>
 
@@ -30,10 +30,14 @@ void land(Game& game, int slot, bool hot_impact = false) {
     item.flight = {};
     const bool melted = item.kind == ItemKind::IceNeedle && (hot_impact || hot_cell(game, shot.cell));
     const Cell impact=shot.cell;
-    const Cell cell = melted ? shot.cell : nearby_ground_item_cell(game, shot.cell);
+    // Physical throws land where their flight ended, including hazards and
+    // occupied item piles. Safe loot placement must not teleport them ashore.
+    const Cell cell = shot.cell;
+    const bool burned=coal_lava_contact(game,item,cell);
     if (Item* held = reservation(game, shot, handle)) *held = {};
     forget_hits(game, handle);
     remove_entity(game, handle);
+    if (burned) return;
     if (melted) { emit_sound(game, SoundId::IceMelt, cell); return; }
     // CAPACITY: Converting a projectile frees a slot before its physical item is restored.
     if (Entity* loose = get_entity(game, spawn_entity(game, EntityKind::GroundItem, cell))) {

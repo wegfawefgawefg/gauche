@@ -1,6 +1,7 @@
 #include "industrial_population.hpp"
 #include "forest_den.hpp"
 #include "bear_stream.hpp"
+#include "bear_clearings.hpp"
 #include "brawlers.hpp"
 #include "room_supplies.hpp"
 #include "equipment_supply.hpp"
@@ -431,12 +432,14 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     }
     populate_forest_den(game,plan);
     populate_bear_streams(game,plan,report);
+    const auto bear_rooms=populate_bear_clearings(game,plan,report);
     if (forest_floor(game.run.floor)) {
         std::vector<std::size_t> encounters;
         for (std::size_t i=0;i<plan.rooms.size();++i) {
             const auto& room=plan.rooms[i];
             if (room.role!=RoomRole::Entrance && room.role!=RoomRole::Exit &&
-                room.role!=RoomRole::Secret && room.shape!=RoomShape::BearHollow) encounters.push_back(i);
+                room.role!=RoomRole::Secret && room.shape!=RoomShape::BearHollow &&
+                std::find(bear_rooms.begin(),bear_rooms.end(),i)==bear_rooms.end()) encounters.push_back(i);
         }
         // A growing floor needs a growing population. Shuffle allocation so deep
         // branches don't become empty after early rooms spend the shared budget.

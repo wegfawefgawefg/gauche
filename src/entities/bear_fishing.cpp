@@ -1,4 +1,5 @@
 #include "bear_fishing.hpp"
+#include "bear_family.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "../projectiles/fishing.hpp"
@@ -91,7 +92,7 @@ bool step_bear_fishing(Game& game,int slot) {
     bear.sprite=Sprite::Bear;bear.timer_a=180;return false;
 }
 bool valid_bear(const Entity& bear) {
-    return bear.kind!=EntityKind::Bear || (bear.counter_a>=0 && bear.counter_a<=1 &&
+    return bear.kind!=EntityKind::Bear || (bear.counter_a>=0 && bear.counter_a<=BearOld &&
         bear.label_a>=0 && bear.label_a<=BearFishFollow &&
         (bear.label_a<BearFishPaw || bear.counter_a==1));
 }

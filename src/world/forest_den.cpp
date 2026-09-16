@@ -1,4 +1,5 @@
 #include "forest_den.hpp"
+#include "bear_clearings.hpp"
 #include "terrain_material.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
@@ -71,7 +72,7 @@ void carve_forest_den(Game& game,FloorPlan& plan) {
         // Dry circular beds on the sheltered side, separated by cuttable roots.
         std::vector<Cell> bays{{-6,-4},{-3,-6},{1,-6},{5,-5},{-6,0},{6,0},{-3,-2},{2,-2}};
         for (std::size_t i=bays.size();i>1;--i) std::swap(bays[i-1],bays[random_u32(game)%i]);
-        const std::size_t count=game.run.floor==1 ? 2+random_u32(game)%2 : 3+random_u32(game)%4;
+        const std::size_t count=game.run.floor==1 ? 3+random_u32(game)%2 : 4+random_u32(game)%5;
         for (std::size_t i=0;i<count;++i) {
             const Cell bay=bays[i];
             const Cell bed=site(plan,den,den.b,bay.x,bay.y);den.beds.push_back(bed);
@@ -99,11 +100,7 @@ void carve_forest_den(Game& game,FloorPlan& plan) {
 
 void populate_forest_den(Game& game,const FloorPlan& plan) {
     for (const auto& den:plan.forest_dens) {
-        for (const Cell bed:den.beds) {
-            place_prop(game.stage,bed,PropKind::BearBed);
-            if (auto* bear=get_entity(game,spawn_entity(game,EntityKind::Bear,bed)))
-                apply_sleep(*bear,36000); // Noise, damage and fire wake the ordinary bear.
-        }
+        populate_bear_beds(game,den.beds,random_u32(game)%3!=0);
         // Optional clusters compose around the terrain and beds; they do not
         // repeat a row of identical bones at the same offsets in every hollow.
         for (int index:{den.a,den.b}) for (int cluster=0;cluster<5;++cluster) {

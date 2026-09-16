@@ -1,5 +1,6 @@
 #include "behavior.hpp"
 #include "bear_fishing.hpp"
+#include "bear_family.hpp"
 #include "hearing.hpp"
 #include "foraging.hpp"
 #include "dispatch.hpp"
@@ -21,9 +22,10 @@ void step_bear(Game& game, int slot) {
         if (bear.counter_a==1) bear.sprite=bear.label_b==1 ? Sprite::BearFishEat : Sprite::Bear;
         return;
     }
+    if (step_bear_cub(game,slot)) return;
     if (bear.label_a == 1) {
         if (bear.timer_a > 0) return;
-        resolve_enemy_attack(game, slot, 24, SoundId::BearSlam);
+        resolve_enemy_attack(game, slot, bear_damage(bear), SoundId::BearSlam);
         bear.label_a = 2;
         bear.timer_a = 70;
         return;
@@ -44,10 +46,10 @@ void step_bear(Game& game, int slot) {
     if (!clear_attack_sight(game, bear.cell, cell)) return;
     bear.point_b = cell;
     bear.timer_b = 300;
-    if (distance(bear.cell, cell) <= 2) {
+    if (distance(bear.cell, cell) <= bear_reach(bear)) {
         bear.facing = cardinal_toward(bear.cell, cell, bear.facing);
         bear.label_a = 1;
-        bear.timer_a = 42;
+        bear.timer_a = bear.counter_a==BearOld ? 60 : bear.counter_a==BearFather ? 54 : 42;
         emit_sound(game, SoundId::BearRear, bear.cell);
     } else pursue(game, slot, cell);
 }

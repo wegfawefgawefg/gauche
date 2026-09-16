@@ -5,6 +5,7 @@
 #include "props/ice_pillar_render.hpp"
 #include "items/cooking_render.hpp"
 #include "scene_entities.hpp"
+#include "entities/bear_family.hpp"
 #include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -122,6 +123,10 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             // A crane base can be off-screen while its extended head is visible.
             draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
             continue;
+        }
+        if (entity.kind==EntityKind::Bear) {
+            const float size=bear_size(entity);
+            rect.x-=pixels*(size-1)*.5F;rect.y-=pixels*(size-1);rect.w*=size;rect.h*=size;
         }
         if (entity.sprite==Sprite::ReactorCore) {
             rect.x-=pixels*.5F;rect.y-=pixels;rect.w*=2;rect.h*=2;

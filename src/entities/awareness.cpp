@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "bear_family.hpp"
 #include "../world/chasm.hpp"
 #include "hearing.hpp"
 #include "foraging.hpp"
@@ -12,7 +13,7 @@ void remember_attacker(Game& game, int slot, Cell from) {
         victim.point_c = from; victim.label_c = InvestigateNoise; victim.timer_c = 300;
     }
     if (eats_meat(victim.kind)) { victim.counter_b = 360; victim.label_b = 0; }
-    if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; }
+    if (victim.kind == EntityKind::Bear) { victim.timer_b = 300; victim.point_b = from; alarm_bear_family(game,slot,from); }
     if (victim.kind == EntityKind::CandleKeeper) {
         const int attacker = entity_at(game,from,true);
         if (attacker >= 0 && attacker != slot) {

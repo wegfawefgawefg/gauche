@@ -1,4 +1,5 @@
 #include "dog.hpp"
+#include "bear_family.hpp"
 #include "brawler.hpp"
 #include "zombie.hpp"
 #include "wolf.hpp"
@@ -211,7 +212,7 @@ EnemyAttack enemy_attack(const Entity& enemy) {
     case EntityKind::Bear:
         if (enemy.label_a == 1) {
             const Cell side{-enemy.facing.y, enemy.facing.x};
-            for (int reach = 1; reach <= 2; ++reach)
+            for (int reach = 1; reach <= bear_reach(enemy); ++reach)
                 for (int lane = -1; lane <= 1; ++lane)
                     add(enemy.cell + Cell{enemy.facing.x * reach + side.x * lane,
                                           enemy.facing.y * reach + side.y * lane});

@@ -71,6 +71,7 @@ enum class Sprite : std::size_t {
     ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax,
     IcePillar, IcePillarCracked, IceRubble,
     FrostGoblin, FrostGoblinRaise, FrostGoblinSwing, PipeGuard, PipeGuardRaise, PipeGuardSwing,
+    WolfCrouch, WolfLunge, WolfFangs, WolfFangsClosed,
     Count,
 };
 

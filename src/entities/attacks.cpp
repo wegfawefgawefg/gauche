@@ -1,5 +1,6 @@
 #include "brawler.hpp"
 #include "zombie.hpp"
+#include "wolf.hpp"
 #include "rail_shunter.hpp"
 #include "tar_choir.hpp"
 #include "emergency_pump.hpp"
@@ -224,7 +225,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
             attack.sleep = true;
         }
         break;
-    case EntityKind::BrambleGuard: case EntityKind::Wolf: case EntityKind::CrateMimic:
+    case EntityKind::Wolf:
+        if (enemy.label_a==WolfBiteWindup && enemy.cell+enemy.facing==enemy.point_b && enemy.vitals.rooted==0)
+            add(enemy.point_b);
+        break;
+    case EntityKind::BrambleGuard: case EntityKind::CrateMimic:
         if (enemy.label_a == 1) add(enemy.point_b);
         break;
     case EntityKind::FrostBat:

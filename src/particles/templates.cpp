@@ -127,6 +127,16 @@ void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed) {
     spray(cosmetics, cell, seed, 8, Sprite::Ruin, 0.1F, 0.018F);
 }
 
+void spawn_wolf_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
+    SpriteParticle bite;
+    bite.sprite=Sprite::WolfFangs;bite.next_sprite=Sprite::WolfFangsClosed;
+    bite.motion=ParticleMotion::Animated;bite.layer=ParticleLayer::Foreground;
+    bite.x=static_cast<float>(target.x)+.5F;bite.y=static_cast<float>(target.y)+.5F;
+    bite.width=bite.height=.85F;
+    bite.angle=facing.x<0 ? 180 : facing.y>0 ? 90 : facing.y<0 ? -90 : 0;
+    bite.life=bite.span=18;add(cosmetics,bite);
+}
+
 void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
                            std::uint64_t seed) {
     shake_tiles(cosmetics, impact.cell, impact.damage > 0 ? 0.12F : 0.035F, 0);

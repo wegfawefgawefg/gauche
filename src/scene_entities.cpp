@@ -211,9 +211,10 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const bool worm = entity.kind == EntityKind::BurrowWorm;
             if (worm) angle = std::atan2(static_cast<double>(entity.facing.y),
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
+            pose_wolf(entity,body_rect,angle);
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
-                nullptr, ((entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
+                nullptr, (((entity.kind==EntityKind::Wolf && entity.label_a!=0) || entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
                     !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }

@@ -2,5 +2,6 @@
 
 #include "../lighting/render.hpp"
 
+void pose_wolf(const Entity& wolf,SDL_FRect& rect,double& angle);
 void draw_wolf_call(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Entity& wolf, SDL_FRect rect, LightColor light);

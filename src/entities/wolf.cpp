@@ -1,4 +1,5 @@
 #include "behavior.hpp"
+#include "wolf.hpp"
 #include "wolf_call.hpp"
 #include "hearing.hpp"
 #include "../surfaces/interaction.hpp"
@@ -27,6 +28,18 @@ void find_pack(Game& game, int slot) {
 
 } // namespace
 
+void interrupt_wolf_bite(Entity& wolf) {
+    if (wolf.kind!=EntityKind::Wolf || wolf.label_a!=WolfBiteWindup) return;
+    wolf.label_a=WolfRecover;wolf.timer_a=wolf_recovery_ticks;
+    wolf.sprite=Sprite::Wolf;wolf.use_flash=0;
+}
+
+bool valid_wolf_bite(const Entity& wolf) {
+    return wolf.kind!=EntityKind::Wolf || (wolf.label_a>=WolfHunt && wolf.label_a<=WolfRecover &&
+        wolf.timer_a>=0 && wolf.timer_a<=wolf_recovery_ticks &&
+        (wolf.label_a!=WolfBiteWindup || distance({},wolf.facing)==1));
+}
+
 void init_wolf(Entity& wolf) {
     wolf.sprite = Sprite::Wolf;
     wolf.health = wolf.max_health = 45;
@@ -39,16 +52,23 @@ void step_wolf(Game& game, int slot) {
     Entity& wolf = game.entities[static_cast<std::size_t>(slot)];
     const Entity* called_prey = called_wolf_prey(game, wolf);
     if (!called_prey && step_foraging(game, slot, wolf.label_a != 0)) return;
-    if (wolf.label_a == 1) {
+    if (wolf.label_a == WolfBiteWindup) {
+        // The locked target and facing also identify the original attack cell.
+        if (wolf.cell+wolf.facing!=wolf.point_b || wolf.vitals.rooted>0 ||
+            wolf.stun_ticks>0 || wolf.sleep_ticks>0 || wolf.toss.ticks>0) {
+            interrupt_wolf_bite(wolf);return;
+        }
         if (wolf.timer_a == 0) {
-            resolve_enemy_attack(game, slot, 11, SoundId::WolfBite);
-            wolf.label_a = 2;
-            wolf.timer_a = 32;
+            resolve_enemy_attack(game, slot, 11, SoundId::WolfSnap);
+            wolf.sprite=Sprite::WolfLunge;
+            wolf.label_a = WolfRecover;
+            wolf.timer_a = wolf_recovery_ticks;
         }
         return;
     }
-    if (wolf.label_a == 2) {
-        if (wolf.timer_a == 0) wolf.label_a = 0;
+    if (wolf.label_a == WolfRecover) {
+        if (wolf.use_flash==0) wolf.sprite=Sprite::Wolf;
+        if (wolf.timer_a == 0) wolf.label_a = WolfHunt;
         return;
     }
     if (!called_prey && step_hearing(game, slot)) return;
@@ -76,8 +96,10 @@ void step_wolf(Game& game, int slot) {
     if (distance(wolf.cell, prey) == 1 && clear_attack_sight(game, wolf.cell, prey)) {
         wolf.point_b = prey;
         wolf.facing = cardinal_toward(wolf.cell, prey, wolf.facing);
-        wolf.label_a = 1;
-        wolf.timer_a = 18;
+        wolf.label_a = WolfBiteWindup;
+        wolf.timer_a = wolf_windup_ticks;
+        wolf.sprite=Sprite::WolfCrouch;
+        emit_sound(game,SoundId::WolfSnarl,wolf.cell);
         return;
     }
     Cell destination = prey;

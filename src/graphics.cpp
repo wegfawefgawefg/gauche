@@ -76,6 +76,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "chapel_pew", "chapel_altar", "chapel_runner", "chapel_urn", "chapel_pew_broken", "chapel_wax",
     "ice_pillar", "ice_pillar_cracked", "ice_rubble",
     "frost_goblin", "frost_goblin_raise", "frost_goblin_swing", "pipe_guard", "pipe_guard_raise", "pipe_guard_swing",
+    "wolf_crouch", "wolf_lunge", "wolf_fangs", "wolf_fangs_closed",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

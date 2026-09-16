@@ -1,4 +1,5 @@
 #include "../items/pocket_pump.hpp"
+#include "../items/cooking.hpp"
 #include "../items/nail_board.hpp"
 #include "../items/chain_hook.hpp"
 #include "../items/pocket_drill.hpp"
@@ -68,9 +69,14 @@ void step_player(Game& game, int slot, const Input& incoming) {
         if (!use_pickup_fixture(game,player)) pickup_or_drop(game, player);
         return;
     }
-    if (input.interact && !interact_with_fixture(game, player.owner, player.cell))
-        interact_with_fixture(game, player.owner, player.cell + player.facing);
+    if (input.interact) {
+        cancel_item_action(player);
+        if (!interact_with_fixture(game, player.owner, player.cell))
+            interact_with_fixture(game, player.owner, player.cell + player.facing);
+        if (cooking_action(player)) return;
+    }
     if (input.drop) drop_player_item(game, player);
+    if (step_cooking_action(game,slot,input)) return;
     if (step_pocket_drill(game,slot,input)) return;
     if (step_arc_torch(game,slot,input)) return;
     if (step_magnet(game,slot,input)) return;

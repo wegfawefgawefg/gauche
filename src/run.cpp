@@ -4,6 +4,7 @@
 #include "game.hpp"
 #include "projectiles/recoverable.hpp"
 #include "items/campfire.hpp"
+#include "items/cooking.hpp"
 #include "items/catalog.hpp"
 #include "world/encounter.hpp"
 #include "world/ice_terrain.hpp"
@@ -127,7 +128,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
             // Explicit interaction may cook from the pack; using a flask, gun or
             // other utility keeps that item's action even when meat is carried.
             const bool cooking_hand = item_is_melee(held) || held == ItemKind::RawMeat || held == ItemKind::Egg;
-            if ((!held_use || cooking_hand) && use_campfire(game, *player, fixture)) return true;
+            if ((!held_use || cooking_hand) && use_campfire(game, *player, fixture,held_use)) return true;
         }
         if (fixture.kind == EntityKind::Door && game.run.has_key) {
             fixture.fixture_open = true;
@@ -149,6 +150,9 @@ bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
             return true;
         }
     }
+    const auto held=player->inventory.held()->kind;
+    if (!held_use || item_is_melee(held) || cooked_item(held)!=ItemKind::None)
+        return use_cooking_fire(game,*player,target,held_use);
     return false;
 }
 

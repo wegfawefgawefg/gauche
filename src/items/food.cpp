@@ -1,10 +1,10 @@
 #include "catalog.hpp"
 
 namespace {
-constexpr RegionalItem egg{"Egg", "A fresh egg from a nest. Eat for 3 HP, or fry it at a campfire for a better meal.",
+constexpr RegionalItem egg{"Egg", "Eat for 3 HP. Hold use toward a flame, or leave it on a fire, to fry one portion in 0.75s.",
     Sprite::Egg, {0, 0, 0, 0, 35, PatternEffect::Heal, false, 0, 3},
     ItemAction::Food, 2, 12, true, 0, 0, 0, 0, 0, SoundId::EggEat};
-constexpr RegionalItem fried{"Fried Egg", "A warm little meal. Restore 12 HP. Made by bringing an egg to a campfire.",
+constexpr RegionalItem fried{"Fried Egg", "A warm little meal. Restore 12 HP. Fried over an exposed flame.",
     Sprite::FriedEgg, {0, 0, 0, 0, 60, PatternEffect::Heal, false, 0, 12},
     ItemAction::Food, 5, 12, true, 0, 0, 0, 0, 0, SoundId::EggEat};
 }

@@ -1,4 +1,5 @@
 #include "props/ice_pillar_render.hpp"
+#include "items/cooking_render.hpp"
 #include "scene_entities.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -284,6 +285,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_effigy_mask(renderer,graphics,entity,rect,brightness);
         draw_boiler_details(renderer,graphics,entity,rect,brightness);
         draw_brick_prepare(renderer, entity, rect, brightness);
+        draw_cooking(renderer,graphics,entity,rect,brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&
             entity.health < entity.max_health && entity.max_health < 1000000) {
             SDL_FRect bar{rect.x + 2.0F, rect.y - 4.0F,

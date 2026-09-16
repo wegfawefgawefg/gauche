@@ -2,6 +2,7 @@
 #include "../game.hpp"
 
 bool entity_has_flame(const Entity& actor);
+bool flame_cell(const Game& game,Cell cell);
 bool hot_cell(const Game& game, Cell cell);
 bool warm_cell(const Game& game, Cell cell);
 bool warm_surface(Game& game, Cell cell, int ticks);

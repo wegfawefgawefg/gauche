@@ -1,6 +1,7 @@
 #include "brawler.hpp"
 #include "zombie.hpp"
 #include "wolf.hpp"
+#include "../items/cooking.hpp"
 #include "../items/glow_slag.hpp"
 #include "rail_shunter.hpp"
 #include "tar_choir.hpp"
@@ -170,4 +171,5 @@ void step_entity_timers(Game& game, int slot) {
     }
     if (entity.kind == EntityKind::GroundItem && (entity.ground_item.flame_ticks > 0 || glowing_slag(entity.ground_item)))
         ignite_surface(game, entity.cell);
+    step_ground_cooking(game,slot);
 }

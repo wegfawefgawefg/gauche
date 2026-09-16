@@ -44,8 +44,6 @@ bool entity_has_flame(const Entity& actor) {
     return held && hot_item(*held);
 }
 
-namespace {
-
 bool flame_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
     if (tile == nullptr) return false;
@@ -56,8 +54,6 @@ bool flame_cell(const Game& game, Cell cell) {
     }
     return false;
 }
-
-} // namespace
 
 bool hot_cell(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);

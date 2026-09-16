@@ -83,7 +83,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::BearTrap: return "Open the jaws first. Then place it; a victim takes 100 damage.";
     case ItemKind::Mine: return "Place an explosive trap on the next clear tile.";
     case ItemKind::Pickaxe: return "Strike the next tile and break weak rock quickly.";
-    case ItemKind::RawMeat: return "Eat for 4 health, or cook it at a campfire.";
+    case ItemKind::RawMeat: return "Eat for 4 health. Hold use toward a flame, or leave it on a fire, to roast one portion in 0.75s.";
     case ItemKind::CookedMeat: return "Eat for 18 health after cooking it at a fire.";
     case ItemKind::None: return "Empty slot.";
     default: break;

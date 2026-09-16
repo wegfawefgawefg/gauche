@@ -1,4 +1,5 @@
 #include "fissures.hpp"
+#include "ant_colonies.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -162,6 +163,9 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_forest_river(game,plan,report);
         populate_spider_growth(game,plan,report);
         capture("Cross-room inhabitants and scenery");
+        // Ambient colonies use remaining capacity after all ordinary fighters.
+        populate_ant_colonies(game,plan,report);
+        capture("Ant colonies and food routes");
         dress_forest_theme_patches(game,plan);
         capture("Floor identity scenery");
         // Reserve structures before loose clutter consumes their clear ground.

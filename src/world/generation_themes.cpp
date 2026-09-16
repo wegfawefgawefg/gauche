@@ -53,5 +53,6 @@ unsigned themed_feature_denominator(const GenerationRule& rule,int floor,Generat
     if (has_theme(themes,GenerationTheme::Overgrowth)) {
         if (rule.feature==GenerationFeature::GiantTree || rule.feature==GenerationFeature::RootMaze) boost(3);
     }
+    if (has_theme(themes,GenerationTheme::Ants) && rule.feature==GenerationFeature::AntColonies) boost(1);
     return value;
 }

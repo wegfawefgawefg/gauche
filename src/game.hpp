@@ -175,7 +175,7 @@ enum class EntityKind : std::uint8_t {
     Key, Door, Exit, Spawner, Bat, Wolf, Bear, Bunny, Ember, FrostBat, Trap,
     Switch, Campfire, Den, Crusher, Dog, ZombieStack, Encounter, EncounterGate, WaveVent, Coins,
     Boar, ThornSnail, LanternMoth, SporeToad, CrateMimic, Projectile, RootTurret, BrambleGuard, Mosquito, Owl, Woodpecker,
-    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey, Strikebreaker, RivetGunner, Yeti, ArcWelder, MagnetCrane, PressureRat, CableCrawler, WalkingKiln, AuditClerk, FurnaceMoth, SlagSnail, AshSleeper, Counterweight, EmergencyPump, MoldThief, CastingMold, TarChoir, RailCart, RailShunter, FrostGoblin, PipeGuard, CoalCutter, CraneOperator, ForestSpider, Snake,
+    WaspNest, Wasp, ForagerGoblin, CarrionCrow, BurrowWorm, PocketDoor, RimeSkater, BellDiver, SteamLeech, IceMason, GlassEel, SnowBurrower, MirrorKnight, LensWarden, EchoHound, FrozenPilgrim, FishingWidow, SealThief, WhiteoutDrummer, AvalancheRam, SnowEffigy, CandleKeeper, ShardColony, IcicleSpider, BoilerPorter, BoilerTank, IceAnchor, Sled, Pickhand, ShiftForeman, PowderMonkey, Strikebreaker, RivetGunner, Yeti, ArcWelder, MagnetCrane, PressureRat, CableCrawler, WalkingKiln, AuditClerk, FurnaceMoth, SlagSnail, AshSleeper, Counterweight, EmergencyPump, MoldThief, CastingMold, TarChoir, RailCart, RailShunter, FrostGoblin, PipeGuard, CoalCutter, CraneOperator, ForestSpider, Snake, Ant, AntNest, AntSugar,
     Count,
 };
 

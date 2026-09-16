@@ -32,6 +32,7 @@
 #include "../entities/icicle_spider.hpp"
 #include "../entities/forest_spider.hpp"
 #include "../entities/snake.hpp"
+#include "../entities/ant.hpp"
 #include "../entities/boiler_porter.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../entities/ice_mason.hpp"
@@ -105,6 +106,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_icicle_spider(game,entity);
     interrupt_forest_spider(entity);
     interrupt_snake(entity);
+    hurt_ant_colony(game,slot,attacker);
     interrupt_boiler_porter(entity);
     damage_boiler(game,slot);
     interrupt_seal_thief(entity);

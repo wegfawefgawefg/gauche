@@ -40,6 +40,7 @@
 #include "icicle_spider.hpp"
 #include "forest_spider.hpp"
 #include "snake.hpp"
+#include "ant.hpp"
 #include "../items/fire.hpp"
 #include "../world/water.hpp"
 #include "../world/lava.hpp"
@@ -117,6 +118,7 @@ void step_entity_timers(Game& game, int slot) {
     step_spider_strand(game,entity);
     forest_spider_timers(entity);
     snake_timers(entity);
+    ant_timers(entity);
     thaw_snow_effigy(game, slot);
 
     // HAZARDS: Damage resolves before this tick's action, even on a fatal hit.

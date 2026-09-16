@@ -5,7 +5,7 @@
 
 // Local generation policy. Only the resulting world enters saves/network state.
 // Each biome can register its own themes; slots and compatibility share one roll.
-enum class GenerationTheme { None, WetWoods, Timber, Spiders, Mushrooms, Ruins, Overgrowth, Count };
+enum class GenerationTheme { None, WetWoods, Timber, Spiders, Mushrooms, Ruins, Overgrowth, Ants, Count };
 struct GenerationThemes { GenerationTheme major=GenerationTheme::None,minor=GenerationTheme::None; };
 struct ThemeRule {
     GenerationTheme theme;
@@ -23,6 +23,7 @@ inline constexpr std::array generation_theme_rules{
     ThemeRule{GenerationTheme::Mushrooms,"Mushroom flush",Biome::Forest,{}, {3,4,4,3}},
     ThemeRule{GenerationTheme::Ruins,"Old ruins",Biome::Forest,{}, {2,3,3,4}},
     ThemeRule{GenerationTheme::Overgrowth,"Undergrowth",Biome::Forest,{}, {3,3,4,3},theme_bit(GenerationTheme::Timber)},
+    ThemeRule{GenerationTheme::Ants,"Ant trails",Biome::Forest,{1,2,3,3},{}},
 };
 static_assert(generation_theme_rules.size()==static_cast<std::size_t>(GenerationTheme::Count));
 inline const ThemeRule& theme_rule(GenerationTheme theme) {return generation_theme_rules[static_cast<std::size_t>(theme)];}

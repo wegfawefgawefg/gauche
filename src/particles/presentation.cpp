@@ -115,8 +115,8 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         if (entity.kind==EntityKind::CrateMimic && entity.label_a==MimicRecover &&
             entity.use_flash==10 && entity.use_flash>pose.use_flash)
             spawn_mimic_bite(cosmetics,entity.point_b,entity.facing);
-        if ((entity.kind==EntityKind::ForestSpider || entity.kind==EntityKind::Snake) && entity.use_flash==10 && entity.use_flash>pose.use_flash)
-            spawn_fang_bite(cosmetics,entity.point_b,entity.facing,entity.kind==EntityKind::Snake ? .8F : entity.counter_b==1 ? .5F : entity.counter_b==2 ? 1.1F : .8F);
+        if ((entity.kind==EntityKind::Ant || entity.kind==EntityKind::ForestSpider || entity.kind==EntityKind::Snake) && entity.use_flash==10 && entity.use_flash>pose.use_flash)
+            spawn_fang_bite(cosmetics,entity.point_b,entity.facing,entity.kind==EntityKind::Ant ? (entity.counter_a==1 ? 1.F : .55F) : entity.kind==EntityKind::Snake ? .8F : entity.counter_b==1 ? .5F : entity.counter_b==2 ? 1.1F : .8F);
         if (((entity.kind==EntityKind::Wolf && entity.label_a==WolfRecover) ||
             (entity.kind==EntityKind::Dog && entity.label_a==DogRecover)) &&
             entity.use_flash==10 && entity.use_flash>pose.use_flash)

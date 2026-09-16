@@ -8,6 +8,7 @@
 #include "scene_entities.hpp"
 #include "entities/bear_family.hpp"
 #include "entities/forest_spider.hpp"
+#include "entities/ant.hpp"
 #include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
@@ -127,8 +128,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
             continue;
         }
-        if (entity.kind==EntityKind::Bear || entity.kind==EntityKind::ForestSpider) {
-            const float size=entity.kind==EntityKind::ForestSpider ? forest_spider_size(entity) : bear_size(entity);
+        if (entity.kind==EntityKind::Ant || entity.kind==EntityKind::Bear || entity.kind==EntityKind::ForestSpider) {
+            const float size=entity.kind==EntityKind::Ant ? ant_size(entity) : entity.kind==EntityKind::ForestSpider ? forest_spider_size(entity) : bear_size(entity);
             rect.x-=pixels*(size-1)*.5F;rect.y-=pixels*(size-1);rect.w*=size;rect.h*=size;
         }
         if (entity.sprite==Sprite::ReactorCore) {
@@ -240,6 +241,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             const bool worm = entity.kind == EntityKind::BurrowWorm;
             if (worm) angle = std::atan2(static_cast<double>(entity.facing.y),
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
+            if (entity.kind==EntityKind::Ant) angle=entity.facing.x>0 ? -90 : entity.facing.x<0 ? 90 : entity.facing.y<0 ? 180 : 0;
             pose_canine(entity,body_rect,angle);
             if (entity.kind==EntityKind::CrateMimic && entity.label_a!=MimicHidden) {
                 const float lean=entity.label_a==MimicWindup ? -.10F :
@@ -250,7 +252,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
                 nullptr, ((entity.kind==EntityKind::Dog || (entity.kind==EntityKind::Wolf && entity.label_a!=0) || entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
-                    !worm && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
+                    !worm && entity.kind != EntityKind::Ant && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
         SDL_SetTextureAlphaMod(texture, 255);

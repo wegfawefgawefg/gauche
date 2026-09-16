@@ -38,6 +38,7 @@ PropKind theme_prop(Game& game,GenerationTheme theme) {
     case GenerationTheme::Spiders:return roll ? PropKind::ForestWeb : PropKind::BonePile;
     case GenerationTheme::Mushrooms:return roll<4 ? PropKind::Puffball : roll==4 ? PropKind::LanternPlant : PropKind::Fern;
     case GenerationTheme::Ruins:return roll<4 ? PropKind::BonePile : PropKind::Leaves;
+    case GenerationTheme::Ants:return roll ? PropKind::Twigs : PropKind::BonePile;
     case GenerationTheme::Overgrowth:return roll<3 ? PropKind::TallGrass : roll<5 ? PropKind::Fern : PropKind::Puffball;
     default:return PropKind::None;
     }

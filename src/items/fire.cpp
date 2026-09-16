@@ -36,10 +36,10 @@ void step_item_state(Game& game, Item& item, Cell cell, bool wet) {
 
 void ignite_struck_actor(Game& game, int slot) {
     Entity& target = game.entities[static_cast<std::size_t>(slot)];
-    if (target.health <= 0 || (target.move_interval <= 0 && target.kind != EntityKind::RootTurret && target.kind != EntityKind::WaspNest) ||
+    if (target.health <= 0 || (target.move_interval <= 0 && target.kind != EntityKind::RootTurret && target.kind != EntityKind::WaspNest && target.kind!=EntityKind::AntNest && target.kind!=EntityKind::AntSugar) ||
         target.kind == EntityKind::SlagSnail || target.kind == EntityKind::FurnaceMoth || target.kind == EntityKind::WalkingKiln || target.kind == EntityKind::Ember || target.kind == EntityKind::SteamLeech || target.kind == EntityKind::Train ||
         target.kind == EntityKind::RailLayer) return;
-    if ((wading_actor(target) || target.kind == EntityKind::RootTurret || target.kind == EntityKind::WaspNest) && surface_wet(game.stage.at_or_border(target.cell))) return;
+    if ((wading_actor(target) || target.kind == EntityKind::RootTurret || target.kind == EntityKind::WaspNest || target.kind==EntityKind::AntNest || target.kind==EntityKind::AntSugar) && surface_wet(game.stage.at_or_border(target.cell))) return;
     if (target.scorch_ticks == 0) emit_sound(game, SoundId::FirePanic, target.cell);
     target.scorch_ticks = std::max(target.scorch_ticks, 300);
 }

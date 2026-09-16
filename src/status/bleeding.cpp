@@ -7,7 +7,7 @@ bool can_bleed(EntityKind kind) {
     case EntityKind::BurrowWorm:
     case EntityKind::Wasp: case EntityKind::ForagerGoblin: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:
-    case EntityKind::Snake: case EntityKind::ForestSpider: case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
+    case EntityKind::Ant: case EntityKind::Snake: case EntityKind::ForestSpider: case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
     case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
     case EntityKind::ThornSnail: case EntityKind::LanternMoth:
     case EntityKind::ArcWelder: case EntityKind::Yeti: case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:

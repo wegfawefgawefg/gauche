@@ -1,6 +1,7 @@
 #include "crane_operator.hpp"
 #include "forest_spider.hpp"
 #include "snake.hpp"
+#include "ant.hpp"
 #include "coal_cutter.hpp"
 #include "brawler.hpp"
 #include "../items/coal.hpp"
@@ -65,6 +66,9 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::Pickhand: case EntityKind::ShiftForeman: init_mine_worker(entity); break;
     case EntityKind::BoilerPorter: init_boiler_porter(entity); break;
     case EntityKind::BoilerTank: init_boiler_tank(entity); break;
+    case EntityKind::Ant: init_ant(entity);break;
+    case EntityKind::AntNest: init_ant_nest(entity);break;
+    case EntityKind::AntSugar: init_ant_sugar(entity);break;
     case EntityKind::Snake: init_snake(entity); break;
     case EntityKind::ForestSpider: init_forest_spider(entity); break;
     case EntityKind::IcicleSpider: init_icicle_spider(entity); break;
@@ -159,6 +163,9 @@ void step_entity(Game& game, int slot) {
     case EntityKind::GroundItem: step_sled_cargo(game,slot); step_floating_item(game, slot); step_ground_coal(game,slot); break;
     case EntityKind::BoilerPorter: step_boiler_porter(game,slot); break;
     case EntityKind::BoilerTank: break; // Pressure runs with timers, including during stun.
+    case EntityKind::Ant: step_ant(game,slot);break;
+    case EntityKind::AntNest: step_ant_nest(game.entities[static_cast<std::size_t>(slot)]);break;
+    case EntityKind::AntSugar: step_ant_sugar(game.entities[static_cast<std::size_t>(slot)]);break;
     case EntityKind::Snake: step_snake(game,slot); break;
     case EntityKind::ForestSpider: step_forest_spider(game,slot); break;
     case EntityKind::IcicleSpider: step_icicle_spider(game,slot); break;

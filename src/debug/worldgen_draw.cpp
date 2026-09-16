@@ -43,7 +43,19 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
             SDL_RenderLine(renderer,box.x+box.w,box.y,box.x,box.y+box.h);
         };
         if (child.cells.empty()) mark(child.anchor);
-        else for (Cell cell:child.cells) mark(cell);
+        else for (Cell cell:child.cells) {
+            if (child.guide.empty()) mark(cell);
+            else {
+                SDL_SetRenderDrawColor(renderer,90,240,210,100);
+                const auto box=tile_rect(cell,v.render.camera,v.zoom);SDL_RenderFillRect(renderer,&box);
+            }
+        }
+        SDL_SetRenderDrawColor(renderer,child.placed ? 90 : 255,child.placed ? 255 : 100,210,255);
+        for (std::size_t i=1;!child.guide.empty() && i<child.guide.size()+(child.guide_closed ? 1U : 0U);++i) {
+            const auto a=tile_rect(child.guide[i-1],v.render.camera,v.zoom);
+            const auto b=tile_rect(child.guide[i%child.guide.size()],v.render.camera,v.zoom);
+            SDL_RenderLine(renderer,a.x,a.y,b.x,b.y);
+        }
     }
     if (v.changes && v.checkpoint>0) {
         const auto& before=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game->stage;

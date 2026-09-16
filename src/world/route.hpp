@@ -74,7 +74,9 @@ struct TimberGrove {
     int turns=0,offset=0;
     std::vector<Cell> ground,firebreaks,trees;
 };
+struct OpenSector { std::vector<Cell> ground; int component=-1; };
 struct FloorPlan {
+    std::vector<OpenSector> open_sectors;
     GenerationReport report;
     std::vector<TimberGrove> timber_groves;
     std::vector<GiantTree> giant_trees;

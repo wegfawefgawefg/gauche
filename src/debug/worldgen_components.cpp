@@ -1,5 +1,6 @@
 #include "worldgen.hpp"
 #include <imgui.h>
+#include <algorithm>
 
 namespace {
 void component_tree(const GenerationReport& report,GenerationFeature feature,int parent,bool inspection,int depth) {
@@ -21,6 +22,15 @@ void component_tree(const GenerationReport& report,GenerationFeature feature,int
             ImGui::BeginDisabled(!inspection);
             if (ImGui::Button("Focus site")) {
                 viewer.render.camera=component.anchor;viewer.zoom=2.0F;
+                if (!component.guide.empty()) {
+                    Cell low=component.guide.front(),high=low;
+                    for (Cell point:component.guide) {
+                        low.x=std::min(low.x,point.x);low.y=std::min(low.y,point.y);
+                        high.x=std::max(high.x,point.x);high.y=std::max(high.y,point.y);
+                    }
+                    viewer.render.camera={static_cast<float>(low.x+high.x)*.5F,static_cast<float>(low.y+high.y)*.5F};
+                    viewer.zoom=std::min(400.0F/(8.0F*static_cast<float>(high.x-low.x+4)),240.0F/(8.0F*static_cast<float>(high.y-low.y+4)));
+                }
                 viewer.selected_component=static_cast<int>(i);
             }
             ImGui::EndDisabled();

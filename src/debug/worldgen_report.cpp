@@ -4,7 +4,7 @@
 
 void draw_generation_report(const GenerationReport& report,bool inspection) {
     auto& v=worldgen_viewer();
-    ImGui::SeparatorText("Forest landmark rules / recorded decisions");
+    ImGui::SeparatorText("Generation rules / recorded decisions");
     ImGui::TextWrapped("Initial selection chances per ordinary floor. Placement can still fail. Rows are in generator order.");
     if (ImGui::CollapsingHeader("Stage eligibility (1-1 through 1-4)"))
     if (ImGui::BeginTable("eligibility",5,ImGuiTableFlags_Borders|ImGuiTableFlags_SizingStretchSame)) {
@@ -46,7 +46,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
                 }
                 if (!decision->variant.empty()) ImGui::TextWrapped("Variant: %s",decision->variant.c_str());
                 if (!decision->regions.empty()) {
-                    ImGui::Text("%zu room footprints",decision->regions.size());
+                    ImGui::Text("%zu footprints",decision->regions.size());
                     ImGui::BeginDisabled(!inspection);
                     if (ImGui::Button("Focus footprint")) {
                         Cell low=decision->regions.front().low,high=decision->regions.front().high;
@@ -59,10 +59,10 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
                                         240.0F/(8.0F*static_cast<float>(high.y-low.y+4)));
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button("Reservation pass")) {
+                    if (ImGui::Button("First appearance pass")) {
                         for (std::size_t i=0;i<v.trace.checkpoints.size();++i) {
                             const auto* earlier=feature_decision(v.trace.checkpoints[i].report,rule.feature);
-                            if (earlier && earlier->outcome==GenerationOutcome::Reserved) {v.checkpoint=static_cast<int>(i);break;}
+                            if (earlier && (earlier->outcome==GenerationOutcome::Reserved || earlier->outcome==GenerationOutcome::Built)) {v.checkpoint=static_cast<int>(i);break;}
                         }
                     }
                     ImGui::EndDisabled();
@@ -72,7 +72,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: six large Forest landmarks. Supply/scenery child rolls cover giant trees, groves and snake tunnels; ordinary room-role rolls and later removals remain untraced.");
+    ImGui::TextWrapped("Coverage: six large Forest landmarks and open sectors, plus their recorded child rolls. Ordinary room-role rolls and later removals remain untraced.");
 }
 
 void draw_live_generation_details(const Game& game) {

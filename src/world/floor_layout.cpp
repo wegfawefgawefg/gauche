@@ -1,5 +1,6 @@
 #include "fissures.hpp"
 #include "generation_trace.hpp"
+#include "open_sectors.hpp"
 #include "light_towers.hpp"
 #include "lava_eruptions.hpp"
 #include "tall_trees.hpp"
@@ -99,6 +100,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         place_chasms(game,plan);
         carve_shelf_reward(game,plan);
         capture("Chasms and shelf routes");
+        carve_open_sectors(game,plan);
+        capture("Cross-room open sectors");
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
@@ -143,6 +146,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_shelf_reward(game,plan);
         populate_rooms(game,plan,report,&plan.report);
         capture("Inhabitants and loot");
+        populate_open_sectors(game,plan,report);
+        capture("Sector inhabitants and scenery");
         // Reserve structures before loose clutter consumes their clear ground.
         place_shipping_containers(game,plan);
         capture("Containers");

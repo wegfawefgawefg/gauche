@@ -4,7 +4,7 @@
 
 // Local observations only: shared immutably with an inspected/played Game and
 // omitted from hashes and network snapshots. Received snapshots have no report.
-enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, Count };
+enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
 struct FeatureDecision {
@@ -23,7 +23,8 @@ struct ComponentDecision {
     unsigned ticket=0,total=0;
     int placed=0;
     Cell anchor{};
-    std::vector<Cell> cells;
+    std::vector<Cell> cells,guide;
+    bool guide_closed=false;
     std::vector<ComponentOption> options;
 };
 struct GenerationReport {
@@ -46,6 +47,7 @@ inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::SpiderCave,"Spider cave",Biome::Forest,{5,3,3,3}},
     GenerationRule{GenerationFeature::SnakeTunnel,"Snake tunnel",Biome::Forest,{6,3,3,3}},
     GenerationRule{GenerationFeature::RootMaze,"Root maze",Biome::Forest,{8,4,4,4}},
+    GenerationRule{GenerationFeature::OpenSectors,"Open sectors",Biome::Forest,{3,2,1,2}},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {

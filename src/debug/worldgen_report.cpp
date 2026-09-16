@@ -5,7 +5,21 @@
 void draw_generation_report(const GenerationReport& report,bool inspection) {
     auto& v=worldgen_viewer();
     ImGui::SeparatorText("Generation rules / recorded decisions");
-    ImGui::TextWrapped("Initial selection chances per ordinary floor. Placement can still fail. Rows are in generator order.");
+    ImGui::TextWrapped("Base selection chances per ordinary floor. Placement can still fail; selected rows show actual theme-adjusted chances.");
+    if (const auto* themes=feature_decision(report,GenerationFeature::Themes);
+        themes && themes->outcome!=GenerationOutcome::Suppressed && themes->outcome!=GenerationOutcome::Ineligible) {
+        ImGui::TextWrapped("Identity: %s | Modifier: %s",theme_rule(report.themes.major).name,theme_rule(report.themes.minor).name);
+    }
+    if (ImGui::CollapsingHeader("Theme weights / compatibility")) {
+        ImGui::TextWrapped("Conditional slot weights, not floor percentages. A zero cannot roll. Minor weights below include this floor's selected major identity.");
+        for (const auto& rule:generation_theme_rules) {
+            ImGui::Separator();ImGui::TextUnformatted(rule.name);
+            ImGui::Text("Major F1..F4: %u, %u, %u, %u",rule.major[0],rule.major[1],rule.major[2],rule.major[3]);
+            ImGui::Text("Minor here: %u",theme_weight(rule,report.floor,true,report.themes.major));
+            if (!themes_compatible(rule.theme,report.themes.major)) ImGui::TextWrapped("Excluded with %s",theme_rule(report.themes.major).name);
+            else if (!biome_floor(report.floor,rule.biome)) ImGui::TextUnformatted("Outside registered biome");
+        }
+    }
     if (ImGui::CollapsingHeader("Stage eligibility (1-1 through 1-4)"))
     if (ImGui::BeginTable("eligibility",5,ImGuiTableFlags_Borders|ImGuiTableFlags_SizingStretchSame)) {
         ImGui::TableSetupColumn("Feature");
@@ -38,8 +52,11 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
             if (!decision) ImGui::TextWrapped("This planner has not run at this checkpoint.");
             else {
                 ImGui::TextWrapped("%s",decision->reason.c_str());
-                if (decision->denominator && outcome!=GenerationOutcome::Suppressed)
+                if (decision->denominator && outcome!=GenerationOutcome::Suppressed && rule.feature!=GenerationFeature::Themes)
                     ImGui::Text("Roll %u of [0,%u); 0 selects",decision->roll,decision->denominator);
+                const auto base=feature_denominator(rule,report.floor);
+                if (base && decision->denominator && base!=decision->denominator)
+                    ImGui::Text("Actual 1/%u; base 1/%u before theme",decision->denominator,base);
                 if (decision->candidate_count>=0) {
                     const bool block=rule.feature==GenerationFeature::GiantTree || rule.feature==GenerationFeature::TimberGrove;
                     ImGui::TextWrapped("%d %s",decision->candidate_count,block ? "weighted block entries (weighted by existing corners)" : rule.feature==GenerationFeature::ForestEncounters ? "eligible ordinary rooms" : "eligible placement candidates");
@@ -72,7 +89,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: large Forest landmarks, sectors, rivers and ordinary encounter composition. Room-role assignment and later removals remain untraced.");
+    ImGui::TextWrapped("Coverage: floor identities, base Forest room roles, landmarks, sectors, rivers and ordinary encounters. Later role overrides/removals remain partially untraced.");
 }
 
 void draw_live_generation_details(const Game& game) {

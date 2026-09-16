@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "forest_theme_layers.hpp"
 #include "room_frame.hpp"
 #include "forest_den.hpp"
 #include "giant_tree.hpp"
@@ -103,7 +104,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
         room.half_width = 5 + static_cast<int>(random_u32(game) % 5);
         room.half_height = 4 + static_cast<int>(random_u32(game) % 6);
         room.role = ice_floor(game.run.floor) ? cold_roles[random_u32(game) % std::size(cold_roles)] :
-            roles[random_u32(game) % std::size(roles)];
+            forest_floor(game.run.floor) ? themed_forest_role(game,plan,room.center) : roles[random_u32(game) % std::size(roles)];
         room.shape = static_cast<RoomShape>(random_u32(game) % 8);
         room.mirrored = random_u32(game) % 2 != 0;
         // ROLES: A reservoir needs broad banks; machinery uses galleries and courts.
@@ -192,6 +193,7 @@ void describe_rooms(Game& game, FloorPlan& plan) {
 FloorPlan plan_floor(Game& game) {
     FloorPlan plan;
     plan.report.seed=game.run.seed;plan.report.floor=game.run.floor;plan.report.initial_rng=game.rng;
+    select_generation_themes(game,plan);
     grow_route(game, plan);
     choose_objectives(game, plan);
     describe_rooms(game, plan);

@@ -77,7 +77,11 @@ struct TimberGrove {
 struct SpiderGrowth { std::vector<Cell> ground; int component=-1,opened=0; };
 struct RiverPlan { std::vector<Cell> path,channel,banks; Cell source{},outlet{},outflow{}; int component=-1; };
 struct OpenSector { std::vector<Cell> ground; int component=-1; };
+struct ThemePatch { GenerationTheme theme{};std::vector<Cell> ground;int component=-1; };
 struct FloorPlan {
+    GenerationThemes themes;
+    int theme_component=-1,minor_theme_component=-1;
+    std::vector<ThemePatch> theme_patches;
     std::vector<OpenSector> open_sectors;
     std::vector<RiverPlan> rivers;
     std::vector<SpiderGrowth> spider_growth;

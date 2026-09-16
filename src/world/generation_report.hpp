@@ -1,10 +1,11 @@
 #pragma once
 #include "../game.hpp"
+#include "generation_themes.hpp"
 #include <string>
 
 // Local observations only: shared immutably with an inspected/played Game and
 // omitted from hashes and network snapshots. Received snapshots have no report.
-enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Count };
+enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
 struct FeatureDecision {
@@ -30,6 +31,7 @@ struct ComponentDecision {
 struct GenerationReport {
     std::uint64_t seed=1,initial_rng=1;
     int floor=1;
+    GenerationThemes themes;
     std::vector<FeatureDecision> features;
     std::vector<ComponentDecision> components;
     bool components_truncated=false;
@@ -50,6 +52,7 @@ inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::OpenSectors,"Open sectors",Biome::Forest,{3,2,1,2}},
     GenerationRule{GenerationFeature::River,"Cross-room river",Biome::Forest,{2,2,2,3}},
     GenerationRule{GenerationFeature::ForestEncounters,"Ordinary Forest encounters",Biome::Forest,{1,1,1,1}},
+    GenerationRule{GenerationFeature::Themes,"Floor identity / modifiers",Biome::Forest,{1,1,1,1}},
 };
 static_assert(generation_rules.size()==static_cast<std::size_t>(GenerationFeature::Count));
 inline const GenerationRule& generation_rule(GenerationFeature feature) {

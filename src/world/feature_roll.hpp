@@ -7,7 +7,7 @@
 inline bool roll_generation_feature(Game& game,FloorPlan& plan,GenerationFeature feature) {
     FeatureDecision decision;
     decision.feature=feature;
-    decision.denominator=feature_denominator(generation_rule(feature),game.run.floor);
+    decision.denominator=themed_feature_denominator(generation_rule(feature),game.run.floor,plan.themes);
     if (!decision.denominator) {
         decision.outcome=GenerationOutcome::Ineligible;
         decision.reason="Outside this feature's biome/stage window";
@@ -16,6 +16,8 @@ inline bool roll_generation_feature(Game& game,FloorPlan& plan,GenerationFeature
         decision.outcome=decision.roll==0 ? GenerationOutcome::Selected : GenerationOutcome::Missed;
         decision.reason=decision.roll==0 ? "Initial roll selected; footprint search follows" : "Initial roll missed; footprint search not attempted";
     }
+    const auto base=feature_denominator(generation_rule(feature),game.run.floor);
+    if (base!=decision.denominator) decision.reason+="; floor identity changes base 1/"+std::to_string(base)+" to 1/"+std::to_string(decision.denominator);
     plan.report.features.push_back(std::move(decision));
     return plan.report.features.back().outcome==GenerationOutcome::Selected;
 }

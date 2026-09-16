@@ -151,14 +151,16 @@ void populate_forest_encounters(Game& game,const FloorPlan& plan,std::span<const
         const auto size=roll_component(game,report,feature,shape.record,"Group size",room.center,counts);
         const int wanted=std::min(size.value,std::max(1,static_cast<int>(sites.size()/24)));
         // Roll a family first, then independently roll individual members.
-        const bool wet=room.role==RoomRole::Brook,ruins=room.role==RoomRole::Ruins;
+        const bool wet=room.role==RoomRole::Brook || has_theme(plan.themes,GenerationTheme::WetWoods);
+        const bool ruins=room.role==RoomRole::Ruins || has_theme(plan.themes,GenerationTheme::Ruins);
         const WeightedComponent families[]{{0,"Winged pests",wet ? 6U : 3U},{1,"Restless dead",ruins ? 7U : 2U},
-            {2,"Hunting animals",stage>=2 ? 4U : 0U},{3,"Mixed prowlers",stage>=2 ? 3U : 0U}};
+            {2,"Hunting animals",stage>=2 ? 4U : 0U},{3,"Mixed prowlers",stage>=2 ? 3U : 0U},{4,"Spider hunters",has_theme(plan.themes,GenerationTheme::Spiders) ? 9U : 0U}};
         const auto family=roll_component(game,report,feature,shape.record,"Pack family",room.center,families);
         Options members;
         if (family.value==0) {option(members,EntityKind::Mosquito,"Mosquito",wet ? 5U : 2U);option(members,EntityKind::Bat,"Bat",wet ? 2U : 5U);}
         else if (family.value==1) {option(members,EntityKind::Zombie,"Zombie",8);option(members,EntityKind::Bat,"Bat",2);}
         else if (family.value==2) {option(members,EntityKind::Wolf,"Wolf",5);option(members,EntityKind::Boar,"Boar",2);}
+        else if (family.value==4) {option(members,EntityKind::ForestSpider,"Forest spider",8);option(members,EntityKind::Bat,"Bat",2);}
         else {option(members,EntityKind::Zombie,"Zombie",3);option(members,EntityKind::Wolf,"Wolf",3);option(members,EntityKind::Bat,"Bat",2);option(members,EntityKind::Mosquito,"Mosquito",2);}
         std::vector<Cell> placed;
         if (!sites.empty()) {

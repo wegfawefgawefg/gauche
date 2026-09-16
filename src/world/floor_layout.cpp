@@ -1,4 +1,5 @@
 #include "fissures.hpp"
+#include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
 #include "spider_growth.hpp"
@@ -111,6 +112,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         capture("Spider habitat growth");
         grow_giant_roots(game,plan,trace);
         capture("Giant root growth");
+        carve_forest_theme_patches(game,plan);
+        capture("Floor identity terrain");
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
@@ -159,6 +162,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_forest_river(game,plan,report);
         populate_spider_growth(game,plan,report);
         capture("Cross-room inhabitants and scenery");
+        dress_forest_theme_patches(game,plan);
+        capture("Floor identity scenery");
         // Reserve structures before loose clutter consumes their clear ground.
         place_shipping_containers(game,plan);
         capture("Containers");

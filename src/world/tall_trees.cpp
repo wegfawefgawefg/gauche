@@ -40,7 +40,7 @@ bool place(Game& game,const FloorPlan& plan,Cell cell,int facing,std::vector<Cel
 void place_tall_trees(Game& game,const FloorPlan& plan) {
     if (!forest_floor(game.run.floor) || plan.rooms.empty()) return;
     std::vector<Cell> placed;
-    const int budget=2+static_cast<int>(random_u32(game)%3);
+    const int budget=2+static_cast<int>(random_u32(game)%3)+(has_theme(plan.themes,GenerationTheme::Timber) ? 4 : has_theme(plan.themes,GenerationTheme::Overgrowth) ? 2 : 0);
     // Prefer one actual bank-to-bank crossing. Nothing is relocated or carved
     // to force it; ordinary water/gap geometry supplies the opportunity.
     const int size=game.stage.width*game.stage.height;

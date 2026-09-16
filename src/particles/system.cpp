@@ -27,6 +27,8 @@ void step_particles(Cosmetics& cosmetics) {
         shake.strength = std::max(0.0F, shake.strength - 0.01F);
         --shake.life;
     }
+    for (PropJolt& jolt : cosmetics.prop_jolts) --jolt.life;
+    std::erase_if(cosmetics.prop_jolts, [](const PropJolt& p) { return p.life <= 0; });
     for (LightFlash& flash : cosmetics.flashes) --flash.life;
     std::erase_if(cosmetics.sprites, [](const SpriteParticle& p) { return p.life <= 0; });
     std::erase_if(cosmetics.ribbons, [](const RibbonParticle& p) { return p.life <= 0; });

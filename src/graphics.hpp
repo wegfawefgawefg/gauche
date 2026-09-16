@@ -84,6 +84,7 @@ enum class Sprite : std::size_t {
     LavaFlow0, LavaFlow1, LavaFlow2, LavaFlow3, LavaFlow4, LavaFlow5, LavaFlow6, LavaFlow7,
     LavaGlob,
     FissureCrack, FissureGlow, FissureCooled, FissureSteamA, FissureSteamB, FissureLavaA, FissureLavaB,
+    CrateBruised, CrateSplintered, CrateBroken,
     Count,
 };
 

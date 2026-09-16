@@ -70,6 +70,12 @@ struct TileShake {
     int life = 0;
 };
 
+// Presentation only: prop collision and damage always use the unchanged cell.
+struct PropJolt {
+    Cell cell{}, direction{};
+    int life=12;
+};
+
 struct EntityPose {
     std::uint32_t generation = 0;
     EntityKind kind = EntityKind::None;
@@ -95,6 +101,7 @@ struct Cosmetics {
     std::vector<RibbonParticle> ribbons;
     std::vector<RingParticle> rings;
     std::vector<TileShake> tile_shakes;
+    std::vector<PropJolt> prop_jolts;
     std::vector<LightFlash> flashes;
     mutable LightingCache lighting;
     mutable IceScenery ice_scenery;

@@ -4,6 +4,7 @@
 #include "ice_pillar_render.hpp"
 #include "streetlamp_render.hpp"
 #include "render.hpp"
+#include "../particles/system.hpp"
 #include "rail_render.hpp"
 #include "conveyor_render.hpp"
 #include "circuit_render.hpp"
@@ -15,7 +16,7 @@
 #include <cmath>
 
 void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game,
-                 ViewCamera camera, float zoom, const LightingCache& lighting,std::uint64_t tick) {
+                 ViewCamera camera, float zoom, const LightingCache& lighting,std::uint64_t tick,const Cosmetics* cosmetics) {
     const Stage& stage=game.stage;
     const int radius_x = static_cast<int>(320.0F / tile_pixels(zoom)) + 2;
     const int radius_y = static_cast<int>(180.0F / tile_pixels(zoom)) + 2;
@@ -41,19 +42,31 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (prop.kind==PropKind::TallTree || prop.kind==PropKind::FallenLog || prop.kind==PropKind::LogBridge) {
                 draw_tree_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
             }
-            if (prop.kind == PropKind::None || prop.broken) continue;
+            if (prop.kind == PropKind::None || (prop.broken && prop.kind!=PropKind::Crate)) continue;
             if (prop.kind==PropKind::IcePillar) {draw_pillar_shadow(renderer,stage,cell,camera,zoom);continue;}
             if (prop.kind==PropKind::StreetLamp) {draw_streetlamp_shadow(renderer,stage,cell,camera,zoom);continue;}
             if (prop.kind==PropKind::PoleWreck) {draw_pole_wreck(renderer,prop,tile_rect(cell,camera,zoom),light_at_cell(lighting,cell));continue;}
             const PropSpec spec = prop_spec(prop.kind);
             const LightColor light = light_at_cell(lighting, cell);
-            const Sprite sprite = prop.kind==PropKind::Grate ? (prop.variant==1 ? Sprite::GrateV : Sprite::GrateH) : prop.kind==PropKind::SnowWindbreak ? (prop.variant==1 ? Sprite::SnowWallV : Sprite::SnowWallH) : prop.kind == PropKind::BridgePlank ? ((prop.variant&1U) ? Sprite::BridgePlankV : Sprite::BridgePlankH) : prop.kind == PropKind::GroundingSpike && prop.variant>0 ?
+            Sprite sprite = prop.kind==PropKind::Grate ? (prop.variant==1 ? Sprite::GrateV : Sprite::GrateH) : prop.kind==PropKind::SnowWindbreak ? (prop.variant==1 ? Sprite::SnowWallV : Sprite::SnowWallH) : prop.kind == PropKind::BridgePlank ? ((prop.variant&1U) ? Sprite::BridgePlankV : Sprite::BridgePlankH) : prop.kind == PropKind::GroundingSpike && prop.variant>0 ?
                 (prop.variant==1 ? Sprite::SpikeHot : Sprite::SpikeSpent) : prop.kind == PropKind::SpiderStrand ?
                 (prop.variant == 0 ? Sprite::SpiderStrand : Sprite::SpiderStrandV) : stove_lit(prop) ? Sprite::StoveLit : candle_lit(prop) ? Sprite::CandleLit : prop.kind == PropKind::AlarmClock ? alarm_clock_sprite(prop) : prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
                 Sprite::ShootTall : prop.kind == PropKind::IceBlock && prop.growth_ticks <= 120 ?
                 Sprite::IceBlockThaw : spec.sprite;
+            if (prop.kind==PropKind::Crate)
+                sprite=prop.broken ? Sprite::CrateBroken : prop.hp<=6 ? Sprite::CrateSplintered :
+                    prop.hp<prop_spec(PropKind::Crate).health ? Sprite::CrateBruised : Sprite::Crate;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
+            if (prop.kind==PropKind::Crate && !prop.broken && cosmetics) {
+                for (const PropJolt& jolt:cosmetics->prop_jolts) if (jolt.cell==cell) {
+                    const float age=12-static_cast<float>(jolt.life)+std::clamp(cosmetics->frame_alpha,0.0F,1.0F);
+                    const float amount=std::cos(age*1.05F)*std::max(0.0F,1-age/12)*.12F;
+                    rect.x+=static_cast<float>(jolt.direction.x)*rect.w*amount;
+                    rect.y+=static_cast<float>(jolt.direction.y)*rect.h*amount;
+                    break;
+                }
+            }
             if (prop.kind==PropKind::FoamCover && prop.growth_ticks<120) {
                 const float size=.35F+.65F*static_cast<float>(prop.growth_ticks)/120;
                 rect.x+=rect.w*(1-size)*.5F;rect.y+=rect.h*(1-size);rect.w*=size;rect.h*=size;
@@ -74,7 +87,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                 SDL_RenderTexture(renderer, cloth, nullptr, &rect);
                 SDL_SetTextureColorModFloat(cloth, 1, 1, 1);
             }
-            if (prop.hp < prop_max_health(prop)) {
+            if (!prop.broken && prop.hp < prop_max_health(prop)) {
                 SDL_FRect bar{rect.x + rect.w * .2F, rect.y + rect.h * .87F,
                     rect.w * .6F * static_cast<float>(prop.hp) / static_cast<float>(prop_max_health(prop)), 1};
                 SDL_SetRenderDrawColorFloat(renderer, light.red * .8F,

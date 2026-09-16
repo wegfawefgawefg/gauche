@@ -139,6 +139,20 @@ void spawn_wolf_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
 
 void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
                            std::uint64_t seed) {
+    if (impact.prop==PropKind::Crate) {
+        if (impact.damage<=0) return;
+        std::erase_if(cosmetics.prop_jolts,[&](const PropJolt& p) {return p.cell==impact.cell;});
+        if (!impact.broken) {
+            const Cell delta=impact.cell-impact.source;
+            const Cell direction=std::abs(delta.x)>std::abs(delta.y) ?
+                Cell{delta.x<0 ? -1 : 1,0} : Cell{0,delta.y<0 ? -1 : 1};
+            if (cosmetics.prop_jolts.size()>=96) cosmetics.prop_jolts.erase(cosmetics.prop_jolts.begin());
+            cosmetics.prop_jolts.push_back({impact.cell,direction,12});
+        }
+        spray(cosmetics,impact.cell,seed,impact.broken ? 12 : 4,
+              Sprite::DebrisWoodChip,impact.broken ? .13F : .075F,.012F);
+        return;
+    }
     shake_tiles(cosmetics, impact.cell, impact.damage > 0 ? 0.12F : 0.035F, 0);
     if (impact.damage <= 0) return;
     spray(cosmetics, impact.cell, seed, impact.broken ? 14 : 5,

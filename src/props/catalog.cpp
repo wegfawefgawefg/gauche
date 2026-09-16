@@ -65,7 +65,7 @@ PropSpec prop_spec(PropKind kind) {
     case PropKind::TallGrass: return {Sprite::TallGrass, SoundId::PlantCut, 2, false, true};
     case PropKind::Puffball: return {Sprite::Puffball, SoundId::SporePuff, 1, false, true};
     case PropKind::RottenLog: return {Sprite::RottenLog, SoundId::WoodCrack, 22, true, false};
-    case PropKind::Crate: return {Sprite::Crate, SoundId::WoodCrack, 18, true, false};
+    case PropKind::Crate: return {Sprite::Crate, SoundId::CrateBreak, 18, true, false};
     case PropKind::Nest: return {Sprite::Nest, SoundId::TwigSnap, 3, false, true};
     case PropKind::ClayPot: return {Sprite::ClayPot, SoundId::PotBreak, 5, true, false};
     default: return {Sprite::Grass, SoundId::PlantCut, 0, false, false};

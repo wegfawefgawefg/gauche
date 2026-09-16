@@ -33,6 +33,7 @@ void scatter_prop_debris(LooseDebris& debris, Cell cell, PropKind kind,
     if (kind==PropKind::FoamCover) return; // Collapses in place, not into wooden fragments.
     DebrisKind first = DebrisKind::WoodChip, second = DebrisKind::Bark;
     switch (kind) {
+    case PropKind::Crate: first=second=DebrisKind::WoodChip;break;
     case PropKind::ChapelAltar: first=DebrisKind::WoodChip;second=DebrisKind::Cloth;break;
     case PropKind::ChapelRunner: first=second=DebrisKind::Cloth;break;
     case PropKind::ChapelUrn: first=second=DebrisKind::Pottery;break;

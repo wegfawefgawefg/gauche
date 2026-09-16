@@ -251,7 +251,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_fissures(renderer,graphics,game,camera,zoom,lighting,false);
     draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
-    draw_props(renderer, graphics, game, camera, zoom, lighting,game.tick);
+    draw_props(renderer, graphics, game, camera, zoom, lighting,game.tick,cosmetics);
     draw_boiler_feeds(renderer,graphics,game,camera,zoom,lighting);
     draw_lava_eruptions(renderer,graphics,game,camera,zoom,false);
     for (const Entity& actor : game.entities)

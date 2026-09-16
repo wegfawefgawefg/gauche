@@ -391,7 +391,9 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
         }
         if (distance(impact.cell, focus) <= 18)
             spawn_terrain_impact(cosmetics, impact, key);
-        if (impact.prop != PropKind::None && !fresh_debris)
+        if (impact.prop==PropKind::Crate && !impact.broken)
+            scatter_material(cosmetics.debris,impact.cell,DebrisKind::WoodChip,2,key);
+        else if (impact.prop != PropKind::None && !fresh_debris)
             scatter_prop_debris(cosmetics.debris, impact.cell, impact.prop, key);
         else if (impact.prop == PropKind::None && impact.damage > 0)
             scatter_material(cosmetics.debris, impact.cell,

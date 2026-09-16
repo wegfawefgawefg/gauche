@@ -67,6 +67,7 @@ enum class SoundId : std::size_t {
     TowerGroan, TowerCrash,
     LavaSizzle, LavaRumble, LavaPop,
     FissurePressure, FissureSteam, FissureLava, FissureCool,
+    CrateKnock1, CrateKnock2, CrateBreak,
     Count,
 };
 
@@ -131,4 +132,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "tower_groan", "tower_crash",
     "lava_sizzle", "lava_rumble", "lava_pop",
     "fissure_pressure", "fissure_steam", "fissure_lava", "fissure_cool",
+    "crate_knock1", "crate_knock2", "crate_break",
 };

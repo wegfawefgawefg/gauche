@@ -35,3 +35,4 @@ void draw_generation_report(const GenerationReport& report,bool inspection);
 void draw_live_generation_details(const Game& game);
 
 void draw_component_decisions(const GenerationReport& report,GenerationFeature feature,bool inspection);
+void draw_forest_encounter_pools(const GenerationReport& report);

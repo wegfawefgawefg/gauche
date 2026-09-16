@@ -1,5 +1,5 @@
 #include "forest_encounters.hpp"
-#include "components.hpp"
+#include "forest_encounter_rules.hpp"
 #include "../entities/behavior.hpp"
 #include "../entities/attacks.hpp"
 #include "../entities/dispatch.hpp"
@@ -9,10 +9,6 @@
 namespace {
 constexpr auto feature=GenerationFeature::ForestEncounters;
 constexpr Cell sides[]{{1,0},{-1,0},{0,1},{0,-1}};
-using Options=std::vector<WeightedComponent>;
-void option(Options& options,EntityKind kind,const char* name,unsigned weight) {
-    options.push_back({static_cast<int>(kind),name,weight});
-}
 bool approach(const Game& game,Cell cell) {
     const auto* tile=game.stage.at(cell);
     if (!tile || !walkable(*tile) || distance(cell,game.run.spawn)<9 || entity_at(game,cell,false)>=0) return false;
@@ -53,35 +49,9 @@ std::vector<Cell> place_group(Game& game,GenerationReport* report,int parent,Cel
     }
     return placed;
 }
-void specialist(Game& game,const RoomPlan& room,int parent,PopulationReport* population,GenerationReport* report) {
+void specialist(Game& game,const RoomPlan& room,int parent,PopulationReport* population,GenerationReport* report,
+    std::span<const WeightedComponent> choices) {
     const int stage=biome_stage(game.run.floor);
-    Options choices;option(choices,EntityKind::None,"No specialist",stage>=3 ? 3U : 6U);
-    // Specialists have their own allowance; passive or conditional inhabitants
-    // never spend the ordinary pack's slots. Their existing behavior stays intact.
-    if (stage>=2) switch(room.role) {
-    case RoomRole::Thicket:
-        option(choices,EntityKind::RootTurret,"Root watch",3);
-        option(choices,EntityKind::ThornSnail,"Thorn snail",2);
-        option(choices,EntityKind::WaspNest,"Wasp nest",2);
-        option(choices,EntityKind::BurrowWorm,"Burrow worm",stage>=3 ? 2U : 0U);break;
-    case RoomRole::Den:
-        option(choices,EntityKind::Den,"Wolf den",3);
-        option(choices,EntityKind::BurrowWorm,"Burrow worm",stage>=3 ? 2U : 0U);break;
-    case RoomRole::Ruins:
-        option(choices,EntityKind::ZombieStack,"Zombie stack",stage>=3 ? 4U : 0U);
-        option(choices,EntityKind::Spawner,"Undead source",stage>=3 ? 2U : 0U);break;
-    case RoomRole::Cache:case RoomRole::Workshop:option(choices,EntityKind::CrateMimic,"Mimic",3);break;
-    case RoomRole::Shrine:
-        option(choices,EntityKind::RootTurret,"Root watch",2);
-        option(choices,EntityKind::Bear,"Lone bear",1);break;
-    case RoomRole::Orchard:option(choices,EntityKind::WaspNest,"Wasp nest",3);break;
-    case RoomRole::Brook:option(choices,EntityKind::SporeToad,"Spore toad",3);break;
-    case RoomRole::Clearing:
-        option(choices,EntityKind::Owl,"Owl perch",2);
-        option(choices,EntityKind::ThornSnail,"Thorn snail",2);
-        option(choices,EntityKind::RootTurret,"Root watch",2);break;
-    default:option(choices,EntityKind::Owl,"Owl perch",2);break;
-    }
     const auto roll=roll_component(game,report,feature,parent,"Specialist",room.center,choices);
     const auto kind=static_cast<EntityKind>(roll.value);
     if (kind==EntityKind::None) {component_result(report,roll,"No additional specialist");return;}
@@ -121,17 +91,8 @@ void specialist(Game& game,const RoomPlan& room,int parent,PopulationReport* pop
     }
     component_result(report,roll,"Specialist placed",placed);
 }
-void wildlife(Game& game,const RoomPlan& room,int parent,PopulationReport* population,GenerationReport* report) {
-    Options choices;option(choices,EntityKind::None,"No wildlife",3);
-    option(choices,EntityKind::LanternMoth,"Lantern moth",2);
-    option(choices,EntityKind::CarrionCrow,"Scavenging crow",room.role==RoomRole::Ruins || room.role==RoomRole::Den ? 3U : 1U);
-    if (room.role==RoomRole::Brook) option(choices,EntityKind::Bunny,"Rabbit",4);
-    if (room.role==RoomRole::Orchard || room.role==RoomRole::Clearing) option(choices,EntityKind::Chicken,"Chicken family",4);
-    if (room.role==RoomRole::Workshop || room.role==RoomRole::Cache) {
-        option(choices,EntityKind::ForagerGoblin,"Forager",3);
-        option(choices,EntityKind::Dog,"Dog",1);
-        option(choices,EntityKind::Woodpecker,"Woodpecker",2);
-    }
+void wildlife(Game& game,const RoomPlan& room,int parent,PopulationReport* population,GenerationReport* report,
+    std::span<const WeightedComponent> choices) {
     const auto roll=roll_component(game,report,feature,parent,"Wildlife / scavengers",room.center,choices);
     const auto kind=static_cast<EntityKind>(roll.value);
     if (kind==EntityKind::None) {component_result(report,roll,"No wildlife");return;}
@@ -163,30 +124,20 @@ void populate_forest_encounters(Game& game,const FloorPlan& plan,std::span<const
     decision.candidate_count=static_cast<int>(rooms.size());
     decision.outcome=GenerationOutcome::Built;
     decision.reason="Ordinary fighter packs; wildlife and specialists have separate slots. Landmark inhabitants are independent.";
-    const int stage=biome_stage(game.run.floor);
     int groups=0,total=0;
     for (std::size_t index:rooms) {
         const auto& room=plan.rooms[index];
+        const auto rules=forest_encounter_rules(game.run.floor,room.role,plan.themes);
+        if(rules.exclusion)continue;
         auto sites=room_spaces(game,room);std::erase_if(sites,[&](Cell c){return !approach(game,c);});
         // Shared budgets used to starve later rooms. A local footprint limits
         // each group; layout and composition rolls vary pressure without that bias.
-        const WeightedComponent shapes[]{{0,"Loose inhabitants",3},{1,"Close pack",4},{2,"Two pockets",stage>=2 ? 3U : 1U}};
-        const auto shape=roll_component(game,report,feature,-1,"Ordinary encounter",room.center,shapes);
-        const WeightedComponent counts[]{{2,"Pair",stage==1 ? 5U : 2U},{3,"Three",4},{4,"Four",stage==1 ? 1U : 4U},{5,"Five",stage>=3 ? 3U : 0U},{6,"Six",stage>=3 ? 1U : 0U}};
-        const auto size=roll_component(game,report,feature,shape.record,"Group size",room.center,counts);
+        const auto shape=roll_component(game,report,feature,-1,"Ordinary encounter",room.center,rules.spacing);
+        const auto size=roll_component(game,report,feature,shape.record,"Group size",room.center,rules.sizes);
         const int wanted=std::min(size.value,std::max(1,static_cast<int>(sites.size()/24)));
         // Roll a family first, then independently roll individual members.
-        const bool wet=room.role==RoomRole::Brook || has_theme(plan.themes,GenerationTheme::WetWoods);
-        const bool ruins=room.role==RoomRole::Ruins || has_theme(plan.themes,GenerationTheme::Ruins);
-        const WeightedComponent families[]{{0,"Winged pests",wet ? 6U : 3U},{1,"Restless dead",ruins ? 7U : 2U},
-            {2,"Hunting animals",stage>=2 ? 4U : 0U},{3,"Mixed prowlers",stage>=2 ? 3U : 0U},{4,"Spider hunters",has_theme(plan.themes,GenerationTheme::Spiders) ? 9U : 0U}};
-        const auto family=roll_component(game,report,feature,shape.record,"Pack family",room.center,families);
-        Options members;
-        if (family.value==0) {option(members,EntityKind::Mosquito,"Mosquito",wet ? 5U : 2U);option(members,EntityKind::Bat,"Bat",wet ? 2U : 5U);}
-        else if (family.value==1) {option(members,EntityKind::Zombie,"Zombie",8);option(members,EntityKind::Bat,"Bat",2);}
-        else if (family.value==2) {option(members,EntityKind::Wolf,"Wolf",5);option(members,EntityKind::Boar,"Boar",2);}
-        else if (family.value==4) {option(members,EntityKind::ForestSpider,"Forest spider",8);option(members,EntityKind::Bat,"Bat",2);}
-        else {option(members,EntityKind::Zombie,"Zombie",3);option(members,EntityKind::Wolf,"Wolf",3);option(members,EntityKind::Bat,"Bat",2);option(members,EntityKind::Mosquito,"Mosquito",2);}
+        const auto family=roll_component(game,report,feature,shape.record,"Pack family",room.center,rules.families);
+        const auto& members=rules.members[static_cast<std::size_t>(family.value)];
         std::vector<Cell> placed;
         if (!sites.empty()) {
             const Cell anchor=sites[random_u32(game)%sites.size()];
@@ -211,8 +162,8 @@ void populate_forest_encounters(Game& game,const FloorPlan& plan,std::span<const
         }
         groups+=!placed.empty();total+=static_cast<int>(placed.size());
         decision.regions.push_back({room.center-Cell{room.half_width,room.half_height},room.center+Cell{room.half_width+1,room.half_height+1}});
-        specialist(game,room,shape.record,population,report);
-        wildlife(game,room,shape.record,population,report);
+        specialist(game,room,shape.record,population,report,rules.specialists);
+        wildlife(game,room,shape.record,population,report,rules.wildlife);
     }
     decision.variant=std::to_string(groups)+" ordinary groups / "+std::to_string(total)+" direct fighters";
     if (!groups) {decision.outcome=GenerationOutcome::Failed;decision.reason="No eligible ordinary encounter space; landmark populations are independent";}

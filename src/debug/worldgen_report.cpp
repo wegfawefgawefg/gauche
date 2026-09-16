@@ -27,6 +27,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
             else if (!biome_floor(report.floor,rule.biome)) ImGui::TextUnformatted("Outside registered biome");
         }
     }
+    draw_forest_encounter_pools(report);
     if (ImGui::CollapsingHeader("Stage eligibility (1-1 through 1-4)"))
     if (ImGui::BeginTable("eligibility",5,ImGuiTableFlags_Borders|ImGuiTableFlags_SizingStretchSame)) {
         ImGui::TableSetupColumn("Feature");

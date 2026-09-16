@@ -46,13 +46,12 @@ void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& 
                 (end ? ends : bodies)[static_cast<std::size_t>(roof.kind)];
             const Sprite sprite=static_cast<Sprite>(static_cast<int>(base)+(roof.vertical && !upright_cap ? 2-across : across));
             SDL_Texture* texture=texture_for(graphics,sprite);
-            const auto light=light_at_cell(lighting,cell);
             const float charred=roof.kind==RoofKind::Log ? .45F+.55F*condition : 1;
-            SDL_SetTextureColorModFloat(texture,light.red*charred,light.green*charred,light.blue*charred);
-            SDL_SetTextureAlphaMod(texture,static_cast<Uint8>(reveal ? 42 : roof.kind==RoofKind::IceArch ? 170+70*condition : 255));
-            SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,roof.vertical && !upright_cap ? 90 : 0,nullptr,
-                end && along>0 && !upright_cap ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
-            SDL_SetTextureAlphaMod(texture,255);SDL_SetTextureColorModFloat(texture,1,1,1);
+            const float opacity=reveal ? 42.0F/255 : roof.kind==RoofKind::IceArch ? (170+70*condition)/255 : 1;
+            // A roof is one surface: shared corner lighting avoids cell-sized
+            // brightness blocks. Only the actual occupant changes its opacity.
+            draw_lit_tile(renderer,texture,rect,cell,lighting,{charred,charred,charred},{0,0,1,1},
+                roof.vertical && !upright_cap ? 1 : 0,opacity,end && along>0 && !upright_cap);
         }
     }
 }

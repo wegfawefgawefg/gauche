@@ -81,6 +81,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "coal_cutter", "cutter_teeth", "coal_seam",
     "water_pipe", "water_pipe_broken", "spring_intake",
     "steam_drive", "steam_drive_off", "steam_drive_broken",
+    "crane_operator", "crane_operator_work", "crane_operator_wait", "crane_operator_alarm", "crane_console",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

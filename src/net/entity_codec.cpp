@@ -1,3 +1,4 @@
+#include "../entities/crane_operator.hpp"
 #include "../entities/coal_cutter.hpp"
 #include "../entities/brawler.hpp"
 #include "../entities/zombie.hpp"
@@ -264,6 +265,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_walking_kiln(entity)) reader.okay=false;
     if (!valid_cable_crawler(entity)) reader.okay=false;
     if (!valid_pressure_rat(entity)) reader.okay=false;
+    if (!valid_crane_operator(entity)) reader.okay=false;
     if (!valid_magnet_crane(entity)) reader.okay=false;
     if (!valid_arc_welder(entity)) reader.okay=false;
     if (!valid_pocket_drill(entity)) reader.okay=false;

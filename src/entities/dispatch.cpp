@@ -1,3 +1,4 @@
+#include "crane_operator.hpp"
 #include "coal_cutter.hpp"
 #include "brawler.hpp"
 #include "../items/coal.hpp"
@@ -81,6 +82,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::WalkingKiln: init_walking_kiln(entity); break;
     case EntityKind::CableCrawler: init_cable_crawler(entity); break;
     case EntityKind::PressureRat: init_pressure_rat(entity); break;
+    case EntityKind::CraneOperator: init_crane_operator(entity); break;
     case EntityKind::MagnetCrane: init_magnet_crane(entity); break;
     case EntityKind::ArcWelder: init_arc_welder(entity); break;
     case EntityKind::Yeti: init_yeti(entity); break;
@@ -172,6 +174,7 @@ void step_entity(Game& game, int slot) {
     case EntityKind::WalkingKiln: step_walking_kiln(game,slot); break;
     case EntityKind::CableCrawler: step_cable_crawler(game,slot); break;
     case EntityKind::PressureRat: step_pressure_rat(game,slot); break;
+    case EntityKind::CraneOperator: step_crane_operator(game,slot); break;
     case EntityKind::MagnetCrane: step_magnet_crane(game,slot); break;
     case EntityKind::ArcWelder: step_arc_welder(game,slot); break;
     case EntityKind::Yeti: step_yeti(game,slot); break;

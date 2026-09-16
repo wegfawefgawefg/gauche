@@ -1,3 +1,4 @@
+#include "../entities/crane_operator.hpp"
 #include "../entities/brawler.hpp"
 #include "../entities/zombie.hpp"
 #include "../entities/wolf.hpp"
@@ -76,6 +77,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_furnace_moth(entity);
     hurt_audit_clerk(game,slot,attacker);
     hurt_mine_worker(game,slot,damage,attacker);
+    hurt_crane_operator(game,entity,attacker);
     alert_strikebreakers(game,slot,attacker);
     interrupt_strikebreaker(entity);
     interrupt_rivet_gunner(entity);

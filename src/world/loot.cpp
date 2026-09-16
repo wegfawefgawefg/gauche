@@ -161,6 +161,8 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         else if (roll<30) place_ground_item(game,enemy.cell,ItemKind::EffigyMask);
         break;
     }
+    case EntityKind::CraneOperator:
+        place_ground_item(game,enemy.cell,ItemKind::LunchTin);break;
     case EntityKind::MagnetCrane: {
         const auto roll=random_u32(game)%100;
         if (roll<25) place_ground_item(game,enemy.cell,ItemKind::HorseshoeMagnet);

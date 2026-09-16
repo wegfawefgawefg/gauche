@@ -1,4 +1,5 @@
 #include "freight_exchange.hpp"
+#include "../entities/crane_operator.hpp"
 #include "ground_items.hpp"
 #include "loot.hpp"
 #include "../props/interaction.hpp"
@@ -86,7 +87,7 @@ void populate_freight_exchange(Game& game) {
     freight_pair(game,{54,11},{-1,0},make_item(ItemKind::BoltPouch,3));
     // Crane and gunner work at opposite ends of the upper loading hall. They
     // are not encounter gates: slipping past, hauling cargo or digging works.
-    spawn_entity(game,EntityKind::MagnetCrane,{13,14});
+    staff_crane(game,spawn_entity(game,EntityKind::MagnetCrane,{13,14}),{13,15});
     Entity& gunner=*get_entity(game,spawn_entity(game,EntityKind::RivetGunner,{49,15}));
     gunner.facing={-1,0};
     for (Cell cell:{Cell{47,13},Cell{48,13},Cell{47,17},Cell{48,17}}) fixture(game,cell,PropKind::Grate);

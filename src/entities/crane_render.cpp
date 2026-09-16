@@ -1,5 +1,6 @@
 #include "crane_render.hpp"
 #include "magnet_crane.hpp"
+#include "crane_operator.hpp"
 #include "../lighting/render.hpp"
 #include <algorithm>
 
@@ -20,6 +21,20 @@ void draw_crane_parts(SDL_Renderer* renderer,const GameGraphics& graphics,const 
         const bool locked=crane.label_a==CraneLock;
         const float height=pixels*(locked ? .62F+.20F*static_cast<float>(crane.timer_a)/45 : 1.0F);
         if (shadows) {
+            const Entity* worker=get_entity(game,crane.entity_b);
+            if (crane.label_b==1 && worker && worker->kind==EntityKind::CraneOperator) {
+                const SDL_FRect stand=tile_rect(worker->point_b,camera,zoom);
+                const auto tint=lit_sprite_color(lighting,worker->point_b);
+                SDL_SetRenderDrawColorFloat(renderer,tint.red*.25F,tint.green*.29F,tint.blue*.25F,1);
+                SDL_RenderLine(renderer,base.x+pixels*.5F,base.y+pixels*.65F,
+                    stand.x+pixels*.8F,stand.y+pixels*.85F);
+                SDL_Texture* console=texture_for(graphics,Sprite::CraneConsole);
+                SDL_SetTextureColorModFloat(console,tint.red,tint.green,tint.blue);
+                SDL_RenderTexture(renderer,console,nullptr,&stand);SDL_SetTextureColorModFloat(console,1,1,1);
+                SDL_SetRenderDrawColor(renderer,crane_operator_ready(game,crane) ? 101 : 189,114,56,220);
+                SDL_FRect lamp{stand.x+pixels*.875F,stand.y+pixels*.6875F,pixels/16,pixels/16};
+                SDL_RenderFillRect(renderer,&lamp);
+            }
             SDL_FRect shade{ground.x-pixels*.30F,ground.y-pixels*.12F,pixels*.60F,pixels*.24F};
             SDL_SetRenderDrawColor(renderer,0,0,0,85);SDL_RenderFillRect(renderer,&shade);
             if (locked) {

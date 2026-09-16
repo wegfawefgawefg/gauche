@@ -1,4 +1,5 @@
 #include "magnet_crane.hpp"
+#include "crane_operator.hpp"
 #include "behavior.hpp"
 #include "attacks.hpp"
 #include "../items/magnet.hpp"
@@ -24,12 +25,21 @@ int metal_priority(const Game& game,const Entity& target) {
         target.kind==EntityKind::Strikebreaker) return 1;
     return -1;
 }
+bool blocked_cargo(const Game& game,const Entity& crane,const Entity& target) {
+    if (target.kind!=EntityKind::GroundItem) return false;
+    const Cell next=target.cell+cardinal_toward(target.cell,crane.cell,{1,0});
+    if (projectile_blocked(game,next) || entity_at(game,next,true)>=0) return true;
+    for (const Entity& other:game.entities)
+        if (&other!=&target && other.kind==EntityKind::GroundItem && other.cell==next) return true;
+    return false;
+}
 Handle choose_target(const Game& game,const Entity& crane) {
     Handle best{};int best_score=100;
     for (int i=0;i<max_entities;++i) {
         const Entity& target=game.entities[static_cast<std::size_t>(i)];
         const int priority=metal_priority(game,target),range=distance(crane.cell,target.cell);
         if (priority<0 || range<1 || range>crane_reach) continue;
+        if (crane.label_b==1 && blocked_cargo(game,crane,target)) continue;
         const int score=priority*16+range;
         if (score>=best_score || !clear_shot_sight(game,crane.cell,target.cell)) continue;
         best={i,target.generation};best_score=score;
@@ -70,7 +80,8 @@ void grab(Game& game,Entity& crane) {
 }
 // SLOTS: label_a phase; timer_a phase ticks; entity_a generation-checked marked
 // target; point_a anchored base, point_b committed contact; counter_a retract
-// start fraction in thirtieths (presentation only). No inventory is detached.
+// start fraction in thirtieths (presentation only). label_b staffed latch,
+// entity_b operator. No inventory is detached.
 void init_magnet_crane(Entity& crane) {
     crane.health=crane.max_health=90;crane.impassable=crane.hard_blocker=true;
     crane.sprite=Sprite::MagnetCrane;crane.point_a=crane.point_b=crane.cell;
@@ -85,6 +96,10 @@ void step_magnet_crane(Game& game,int slot) {
         crane.timer_a=60;crane.counter_a=0;crane.entity_a={};return;
     }
     if (crane.freeze_ticks>0) {interrupt_magnet_crane(crane);return;}
+    if (!crane_operator_ready(game,crane)) {
+        interrupt_magnet_crane(crane);
+        if (crane.label_a!=CraneReturn) {crane.label_a=CraneIdle;crane.timer_a=0;return;}
+    }
     if (crane.timer_a>0) return;
     switch (crane.label_a) {
     case CraneIdle: {
@@ -105,6 +120,7 @@ void step_magnet_crane(Game& game,int slot) {
 }
 bool valid_magnet_crane(const Entity& crane) {
     if (crane.kind!=EntityKind::MagnetCrane) return true;
+    if (crane.label_b<0 || crane.label_b>1) return false;
     if (crane.label_a<CraneIdle || crane.label_a>CraneReturn || crane.timer_a<0 || crane.timer_a>60 ||
         crane.counter_a<0 || crane.counter_a>30 || distance(crane.point_a,crane.point_b)>crane_reach) return false;
     if (crane.label_a==CraneTravel && crane.timer_a>30) return false;

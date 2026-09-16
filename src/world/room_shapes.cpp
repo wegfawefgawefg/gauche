@@ -137,7 +137,7 @@ void carve_floor(Game& game, FloorPlan& plan,GenerationTrace* trace) {
     plan.protected_cells.assign(game.stage.tiles.size(), 0);
     for (const RoomPlan& room : plan.rooms) carve_room(game, plan, room);
     for (RouteEdge edge : plan.edges) connect_rooms(game, plan, edge);
-    carve_forest_den(game,plan);
+    carve_forest_den(game,plan,trace);
     carve_spider_cave(game,plan);
     connect_ice_shelves(game,plan);
     carve_ice_thaw(game,plan);

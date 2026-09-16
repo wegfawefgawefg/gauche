@@ -49,7 +49,7 @@ struct GenerationRule {
 inline constexpr std::array generation_rules{
     GenerationRule{GenerationFeature::GiantTree,"Giant tree",Biome::Forest,{10,5,5,5},true},
     GenerationRule{GenerationFeature::TimberGrove,"Timber grove",Biome::Forest,{9,4,4,4},true},
-    GenerationRule{GenerationFeature::BearDen,"Connected bear den",Biome::Forest,{4,3,3,3}},
+    GenerationRule{GenerationFeature::BearDen,"Connected bear den",Biome::Forest,{4,3,3,3},true},
     GenerationRule{GenerationFeature::SpiderCave,"Spider cave",Biome::Forest,{5,3,3,3},true},
     GenerationRule{GenerationFeature::SnakeTunnel,"Snake tunnel",Biome::Forest,{6,3,3,3},true},
     GenerationRule{GenerationFeature::RootMaze,"Root maze",Biome::Forest,{8,4,4,4}},

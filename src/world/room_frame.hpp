@@ -22,6 +22,7 @@ inline RoomPlan unturned_room(RoomPlan room) {
     return room;
 }
 inline bool socket_room(const Game& game,const RoomPlan& room) {
+    if (forest_floor(game.run.floor) && room.shape==RoomShape::BearHollow) return true;
     if (room.shape>=RoomShape::ChapelNave) return false;
     if (forest_floor(game.run.floor)) return true;
     if (!ice_floor(game.run.floor)) return false;

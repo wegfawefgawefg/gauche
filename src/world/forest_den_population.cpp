@@ -30,7 +30,7 @@ std::vector<Cell> ground(const Game& game,const RoomPlan& room) {
 
 ComponentRoll residents(Game& game,const ForestDen& den,GenerationReport* report) {
     const WeightedComponent groups[]{{0,"Sleeping family",6},{1,"Adult gathering",3},{2,"Old solitary bear",2}};
-    const auto group=roll_component(game,report,feature,-1,"Hollow residents",den.cache,groups);
+    const auto group=roll_component(game,report,feature,den.component,"Hollow residents",den.cache,groups);
     std::vector<Cell> beds;
     for(Cell c:den.beds)if(vacant(game,c))beds.push_back(c);
     if(group.value==2 && !beds.empty())beds.resize(1);

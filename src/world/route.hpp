@@ -39,6 +39,7 @@ struct IndustrialLink {
 };
 struct ForestDen {
     int a=0,b=0;
+    int component=-1;
     Cell along{},across{},spring{},cache{};
     std::vector<Cell> beds;
 };

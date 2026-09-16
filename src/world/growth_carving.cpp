@@ -1,4 +1,5 @@
 #include "growth_carving.hpp"
+#include <algorithm>
 
 bool generation_lock_intact(const Game& game,const FloorPlan& plan) {
     const Cell start=plan.rooms.front().center,exit=plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
@@ -73,4 +74,22 @@ std::vector<std::uint8_t> generation_walking_routes(const Game& game,const Floor
         }
     }
     return mask;
+}
+
+// New blocking scenery must not split connected ground, including incidental
+// loot pockets. Required-route checks alone would miss a severed side passage.
+bool ground_neighbors_connected(const Stage& stage,Cell cell) {
+    std::vector<Cell> neighbors;
+    for(Cell d:{Cell{1,0},{0,1},{-1,0},{0,-1}})if(walkable(stage.at_or_border(cell+d)))neighbors.push_back(cell+d);
+    if(neighbors.size()<2)return true;
+    std::vector<bool> seen(stage.tiles.size());std::vector<Cell> queue{neighbors.front()};
+    const auto index=[&](Cell c){return static_cast<std::size_t>(c.y*stage.width+c.x);};
+    seen[index(queue.front())]=true;std::size_t reached=1;
+    for(std::size_t i=0;i<queue.size();++i)for(Cell d:{Cell{1,0},{0,1},{-1,0},{0,-1}}) {
+        const Cell next=queue[i]+d;const auto* tile=stage.at(next);
+        if(!tile || !walkable(*tile) || seen[index(next)])continue;
+        seen[index(next)]=true;queue.push_back(next);
+        if(std::find(neighbors.begin()+1,neighbors.end(),next)!=neighbors.end() && ++reached==neighbors.size())return true;
+    }
+    return false;
 }

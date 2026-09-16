@@ -1,3 +1,4 @@
 #pragma once
 #include "route.hpp"
-void place_tall_trees(Game& game,const FloorPlan& plan);
+struct GenerationTrace;
+void place_tall_trees(Game& game,FloorPlan& plan,GenerationTrace* trace=nullptr);

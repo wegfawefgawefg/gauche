@@ -26,7 +26,7 @@ void collapse(Game& game,Cell root,Prop& tree) {
     const bool crossing=tree_bridge_length(game,root,dir)>0;
     tree.hp=0;tree.broken=true;
     emit_sound(game,SoundId::TreeFall,root);chips(game,root,root-dir);
-    for (int n=1;n<=tree_reach;++n) {
+    for (int n=1;n<=tree_height(tree);++n) {
         const Cell cell=offset(root,dir,n);Tile* tile=game.stage.at(cell);
         if (!tile || (!walkable(tile->kind) && !gap(tile->kind)) || fixture(game,cell)) break;
         std::vector<Handle> victims;
@@ -49,18 +49,27 @@ void collapse(Game& game,Cell root,Prop& tree) {
         if (burning) ignite_surface(game,cell);
     }
     if (crossing && lay_tree_bridge(game,root,dir) && burning)
-        for (int n=1;n<=tree_reach;++n) ignite_surface(game,offset(root,dir,n));
+        for (int n=1;n<=tree_height(tree);++n) ignite_surface(game,offset(root,dir,n));
 }
 }
 Cell tree_direction(const Prop& prop) {return directions[prop.variant&3U];}
-int tree_burn_height(const Prop& prop) {return prop.variant>>2;}
+int tree_burn_height(const Prop& prop) {return (prop.variant>>2)&15U;}
+int tree_height(const Prop& prop) {
+    constexpr int heights[]{3,2,4,5};return heights[prop.variant>>6];
+}
+std::uint8_t tree_variant(int facing,int height) {
+    const int code=height==2 ? 1 : height==4 ? 2 : height==5 ? 3 : 0;
+    return static_cast<std::uint8_t>((facing&3)|(code<<6));
+}
 int tree_bridge_length(const Game& game,Cell root,Cell dir) {
+    const auto& prop=game.stage.at_or_border(root).prop;
+    const int reach=prop.kind==PropKind::TallTree ? tree_height(prop) : tree_reach;
     if (distance({},dir)!=1 || !bridge_bank(game.stage.at_or_border(root))) return 0;
-    for (int n=1;n<=tree_reach+1;++n) {
+    for (int n=1;n<=reach+1;++n) {
         const Cell cell=offset(root,dir,n);const Tile* tile=game.stage.at(cell);
         if (!tile || fixture(game,cell)) return 0;
         if (bridge_bank(*tile)) return n>1 && !prop_blocks(tile->prop) ? n-1 : 0;
-        if (n>tree_reach || !gap(tile->kind) || (tile->prop.kind!=PropKind::None && !tile->prop.broken)) return 0;
+        if (n>reach || !gap(tile->kind) || (tile->prop.kind!=PropKind::None && !tile->prop.broken)) return 0;
     }
     return 0;
 }
@@ -101,6 +110,6 @@ bool valid_tree_prop(const Prop& prop) {
     if (prop.kind==PropKind::FallenLog)
         return (prop.variant&~5U)==0 && prop.growth_ticks==0 && (prop.broken || prop.hp>0);
     if (prop.kind!=PropKind::TallTree) return true;
-    return prop.variant<52 && (prop.broken || prop.hp>0) && prop.growth_ticks<=tree_warn_ticks+tree_fall_ticks &&
+    return tree_burn_height(prop)<=12 && (prop.broken || prop.hp>0) && prop.growth_ticks<=tree_warn_ticks+tree_fall_ticks &&
         (prop.growth_ticks==0 || (!prop.broken && prop.hp==1));
 }

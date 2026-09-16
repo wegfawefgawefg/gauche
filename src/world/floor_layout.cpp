@@ -192,7 +192,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         capture("Loose props");
         place_ice_pillars(game,plan);
         capture("Ice pillars");
-        place_tall_trees(game,plan);
+        place_tall_trees(game,plan,trace);
         capture("Tall trees");
         place_light_towers(game,plan);
         capture("Light towers");

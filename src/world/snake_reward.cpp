@@ -20,7 +20,7 @@ bool safe_tree(Game& game,Cell root,Cell dir,int gap) {
     bool valid=floor_reachable(game);
     for (Cell direction:directions) {
         const int length=tree_bridge_length(game,root,direction);if (!length) continue;
-        std::array<Tile,3> saved{};
+        std::array<Tile,tree_max_reach> saved{};
         for (int i=0;i<length;++i) saved[static_cast<std::size_t>(i)]=*game.stage.at(root+scale(direction,i+1));
         lay_tree_bridge(game,root,direction);
         const auto prop=game.stage.at(root)->prop;game.stage.at(root)->prop={};

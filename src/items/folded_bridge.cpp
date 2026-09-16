@@ -1,5 +1,6 @@
 #include "folded_bridge.hpp"
 #include "../props/interaction.hpp"
+#include "../props/tall_tree.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../world/water.hpp"
 #include "../world/chasm.hpp"
@@ -90,17 +91,17 @@ void step_bridge_support(Game& game, Cell cell) {
     const Cell axis=(plank.variant&1U) ? Cell{0,1} : Cell{1,0};
     if (plank.kind==PropKind::LogBridge) {
         Cell first=cell,last=cell;
-        for (int n=0;n<3;++n) {
+        for (int n=0;n<tree_max_reach;++n) {
             const auto& other=game.stage.at_or_border(first-axis).prop;
             if (other.kind!=PropKind::LogBridge || other.broken || (other.variant&1U)!=(plank.variant&1U)) break;
             first=first-axis;
         }
-        for (int n=0;n<3;++n) {
+        for (int n=0;n<tree_max_reach;++n) {
             const auto& other=game.stage.at_or_border(last+axis).prop;
             if (other.kind!=PropKind::LogBridge || other.broken || (other.variant&1U)!=(plank.variant&1U)) break;
             last=last+axis;
         }
-        if (distance(first,last)>2 || !bridge_bank(game.stage.at_or_border(first-axis)) ||
+        if (distance(first,last)>=tree_max_reach || !bridge_bank(game.stage.at_or_border(first-axis)) ||
             !bridge_bank(game.stage.at_or_border(last+axis))) hit_prop(game,cell,plank.hp,cell);
         return;
     }

@@ -9,20 +9,21 @@ void draw_tall_tree(SDL_Renderer* renderer,const GameGraphics& graphics,const Ga
     const auto& tile=*game.stage.at(cell);const Prop& tree=tile.prop;
     const SDL_FRect floor=tile_rect(cell,camera,zoom);
     const Cell dir=tree_direction(tree);
+    const float reach=static_cast<float>(tree_height(tree));
     const float progress=tree.growth_ticks ? std::clamp(1-static_cast<float>(tree.growth_ticks)/tree_fall_ticks,0.0F,1.0F) : 0;
     const float theta=progress*1.57079633F;
-    float dx=3*floor.w*static_cast<float>(dir.x)*std::sin(theta);
-    const float dy=3*floor.w*(static_cast<float>(dir.y)*std::sin(theta)-std::cos(theta));
+    float dx=reach*floor.w*static_cast<float>(dir.x)*std::sin(theta);
+    const float dy=reach*floor.w*(static_cast<float>(dir.y)*std::sin(theta)-std::cos(theta));
     if (!tree.growth_ticks) dx+=floor.w*.12F*static_cast<float>(dir.x);
     if (tree.growth_ticks>tree_fall_ticks) dx+=std::sin(static_cast<float>(game.tick%100)*1.5F)*floor.w*.06F;
-    const float width=floor.w*2,height=std::max(floor.w*.2F,std::hypot(dx,dy))*64/58;
+    const float width=floor.w*(1.25F+reach*.25F),height=std::max(floor.w*.2F,std::hypot(dx,dy))*64/58;
     const SDL_FPoint pivot{width*.5F,height*60/64};
     SDL_FRect body{floor.x+floor.w*.5F-pivot.x,floor.y+floor.h*.6F-pivot.y,width,height};
     const double angle=std::atan2(dx,-dy)*180/3.141592653589793;
     const auto light=light_at_cell(lighting,cell);
     bool obscures=false;
     for (Handle h:game.players) if (const Entity* player=get_entity(game,h))
-        if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-3) obscures=true;
+        if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-tree_height(tree)) obscures=true;
     const auto draw=[&](Sprite sprite,const SDL_FRect* source,SDL_FRect rect,SDL_FPoint anchor) {
         SDL_Texture* texture=texture_for(graphics,sprite);
         SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);SDL_SetTextureAlphaMod(texture,obscures ? 100 : 255);
@@ -56,7 +57,7 @@ void draw_tree_ground(SDL_Renderer* renderer,const GameGraphics& graphics,const 
         SDL_SetRenderDrawColor(renderer,0,0,0,160);SDL_RenderFillRect(renderer,&shadow);
         if (prop.growth_ticks) {
             const Cell dir=tree_direction(prop);
-            for (int n=1;n<=tree_reach;++n) {
+            for (int n=1;n<=tree_height(prop);++n) {
                 const Cell target=cell+Cell{dir.x*n,dir.y*n};const auto kind=game.stage.at_or_border(target).kind;
                 if (kind==TileKind::Wall) break;
                 SDL_FRect mark=tile_rect(target,camera,zoom);mark.x+=mark.w*.08F;mark.y+=mark.h*.2F;mark.w*=.84F;mark.h*=.6F;

@@ -1,6 +1,7 @@
 #include "forest_den.hpp"
 #include "bear_clearings.hpp"
 #include "components.hpp"
+#include "growth_carving.hpp"
 #include "landmark_supplies.hpp"
 #include "ground_items.hpp"
 #include "water.hpp"
@@ -123,13 +124,19 @@ void dressing(Game& game,std::span<const Cell> sites,Cell cache,int parent,Gener
         const WeightedComponent patches[]{{0,"Bare ground",2},{1,"Gnawed remains",4},{2,"Leaf litter",3},{3,"Rotting wood and fungus",3}};
         const auto patch=roll_component(game,report,feature,parent,"Den floor patch",anchor,patches);
         if(!patch.value){component_result(report,patch,"Undisturbed ground");continue;}
-        std::vector<Cell> placed;
+        std::vector<Cell> placed,rejected;
         for(Cell c:shuffled)if(distance(c,anchor)<=3 && distance(c,cache)>=3 && vacant(game,c) && random_u32(game)%3==0) {
             const auto prop=patch.value==1 ? PropKind::BonePile : patch.value==2 ? (random_u32(game)%2 ? PropKind::Leaves : PropKind::Fern) :
                 (random_u32(game)%3 ? PropKind::Puffball : PropKind::RottenLog);
-            if(place_prop(game.stage,c,prop,static_cast<std::uint8_t>(random_u32(game))))placed.push_back(c);
+            if(place_prop(game.stage,c,prop,static_cast<std::uint8_t>(random_u32(game)))) {
+                auto& placed_prop=game.stage.at(c)->prop;
+                if(prop_blocks(placed_prop) && !ground_neighbors_connected(game.stage,c)) {
+                    placed_prop={};rejected.push_back(c);
+                } else placed.push_back(c);
+            }
         }
-        component_result(report,patch,"Scattered low props; preserve beds, residents and loot",placed);
+        component_result(report,patch,"Scattered props; preserve beds, residents, loot and walking connections",placed);
+        if(report && patch.record>=0)report->components[static_cast<std::size_t>(patch.record)].rejected_cells=std::move(rejected);
     }
 }
 }

@@ -30,7 +30,7 @@ std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float z
         order.push_back({slot,entity.cell,BodyKind::Entity,priority});
     }
     if (pass==ScenePass::Bodies) {
-        const int rx=static_cast<int>(320/tile_pixels(zoom))+4,ry=static_cast<int>(180/tile_pixels(zoom))+5;
+        const int rx=static_cast<int>(320/tile_pixels(zoom))+6,ry=static_cast<int>(180/tile_pixels(zoom))+7;
         const int cx=static_cast<int>(std::floor(camera.x)),cy=static_cast<int>(std::floor(camera.y));
         for (int y=std::max(0,cy-ry);y<std::min(game.stage.height,cy+ry);++y)
             for (int x=std::max(0,cx-rx);x<std::min(game.stage.width,cx+rx);++x) {

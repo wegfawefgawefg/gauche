@@ -7,3 +7,6 @@ bool generation_lock_intact(const Game& game,const FloorPlan& plan);
 // Preserve reachable room anchors plus the objective/exit when adding solid terrain.
 std::vector<std::uint8_t> generation_walking_routes(const Game& game,const FloorPlan& plan);
 bool generation_exit_reachable(const Game& game,const FloorPlan& plan);
+
+// After blocking one cell, its former walking neighbors must remain connected.
+bool ground_neighbors_connected(const Stage& stage,Cell cell);

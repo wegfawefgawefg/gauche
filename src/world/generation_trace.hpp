@@ -12,7 +12,7 @@ struct GenerationCheckpoint {
     GenerationReport report;
 };
 struct GenerationTrace {
-    static constexpr std::size_t limit = 24;
+    static constexpr std::size_t limit = 32;
     std::vector<GenerationCheckpoint> checkpoints;
     bool truncated = false;
     void capture(const char* name, const Game& game, const FloorPlan& plan) {

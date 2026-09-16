@@ -72,7 +72,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
         }
         ImGui::PopID();
     }
-    ImGui::TextWrapped("Coverage: six large Forest landmarks and open sectors, plus their recorded child rolls. Ordinary room-role rolls and later removals remain untraced.");
+    ImGui::TextWrapped("Coverage: six large Forest landmarks, open sectors and rivers, plus their recorded child rolls. Ordinary room-role rolls and later removals remain untraced.");
 }
 
 void draw_live_generation_details(const Game& game) {

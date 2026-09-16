@@ -38,6 +38,7 @@ void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool g
 }
 
 void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
+    if (room.shape==RoomShape::ThawCavern) return;
     const int round = (game.run.floor - 1) % 4;
     if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
@@ -177,6 +178,7 @@ void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Roo
 }
 
 void encounter(Game& game,const FloorPlan& plan,const RoomPlan& room,RoomSupplies& budget) {
+    if (room.shape==RoomShape::ThawCavern) return;
     if (!budget.report || room.role>=RoomRole::Workfront) {room_encounter(game,plan,room,budget);return;}
     const auto occupants=[&]() {return std::count_if(game.entities.begin(),game.entities.end(),
         [](const Entity& entity){return entity.kind!=EntityKind::None && entity.health>0;});};
@@ -367,6 +369,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
+        report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
         for (const RoomPlan& room:plan.rooms) {
             ++report->scenes[static_cast<std::size_t>(room.role)].planned;

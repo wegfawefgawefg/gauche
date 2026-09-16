@@ -25,7 +25,7 @@ void place_chasms(Game& game,const FloorPlan& plan) {
     if (forest && (round<2 || random_u32(game)%4!=0)) return;
     int budget=forest ? 1 : 2+round/2;
     std::vector<std::size_t> candidates;
-    for (std::size_t i=0;i<plan.rooms.size();++i) if (plan.rooms[i].shape!=RoomShape::IceShelf && fissure_room(plan.rooms[i].role)) candidates.push_back(i);
+    for (std::size_t i=0;i<plan.rooms.size();++i) if (plan.rooms[i].shape!=RoomShape::IceShelf && plan.rooms[i].shape!=RoomShape::ThawCavern && fissure_room(plan.rooms[i].role)) candidates.push_back(i);
     for (std::size_t i=candidates.size();i>1;--i) std::swap(candidates[i-1],candidates[random_u32(game)%i]);
     for (auto index:candidates) {
         if (budget==0) break;

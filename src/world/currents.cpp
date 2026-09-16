@@ -43,6 +43,7 @@ void step_water_currents(Game& game) {
 
 void place_water_currents(Game& game, const FloorPlan& plan) {
     for (const RoomPlan& room : plan.rooms) {
+        if (room.shape==RoomShape::ThawCavern) continue;
         if (room.role!=RoomRole::Brook && room.role!=RoomRole::Reservoir) continue;
         for (int y=-room.half_height;y<=room.half_height;++y)
             for (int x=-room.half_width;x<=room.half_width;++x) {

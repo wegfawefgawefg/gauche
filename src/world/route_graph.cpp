@@ -1,5 +1,6 @@
 #include "route.hpp"
 #include "ice_shelves.hpp"
+#include "ice_thaw.hpp"
 #include "ice_terrain.hpp"
 
 #include <algorithm>
@@ -198,6 +199,7 @@ FloorPlan plan_floor(Game& game) {
         }
     }
     plan_ice_shelves(game,plan);
+    plan_ice_thaw(game,plan);
     return plan;
 }
 

@@ -6,6 +6,20 @@
 inline void draw_current_marks(SDL_Renderer* renderer,const Stage& stage,Cell cell,
     SDL_FRect rect,LightColor light,std::uint64_t tick) {
     const Tile& tile=stage.at_or_border(cell);
+    if (tile.kind==TileKind::DeepRiver) {
+        // Opaque dark water, with a pale broken lip against standing ground.
+        // Current strokes below continue across the shallow/deep boundary.
+        SDL_SetRenderDrawColorFloat(renderer,light.red*.035F,light.green*.085F,light.blue*.10F,1);
+        SDL_RenderFillRect(renderer,&rect);
+        for (Cell d:std::array{Cell{0,-1},Cell{0,1},Cell{-1,0},Cell{1,0}}) {
+            const auto& near=stage.at_or_border(cell+d);
+            if (!walkable(near) || near.kind==TileKind::Bridge) continue;
+            const float x=rect.x+(d.x>0 ? rect.w : 0),y=rect.y+(d.y>0 ? rect.h : 0);
+            SDL_SetRenderDrawColorFloat(renderer,light.red*.20F,light.green*.32F,light.blue*.30F,.8F);
+            if (d.x) SDL_RenderLine(renderer,x,y+rect.h*.1F,x,y+rect.h*.7F);
+            else SDL_RenderLine(renderer,x+rect.w*.15F,y,x+rect.w*.85F,y);
+        }
+    }
     const Cell flow=water_current(tile);
     if (flow!=Cell{}) {
         const bool fast=water_current_strength(tile)==2;

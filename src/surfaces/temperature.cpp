@@ -103,7 +103,7 @@ bool freeze_water(Game& game, Cell cell, int ticks) {
     }
     // MEMORY: Refresh temporary ice without forgetting the pool or diver hole beneath it.
     if (tile->kind != TileKind::Ice || tile->freeze_ticks == 0) {
-        if (!shallow_water(tile->kind)) return false;
+        if (!river_water(tile->kind)) return false;
         tile->thaw_kind = tile->kind;
     }
     tile->kind = TileKind::Ice;

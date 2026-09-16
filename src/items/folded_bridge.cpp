@@ -11,7 +11,7 @@ constexpr RegionalItem bridge{"Folded Bridge",
     "Three planks across water or a chasm; dry banks at both ends. Burnable. Unsupported falls kill.",
     Sprite::FoldedBridge,{1,3,0,0,45,PatternEffect::Utility,true},
     ItemAction::Material,24,1,true,0,0,0,0,0,SoundId::BridgeUnfold,30};
-bool water(TileKind kind) { return kind==TileKind::Water || shallow_water(kind); }
+bool water(TileKind kind) { return kind==TileKind::Water || river_water(kind); }
 bool span(TileKind kind) { return water(kind) || kind==TileKind::Chasm; }
 }
 
@@ -68,10 +68,10 @@ bool place_folded_bridge(Game& game, int slot) {
 void collapse_bridge_plank(Game& game, Cell cell, Cell source) {
     Tile& tile=*game.stage.at(cell);
     tile.kind=bridge_underlay(tile.prop); tile.prop={}; tile.surface={};
-    if (tile.kind==TileKind::Chasm) {
-        emit_sound(game,SoundId::BridgeBreak,cell);
+    if (open_drop(tile.kind)) {
+        emit_sound(game,tile.kind==TileKind::Chasm ? SoundId::BridgeBreak : SoundId::BridgeSplash,cell);
         for (int slot=0;slot<max_entities;++slot)
-            if (game.entities[static_cast<std::size_t>(slot)].cell==cell) chasm_contact(game,slot);
+            if (game.entities[static_cast<std::size_t>(slot)].cell==cell) {chasm_contact(game,slot);deep_river_contact(game,slot);}
         return;
     }
     emit_sound(game,SoundId::BridgeSplash,cell);

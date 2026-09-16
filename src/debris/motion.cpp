@@ -19,7 +19,7 @@ Cell cell_at(float x, float y) {
 
 bool free_cell(const Stage& stage, float x, float y) {
     const Tile* tile = stage.at(cell_at(x, y));
-    return tile != nullptr && (walkable(*tile) || tile->kind==TileKind::Chasm);
+    return tile != nullptr && (walkable(*tile) || open_drop(tile->kind));
 }
 
 bool light_material(DebrisKind kind) {
@@ -150,6 +150,6 @@ void step_debris(LooseDebris& debris, const Stage& stage, std::uint64_t tick, bo
             p.settled = 1;
         }
     }
-    std::erase_if(debris.pieces,[&](const LoosePiece& p){return stage.at_or_border(cell_at(p.x,p.y)).kind==TileKind::Chasm;});
+    std::erase_if(debris.pieces,[&](const LoosePiece& p){return open_drop(stage.at_or_border(cell_at(p.x,p.y)).kind);});
     rebuild_debris_index(debris);
 }

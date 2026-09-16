@@ -160,7 +160,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         tile.freeze_ticks = reader.u16();
         if (tile.freeze_ticks > 480 || (tile.freeze_ticks == 0 ? tile.thaw_kind != TileKind::Empty :
             (tile.thaw_kind != TileKind::ShallowWater && tile.thaw_kind != TileKind::Spring &&
-             tile.thaw_kind != TileKind::IceHole))) reader.okay = false;
+             tile.thaw_kind != TileKind::IceHole && tile.thaw_kind != TileKind::DeepRiver))) reader.okay = false;
         tile.surface.liquid = static_cast<LiquidKind>(reader.u8());
         const auto gritted = reader.u8();
         if (gritted > 1) reader.okay = false;

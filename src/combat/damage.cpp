@@ -60,6 +60,7 @@
 #include "../item_pattern.hpp"
 #include "../world/loot.hpp"
 #include "../world/chasm.hpp"
+#include "../world/water.hpp"
 
 #include <algorithm>
 
@@ -75,7 +76,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
         interrupt_bear_fishing(entity);entity.timer_b=300;
     }
     entity.health = std::max(0, entity.health - damage);
-    if (finish_chasm_death(game,slot)) return;
+    if (finish_chasm_death(game,slot) || finish_deep_river_death(game,slot)) return;
     damage_machine_fitting(game,entity,damage);
     interrupt_rail_shunter(entity);hurt_rail_cart(game,entity,damage);
     interrupt_tar_singer(entity);

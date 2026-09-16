@@ -122,6 +122,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
     case TileKind::Spring:
         return (tick / 12) % 2 == 0 ? Sprite::SpringA : Sprite::SpringB;
     case TileKind::Bridge:
+    case TileKind::DeepRiver:
     case TileKind::Water:
         return ((tick / 60 + tile.water_phase) % 2 == 0) ? Sprite::Water3 : Sprite::Water4;
     case TileKind::Rail: return Sprite::Rail;

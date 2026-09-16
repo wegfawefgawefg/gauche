@@ -6,7 +6,7 @@
 
 namespace {
 
-constexpr RegionalItem flask{"Cold Flask", "Chill a cross. Freeze shallow water for 8s. Douse small fires. Flames nearby thaw ice and resist cold.",
+constexpr RegionalItem flask{"Cold Flask", "Freezes river water. Keep away from heat.",
     Sprite::ColdFlask, {1, 5, 1, 0, 45, PatternEffect::Utility, true, 0, 0, false, false, true},
     ItemAction::Throw, 10, 3, true, 0, 0, 0, 0, 0, SoundId::ColdThrow};
 
@@ -25,7 +25,7 @@ std::vector<Cell> cold_flask_cells(const Game& game, const Item& item, Cell cent
             if ((dx != 0 && dy != 0) || std::abs(dx) + std::abs(dy) > radius) continue;
             const Cell cell = center + Cell{dx, dy};
             const Tile* tile = game.stage.at(cell);
-            if (tile == nullptr || !walkable(tile->kind) ||
+            if (tile == nullptr || (!walkable(tile->kind) && tile->kind!=TileKind::DeepRiver) ||
                 !clear_attack_sight(game, center, cell, false)) continue;
             exposed.push_back(cell);
         }

@@ -14,7 +14,7 @@
 
 void enter_actor_cell(Game& game, int slot) {
     contact_arrows(game,slot);
-    if (chasm_contact(game,slot)) return;
+    if (chasm_contact(game,slot) || deep_river_contact(game,slot)) return;
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
     if (actor.toss.ticks>0 || actor.health <= 0 || actor.move_interval == 0 || actor.hard_blocker ||
         actor.kind == EntityKind::Train) return;

@@ -43,7 +43,7 @@ int nearest_player(const Game& game, Cell from, int radius) {
 
 bool willing_step(Game& game, int slot, Cell destination) {
     Entity& actor = game.entities[static_cast<std::size_t>(slot)];
-    if (game.stage.at_or_border(destination).kind==TileKind::Chasm && !gap_flyer(actor)) {
+    if (open_drop(game.stage.at_or_border(destination).kind) && !navigable_ground(actor,game.stage.at_or_border(destination))) {
         actor.move_wait=std::max(1,actor.move_interval);return false;
     }
     if (!scarecrow_allows_step(game, actor, destination)) {

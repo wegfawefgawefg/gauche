@@ -2,6 +2,7 @@
 #include "world/lava_eruptions.hpp"
 #include "scenery/roof.hpp"
 #include "world/chasm.hpp"
+#include "world/water.hpp"
 #include "world/reactor.hpp"
 #include "combat/toss.hpp"
 #include "world/currents.hpp"
@@ -145,6 +146,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     step_conveyors(game);
     step_traps(game);
     step_chasm_contacts(game);
+    step_deep_river_contacts(game);
     step_lava_eruptions(game);
     step_fissures(game);
     sweep_dead(game);

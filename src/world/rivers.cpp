@@ -67,6 +67,7 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             "Two pushes per second; supports and floating cargo travel twice as fast" :
             "One push per second; normal support/cargo drift",plan.rivers.back().channel);
         plan.report.features.back().variant+=strength.value==2 ? " / Fast current" : " / Gentle current";
+        deepen_forest_river(game,plan,trace);
     };
     if (style.value==3) {
         // A circulating channel must not consume an existing wall-backed source.

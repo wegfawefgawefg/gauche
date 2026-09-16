@@ -1,6 +1,7 @@
 #pragma once
 #include "../game.hpp"
 
+void catch_river_raft(Game& game,int slot);
 void init_river_raft(const Game& game,Entity& raft);
 void step_river_raft(Game& game,int slot);
 void board_river_raft(Game& game,int player_slot);

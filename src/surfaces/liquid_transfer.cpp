@@ -10,7 +10,7 @@ bool pumpable_liquid(LiquidKind kind) {
 }
 bool pumpable_spill(const Tile& tile) {
     return walkable(tile.kind) && tile.kind!=TileKind::Lava && tile.kind!=TileKind::Ice &&
-        tile.kind!=TileKind::Water && !shallow_water(tile.kind) && !tile.freeze_ticks &&
+        tile.kind!=TileKind::Water && !river_water(tile.kind) && !tile.freeze_ticks &&
         !tile.surface.fire_ticks && tile.surface.liquid_ticks>0 && pumpable_liquid(tile.surface.liquid);
 }
 LiquidLoad collect_spill(Game& game,Cell cell,LiquidKind accepted,int capacity) {

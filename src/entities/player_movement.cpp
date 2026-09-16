@@ -5,7 +5,7 @@ namespace {
 
 bool free_step(const Game& game, Cell cell) {
     const Tile* tile = game.stage.at(cell);
-    return tile != nullptr && (walkable(*tile) || tile->kind==TileKind::Chasm) && entity_at(game, cell, true) < 0;
+    return tile != nullptr && (walkable(*tile) || open_drop(tile->kind)) && entity_at(game, cell, true) < 0;
 }
 
 Cell movement_axis(const Game& game, const Entity& player, Cell input) {

@@ -17,7 +17,7 @@ void populate_river_rafts(Game& game,FloorPlan& plan) {
         for (Cell cell:sites) {
             if (static_cast<int>(placed.size())>=count.value) break;
             const auto& tile=game.stage.at_or_border(cell);
-            if (!shallow_water(tile.kind) || prop_blocks(tile.prop) || entity_at(game,cell,false)>=0) continue;
+            if (!river_water(tile.kind) || prop_blocks(tile.prop) || entity_at(game,cell,false)>=0) continue;
             if (std::any_of(placed.begin(),placed.end(),[&](Cell old){return distance(old,cell)<6;})) continue;
             const WeightedComponent kinds[]{{0,"Lily pad",4},{1,"Drift log",3}};
             const auto kind=roll_component(game,&plan.report,GenerationFeature::River,count.record,"Support type",cell,kinds);

@@ -30,7 +30,7 @@ void place_ambience(AmbientAudio& audio, const Game& game, Cell listener) {
         for (int x = 1; x < game.stage.width - 1; ++x) {
             const Cell cell{x, y};
             const Tile& tile = *game.stage.at(cell);
-            if (tile.kind == TileKind::Water || shallow_water(tile.kind)) {
+            if (tile.kind == TileKind::Water || river_water(tile.kind)) {
                 add(AmbientCue::Stream, cell);
                 add(AmbientCue::PoolDrips, cell);
                 add(AmbientCue::ReedHiss, cell);

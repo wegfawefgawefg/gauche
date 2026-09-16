@@ -33,7 +33,7 @@ bool dry_growth(const Prop& prop) {
 } // namespace
 
 bool surface_wet(const Tile& tile) {
-    return shallow_water(tile.kind) || tile.kind == TileKind::Water ||
+    return river_water(tile.kind) || tile.kind == TileKind::Water ||
         (water_liquid(tile.surface.liquid) && tile.surface.liquid_ticks > 0);
 }
 

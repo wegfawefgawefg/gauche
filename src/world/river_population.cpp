@@ -38,7 +38,7 @@ void populate_forest_river(Game& game,FloorPlan& plan,PopulationReport* report) 
             const Cell c=river.path[static_cast<std::size_t>((i+1)*static_cast<int>(river.path.size())/(pockets+1))];
             const auto roll=roll_component(game,&plan.report,GenerationFeature::River,river.component,"River shoal",c,shoals);
             if (!roll.value) {component_result(&plan.report,roll,"Empty water");continue;}
-            if (!shallow_water(game.stage.at_or_border(c).kind) || entity_at(game,c,false)>=0) {component_result(&plan.report,roll,"Water occupied or changed");continue;}
+            if (!river_water(game.stage.at_or_border(c).kind) || entity_at(game,c,false)>=0) {component_result(&plan.report,roll,"Water occupied or changed");continue;}
             auto* fish=get_entity(game,spawn_entity(game,EntityKind::GroundItem,c));
             if (!fish) {component_result(&plan.report,roll,"Entity capacity exhausted");continue;}
             fish->ground_item=make_item(ItemKind::RiverFish,2+static_cast<int>(random_u32(game)%4));fish->sprite=item_sprite(ItemKind::RiverFish);
@@ -46,7 +46,7 @@ void populate_forest_river(Game& game,FloorPlan& plan,PopulationReport* report) 
             component_result(&plan.report,roll,"Fish available to catch",std::array{c});
         }
         if (river.component>=0) plan.report.components[static_cast<std::size_t>(river.component)].result=
-            std::string(river.loop ? "Circulating shallow channel; " : "Connected shallow channel; ")+
+            std::string(river.loop ? "Circulating channel; " : "Connected channel; ")+
             std::to_string(occupied.size())+"/"+std::to_string(budget)+" bank fighters, "+std::to_string(plants)+" plants";
     }
 }

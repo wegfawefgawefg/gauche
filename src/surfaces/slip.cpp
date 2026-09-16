@@ -20,7 +20,7 @@ bool slip_on_surface(Game& game, int slot, Cell direction) {
         distance({}, direction) != 1) return false;
     const Cell next = actor.cell + direction;
     tile = game.stage.at(next);
-    if (tile == nullptr || (!walkable(*tile) && tile->kind!=TileKind::Chasm) || entity_at(game, next, true) >= 0) return false;
+    if (tile == nullptr || (!walkable(*tile) && !open_drop(tile->kind)) || entity_at(game, next, true) >= 0) return false;
     // SLIP: One extra real cell per step; no recursion along a whole lake.
     if (!move_entity(game, slot, next, false)) return false;
     if (actor.health > 0) actor.vitals.slide_momentum = 12;

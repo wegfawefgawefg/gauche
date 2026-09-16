@@ -20,7 +20,7 @@ Cell stored_current_direction(const Tile& tile) {
     }
 }
 int water_current_strength(const Tile& tile) {
-    if (!shallow_water(tile.kind) || tile.surface.still_ticks>0 || !tile.current || tile.current>8) return 0;
+    if (!river_water(tile.kind) || tile.surface.still_ticks>0 || !tile.current || tile.current>8) return 0;
     return tile.current<=4 ? 1 : 2;
 }
 int water_current_beat(const Tile& tile,int normal_ticks) {
@@ -49,6 +49,7 @@ void step_water_currents(Game& game) {
         const Cell flow=water_current(tile);
         if (flow==Cell{}) continue;
         const Cell target=actor.cell+flow;
+        if (game.stage.at_or_border(target).kind==TileKind::DeepRiver && tile.kind!=TileKind::DeepRiver) continue;
         if (!float_cell_free(game,target,slot)) continue;
         if (cargo) {
             if (actor.ground_item.flight.slot>=0) continue; // A hook/return owns this item.
@@ -72,7 +73,7 @@ void place_water_currents(Game& game, const FloorPlan& plan) {
             for (int x=-room.half_width;x<=room.half_width;++x) {
                 const Cell cell=room.center+Cell{x,y};
                 Tile* tile=game.stage.at(cell);
-                if (!tile || !shallow_water(tile->kind) || tile->kind==TileKind::IceHole ||
+                if (!tile || !river_water(tile->kind) || tile->kind==TileKind::IceHole ||
                     plan.protected_cell(cell) || tile->current!=0) continue;
                 const Cell flow=turn_cell({0,1},room.turns);
                 if (!walkable(game.stage.at_or_border(cell+flow))) continue;

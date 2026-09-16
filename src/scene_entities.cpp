@@ -113,7 +113,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         const std::size_t slot=entry.slot;
         const Entity& entity = game.entities[slot];
         if (hidden_gnome(entity)) continue;
-        if (entity.max_health>0 && entity.health<=0 && game.stage.at_or_border(entity.cell).kind==TileKind::Chasm) continue;
+        if (entity.max_health>0 && entity.health<=0 && open_drop(game.stage.at_or_border(entity.cell).kind)) continue;
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
         if (entity.kind == EntityKind::EncounterGate) {

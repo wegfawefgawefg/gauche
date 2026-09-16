@@ -6,7 +6,7 @@
 
 bool diver_pool(TileKind kind) {
     return kind == TileKind::Ice || kind == TileKind::IceHole ||
-        kind == TileKind::Water || kind == TileKind::ShallowWater;
+        kind == TileKind::Water || kind == TileKind::DeepRiver || kind == TileKind::ShallowWater;
 }
 
 bool diver_hole_open(const Game& game, Cell cell, int diver_slot) {

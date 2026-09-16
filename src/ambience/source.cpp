@@ -56,7 +56,7 @@ float ambient_source_gain(const AmbientSource& source, const Game& game, Cell li
     case AmbientCue::ReedHiss: case AmbientCue::Frogs: case AmbientCue::UnderIce:
     case AmbientCue::ThawDrip: case AmbientCue::SlushLap: case AmbientCue::Waterwheel:
     case AmbientCue::SubmergedKnock:
-        if (!tile || (tile->kind!=TileKind::Water && !shallow_water(tile->kind))) return 0;
+        if (!tile || (tile->kind!=TileKind::Water && !river_water(tile->kind))) return 0;
         break;
     default: break;
     }

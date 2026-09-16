@@ -9,7 +9,7 @@
 namespace {
 constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
 Cell offset(Cell root,Cell dir,int n) {return root+Cell{dir.x*n,dir.y*n};}
-bool gap(TileKind kind) {return kind==TileKind::Chasm || kind==TileKind::Water || shallow_water(kind);}
+bool gap(TileKind kind) {return kind==TileKind::Chasm || kind==TileKind::Water || river_water(kind);}
 bool fixture(const Game& game,Cell cell) {
     for (const Entity& e:game.entities) if (e.cell==cell &&
         (e.kind==EntityKind::Key || e.kind==EntityKind::Switch || e.kind==EntityKind::Door ||

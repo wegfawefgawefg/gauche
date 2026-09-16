@@ -20,7 +20,7 @@ bool clear_feet(Game& game,Entity& widow) {
         for (Cell offset:{Cell{-widow.facing.x,-widow.facing.y},side,Cell{-side.x,-side.y}}) {
             const Cell cell=widow.cell+offset;
             const Tile& tile=game.stage.at_or_border(cell);
-            if (shallow_water(tile.kind) || tile.kind==TileKind::Water ||
+            if (river_water(tile.kind) || tile.kind==TileKind::Water ||
                 !float_cell_free(game,cell,static_cast<int>(&cargo-game.entities.data()))) continue;
             stop_item_float(game,cargo);cargo.cell=cell;
             emit_sound(game,SoundId::FishingFinish,cell);return true;

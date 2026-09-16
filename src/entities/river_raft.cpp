@@ -11,7 +11,7 @@ Handle handle_of(const Game& game,const Entity& actor) {
 bool afloat(const Game& game,const Entity& raft) {
     const auto& tile=game.stage.at_or_border(raft.cell);
     return raft.kind==EntityKind::RiverRaft && raft.health>0 && !raft.toss.ticks &&
-        shallow_water(tile.kind) && !prop_blocks(tile.prop);
+        river_water(tile.kind) && !prop_blocks(tile.prop);
 }
 void sync_passengers(Game& game,Entity& raft) {
     if (const auto* rider=get_entity(game,raft.entity_a);!rider || ridden_river_raft(game,*rider)!=&raft) raft.entity_a={};
@@ -19,7 +19,7 @@ void sync_passengers(Game& game,Entity& raft) {
 }
 bool landing_free(const Game& game,const Entity& raft,Cell cell) {
     const auto* tile=game.stage.at(cell);
-    if (!tile || !shallow_water(tile->kind) || prop_blocks(tile->prop)) return false;
+    if (!tile || !river_water(tile->kind) || prop_blocks(tile->prop)) return false;
     for (const auto& other:game.entities) {
         if (&other==&raft || other.kind==EntityKind::None || other.cell!=cell) continue;
         if (other.impassable || other.kind==EntityKind::RiverRaft || other.kind==EntityKind::Sled) return false;
@@ -30,7 +30,7 @@ bool landing_free(const Game& game,const Entity& raft,Cell cell) {
 void load_cargo(Game& game,Entity& raft) {
     if (raft.entity_b.slot>=0) return;
     for (auto& cargo:game.entities) {
-        if (cargo.kind!=EntityKind::GroundItem || cargo.cell!=raft.cell || cargo.ground_item.count<=0 || cargo.ground_item.kind==ItemKind::None ||
+        if (cargo.kind!=EntityKind::GroundItem || cargo.toss.ticks || cargo.cell!=raft.cell || cargo.ground_item.count<=0 || cargo.ground_item.kind==ItemKind::None ||
             cargo.ground_item.kind==ItemKind::RiverFish || cargo.ground_item.flight.slot>=0 ||
             sled_cargo(game,cargo) || ridden_river_raft(game,cargo)) continue;
         stop_item_float(game,cargo);cargo.label_a=3;cargo.entity_a=handle_of(game,raft);
@@ -108,6 +108,15 @@ void step_river_raft(Game& game,int slot) {
     if (rider) {rider->cell=next;rider->vitals.slide_momentum=0;enter_actor_cell(game,raft.entity_a.slot);}
     sync_passengers(game,raft);load_cargo(game,raft);
     if ((next.x+next.y)%4==0) emit_sound(game,SoundId::CurrentDrift,next);
+}
+void catch_river_raft(Game& game,int slot) {
+    auto& actor=game.entities[static_cast<std::size_t>(slot)];
+    if (actor.kind==EntityKind::Player) {board_river_raft(game,slot);return;}
+    if (actor.kind!=EntityKind::GroundItem) return;
+    for (auto& raft:game.entities) if (afloat(game,raft) && raft.point_a==raft.cell && raft.cell==actor.cell) {
+        sync_passengers(game,raft);load_cargo(game,raft);
+        if (ridden_river_raft(game,actor)) return;
+    }
 }
 bool valid_river_raft(const Entity& raft) {
     return raft.kind!=EntityKind::RiverRaft || (raft.label_a>=0 && raft.label_a<=1 &&

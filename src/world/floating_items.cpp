@@ -10,13 +10,13 @@ bool floating_item(const Entity& item) {
 }
 
 bool float_water(const Tile& tile) {
-    return shallow_water(tile.kind) || (walkable(tile) && tile.kind != TileKind::Water &&
+    return river_water(tile.kind) || (walkable(tile) && tile.kind != TileKind::Water &&
         water_liquid(tile.surface.liquid) && tile.surface.liquid_ticks > 0);
 }
 
 bool float_cell_free(const Game& game, Cell cell, int cargo_slot) {
     const Tile* tile = game.stage.at(cell);
-    if (tile == nullptr || !walkable(*tile) || tile->kind == TileKind::Lava) return false;
+    if (tile == nullptr || (!walkable(*tile) && tile->kind!=TileKind::DeepRiver) || prop_blocks(tile->prop) || tile->kind == TileKind::Lava) return false;
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& other = game.entities[static_cast<std::size_t>(slot)];
         if (slot != cargo_slot && other.kind != EntityKind::None && other.cell == cell &&
@@ -67,7 +67,7 @@ void step_floating_item(Game& game, int slot) {
     cargo.cell = cargo.point_a = next;
     cargo.timer_a = water_current_beat(game.stage.at_or_border(next),item_float_beat);
     --cargo.counter_a;
-    // BEACH: One dry landing is allowed; deep water and occupied landings are not.
+    // BEACH: One dry landing is allowed; occupied landings are not. Deflated cargo sinks in deep water.
     if (!float_water(game.stage.at_or_border(next)) || cargo.counter_a == 0)
         stop_item_float(game, cargo);
     else if (cargo.counter_a % 3 == 0) emit_sound(game, SoundId::AirPaddle, next);

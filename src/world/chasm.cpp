@@ -2,8 +2,8 @@
 #include "../items/action.hpp"
 #include "../items/sled.hpp"
 #include "../projectiles/projectile.hpp"
+#include "water.hpp"
 
-namespace {
 bool grounded_projectile(const Entity& actor) {
     if (actor.counter_a>0) return false;
     switch (static_cast<ProjectileKind>(actor.label_a)) {
@@ -15,12 +15,13 @@ bool grounded_projectile(const Entity& actor) {
     }
 }
 
-void falling_image(Game& game,int slot) {
+namespace {
+void falling_image(Game& game,int slot,SoundId sound=SoundId::ChasmFall) {
     const Entity& actor=game.entities[static_cast<std::size_t>(slot)];
     if (game.fall_count<static_cast<int>(game.falls.size()))
         game.falls[static_cast<std::size_t>(game.fall_count++)]={
             {slot,actor.generation},actor.cell,actor.kind==EntityKind::GroundItem ? item_sprite(actor.ground_item) : actor.sprite};
-    emit_sound(game,SoundId::ChasmFall,actor.cell);
+    emit_sound(game,sound,actor.cell);
 }
 }
 
@@ -36,22 +37,27 @@ bool gap_flyer(const Entity& actor) {
 }
 
 bool navigable_ground(const Entity& actor,const Tile& tile) {
-    return walkable(tile) || (tile.kind==TileKind::Chasm && !prop_blocks(tile.prop) && gap_flyer(actor));
+    return walkable(tile) || (!prop_blocks(tile.prop) &&
+        ((open_drop(tile.kind) && gap_flyer(actor)) || (tile.kind==TileKind::DeepRiver && river_swimmer(actor))));
 }
 
 // Death over a void loses the body and its cargo. Never create shore loot,
 // toppled survivors, or a machine explosion on the missing floor.
-bool finish_chasm_death(Game& game,int slot) {
+void remove_unsupported_body(Game& game,int slot,SoundId sound) {
     Entity& actor=game.entities[static_cast<std::size_t>(slot)];
-    if (actor.health>0 || game.stage.at_or_border(actor.cell).kind!=TileKind::Chasm) return false;
-    falling_image(game,slot);
+    falling_image(game,slot,sound);
     if (actor.kind==EntityKind::Player) {
         cancel_item_action(actor);clear_sled_links(game,actor);
         actor.toss={};actor.vitals={};actor.impassable=false;
         actor.sprite=Sprite::PlayerDead;actor.spawn_wait=180;
         actor.light={};actor.self_light={};
     } else remove_entity(game,{slot,actor.generation});
-    return true;
+}
+
+bool finish_chasm_death(Game& game,int slot) {
+    const auto& actor=game.entities[static_cast<std::size_t>(slot)];
+    if (actor.health>0 || game.stage.at_or_border(actor.cell).kind!=TileKind::Chasm) return false;
+    remove_unsupported_body(game,slot,SoundId::ChasmFall);return true;
 }
 
 bool chasm_contact(Game& game,int slot) {

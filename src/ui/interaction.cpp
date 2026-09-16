@@ -19,10 +19,22 @@ void reset_if_run_changed(InteractionUi& ui, const Game& game) {
         cancel_offer_flow(ui);
         ui.compare_ground = false;
         ui.offer_focus = 0;
+        ui.card_focus = 0;
         ui.notice.clear();
     }
     ui.last_tick = game.tick;
     ui.last_phase = game.run.phase;
+}
+
+void navigate_offers(InteractionUi& ui, Cell direction, bool shop) {
+    if (ui.offer_focus < 3) ui.card_focus = ui.offer_focus;
+    if (shop && direction.y > 0) ui.offer_focus = 3;
+    else if (shop && direction.y < 0 && ui.offer_focus == 3)
+        ui.offer_focus = ui.card_focus;
+    else if (direction.x != 0) {
+        const int count = shop ? 4 : 3;
+        ui.offer_focus = (ui.offer_focus + count + direction.x) % count;
+    }
 }
 
 int logical_x(const SDL_Event& event, const GubsyFrame& frame) {
@@ -101,22 +113,26 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
     }
     if (!ui.inventory_open && (offering(game, owner) || game.run.phase == RunPhase::Shop)) {
         if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat) {
-            if (event.key.key == SDLK_LEFT) {
-                const int count = game.run.phase == RunPhase::Shop ? 4 : 3;
-                ui.offer_focus = (ui.offer_focus + count - 1) % count; return true;
-            }
-            if (event.key.key == SDLK_RIGHT) {
-                const int count = game.run.phase == RunPhase::Shop ? 4 : 3;
-                ui.offer_focus = (ui.offer_focus + 1) % count; return true;
+            Cell direction{};
+            if (event.key.key == SDLK_LEFT) direction.x = -1;
+            if (event.key.key == SDLK_RIGHT) direction.x = 1;
+            if (event.key.key == SDLK_UP) direction.y = -1;
+            if (event.key.key == SDLK_DOWN) direction.y = 1;
+            if (direction != Cell{}) {
+                navigate_offers(ui,direction,game.run.phase == RunPhase::Shop);
+                return true;
             }
         }
     }
-    if (event.type == SDL_EVENT_MOUSE_MOTION && !ui.inventory_open && frame.window &&
+    if (event.type == SDL_EVENT_MOUSE_MOTION && pointer_device_active() &&
+        !ui.inventory_open && frame.window &&
         (offering(game, owner) || game.run.phase == RunPhase::Shop)) {
         const float x = (static_cast<float>(logical_x(event, frame)) - modal_left) / ui_scale;
         const float y = (static_cast<float>(logical_y(event, frame)) - modal_top) / ui_scale;
         if (x >= 20 && x < 620 && y >= 65 && y <= 306)
             ui.offer_focus = std::clamp(static_cast<int>((x - 20) / 202), 0, 2);
+        if (game.run.phase == RunPhase::Shop && y >= 334 && y <= 356 && x >= 430 && x < 640)
+            navigate_offers(ui,{0,1},true);
         return true;
     }
     if (event.type != SDL_EVENT_MOUSE_BUTTON_DOWN ||
@@ -155,7 +171,7 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
         ui.request_confirm=true;
         return true;
     }
-    if (game.run.phase == RunPhase::Shop && y >= 336 && y <= 356 && x >= 430 && x < 640) {
+    if (game.run.phase == RunPhase::Shop && y >= 334 && y <= 356 && x >= 430 && x < 640) {
         ui.mouse_choice = 3;
         return true;
     }
@@ -210,15 +226,16 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
     ui.pickup_latch = input.pickup;
     input.pickup = pickup;
     const int nav = ui.inventory_open ? input.move.y : input.move.x;
-    if (ui.offer_mode!=OfferMode::Confirm && nav != 0 && nav != ui.move_latch) {
-        if (ui.inventory_open)
+    const bool horizontal_step = nav != 0 && nav != ui.move_latch;
+    const bool vertical_step = input.move.y != 0 && input.move.y != ui.vertical_latch;
+    if (ui.offer_mode!=OfferMode::Confirm) {
+        if (ui.inventory_open && horizontal_step)
             ui.slot_focus = (ui.slot_focus + quick_slots + nav) % quick_slots;
-        else if (offered || shop) {
-            const int count = shop ? 4 : 3;
-            ui.offer_focus = (ui.offer_focus + count + nav) % count;
-        }
+        else if (!ui.inventory_open && (offered || shop))
+            navigate_offers(ui,{horizontal_step ? nav : 0,vertical_step ? input.move.y : 0},shop);
     }
     ui.move_latch = nav;
+    ui.vertical_latch = input.move.y;
     if (ui.offer_focus != ui.previous_offer_focus) {
         ui.previous_offer_focus = ui.offer_focus;
         ui.offer_changed_at = SDL_GetTicks();

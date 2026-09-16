@@ -292,12 +292,15 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         } else reward_card(renderer, graphics, *player, reward_offer(game, owner, index),
                            x, y, 187.0F, index == ui.offer_focus, label.c_str());
     }
-    draw_modal_hint(renderer,25,319,false,"CHOOSE");
+    draw_modal_hint(renderer,25,319,false,shop && ui.offer_focus == 3 ? "CONTINUE" : "CHOOSE");
     draw_action_hint(renderer, 215, 319, Action::Compare, "COMPARE");
     draw_action_hint(renderer, 425, 319, Action::Inventory, "PACK");
-    if (shop)
-        text(renderer, 445.0F, 341.0F, ui.offer_focus == 3 ?
-             "> CONTINUE" : "CONTINUE >", 218, 198, 152);
+    if (shop) {
+        const bool selected = ui.offer_focus == 3;
+        frame(renderer,430,334,200,22,selected);
+        if (selected) draw_modal_hint(renderer,445,341,false,"CONTINUE");
+        else draw_action_hint(renderer,445,341,Action::MoveDown,"CONTINUE");
+    }
     if (!ui.notice.empty())
         text(renderer, 25.0F, 342.0F, ui.notice, 231, 111, 87);
 }

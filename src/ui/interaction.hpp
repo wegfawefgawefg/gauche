@@ -17,8 +17,10 @@ struct InteractionUi {
     bool confirm_latch = false;
     bool pickup_latch = false;
     int move_latch = 0;
+    int vertical_latch = 0;
     int slot_focus = 0;
     int offer_focus = 0;
+    int card_focus = 0;
     int previous_offer_focus = -1;
     std::uint64_t offer_changed_at = 0;
     int mouse_choice = -1;

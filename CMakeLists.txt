@@ -77,7 +77,7 @@ set(GAUCHE_CODEC_SOURCES
 
 set(GAUCHE_ENTITY_SOURCES
     src/props/industrial.cpp
-    src/entities/strikebreaker.cpp src/entities/breaker_render.cpp
+    src/entities/strikebreaker.cpp src/entities/breaker_render.cpp src/entities/gunner_render.cpp
     src/entities/rivet_gunner.cpp
     src/world/rivet_post.cpp
     src/world/assembly.cpp
@@ -140,7 +140,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/props/light_tower.cpp src/props/light_tower_render.cpp src/world/light_towers.cpp
     src/props/tall_tree.cpp src/props/tall_tree_render.cpp src/world/tall_trees.cpp
     src/props/ice_pillar.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp
-    src/entities/brawler.cpp src/world/brawlers.cpp
+    src/entities/brawler.cpp src/world/brawlers.cpp src/world/ranged_groups.cpp
     src/world/chasm.cpp src/world/chasm_render.cpp src/world/chasm_generation.cpp
     src/entities/yeti.cpp
     src/combat/toss.cpp

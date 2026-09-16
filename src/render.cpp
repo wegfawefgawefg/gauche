@@ -1,4 +1,5 @@
 #include "world/fissure_render.hpp"
+#include "entities/gunner_render.hpp"
 #include "world/lava_eruption_render.hpp"
 #include "entities/boiler_feed_render.hpp"
 #include "scenery/roof_render.hpp"
@@ -263,6 +264,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                        camera, zoom, &lighting, &game.stage);
     draw_owl_landing(renderer, graphics, game, camera, zoom, lighting);
     draw_shard_links(renderer,game,camera,zoom,lighting);
+    draw_gunner_aim(renderer,game,camera,zoom,lighting);
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,true);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,true);

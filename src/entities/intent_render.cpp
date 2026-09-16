@@ -30,7 +30,9 @@ void draw_enemy_intents(SDL_Renderer* renderer, const Game& game,
         if (std::max({seen.red, seen.green, seen.blue}) < .10F) continue;
         for (int i = 0; i < attack.count; ++i) {
             const Cell cell = attack.cells[static_cast<std::size_t>(i)];
-            if (!optical && !water && !clear_sight(game, enemy.cell, cell)) continue;
+            // Smoke can prevent acquisition, but cannot cancel a committed burst.
+            if (!optical && !water && !clear_sight(game, enemy.cell, cell,
+                enemy.kind!=EntityKind::RivetGunner)) continue;
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             if (rect.x < -rect.w || rect.y < -rect.h || rect.x > 640 || rect.y > 360) continue;
             const LightColor brightness = lit_sprite_color(lighting, cell);

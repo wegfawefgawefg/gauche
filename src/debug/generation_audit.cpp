@@ -26,6 +26,7 @@ int run_generation_audit() {
     for (int biome=1;biome<=2;++biome) {
         PopulationReport totals;
         int shelf_floors=0,shelf_rewards=0,thaw_channels=0,work_halls=0,excavations=0,industrial_links=0,belt_cells=0;
+        int ranged_groups=0,new_gunners=0;
         std::array<int,static_cast<std::size_t>(EntityKind::Count)> bodies{};
         std::array<int,static_cast<std::size_t>(ItemKind::Count)> items{};
         for (int seed=1;seed<=64;++seed) {
@@ -42,6 +43,8 @@ int run_generation_audit() {
                     biome,seed,game->run.floor,error.c_str());return 1;
             }
             work_halls+=report.industry_profile==1;excavations+=report.industry_profile==2;
+            ranged_groups+=static_cast<int>(report.ranged_groups.size());
+            for (const auto& group:report.ranged_groups) new_gunners+=group.added_gunner;
             industrial_links+=static_cast<int>(report.industrial_links.size());
             for (const auto& link:report.industrial_links) belt_cells+=static_cast<int>(link.belt.size())-1;
             thaw_channels+=static_cast<int>(report.thaw_channels.size());
@@ -65,6 +68,8 @@ int run_generation_audit() {
         for (std::size_t i=1;i<role_counts.size();++i)
             row(biome,"loot_role",item_role_name(static_cast<ItemRole>(i)),{},0,0,role_counts[i]);
         row(biome,"geometry","work_hall_floors",{},0,0,work_halls);
+        row(biome,"combat","mixed_ranged_groups",{},0,0,ranged_groups);
+        row(biome,"combat","new_group_gunners",{},0,0,new_gunners);
         row(biome,"geometry","excavation_floors",{},0,0,excavations);
         row(biome,"geometry","industrial_links",{},0,0,industrial_links);
         row(biome,"geometry","linked_belt_cells",{},0,0,belt_cells);

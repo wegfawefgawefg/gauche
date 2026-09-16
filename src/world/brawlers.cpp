@@ -1,4 +1,5 @@
 #include "brawlers.hpp"
+#include "ranged_groups.hpp"
 #include "../entities/attacks.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -39,6 +40,7 @@ void place_brawlers(Game& game,const FloorPlan& plan,RoomSupplies& budget) {
     for (std::size_t i=0;i<plan.rooms.size();++i)
         if (combat_room(plan.rooms[i].role)) rooms.push_back(i);
     for (std::size_t i=rooms.size();i>1;--i) std::swap(rooms[i-1],rooms[random_u32(game)%i]);
+    place_ranged_group(game,plan,rooms,budget);
     // Specialists and installations get their spaces first. Quiet refuges remain
     // quiet; roomy encounters may gain a pair, or a late-biome trio, not a lone
     // fighter stamped into every room. Failed placements do not spend the budget.

@@ -6,6 +6,25 @@
 #include <algorithm>
 
 void observe_gunfire(Cosmetics& cosmetics, const Game& game, Cell focus) {
+    // Pneumatic shots vent at the actual launch, including the last round before
+    // reload. Damage flashes cannot fake this; snapshots of older bolts cannot
+    // replay it. Use the same local event dedupe as other gunfire.
+    for (std::size_t slot=0;slot<game.entities.size();++slot) {
+        const Entity& bolt=game.entities[slot];
+        if (bolt.kind!=EntityKind::Projectile || bolt.ground_item.kind!=ItemKind::RivetGun ||
+            bolt.birth_tick!=game.tick || bolt.cell!=bolt.point_a || distance(bolt.cell,focus)>24) continue;
+        const auto key=(1ULL<<61)|(game.tick<<16)|(static_cast<std::uint64_t>(slot)+1);
+        if (std::find(cosmetics.seen_events.begin(),cosmetics.seen_events.end(),key)!=cosmetics.seen_events.end()) continue;
+        cosmetics.seen_events[cosmetics.next_event++%cosmetics.seen_events.size()]=key;
+        SpriteParticle puff;
+        puff.sprite=Sprite::SteamPuff;puff.layer=ParticleLayer::Foreground;puff.motion=ParticleMotion::Drift;
+        puff.x=static_cast<float>(bolt.cell.x)+.5F+static_cast<float>(bolt.facing.x)*.65F;
+        puff.y=static_cast<float>(bolt.cell.y)+.5F+static_cast<float>(bolt.facing.y)*.65F;
+        puff.vx=static_cast<float>(bolt.facing.x)*.035F;
+        puff.vy=static_cast<float>(bolt.facing.y)*.035F;
+        puff.width=puff.height=.4F;puff.alpha=.65F;puff.life=puff.span=6;
+        if (cosmetics.sprites.size()<2048) cosmetics.sprites.push_back(puff);
+    }
     // SHOTS: Cosmetic events replay with simulation, but fragments emit once locally.
     for (int index = 0; index < game.shot_count; ++index) {
         const auto key = (1ULL << 62) | (game.tick << 8) | (static_cast<std::uint64_t>(index) + 1);

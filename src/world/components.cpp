@@ -13,7 +13,7 @@ ComponentRoll roll_component(Game& game,GenerationReport* report,GenerationFeatu
     }
     if (!selected) return {};
     ComponentRoll result{selected->value,-1};
-    if (report && report->components.size()<256) {
+    if (report && report->components.size()<generation_component_limit) {
         result.record=static_cast<int>(report->components.size());
         ComponentDecision decision;
         decision.feature=feature;decision.parent=parent;decision.slot=slot;decision.anchor=anchor;

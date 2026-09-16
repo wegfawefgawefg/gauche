@@ -9,6 +9,17 @@ bool shallow_water(TileKind kind) {
     return kind == TileKind::ShallowWater || kind == TileKind::Spring || kind == TileKind::IceHole;
 }
 
+bool supports_wall_spring(const Stage& stage,Cell cell) {
+    // Later carving may open the surrounding sector, but the source needs a wall face.
+    if(stage.at_or_border(cell).kind!=TileKind::Wall)return false;
+    constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
+    for(unsigned i=0;i<4;++i) {
+        const auto& tile=stage.at_or_border(cell+directions[i]);
+        if(tile.kind==TileKind::Spring && tile.current==i+1)return true;
+    }
+    return false;
+}
+
 bool wading_actor(const Entity& actor) {
     if (actor.toss.ticks>0 || actor.move_interval <= 0 || actor.health <= 0 || diver_submerged(actor)) return false;
     switch (actor.kind) {

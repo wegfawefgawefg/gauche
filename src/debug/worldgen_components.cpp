@@ -46,5 +46,5 @@ void draw_component_decisions(const GenerationReport& report,GenerationFeature f
     if (!ImGui::CollapsingHeader("Child component rolls",ImGuiTreeNodeFlags_DefaultOpen)) return;
     ImGui::TextWrapped("Weights belong to each displayed choice pool, not to unconditional floor chances. Empty slots and failed placements are retained.");
     component_tree(report,feature,-1,inspection,0);
-    if (report.components_truncated) ImGui::TextWrapped("Component trace reached its 256-entry cap; generation continued normally.");
+    if (report.components_truncated) ImGui::TextWrapped("Component trace reached its %zu-entry cap; generation continued normally.",generation_component_limit);
 }

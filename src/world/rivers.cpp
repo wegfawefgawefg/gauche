@@ -5,6 +5,7 @@
 #include "routed_path.hpp"
 #include "raster.hpp"
 #include "growth_carving.hpp"
+#include "water.hpp"
 #include "../scenery/roof.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -15,7 +16,7 @@ bool eligible(const Game& game,const FloorPlan& plan,Cell cell) {
     const auto* t=game.stage.at(cell);
     if (!t || cell.x<1 || cell.y<1 || cell.x>=plan.width-1 || cell.y>=plan.height-1 ||
         t->contents!=ItemKind::None || t->prop.kind!=PropKind::None || t->material==TileMaterial::Root) return false;
-    if (t->kind==TileKind::Wall && t->break_rule==BreakRule::Unbreakable) return false;
+    if (t->kind==TileKind::Wall && (t->break_rule==BreakRule::Unbreakable || supports_wall_spring(game.stage,cell))) return false;
     if (t->kind!=TileKind::Wall && t->kind!=TileKind::Grass && t->kind!=TileKind::Empty && t->kind!=TileKind::Ruin &&
         t->kind!=TileKind::ShallowWater && t->kind!=TileKind::Spring) return false;
     for (int index:{0,plan.exit_room,plan.objective_room,plan.secret_room}) {

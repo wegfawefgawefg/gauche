@@ -4,6 +4,7 @@
 #include "components.hpp"
 #include "raster.hpp"
 #include "growth_carving.hpp"
+#include "water.hpp"
 #include "population_report.hpp"
 #include "../props/interaction.hpp"
 #include <algorithm>
@@ -49,7 +50,7 @@ void carve_open_sectors(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             auto* tile=game.stage.at(cell);
             if (!tile || cell.x<=0 || cell.y<=0 || cell.x>=plan.width-1 || cell.y>=plan.height-1 ||
                 tile->kind!=TileKind::Wall || tile->break_rule==BreakRule::Unbreakable ||
-                tile->material==TileMaterial::Root || tile->contents!=ItemKind::None || tile->prop.kind!=PropKind::None) continue;
+                tile->material==TileMaterial::Root || tile->contents!=ItemKind::None || tile->prop.kind!=PropKind::None || supports_wall_spring(game.stage,cell)) continue;
             saved.push_back({cell,*tile});*tile={TileKind::Grass};sector.ground.push_back(cell);
         }
         const bool valid=sector.ground.size()>=32 && generation_lock_intact(game,plan);

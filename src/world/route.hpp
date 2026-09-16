@@ -69,10 +69,13 @@ struct GiantTree {
     std::vector<Cell> entrances,ground;
     std::vector<RoofSpan> passages;
 };
+struct TimberGlade { Cell center{}; int component=-1; std::vector<Cell> ground; };
 struct TimberGrove {
     std::array<int,4> rooms{};
     Cell center{},entry{},cache{},spring{};
-    int turns=0,offset=0;
+    int turns=0,shape=0,component=-1;
+    std::array<std::uint8_t,41*41> footprint{};
+    std::vector<TimberGlade> glades;
     std::vector<Cell> ground,firebreaks,trees;
 };
 struct SpiderGrowth { std::vector<Cell> ground; int component=-1,opened=0; };

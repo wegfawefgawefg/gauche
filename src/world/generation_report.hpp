@@ -17,6 +17,7 @@ struct FeatureDecision {
     std::vector<GenerationRegion> regions;
 };
 struct ComponentOption { int value=0; std::string name; unsigned weight=0; };
+inline constexpr std::size_t generation_component_limit=512;
 struct ComponentDecision {
     GenerationFeature feature{};
     int parent=-1;

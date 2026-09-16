@@ -1,167 +1,156 @@
 #include "timber_grove.hpp"
-#include "landmark_supplies.hpp"
+#include "components.hpp"
+#include "generation_trace.hpp"
 #include "feature_roll.hpp"
 #include "four_room_block.hpp"
+#include "growth_carving.hpp"
 #include "room_frame.hpp"
+#include "raster.hpp"
 #include "terrain_material.hpp"
-#include "../props/interaction.hpp"
 #include <algorithm>
 #include <cstdlib>
 
 namespace {
+constexpr auto feature=GenerationFeature::TimberGrove;
 Cell at(const TimberGrove& grove,Cell local) {return grove.center+turn_cell(local,grove.turns);}
-void shuffle(Game& game,std::vector<Cell>& cells) {
-    for (std::size_t i=cells.size();i>1;--i) std::swap(cells[i-1],cells[random_u32(game)%i]);
+bool within(const TimberGrove& grove,Cell cell) {
+    const Cell d=cell-grove.center;
+    return std::abs(d.x)<=20 && std::abs(d.y)<=20 && grove.footprint[static_cast<std::size_t>((d.y+20)*41+d.x+20)]!=0;
 }
-bool vacant(const Game& game,Cell cell) {
-    const auto* tile=game.stage.at(cell);
-    return tile && walkable(*tile) && tile->prop.kind==PropKind::None && entity_at(game,cell,false)<0;
-}
-void clear_cell(Game& game,Cell cell,TileKind kind) {if (auto* tile=game.stage.at(cell)) *tile={kind};}
-bool near_break(const TimberGrove& grove,Cell cell,int radius) {
-    for (Cell old:grove.firebreaks) if (distance(old,cell)<=radius) return true;
-    return false;
-}
-void trails(Game& game,const FloorPlan& plan,TimberGrove& grove) {
-    for (int y=-21;y<=21;++y) for (int x=-21;x<=21;++x) {
-        const Cell cell=at(grove,{x,y});
-        // A winding three-cell mineral strip splits the fuel beds. Route sockets
-        // also stay bare, but their existing geometry still determines the paths.
-        const int bend=grove.offset+x/6;
-        const bool crossing=std::abs(y-bend)<=1;
-        if (!crossing && !plan.protected_cell(cell)) continue;
-        clear_cell(game,cell,TileKind::Ruin);grove.firebreaks.push_back(cell);
-    }
-    grove.entry=at(grove,{-20,grove.offset-3});
-    grove.cache=at(grove,{17,grove.offset+2});
-    // The approach's three-cell clearing holds tools; the far end holds a cache.
-    for (Cell anchor:{grove.entry,grove.cache}) for (int y=-1;y<=1;++y) for (int x=-1;x<=1;++x) {
-        const Cell cell=anchor+Cell{x,y};clear_cell(game,cell,TileKind::Ruin);grove.firebreaks.push_back(cell);
-    }
-}
-void wet_refuge(Game& game,const FloorPlan& plan,TimberGrove& grove) {
-    // A spring on either bank feeds a short shallow pool. It can quench actors
-    // or refill their flask; it never takes over an existing required route.
-    for (int sign:{1,-1}) {
-        const Cell source=at(grove,{-18,sign*(11+static_cast<int>(random_u32(game)%4))});
-        const Cell flow=turn_cell({1,0},grove.turns),side{-flow.y,flow.x};
-        bool clear=true;
-        for (int i=0;i<5;++i) for (int j=-2;j<=2;++j)
-            if (plan.protected_cell(source+Cell{flow.x*i+side.x*j,flow.y*i+side.y*j})) clear=false;
-        if (!clear) continue;
-        grove.spring=source;
-        for (int i=0;i<5;++i) for (int j=-2;j<=2;++j) {
-            if ((i==0 || i==4) && std::abs(j)>1) continue;
-            const Cell cell=source+Cell{flow.x*i+side.x*j,flow.y*i+side.y*j};
-            clear_cell(game,cell,TileKind::ShallowWater);
-            game.stage.at(cell)->current=static_cast<std::uint8_t>(grove.turns+1);
-            grove.firebreaks.push_back(cell);
+void connect(Game& game,FloorPlan& plan,TimberGrove& grove,Cell a,Cell b,bool main,GenerationTrace* trace) {
+    const WeightedComponent widths[]{{0,"Fuel trail",main ? 0U : 10U},{1,"Narrow mineral break",main ? 5U : 3U},{2,"Broad mineral break",main ? 3U : 1U}};
+    const auto roll=roll_component(game,&plan.report,feature,grove.component,main ? "Main firebreak" : "Glade connection",a,widths);
+    const GenerationStep step{trace,game,plan,"Grove trail",feature,roll.record};
+    const Cell bend{(a.x+b.x)/2+static_cast<int>(random_u32(game)%9)-4,(a.y+b.y)/2+static_cast<int>(random_u32(game)%9)-4};
+    if(roll.record>=0)plan.report.components[static_cast<std::size_t>(roll.record)].guide={a,bend,b};
+    std::vector<Cell> changed;
+    const auto carve=[&](Cell from,Cell to) {
+        for(Cell cell:raster_line(from,to,std::max(1,roll.value),plan.width,plan.height).cells) {
+            if(!within(grove,cell))continue;
+            auto& tile=*game.stage.at(cell);
+            // Fuel trails may join mineral breaks, but never paint fuel over one.
+            if(tile.kind==TileKind::Ruin && !roll.value)continue;
+            tile={roll.value ? TileKind::Ruin : TileKind::Grass};changed.push_back(cell);
         }
-        clear_cell(game,source,TileKind::Spring);
-        game.stage.at(source)->current=static_cast<std::uint8_t>(grove.turns+1);
-        break;
-    }
+    };
+    carve(a,bend);carve(bend,b);
+    component_result(&plan.report,roll,roll.value ? "Bare mineral trail connects glades" : "Burnable ground connects glades",changed);
 }
-void fuel_beds(Game& game,TimberGrove& grove) {
-    std::vector<Cell> candidates;
-    for (int y=-20;y<=20;++y) for (int x=-20;x<=20;++x) {
-        const Cell cell=at(grove,{x,y});
-        if (walkable(game.stage.at_or_border(cell)) && !near_break(grove,cell,0)) candidates.push_back(cell);
+void glade(Game& game,FloorPlan& plan,TimberGrove& grove,Cell anchor,GenerationTrace* trace) {
+    const WeightedComponent forms[]{{0,"Broad opening",grove.shape==0 ? 6U : 2U},{1,"Narrow reach",grove.shape==2 ? 7U : 2U},{2,"Small clearing",grove.shape==1 ? 6U : 2U}};
+    const auto roll=roll_component(game,&plan.report,feature,grove.component,"Grove glade",anchor,forms);
+    const GenerationStep step{trace,game,plan,"Grove glade",feature,roll.record};
+    const int rx=roll.value==0 ? 9+static_cast<int>(random_u32(game)%5) : roll.value==1 ? 11+static_cast<int>(random_u32(game)%4) : 5+static_cast<int>(random_u32(game)%4);
+    const int ry=roll.value==0 ? 8+static_cast<int>(random_u32(game)%5) : roll.value==1 ? 5+static_cast<int>(random_u32(game)%3) : 5+static_cast<int>(random_u32(game)%3);
+    const int turns=static_cast<int>(random_u32(game)%4),bite=static_cast<int>(random_u32(game)%4);
+    std::array polygon{Cell{-rx,0},Cell{-rx/2,-ry},Cell{rx/2,-ry+bite},Cell{rx,1},Cell{rx/2,ry},Cell{-rx/2,ry-bite}};
+    for(auto& p:polygon)p=anchor+turn_cell(p,turns);
+    if(roll.record>=0){auto& row=plan.report.components[static_cast<std::size_t>(roll.record)];row.guide.assign(polygon.begin(),polygon.end());row.guide_closed=true;}
+    TimberGlade clearing;clearing.center=anchor;clearing.component=roll.record;
+    for(Cell cell:raster_polygon(polygon,plan.width,plan.height).cells)if(within(grove,cell)) {
+        if(!plan.protected_cell(cell))*game.stage.at(cell)={TileKind::Grass};
+        clearing.ground.push_back(cell);
     }
-    shuffle(game,candidates);
-    const int wanted=18+static_cast<int>(random_u32(game)%13);
-    for (Cell cell:candidates) {
-        if (static_cast<int>(grove.trees.size())>=wanted) break;
-        if (!vacant(game,cell) || near_break(grove,cell,4)) continue;
-        bool spaced=true;for (Cell old:grove.trees) if (distance(old,cell)<4) spaced=false;
-        if (!spaced) continue;
-        // Falling in any direction stays away from the guaranteed bare routes.
-        place_prop(game.stage,cell,PropKind::TallTree,static_cast<std::uint8_t>(random_u32(game)%4));
-        grove.trees.push_back(cell);
-    }
-    struct Brush {Cell center;int radius;PropKind kind;};
-    std::vector<Brush> patches;
-    const int patch_count=10+static_cast<int>(random_u32(game)%7);
-    for (int i=0;i<patch_count && !candidates.empty();++i) {
-        const unsigned roll=random_u32(game)%10;
-        patches.push_back({candidates[random_u32(game)%candidates.size()],3+static_cast<int>(random_u32(game)%4),
-            roll<5 ? PropKind::TallGrass : roll<9 ? PropKind::Fern : PropKind::Puffball});
-    }
-    for (Cell cell:candidates) {
-        if (!vacant(game,cell)) continue;
-        // The adjoining fuel is mostly low litter. Separate child patches grow
-        // taller plants with fuzzy edges, rather than repeating a grid of bushes.
-        if (random_u32(game)%100>=84) continue;
-        PropKind kind=random_u32(game)%4 ? PropKind::Leaves : PropKind::Twigs;
-        for (const auto& patch:patches) {
-            const Cell delta=cell-patch.center;const int squared=delta.x*delta.x+delta.y*delta.y;
-            if (squared<patch.radius*patch.radius && random_u32(game)%100<70) kind=patch.kind;
+    component_result(&plan.report,roll,"Irregular opening cut through timber",clearing.ground);
+    grove.glades.push_back(std::move(clearing));
+}
+void spring(Game& game,FloorPlan& plan,TimberGrove& grove,GenerationTrace* trace) {
+    const WeightedComponent choices[]{{0,"Dry grove",2},{4,"Short wall spring",4},{7,"Long wall spring",3}};
+    const auto roll=roll_component(game,&plan.report,feature,grove.component,"Grove spring",grove.center,choices);
+    const GenerationStep step{trace,game,plan,"Grove spring",feature,roll.record};
+    if(!roll.value){component_result(&plan.report,roll,"No added spring");return;}
+    struct Source {Cell cell,flow;int direction;};std::vector<Source> sources;
+    constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
+    for(int y=-18;y<=18;++y)for(int x=-18;x<=18;++x)for(int d=0;d<4;++d) {
+        const Cell cell=grove.center+Cell{x,y},flow=directions[d],side{-flow.y,flow.x};
+        if(game.stage.at_or_border(cell-flow).kind!=TileKind::Wall)continue;
+        bool safe=true;
+        for(int i=0;i<roll.value;++i)for(int j=-1;j<=1;++j) {
+            const Cell c=cell+Cell{flow.x*i+side.x*j,flow.y*i+side.y*j};
+            if(!within(grove,c) || plan.protected_cell(c) || game.stage.at_or_border(c).kind!=TileKind::Grass)safe=false;
         }
-        place_prop(game.stage,cell,kind,static_cast<std::uint8_t>(random_u32(game)%3));
+        if(safe)sources.push_back({cell,flow,d+1});
     }
-    // Later ordinary scatter cannot erase the fuel breaks or spend this habitat's
-    // population budget. Its own actors are placed in the surviving clear lanes.
-    for (int y=-21;y<=21;++y) for (int x=-21;x<=21;++x) {
-        const Cell cell=at(grove,{x,y});
-        if (walkable(game.stage.at_or_border(cell))) grove.ground.push_back(cell);
+    if(sources.empty()){component_result(&plan.report,roll,"No wall-backed pool fits off the bare routes");return;}
+    const auto source=sources[random_u32(game)%sources.size()];const Cell side{-source.flow.y,source.flow.x};std::vector<Cell> placed;
+    for(int i=0;i<roll.value;++i)for(int j=-1;j<=1;++j) {
+        if((i==0 || i==roll.value-1) && j)continue;
+        const Cell cell=source.cell+Cell{source.flow.x*i+side.x*j,source.flow.y*i+side.y*j};
+        auto& tile=*game.stage.at(cell);tile={cell==source.cell ? TileKind::Spring : TileKind::ShallowWater};tile.current=static_cast<std::uint8_t>(source.direction);placed.push_back(cell);
     }
+    grove.spring=source.cell;component_result(&plan.report,roll,"Wall-backed source feeds a real shallow refuge",placed);
 }
 }
 
 void plan_timber_grove(Game& game,FloorPlan& plan) {
-    if (!roll_generation_feature(game,plan,GenerationFeature::TimberGrove)) return;
+    if(!roll_generation_feature(game,plan,feature))return;
     TimberGrove grove;
     const auto center=reserve_four_rooms(game,plan,grove.rooms,&plan.report.features.back().candidate_count);
-    if (!center) { feature_failed(plan,"No eligible four-room block; objectives and earlier habitats are excluded"); return; }
+    if(!center){feature_failed(plan,"No eligible four-room block; objectives and earlier habitats are excluded");return;}
     grove.center=*center;grove.turns=static_cast<int>(random_u32(game)%4);
-    grove.offset=static_cast<int>(random_u32(game)%7)-3;
-    plan.timber_groves.push_back(grove);
-    feature_reserved(plan,grove.rooms,"Rotation "+std::to_string(grove.turns)+" / offset "+std::to_string(grove.offset));
+    const WeightedComponent forms[]{{0,"Overlapping woodland",4},{1,"Linked glades",4},{2,"Wooded ridges",3}};
+    const auto shape=roll_component(game,&plan.report,feature,-1,"Grove structure",grove.center,forms);
+    grove.shape=shape.value;grove.component=shape.record;plan.timber_groves.push_back(grove);
+    feature_reserved(plan,grove.rooms,forms[grove.shape].name);
 }
 
-void carve_timber_grove(Game& game,FloorPlan& plan) {
-    for (auto& grove:plan.timber_groves) {
-        // Four independently sized lobes merge across former separating walls.
-        // Uncarved margins stay wood, adding fuel and optional axe shortcuts.
-        for (int y=-20;y<=20;++y) for (int x=-20;x<=20;++x) {
-            const Cell cell=at(grove,{x,y});
-            if (!plan.protected_cell(cell)) *game.stage.at(cell)=wood_tile(TileMaterial::Tree);
+void carve_timber_grove(Game& game,FloorPlan& plan,GenerationTrace* trace) {
+    for(auto& grove:plan.timber_groves) {
+        // Preserve existing route sockets. Everything between them is recomposed.
+        const auto saved=game.stage.tiles;
+        const auto edge=[&](){return 17+static_cast<int>(random_u32(game)%4);};
+        std::array outline{Cell{-edge(),-7},Cell{-edge(),-edge()},Cell{-5,-edge()},Cell{7,-edge()},Cell{edge(),-edge()},Cell{edge(),-5},
+            Cell{edge(),7},Cell{edge(),edge()},Cell{5,edge()},Cell{-7,edge()},Cell{-edge(),edge()},Cell{-edge(),5}};
+        // Recess alternating corners so timber doesn't end at a rectangular stamp.
+        for(int i:{1,4,7,10}) {auto& cell=outline[static_cast<std::size_t>(i)];cell.x=cell.x*3/4;cell.y=cell.y*3/4;}
+        for(auto& cell:outline)cell=at(grove,cell);
+        if(grove.component>=0){auto& row=plan.report.components[static_cast<std::size_t>(grove.component)];row.guide.assign(outline.begin(),outline.end());row.guide_closed=true;}
+        for(Cell cell:raster_polygon(outline,plan.width,plan.height).cells) {
+            const Cell local=cell-grove.center;
+            if(std::abs(local.x)<=20 && std::abs(local.y)<=20)grove.footprint[static_cast<std::size_t>((local.y+20)*41+local.x+20)]=1;
         }
-        for (Cell corner:{Cell{-10,-10},Cell{10,-10},Cell{-10,10},Cell{10,10}}) {
-            const int rx=12+static_cast<int>(random_u32(game)%3),ry=12+static_cast<int>(random_u32(game)%3);
-            for (int y=-ry;y<=ry;++y) for (int x=-rx;x<=rx;++x) {
-                const Cell local=corner+Cell{x,y};
-                if (std::abs(local.x)>20 || std::abs(local.y)>20 || x*x*ry*ry+y*y*rx*rx>rx*rx*ry*ry) continue;
-                clear_cell(game,at(grove,local),TileKind::Grass);
+        for(int y=-20;y<=20;++y)for(int x=-20;x<=20;++x) {
+            const Cell cell=grove.center+Cell{x,y};
+            if(within(grove,cell) && !plan.protected_cell(cell))*game.stage.at(cell)=wood_tile(TileMaterial::Tree);
+        }
+        grove.entry=at(grove,{-16,static_cast<int>(random_u32(game)%13)-6});
+        grove.cache=at(grove,{15,static_cast<int>(random_u32(game)%13)-6});
+        const int count=(grove.shape==1 ? 8 : 5)+static_cast<int>(random_u32(game)%4);
+        std::vector<Cell> anchors;
+        for(int attempt=0;attempt<100 && static_cast<int>(anchors.size())<count;++attempt) {
+            const Cell cell=grove.center+Cell{static_cast<int>(random_u32(game)%31)-15,static_cast<int>(random_u32(game)%31)-15};
+            if(!within(grove,cell))continue;
+            if(std::any_of(anchors.begin(),anchors.end(),[&](Cell old){return distance(cell,old)<7;}))continue;
+            anchors.push_back(cell);glade(game,plan,grove,cell,trace);
+        }
+        connect(game,plan,grove,grove.entry,grove.cache,true,trace);
+        // Each opening joins the nearest earlier opening or the main trail.
+        std::vector<Cell> joined{grove.entry,grove.cache};
+        for(Cell cell:anchors) {
+            const Cell other=*std::min_element(joined.begin(),joined.end(),[&](Cell a,Cell b){return distance(cell,a)<distance(cell,b);});
+            connect(game,plan,grove,cell,other,false,trace);joined.push_back(cell);
+        }
+        for(int y=-20;y<=20;++y)for(int x=-20;x<=20;++x) {
+            const Cell cell=grove.center+Cell{x,y};if(within(grove,cell) && plan.protected_cell(cell))*game.stage.at(cell)={TileKind::Ruin};
+        }
+        if(!generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
+            game.stage.tiles=saved;grove.glades.clear();grove.entry=grove.cache=grove.center;
+            component_result(&plan.report,{grove.shape,grove.component},"Geometry rolled back: required route or exit lock changed");
+            for(auto& decision:plan.report.features)if(decision.feature==feature) {
+                decision.outcome=GenerationOutcome::Failed;decision.reason="Grove carving rolled back; original room geometry retained";
             }
+            for(int room:grove.rooms)plan.rooms[static_cast<std::size_t>(room)].landmark=false;
+            continue;
+        } else component_result(&plan.report,{grove.shape,grove.component},"Connected irregular glades; child trails and fuel vary independently",anchors);
+        spring(game,plan,grove,trace);
+        for(int y=-20;y<=20;++y)for(int x=-20;x<=20;++x) {
+            const Cell cell=grove.center+Cell{x,y};const auto& tile=game.stage.at_or_border(cell);
+            if(within(grove,cell) && walkable(tile))grove.ground.push_back(cell);
+            if(tile.kind==TileKind::Ruin || tile.kind==TileKind::Spring || tile.kind==TileKind::ShallowWater)grove.firebreaks.push_back(cell);
         }
-        trails(game,plan,grove);wet_refuge(game,plan,grove);fuel_beds(game,grove);
-        for (int y=-21;y<=21;++y) for (int x=-21;x<=21;++x) {
-            const Cell cell=at(grove,{x,y});
-            plan.protected_cells[static_cast<std::size_t>(cell.y*plan.width+cell.x)]=1;
+        dress_timber_grove(game,plan,grove,trace);
+        for(int y=-21;y<=21;++y)for(int x=-21;x<=21;++x) {
+            const Cell cell=grove.center+Cell{x,y};plan.protected_cells[static_cast<std::size_t>(cell.y*plan.width+cell.x)]=1;
         }
-    }
-}
-
-void populate_timber_grove(Game& game,const FloorPlan& plan,GenerationReport* report) {
-    for (const auto& grove:plan.timber_groves) {
-        auto ground=grove.ground;shuffle(game,ground);std::vector<Cell> occupied;
-        const int wanted=12+static_cast<int>(random_u32(game)%9);
-        for (Cell cell:ground) {
-            if (static_cast<int>(occupied.size())>=wanted) break;
-            if (distance(cell,grove.entry)<7 || distance(cell,grove.cache)<3 || entity_at(game,cell,false)>=0) continue;
-            auto& tile=*game.stage.at(cell);
-            if (!walkable(tile) || tile.kind!=TileKind::Grass) continue;
-            bool spaced=true;for (Cell old:occupied) if (distance(old,cell)<4) spaced=false;
-            if (!spaced) continue;
-            tile.prop={};
-            const unsigned roll=random_u32(game)%8;
-            spawn_entity(game,roll<3 ? EntityKind::ForagerGoblin : roll<5 ? EntityKind::BrambleGuard :
-                roll==5 ? EntityKind::RootTurret : roll==6 ? EntityKind::Woodpecker : EntityKind::Wolf,cell);
-            occupied.push_back(cell);
-        }
-        compose_landmark_supplies(game,report,GenerationFeature::TimberGrove,grove.ground,grove.cache);
-        for (Cell cell:{grove.entry,grove.cache}) if (game.run.roof_light_count<static_cast<int>(game.run.roof_lights.size()))
-            game.run.roof_lights[static_cast<std::size_t>(game.run.roof_light_count++)]={cell,{12,1500,{211,194,136}}};
     }
 }

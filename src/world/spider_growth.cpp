@@ -2,6 +2,7 @@
 #include "generation_trace.hpp"
 #include "growth_paths.hpp"
 #include "growth_carving.hpp"
+#include "water.hpp"
 #include "raster.hpp"
 #include "components.hpp"
 #include "../props/interaction.hpp"
@@ -19,7 +20,7 @@ bool allowed(const Game& game,const FloorPlan& plan,Cell cell) {
     }
     if (distance(cell,plan.door)<4 || tile->contents!=ItemKind::None || prop_blocks(tile->prop)) return false;
     if (tile->kind==TileKind::Wall)
-        return tile->break_rule!=BreakRule::Unbreakable && tile->material!=TileMaterial::Root && tile->prop.kind==PropKind::None;
+        return tile->break_rule!=BreakRule::Unbreakable && tile->material!=TileMaterial::Root && tile->prop.kind==PropKind::None && !supports_wall_spring(game.stage,cell);
     return tile->kind==TileKind::Grass || tile->kind==TileKind::Empty;
 }
 

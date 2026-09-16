@@ -144,7 +144,7 @@ void carve_floor(Game& game, FloorPlan& plan,GenerationTrace* trace) {
     carve_industrial_geometry(game,plan);
     place_room_gates(game, plan);
     carve_giant_tree(game,plan,trace);
-    carve_timber_grove(game,plan);
+    carve_timber_grove(game,plan,trace);
     carve_snake_tunnel(game,plan);
     carve_root_maze(game,plan);
     for (int y = 0; y < plan.height; ++y)

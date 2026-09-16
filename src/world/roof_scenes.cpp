@@ -17,7 +17,7 @@ bool empty_site(const Game& game,const FloorPlan& plan,const RoofSpan& roof,bool
         const Cell cell=roof_cell(roof,along,across);
         const Tile* tile=game.stage.at(cell);
         if (!tile || cell.x<2 || cell.y<2 || cell.x>=game.stage.width-2 || cell.y>=game.stage.height-2 ||
-            tile->prop.kind!=PropKind::None || tile->surface.fire_ticks>0) return false;
+            tile->prop.kind!=PropKind::None || tile->contents!=ItemKind::None || tile->surface.fire_ticks>0) return false;
         for (const RoofSpan& other:game.stage.roofs)
             if (distance(roof_cell(roof,roof.length/2,1),roof_cell(other,other.length/2,1))<12) return false;
         const bool interior=along>=0 && along<roof.length;

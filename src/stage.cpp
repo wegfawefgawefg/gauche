@@ -1,6 +1,8 @@
 #include "game.hpp"
 #include "world/terrain_material.hpp"
 #include "world/ice_terrain.hpp"
+#include "world/ice_material.hpp"
+#include "world/ice_render.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -57,7 +59,9 @@ bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power, TileImpact 
     // RAIL: The conductor lays track through all in-bounds material before the train arrives.
     if (impact == TileImpact::Train) {
         const Prop broken_prop = tile->prop;
+        const auto contents=tile->contents;const auto count=tile->content_count;
         *tile = {TileKind::Rail, 0, 0};
+        tile->contents=contents;tile->content_count=count;
         tile->prop = broken_prop.kind==PropKind::BridgePlank ? Prop{} : broken_prop;
         return true;
     }
@@ -82,11 +86,12 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
     const bool wood = wooden_terrain(*tile);
     const Sprite material = freight ? Sprite::Rail : tile->material == TileMaterial::Tree ? Sprite::ForestTree :
         tile->material == TileMaterial::Timber ? Sprite::ForestTimber :
-        tile->material == TileMaterial::Ice ? Sprite::IceWall :
+        tile->material == TileMaterial::Ice ? ice_wall_sprite(*tile,cell) :
         game.run.phase == RunPhase::Arena ? Sprite::Wall :
-        ice_floor(game.run.floor) ? Sprite::IceWall :
+        ice_floor(game.run.floor) ? ice_wall_sprite(*tile,cell) :
         industrial_floor(game.run.floor) ? Sprite::IndustrialWall : Sprite::ForestWall;
     const bool hit = damage_tile(game.stage, cell, damage, dig_power, impact);
+    if (hit) release_wall_contents(game,cell);
     if (game.impact_count < static_cast<int>(game.impacts.size()))
         game.impacts[static_cast<std::size_t>(game.impact_count++)] =
             {cell, source, material, hit ? previous - tile->hp : 0, hit && tile->hp == 0};

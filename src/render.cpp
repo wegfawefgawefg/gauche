@@ -57,6 +57,7 @@
 #include "view.hpp"
 #include "world/wall_render.hpp"
 #include "world/ice_render.hpp"
+#include "world/ice_material_render.hpp"
 #include "world/industrial_render.hpp"
 #include "world/encounter.hpp"
 
@@ -70,7 +71,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
     if (tile.surface.still_ticks>0) tick=0;
     if (tile.kind == TileKind::Ice && tile.freeze_ticks > 0)
         return tile.freeze_ticks <= 120 ? Sprite::ThawingWater : Sprite::FrozenWater;
-    if (tile.material == TileMaterial::Ice && tile.kind == TileKind::Wall) return Sprite::IceWall;
+    if (tile.material == TileMaterial::Ice && tile.kind == TileKind::Wall) return ice_wall_sprite(tile,cell);
     if (tile.material == TileMaterial::Tree)
         return tile.kind == TileKind::Wall ? Sprite::ForestTree : Sprite::TreeStump;
     if (tile.material == TileMaterial::Timber)
@@ -190,6 +191,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 SDL_RenderTexture(renderer, texture, nullptr, &rect);
                 SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
             }
+            if (!arena && biome==Biome::Ice) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
             if (!arena && tile.kind == TileKind::Wall)
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
                     biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} :

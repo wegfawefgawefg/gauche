@@ -56,6 +56,7 @@ enum class TileKind : std::uint8_t { Empty, Grass, Wall, Ruin, Water, Rail, Lava
 enum class TileMaterial : std::uint8_t { Stone, Timber, Tree, Ice, Count };
 enum class BreakRule : std::uint8_t { Unbreakable, Damageable, DigRequired };
 enum class TileImpact : std::uint8_t { Strike, Blast, Train };
+enum class ItemKind : std::uint8_t;
 struct Tile {
     TileKind kind = TileKind::Empty;
     std::uint16_t hp = 0;
@@ -69,6 +70,8 @@ struct Tile {
     TileKind thaw_kind = TileKind::Empty;
     std::uint16_t freeze_ticks = 0;
     std::uint8_t current = 0;
+    ItemKind contents{};
+    std::uint8_t content_count = 0;
 };
 
 enum class RoofKind : std::uint8_t { Log, IceArch, Gantry, Count };

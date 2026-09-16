@@ -1,3 +1,4 @@
+#include "../world/ice_material.hpp"
 #include "../items/glow_slag.hpp"
 #include "../entities/ash_sleeper.hpp"
 #include "../entities/slag_snail.hpp"
@@ -207,6 +208,8 @@ void step_temperature(Game& game) {
             melt_ice_cover(game, flame + offset);
             thaw_lunch_tin(game, flame + offset);
             thawed |= thaw_water(game, flame + offset);
+            if (game.tick%30==0 && !drained(flame+offset))
+                melt_ice_wall(game,flame+offset,4,flame);
         }
         if (thawed) emit_sound(game, SoundId::IceThaw, flame);
     }

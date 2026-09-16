@@ -1,4 +1,5 @@
 #include "thaw_charge.hpp"
+#include "../world/ice_material.hpp"
 #include "../projectiles/projectile.hpp"
 #include "../entities/attacks.hpp"
 #include "../surfaces/interaction.hpp"
@@ -31,6 +32,7 @@ void burst(Game& game, int slot) {
             const int hp=tile->hp;
             if (!damage_tile(game.stage,cell,hp,255)) break;
             tile->kind=TileKind::ShallowWater;
+            release_wall_contents(game,cell);
             if (game.impact_count<static_cast<int>(game.impacts.size()))
                 game.impacts[static_cast<std::size_t>(game.impact_count++)]={cell,shot.cell,Sprite::IceWall,hp,true};
             emit_sound(game,SoundId::ThawSteam,cell);

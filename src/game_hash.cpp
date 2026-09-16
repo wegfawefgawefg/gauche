@@ -79,6 +79,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(tile.break_rule));
         mix(hash, tile.required_dig_power);
         mix(hash, tile.current);
+        mix(hash,static_cast<std::uint64_t>(tile.contents));mix(hash,tile.content_count);
         mix(hash, static_cast<std::uint64_t>(tile.surface.liquid));
         mix(hash, tile.surface.gritted);
         mix(hash, tile.surface.reactor_fire);

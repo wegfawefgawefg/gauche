@@ -1,4 +1,5 @@
 #include "ice_terrain.hpp"
+#include "ice_material.hpp"
 
 #include <cstdlib>
 
@@ -41,9 +42,7 @@ TileKind ice_room_floor(const RoomPlan& room, int x, int y) {
 
 void place_ice_terrain(Game& game, const FloorPlan& plan) {
     if (!ice_floor(game.run.floor)) return;
-    // MATERIAL: Ice walls carry a gameplay material, independent of their displayed sprite.
-    for (Tile& tile : game.stage.tiles)
-        if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Stone) tile.material = TileMaterial::Ice;
+    place_ice_materials(game,plan);
     for (const RoomPlan& room : plan.rooms) {
         if (room.role != RoomRole::Reservoir && room.role != RoomRole::FishingHut) continue;
         Cell first{};

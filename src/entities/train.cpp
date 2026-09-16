@@ -1,3 +1,4 @@
+#include "../world/ice_material.hpp"
 #include "dispatch.hpp"
 #include "../props/interaction.hpp"
 
@@ -21,6 +22,7 @@ void step_rail(Game& game, int slot) {
     if (game.stage.in_bounds(next)) {
         hit_prop(game, next, 255, rail.cell);
         damage_tile(game.stage, next, 0, 0, TileImpact::Train);
+        release_wall_contents(game,next);
         rail.cell = next;
         if (game.tick % 4 == 0) emit_sound(game, SoundId::RailPlace, next);
         return;

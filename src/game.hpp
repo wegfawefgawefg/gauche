@@ -71,10 +71,19 @@ struct Tile {
     std::uint8_t current = 0;
 };
 
+enum class RoofKind : std::uint8_t { Log, IceArch, Gantry, Count };
+// Ground and its contents remain independent. One connected roof fades together.
+struct RoofSpan {
+    Cell start{};
+    RoofKind kind = RoofKind::Log;
+    std::uint8_t length = 5, vertical = 0, hp = 40;
+};
+
 struct Stage {
     int width = 0;
     int height = 0;
     std::vector<Tile> tiles;
+    std::vector<RoofSpan> roofs;
     bool in_bounds(Cell cell) const;
     Tile* at(Cell cell);
     const Tile* at(Cell cell) const;

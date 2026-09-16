@@ -1,3 +1,4 @@
+#include "scenery/roof_render.hpp"
 #include "world/reactor_render.hpp"
 #include "scene_entities.hpp"
 #include "props/rail_render.hpp"
@@ -253,6 +254,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,false);
+    draw_roofs(renderer,graphics,game,player,camera,zoom,lighting);
     draw_plant_lash(renderer, game, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,

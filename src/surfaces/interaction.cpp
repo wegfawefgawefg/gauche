@@ -1,3 +1,4 @@
+#include "../scenery/roof.hpp"
 #include "../entities/slag_snail.hpp"
 #include "slag.hpp"
 #include "../items/emergency_foam.hpp"
@@ -69,7 +70,7 @@ bool ignite_surface(Game& game, Cell cell) {
     if (surface.fire_ticks > 0) return false;
     const bool fuel = (surface.liquid == LiquidKind::Oil || surface.liquid == LiquidKind::Sap || tar_liquid(surface.liquid)) && surface.liquid_ticks>0;
     const bool lit = light_candle(game,cell) || light_stove(game,cell);
-    if (!wood && !fuel && !dry_growth(tile->prop)) return lit;
+    if (!wood && !wooden_roof(game.stage,cell) && !fuel && !dry_growth(tile->prop)) return lit;
     const bool cloth_only = tile->prop.covered && !wood && !fuel;
     remove_prop_cover(game, cell, true);
     surface.fire_ticks = static_cast<std::uint16_t>(cloth_only ? 30 : wood ? 600 : surface.liquid == LiquidKind::Sap ? 360 : 240);

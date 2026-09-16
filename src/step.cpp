@@ -1,3 +1,4 @@
+#include "scenery/roof.hpp"
 #include "world/reactor.hpp"
 #include "combat/toss.hpp"
 #include "world/currents.hpp"
@@ -123,6 +124,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
 
     step_temperature(game);
     step_surfaces(game);
+    step_roofs(game);
     step_prop_growth(game);
 
     // TIMERS: A cooldown reaching zero can act on this tick.

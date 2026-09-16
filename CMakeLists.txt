@@ -198,7 +198,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
-set(GAUCHE_WORLD_SOURCES src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp
+set(GAUCHE_WORLD_SOURCES src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/scenery/roof.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp
     src/world/room_population.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/freight_exchange.cpp src/world/last_shift.cpp src/world/reactor.cpp src/world/reactor_render.cpp src/world/loot.cpp)
@@ -216,7 +216,7 @@ add_executable(gauche
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp src/ui/offer_flow.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
-    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
+    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/net/rooms/names.cpp src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp

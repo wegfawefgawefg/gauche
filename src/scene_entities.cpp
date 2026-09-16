@@ -146,6 +146,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         if (entity.kind == EntityKind::GroundItem)
             draw_item_float(renderer, graphics, entity, camera, zoom, lighting);
+        draw_personal_float(renderer,graphics,game,entity,camera,zoom,lighting);
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
             entity.kind == EntityKind::Coins) {
             rect.x += pixels * 0.25F; rect.y += pixels * 0.25F;

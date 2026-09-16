@@ -2,6 +2,7 @@
 #include "chasm.hpp"
 #include "floating_items.hpp"
 #include "../entities/river_raft.hpp"
+#include "../items/air_bladder.hpp"
 
 bool river_swimmer(const Entity& actor) {
     return actor.health>0 && (actor.kind==EntityKind::GlassEel ||
@@ -26,6 +27,7 @@ bool deep_river_contact(Game& game,int slot) {
     // also handles teleports, toss landings and cargo spawned after its raft.
     catch_river_raft(game,slot);
     if (ridden_river_raft(game,actor)) return false;
+    if (personal_flotation(actor)) return false;
     if (actor.kind==EntityKind::Player && actor.health<=0) return false;
     actor.health=0;
     return finish_deep_river_death(game,slot);

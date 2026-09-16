@@ -279,6 +279,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "STEP %d -> %d TICKS", movement_beat(player, player.move_interval),
             movement_beat(gripped, gripped.move_interval));
     }
+    if (item.kind==ItemKind::AirBladder)
+        std::snprintf(line,sizeof(line),"FLOATS WHILE SELECTED");
     if (item.kind == ItemKind::RabbitCharm) {
         Entity faster = player;
         *faster.inventory.held() = item;

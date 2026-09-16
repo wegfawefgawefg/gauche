@@ -1,5 +1,6 @@
 #include "../entities/river_raft.hpp"
 #include "../items/sled.hpp"
+#include "../items/air_bladder.hpp"
 #include "currents.hpp"
 #include "route.hpp"
 #include "room_frame.hpp"
@@ -34,7 +35,7 @@ void step_water_currents(Game& game) {
     if (game.tick%30!=0) return;
     // DRIFT: Gentle water pushes once per second, fast water twice. Floats own
     // their quicker beats; riders/cargo cannot get a second push from this pass.
-    // Water cannot crush an actor against a bank or drag someone into deep water.
+    // Water cannot crush an actor against a bank or drag an unsupported wader into deep water.
     for (int slot=0;slot<max_entities;++slot) {
         Entity& actor=game.entities[static_cast<std::size_t>(slot)];
         const bool cargo=actor.kind==EntityKind::GroundItem;
@@ -49,7 +50,8 @@ void step_water_currents(Game& game) {
         const Cell flow=water_current(tile);
         if (flow==Cell{}) continue;
         const Cell target=actor.cell+flow;
-        if (game.stage.at_or_border(target).kind==TileKind::DeepRiver && tile.kind!=TileKind::DeepRiver) continue;
+        if (game.stage.at_or_border(target).kind==TileKind::DeepRiver && tile.kind!=TileKind::DeepRiver &&
+            !personal_flotation(actor)) continue;
         if (!float_cell_free(game,target,slot)) continue;
         if (cargo) {
             if (actor.ground_item.flight.slot>=0) continue; // A hook/return owns this item.

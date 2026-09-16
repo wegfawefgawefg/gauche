@@ -7,7 +7,7 @@
 
 namespace {
 
-constexpr RegionalItem bladder{"Air Bladder", "Pushes neighbors. Keeps loose cargo afloat for a short trip.",
+constexpr RegionalItem bladder{"Air Bladder", "Hold to float. Use to push or float cargo.",
     Sprite::AirBladder, {0, 0, 1, 0, 45, PatternEffect::Utility, false, 0, 0, false, false, true},
     ItemAction::Material, 10, 1, false, 3, 0, 0, 0, 0, SoundId::AirInflate};
 
@@ -15,6 +15,13 @@ constexpr RegionalItem bladder{"Air Bladder", "Pushes neighbors. Keeps loose car
 
 const RegionalItem* air_bladder_item(ItemKind kind) {
     return kind == ItemKind::AirBladder ? &bladder : nullptr;
+}
+
+bool personal_flotation(const Entity& actor) {
+    const Item& held=*actor.inventory.held();
+    // Occupies the selected hand, not a timed buff. Stun/sleep do not puncture it.
+    return actor.kind==EntityKind::Player && actor.health>0 &&
+        held.kind==ItemKind::AirBladder && held.count>0 && held.uses>0 && held.flight.slot<0;
 }
 
 int floating_cargo_in_front(const Game& game, const Entity& user, Cell direction) {

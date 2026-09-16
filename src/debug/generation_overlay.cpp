@@ -14,6 +14,7 @@ LiveGenerationInspector& bind_live_generation_report(const Game& game) {
 }
 void draw_generation_annotations(SDL_Renderer* renderer,const GenerationReport& report,
     int selected_feature,int selected_component,ViewCamera camera,float zoom) {
+    if(report.geometry_omitted)return;
     SDL_BlendMode old_blend;SDL_GetRenderDrawBlendMode(renderer,&old_blend);
     float red=0,green=0,blue=0,alpha=0;SDL_GetRenderDrawColorFloat(renderer,&red,&green,&blue,&alpha);
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);

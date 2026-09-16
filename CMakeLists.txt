@@ -81,7 +81,7 @@ else()
 endif()
 
 set(GAUCHE_CODEC_SOURCES
-    src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp)
+    src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp src/net/generation_report_codec.cpp src/net/snapshot_codec.cpp)
 
 set(GAUCHE_ENTITY_SOURCES
     src/props/industrial.cpp

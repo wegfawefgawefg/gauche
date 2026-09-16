@@ -3,8 +3,8 @@
 #include "generation_themes.hpp"
 #include <string>
 
-// Local observations only: shared immutably with an inspected/played Game and
-// omitted from hashes and network snapshots. Received snapshots have no report.
+// Immutable generation observations, excluded from gameplay hashes/plain state
+// snapshots. Developer network snapshots may attach a bounded copy.
 enum class GenerationFeature { GiantTree, TimberGrove, BearDen, SpiderCave, SnakeTunnel, RootMaze, OpenSectors, River, ForestEncounters, Themes, AntColonies, MushroomSettlements, ForestBoss, ForestBorder, ForestOutskirts, Count };
 enum class GenerationOutcome { Pending, Ineligible, Missed, Selected, Failed, Reserved, Built, Suppressed };
 struct GenerationRegion { Cell low{},high{}; };
@@ -30,6 +30,8 @@ struct ComponentDecision {
     std::vector<ComponentOption> options;
 };
 struct GenerationReport {
+    std::string revision; // Empty for local reports; received reports name the host build.
+    bool received=false,geometry_omitted=false;
     std::uint64_t seed=1,initial_rng=1;
     int floor=1;
     GenerationThemes themes;

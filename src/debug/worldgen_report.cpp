@@ -11,6 +11,7 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
     int& selected_feature=inspection ? v.selected_feature : live.selected_feature;
     int& selected_component=inspection ? v.selected_component : live.selected_component;
     ImGui::SeparatorText("Generation rules / recorded decisions");
+    if(report.geometry_omitted)ImGui::TextWrapped("Map geometry omitted to fit the network diagnostic budget. Decisions/counts are retained; map annotations are unavailable.");
     ImGui::TextWrapped("Base selection chances per ordinary floor. Placement can still fail; selected rows show actual theme-adjusted chances.");
     if (const auto* themes=feature_decision(report,GenerationFeature::Themes);
         themes && themes->outcome!=GenerationOutcome::Suppressed && themes->outcome!=GenerationOutcome::Ineligible) {
@@ -100,19 +101,20 @@ void draw_live_generation_details(const Game& game) {
             const auto& report=*game.generation_report;
             ImGui::Text("Current floor %d | run seed %llu",report.floor,static_cast<unsigned long long>(report.seed));
             ImGui::Text("Planner RNG %llu",static_cast<unsigned long long>(report.initial_rng));
-            ImGui::TextWrapped("Build: %s",GAUCHE_GENERATOR_REVISION);
+            const char* revision=report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision.c_str();
+            ImGui::TextWrapped("Generator build: %s",revision);
             if(ImGui::Button("Copy floor diagnostics")) {
                 const std::string text="floor "+std::to_string(report.floor)+" | run seed "+std::to_string(report.seed)+
-                    " | planner RNG "+std::to_string(report.initial_rng)+" | build " GAUCHE_GENERATOR_REVISION;
+                    " | planner RNG "+std::to_string(report.initial_rng)+" | build "+revision;
                 SDL_SetClipboardText(text.c_str());
             }
             ImGui::Checkbox("Show recorded map annotations",&live.overlay);
             ImGui::SameLine();
             if(ImGui::Button("Clear selection"))live.selected_feature=live.selected_component=-1;
             ImGui::TextWrapped("Select a feature or child roll below. Gold: footprint; cyan: placed cells/guide; pink: empty attempt; orange: rejected cells. Marks stay at generation-time positions, even after actors move or scenery breaks. F1 hides the panel; the enabled overlay remains visible.");
-            ImGui::TextWrapped("Recorded when this floor was generated locally. Decisions survive gameplay; they are not a census of what is still alive.");
+            ImGui::TextWrapped("%s Decisions describe generation, not what is still alive.",report.received ? "Recorded by the host and received with this world snapshot." : "Recorded when this floor was generated locally.");
             draw_generation_report(report,false);
-        } else ImGui::TextWrapped("No local generation report for this state. Received network snapshots do not carry diagnostics yet; this window will not substitute an unrelated preview.");
+        } else ImGui::TextWrapped("No generation report for this state. The host may have developer diagnostics disabled, or the attachment was unavailable. This window never substitutes an unrelated preview.");
     }
     ImGui::End();
 }

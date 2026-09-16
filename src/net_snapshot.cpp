@@ -1,10 +1,11 @@
 #include "net_session_internal.hpp"
+#include "net/snapshot_codec.hpp"
 
 #include <algorithm>
 
 namespace {
 
-constexpr std::size_t chunk_bytes = 900;
+constexpr std::size_t chunk_bytes = snapshot_chunk_bytes;
 
 void acknowledge(NetSession& session, std::uint32_t id) {
     PacketWriter ack = begin_packet(WireKind::SnapshotAck);
@@ -19,13 +20,15 @@ void queue_snapshot(NetSession& session, int owner) {
     if (owner <= 0 || owner >= 4) return;
     NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
     if (!peer.connected) return;
+    auto bytes=encode_network_snapshot(session.rollback.game);
+    if(bytes.empty()){session.status="World snapshot exceeds transfer limit";return;}
     // Shared snapshots commit their baseline: late inputs cannot rewrite an in-flight world.
     session.rollback.input_commit_tick = session.rollback.game.tick;
     peer.correction_from = 0;
     peer.correction_ranges.clear();
     peer.correction = {};
     peer.snapshot = {};
-    peer.snapshot.bytes = encode_game(session.rollback.game);
+    peer.snapshot.bytes = std::move(bytes);
     peer.snapshot.tick = session.rollback.game.tick;
     peer.snapshot.revision = session.timeline_revision;
     peer.snapshot.checksum = bytes_hash(peer.snapshot.bytes);
@@ -73,8 +76,8 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
     const std::uint16_t count = reader.u16();
     const std::uint64_t checksum = reader.u64();
     const std::uint16_t payload_size = reader.u16();
-    if (!reader.okay || id == 0 || total_size == 0 || total_size > 2'000'000 ||
-        count == 0 || count > 2048 || index >= count || payload_size > chunk_bytes ||
+    if (!reader.okay || id == 0 || total_size == 0 || total_size > snapshot_wire_limit ||
+        count == 0 || count > snapshot_chunk_limit || index >= count || payload_size > chunk_bytes ||
         reader.position + payload_size != reader.bytes.size()) return;
     if (id <= session.last_snapshot_id) {
         acknowledge(session, id);
@@ -110,8 +113,8 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
         return;
     }
     Game restored;
-    std::string error;
-    if (!decode_game(bytes, restored, error)) {
+    std::string error,diagnostic_note;
+    if (!decode_network_snapshot(bytes, restored, error,diagnostic_note)) {
         session.status = error;
         transfer = {};
         return;
@@ -126,6 +129,7 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
     session.receiving_correction = {};
     session.ready = true;
     session.status = "Joined as player " + std::to_string(session.local_owner + 1);
+    if(!diagnostic_note.empty())session.status+="; "+diagnostic_note;
     acknowledge(session, id);
     transfer = {};
 }

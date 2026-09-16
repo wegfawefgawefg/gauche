@@ -39,6 +39,7 @@ const char* status(GenerationOutcome outcome) {
 }
 
 void focus_worldgen_selection(WorldGenViewer& v,const GenerationReport& report,bool component) {
+    if(report.geometry_omitted)return;
     if(component && v.selected_component>=0 && static_cast<std::size_t>(v.selected_component)<report.components.size()) {
         const auto& c=report.components[static_cast<std::size_t>(v.selected_component)];
         Cell low=!c.guide.empty() ? c.guide.front() : !c.cells.empty() ? c.cells.front() : c.anchor;

@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "worldgen_sidebar.hpp"
 #include "generation_overlay.hpp"
 #include "generation_build.hpp"
 #include <imgui.h>
@@ -71,20 +72,13 @@ void draw_generation_report(const GenerationReport& report,bool inspection) {
                     ImGui::Text("%zu footprints",decision->regions.size());
                     ImGui::BeginDisabled(!inspection);
                     if (ImGui::Button("Focus footprint")) {
-                        Cell low=decision->regions.front().low,high=decision->regions.front().high;
-                        for (const auto& region:decision->regions) {
-                            low.x=std::min(low.x,region.low.x);low.y=std::min(low.y,region.low.y);
-                            high.x=std::max(high.x,region.high.x);high.y=std::max(high.y,region.high.y);
-                        }
-                        v.render.camera={static_cast<float>(low.x+high.x)*.5F,static_cast<float>(low.y+high.y)*.5F};
-                        v.zoom=std::min(400.0F/(8.0F*static_cast<float>(high.x-low.x+4)),
-                                        240.0F/(8.0F*static_cast<float>(high.y-low.y+4)));
+                        focus_worldgen_selection(v,report,false);
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("First appearance pass")) {
                         for (std::size_t i=0;i<v.trace.checkpoints.size();++i) {
                             const auto* earlier=feature_decision(v.trace.checkpoints[i].report,rule.feature);
-                            if (earlier && (earlier->outcome==GenerationOutcome::Reserved || earlier->outcome==GenerationOutcome::Built)) {v.checkpoint=static_cast<int>(i);break;}
+                            if (earlier && (earlier->outcome==GenerationOutcome::Reserved || earlier->outcome==GenerationOutcome::Built)) {select_worldgen_checkpoint(v,static_cast<int>(i));break;}
                         }
                     }
                     ImGui::EndDisabled();

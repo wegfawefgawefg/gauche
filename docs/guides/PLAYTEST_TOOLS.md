@@ -56,9 +56,12 @@ Main menu → Dev → World Gen inspects standalone Forest floors 1-1–1-4 with
 | Roof / crown visibility | O | Right stick click |
 | Fullbright | L | Left stick click |
 | Details | F1 | Start |
-| Room bounds | ImGui checkbox | Back |
+| Browse results / return to map controls | Tab | Back |
+| Room bounds | G or ImGui checkbox | ImGui checkbox |
 | Vignette | V | ImGui checkbox |
 | Copy current seed | C | ImGui button |
+
+The left results sidebar lists actual feature outcomes at the selected checkpoint. **Back/Tab** enters or leaves browsing; **D-pad / arrow Up–Down** selects, **Right** opens child rolls, **Left** returns to features, **A/Enter** focuses the recorded footprint/site, and **B/Escape** returns to map controls. While browsing, A does not start play and B does not exit the viewer. Bumpers still switch floors; X/R regenerates. Once back on map controls, A plays, B exits and the D-pad resumes zoom/timeline control. Fit and focus keep the selected area beside the sidebar. The Capture tab can hide the sidebar; Back/Tab restores it. F6/Back still returns from actual play.
 
 ImGui Generation inspector edits the next seed, copies the completed map's seed/floor/build revision/settings, scrubs passes, highlights changed terrain/material/prop kinds, and shows recorded population outcomes. Room outlines reflect the selected pass; cyan is ordinary, gold is a reserved landmark. Coarse capture is capped at 32 complete Game snapshots (32 on ordinary Forest; memory varies with map dimensions). Generation retains no snapshots when the optional capture argument is absent.
 

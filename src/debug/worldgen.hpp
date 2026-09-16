@@ -9,6 +9,7 @@ struct WorldGenViewer {
     bool active=false, playing=false, open_requested=false, return_requested=false;
     bool exit_requested=false;
     bool regenerate_requested=false, play_requested=false, details=true;
+    bool sidebar_visible=true,sidebar_focus=false,sidebar_children=false;
     bool rooms=true, changes=false, actor_changes=false, follow_step=true, keep_view_on_regen=false;
     GenerationTraceOptions capture_options;
     int floor=1, checkpoint=0, selected_feature=-1, selected_component=-1;

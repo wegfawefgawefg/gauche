@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "worldgen_sidebar.hpp"
 #include "playtest.hpp"
 #include "panels.hpp"
 #include "../menu_shell.hpp"
@@ -9,17 +10,27 @@ WorldGenViewer& worldgen_viewer() { static WorldGenViewer viewer; return viewer;
 
 void fit_worldgen(WorldGenViewer& v) {
     if (!v.original) return;
-    v.render.camera={static_cast<float>(v.original->stage.width)*.5F,
-                     static_cast<float>(v.original->stage.height)*.5F};
-    v.zoom=std::min(600.0F/(8.0F*static_cast<float>(v.original->stage.width)),
-                   280.0F/(8.0F*static_cast<float>(v.original->stage.height)));
+    focus_worldgen_bounds(v,{},Cell{v.original->stage.width,v.original->stage.height},8.0F);
 }
 
 void select_worldgen_checkpoint(WorldGenViewer& v,int checkpoint) {
     v.checkpoint=std::clamp(checkpoint,0,std::max(0,static_cast<int>(v.trace.checkpoints.size())-1));
     if (v.follow_step && !v.trace.checkpoints.empty()) {
         const auto& step=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)];
-        if (step.detail) v.selected_component=step.component;
+        if (step.detail) {
+            v.selected_component=step.component;
+            if(step.component>=0 && static_cast<std::size_t>(step.component)<step.report.components.size())
+                v.selected_feature=static_cast<int>(step.report.components[static_cast<std::size_t>(step.component)].feature);
+        }
+    }
+    if(!v.trace.checkpoints.empty()) {
+        const auto& report=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)].report;
+        if(v.selected_component>=static_cast<int>(report.components.size()))v.selected_component=-1;
+        if(v.sidebar_children && v.selected_component<0) {
+            for(std::size_t i=0;i<report.components.size();++i)
+                if(static_cast<int>(report.components[i].feature)==v.selected_feature){v.selected_component=static_cast<int>(i);break;}
+            if(v.selected_component<0)v.sidebar_children=false;
+        }
     }
 }
 void recapture_worldgen(WorldGenViewer& v) {
@@ -30,7 +41,7 @@ void recapture_worldgen(WorldGenViewer& v) {
 void regenerate_worldgen(WorldGenViewer& v) {
     v.original=std::make_unique<Game>();
     v.population={};
-    v.selected_component=-1;
+    v.selected_component=-1;v.sidebar_children=false;
     Game& game=*v.original;
     game.rng=v.seed==0 ? 1 : v.seed;
     game.run.seed=game.rng;
@@ -85,6 +96,9 @@ bool worldgen_event(const SDL_Event& event) {
         }
         return false;
     }
+    if(event.type==SDL_EVENT_KEY_DOWN && event.key.repeat &&
+        (event.key.key==SDLK_ESCAPE || event.key.key==SDLK_RETURN || event.key.key==SDLK_TAB)) return true;
+    if (worldgen_sidebar_event(event,v)) return true;
     if (event.type==SDL_EVENT_MOUSE_WHEEL) {
         v.zoom=std::clamp(v.zoom*std::pow(1.15F,event.wheel.y),.08F,8.0F); return true;
     }
@@ -112,7 +126,7 @@ bool worldgen_event(const SDL_Event& event) {
     if (pressed(SDLK_MINUS,SDL_GAMEPAD_BUTTON_DPAD_DOWN)) v.zoom=std::max(.08F,v.zoom/1.2F);
     if (pressed(SDLK_EQUALS,SDL_GAMEPAD_BUTTON_DPAD_UP)) v.zoom=std::min(8.0F,v.zoom*1.2F);
     if (pad && event.gbutton.button==SDL_GAMEPAD_BUTTON_START) debug_panels().visible=!debug_panels().visible;
-    if (pad && event.gbutton.button==SDL_GAMEPAD_BUTTON_BACK) v.rooms=!v.rooms;
+    if (key && event.key.key==SDLK_G) v.rooms=!v.rooms;
     if (pad && event.gbutton.button==SDL_GAMEPAD_BUTTON_LEFT_STICK) v.render.fullbright=!v.render.fullbright;
     if (pressed(SDLK_O,SDL_GAMEPAD_BUTTON_RIGHT_STICK)) v.render.roofs=!v.render.roofs;
     if (key && event.key.key==SDLK_L) v.render.fullbright=!v.render.fullbright;

@@ -1,4 +1,5 @@
 #include "worldgen.hpp"
+#include "worldgen_sidebar.hpp"
 #include "generation_overlay.hpp"
 #include "generation_build.hpp"
 #include "../input.hpp"
@@ -28,6 +29,7 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
     draw_generation_annotations(renderer,selected.report,v.selected_feature,v.selected_component,v.render.camera,v.zoom);
     if ((v.changes || v.actor_changes) && v.checkpoint>0)
         draw_worldgen_changes(renderer,v,*v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game,game);
+    draw_worldgen_sidebar(renderer,v,selected.report);
     SDL_SetRenderDrawColor(renderer,10,14,18,240);
     const SDL_FRect top{0,0,640,24},bottom{0,321,640,39};
     SDL_RenderFillRect(renderer,&top); SDL_RenderFillRect(renderer,&bottom);
@@ -36,9 +38,9 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
     std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | step %d/%zu: %s",v.original->run.floor,
         static_cast<unsigned long long>(v.original->run.seed),v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
     SDL_RenderDebugText(renderer,8,8,title);
-    SDL_RenderDebugText(renderer,8,327,"A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
-    SDL_RenderDebugText(renderer,8,338,"Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
-    SDL_RenderDebugText(renderer,8,349,"F6/Back Return | O Roofs  L Light  V Vignette  T Fine  C Copy seed");
+    SDL_RenderDebugText(renderer,8,327,v.sidebar_focus ? "D-pad/Arrows: rolls  A/Enter: focus  B/Back/Tab: map  X/R: regen" : "A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
+    SDL_RenderDebugText(renderer,8,338,v.sidebar_focus ? "Right: child rolls  Left: features  Y/F Fit  LB/RB Floor  Start/F1 Details" : "Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
+    SDL_RenderDebugText(renderer,8,349,"Back/Tab Rolls | O Roofs  L Light  V Vignette  T Fine  C Copy seed");
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 }
 
@@ -97,6 +99,7 @@ void draw_worldgen_details(const Game& live_game) {
         ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Capture")) {
+            if(ImGui::Checkbox("Results sidebar",&v.sidebar_visible) && !v.sidebar_visible)v.sidebar_focus=false;
             ImGui::Checkbox("Fine steps (next capture)",&v.capture_options.details);
             const char* scope="All instrumented features";
             for(const auto& rule:generation_rules)

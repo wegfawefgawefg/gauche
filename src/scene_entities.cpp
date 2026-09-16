@@ -1,3 +1,4 @@
+#include "entities/crate_mimic.hpp"
 #include "props/light_tower_render.hpp"
 #include "props/tall_tree_render.hpp"
 #include "entities/boiler_feed_render.hpp"
@@ -239,6 +240,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (worm) angle = std::atan2(static_cast<double>(entity.facing.y),
                 static_cast<double>(entity.facing.x)) * 180.0 / 3.141592653589793;
             pose_canine(entity,body_rect,angle);
+            if (entity.kind==EntityKind::CrateMimic && entity.label_a!=MimicHidden) {
+                const float lean=entity.label_a==MimicWindup ? -.10F :
+                    entity.sprite==Sprite::MimicSnap ? .18F : 0;
+                body_rect.x+=pixels*lean*static_cast<float>(entity.facing.x);
+                body_rect.y+=pixels*lean*static_cast<float>(entity.facing.y);
+            }
 
             SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
                 nullptr, ((entity.kind==EntityKind::Dog || (entity.kind==EntityKind::Wolf && entity.label_a!=0) || entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :

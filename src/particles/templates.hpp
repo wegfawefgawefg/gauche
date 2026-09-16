@@ -9,6 +9,7 @@ void spawn_zombie_scratch(Cosmetics& cosmetics, Cell cell, Cell facing,
                           std::uint64_t seed);
 void spawn_ice_weapon_swing(Cosmetics& cosmetics,const Entity& user);
 void spawn_fang_bite(Cosmetics& cosmetics,Cell target,Cell facing,float size);
+void spawn_mimic_bite(Cosmetics& cosmetics,Cell target,Cell facing);
 void spawn_canine_bite(Cosmetics& cosmetics,Cell target,Cell facing);
 void spawn_debris(Cosmetics& cosmetics, Cell cell, std::uint64_t seed);
 void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,

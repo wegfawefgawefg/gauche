@@ -1,3 +1,4 @@
+#include "../entities/crate_mimic.hpp"
 #include "../entities/dog.hpp"
 #include "../entities/bear_fishing.hpp"
 #include "../entities/crane_operator.hpp"
@@ -91,7 +92,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     interrupt_rivet_gunner(entity);
     if (damage>=12) {interrupt_zombie_swipe(entity);interrupt_brawler(entity);interrupt_counterweight(entity);interrupt_slag_snail(entity);interrupt_yeti(entity);interrupt_magnet_crane(entity);}
     if (damage>=10) {interrupt_emergency_pump(entity);interrupt_arc_welder(entity); }
-    if (damage>=12) interrupt_wolf_bite(entity);
+    if (damage>=12) {interrupt_wolf_bite(entity);interrupt_mimic_bite(entity);}
     if (damage>=8) interrupt_dog_bite(entity);
     if (damage>=8) interrupt_cable_crawler(entity);
     interrupt_stoker(entity);

@@ -1,3 +1,4 @@
+#include "crate_mimic.hpp"
 #include "dog.hpp"
 #include "brawler.hpp"
 #include "zombie.hpp"
@@ -105,6 +106,7 @@ void step_entity_timers(Game& game, int slot) {
     if (entity.kind == EntityKind::BoilerPorter && (entity.sleep_ticks > 0 || entity.stun_ticks > 0))
         interrupt_boiler_porter(entity);
     if (entity.sleep_ticks>0 || entity.stun_ticks>0 || entity.toss.ticks>0) {
+        interrupt_mimic_bite(entity);
         interrupt_wolf_bite(entity);
         interrupt_dog_bite(entity);
         interrupt_zombie_swipe(entity);

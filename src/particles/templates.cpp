@@ -151,6 +151,16 @@ void spawn_fang_bite(Cosmetics& cosmetics,Cell target,Cell facing,float size) {
     bite.life=bite.span=14;add(cosmetics,bite);
 }
 
+void spawn_mimic_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
+    SpriteParticle bite;
+    bite.sprite=Sprite::MimicJaws;bite.next_sprite=Sprite::MimicJawsClosed;
+    bite.motion=ParticleMotion::Animated;bite.layer=ParticleLayer::Foreground;
+    bite.x=static_cast<float>(target.x)+.5F;bite.y=static_cast<float>(target.y)+.5F;
+    bite.width=bite.height=1;
+    bite.angle=facing.x<0 ? 90 : facing.x>0 ? -90 : facing.y<0 ? 180 : 0;
+    bite.life=bite.span=14;add(cosmetics,bite);
+}
+
 void spawn_canine_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
     SpriteParticle bite;
     bite.sprite=Sprite::WolfFangs;bite.next_sprite=Sprite::WolfFangsClosed;

@@ -1,3 +1,4 @@
+#include "crate_mimic.hpp"
 #include "dog.hpp"
 #include "bear_family.hpp"
 #include "brawler.hpp"
@@ -242,7 +243,11 @@ EnemyAttack enemy_attack(const Entity& enemy) {
         if (enemy.label_a==WolfBiteWindup && enemy.cell+enemy.facing==enemy.point_b && enemy.vitals.rooted==0)
             add(enemy.point_b);
         break;
-    case EntityKind::BrambleGuard: case EntityKind::CrateMimic:
+    case EntityKind::CrateMimic:
+        if (enemy.label_a==MimicWindup && enemy.cell+enemy.facing==enemy.point_b &&
+            enemy.sleep_ticks==0 && enemy.stun_ticks==0 && enemy.toss.ticks==0) add(enemy.point_b);
+        break;
+    case EntityKind::BrambleGuard:
         if (enemy.label_a == 1) add(enemy.point_b);
         break;
     case EntityKind::FrostBat:

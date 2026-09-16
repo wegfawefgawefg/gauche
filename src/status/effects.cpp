@@ -96,8 +96,11 @@ bool apply_sleep(Entity& actor, int ticks) {
 bool apply_root(Entity& actor, int ticks, RootKind kind) {
     if (actor.health <= 0 || actor.move_interval <= 0 || actor.hard_blocker || ticks <= 0) return false;
     interrupt_rail_shunter(actor);interrupt_tar_singer(actor);interrupt_mold_thief(actor);interrupt_emergency_pump(actor);
-    if (ticks >= actor.vitals.rooted) actor.vitals.root_kind = kind;
-    actor.vitals.rooted = static_cast<std::uint16_t>(std::clamp(std::max(ticks, static_cast<int>(actor.vitals.rooted)), 0, 600));
+    ticks = std::min(ticks, root_tick_limit(kind));
+    if (ticks >= actor.vitals.rooted) {
+        actor.vitals.root_kind = kind;
+        actor.vitals.rooted = static_cast<std::uint16_t>(ticks);
+    }
     return true;
 }
 

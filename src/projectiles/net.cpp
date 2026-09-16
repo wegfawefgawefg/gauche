@@ -63,7 +63,7 @@ void step_net(Game& game, int slot) {
             Entity& actor = game.entities[static_cast<std::size_t>(index)];
             if (index == net.entity_a.slot && actor.generation == net.entity_a.generation) continue;
             if (actor.cell != cell || !net_target(actor)) continue;
-            caught |= apply_root(actor, 120, RootKind::Net);
+            caught |= apply_root(actor, net_hold_ticks, RootKind::Net);
         }
     }
     if (caught) { finish(game, slot, next, SoundId::NetCatch); return; }

@@ -3,6 +3,8 @@
 #include <cstdint>
 
 enum class RootKind : std::uint8_t { Rope, Net };
+constexpr int net_hold_ticks = 30 * 60;
+constexpr int root_tick_limit(RootKind kind) { return kind == RootKind::Net ? net_hold_ticks : 600; }
 enum class RecoveryKind : std::uint8_t { Herbs, Broth, Poultice, Meal };
 
 // VITAL EFFECTS: Shared actor rules, independent of species-specific AI slots.

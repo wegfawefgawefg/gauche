@@ -3,7 +3,7 @@
 
 namespace {
 
-constexpr RegionalItem net{"Throwing Net", "A traveling wide cast. Roots the first group for 2s; they can still attack. Walls catch the net.",
+constexpr RegionalItem net{"Throwing Net", "A traveling wide cast. Roots the first group for 30s; they can still attack. Walls catch the net.",
     Sprite::ThrowingNet, {1, 3, 0, 0, 60, PatternEffect::Utility, true, 1},
     ItemAction::Throw, 15, 3, true, 0, 0, 0, 0, 0, SoundId::NetThrow};
 constexpr RegionalItem boots{"Sticky Boots", "Grip for 6s: resist shoves and slips, but each step takes longer. Crushers still crush. Four uses.",

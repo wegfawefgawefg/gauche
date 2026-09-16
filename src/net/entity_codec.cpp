@@ -212,7 +212,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
         entity.vitals.recovery > RecoveryKind::Meal || entity.vitals.chill_guard > 480 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
-        entity.vitals.haste > 240 || entity.vitals.rooted > 600 || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
+        entity.vitals.haste > 240 || entity.vitals.rooted > root_tick_limit(entity.vitals.root_kind) || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
     entity.toss.origin=reader.cell(); entity.toss.direction=reader.cell(); entity.toss.source=reader.cell();
     entity.toss.instigator={reader.i32(),reader.u32()}; entity.toss.ticks=reader.i32();
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();

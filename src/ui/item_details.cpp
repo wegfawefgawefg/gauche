@@ -409,7 +409,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     else if (item.kind == ItemKind::Firecracker)
         std::snprintf(line, sizeof(line), "FUSE 1.5s | STARTLE %d", pattern.blast_radius);
     else if (item.kind == ItemKind::ThrowingNet)
-        std::snprintf(line, sizeof(line), "RANGE %d | ROOT 2.0s", pattern.maximum);
+        std::snprintf(line, sizeof(line), "RANGE %d | ROOT 30s", pattern.maximum);
     else if (item.kind == ItemKind::StickyBoots)
         std::snprintf(line, sizeof(line), "GRIP 6.0s | SLOW STEPS");
     else if (item.kind == ItemKind::RabbitCharm)

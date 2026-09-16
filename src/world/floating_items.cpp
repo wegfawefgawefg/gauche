@@ -36,7 +36,7 @@ bool start_item_float(Game& game, int slot, Cell direction) {
         !float_cell_free(game, cargo.cell, slot) || !float_cell_free(game, cargo.cell + direction, slot)) return false;
     cargo.label_a = 1;
     cargo.counter_a = item_float_reach;
-    cargo.timer_a = item_float_beat;
+    cargo.timer_a = water_current_beat(game.stage.at_or_border(cargo.cell),item_float_beat);
     cargo.point_a = cargo.cell;
     cargo.point_b = direction;
     emit_sound(game, SoundId::AirFloat, cargo.cell);
@@ -65,7 +65,7 @@ void step_floating_item(Game& game, int slot) {
     const Cell next = cargo.cell + cargo.point_b;
     if (!float_cell_free(game, next, slot)) { stop_item_float(game, cargo); return; }
     cargo.cell = cargo.point_a = next;
-    cargo.timer_a = item_float_beat;
+    cargo.timer_a = water_current_beat(game.stage.at_or_border(next),item_float_beat);
     --cargo.counter_a;
     // BEACH: One dry landing is allowed; deep water and occupied landings are not.
     if (!float_water(game.stage.at_or_border(next)) || cargo.counter_a == 0)

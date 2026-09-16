@@ -118,7 +118,7 @@ void init_entity(Game& game, Entity& entity) {
     case EntityKind::RimeSkater: init_rime_skater(entity); break;
     case EntityKind::PocketDoor: init_pocket_door(entity); break;
     case EntityKind::Sled: init_sled(entity); break;
-    case EntityKind::RiverRaft: init_river_raft(entity); break;
+    case EntityKind::RiverRaft: init_river_raft(game,entity); break;
     case EntityKind::IceAnchor: init_ice_anchor(entity); break;
     case EntityKind::WaspNest: init_wasp_nest(entity); break;
     case EntityKind::Wasp: init_wasp(entity); break;

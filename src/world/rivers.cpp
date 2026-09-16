@@ -6,6 +6,7 @@
 #include "raster.hpp"
 #include "growth_carving.hpp"
 #include "water.hpp"
+#include "currents.hpp"
 #include "../scenery/roof.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -28,7 +29,6 @@ bool eligible(const Game& game,const FloorPlan& plan,Cell cell) {
     for (const auto& roof:game.stage.roofs) if (roof_covers(roof,cell)) return false;
     return true;
 }
-std::uint8_t flow_code(Cell d) {return static_cast<std::uint8_t>(d.x>0 ? 1 : d.y>0 ? 2 : d.x<0 ? 3 : 4);}
 struct Outlet {Cell cell,flow;};
 struct Source {Cell cell,flow;};
 }
@@ -57,13 +57,25 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         {2,"Broad shallows",game.run.floor==1 ? 1U : 3U},{3,"Circulating river",game.run.floor==1 ? 0U : 3U}};
     const auto style=roll_component(game,&plan.report,GenerationFeature::River,-1,"River shape",
         sources.empty() ? plan.rooms.front().center : sources.front().cell,styles);
+    const WeightedComponent strengths[]{{1,"Gentle current",style.value==0 ? 2U : 5U},
+        {2,"Fast current",game.run.floor==1 ? 0U : style.value==0 ? 5U : style.value==3 ? 1U : 2U}};
+    const auto strength=roll_component(game,&plan.report,GenerationFeature::River,style.record,"Current strength",
+        sources.empty() ? plan.rooms.front().center : sources.front().cell,strengths);
+    const auto finish_flow=[&](bool built) {
+        if (!built) {component_result(&plan.report,strength,"No channel built");return;}
+        component_result(&plan.report,strength,strength.value==2 ?
+            "Two pushes per second; supports and floating cargo travel twice as fast" :
+            "One push per second; normal support/cargo drift",plan.rivers.back().channel);
+        plan.report.features.back().variant+=strength.value==2 ? " / Fast current" : " / Gentle current";
+    };
     if (style.value==3) {
         // A circulating channel must not consume an existing wall-backed source.
         for (std::size_t i=0;i<count;++i) if (game.stage.tiles[i].kind==TileKind::Spring) allowed[i]=0;
-        carve_forest_river_loop(game,plan,trace,allowed,style);return;
+        finish_flow(carve_forest_river_loop(game,plan,trace,allowed,style,strength.value));return;
     }
     if (sources.empty() || (drains.empty() && drops.empty())) {
         component_result(&plan.report,style,"No eligible source/outlet pair");
+        finish_flow(false);
         auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="No eligible source/outlet pair";return;
     }
     const WeightedComponent ends[]{{0,"Boundary drain",drains.empty() ? 0U : 3U},{1,"Chasm spill",drops.empty() ? 0U : 2U}};
@@ -143,10 +155,10 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
             const Cell c=queue[i]+d;if (!game.stage.in_bounds(c)) continue;
             const auto index=static_cast<std::size_t>(c.y*plan.width+c.x);
             if (seen[index] || owner[index]<0) continue;
-            seen[index]=true;game.stage.at(c)->current=flow_code(queue[i]-c);queue.push_back(c);
+            seen[index]=true;game.stage.at(c)->current=make_current(queue[i]-c,strength.value);queue.push_back(c);
         }
-        game.stage.at(source)->current=flow_code(spring.flow);
-        game.stage.at(outlet.cell)->current=flow_code(outlet.flow);
+        game.stage.at(source)->current=make_current(spring.flow,strength.value);
+        game.stage.at(outlet.cell)->current=make_current(outlet.flow,strength.value);
         if (queue.size()!=river.channel.size() || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
             for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;
             component_result(&plan.report,outlet_roll,"Rolled back: disconnected water or required route/lock changed");continue;
@@ -159,8 +171,9 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
         for (Cell c:river.channel) {low.x=std::min(low.x,c.x);low.y=std::min(low.y,c.y);high.x=std::max(high.x,c.x+1);high.y=std::max(high.y,c.y+1);}
         decision.regions.push_back({low,high});
         for (Cell c:river.channel) plan.protected_cells[static_cast<std::size_t>(c.y*plan.width+c.x)]=1;
-        plan.rivers.push_back(std::move(river));return;
+        plan.rivers.push_back(std::move(river));finish_flow(true);return;
     }
     component_result(&plan.report,style,"All outlet attempts failed");
+    finish_flow(false);
     auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="Six source/outlet attempts exhausted; see child reasons";
 }

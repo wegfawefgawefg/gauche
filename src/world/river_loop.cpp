@@ -2,17 +2,17 @@
 #include "components.hpp"
 #include "generation_trace.hpp"
 #include "routed_path.hpp"
+#include "currents.hpp"
 #include "raster.hpp"
 #include "growth_carving.hpp"
 #include <algorithm>
 
 namespace {
 constexpr Cell sides[]{{1,0},{0,1},{-1,0},{0,-1}};
-std::uint8_t flow_code(Cell d) {return static_cast<std::uint8_t>(d.x>0 ? 1 : d.y>0 ? 2 : d.x<0 ? 3 : 4);}
 }
 
 bool carve_forest_river_loop(Game& game,FloorPlan& plan,GenerationTrace* trace,
-    std::span<const std::uint8_t> allowed,ComponentRoll style) {
+    std::span<const std::uint8_t> allowed,ComponentRoll style,int strength) {
     std::vector<Cell> centers;
     const auto index=[&](Cell cell){return static_cast<std::size_t>(cell.y*plan.width+cell.x);};
     for (const auto& room:plan.rooms) if (allowed[index(room.center)]) centers.push_back(room.center);
@@ -65,10 +65,10 @@ bool carve_forest_river_loop(Game& game,FloorPlan& plan,GenerationTrace* trace,
         // The centerline is the sole intentional cycle. Wider pockets drain into
         // it through a BFS forest, never point at a nearest segment across land.
         std::vector<std::uint8_t> seen(allowed.size());std::vector<Cell> queue=path;
-        for (std::size_t i=0;i<path.size();++i) {seen[index(path[i])]=1;game.stage.at(path[i])->current=flow_code(path[(i+1)%path.size()]-path[i]);}
+        for (std::size_t i=0;i<path.size();++i) {seen[index(path[i])]=1;game.stage.at(path[i])->current=make_current(path[(i+1)%path.size()]-path[i],strength);}
         for (std::size_t i=0;i<queue.size();++i) for (Cell d:sides) {
             const Cell c=queue[i]+d;if (!game.stage.in_bounds(c) || !channel[index(c)] || seen[index(c)]) continue;
-            seen[index(c)]=1;game.stage.at(c)->current=flow_code(queue[i]-c);queue.push_back(c);
+            seen[index(c)]=1;game.stage.at(c)->current=make_current(queue[i]-c,strength);queue.push_back(c);
         }
         if (queue.size()!=river.channel.size() || !generation_lock_intact(game,plan) || !generation_exit_reachable(game,plan)) {
             for (const auto& old:saved) *game.stage.at(old.cell)=old.tile;

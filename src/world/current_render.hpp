@@ -8,11 +8,22 @@ inline void draw_current_marks(SDL_Renderer* renderer,const Stage& stage,Cell ce
     const Tile& tile=stage.at_or_border(cell);
     const Cell flow=water_current(tile);
     if (flow!=Cell{}) {
-        const float phase=static_cast<float>((tick+static_cast<std::uint64_t>((cell.x*7+cell.y*13)%60))%60)/60;
-        const float x=rect.x+rect.w*(.5F+static_cast<float>(flow.x)*(phase-.5F)*.6F);
-        const float y=rect.y+rect.h*(.5F+static_cast<float>(flow.y)*(phase-.5F)*.6F);
-        SDL_SetRenderDrawColorFloat(renderer,light.red*.5F,light.green*.7F,light.blue*.75F,.45F);
-        SDL_RenderLine(renderer,x-rect.w*.09F,y,x+rect.w*.09F,y);
+        const bool fast=water_current_strength(tile)==2;
+        const auto beat=static_cast<std::uint64_t>(water_current_beat(tile,60));
+        const auto pattern=static_cast<std::uint32_t>(cell.x)*73856093U ^ static_cast<std::uint32_t>(cell.y)*19349663U;
+        for (int i=0;i<(fast ? 2 : 1);++i) {
+            const float phase=static_cast<float>((tick+pattern+static_cast<unsigned>(i*17))%beat)/static_cast<float>(beat);
+            if (phase>.8F) continue;
+            const float across=(static_cast<float>((pattern>>(i*8))&31U)/31-.5F)*.6F;
+            const float x=rect.x+rect.w*(.5F+static_cast<float>(flow.x)*(phase-.5F)*.6F-static_cast<float>(flow.y)*across);
+            const float y=rect.y+rect.h*(.5F+static_cast<float>(flow.y)*(phase-.5F)*.6F+static_cast<float>(flow.x)*across);
+            const float arch=1-std::abs(phase-.4F)/.4F;
+            SDL_SetRenderDrawColorFloat(renderer,light.red*(fast ? .65F : .5F),light.green*.7F,light.blue*.75F,
+                (fast ? .2F : .1F)+arch*.35F);
+            const float length=fast ? .13F : .08F;
+            SDL_RenderLine(renderer,x-rect.w*length*static_cast<float>(flow.x),y-rect.h*length*static_cast<float>(flow.y),
+                x+rect.w*length*static_cast<float>(flow.x),y+rect.h*length*static_cast<float>(flow.y));
+        }
     }
     // An outlet is derived from real terrain/current state and survives snapshots.
     // Surface rendering follows terrain, so falling streaks can extend into a pit.

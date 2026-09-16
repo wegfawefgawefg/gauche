@@ -42,9 +42,9 @@ void load_cargo(Game& game,Entity& raft) {
 // RAFT SLOTS: label_a 0 lily / 1 log; timer_a drift beat; point_a expected cell;
 // entity_a one player, entity_b one real item. GroundItem label_a=3 is raft cargo,
 // with entity_a the reciprocal generation-qualified raft handle. No ownership by slot alone.
-void init_river_raft(Entity& raft) {
+void init_river_raft(const Game& game,Entity& raft) {
     raft.sprite=Sprite::RiverLily;raft.health=raft.max_health=30;
-    raft.point_a=raft.cell;raft.timer_a=18;
+    raft.point_a=raft.cell;raft.timer_a=water_current_beat(game.stage.at_or_border(raft.cell),18);
 }
 const Entity* ridden_river_raft(const Game& game,const Entity& actor) {
     if (actor.toss.ticks>0) return nullptr;
@@ -88,7 +88,8 @@ void board_river_raft(Game& game,int player_slot) {
 void step_river_raft(Game& game,int slot) {
     auto& raft=game.entities[static_cast<std::size_t>(slot)];
     if (!afloat(game,raft) || raft.point_a!=raft.cell) {
-        clear_river_raft(game,raft);raft.point_a=raft.cell;raft.timer_a=18;
+        clear_river_raft(game,raft);raft.point_a=raft.cell;
+        raft.timer_a=water_current_beat(game.stage.at_or_border(raft.cell),18);
         return;
     }
     sync_passengers(game,raft);
@@ -98,10 +99,11 @@ void step_river_raft(Game& game,int slot) {
     auto* rider=get_entity(game,raft.entity_a);
     const Cell flow=water_current(game.stage.at_or_border(raft.cell));
     if (raft.timer_a>0 || raft.freeze_ticks>0 || flow==Cell{} || (rider && (rider->vitals.rooted || rider->vitals.grip))) return;
-    raft.timer_a=18;
+    raft.timer_a=water_current_beat(game.stage.at_or_border(raft.cell),18);
     const Cell next=raft.cell+flow;if (!landing_free(game,raft,next)) return;
     // All passengers move atomically; normal landing damage still applies.
     raft.cell=raft.point_a=next;raft.facing=flow;
+    raft.timer_a=water_current_beat(game.stage.at_or_border(next),18);
     if (auto* cargo=get_entity(game,raft.entity_b)) cargo->cell=next;
     if (rider) {rider->cell=next;rider->vitals.slide_momentum=0;enter_actor_cell(game,raft.entity_a.slot);}
     sync_passengers(game,raft);load_cargo(game,raft);

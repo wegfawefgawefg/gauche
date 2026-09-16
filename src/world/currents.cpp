@@ -5,18 +5,35 @@
 #include "room_frame.hpp"
 #include "water.hpp"
 #include "floating_items.hpp"
+#include <algorithm>
 
-Cell water_current(const Tile& tile) {
-    if (!shallow_water(tile.kind) || tile.surface.still_ticks>0) return {};
-    switch (tile.current) {
+std::uint8_t make_current(Cell direction,int strength) {
+    if (distance({},direction)!=1 || strength<1 || strength>2) return 0;
+    const int heading=direction.x>0 ? 1 : direction.y>0 ? 2 : direction.x<0 ? 3 : 4;
+    return static_cast<std::uint8_t>(heading+4*(strength-1));
+}
+Cell stored_current_direction(const Tile& tile) {
+    if (!tile.current || tile.current>8) return {};
+    switch ((tile.current-1)%4+1) {
     case 1: return {1,0}; case 2: return {0,1};
     case 3: return {-1,0}; case 4: return {0,-1}; default: return {};
     }
 }
+int water_current_strength(const Tile& tile) {
+    if (!shallow_water(tile.kind) || tile.surface.still_ticks>0 || !tile.current || tile.current>8) return 0;
+    return tile.current<=4 ? 1 : 2;
+}
+int water_current_beat(const Tile& tile,int normal_ticks) {
+    return std::max(1,normal_ticks/std::max(1,water_current_strength(tile)));
+}
+Cell water_current(const Tile& tile) {
+    return water_current_strength(tile)>0 ? stored_current_direction(tile) : Cell{};
+}
 
 void step_water_currents(Game& game) {
-    if (game.tick%60!=0) return;
-    // DRIFT: One real step per second. Float-equipped cargo owns its quicker beat.
+    if (game.tick%30!=0) return;
+    // DRIFT: Gentle water pushes once per second, fast water twice. Floats own
+    // their quicker beats; riders/cargo cannot get a second push from this pass.
     // Water cannot crush an actor against a bank or drag someone into deep water.
     for (int slot=0;slot<max_entities;++slot) {
         Entity& actor=game.entities[static_cast<std::size_t>(slot)];
@@ -27,7 +44,9 @@ void step_water_currents(Game& game) {
         // Live shoals hold their place in the stream; casts can still retrieve them.
         if (cargo && actor.ground_item.kind==ItemKind::RiverFish) continue;
         if (sled_cargo(game,actor) || ridden_sled(game,actor) || ridden_river_raft(game,actor)) continue;
-        const Cell flow=water_current(game.stage.at_or_border(actor.cell));
+        const auto& tile=game.stage.at_or_border(actor.cell);
+        if (game.tick%static_cast<unsigned>(water_current_beat(tile,60))!=0) continue;
+        const Cell flow=water_current(tile);
         if (flow==Cell{}) continue;
         const Cell target=actor.cell+flow;
         if (!float_cell_free(game,target,slot)) continue;
@@ -57,7 +76,7 @@ void place_water_currents(Game& game, const FloorPlan& plan) {
                     plan.protected_cell(cell) || tile->current!=0) continue;
                 const Cell flow=turn_cell({0,1},room.turns);
                 if (!walkable(game.stage.at_or_border(cell+flow))) continue;
-                tile->current=static_cast<std::uint8_t>(flow.x>0 ? 1 : flow.y>0 ? 2 : flow.x<0 ? 3 : 4);
+                tile->current=make_current(flow);
             }
     }
 }

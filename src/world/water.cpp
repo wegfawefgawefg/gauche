@@ -1,4 +1,5 @@
 #include "water.hpp"
+#include "currents.hpp"
 #include "../entities/bell_diver.hpp"
 #include "route.hpp"
 
@@ -15,7 +16,7 @@ bool supports_wall_spring(const Stage& stage,Cell cell) {
     constexpr Cell directions[]{{1,0},{0,1},{-1,0},{0,-1}};
     for(unsigned i=0;i<4;++i) {
         const auto& tile=stage.at_or_border(cell+directions[i]);
-        if(tile.kind==TileKind::Spring && tile.current==i+1)return true;
+        if(tile.kind==TileKind::Spring && stored_current_direction(tile)==directions[i])return true;
     }
     return false;
 }

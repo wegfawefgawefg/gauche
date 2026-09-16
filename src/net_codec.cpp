@@ -147,7 +147,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (kind >= static_cast<std::uint8_t>(TileKind::Count)) reader.okay = false;
         tile.kind = static_cast<TileKind>(kind);
         tile.hp = reader.u16(); tile.water_phase = reader.u8(); tile.current=reader.u8();
-        if (tile.current>4) reader.okay=false;
+        if (tile.current>8) reader.okay=false;
         tile.max_hp = reader.u16();
         tile.break_rule = static_cast<BreakRule>(reader.u8());
         tile.required_dig_power = reader.u8();

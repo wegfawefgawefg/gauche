@@ -153,7 +153,8 @@ void spawn_canine_bite(Cosmetics& cosmetics,Cell target,Cell facing) {
 
 void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
                            std::uint64_t seed) {
-    if (impact.prop==PropKind::Crate) {
+    const bool log=impact.prop==PropKind::FallenLog || impact.prop==PropKind::LogBridge;
+    if (impact.prop==PropKind::Crate || log) {
         if (impact.damage<=0) return;
         std::erase_if(cosmetics.prop_jolts,[&](const PropJolt& p) {return p.cell==impact.cell;});
         if (!impact.broken) {
@@ -169,8 +170,10 @@ void spawn_terrain_impact(Cosmetics& cosmetics, const ImpactEvent& impact,
     }
     shake_tiles(cosmetics, impact.cell, impact.damage > 0 ? 0.12F : 0.035F, 0);
     if (impact.damage <= 0) return;
+    const Sprite fragment=impact.material==Sprite::ForestTimber ? Sprite::DebrisWoodChip :
+        impact.material==Sprite::ForestTree ? Sprite::DebrisBark : impact.material;
     spray(cosmetics, impact.cell, seed, impact.broken ? 14 : 5,
-          impact.material, impact.broken ? 0.15F : 0.08F, 0.012F);
+          fragment, impact.broken ? 0.15F : 0.08F, 0.012F);
 }
 
 void spawn_death(Cosmetics& cosmetics, Cell cell, EntityKind kind,

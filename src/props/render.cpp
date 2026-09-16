@@ -4,6 +4,7 @@
 #include "ice_pillar_render.hpp"
 #include "streetlamp_render.hpp"
 #include "render.hpp"
+#include "hit_render.hpp"
 #include "../particles/system.hpp"
 #include "rail_render.hpp"
 #include "conveyor_render.hpp"
@@ -40,7 +41,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                 draw_tower_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
             }
             if (prop.kind==PropKind::TallTree || prop.kind==PropKind::FallenLog || prop.kind==PropKind::LogBridge) {
-                draw_tree_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
+                draw_tree_ground(renderer,graphics,game,cell,camera,zoom,lighting,cosmetics);continue;
             }
             const bool freight=prop.kind==PropKind::Pallet || prop.kind==PropKind::PalletStack ||
                 prop.kind==PropKind::BoundRocks || prop.kind==PropKind::ContainerSide;
@@ -63,15 +64,8 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                     prop.kind==PropKind::ContainerSide ? Sprite::ContainerSideBroken : Sprite::PalletBroken;
             SDL_Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
-            if (prop.kind==PropKind::Crate && !prop.broken && cosmetics) {
-                for (const PropJolt& jolt:cosmetics->prop_jolts) if (jolt.cell==cell) {
-                    const float age=12-static_cast<float>(jolt.life)+std::clamp(cosmetics->frame_alpha,0.0F,1.0F);
-                    const float amount=std::cos(age*1.05F)*std::max(0.0F,1-age/12)*.12F;
-                    rect.x+=static_cast<float>(jolt.direction.x)*rect.w*amount;
-                    rect.y+=static_cast<float>(jolt.direction.y)*rect.h*amount;
-                    break;
-                }
-            }
+            if (prop.kind==PropKind::Crate && !prop.broken)
+                rect=jolted_prop_rect(rect,cell,cosmetics);
             if (prop.kind==PropKind::FoamCover && prop.growth_ticks<120) {
                 const float size=.35F+.65F*static_cast<float>(prop.growth_ticks)/120;
                 rect.x+=rect.w*(1-size)*.5F;rect.y+=rect.h*(1-size);rect.w*=size;rect.h*=size;

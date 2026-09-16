@@ -1,5 +1,6 @@
 #include "tall_tree_render.hpp"
 #include "tall_tree.hpp"
+#include "hit_render.hpp"
 #include <algorithm>
 #include <cmath>
 
@@ -45,7 +46,7 @@ void draw_tall_tree(SDL_Renderer* renderer,const GameGraphics& graphics,const Ga
     }
 }
 void draw_tree_ground(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
-    Cell cell,ViewCamera camera,float zoom,const LightingCache& lighting) {
+    Cell cell,ViewCamera camera,float zoom,const LightingCache& lighting,const Cosmetics* cosmetics) {
     const Prop& prop=game.stage.at(cell)->prop;SDL_FRect floor=tile_rect(cell,camera,zoom);
     if (prop.kind==PropKind::TallTree && !prop.broken) {
         SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
@@ -63,9 +64,11 @@ void draw_tree_ground(SDL_Renderer* renderer,const GameGraphics& graphics,const 
         }
         SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);return;
     }
-    if (prop.broken && prop.kind!=PropKind::TallTree) return;
     const auto light=light_at_cell(lighting,cell);
-    SDL_Texture* texture=texture_for(graphics,prop.kind==PropKind::TallTree ? Sprite::TallTreeStump : Sprite::FallenLog);
+    const Sprite sprite=prop.kind==PropKind::TallTree ? Sprite::TallTreeStump : prop.broken ? Sprite::FallenLogBroken :
+        prop.hp<=12 ? Sprite::FallenLogSplit : prop.hp<24 ? Sprite::FallenLogBruised : Sprite::FallenLog;
+    if (prop.kind!=PropKind::TallTree && !prop.broken) floor=jolted_prop_rect(floor,cell,cosmetics);
+    SDL_Texture* texture=texture_for(graphics,sprite);
     SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
     SDL_RenderTextureRotated(renderer,texture,nullptr,&floor,prop.kind!=PropKind::TallTree && (prop.variant&1U) ? 90 : 0,nullptr,SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture,1,1,1);

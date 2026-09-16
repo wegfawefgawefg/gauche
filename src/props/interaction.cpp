@@ -196,6 +196,12 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
             game.impacts[static_cast<std::size_t>(game.impact_count++)]=
                 {cell,source,Sprite::Crate,damage,false,PropKind::Crate};
     }
+    else if (prop.kind==PropKind::FallenLog || prop.kind==PropKind::LogBridge) {
+        emit_sound(game,SoundId::TreeChop,cell);
+        if (game.impact_count<static_cast<int>(game.impacts.size()))
+            game.impacts[static_cast<std::size_t>(game.impact_count++)]=
+                {cell,source,Sprite::FallenLog,damage,false,prop.kind};
+    }
     else if (prop.kind==PropKind::Pallet || prop.kind==PropKind::PalletStack) emit_sound(game,SoundId::CrateKnock1,cell);
     else if (prop.kind==PropKind::BoundRocks) emit_sound(game,SoundId::OreHit,cell);
     else if (prop.kind==PropKind::ContainerSide) emit_sound(game,SoundId::GrateHit,cell);

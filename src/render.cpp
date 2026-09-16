@@ -27,6 +27,8 @@
 #include "scenery/ice_render.hpp"
 #include "combat/parry.hpp"
 #include "render.hpp"
+#include "props/hit_render.hpp"
+#include "world/terrain_material.hpp"
 #include "items/effigy_mask_render.hpp"
 #include "entities/gate_render.hpp"
 #include "world/floating_render.hpp"
@@ -123,12 +125,16 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
     }
 }
 
-void draw_tile_damage(SDL_Renderer* renderer, const Tile& tile, Cell cell,
-                      SDL_FRect rect, const LightingCache& lighting) {
+void draw_tile_damage(SDL_Renderer* renderer,const GameGraphics& graphics, const Tile& tile, Cell cell,
+                      SDL_FRect rect, const LightingCache& lighting,int turns=0) {
     if (tile.kind != TileKind::Wall || tile.hp >= tile.max_hp || tile.max_hp == 0) return;
     const float remaining = static_cast<float>(tile.hp) / static_cast<float>(tile.max_hp);
     const LightColor light = lit_sprite_color(lighting, cell);
-    // FRACTURES: The same branching cuts work on every wall material.
+    if (wooden_terrain(tile)) {
+        draw_wood_splits(renderer,graphics,rect,cell,tile.hp,tile.max_hp,turns,lighting);
+        return;
+    }
+    // FRACTURES: Mineral walls retain their branching cuts and condition bar.
     SDL_SetRenderDrawColorFloat(renderer, light.red * 0.08F, light.green * 0.07F,
                                light.blue * 0.06F, 1.0F);
     const float flip = ((cell.x + cell.y) % 2 == 0) ? 1.0F : -1.0F;
@@ -187,7 +193,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             if (draw_chasm(renderer,game,cell,rect,lighting)) continue;
             if (draw_lava(renderer,graphics,game,cell,rect,lighting)) continue;
             if (draw_freight_track(renderer,graphics,game.stage,cell,rect,lighting)) {
-                draw_tile_damage(renderer,tile,cell,rect,lighting);continue;
+                draw_tile_damage(renderer,graphics,tile,cell,rect,lighting);continue;
             }
             const auto log_cap=tile.kind==TileKind::Wall ? log_far_support(game.stage,cell) : std::optional<Sprite>{};
             const auto deck=roof_ground(game.stage,cell);
@@ -211,7 +217,7 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 draw_wall_contour(renderer, game.stage, cell, rect, lighting,
                     biome==Biome::Ice ? LightColor{.78F, .9F, 1.25F} :
                     biome==Biome::Industrial ? LightColor{1.05F,.88F,1.08F} : tint);
-            draw_tile_damage(renderer, tile, cell, rect, lighting);
+            draw_tile_damage(renderer,graphics,tile,cell,rect,lighting,turns);
         }
     }
 }

@@ -6,6 +6,8 @@
 struct PlacementCount { int attempted=0, placed=0, budget_blocked=0, rejected=0; };
 struct SceneCount : PlacementCount { int planned=0, fallbacks=0; };
 struct PopulationReport {
+    int shelf_rooms=0, shelf_links=0;
+    std::vector<ShelfReward> shelf_rewards;
     std::array<SceneCount,static_cast<std::size_t>(RoomRole::FreightSiding)+1> scenes{};
     std::array<PlacementCount,static_cast<std::size_t>(EntityKind::Count)> enemies{};
     std::array<PlacementCount,static_cast<std::size_t>(ItemKind::Count)> supplies{};

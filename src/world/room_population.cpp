@@ -366,7 +366,13 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     const int round = (game.run.floor - 1) % 4;
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
-    if (report) for (const RoomPlan& room:plan.rooms) ++report->scenes[static_cast<std::size_t>(room.role)].planned;
+    if (report) {
+        report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
+        for (const RoomPlan& room:plan.rooms) {
+            ++report->scenes[static_cast<std::size_t>(room.role)].planned;
+            report->shelf_rooms+=room.shape==RoomShape::IceShelf;
+        }
+    }
     game.run.roof_lights = {};
     game.run.roof_light_count = 0;
     // LANDMARKS: Reserve objectives before any scatter or encounter placement.

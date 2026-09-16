@@ -24,6 +24,7 @@ int run_generation_audit() {
     std::puts("biome,category,name_or_kind_id,planned,attempted,placed,budget_blocked,rejected,fallbacks,actual");
     for (int biome=1;biome<=2;++biome) {
         PopulationReport totals;
+        int shelf_floors=0,shelf_rewards=0;
         std::array<int,static_cast<std::size_t>(EntityKind::Count)> bodies{};
         std::array<int,static_cast<std::size_t>(ItemKind::Count)> items{};
         for (int seed=1;seed<=64;++seed) {
@@ -39,6 +40,8 @@ int run_generation_audit() {
                 std::fprintf(stderr,"Generation audit failed: biome=%d seed=%d floor=%d %s\n",
                     biome,seed,game->run.floor,error.c_str());return 1;
             }
+            shelf_floors+=report.shelf_links>0;shelf_rewards+=static_cast<int>(report.shelf_rewards.size());
+            totals.shelf_rooms+=report.shelf_rooms;totals.shelf_links+=report.shelf_links;
             for (const Entity& entity:game->entities) {
                 ++bodies[static_cast<std::size_t>(entity.kind)];
                 if (entity.kind==EntityKind::GroundItem) ++items[static_cast<std::size_t>(entity.ground_item.kind)];
@@ -51,6 +54,10 @@ int run_generation_audit() {
             for (std::size_t i=0;i<totals.enemies.size();++i) add(totals.enemies[i],report.enemies[i]);
             for (std::size_t i=0;i<totals.supplies.size();++i) add(totals.supplies[i],report.supplies[i]);
         }
+        row(biome,"geometry","shelf_floors",{},0,0,shelf_floors);
+        row(biome,"geometry","shelf_rooms",{},0,0,totals.shelf_rooms);
+        row(biome,"geometry","shelf_connections",{},0,0,totals.shelf_links);
+        row(biome,"geometry","crossing_rewards",{},0,0,shelf_rewards);
         for (std::size_t i=0;i<totals.scenes.size();++i) {
             const auto& count=totals.scenes[i];
             if (count.planned) row(biome,"room",room_name(static_cast<RoomRole>(i)),count,count.planned,count.fallbacks);

@@ -23,7 +23,7 @@ Roof milestone evidence: 96 ordinary generated floors retained reachable objecti
 
 Distinct ordinary floors and living machinery:
 
-- [ ] **ICE-1:** Add a shelf-and-fissure geometry profile with broad spaces, branching edges and optional crossing rewards; preserve a reachable required route. Select it in ordinary Ice generation rather than only via a unique floor.
+- [x] **ICE-1:** Ordinary Ice can select broad snow/ice shelves with six bent/branched fissure variants, widened neighboring connections and an optional native-weapon island with a fitting permanent bridge kit. Authored interiors and required routes remain intact. Build and 128-floor repeatability/route/lock/snapshot audit passed; 24/64 sampled Ice floors selected the profile (117 shelves, 57 connections, 24 islands). Direct checks verified isolated rewards, dry approaches, three-cell bridge fit and return routes; ordinary-seed terrain and before/after bridge captures inspected. Other traversal widths/tools remain GAP-3.
 - [ ] **ICE-2:** Add thaw-channel/cavern geometry with connected water, dry islands and frozen pockets; place existing fishing/mobility tools and appropriate enemies where those systems matter. Audit shared room carving so these profiles change navigation, not merely textures.
 - [ ] **ICE-3:** Add code-made rock-backed, clear/clouded ice and packed-snow treatments with transitions, cracks and contents. Mix materials at structural boundaries; freezing/melting/break rules must match the visible material.
 - [ ] **IND-1:** Add broad work-hall plus service-loop geometry and a separate excavation-front profile to ordinary Industry generation. Belts, heat and machinery cross former room boundaries; keep required objective access and useful diggable shortcuts.

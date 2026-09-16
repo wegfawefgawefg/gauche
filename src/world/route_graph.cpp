@@ -1,4 +1,5 @@
 #include "route.hpp"
+#include "ice_shelves.hpp"
 #include "ice_terrain.hpp"
 
 #include <algorithm>
@@ -196,6 +197,7 @@ FloorPlan plan_floor(Game& game) {
             break;
         }
     }
+    plan_ice_shelves(game,plan);
     return plan;
 }
 

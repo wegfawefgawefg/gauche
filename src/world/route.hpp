@@ -7,7 +7,7 @@
 enum class RoomRole { Entrance, Exit, Clearing, Thicket, Brook, Ruins,
                       Den, Cache, Shrine, Workshop, Orchard, Secret,
                       Reservoir, FishingHut, Bathhouse, IceQuarry, Observatory, Shelter, EchoTunnel, WeatherStation, CliffPath, MemorialCourt, Chapel, CrystalGallery, ServicePassage, BoilerGallery, Workfront, BlastingAlcove, AssemblyLine, RepairBay, ScrapYard, CoolingWorks, CableTrench, KilnCourt, PayOffice, LampAlcove, SlagBank, AshLoft, HoistShaft, CastingFloor, SettlingTanks, FreightSiding };
-enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave };
+enum class RoomShape { Clearing, Cross, BentHall, TwinCave, Courtyard, Pillars, Gallery, Steps, ChapelNave, IceShelf };
 
 struct RoomPlan {
     Cell grid{}, center{};
@@ -16,12 +16,16 @@ struct RoomPlan {
     RoomRole role = RoomRole::Clearing;
     RoomShape shape = RoomShape::Clearing;
     bool mirrored = false;
+    int shelf_variant=0;
 };
 
 struct RouteEdge { int a = 0, b = 0; };
+struct ShelfReward { Cell island{},bank{},direction{}; };
 struct FloorPlan {
     std::vector<RoomPlan> rooms;
     std::vector<RouteEdge> edges;
+    std::vector<ShelfReward> shelf_rewards;
+    int shelf_links=0;
     std::vector<std::uint8_t> protected_cells;
     int exit_room = 0, objective_room = 0;
     int width = 0, height = 0;

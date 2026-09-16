@@ -1,4 +1,5 @@
 #include "ice_pillars.hpp"
+#include "ice_shelves.hpp"
 #include "chasm.hpp"
 #include "roof_scenes.hpp"
 #include "reactor.hpp"
@@ -63,6 +64,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         game.run.has_key = false;
         game.run.objective = (game.run.floor - 1) % 2 == 0 ? ObjectiveKind::Key : ObjectiveKind::Switch;
         place_chasms(game,plan);
+        carve_shelf_reward(game,plan);
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
@@ -101,6 +103,6 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     if (reactor) populate_last_shift(game);
     else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
-    else { populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
+    else { populate_shelf_reward(game,plan); populate_rooms(game, plan,report); scatter_room_props(game, plan); place_ice_pillars(game,plan); place_roof_scenes(game,plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);
 }

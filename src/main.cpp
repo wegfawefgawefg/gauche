@@ -43,6 +43,7 @@ constexpr double step_seconds = 1.0 / 60.0;
 int main(int argc, char** argv) {
     if (has_arg(argc,argv,"--audit-supply")) return run_supply_audit();
     if (has_arg(argc,argv,"--audit-generation")) return run_generation_audit();
+    if (has_arg(argc,argv,"--audit-forest")) return run_forest_audit();
     if (has_arg(argc, argv, "--headless")) return run_headless_client(argc, argv);
     MultiplayerDebug multiplayer;
     const bool smoke = wants_smoke(argc, argv);

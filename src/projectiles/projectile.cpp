@@ -2,6 +2,7 @@
 #include "chain_hook.hpp"
 #include "projectile.hpp"
 #include "arrow_fire.hpp"
+#include "arrow_contact.hpp"
 #include "../items/fire.hpp"
 #include "../items/bolt_pouch.hpp"
 #include "coal_spit.hpp"
@@ -33,6 +34,7 @@
 // entity_a = current owner, ground_item = weapon spec, attack_interval = total range.
 // counter_c = wooden arrow flame flag (other projectile kinds own their slots).
 // timer_c = hard lifetime for reflecting arrow/rocket legs; never refreshed on a parry.
+// Piercing arrows share the saved flight-contact list; parries start a new leg.
 void init_projectile(Entity& entity) {
     entity.health = entity.max_health = 1;
     entity.sprite = Sprite::Arrow;
@@ -178,6 +180,7 @@ void step_projectile(Game& game, int slot) {
         else finish_arrow(game, slot, shot.cell);
         return;
     }
+    if (!bomb && !rocket && !flask && arrow_cell_contact(game,slot)) return;
     if (bomb && shot.timer_a % 30 == 0) emit_sound(game, SoundId::BombFuse, shot.cell);
     if (shot.counter_a == 0 || shot.timer_b > 0) return;
     const Cell next = shot.cell + shot.facing;
@@ -225,22 +228,6 @@ void step_projectile(Game& game, int slot) {
         if (bomb && shot.counter_a == 0) emit_sound(game, SoundId::BombLand, shot.cell);
         return;
     }
-    for (int victim_slot = 0; victim_slot < max_entities; ++victim_slot) {
-        const Entity& victim = game.entities[static_cast<std::size_t>(victim_slot)];
-        if (victim_slot == slot || victim.cell != next || !victim.impassable || victim.health <= 0 ||
-            (victim_slot == shot.entity_a.slot && victim.generation == shot.entity_a.generation)) continue;
-        if (parry_ranged_hit(game, victim_slot, shot.facing)) {
-            reflect_projectile(shot, victim, victim_slot);
-            return;
-        }
-        const int health=victim.health;
-        damage_entity(game, victim_slot, shot.counter_b, next - shot.facing, true, shot.entity_a);
-        if (burning_arrow(shot) && victim.health<health) {
-            ignite_struck_actor(game,victim_slot);
-            ignite_arrow_impact(game,shot,next);
-        }
-        emit_sound(game, shot.ground_item.kind==ItemKind::RivetGun ? SoundId::RivetImpact : SoundId::ArrowImpact, next);
-        if (shot.label_b == 0) { remove_entity(game, {slot, shot.generation}); return; }
-    }
+    if (arrow_cell_contact(game,slot)) return;
     if (shot.counter_a == 0) finish_arrow(game, slot, next);
 }

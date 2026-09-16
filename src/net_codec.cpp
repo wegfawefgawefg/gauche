@@ -317,6 +317,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         const Entity* shot = get_entity(result, hit.projectile);
         if (shot == nullptr || shot->kind != EntityKind::Projectile ||
             (shot->label_a != static_cast<int>(ProjectileKind::Rock) &&
+             shot->label_a != static_cast<int>(ProjectileKind::Arrow) &&
              shot->label_a != static_cast<int>(ProjectileKind::Boomerang)) ||
             hit.victim.slot < 0 || hit.victim.slot >= max_entities) reader.okay = false;
         result.flight_contacts.push_back(hit);

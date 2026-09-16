@@ -1,6 +1,7 @@
 #include "entities/mine_crew.hpp"
 #include "items/sled.hpp"
 #include "game.hpp"
+#include "projectiles/flight_contacts.hpp"
 #include "entities/icicle_spider.hpp"
 #include "entities/echo_hound.hpp"
 #include "world/water.hpp"
@@ -52,6 +53,7 @@ const Entity* get_entity(const Game& game, Handle handle) {
 void remove_entity(Game& game, Handle handle) {
     Entity* entity = get_entity(game, handle);
     if (entity == nullptr) return;
+    if (entity->kind==EntityKind::Projectile) forget_flight_contacts(game,handle);
     clear_sled_links(game,*entity);
     clear_spider_strand(game,*entity);
     const std::uint32_t generation = entity->generation;

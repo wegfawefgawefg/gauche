@@ -1,4 +1,5 @@
 #include "recoverable.hpp"
+#include "flight_contacts.hpp"
 #include "../world/chasm.hpp"
 #include "../items/lunch_tin.hpp"
 #include "../items/coal.hpp"
@@ -11,10 +12,6 @@
 #include <algorithm>
 
 namespace {
-
-void forget_hits(Game& game, Handle shot) {
-    std::erase_if(game.flight_contacts, [shot](const FlightContact& hit) { return hit.projectile == shot; });
-}
 
 Item* reservation(Game& game, const Entity& shot, Handle handle) {
     Entity* owner = get_entity(game, shot.entity_b);
@@ -36,7 +33,6 @@ void land(Game& game, int slot, bool hot_impact = false) {
     const Cell cell = shot.cell;
     const bool burned=coal_lava_contact(game,item,cell);
     if (Item* held = reservation(game, shot, handle)) *held = {};
-    forget_hits(game, handle);
     remove_entity(game, handle);
     if (burned) return;
     if (melted) { emit_sound(game, SoundId::IceMelt, cell); return; }
@@ -61,7 +57,6 @@ bool catch_boomerang(Game& game, int slot) {
     held->flight = {};
     held->cooldown = item_pattern(*held).cooldown;
     const Cell cell = shot.cell;
-    forget_hits(game, handle);
     remove_entity(game, handle);
     emit_sound(game, SoundId::BoomerangCatch, cell);
     return true;
@@ -75,15 +70,8 @@ void turn_back(Game& game, int slot) {
     shot.counter_a = shot.attack_interval * 2 + 8;
     shot.facing = cardinal_toward(shot.cell, owner->cell, shot.facing);
     shot.timer_b = 3;
-    forget_hits(game, {slot, shot.generation});
+    forget_flight_contacts(game, {slot, shot.generation});
     catch_boomerang(game, slot);
-}
-
-bool first_contact(Game& game, Handle shot, Handle victim) {
-    for (const FlightContact& hit : game.flight_contacts)
-        if (hit.projectile == shot && hit.victim == victim) return false;
-    game.flight_contacts.push_back({shot, victim});
-    return true;
 }
 
 } // namespace
@@ -152,11 +140,11 @@ void step_recoverable(Game& game, int slot) {
         const Entity& actor = game.entities[static_cast<std::size_t>(index)];
         if (index == slot || actor.health <= 0 || !actor.impassable || actor.cell != next ||
             (index == shot.entity_a.slot && actor.generation == shot.entity_a.generation)) continue;
-        if (!first_contact(game, {slot, shot.generation}, {index, actor.generation})) continue;
+        if (!first_flight_contact(game, {slot, shot.generation}, {index, actor.generation})) continue;
         if (parry_ranged_hit(game, index, shot.facing)) {
             reflect_projectile(shot, actor, index);
             if (boomerang) shot.label_b = 2;
-            forget_hits(game, {slot, shot.generation});
+            forget_flight_contacts(game, {slot, shot.generation});
             return;
         }
         const int health = actor.health;

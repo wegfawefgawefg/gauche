@@ -4,6 +4,7 @@
 #include "../surfaces/slip.hpp"
 #include "../world/water.hpp"
 #include "../world/chasm.hpp"
+#include "../projectiles/arrow_contact.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -64,6 +65,8 @@ void step_actor_tosses(Game& game) {
         const bool open=tile && (walkable(*tile) || tile->kind==TileKind::Water || tile->kind==TileKind::Chasm);
         if (!open || entity_at(game,next,true)>=0) { land(game,slot,true); continue; }
         actor.cell=next;
+        contact_arrows(game,slot);
+        if (actor.health<=0) continue;
         if (actor.toss.ticks==0) land(game,slot,false);
     }
 }

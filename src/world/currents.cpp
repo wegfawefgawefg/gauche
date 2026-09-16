@@ -1,3 +1,4 @@
+#include "../entities/river_raft.hpp"
 #include "../items/sled.hpp"
 #include "currents.hpp"
 #include "route.hpp"
@@ -25,7 +26,7 @@ void step_water_currents(Game& game) {
             actor.kind==EntityKind::SealThief || actor.kind==EntityKind::BellDiver) continue;
         // Live shoals hold their place in the stream; casts can still retrieve them.
         if (cargo && actor.ground_item.kind==ItemKind::RiverFish) continue;
-        if (sled_cargo(game,actor) || ridden_sled(game,actor)) continue;
+        if (sled_cargo(game,actor) || ridden_sled(game,actor) || ridden_river_raft(game,actor)) continue;
         const Cell flow=water_current(game.stage.at_or_border(actor.cell));
         if (flow==Cell{}) continue;
         const Cell target=actor.cell+flow;

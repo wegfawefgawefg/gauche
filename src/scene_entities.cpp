@@ -182,6 +182,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_FRect body_rect = rect;
             double angle = pose != nullptr && pose->seen ? pose->angle : 0.0;
             if (entity.kind==EntityKind::Sled) angle=entity.facing.x>0 ? 0 : entity.facing.x<0 ? 180 : entity.facing.y>0 ? 90 : -90;
+            if (entity.kind==EntityKind::RiverRaft && entity.label_a==1) angle=entity.facing.y!=0 ? 90 : 0;
             if (eats_meat(entity.kind) && entity.label_b == 1) {
                 body_rect.h *= .88F; body_rect.y += pixels * .12F;
                 angle += std::sin(static_cast<double>(game.tick % 60) * .65) * 7;

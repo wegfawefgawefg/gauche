@@ -80,7 +80,7 @@ struct TimberGrove {
     std::vector<Cell> ground,firebreaks,trees;
 };
 struct SpiderGrowth { std::vector<Cell> ground; int component=-1,opened=0; };
-struct RiverPlan { std::vector<Cell> path,channel,banks; Cell source{},outlet{},outflow{}; int component=-1; };
+struct RiverPlan { std::vector<Cell> path,channel,banks; Cell source{},outlet{},outflow{}; int component=-1; bool loop=false; };
 struct OpenSector { std::vector<Cell> ground; int component=-1; };
 struct ThemePatch { GenerationTheme theme{};std::vector<Cell> ground;int component=-1; };
 struct FloorPlan {

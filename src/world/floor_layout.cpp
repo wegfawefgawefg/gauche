@@ -167,6 +167,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_open_sectors(game,plan,report);
         populate_forest_river(game,plan,report);
         populate_spider_growth(game,plan,report);
+        populate_river_rafts(game,plan);
         capture("Cross-room inhabitants and scenery");
         // Ambient colonies use remaining capacity after all ordinary fighters.
         populate_ant_colonies(game,plan,report);

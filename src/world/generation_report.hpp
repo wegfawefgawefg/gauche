@@ -26,7 +26,7 @@ struct ComponentDecision {
     int placed=0;
     Cell anchor{};
     std::vector<Cell> cells,guide,rejected_cells;
-    bool guide_closed=false;
+    bool guide_closed=false,guide_cell_centers=false;
     std::vector<ComponentOption> options;
 };
 struct GenerationReport {

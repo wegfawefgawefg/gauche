@@ -56,7 +56,7 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
         for (std::size_t i=1;!child.guide.empty() && i<child.guide.size()+(child.guide_closed ? 1U : 0U);++i) {
             const auto a=tile_rect(child.guide[i-1],v.render.camera,v.zoom);
             const auto b=tile_rect(child.guide[i%child.guide.size()],v.render.camera,v.zoom);
-            const float offset=child.guide_closed ? 0.0F : a.w*.5F;
+            const float offset=child.guide_closed && !child.guide_cell_centers ? 0.0F : a.w*.5F;
             SDL_RenderLine(renderer,a.x+offset,a.y+offset,b.x+offset,b.y+offset);
         }
     }

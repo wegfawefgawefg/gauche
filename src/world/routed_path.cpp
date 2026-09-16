@@ -3,6 +3,31 @@
 #include <limits>
 #include <queue>
 
+std::vector<Cell> route_closed_cost_field(std::span<const Cell> guide,int width,int height,
+                                         std::span<const unsigned> costs) {
+    if (guide.size()<3 || width<=0 || height<=0 || width>512 || height>512 || costs.size()!=static_cast<std::size_t>(width*height)) return {};
+    const auto index=[&](Cell cell){return static_cast<std::size_t>(cell.y*width+cell.x);};
+    for (std::size_t i=0;i<guide.size();++i) {
+        const Cell cell=guide[i];
+        if (cell.x<0 || cell.y<0 || cell.x>=width || cell.y>=height || !costs[index(cell)]) return {};
+        for (std::size_t j=0;j<i;++j) if (cell==guide[j]) return {};
+    }
+    std::vector<Cell> path{guide.front()};
+    for (std::size_t i=0;i<guide.size();++i) {
+        const Cell from=guide[i],to=guide[(i+1)%guide.size()];
+        if (from==to) return {};
+        std::vector<unsigned> available(costs.begin(),costs.end());
+        for (Cell cell:path) available[index(cell)]=0;
+        for (Cell cell:guide) available[index(cell)]=0;
+        available[index(from)]=costs[index(from)];available[index(to)]=costs[index(to)];
+        auto link=route_cost_field(from,to,width,height,available);
+        if (link.size()<2) return {};
+        path.insert(path.end(),link.begin()+1,link.end());
+    }
+    if (path.back()!=path.front()) return {};
+    path.pop_back();return path;
+}
+
 std::vector<Cell> route_cost_field(Cell from,Cell to,int width,int height,std::span<const unsigned> costs) {
     const auto inside=[&](Cell c){return c.x>=0 && c.y>=0 && c.x<width && c.y<height;};
     if (width<=0 || height<=0 || width>512 || height>512 || costs.size()!=static_cast<std::size_t>(width*height) || !inside(from) || !inside(to)) return {};

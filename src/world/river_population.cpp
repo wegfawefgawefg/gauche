@@ -46,6 +46,7 @@ void populate_forest_river(Game& game,FloorPlan& plan,PopulationReport* report) 
             component_result(&plan.report,roll,"Fish available to catch",std::array{c});
         }
         if (river.component>=0) plan.report.components[static_cast<std::size_t>(river.component)].result=
-            "Connected shallow channel; "+std::to_string(occupied.size())+"/"+std::to_string(budget)+" bank fighters, "+std::to_string(plants)+" plants";
+            std::string(river.loop ? "Circulating shallow channel; " : "Connected shallow channel; ")+
+            std::to_string(occupied.size())+"/"+std::to_string(budget)+" bank fighters, "+std::to_string(plants)+" plants";
     }
 }

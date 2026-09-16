@@ -1,3 +1,4 @@
+#include "../entities/river_raft.hpp"
 #include "../items/sled.hpp"
 #include "floating_items.hpp"
 #include "currents.hpp"
@@ -30,7 +31,7 @@ bool float_cell_free(const Game& game, Cell cell, int cargo_slot) {
 bool start_item_float(Game& game, int slot, Cell direction) {
     Entity& cargo = game.entities[static_cast<std::size_t>(slot)];
     if (cargo.kind != EntityKind::GroundItem || cargo.ground_item.count <= 0 ||
-        cargo.ground_item.kind == ItemKind::None || sled_cargo(game,cargo) || floating_item(cargo) || distance({}, direction) != 1 ||
+        cargo.ground_item.kind == ItemKind::None || sled_cargo(game,cargo) || ridden_river_raft(game,cargo) || floating_item(cargo) || distance({}, direction) != 1 ||
         !float_water(game.stage.at_or_border(cargo.cell)) ||
         !float_cell_free(game, cargo.cell, slot) || !float_cell_free(game, cargo.cell + direction, slot)) return false;
     cargo.label_a = 1;

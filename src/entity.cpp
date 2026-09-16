@@ -1,3 +1,4 @@
+#include "entities/river_raft.hpp"
 #include "entities/mine_crew.hpp"
 #include "items/sled.hpp"
 #include "game.hpp"
@@ -55,6 +56,7 @@ void remove_entity(Game& game, Handle handle) {
     if (entity == nullptr) return;
     if (entity->kind==EntityKind::Projectile) forget_flight_contacts(game,handle);
     clear_sled_links(game,*entity);
+    clear_river_raft(game,*entity);
     clear_spider_strand(game,*entity);
     const std::uint32_t generation = entity->generation;
     *entity = {};
@@ -86,8 +88,9 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     entity.facing = direction;
     entity.cell = destination;
     enter_actor_cell(game, slot);
-    if (entity.kind==EntityKind::Player && entity.cell==destination) board_sled(game,slot);
-    if (allow_slip && entity.cell == destination && !ridden_sled(game,entity) && slip_on_surface(game, slot, direction)) return true;
+    if (entity.kind==EntityKind::Player && entity.cell==destination) {board_sled(game,slot);board_river_raft(game,slot);}
+    if (allow_slip && entity.cell == destination && !ridden_sled(game,entity) &&
+        !ridden_river_raft(game,entity) && slip_on_surface(game, slot, direction)) return true;
     entity.move_wait = entity.move_interval;
     // LANDING: A spring can move us again during contact; effects use the final cell.
     if (entity.health <= 0) return true;

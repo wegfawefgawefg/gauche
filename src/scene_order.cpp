@@ -8,7 +8,7 @@ namespace {
 int entity_priority(const Entity& entity) {
     // Flat fixtures belong below ground flames and all standing bodies.
     if (diver_submerged(entity) || entity.kind==EntityKind::Campfire ||
-        entity.kind==EntityKind::Sled || entity.kind==EntityKind::IceAnchor ||
+        entity.kind==EntityKind::Sled || entity.kind==EntityKind::RiverRaft || entity.kind==EntityKind::IceAnchor ||
         entity.kind==EntityKind::PocketDoor || entity.kind==EntityKind::Trap ||
         entity.kind==EntityKind::Exit || entity.kind==EntityKind::Switch ||
         entity.kind==EntityKind::Encounter || entity.kind==EntityKind::WaveVent ||

@@ -1,3 +1,4 @@
+#include "../entities/river_raft.hpp"
 #include "sled.hpp"
 #include "../world/water.hpp"
 #include "../world/floating_items.hpp"
@@ -38,7 +39,7 @@ void load_cargo(Game& game,Entity& sled) {
     if (sled.entity_b.slot>=0) return;
     for (Entity& cargo : game.entities) {
         if (cargo.kind!=EntityKind::GroundItem || cargo.cell!=sled.cell || cargo.ground_item.count<=0 ||
-            cargo.ground_item.flight.slot>=0 || sled_cargo(game,cargo)) continue;
+            cargo.ground_item.flight.slot>=0 || sled_cargo(game,cargo) || ridden_river_raft(game,cargo)) continue;
         stop_item_float(game,cargo);
         cargo.label_a=2; cargo.entity_a=handle_of(game,sled);
         sled.entity_b=handle_of(game,cargo);
@@ -116,7 +117,7 @@ void clear_sled_links(Game& game,Entity& sled) {
 }
 void board_sled(Game& game,int player_slot) {
     Entity& player=game.entities[static_cast<std::size_t>(player_slot)];
-    if (player.health<=0 || ridden_sled(game,player)) return;
+    if (player.health<=0 || ridden_sled(game,player) || ridden_river_raft(game,player)) return;
     for (Entity& sled : game.entities) {
         if (sled.kind!=EntityKind::Sled || sled.health<=0 || sled.cell!=player.cell) continue;
         sync_passengers(game,sled);

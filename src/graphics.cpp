@@ -112,7 +112,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "mimic_open", "mimic_gape", "mimic_snap", "mimic_recover", "mimic_jaws", "mimic_jaws_closed",
     "gnome_stick", "gnome_stick_walk", "gnome_stick_tell", "gnome_stick_hit", "gnome_bow", "gnome_bow_walk", "gnome_bow_tell", "gnome_bow_hit", "gnome_crossbow", "gnome_crossbow_walk", "gnome_crossbow_tell", "gnome_crossbow_hit", "gnome_rider", "gnome_rider_walk", "gnome_rider_tell", "gnome_rider_hit",
     "gnome_house", "gnome_house_closed", "gnome_house_blue", "gnome_house_blue_closed", "gnome_house_ochre", "gnome_house_ochre_closed", "tall_mushroom", "tall_mushroom_blue", "tall_mushroom_ochre",
-    "old_growth_bear", "old_growth_rear", "old_growth_swipe", "old_growth_paw", "old_growth_rush", "old_growth_stagger", "tall_tree_snow_cap",
+    "old_growth_bear", "old_growth_rear", "old_growth_swipe", "old_growth_paw", "old_growth_rush", "old_growth_stagger", "tall_tree_snow_cap", "river_lily", "river_log",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

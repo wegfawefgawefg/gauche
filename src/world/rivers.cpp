@@ -53,11 +53,19 @@ void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     }
     if (!springs.empty()) sources=springs;
     plan.report.features.back().candidate_count=static_cast<int>(sources.size());
+    const WeightedComponent styles[]{{0,"Direct brook",3},{1,"Meandering stream",5},
+        {2,"Broad shallows",game.run.floor==1 ? 1U : 3U},{3,"Circulating river",game.run.floor==1 ? 0U : 3U}};
+    const auto style=roll_component(game,&plan.report,GenerationFeature::River,-1,"River shape",
+        sources.empty() ? plan.rooms.front().center : sources.front().cell,styles);
+    if (style.value==3) {
+        // A circulating channel must not consume an existing wall-backed source.
+        for (std::size_t i=0;i<count;++i) if (game.stage.tiles[i].kind==TileKind::Spring) allowed[i]=0;
+        carve_forest_river_loop(game,plan,trace,allowed,style);return;
+    }
     if (sources.empty() || (drains.empty() && drops.empty())) {
+        component_result(&plan.report,style,"No eligible source/outlet pair");
         auto& decision=plan.report.features.back();decision.outcome=GenerationOutcome::Failed;decision.reason="No eligible source/outlet pair";return;
     }
-    const WeightedComponent styles[]{{0,"Direct brook",3},{1,"Meandering stream",5},{2,"Broad shallows",game.run.floor==1 ? 1U : 3U}};
-    const auto style=roll_component(game,&plan.report,GenerationFeature::River,-1,"River shape",sources.front().cell,styles);
     const WeightedComponent ends[]{{0,"Boundary drain",drains.empty() ? 0U : 3U},{1,"Chasm spill",drops.empty() ? 0U : 2U}};
     for (int attempt=0;attempt<6;++attempt) {
         const auto spring=sources[random_u32(game)%sources.size()];

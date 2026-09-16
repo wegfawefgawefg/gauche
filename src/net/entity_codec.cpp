@@ -1,3 +1,4 @@
+#include "../entities/river_raft.hpp"
 #include "../entities/crate_mimic.hpp"
 #include "../entities/dog.hpp"
 #include "../projectiles/arrow_fire.hpp"
@@ -301,6 +302,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_rivet_gunner(entity)) reader.okay=false;
     if (!valid_rivet_action(entity)) reader.okay=false;
     if (!valid_strikebreaker(entity)) reader.okay=false;
+    if (!valid_river_raft(entity)) reader.okay=false;
     if (!valid_sled(entity)) reader.okay=false;
     if (!valid_ice_anchor(entity)) reader.okay=false;
     if (!valid_quarry_charge(entity)) reader.okay=false;

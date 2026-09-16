@@ -58,7 +58,7 @@ SoundId entity_death_sound(EntityKind kind) {
     case EntityKind::FrostBat: return SoundId::FrostDeath;
     case EntityKind::RimeSkater: return SoundId::SkaterBreak;
     case EntityKind::WaspNest: return SoundId::NestBreak;
-    case EntityKind::CrateMimic: case EntityKind::RootTurret:
+    case EntityKind::RiverRaft: case EntityKind::CrateMimic: case EntityKind::RootTurret:
     case EntityKind::BrambleGuard: return SoundId::WoodCrack;
     case EntityKind::ThornSnail: return SoundId::ShellKnock;
     default: return SoundId::AnimalCrush1;

@@ -91,3 +91,7 @@ more ideas for big world things. love your big forest area but, a mushroom fores
 idk i think we need more themes major world modifiers. minor world modifiers. and then we need a gen that lets us mix all these things togethor stochastically. and then well probably spend a few days going back and forth tweaking them and ill gen zones and then. also. i need a button to jump in and play a zone. so like we have the cam centered. im genning zones. lets say on the main menu theres a dev option, and if i hit that it takes me to this zone gen view right. i should be able to use my controller and like bumper to switch levels, press a button to regen. zoom in out, pan around, and then hit a button to jump in and play it. and i should be able to see the seed too.
 
 that way i can give feedback and playtest zones. this is gonna be really useful for us.
+
+--- Generation timeline and pass stepping — 2026-09-16 ---
+
+it would also be nice if the world level generation was somehow steppable like forward and backward? so i could see whats causing what. like scrub through time. not saying we record every modification but we obviously have PASSES right. so it would be nice to be able to step through the passes at the very least, maybe through each n in each pass assuming its loops.  not saying id use that all the time but it would make investigation dramatically easier right. then i can see okay why is the world fucked up in this way, scrub back. wow it looks good at pass 80%, oh the last step ruined everything. like that right.

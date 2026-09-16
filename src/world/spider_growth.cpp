@@ -21,22 +21,14 @@ bool allowed(const Game& game,const FloorPlan& plan,Cell cell) {
         return tile->break_rule!=BreakRule::Unbreakable && tile->material!=TileMaterial::Root && tile->prop.kind==PropKind::None;
     return tile->kind==TileKind::Grass || tile->kind==TileKind::Empty;
 }
-std::vector<Cell> connected(const Game& game,const FloorPlan& plan,Cell start,const std::vector<Cell>& cells) {
-    std::vector<bool> proposed(game.stage.tiles.size(),false),seen(proposed.size(),false);
-    for (Cell cell:cells) proposed[static_cast<std::size_t>(cell.y*plan.width+cell.x)]=true;
-    std::vector<Cell> result,queue{start};
-    for (std::size_t i=0;i<queue.size();++i) {
-        const Cell cell=queue[i];if (!game.stage.in_bounds(cell)) continue;
-        const auto index=static_cast<std::size_t>(cell.y*plan.width+cell.x);
-        if (seen[index] || !proposed[index] || !allowed(game,plan,cell)) continue;
-        seen[index]=true;result.push_back(cell);
-        for (Cell d:{Cell{1,0},Cell{-1,0},Cell{0,1},Cell{0,-1}}) queue.push_back(cell+d);
-    }
-    return result;
-}
+
 }
 
 void grow_spider_habitats(Game& game,FloorPlan& plan) {
+    if (plan.spider_caves.empty()) return;
+    std::vector<std::uint8_t> mask(game.stage.tiles.size());
+    for (int y=0;y<plan.height;++y) for (int x=0;x<plan.width;++x)
+        mask[static_cast<std::size_t>(y*plan.width+x)]=allowed(game,plan,{x,y});
     for (const auto& cave:plan.spider_caves) {
         const Cell origin=plan.rooms[static_cast<std::size_t>(cave.rooms[random_u32(game)%cave.rooms.size()])].center;
         const bool early=biome_stage(game.run.floor)==1;
@@ -76,7 +68,7 @@ void grow_spider_habitats(Game& game,FloorPlan& plan) {
                 truncated|=chamber.truncated;proposed.insert(proposed.end(),chamber.cells.begin(),chamber.cells.end());
             }
             if (truncated) {component_result(&plan.report,branch,"Raster budget exceeded");continue;}
-            auto ground=connected(game,plan,path.points.front(),proposed);
+            auto ground=connected_raster(path.points.front(),proposed,mask,plan.width,plan.height);
             struct Saved {Cell cell;Tile tile;};std::vector<Saved> saved;std::vector<Cell> opened;
             for (Cell cell:ground) if (auto* tile=game.stage.at(cell);tile->kind==TileKind::Wall) {
                 saved.push_back({cell,*tile});*tile={TileKind::Empty};opened.push_back(cell);

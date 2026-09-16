@@ -60,3 +60,19 @@ RasterShape raster_line(Cell a,Cell b,int radius,int width,int height,std::size_
     }
     result.truncated=true;return result;
 }
+
+std::vector<Cell> connected_raster(Cell start,std::span<const Cell> cells,
+    std::span<const std::uint8_t> allowed,int width,int height) {
+    if (width<=0 || height<=0 || width>512 || height>512 || allowed.size()!=static_cast<std::size_t>(width*height)) return {};
+    std::vector<bool> proposed(allowed.size(),false),seen(allowed.size(),false);
+    for (Cell cell:cells) if (within(cell,width,height)) proposed[static_cast<std::size_t>(cell.y*width+cell.x)]=true;
+    std::vector<Cell> result,queue{start};
+    for (std::size_t i=0;i<queue.size();++i) {
+        const Cell cell=queue[i];if (!within(cell,width,height)) continue;
+        const auto index=static_cast<std::size_t>(cell.y*width+cell.x);
+        if (seen[index] || !proposed[index] || !allowed[index]) continue;
+        seen[index]=true;result.push_back(cell);
+        for (Cell d:{Cell{1,0},Cell{-1,0},Cell{0,1},Cell{0,-1}}) queue.push_back(cell+d);
+    }
+    return result;
+}

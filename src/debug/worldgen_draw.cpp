@@ -50,6 +50,8 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
                 const auto box=tile_rect(cell,v.render.camera,v.zoom);SDL_RenderFillRect(renderer,&box);
             }
         }
+        SDL_SetRenderDrawColor(renderer,255,140,90,190);
+        for (Cell cell:child.rejected_cells) mark(cell);
         SDL_SetRenderDrawColor(renderer,child.placed ? 90 : 255,child.placed ? 255 : 100,210,255);
         for (std::size_t i=1;!child.guide.empty() && i<child.guide.size()+(child.guide_closed ? 1U : 0U);++i) {
             const auto a=tile_rect(child.guide[i-1],v.render.camera,v.zoom);

@@ -16,6 +16,7 @@ void component_tree(const GenerationReport& report,GenerationFeature feature,int
         if (ImGui::IsItemClicked()) viewer.selected_component=static_cast<int>(i);
         if (expanded) {
             ImGui::TextWrapped("%s | %d recorded cells",component.result.c_str(),component.placed);
+            if (!component.rejected_cells.empty()) ImGui::Text("%zu skipped cells (orange crosses)",component.rejected_cells.size());
             ImGui::Text("Weighted ticket %u / %u",component.ticket,component.total);
             for (const auto& option:component.options)
                 ImGui::TextWrapped("weight %u: %s",option.weight,option.name.c_str());

@@ -2,6 +2,7 @@
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
 #include "spider_growth.hpp"
+#include "root_growth.hpp"
 #include "light_towers.hpp"
 #include "lava_eruptions.hpp"
 #include "tall_trees.hpp"
@@ -105,6 +106,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         capture("Cross-room open sectors");
         grow_spider_habitats(game,plan);
         capture("Spider habitat growth");
+        grow_giant_roots(game,plan);
+        capture("Giant root growth");
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.

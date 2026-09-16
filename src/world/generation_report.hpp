@@ -23,7 +23,7 @@ struct ComponentDecision {
     unsigned ticket=0,total=0;
     int placed=0;
     Cell anchor{};
-    std::vector<Cell> cells,guide;
+    std::vector<Cell> cells,guide,rejected_cells;
     bool guide_closed=false;
     std::vector<ComponentOption> options;
 };

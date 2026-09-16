@@ -17,7 +17,8 @@ bool draw_chasm(SDL_Renderer* renderer,const Game& game,Cell cell,SDL_FRect rect
         const SDL_FRect part{rect.x+rect.w*x,rect.y+rect.h*y,rect.w*w,rect.h*h};
         SDL_RenderFillRect(renderer,&part);
     };
-    fill(0,0,1,1,.012F);
+    draw_flat_tile(renderer,nullptr,rect,{light.red*.012F*(ice ? .75F : 1),
+        light.green*.012F*(ice ? .9F : .92F),light.blue*.012F,1});
     const Tile& north=game.stage.at_or_border(cell+Cell{0,-1});
     if (!void_tile(north)) {
         // A lit lip above a tapering dark face reads as missing floor, not wall.

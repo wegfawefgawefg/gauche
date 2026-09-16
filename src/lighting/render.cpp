@@ -18,10 +18,31 @@ SDL_FColor blend(SDL_FColor a, SDL_FColor b, float t) {
 
 } // namespace
 
+void draw_flat_tile(SDL_Renderer* renderer, SDL_Texture* texture, SDL_FRect rect,
+                    SDL_FColor color, SDL_FRect uv, int quarter_turns, bool flip_horizontal) {
+    constexpr std::array<SDL_FPoint,5> points{{{0,0},{1,0},{1,1},{0,1},{.5F,.5F}}};
+    std::array<SDL_Vertex,5> vertices{};
+    for (std::size_t i=0;i<points.size();++i) {
+        const auto p=points[i];float u=p.x,v=p.y;
+        for (int turn=0;turn<(quarter_turns&3);++turn) {const float old=u;u=v;v=1-old;}
+        if (flip_horizontal) u=1-u;
+        vertices[i]={{rect.x+rect.w*p.x,rect.y+rect.h*p.y},color,{uv.x+uv.w*u,uv.y+uv.h*v}};
+    }
+    // A center fan stays on the triangle path in SDL's software renderer. Its
+    // rectangle shortcut truncates positions and widths separately, leaving gaps.
+    constexpr int indices[]{0,1,4,1,2,4,2,3,4,3,0,4};
+    SDL_RenderGeometry(renderer,texture,vertices.data(),static_cast<int>(vertices.size()),indices,12);
+}
+
 void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
                    SDL_FRect rect, Cell cell, const LightingCache& lighting,
                    LightColor tint,SDL_FRect uv,int quarter_turns,float opacity,bool flip_horizontal) {
     if (texture == nullptr) return;
+    if (!lighting.active) {
+        auto color=vertex_color({1,1,1},tint);color.a=opacity;
+        draw_flat_tile(renderer,texture,rect,color,uv,quarter_turns,flip_horizontal);
+        return;
+    }
     const SDL_FColor nw = vertex_color(light_at_corner(lighting, cell), tint);
     const SDL_FColor ne = vertex_color(light_at_corner(lighting, cell + Cell{1, 0}), tint);
     const SDL_FColor sw = vertex_color(light_at_corner(lighting, cell + Cell{0, 1}), tint);
@@ -49,12 +70,17 @@ void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
     static constexpr auto indices = [] {
         std::array<int, divisions * divisions * 6> result{};
         int next = 0;
-        for (int y = 0; y < divisions; ++y)
-            for (int x = 0; x < divisions; ++x) {
-                const int a = y * stride + x;
-                for (int index : {a, a + 1, a + stride + 1, a, a + stride + 1, a + stride})
-                    result[static_cast<std::size_t>(next++)] = index;
-            }
+        // Keep opposite triangles apart. SDL's software quad shortcut truncates
+        // origin/extent independently, opening seams at fractional zoom even
+        // inside this lighting mesh. Triangles rasterize their shared endpoints.
+        for (int half = 0; half < 2; ++half)
+            for (int y = 0; y < divisions; ++y)
+                for (int x = 0; x < divisions; ++x) {
+                    const int a = y * stride + x;
+                    for (int index : half == 0 ? std::array{a, a + 1, a + stride + 1} :
+                                               std::array{a, a + stride + 1, a + stride})
+                        result[static_cast<std::size_t>(next++)] = index;
+                }
         return result;
     }();
     SDL_RenderGeometry(renderer, texture, vertices.data(),

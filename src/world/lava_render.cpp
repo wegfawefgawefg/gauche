@@ -9,11 +9,7 @@ bool draw_lava(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& g
     // One native-resolution pattern spans eight tiles in each direction.
     const SDL_FRect uv{static_cast<float>((cell.x%8+8)%8)/8,
         static_cast<float>((cell.y%8+8)%8)/8,1.0F/8,1.0F/8};
-    if (lighting.active) draw_lit_tile(renderer,texture,rect,cell,lighting,{1,1,1},uv);
-    else {
-        const SDL_FRect source{uv.x*128,uv.y*128,16,16};
-        SDL_RenderTexture(renderer,texture,&source,&rect);
-    }
+    draw_lit_tile(renderer,texture,rect,cell,lighting,{1,1,1},uv);
     const auto light=lit_sprite_color(lighting,cell);
     const auto fill=[&](int x,int y,int w,int h,SDL_Color color) {
         SDL_SetRenderDrawColorFloat(renderer,light.red*color.r/255.0F,

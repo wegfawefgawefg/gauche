@@ -206,16 +206,10 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             const Sprite id = deck ? deck->sprite : tile.material==TileMaterial::Root && !log_cap ? root_sprite(game.stage,cell) : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
             SDL_Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};
-            if (lighting.active) draw_lit_tile(renderer, texture, rect, cell, lighting, tint,{0,0,1,1},turns);
-            else {
-                SDL_SetTextureColorModFloat(texture, tint.red, tint.green, tint.blue);
-                SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,turns*90,nullptr,SDL_FLIP_NONE);
-                SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
-            }
+            draw_lit_tile(renderer, texture, rect, cell, lighting, tint,{0,0,1,1},turns);
             if (log_cap) {
                 SDL_Texture* cap=texture_for(graphics,*log_cap);
-                if (lighting.active) draw_lit_tile(renderer,cap,rect,cell,lighting,tint);
-                else SDL_RenderTexture(renderer,cap,nullptr,&rect);
+                draw_lit_tile(renderer,cap,rect,cell,lighting,tint);
             }
             if (!arena && (biome==Biome::Ice || tile.kind==TileKind::Snow || tile.kind==TileKind::Ice)) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
             if (!arena && tile.kind == TileKind::Wall && !log_cap)

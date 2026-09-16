@@ -15,6 +15,19 @@ from multiplayer_layout import i3, arrange
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def window_options(role, layout, primary):
+    width, height = 960, 540
+    render_width, render_height = 640, 360
+    if role == 'human' and layout != 'quad':
+        rect = primary['rect'] if primary else {'width': 1920, 'height': 1080}
+        width, height = rect['width'], rect['height']
+        # Keep the game's 16:9 view, rendered at the human display's resolution.
+        render_height = min(height, width * 9 // 16)
+        render_width = render_height * 16 // 9
+    return ['--window-width', str(width), '--window-height', str(height),
+            '--render-width', str(render_width), '--render-height', str(render_height)]
+
+
 def stop_children(children):
     for child in children:
         if child.poll() is None:
@@ -69,6 +82,8 @@ def main():
     print(f'Primary: {primary["name"] if primary else "desktop"}; workspace {args.workspace}')
     if args.layout == 'split':
         print(f'Bots: {secondary["name"] if secondary else "desktop"}; workspace {args.bot_workspace}')
+    if human:
+        print('Human video: ' + ' '.join(window_options('human', args.layout, primary)))
     if args.dry_run:
         return 0
     if not args.no_build:
@@ -101,7 +116,7 @@ def main():
         if headless:
             command += ['--headless']
         else:
-            command += ['--window-title', title, '--window-width', '960', '--window-height', '540']
+            command += ['--window-title', title, *window_options(role, args.layout, primary)]
         log = open(run / f'{role}.log', 'w')
         logs.append(log)
         child = subprocess.Popen(command, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)

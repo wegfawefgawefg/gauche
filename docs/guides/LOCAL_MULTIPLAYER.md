@@ -55,6 +55,9 @@ profile's `data/gauche/Gauche/netlogs`. Profiles/logs remain after exit for diag
 `layout.json` records requested and actual window positions. The launcher checks
 that placement settles instead of silently ignoring i3 errors. Debug windows keep
 a fixed 16:9 canvas with letterboxing, even when resized into a narrow shape.
+In split/headless layouts the human canvas uses the primary display's resolution
+(1920×1080 on a Full HD display; that is also the fallback without i3).
+Visible bots and quad-layout windows keep their cheaper 640×360 canvas.
 
 Network logs include progress every five seconds, confirmed/host/local ticks,
 timeline revision, measured RTT, prediction lead, byte totals, and recovery count.

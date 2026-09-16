@@ -49,7 +49,8 @@ int main(int argc, char** argv) {
     const bool smoke = wants_smoke(argc, argv);
     const bool border_smoke = has_arg(argc, argv, "--smoke-border");
     GubsyRuntime host;
-    if (!init_gubsy_runtime(host, app_config(argc, argv)) || !gubsy_init_sdl_renderer(host)) {
+    const auto config = app_config(argc, argv);
+    if (!init_gubsy_runtime(host, config) || !gubsy_init_sdl_renderer(host)) {
         std::fprintf(stderr, "Gubsy host failed: %s\n", SDL_GetError());
         cleanup_gubsy_runtime(host);
         return 1;
@@ -59,8 +60,9 @@ int main(int argc, char** argv) {
     if (!value_arg(argc, argv, "--window-width").empty()) {
         auto& engine = gubsy_runtime_engine(host);
         set_top_level_setting_int(engine.top_level_game_settings, "gubsy.video.match_render_to_window", 0);
-        set_top_level_setting_string(engine.top_level_game_settings, "gubsy.video.render_resolution", "640x360");
-        set_render_resolution(engine, 640, 360);
+        const auto resolution = std::to_string(config.render_width) + "x" + std::to_string(config.render_height);
+        set_top_level_setting_string(engine.top_level_game_settings, "gubsy.video.render_resolution", resolution);
+        set_render_resolution(engine, config.render_width, config.render_height);
         set_render_scale_mode(engine, RenderScaleMode::Fit);
     }
 

@@ -83,6 +83,12 @@ GubsyAppConfig app_config(int argc, char** argv) {
     config.window_height = 720;
     config.render_width = 640;
     config.render_height = 360;
+    const auto render_width = number_arg(value_arg(argc, argv, "--render-width"));
+    const auto render_height = number_arg(value_arg(argc, argv, "--render-height"));
+    if (render_width && render_height && *render_width > 0 && *render_height > 0) {
+        config.render_width = *render_width;
+        config.render_height = *render_height;
+    }
     config.resizable_window = true;
     config.apply_display_settings = true;
     config.draw_fps_overlay = false;
@@ -94,4 +100,3 @@ GubsyAppConfig app_config(int argc, char** argv) {
     }
     return config;
 }
-

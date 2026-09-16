@@ -1,0 +1,41 @@
+User feedback — 2026-09-16. Wording preserved; individual send times unavailable.
+Source: this conversation. Separate from implementation decisions in MASTER_TASKS.md.
+
+--- Frozen logs and missing Forest content ---
+
+okay those ice arches look like frozen logs. rename them as frozen logs and put them on 2-1 only, and then figure out something totally different for ice arches lol.
+
+i feel like the forest is so samey and im just wondering where all the things i talked about before are. the larger multi room structures, the common, rarer etc scenes. bear dens, spider dens, snake pits, holes to step in, mud, vines. were just missing so much. its been like 12+ hours. is it bureid only in docs? buried in tasks? did the tasks never get made?
+
+--- Depth, combat density, fishing gold ---
+
+[Image #1] gonna have to be careful with things like this. for tall stuff it needs to be z ordered bottom to top by y yeah?
+
+also so far the most fun area combat wise has been the haunted house. i think we need tons of fucking enemies in some place. and weapons maybe should have a lot more durability like ten times what they have now. world should be more cluttered. a little more gauntlet in the game you know?
+
+comment: fishing line cant currently pull gold idk why.
+
+regarding: That was a
+  failure to turn the ideas into executable work.  uh... i hope theres not tons of shit ive been saying that has just been acknolwedged but not turned into tasks ._. oh god.
+
+--- Bear variants and layered generation ---
+
+• The new bear area will occupy two connected room footprints, with a stream approach and a sheltered sleeping hollow—
+  not just a bear dropped into a normal room. It will have its own population and scenery budget, so ordinary
+  encounters can’t consume its allocation.
+
+no dude. like theres supposed to be variants. like could just be one bear roaming. 
+there was this thing of a bear eating fish from a stream. we used to have these water source streams in the wall on forest i went thru entire forest i never see them now. 
+we wanted like a full room of sleeping nested bears baby bears moma papas etc. 
+
+or just a room with one LARGE bear. and we had this thing where we need skeletons and bones in the room. cuz the bear ate things. rotten fish etc. 
+
+any time i give you something that can be content in the game, we need it to become tasks. every time, and it at the very least should be recorded... when i said it and as i said it. luckily we have this chat log i think we can check through my smessages. [Image #1] look im on ice in this area... thers.. nothing here. and i see the same pattern with the two holes but those holes could appear in a few places. you need to use like rng on these scenes. are you hard coding them? they should be layers of probabilities and components appearing on components. prefabs with dice rolls. everything in the game should be like that. like the spelunky gen. passes layers and layers of probabilities and conditions. we shouldnt just have the same prefab scene room popped a bunch of times it makes no sense. we need a major evaluation of the scenes and sets and world gen then bc i keep seeing the same sets and its not quite right. its okay to have some fixed but a lot should be layers of probabilities of like prefab prefab on prefab rolls etc. yeah? rolls for item spots. 
+
+so it should be like, generate things at room level, room gen has layers of prefabs on top. then cross room pass. then like a whole level pass right. 
+
+i dont understand how our current gen works but i imagine its not as sophisticated as it needs to be and thats why were not getting richness in our patterns, like our patterns arent even rotating. 
+
+note this. please. 
+
+continue

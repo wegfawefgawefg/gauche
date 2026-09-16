@@ -22,14 +22,15 @@ PropKind room_prop(Game& game, RoomRole role) {
             PropKind::ClayPot : PropKind::Crate;
     switch (role) {
     case RoomRole::Thicket: return roll % 3 == 0 ? PropKind::Puffball : PropKind::TallGrass;
-    case RoomRole::Brook: return roll % 2 == 0 ? PropKind::Fern : PropKind::Twigs;
+    case RoomRole::Brook: return roll % 5 == 0 ? PropKind::Puffball : roll % 2 == 0 ? PropKind::Fern : PropKind::TallGrass;
     case RoomRole::Ruins: case RoomRole::Shrine:
         return roll % 3 == 0 ? PropKind::ClayPot : PropKind::Leaves;
     case RoomRole::Den: return roll % 3 == 0 ? PropKind::RottenLog : PropKind::Twigs;
     case RoomRole::Secret: case RoomRole::Cache: case RoomRole::Workshop:
         return roll % 3 == 0 ? PropKind::Crate : PropKind::Twigs;
-    case RoomRole::Orchard: return roll % 5 == 0 ? PropKind::Nest : PropKind::Leaves;
-    default: return roll % 3 == 0 ? PropKind::Fern : PropKind::Leaves;
+    case RoomRole::Orchard: return roll % 5 == 0 ? PropKind::Nest : roll % 3 == 0 ? PropKind::Puffball : PropKind::Leaves;
+    default: return roll % 17 == 0 ? PropKind::LanternPlant : roll % 5 == 0 ? PropKind::Puffball :
+        roll % 3 == 0 ? PropKind::Fern : PropKind::Leaves;
     }
 }
 
@@ -77,7 +78,10 @@ void scatter_room_props(Game& game, const FloorPlan& plan) {
         if (cold && room.role != RoomRole::MemorialCourt && room.role != RoomRole::WeatherStation && room.role != RoomRole::FishingHut && room.role != RoomRole::Shelter &&
             room.role != RoomRole::Bathhouse && room.role != RoomRole::Cache &&
             room.role != RoomRole::Observatory && room.role != RoomRole::Shrine) continue;
-        const int patches = room.role == RoomRole::Thicket ? 7 : 3;
+        // Dense patches and quieter gaps, scaled to the real room footprint.
+        const int patches = cold ? 3 : room.role == RoomRole::Thicket ? 9 :
+            3+room.half_width*room.half_height/18;
+        if (room.shape==RoomShape::BearHollow) continue;
         for (int patch = 0; patch < patches; ++patch) {
             const Cell anchor = room.center + Cell{
                 static_cast<int>(random_u32(game) % static_cast<unsigned int>(room.half_width * 2)) - room.half_width,

@@ -7,6 +7,8 @@ struct PlacementCount { int attempted=0, placed=0, budget_blocked=0, rejected=0;
 struct SceneCount : PlacementCount { int planned=0, fallbacks=0; };
 struct RangedGroup { Cell gunner{},escort{}; bool added_gunner=false; };
 struct PopulationReport {
+    std::vector<RoomPlan> rooms;
+    std::vector<ForestDen> forest_dens;
     std::vector<RangedGroup> ranged_groups;
     int shelf_rooms=0, shelf_links=0;
     std::vector<ShelfReward> shelf_rewards;

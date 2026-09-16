@@ -1,7 +1,9 @@
 # Original user messages
 
-Occasionally archive substantial messages worth keeping, or messages the user
-explicitly asks to preserve. Do not archive every message or routine clarification.
+From 2026-09-16, preserve new user content ideas and playtest feedback verbatim
+with their date, and turn actionable ideas into entries in MASTER_TASKS.md.
+This supersedes the earlier occasional-only policy for content feedback.
+Routine acknowledgements need not be archived. Do not invent unavailable times.
 For selected messages, preserve wording independently of design interpretations
 and task lists.
 The `.txt` files contain message bodies without spelling corrections, reflow or
@@ -24,3 +26,7 @@ This archive is source material, not a second live checklist.
   preserving the fun of exploration. Expanded into [Balance review](../design/BALANCE_REVIEW.md).
 
 [MASTER_TASKS.md](../MASTER_TASKS.md) is the single live execution checklist.
+
+## 2026-09-16
+
+- [Generation and scene feedback](2026-09-16-generation-feedback.txt): frozen logs, missing Forest landmarks, depth sorting, crowded combat, fishing gold, bear variants and layered procedural generation. Images: [roof/pillar overlap](images/2026-09-16-roof-depth.png), [repeated Ice set](images/2026-09-16-ice-repetition.png).

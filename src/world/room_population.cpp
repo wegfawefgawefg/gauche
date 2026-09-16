@@ -1,4 +1,5 @@
 #include "industrial_population.hpp"
+#include "forest_den.hpp"
 #include "brawlers.hpp"
 #include "room_supplies.hpp"
 #include "equipment_supply.hpp"
@@ -39,7 +40,7 @@ void rooted_watch(Game& game, const RoomPlan& room, RoomSupplies& budget, bool g
 }
 
 void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, RoomSupplies& budget) {
-    if (room.shape==RoomShape::ThawCavern) return;
+    if (room.shape==RoomShape::ThawCavern || room.shape==RoomShape::BearHollow) return;
     const int round = (game.run.floor - 1) % 4;
     if (room.role==RoomRole::Workfront || room.role==RoomRole::BlastingAlcove || room.role==RoomRole::AssemblyLine || room.role==RoomRole::RepairBay || room.role==RoomRole::ScrapYard || room.role==RoomRole::CoolingWorks || room.role==RoomRole::CableTrench || room.role==RoomRole::KilnCourt || room.role==RoomRole::PayOffice || room.role==RoomRole::LampAlcove || room.role==RoomRole::SlagBank || room.role==RoomRole::AshLoft || room.role==RoomRole::HoistShaft || room.role==RoomRole::CastingFloor || room.role==RoomRole::SettlingTanks || room.role==RoomRole::FreightSiding) return;
     if (ice_floor(game.run.floor) && (room.role == RoomRole::Reservoir ||
@@ -179,7 +180,7 @@ void room_encounter(Game& game, const FloorPlan& plan, const RoomPlan& room, Roo
 }
 
 void encounter(Game& game,const FloorPlan& plan,const RoomPlan& room,RoomSupplies& budget) {
-    if (room.shape==RoomShape::ThawCavern) return;
+    if (room.shape==RoomShape::ThawCavern || room.shape==RoomShape::BearHollow) return;
     if (!budget.report || room.role>=RoomRole::Workfront) {room_encounter(game,plan,room,budget);return;}
     const auto occupants=[&]() {return std::count_if(game.entities.begin(),game.entities.end(),
         [](const Entity& entity){return entity.kind!=EntityKind::None && entity.health>0;});};
@@ -372,6 +373,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     RoomSupplies budget{9 + round * 5, 2 + round / 2, 2 + round, 3, 3 + round / 2};
     budget.report=report;
     if (report) {
+        report->rooms=plan.rooms;report->forest_dens=plan.forest_dens;
         report->industry_profile=plan.industry_profile;report->industrial_links=plan.industrial_links;
         report->thaw_channels=plan.thaw_channels;
         report->shelf_links=plan.shelf_links;report->shelf_rewards=plan.shelf_rewards;
@@ -426,11 +428,26 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
             std::swap(encounters[i-1],encounters[random_u32(game)%i]);
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
+    populate_forest_den(game,plan);
+    if (forest_floor(game.run.floor)) {
+        std::vector<std::size_t> encounters;
+        for (std::size_t i=0;i<plan.rooms.size();++i) {
+            const auto& room=plan.rooms[i];
+            if (room.role!=RoomRole::Entrance && room.role!=RoomRole::Exit &&
+                room.role!=RoomRole::Secret && room.shape!=RoomShape::BearHollow) encounters.push_back(i);
+        }
+        // A growing floor needs a growing population. Shuffle allocation so deep
+        // branches don't become empty after early rooms spend the shared budget.
+        budget.threat=std::max(budget.threat,static_cast<int>(encounters.size())*2+round*3);
+        for (std::size_t i=encounters.size();i>1;--i)
+            std::swap(encounters[i-1],encounters[random_u32(game)%i]);
+        for (const auto i:encounters) encounter(game,plan,plan.rooms[i],budget);
+    }
     place_field_equipment(game,plan,budget,starter);
     for (const RoomPlan& room:plan.rooms) {
         if (forest_floor(game.run.floor)) room_light(game,room);
         if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit) continue;
-        if (forest_floor(game.run.floor)) encounter(game,plan,room,budget);
+        if (room.shape==RoomShape::BearHollow) continue;
         place_crystal_vein(game,plan,room);
         room_loot(game,room,budget);
     }

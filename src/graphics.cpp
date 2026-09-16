@@ -97,6 +97,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "dog_body", "dog_crouch", "dog_bite",
     "sleep_z",
     "fallen_log_bruised", "fallen_log_split", "fallen_log_broken", "wood_bruised", "wood_split",
+    "bear_bed", "bone_pile",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

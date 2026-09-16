@@ -2,7 +2,7 @@
 #include "../game.hpp"
 
 constexpr int max_roof_spans=16;
-inline int roof_health(RoofKind kind) {return kind==RoofKind::Log ? 40 : kind==RoofKind::IceArch ? 24 : 80;}
+inline int roof_health(RoofKind kind) {return kind==RoofKind::Log ? 40 : kind==RoofKind::FrozenLog ? 24 : 80;}
 inline Cell roof_cell(const RoofSpan& roof,int along,int across) {
     return roof.start+(roof.vertical ? Cell{across,along} : Cell{along,across});
 }

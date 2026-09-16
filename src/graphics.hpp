@@ -67,7 +67,7 @@ enum class Sprite : std::size_t {
     Conveyor, ConveyorMoving, ConveyorOff, ConveyorBrake, BeltCrank, BrakeShoe, DebrisBeltRubber,
     Yeti, ArcTorch, ArcWelder, WelderMask, HorseshoeMagnet, MagnetCrane, CraneHead, FoldingBarricade, BarricadeSection, PressureRat, RatInflate, RatDash, CoolantCan,
     DebrisBentNail, DebrisChainLink, CableCrawler, CrawlerCharge, PocketDrill, WalkingKiln, KilnOpen, KilnCooled, TensionSpring, AuditClerk, ClerkStamp, ClerkAlarm, PayCage, EmergencyFoam, FoamCover, FurnaceMoth, FurnaceMothHot, BoltPouch, SlagSnail, SlagSnailTucked, SlagSnailCooled, ChainHook, NailBoard, AshMound, AshWhirl, HandBellows, Counterweight, WeightBlock, PocketPump, EmergencyPump, NozzleElbow, MoldThief, MoldOpen, MoldClosed, MoldKey, SteamLance, LanceHot, TarFlask, TarSinger, TarGob, RailCart, RailShunter, RailSwitchKey, RailPoints, InsulatedBoots, GlowSlag, SlagCold, StreetLamp, SteelToe, LunchTin, LunchEmpty, ReactorCore, ReactorFlame,
-    RoofLogA, RoofLogB, RoofLogC, RoofLogEndA, RoofLogEndB, RoofLogEndC, RoofIceA, RoofIceB, RoofIceC, RoofIceEndA, RoofIceEndB, RoofIceEndC, RoofGantryA, RoofGantryB, RoofGantryC, RoofGantryEndA, RoofGantryEndB, RoofGantryEndC,
+    RoofLogA, RoofLogB, RoofLogC, RoofLogEndA, RoofLogEndB, RoofLogEndC, RoofFrozenLogA, RoofFrozenLogB, RoofFrozenLogC, RoofFrozenLogEndA, RoofFrozenLogEndB, RoofFrozenLogEndC, RoofGantryA, RoofGantryB, RoofGantryC, RoofGantryEndA, RoofGantryEndB, RoofGantryEndC,
     ChapelPew, ChapelAltar, ChapelRunner, ChapelUrn, ChapelPewBroken, ChapelWax,
     IcePillar, IcePillarCracked, IceRubble,
     FrostGoblin, FrostGoblinRaise, FrostGoblinSwing, PipeGuard, PipeGuardRaise, PipeGuardSwing,

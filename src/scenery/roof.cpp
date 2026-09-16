@@ -29,12 +29,12 @@ void step_roofs(Game& game) {
         const bool unsupported=supports<roof.length;
         int damage=unsupported ? 4 : 0;
         if (roof.kind==RoofKind::Log && burning) damage=std::max(damage,2);
-        if (roof.kind==RoofKind::IceArch && heated) damage=std::max(damage,1);
+        if (roof.kind==RoofKind::FrozenLog && heated) damage=std::max(damage,1);
         if (!damage) continue;
         const bool first=roof.hp==roof_health(roof.kind);
         roof.hp=static_cast<std::uint8_t>(std::max(0,static_cast<int>(roof.hp)-damage));
         if (first) emit_sound(game,SoundId::RoofCreak,effect);
-        if (roof.kind==RoofKind::IceArch && game.tick%60==0) {
+        if (roof.kind==RoofKind::FrozenLog && game.tick%60==0) {
             // Falling meltwater leaves the floor, existing contents and other liquids intact.
             const Cell cell=roof_cell(roof,static_cast<int>((game.tick/60)%roof.length),1);
             const Tile& tile=game.stage.at_or_border(cell);
@@ -42,20 +42,20 @@ void step_roofs(Game& game) {
                 pour_surface(game,cell,LiquidKind::Water,180);
         }
         if (!roof.hp) {
-            if (roof.kind==RoofKind::IceArch && heated)
+            if (roof.kind==RoofKind::FrozenLog && heated)
                 for (int along=0;along<roof.length;++along) for (int across:{0,2}) {
                     Tile& tile=*game.stage.at(roof_cell(roof,along,across));
                     if (tile.kind==TileKind::Wall && tile.material==TileMaterial::Ice) {
                         tile.kind=TileKind::ShallowWater;tile.hp=0;
                     }
                 }
-            emit_sound(game,roof.kind==RoofKind::IceArch ? SoundId::RoofMelt : SoundId::RoofBreak,effect);
+            emit_sound(game,roof.kind==RoofKind::FrozenLog ? SoundId::RoofMelt : SoundId::RoofBreak,effect);
             // Roof fragments are cosmetic. Never replace the occupied passage
             // with blocking rubble or erase its pickups, liquids or ground props.
             if (game.impact_count<static_cast<int>(game.impacts.size()))
                 game.impacts[static_cast<std::size_t>(game.impact_count++)]={effect,effect,
-                    roof.kind==RoofKind::IceArch ? Sprite::IceBlock : roof.kind==RoofKind::Log ? Sprite::RottenLog : roof.kind==RoofKind::Container ? Sprite::ContainerSide : Sprite::GrateH,
-                    0,true,roof.kind==RoofKind::IceArch ? PropKind::IceBlock : roof.kind==RoofKind::Log ? PropKind::RottenLog : roof.kind==RoofKind::Container ? PropKind::ContainerSide : PropKind::Grate};
+                    roof.kind==RoofKind::FrozenLog ? Sprite::IceBlock : roof.kind==RoofKind::Log ? Sprite::RottenLog : roof.kind==RoofKind::Container ? Sprite::ContainerSide : Sprite::GrateH,
+                    0,true,roof.kind==RoofKind::FrozenLog ? PropKind::IceBlock : roof.kind==RoofKind::Log ? PropKind::RottenLog : roof.kind==RoofKind::Container ? PropKind::ContainerSide : PropKind::Grate};
         }
     }
 }

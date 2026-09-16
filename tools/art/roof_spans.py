@@ -1,11 +1,11 @@
-"""Three-tile-wide log, ice and steel roofs, hand drawn in 16px sections.
+"""Three-tile-wide log, frozen timber and steel roofs, hand drawn in 16px sections.
 
 The A/B/C bands join across a span. Horizontal ends expose the passage lip.
 North/south logs use a closed far dome and a near arch, not rotated side holes.
 """
 from underworks_palette import *
 
-for family in ('log', 'ice', 'gantry'):
+for family in ('log', 'frozen_log', 'gantry'):
     for end in (False, True):
         for band in range(3):
             im, p = canvas()
@@ -27,7 +27,7 @@ for family in ('log', 'ice', 'gantry'):
                     p.ellipse((2, top+4, 12, top+43), fill='#786544')
                     p.ellipse((3, top+7, 11, top+40), fill=INK)
                     p.ellipse((4, top+9, 10, top+38), fill=(0, 0, 0, 0))
-            elif family == 'ice':
+            elif family == 'frozen_log':
                 p.rectangle((0, 0, 15, 15), fill=('#557575', '#85a7a2', '#425e63')[band])
                 p.line([(0, 5), (5, 4), (9, 7), (15, 6)], fill='#a6c2b6' if band != 2 else '#668686')
                 p.line([(8, 0), (9, 4), (7, 7), (8, 12)], fill='#628582')

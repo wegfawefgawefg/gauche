@@ -25,8 +25,8 @@ std::optional<Sprite> log_far_support(const Stage& stage,Cell cell) {
 
 void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
                 const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
-    constexpr std::array<Sprite,4> bodies{Sprite::RoofLogA,Sprite::RoofIceA,Sprite::RoofGantryA,Sprite::RoofContainerA};
-    constexpr std::array<Sprite,4> ends{Sprite::RoofLogEndA,Sprite::RoofIceEndA,Sprite::RoofGantryEndA,Sprite::RoofContainerEndA};
+    constexpr std::array<Sprite,4> bodies{Sprite::RoofLogA,Sprite::RoofFrozenLogA,Sprite::RoofGantryA,Sprite::RoofContainerA};
+    constexpr std::array<Sprite,4> ends{Sprite::RoofLogEndA,Sprite::RoofFrozenLogEndA,Sprite::RoofGantryEndA,Sprite::RoofContainerEndA};
     for (const RoofSpan& roof:game.stage.roofs) {
         if (!roof.hp) continue;
         const bool reveal=viewer && reveal_roof(roof,viewer->cell);
@@ -47,7 +47,7 @@ void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& 
             const Sprite sprite=static_cast<Sprite>(static_cast<int>(base)+(roof.vertical && !upright_cap ? 2-across : across));
             SDL_Texture* texture=texture_for(graphics,sprite);
             const float charred=roof.kind==RoofKind::Log ? .45F+.55F*condition : 1;
-            const float opacity=reveal ? 42.0F/255 : roof.kind==RoofKind::IceArch ? (170+70*condition)/255 : 1;
+            const float opacity=reveal ? 42.0F/255 : roof.kind==RoofKind::FrozenLog ? (170+70*condition)/255 : 1;
             // A roof is one surface: shared corner lighting avoids cell-sized
             // brightness blocks. Only the actual occupant changes its opacity.
             draw_lit_tile(renderer,texture,rect,cell,lighting,{charred,charred,charred},{0,0,1,1},

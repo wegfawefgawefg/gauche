@@ -51,7 +51,7 @@ bool place_roof_span(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcu
         if (across==1) {
             if (tile.kind==TileKind::Wall) tile={TileKind::Grass};
         } else if (roof.kind==RoofKind::Log) tile=wood_tile(TileMaterial::Timber);
-        else if (roof.kind==RoofKind::IceArch) {
+        else if (roof.kind==RoofKind::FrozenLog) {
             tile={TileKind::Wall,40,0,40,BreakRule::Damageable,0};tile.material=TileMaterial::Ice;
         } else place_prop(game.stage,cell,roof.kind==RoofKind::Container ? PropKind::ContainerSide : PropKind::Grate,
             roof.vertical ? 0 : 1);
@@ -70,7 +70,9 @@ bool place_roof_span(Game& game,const FloorPlan& plan,RoofSpan roof,bool shortcu
 
 void place_roof_scenes(Game& game,const FloorPlan& plan) {
     if (game.run.layout!=FloorLayout::Generated || plan.rooms.empty()) return;
-    const RoofKind kind=forest_floor(game.run.floor) ? RoofKind::Log : ice_floor(game.run.floor) ? RoofKind::IceArch : RoofKind::Gantry;
+    // Snowbound timber is a Forest-to-Ice transition, not the Ice arch family.
+    if (ice_floor(game.run.floor) && game.run.floor!=5) return;
+    const RoofKind kind=forest_floor(game.run.floor) ? RoofKind::Log : ice_floor(game.run.floor) ? RoofKind::FrozenLog : RoofKind::Gantry;
     const int desired=std::min(max_roof_spans,static_cast<int>(game.stage.roofs.size())+2+static_cast<int>(random_u32(game)%2));
     // Normal scenes get their own small budget, not the special-encounter budget.
     const int offset=static_cast<int>(random_u32(game)%static_cast<unsigned>(plan.rooms.size()));

@@ -1,8 +1,6 @@
 #pragma once
 #include "../render.hpp"
 #include "../lighting/field.hpp"
-struct BodyDraw {std::size_t slot=0;Cell cell{};bool prop=false;};
-std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float zoom,int layer);
 void draw_streetlamp(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
                      Cell cell,ViewCamera camera,float zoom,const LightingCache& lighting);
 void draw_streetlamp_shadow(SDL_Renderer* renderer,const Stage& stage,Cell cell,ViewCamera camera,float zoom);

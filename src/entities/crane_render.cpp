@@ -5,9 +5,10 @@
 #include <algorithm>
 
 void draw_crane_parts(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
-                      ViewCamera camera,float zoom,const LightingCache& lighting,bool shadows) {
+                      ViewCamera camera,float zoom,const LightingCache& lighting,bool shadows,const Entity* only) {
     const float pixels=tile_pixels(zoom);
     for (const Entity& crane:game.entities) {
+        if (only && &crane!=only) continue;
         if (crane.kind!=EntityKind::MagnetCrane || crane.health<=0) continue;
         const SDL_FRect base=tile_rect(crane.cell,camera,zoom),target=tile_rect(crane.point_b,camera,zoom);
         float progress=0;

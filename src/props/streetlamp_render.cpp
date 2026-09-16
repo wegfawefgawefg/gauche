@@ -3,25 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float zoom,int layer) {
-    std::vector<BodyDraw> order;
-    for (std::size_t slot=0;slot<game.entities.size();++slot)
-        if (game.entities[slot].kind!=EntityKind::None) order.push_back({slot,game.entities[slot].cell,false});
-    if (layer!=2) return order;
-    const int rx=static_cast<int>(320/tile_pixels(zoom))+4,ry=static_cast<int>(180/tile_pixels(zoom))+5;
-    const int cx=static_cast<int>(camera.x),cy=static_cast<int>(camera.y);
-    for (int y=std::max(0,cy-ry);y<std::min(game.stage.height,cy+ry);++y)
-        for (int x=std::max(0,cx-rx);x<std::min(game.stage.width,cx+rx);++x) {
-            const Prop& prop=game.stage.at({x,y})->prop;
-            if ((prop.kind==PropKind::LightTower || prop.kind==PropKind::TallTree || prop.kind==PropKind::StreetLamp || prop.kind==PropKind::IcePillar) && !prop.broken) order.push_back({0,{x,y},true});
-        }
-    // Foot position owns depth. Ties keep actor slot order and put props first.
-    std::stable_sort(order.begin(),order.end(),[](const BodyDraw& a,const BodyDraw& b) {
-        if (a.cell.y!=b.cell.y) return a.cell.y<b.cell.y;
-        return a.prop && !b.prop;
-    });
-    return order;
-}
 void draw_streetlamp(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
                      Cell cell,ViewCamera camera,float zoom,const LightingCache& lighting) {
     const Prop& prop=game.stage.at(cell)->prop;

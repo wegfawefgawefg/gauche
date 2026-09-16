@@ -278,16 +278,12 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (debug_panels().world_enemies) draw_enemy_intents(renderer, game, camera, zoom, lighting);
     draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,true);
     draw_counterweights(renderer,graphics,game,camera,zoom,lighting,true);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 0);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Ground,player);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Flames, camera, zoom, &lighting, &game.stage);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 1);
-    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, 2);
-    draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false);
-    draw_counterweights(renderer,graphics,game,camera,zoom,lighting,false);
+    draw_entities(renderer, graphics, game, camera, zoom, cosmetics, lighting, ScenePass::Bodies,player);
     draw_fissures(renderer,graphics,game,camera,zoom,lighting,true);
     draw_lava_eruptions(renderer,graphics,game,camera,zoom,true);
-    draw_roofs(renderer,graphics,game,player,camera,zoom,lighting);
     draw_plant_lash(renderer, game, camera, zoom, lighting);
     if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Foreground,
@@ -311,8 +307,8 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     build_lighting(lighting, scene, camera, 2.0F);
     draw_tiles(renderer, graphics, scene, camera, 2.0F, nullptr, lighting);
     draw_props(renderer, graphics, scene, camera, 2.0F, lighting);
-    for (int layer = 0; layer < 3; ++layer)
-        draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting, layer);
+    for (auto pass:{ScenePass::Ground,ScenePass::Bodies})
+        draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting, pass,nullptr);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};

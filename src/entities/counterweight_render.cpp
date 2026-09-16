@@ -5,9 +5,10 @@
 #include <cmath>
 
 void draw_counterweights(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
-                         ViewCamera camera,float zoom,const LightingCache& lighting,bool shadows) {
+                         ViewCamera camera,float zoom,const LightingCache& lighting,bool shadows,const Entity* only) {
     const float pixels=tile_pixels(zoom);
     for (const Entity& actor:game.entities) {
+        if (only && &actor!=only) continue;
         if (actor.kind!=EntityKind::Counterweight || actor.health<=0) continue;
         const SDL_FRect base=tile_rect(actor.cell,camera,zoom),mark=tile_rect(actor.point_b,camera,zoom);
         float travel=0,height=1;

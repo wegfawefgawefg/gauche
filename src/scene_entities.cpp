@@ -5,6 +5,7 @@
 #include "props/ice_pillar_render.hpp"
 #include "items/cooking_render.hpp"
 #include "scene_entities.hpp"
+#include "scenery/roof_render.hpp"
 #include "props/streetlamp_render.hpp"
 #include "props/rail_render.hpp"
 #include "entities/freight_render.hpp"
@@ -68,13 +69,28 @@
 #include <cstdio>
 #include <cmath>
 
+namespace {
+void draw_suspended_parts(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
+                          const Entity& entity,ViewCamera camera,float zoom,const LightingCache& lighting) {
+    if (entity.kind==EntityKind::MagnetCrane)
+        draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false,&entity);
+    if (entity.kind==EntityKind::Counterweight)
+        draw_counterweights(renderer,graphics,game,camera,zoom,lighting,false,&entity);
+}
+}
+
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, float zoom,
-                   const Cosmetics* cosmetics, const LightingCache& lighting, int layer) {
+                   const Cosmetics* cosmetics, const LightingCache& lighting, ScenePass pass,const Entity* viewer) {
     const float pixels = tile_pixels(zoom);
-    // LAYERS: Fixtures sit on the ground, pickups above them, then actors with held items.
-    for (const BodyDraw& entry:body_draw_order(game,camera,zoom,layer)) {
-        if (entry.prop) {
+    // Ground effects precede the shared ground-anchor order for raised bodies.
+    for (const BodyDraw& entry:body_draw_order(game,camera,zoom,pass)) {
+        if (entry.kind==BodyKind::RoofRow) {
+            const auto& roof=game.stage.roofs[entry.slot];
+            draw_roof_row(renderer,graphics,roof,entry.cell.y-roof.start.y,viewer,camera,zoom,lighting);
+            continue;
+        }
+        if (entry.kind==BodyKind::Prop) {
             if (game.stage.at(entry.cell)->prop.kind==PropKind::LightTower)
                 draw_light_tower(renderer,graphics,game,entry.cell,camera,zoom,lighting);
             else if (game.stage.at(entry.cell)->prop.kind==PropKind::TallTree)
@@ -90,16 +106,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (entity.kind == EntityKind::None || entity.kind == EntityKind::RailLayer ||
             (entity.kind == EntityKind::Door && entity.fixture_open)) continue;
         if (entity.kind == EntityKind::EncounterGate) {
-            if (layer == 0) draw_gate(renderer,graphics,entity,camera,zoom,lighting);
+            draw_gate(renderer,graphics,entity,camera,zoom,lighting);
             continue;
         }
-        const int entity_layer = diver_submerged(entity) || entity.kind == EntityKind::Campfire || entity.kind == EntityKind::Sled || entity.kind == EntityKind::IceAnchor || entity.kind == EntityKind::PocketDoor ||
-            entity.kind == EntityKind::Trap || entity.kind == EntityKind::Exit ||
-            entity.kind == EntityKind::Switch || entity.kind == EntityKind::Encounter ||
-            entity.kind == EntityKind::WaveVent ? 0 :
-            entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||
-            entity.kind == EntityKind::Coins ? 1 : 2;
-        if (entity_layer != layer) continue;
         if (entity.kind==EntityKind::IceAnchor) draw_anchor_tether(renderer,game,entity,camera,zoom,lighting);
         if (entity.kind == EntityKind::Projectile) {
             draw_projectile(renderer, graphics, entity, game, camera, zoom, lighting);
@@ -109,8 +118,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         SDL_FRect rect = tile_rect(entity.cell, camera, zoom);
         const EntityPose* pose = cosmetics == nullptr ? nullptr : &cosmetics->poses[slot];
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.
-        if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
+        if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0)) {
+            // A crane base can be off-screen while its extended head is visible.
+            draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
             continue;
+        }
         if (entity.sprite==Sprite::ReactorCore) {
             rect.x-=pixels*.5F;rect.y-=pixels;rect.w*=2;rect.h*=2;
         }
@@ -294,6 +306,7 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_effigy_mask(renderer,graphics,entity,rect,brightness);
         draw_boiler_details(renderer,graphics,entity,rect,brightness);
         draw_boiler_water(renderer,graphics,game,entity,rect,brightness);
+        draw_suspended_parts(renderer,graphics,game,entity,camera,zoom,lighting);
         draw_brick_prepare(renderer, entity, rect, brightness);
         draw_cooking(renderer,graphics,entity,rect,brightness);
         if (entity.kind != EntityKind::Player && entity.health > 0 &&

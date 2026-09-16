@@ -5,6 +5,7 @@
 #include "tension_spring.hpp"
 #include "streetlamp.hpp"
 #include "interaction.hpp"
+#include "../items/supply.hpp"
 #include "conveyor.hpp"
 #include "../items/folded_bridge.hpp"
 #include "../entities/icicle_spider.hpp"
@@ -83,19 +84,28 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
         else if (roll < 90) item = ItemKind::TuningFork;
         break;
     case PropKind::SnowCache:
-        if (roll < 30) item = ItemKind::Snowball;
-        else if (roll < 50) item = ItemKind::WoolWrap;
-        else if (roll < 65) item = ItemKind::Ammo;
+        if (roll < 20) item = ItemKind::Snowball;
+        else if (roll < 40) item = ItemKind::WoolWrap;
+        else if (roll < 55) item = ItemKind::Ammo;
+        else if (roll < 75) {
+            const auto gear=roll_item_supply(game,LootSource::Cache,false,ItemKind::None,SupplyNeed::Equipment);
+            if (gear!=ItemKind::None) place_ground_item(game,cell,gear,supply_count(gear));
+            return;
+        }
         else if (roll < 90) place_coins(game, cell, 3);
         else item=ItemKind::SnowShelter;
         break;
     case PropKind::RottenLog: if (roll < 15) item = ItemKind::RottenFruit; break;
     case PropKind::Nest: if (roll < 18) item = ItemKind::Egg; break;
     case PropKind::Crate:
-        if (roll < 35) item = ItemKind::Ammo;
-        else if (roll < 60) item = ItemKind::Bandage;
-        else if (roll < 70) item = ItemKind::SleepMeds;
-        else if (roll < 90) place_coins(game, cell, 4 + static_cast<int>(random_u32(game) % 7));
+        if (roll < 20) item = ItemKind::Ammo;
+        else if (roll < 40) item = ItemKind::Bandage;
+        else if (roll < 55) {
+            const auto gear=roll_item_supply(game,LootSource::Cache,true,ItemKind::None,SupplyNeed::Equipment);
+            if (gear!=ItemKind::None) place_ground_item(game,cell,gear,supply_count(gear));
+            return;
+        }
+        else if (roll < 85) place_coins(game, cell, 4 + static_cast<int>(random_u32(game) % 7));
         break;
     case PropKind::ClayPot:
         if (roll < 15) item = ItemKind::Bandaid;

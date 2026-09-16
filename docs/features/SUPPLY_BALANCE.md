@@ -10,7 +10,8 @@ damage and broader enemy/encounter tuning remain open.
 native weight, earliest local stage, bundle count and eligible general sources.
 Compile-time checks require enum-ordered, complete coverage. Metadata lookup is
 direct; random selection scans the small catalog during generation/reward creation.
-This is separate from the still-existing item-behavior definition provider chain.
+This is separate from the item-behavior definition catalog. Primary roles and
+current selection shares are described in [loot roles](LOOT_ROLES.md).
 
 General rewards, shops, caches, secrets and workshops reference the catalog.
 Deleted the duplicated Forest/Ice reward/shop lists and Industrial-only list.

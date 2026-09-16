@@ -1,6 +1,7 @@
 #include "supply.hpp"
 
 #include <algorithm>
+#include <array>
 
 bool native_supply(ItemKind kind, Biome biome) {
     const auto origin=item_supply(kind).origin;
@@ -16,7 +17,8 @@ int supply_count(ItemKind kind) {
 
 Item supply_item(ItemKind kind) { return make_item(kind,supply_count(kind)); }
 
-ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import, ItemKind exclude) {
+ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import, ItemKind exclude, SupplyNeed need) {
+    if (source==LootSource::Reward && need==SupplyNeed::Any) need=SupplyNeed::Dependable;
     // IMPORTS: One explicit chance per eligible offer/cache, not a shared fallback
     // full of stronger guns. Workshops always supply their own available tools.
     const bool salvage=source==LootSource::Salvage;
@@ -29,6 +31,8 @@ ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import, Item
     const unsigned mask=1U<<static_cast<unsigned>(salvage ? LootSource::Weapon : source);
     const auto weight=[&](ItemKind kind, bool foreign) {
         const auto& entry=item_supply(kind);
+        if ((need==SupplyNeed::Dependable && !dependable_supply(kind)) ||
+            (need==SupplyNeed::Equipment && entry.role!=ItemRole::Combat && entry.role!=ItemRole::Mobility)) return 0;
         if (kind==exclude || (entry.sources&mask)==0 || entry.weight<=0 ||
             native_supply(kind,biome)==foreign || (!foreign && entry.stage>stage)) return 0;
         return source==LootSource::Secret || salvage ? 12/entry.weight : entry.weight;
@@ -36,17 +40,49 @@ ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import, Item
     // FALLBACK: A source without eligible imports still produces native content.
     for (int attempt=0;attempt<(imported ? 2 : 1);++attempt) {
         const bool foreign=imported && attempt==0;
-        unsigned total=0;
-        for (unsigned i=1;i<static_cast<unsigned>(ItemKind::Count);++i)
-            total+=static_cast<unsigned>(weight(static_cast<ItemKind>(i),foreign));
-        if (total==0) continue;
-        unsigned roll=random_u32(game)%total;
+        // Choose usefulness before the item: adding twenty niche tools must not
+        // drown out portable equipment. Scene-specific supplies remain explicit.
+        const auto bucket=[](ItemKind kind) -> unsigned {
+            return dependable_supply(kind) ? 0U : item_supply(kind).role==ItemRole::Utility ? 1U : 2U;
+        };
+        std::array<unsigned,3> totals{};
         for (unsigned i=1;i<static_cast<unsigned>(ItemKind::Count);++i) {
             const auto kind=static_cast<ItemKind>(i);
-            const auto amount=static_cast<unsigned>(weight(kind,foreign));
+            totals[bucket(kind)]+=static_cast<unsigned>(weight(kind,foreign));
+        }
+        const std::array<unsigned,3> shares=source==LootSource::Workshop ?
+            std::array<unsigned,3>{40,55,5} : source==LootSource::Secret ?
+            std::array<unsigned,3>{85,12,3} : std::array<unsigned,3>{70,25,5};
+        unsigned share_total=0,available=0,selected=0;
+        for (unsigned i=0;i<totals.size();++i) if (totals[i]) {
+            share_total+=shares[i];++available;selected=i;
+        }
+        if (!share_total) continue;
+        if (available>1) {
+            unsigned share=random_u32(game)%share_total;
+            for (unsigned i=0;i<totals.size();++i) if (totals[i]) {
+                if (share<shares[i]) {selected=i;break;}
+                share-=shares[i];
+            }
+        }
+        unsigned roll=random_u32(game)%totals[selected];
+        for (unsigned i=1;i<static_cast<unsigned>(ItemKind::Count);++i) {
+            const auto kind=static_cast<ItemKind>(i);
+            const auto amount=bucket(kind)==selected ? static_cast<unsigned>(weight(kind,foreign)) : 0U;
             if (roll<amount) return kind;
             roll-=amount;
         }
     }
     return ItemKind::None;
+}
+
+const char* item_role_name(ItemRole role) {
+    constexpr const char* names[]{"none","combat","survival","mobility","utility","oddity"};
+    const auto index=static_cast<unsigned>(role);
+    return index<static_cast<unsigned>(ItemRole::Count) ? names[index] : "invalid";
+}
+
+bool dependable_supply(ItemKind kind) {
+    const auto role=item_supply(kind).role;
+    return role==ItemRole::Combat || role==ItemRole::Survival || role==ItemRole::Mobility;
 }

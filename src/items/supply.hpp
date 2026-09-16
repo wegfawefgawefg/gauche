@@ -3,11 +3,14 @@
 
 enum class ItemOrigin { Shared, Forest, Ice, Industrial };
 enum class LootSource { Reward, Shop, Weapon, Cache, Secret, Workshop, Salvage };
+enum class ItemRole { None, Combat, Survival, Mobility, Utility, Oddity, Count };
+enum class SupplyNeed { Any, Dependable, Equipment };
 struct ItemSupply {
     ItemKind kind;
     ItemOrigin origin;
     int weight, stage, count;
     unsigned sources;
+    ItemRole role;
 };
 
 const ItemSupply& item_supply(ItemKind kind);
@@ -15,4 +18,7 @@ bool native_supply(ItemKind kind, Biome biome);
 int supply_count(ItemKind kind);
 Item supply_item(ItemKind kind);
 ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import = true,
-                         ItemKind exclude = ItemKind::None);
+                         ItemKind exclude = ItemKind::None, SupplyNeed need = SupplyNeed::Any);
+
+const char* item_role_name(ItemRole role);
+bool dependable_supply(ItemKind kind);

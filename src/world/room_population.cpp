@@ -1,6 +1,7 @@
 #include "industrial_population.hpp"
 #include "brawlers.hpp"
 #include "room_supplies.hpp"
+#include "equipment_supply.hpp"
 #include "../items/supply.hpp"
 #include "route.hpp"
 #include "ground_items.hpp"
@@ -384,16 +385,15 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
     spawn_entity(game, game.run.objective == ObjectiveKind::Key ? EntityKind::Key : EntityKind::Switch, objective);
     spawn_entity(game, EntityKind::Door, plan.door);
     spawn_entity(game, EntityKind::Exit, game.run.exit);
+    ItemKind starter=ItemKind::Stick;
     if (forest_floor(game.run.floor))
         place_ground_item(game,game.run.spawn+Cell{0,2},ItemKind::Stick);
     else {
         // Reserve one ordinary equipment slot for a native combat tool before
         // situational role supplies can consume the floor's entire budget.
-        const ItemKind weapon=roll_item_supply(game,LootSource::Weapon,false);
-        if (weapon!=ItemKind::None) {
-            place_ground_item(game,game.run.spawn+Cell{0,2},weapon,supply_count(weapon));
-            --budget.equipment;
-        }
+        starter=roll_item_supply(game,LootSource::Weapon,false);
+        if (starter!=ItemKind::None && get_entity(game,place_ground_item(game,
+            game.run.spawn+Cell{0,2},starter,supply_count(starter)))) --budget.equipment;
     }
     RoomSupplies fighters{};fighters.report=report;
     if (ice_floor(game.run.floor) || industrial_floor(game.run.floor)) {
@@ -424,6 +424,7 @@ void populate_rooms(Game& game, const FloorPlan& plan, PopulationReport* report)
             std::swap(encounters[i-1],encounters[random_u32(game)%i]);
         for (auto index:encounters) encounter(game,plan,plan.rooms[index],budget);
     }
+    place_field_equipment(game,plan,budget,starter);
     for (const RoomPlan& room:plan.rooms) {
         if (forest_floor(game.run.floor)) room_light(game,room);
         if (room.role==RoomRole::Entrance || room.role==RoomRole::Exit) continue;

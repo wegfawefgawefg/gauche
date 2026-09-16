@@ -1,4 +1,5 @@
 #include "generation_audit.hpp"
+#include "../items/supply.hpp"
 #include "../world/population_report.hpp"
 #include "../net_codec.hpp"
 #include <cstdio>
@@ -58,6 +59,11 @@ int run_generation_audit() {
             for (std::size_t i=0;i<totals.enemies.size();++i) add(totals.enemies[i],report.enemies[i]);
             for (std::size_t i=0;i<totals.supplies.size();++i) add(totals.supplies[i],report.supplies[i]);
         }
+        std::array<int,static_cast<std::size_t>(ItemRole::Count)> role_counts{};
+        for (std::size_t i=1;i<items.size();++i)
+            role_counts[static_cast<std::size_t>(item_supply(static_cast<ItemKind>(i)).role)]+=items[i];
+        for (std::size_t i=1;i<role_counts.size();++i)
+            row(biome,"loot_role",item_role_name(static_cast<ItemRole>(i)),{},0,0,role_counts[i]);
         row(biome,"geometry","work_hall_floors",{},0,0,work_halls);
         row(biome,"geometry","excavation_floors",{},0,0,excavations);
         row(biome,"geometry","industrial_links",{},0,0,industrial_links);

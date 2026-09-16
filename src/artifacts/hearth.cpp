@@ -4,7 +4,7 @@
 #include <algorithm>
 
 bool hearth_meal(ItemKind kind) {
-    return kind == ItemKind::CookedMeat || kind == ItemKind::FriedEgg ||
+    return kind == ItemKind::LunchTin || kind == ItemKind::CookedMeat || kind == ItemKind::FriedEgg ||
         kind == ItemKind::SmokedFish || kind == ItemKind::HotBroth;
 }
 

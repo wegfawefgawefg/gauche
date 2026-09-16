@@ -404,7 +404,8 @@ behavior and balance playtesting remain the user's.
   [Insulated Boots](features/INSULATED_BOOTS.md) add temporary floor-conduction immunity with slower steps, explicit direct-arc vulnerability, a saved HUD timer, contextual cable-trench supply and crawler drops.
   [Glow Slag](features/GLOW_SLAG.md) adds recoverable thrown light/heat, finite reheating, moth/siphon theft, cold/water quenching and lamp-alcove acquisition.
   Steel Toe Caps add twelve limited kicks: two-cell shoves, short bomb punts preserving fuses, cart starts and modest wall-impact damage; native supplies, freight scenes and shunter drops.
-  All twenty initial catalog enemy behaviors and twenty-eight of fifty regional items implemented;
+  Lunch Tins hold two interruptible meals, then remain as recoverable thrown noise lures; portion HUD, Hearth sharing, native healing supplies and foreman drops are integrated.
+  All twenty initial catalog enemy behaviors and twenty-nine of fifty regional items implemented;
   remaining content slices and player feedback are pending.
 - [ ] Choose the fourth biome's identity. Military / robot is a candidate,
   not a locked decision; design its full catalog to the same quotas.

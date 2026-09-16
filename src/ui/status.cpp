@@ -31,8 +31,8 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
         (player.vitals.healing_left - 1) * recovery_interval(player.vitals) + player.vitals.healing_wait;
     std::snprintf(healing, sizeof(healing), "%d HP/S | %d LEFT%s",
         60 / recovery_interval(player.vitals), player.vitals.healing_left,
-        player.vitals.recovery == RecoveryKind::Broth ? " | HIT ENDS" : "");
-    const Sprite recovery_icon = player.vitals.recovery == RecoveryKind::Broth ? Sprite::HotBroth :
+        (player.vitals.recovery == RecoveryKind::Broth || player.vitals.recovery==RecoveryKind::Meal) ? " | HIT ENDS" : "");
+    const Sprite recovery_icon = player.vitals.recovery==RecoveryKind::Meal ? Sprite::LunchTin : player.vitals.recovery == RecoveryKind::Broth ? Sprite::HotBroth :
         player.vitals.recovery == RecoveryKind::Poultice ? Sprite::IcePoultice : Sprite::HerbBag;
     std::snprintf(speed, sizeof(speed), "STEP %d TICKS | BURN AFTER", movement_beat(player, player.move_interval));
     const std::array rows{

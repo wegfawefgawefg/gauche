@@ -48,6 +48,7 @@ bool edit_item(Item& item) {
         changed |= ImGui::SliderInt(item.kind == ItemKind::Bow ? "Arrows" : "Loaded", &item.loaded, 0, make_item(item.kind).loaded);
         if (item.kind != ItemKind::Bow) changed |= ImGui::SliderInt("Reserve (this weapon)", &item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::LunchTin) changed |= ImGui::SliderInt("Meals remaining",&item.loaded,0,2);
     if (item.kind==ItemKind::GlowSlag) {
         int heat=(item.loaded+59)/60;
         if (ImGui::SliderInt("Glow (seconds)",&heat,0,20)) {item.loaded=heat*60;changed=true;}

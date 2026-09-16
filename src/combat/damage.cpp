@@ -96,7 +96,8 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     expose_snow_burrower(entity);
     interrupt_ice_mason(entity);
     interrupt_glass_eel(entity);
-    if (interrupt_recovery(entity)) emit_sound(game, SoundId::BrothSpill, entity.cell);
+    const bool meal=entity.vitals.recovery==RecoveryKind::Meal;
+    if (interrupt_recovery(entity)) emit_sound(game, meal ? SoundId::LunchSpill : SoundId::BrothSpill, entity.cell);
     entity.use_flash = 6;
     entity.sleep_ticks = 0;
     if (entity.kind == EntityKind::CrateMimic) entity.counter_a = 0;

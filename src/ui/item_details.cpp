@@ -268,6 +268,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         const double rate = item.kind == ItemKind::HotBroth ? 3.0 : 2.0;
         std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal, pattern.heal / rate);
     }
+    if (item.kind==ItemKind::LunchTin && item.loaded>0)
+        std::snprintf(line,sizeof(line),"MEAL +%d OVER %.1fs | HIT ENDS",pattern.heal,pattern.heal*.3);
     if (item.kind == ItemKind::HerbBag)
         std::snprintf(line, sizeof(line), "REGEN +%d OVER %.1fs", pattern.heal,
             static_cast<double>(pattern.heal) / 3);
@@ -327,7 +329,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
                       item.consume_on_use ? "CONSUMES" : "PERSISTS");
     else std::snprintf(line, sizeof(line), "%s",
                        item.consume_on_use ? "ONE USE - CONSUMES" : "PERSISTENT");
-    if (item.kind==ItemKind::EffigyMask) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
+    if (item.kind==ItemKind::EffigyMask || item.kind==ItemKind::LunchTin) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.kind==ItemKind::HeatSiphon) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     text(renderer, x + 10.0F, y + 118.0F, line, 194, 192, 180);
     if (item.kind==ItemKind::GlowSlag) {
@@ -424,7 +426,8 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
         std::snprintf(line, sizeof(line), "PLACE 1 | ROOT 3.0s");
     else if (item.kind == ItemKind::SpringTrap)
         std::snprintf(line, sizeof(line), "PLACE 1 | SHOVE 2");
-    if (has_artifact(player,ArtifactKind::Hearth) && hearth_meal(item.kind))
+    if (has_artifact(player,ArtifactKind::Hearth) && hearth_meal(item.kind) &&
+        (item.kind!=ItemKind::LunchTin || item.loaded>0))
         std::snprintf(line,sizeof(line),"HEARTH: +3 HP / NEARBY FRIENDS");
     if (item_is_gun(item.kind))
         std::snprintf(line,sizeof(line),"RANGE %d-%d | AMMO +%d",pattern.minimum,pattern.maximum,ammunition_refill(item.kind));

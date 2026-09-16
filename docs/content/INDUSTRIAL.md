@@ -3,7 +3,7 @@
 Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
-Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, Slag Snails, Ash Sleepers, Counterweights, Emergency Pumps, Mold Thieves, Tar Choirs, Rail Shunters, twenty-eight regional items, metal cover/bins,
+Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, Slag Snails, Ash Sleepers, Counterweights, Emergency Pumps, Mold Thieves, Tar Choirs, Rail Shunters, twenty-nine regional items, metal cover/bins,
 assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, slag banks, ash lofts, hoist shafts, casting floors, settling tanks, freight sidings, scrap-yard sorting lanes, the Freight Exchange unique floor, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
@@ -145,7 +145,7 @@ Existing shared/Ice items above are carryover drops, not counted toward these 50
 | 33 | Insulated boots | Implemented: six 4s activations, Durable twelve; later water/wire circuit nodes cannot hurt the wearer, but direct electrode/arc contact still does. Steps take twice as long; can stow after fitting. No circuit break, team shield, cold/fire resistance or traction. Active timer, movement preview and six rubber/electrical cues. | U / 20; native stage-one stock, half of cable-trench supplies and 15% crawler drop |
 | 34 | Steel toe cap | Implemented: twelve kicks, 3 damage and two-cell shove; walls add 6 damage, bodies stop without crushing. Loose gear preserves its state; ice/oil can extend slides. Landed Bombs, Firecrackers and Pitch Bombs travel two more cells with their existing fuse. Starts carts, brakes resist; anchored/gripping/rooted/ridden bodies refuse. Shield-facing blocks the shove. Durable/Strong/Agile/Heavy/Fragile supported; steel responds to magnets and mold thieves. Four leather/metal cues. | U / 15; native stage-one stock, 15% shunter drop, half of non-junction siding supplies and half of Freight Exchange entry-tool rolls |
 | 35 | Filter mask | Hold to resist smoke/ash breathing penalties, with muffled local audio and narrower sight. 30s filter life; no protection from actual flame. Cloth breath. | U / 16 |
-| 36 | Lunch tin | Eat one of two portions for 10 HP over 3s; damage interrupts. Empty tin remains and can be thrown as a loud distraction. Lid pop, chew, hollow landing. | C / 9 |
+| 36 | Lunch tin | Implemented: two 10-HP meals over 3s each; health damage discards pending healing. Restorative gives 15 HP over 4.5s. Cannot overlap recovery or refill; Hearth shares only a real meal. Empty tin throws to five cells for 2 damage, then clatters through the shared eight-cell hearing rules and remains recoverable. Exact portions survive trade/drop/snapshots; steel responds to magnets/thieves. Portion/empty HUD, separate sprites, four lid/chew/metal sounds. | C / 9; native stage-one tables, half of Industry healing supplies, Freight Exchange lunch and 15% foreman drop |
 | 37 | Cinder sausage | Eat for 8 HP and 8s warmth; briefly attracts furnace moths and heat-seeking creatures. Dropped sausage is real food bait. Stack 4. Crunchy munch. | C / 6 |
 | 38 | Coal biscuit | Awful snack: lose 2 HP, resist nausea for 12s; alternatively feed it to a kiln as fuel. Stack 5. No free healing conversion. Dry crunch. | C / 3 |
 | 39 | Salt tablet | Clears one heat-fatigue penalty but gives 2s thirst/slow recovery; use only when affected. Stack 6. Never a requirement to survive normal floor temperature. Capsule click. | C / 5 |
@@ -204,7 +204,7 @@ Implemented unique: **Freight Exchange**. Industry 3-2 alone has a seeded 20%
 chance to replace its generated map with connected loading halls, two loaded
 cart routes and switch points, a crane salvaging worn gear, a sorting belt near
 an Ash Sleeper, a guarded control booth and a Counterweight over a coin cache.
-The entrance supplies a Rail Switch Key, Chain Hook and either Rubber Mallet or Steel Toe Cap; cart
+The entrance supplies a Rail Switch Key, Chain Hook, Lunch Tin and either Rubber Mallet or Steel Toe Cap; cart
 cargo is a worn Press Hammer and a three-use Bolt Pouch stack. Four small lamps
 and two tall streetlights mark work areas; dry crossings remain open, and ordinary interior walls can be
 dug. A required switch opens the sealed exit; all living online players gather

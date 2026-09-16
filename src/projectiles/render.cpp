@@ -41,7 +41,7 @@ ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera ca
     const bool harpoon=shot.label_a==static_cast<int>(ProjectileKind::Harpoon);
     const bool hook=harpoon || shot.label_a==static_cast<int>(ProjectileKind::ChainHook) || shot.label_a==static_cast<int>(ProjectileKind::Hook) ||
         shot.label_a==static_cast<int>(ProjectileKind::WidowHook) || shot.label_a==static_cast<int>(ProjectileKind::FishingHook);
-    const bool thrown=shot.label_a==static_cast<int>(ProjectileKind::TarSpit) || shot.label_a==static_cast<int>(ProjectileKind::FoamCan) || shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
+    const bool thrown=shot.ground_item.kind==ItemKind::LunchTin || shot.label_a==static_cast<int>(ProjectileKind::TarSpit) || shot.label_a==static_cast<int>(ProjectileKind::FoamCan) || shot.label_a==static_cast<int>(ProjectileKind::Blink) ||
         shot.label_a==static_cast<int>(ProjectileKind::EchoPebble) || shot.label_a==static_cast<int>(ProjectileKind::PrismBomb) ||
         shot.label_a==static_cast<int>(ProjectileKind::Snowball) || shot.label_a==static_cast<int>(ProjectileKind::IceBrick) ||
         shot.label_a==static_cast<int>(ProjectileKind::Mixture) || shot.label_a==static_cast<int>(ProjectileKind::Bomb) ||
@@ -91,7 +91,7 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool mixture = shot.label_a == static_cast<int>(ProjectileKind::Mixture);
     const bool pitch = mixture && shot.ground_item.kind == ItemKind::PitchBomb;
-    const bool thrown = foam || blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    const bool thrown = shot.ground_item.kind==ItemKind::LunchTin || foam || blink || echo || prism || shot.label_a == static_cast<int>(ProjectileKind::Snowball) || shot.label_a == static_cast<int>(ProjectileKind::IceBrick) || mixture || bomb || cracker || shot.label_a == static_cast<int>(ProjectileKind::Flask);
     const float pixels=tile_pixels(zoom);
     const ProjectilePose pose=projectile_pose(shot,game,camera,zoom);
     SDL_FRect rect=pose.body;

@@ -4,7 +4,7 @@
 #include <algorithm>
 
 int recovery_interval(const VitalEffects& effects) {
-    return effects.recovery == RecoveryKind::Poultice ? 30 : 20;
+    return effects.recovery==RecoveryKind::Meal ? 18 : effects.recovery == RecoveryKind::Poultice ? 30 : 20;
 }
 
 bool begin_recovery(Entity& actor, RecoveryKind kind, int health) {
@@ -31,7 +31,7 @@ void step_recovery(Entity& actor) {
 
 bool interrupt_recovery(Entity& actor) {
     VitalEffects& effects = actor.vitals;
-    if (effects.recovery != RecoveryKind::Broth || effects.healing_left == 0) return false;
+    if ((effects.recovery != RecoveryKind::Broth && effects.recovery != RecoveryKind::Meal) || effects.healing_left == 0) return false;
     effects.healing_left = effects.healing_wait = 0;
     effects.recovery = RecoveryKind::Herbs;
     return true;

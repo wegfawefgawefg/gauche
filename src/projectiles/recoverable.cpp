@@ -1,4 +1,5 @@
 #include "recoverable.hpp"
+#include "../items/lunch_tin.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../surfaces/temperature.hpp"
 #include "../item_pattern.hpp"
@@ -28,6 +29,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
     Item item = shot.ground_item;
     item.flight = {};
     const bool melted = item.kind == ItemKind::IceNeedle && (hot_impact || hot_cell(game, shot.cell));
+    const Cell impact=shot.cell;
     const Cell cell = melted ? shot.cell : nearby_ground_item_cell(game, shot.cell);
     if (Item* held = reservation(game, shot, handle)) *held = {};
     forget_hits(game, handle);
@@ -38,6 +40,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
         loose->ground_item = item;
         loose->sprite = item_sprite(item);
     }
+    if (item.kind==ItemKind::LunchTin) {land_lunch_tin(game,impact);return;}
     emit_sound(game, item.kind == ItemKind::GlowSlag ? SoundId::GlowLand : item.kind == ItemKind::Boomerang ? SoundId::BoomerangLand : item.kind == ItemKind::IceNeedle ? SoundId::IceNeedleHit : item.kind == ItemKind::CoalLump ? SoundId::CoalLand : SoundId::RockImpact, cell);
 }
 

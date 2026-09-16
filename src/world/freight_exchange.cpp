@@ -105,7 +105,7 @@ void populate_freight_exchange(Game& game) {
     place_ground_item(game,{10,40},ItemKind::RailSwitchKey);
     place_ground_item(game,{8,42},ItemKind::ChainHook);
     place_ground_item(game,{12,40},random_u32(game)%2==0 ? ItemKind::RubberMallet : ItemKind::SteelToeCap);
-    place_ground_item(game,{7,41},ItemKind::Bandage,2);
+    place_ground_item(game,{7,41},ItemKind::LunchTin);
     // Actual worn salvage attracts the crane; the supplied hook can recover it.
     const Handle scrap=spawn_entity(game,EntityKind::GroundItem,{13,12});
     Entity& pick=*get_entity(game,scrap);pick.ground_item=make_item(ItemKind::Pickaxe);

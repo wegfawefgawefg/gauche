@@ -66,7 +66,7 @@ enum class Sprite : std::size_t {
     RivetGun, Rivet, RivetGunner, GunnerBrace, GunnerFire, GunnerReload, DebrisRivetCasing,
     Conveyor, ConveyorMoving, ConveyorOff, ConveyorBrake, BeltCrank, BrakeShoe, DebrisBeltRubber,
     Yeti, ArcTorch, ArcWelder, WelderMask, HorseshoeMagnet, MagnetCrane, CraneHead, FoldingBarricade, BarricadeSection, PressureRat, RatInflate, RatDash, CoolantCan,
-    DebrisBentNail, DebrisChainLink, CableCrawler, CrawlerCharge, PocketDrill, WalkingKiln, KilnOpen, KilnCooled, TensionSpring, AuditClerk, ClerkStamp, ClerkAlarm, PayCage, EmergencyFoam, FoamCover, FurnaceMoth, FurnaceMothHot, BoltPouch, SlagSnail, SlagSnailTucked, SlagSnailCooled, ChainHook, NailBoard, AshMound, AshWhirl, HandBellows, Counterweight, WeightBlock, PocketPump, EmergencyPump, NozzleElbow, MoldThief, MoldOpen, MoldClosed, MoldKey, SteamLance, LanceHot, TarFlask, TarSinger, TarGob, RailCart, RailShunter, RailSwitchKey, RailPoints, InsulatedBoots, GlowSlag, SlagCold, StreetLamp, SteelToe,
+    DebrisBentNail, DebrisChainLink, CableCrawler, CrawlerCharge, PocketDrill, WalkingKiln, KilnOpen, KilnCooled, TensionSpring, AuditClerk, ClerkStamp, ClerkAlarm, PayCage, EmergencyFoam, FoamCover, FurnaceMoth, FurnaceMothHot, BoltPouch, SlagSnail, SlagSnailTucked, SlagSnailCooled, ChainHook, NailBoard, AshMound, AshWhirl, HandBellows, Counterweight, WeightBlock, PocketPump, EmergencyPump, NozzleElbow, MoldThief, MoldOpen, MoldClosed, MoldKey, SteamLance, LanceHot, TarFlask, TarSinger, TarGob, RailCart, RailShunter, RailSwitchKey, RailPoints, InsulatedBoots, GlowSlag, SlagCold, StreetLamp, SteelToe, LunchTin, LunchEmpty,
     Count,
 };
 

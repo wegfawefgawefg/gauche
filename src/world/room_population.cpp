@@ -273,7 +273,8 @@ void room_loot(Game& game, const RoomPlan& room, RoomSupplies& budget) {
             const ItemKind kind=roll_item_supply(game,source);
             supply(game,room,kind,supply_count(kind),budget.equipment);
             supply(game,room,ItemKind::Ammo,1,budget.ammunition);
-            supply(game,room,ItemKind::Bandage,2,budget.healing);
+            if (random_u32(game)%2==0) supply(game,room,ItemKind::LunchTin,1,budget.healing);
+            else supply(game,room,ItemKind::Bandage,2,budget.healing);
         }
         return;
     }

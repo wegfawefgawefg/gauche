@@ -23,6 +23,7 @@ void normalize_test_item(Item& item) {
         fresh.loaded = std::clamp(item.loaded, 0, make_item(item.kind).loaded);
         fresh.spare = std::clamp(item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::LunchTin) fresh.loaded=std::clamp(item.loaded,0,2);
     if (item.kind==ItemKind::GlowSlag) fresh.loaded=std::clamp(item.loaded,0,1200);
     if (item.kind==ItemKind::NozzleElbow) fresh.loaded=std::clamp(item.loaded,0,1);
     if (item.kind==ItemKind::PocketPump) {

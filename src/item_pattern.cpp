@@ -45,6 +45,8 @@ ItemPattern item_pattern(ItemKind kind) {
 
 ItemPattern item_pattern(const Item& item) {
     ItemPattern pattern = item_pattern(item.kind);
+    if (item.kind==ItemKind::LunchTin && item.loaded==0)
+        pattern={1,5,0,2,30,PatternEffect::Damage,true};
     if (item.kind==ItemKind::StormLantern) {
         pattern.light_shape=item.light.shape;
         pattern.maximum=item.light.shape==LightShape::Beam ? 12 : 8;

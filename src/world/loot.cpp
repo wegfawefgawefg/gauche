@@ -123,6 +123,7 @@ void drop_enemy_loot(Game& game, const Entity& enemy) {
         const auto roll=random_u32(game)%100;
         if (roll<25) place_ground_item(game,enemy.cell,ItemKind::ForemanWhistle);
         else if (roll<50) place_coins(game,enemy.cell,5+static_cast<int>(random_u32(game)%5));
+        else if (roll<65) place_ground_item(game,enemy.cell,ItemKind::LunchTin);
         break;
     }
     case EntityKind::BoilerPorter: {

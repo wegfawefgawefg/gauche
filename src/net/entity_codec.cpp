@@ -88,6 +88,7 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor && item.kind != ItemKind::IceAnchor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
+    if (item.kind==ItemKind::LunchTin && (item.loaded>2 || item.spare!=0 || item.count>1)) reader.okay=false;
     if (item.kind==ItemKind::GlowSlag && (item.loaded>1200 || item.spare!=0 || item.count>1)) reader.okay=false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
     if (!valid_nozzle_elbow(item)) reader.okay=false;
@@ -202,7 +203,7 @@ Entity read_entity(PacketReader& reader) {
     if (entity.vitals.traction > 300 || entity.vitals.slide_momentum > 12) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());
     if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
-        entity.vitals.recovery > RecoveryKind::Poultice || entity.vitals.chill_guard > 480 ||
+        entity.vitals.recovery > RecoveryKind::Meal || entity.vitals.chill_guard > 480 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
         entity.vitals.haste > 240 || entity.vitals.rooted > 600 || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
     entity.toss.origin=reader.cell(); entity.toss.direction=reader.cell(); entity.toss.source=reader.cell();

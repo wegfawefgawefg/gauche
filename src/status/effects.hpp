@@ -3,7 +3,7 @@
 #include <cstdint>
 
 enum class RootKind : std::uint8_t { Rope, Net };
-enum class RecoveryKind : std::uint8_t { Herbs, Broth, Poultice };
+enum class RecoveryKind : std::uint8_t { Herbs, Broth, Poultice, Meal };
 
 // VITAL EFFECTS: Shared actor rules, independent of species-specific AI slots.
 struct VitalEffects {

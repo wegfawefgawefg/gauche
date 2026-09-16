@@ -22,3 +22,9 @@ ItemKind roll_item_supply(Game& game, LootSource source, bool allow_import = tru
 
 const char* item_role_name(ItemRole role);
 bool dependable_supply(ItemKind kind);
+
+// Shared eligibility/weights for actual selection and generation diagnostics.
+int supply_weight(ItemKind kind,int floor,LootSource source,bool foreign=false,
+                  ItemKind exclude=ItemKind::None,SupplyNeed need=SupplyNeed::Any);
+unsigned supply_bucket(ItemKind kind);
+std::array<unsigned,3> supply_shares(LootSource source);

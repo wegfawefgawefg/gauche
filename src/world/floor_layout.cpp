@@ -4,6 +4,7 @@
 #include "forest_boss.hpp"
 #include "forest_border.hpp"
 #include "forest_outskirts.hpp"
+#include "loose_finds.hpp"
 #include "forest_theme_layers.hpp"
 #include "generation_trace.hpp"
 #include "open_sectors.hpp"
@@ -198,6 +199,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     if(!reactor && !freight && !haunted) {
         place_forest_border(game,plan);
         capture("Biome border scenery");
+        place_forest_loose_finds(game,plan,report,trace);
+        capture("Late Forest finds");
     }
     place_fissures(game,plan);
     place_lava_vents(game);

@@ -18,7 +18,7 @@ struct GenerationTraceOptions {
 };
 // Local observation only. Fine captures cannot consume the coarse pass slots.
 struct GenerationTrace {
-    static constexpr std::size_t limit=32,detail_limit=32;
+    static constexpr std::size_t limit=36,detail_limit=32;
     static constexpr std::size_t detail_byte_limit=48U*1024U*1024U;
     GenerationTraceOptions options;
     std::vector<GenerationCheckpoint> checkpoints;

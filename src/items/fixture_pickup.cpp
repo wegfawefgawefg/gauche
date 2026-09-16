@@ -29,7 +29,7 @@ const Entity* pickup_fixture(const Game& game, const Entity& player) {
 const char* pickup_fixture_label(const Game& game, const Entity& fixture) {
     switch (fixture.kind) {
     case EntityKind::Key: return "TAKE KEY";
-    case EntityKind::Switch: return "PULL LEVER";
+    case EntityKind::Switch: return fixture.sprite==Sprite::ReactorCore ? "SHUT DOWN: 60S TO ESCAPE" : "PULL LEVER";
     case EntityKind::Door: return game.run.has_key ? "UNLOCK DOOR" : "NEED KEY";
     case EntityKind::Exit: return "LEAVE TOGETHER";
     case EntityKind::Encounter: return "ACTIVATE";

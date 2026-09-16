@@ -1,3 +1,4 @@
+#include "world/reactor.hpp"
 #include "combat/toss.hpp"
 #include "world/currents.hpp"
 #include "props/conveyor.hpp"
@@ -138,4 +139,5 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     step_conveyors(game);
     step_traps(game);
     sweep_dead(game);
+    step_reactor(game);
 }

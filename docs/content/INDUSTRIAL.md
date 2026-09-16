@@ -4,7 +4,7 @@ Design specification, not a claim of implemented content. The runtime currently
 has lava terrain, Ember enemies, native charcoal/molten terrain art, and
 working mine crews and whistle orders, finite-coal Ember Stokers, Powder Monkeys,
 Strikebreaker escorts, Rivet Gunners, Arc Welders, Magnet Cranes, Pressure Rats, Cable Crawlers, Walking Kilns, Audit Clerks, Furnace Moths, Slag Snails, Ash Sleepers, Counterweights, Emergency Pumps, Mold Thieves, Tar Choirs, Rail Shunters, twenty-nine regional items, metal cover/bins,
-assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, slag banks, ash lofts, hoist shafts, casting floors, settling tanks, freight sidings, scrap-yard sorting lanes, the Freight Exchange unique floor, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
+assembly-room conveyors, wet repair bays, cooling works, cable trenches, kiln courts, pay offices, lamp alcoves, slag banks, ash lofts, hoist shafts, casting floors, settling tanks, freight sidings, scrap-yard sorting lanes, the Freight Exchange and Last Shift unique floors, ten integrated catalog debris materials and eight ambient cue families. Track implementation in `../MASTER_TASKS.md`.
 This is biome three, following Forest and Ice. The fourth biome remains open.
 
 ## Identity and shared rules
@@ -219,14 +219,18 @@ surviving cover and quest fixtures stop the fall; survivors and loot are not bur
 Landed 20-HP metal sections block walking but allow shots and can be cut apart.
 The light goes out, leaving local glass and copper debris.
 
-Unique candidate: **The Last Shift**. A mostly authored central foundry has a
-clearly labeled emergency shutdown. Activating it cuts power to the exit but
-starts a 60s escape through opening service gates. Hot cracks spread from fixed
-vents through a bounded frontier, faster through conductive walls than floors.
-Cap work per simulation tick and store queue order deterministically. Telegraph
-new hot cells before damage. Guarantee a timed escape path, include split/rejoined
-players, and pause the timer only under the chosen team-pause policy. This is
-not ready to enable merely because the banner and countdown exist.
+Implemented unique: **The Last Shift**. Industry 3-4 has a seeded 20% chance;
+explicit dev selection/start/repeat also works. A shutdown wheel opens the exit
+and starts a 60s meltdown. Weapon use cannot accidentally activate it. Two
+service corridors, cooling pools, foam/coolant/pump supplies and guarded side
+loot support scouting and escape. Walls carry the front faster than floors;
+each tile gets at least 1.5s warning. At most eight warnings and eight releases
+are processed per tick. Water, cold and foam suppress individual releases;
+released fire can be extinguished without the reactor refueling it. The terminal
+blast ends the run even with Entrance respawns. Party gathering, snapshots,
+replay, required gates and a 14.6s clear walking route were checked. Four sounds,
+reactor/flame art and an angled countdown communicate the sequence. Solo pause
+stops fixed time; online menus currently do not, pending the team-pause feature.
 
 ## Containers and deterministic loot
 

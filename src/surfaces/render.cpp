@@ -191,7 +191,7 @@ void observe_surfaces(Cosmetics& cosmetics, const Game& game, Cell focus) {
     for (int y = focus.y - 14; y <= focus.y + 14; ++y)
         for (int x = focus.x - 22; x <= focus.x + 22; ++x) {
             const Tile* tile = game.stage.at({x, y});
-            if (tile == nullptr || tile->surface.fire_ticks == 0) continue;
+            if (tile == nullptr || tile->surface.fire_ticks == 0 || tile->surface.reactor_fire) continue;
             const auto seed = game.tick ^ static_cast<std::uint64_t>(x * 71 + y * 131);
             spawn_flame(cosmetics, {x, y}, seed, false);
             if (game.tick % 24 == 0) spawn_campfire_smoke(cosmetics, {x, y}, seed);

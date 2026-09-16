@@ -1,3 +1,4 @@
+#include "world/reactor.hpp"
 #include "items/supply.hpp"
 #include "run/offers.hpp"
 #include "game.hpp"
@@ -113,6 +114,8 @@ bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
         }
         if (fixture.kind == EntityKind::Encounter) return request_encounter(game, fixture);
         if (fixture.kind == EntityKind::Switch && !fixture.fixture_open) {
+            if (fixture.sprite==Sprite::ReactorCore)
+                return !held_use && activate_reactor(game,fixture);
             fixture.fixture_open = true;
             game.run.has_key = true;
             unlock_exit_light(game);
@@ -134,6 +137,7 @@ bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
             return true;
         }
         if (fixture.kind == EntityKind::Exit && game.run.phase == RunPhase::Playing) {
+            if (game.run.layout==FloorLayout::LastShift && !game.run.has_key) return false;
             if (!encounter_released(game, fixture.entity_a)) return false;
             for (std::size_t member_owner = 0; member_owner < 4; ++member_owner) {
                 if (!game.run.online[member_owner]) continue;

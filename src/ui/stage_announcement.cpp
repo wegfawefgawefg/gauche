@@ -16,6 +16,7 @@ void update_stage_announcement(StageAnnouncement& banner, const Game& game,
         banner.title = label; banner.subtitle.clear();
         if (game.run.layout==FloorLayout::HauntedHouse) banner.subtitle="HAUNTED HOUSE";
         if (game.run.layout==FloorLayout::FreightExchange) banner.subtitle="FREIGHT EXCHANGE";
+        if (game.run.layout==FloorLayout::LastShift) banner.subtitle="THE LAST SHIFT";
     } else banner.age += std::clamp(dt, 0.0F, .1F);
 }
 

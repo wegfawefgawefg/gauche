@@ -57,6 +57,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
 - [ ] Add material routes: axe/fire root masses, shovel-soft and pick-hard walls, shallow-hole candidates, populated burnable-web caves and alternate/guaranteed solutions.
 - [ ] Implement Timber Forest connected-fuel variant and the requested bounded noninteractive fire performance check, including cosmetics/network load and deterministic propagation.
 - [ ] Implement Industrial reactor-exit event: crank/activation and gate-opening rules, clear warning, bounded radioactive-fire spread and/or structural-blast variants, intentional escape routes and authoritative co-op/pause/reconnect state. Expand the existing conditions-brief task using [level-feature rules](design/LEVEL_FEATURES.md).
+  The Last Shift is implemented: rare Industry 3-4 floor, explicit shutdown, opened exit, 60s meltdown, 1.5s tile warnings, bounded wall/floor spread, cooling counters, native supplies, countdown/art/sounds and dev selection/repeat. Snapshot/replay and timed-route checks pass; full simulation averaged 0.094ms/tick with 2,525 active cells. Solo pause follows simulation; online menus keep time running. Team-pause policy remains pending, so this combined task stays open.
 - [ ] Build rare infrastructure fitting over base geometry: station plus active trains, Forest two-way road with occasional cars/trucks and breakable streetlights. Define geometry cutting versus live ramming, route lanes/endpoints, warnings, protected-objective intersections, compatible population and final validation; share large-feature rarity budgets.
 - [ ] Design/implement rare fire-engine response event: approach siren/lights, legal entry/parking, firefighters disembarking, finite buckets, reachable fire targets, truck refill and tank/stream/hydrant supply options. Shared wetting/quench rules, crowd yielding and co-op state; very rare Ice freezing-water and joke fire-spraying variants stay explicit candidates. See [response crew](design/LEVEL_FEATURES.md#rare-fire-response-crew).
 - [ ] Add biome-boundary scenery/material profiles: snowy/icy Forest 4, woodland remnants in Ice 1, thaw/water/heat in Ice 4 and residual ice in Industrial 1. Retain primary biome identity and native loot/enemy policy; audit local material rules separately from global climate.
@@ -277,8 +278,11 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
   Seeded one-in-five selection at this one stage; explicit dev selection,
   start override and repeat work. Switch/exit route, four-player carryover,
   party exit/reward/shop/progression and snapshot replay checked. This is a
-  whole-floor unique, not completion of the multi-room landmark system or
-  the Last Shift reactor event; wider quotas remain open.
+  whole-floor unique; wider landmark/unique quotas remain open.
+- [x] Add The Last Shift reactor unique at Industry 3-4 (seeded 20% at that
+  single stage): two service routes, cooling stores, guarded side loot and
+  irreversible shutdown escape. ImGui selection/start/repeat supported.
+  The broader reactor task above retains the outstanding team-pause policy.
 
 ## Biome content farm
 

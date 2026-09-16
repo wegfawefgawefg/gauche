@@ -95,6 +95,9 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
         // TILE TRUTH: Body and held-item origins agree with collisions; only the camera is smoothed.
         if (rect.x < -pixels || rect.x > 640.0F || rect.y < -pixels || rect.y > 360.0F + (entity.kind == EntityKind::ZombieStack ? pixels * 3 : 0))
             continue;
+        if (entity.sprite==Sprite::ReactorCore) {
+            rect.x-=pixels*.5F;rect.y-=pixels;rect.w*=2;rect.h*=2;
+        }
         if (entity.kind == EntityKind::GroundItem)
             draw_item_float(renderer, graphics, entity, camera, zoom, lighting);
         if (entity.kind == EntityKind::GroundItem || entity.kind == EntityKind::Key ||

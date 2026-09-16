@@ -136,10 +136,11 @@ void step_surfaces(Game& game) {
             if (surface.fire_ticks > 0 && surface.liquid == LiquidKind::Rot) {
                 surface.liquid = LiquidKind::None; surface.liquid_ticks = 0;
             }
-            if (surface.fire_ticks == 0) continue;
-            if (surface_wet(tile)) { surface.fire_ticks = 0; continue; }
+            if (surface.fire_ticks == 0) {surface.reactor_fire=false;continue;}
+            if (surface_wet(tile)) { surface.fire_ticks = 0; surface.reactor_fire=false; continue; }
             remove_prop_cover(game, cell, true);
             --surface.fire_ticks;
+            if (surface.fire_ticks==0) surface.reactor_fire=false;
             if (surface.fire_ticks == 0 && surface.liquid == LiquidKind::Sap && surface.liquid_ticks > 0)
                 surface.liquid = LiquidKind::SpentSap;
             if (surface.fire_ticks == 0 || game.tick % 30 != 0) continue;

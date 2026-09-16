@@ -1,3 +1,4 @@
+#include "world/reactor.hpp"
 #include "props/streetlamp.hpp"
 #include "net_codec.hpp"
 #include "items/folded_bridge.hpp"
@@ -10,7 +11,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(50);
+    writer.u32(51);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -26,6 +27,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.u16(tile.freeze_ticks);
         writer.u8(static_cast<std::uint8_t>(tile.surface.liquid));
         writer.u8(tile.surface.gritted ? 1 : 0);
+        writer.u8(tile.surface.reactor_fire ? 1 : 0);
         for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks, tile.surface.warmth_ticks, tile.surface.whiteout_ticks, tile.surface.still_ticks}) writer.u16(ticks);
         writer.u8(static_cast<std::uint8_t>(tile.prop.kind));
         writer.u8(tile.prop.hp); writer.u8(tile.prop.variant);
@@ -78,12 +80,16 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         for (Handle handle : {hit.projectile, hit.victim}) {
             writer.i32(handle.slot); writer.u32(handle.generation);
         }
+    writer.u32(static_cast<std::uint32_t>(game.reactor_front.size()));
+    for (const ReactorEvent& event:game.reactor_front) {
+        writer.u32(event.tile);writer.u16(event.due);writer.u16(event.warned_at);
+    }
     return writer.bytes;
 }
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 50) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 51) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -117,6 +123,9 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         const auto gritted = reader.u8();
         if (gritted > 1) reader.okay = false;
         tile.surface.gritted = gritted != 0;
+        const auto reactor_fire=reader.u8();
+        if (reactor_fire>1) reader.okay=false;
+        tile.surface.reactor_fire=reactor_fire!=0;
         tile.surface.liquid_ticks = reader.u16(); tile.surface.fire_ticks = reader.u16();
         tile.surface.smoke_ticks = reader.u16(); tile.surface.sleep_ticks = reader.u16(); tile.surface.scent_ticks = reader.u16();
         tile.surface.warmth_ticks = reader.u16(); tile.surface.whiteout_ticks = reader.u16(); tile.surface.still_ticks=reader.u16();
@@ -170,7 +179,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
     run.phase = static_cast<RunPhase>(phase);
     run.floor = reader.i32(); run.seed = reader.u64();
     run.layout=static_cast<FloorLayout>(reader.u8());
-    if (run.layout<FloorLayout::Generated || run.layout>FloorLayout::FreightExchange) reader.okay=false;
+    if (run.layout<FloorLayout::Generated || run.layout>FloorLayout::LastShift) reader.okay=false;
     const std::uint8_t death_policy = reader.u8();
     if (death_policy > static_cast<std::uint8_t>(DeathPolicy::NextFloor)) reader.okay = false;
     run.death_policy = static_cast<DeathPolicy>(death_policy);
@@ -249,6 +258,13 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             hit.victim.slot < 0 || hit.victim.slot >= max_entities) reader.okay = false;
         result.flight_contacts.push_back(hit);
     }
+    const std::uint32_t front_count=reader.u32();
+    if (!reader.okay || front_count>tile_count || front_count>(bytes.size()-reader.position)/8) {
+        error="Invalid reactor frontier size";return false;
+    }
+    for (std::uint32_t i=0;i<front_count;++i)
+        result.reactor_front.push_back({reader.u32(),reader.u16(),reader.u16()});
+    if (!valid_reactor(result)) {error="Invalid reactor state";return false;}
     // RESERVATIONS: A carried placeholder must name its owner's physical projectile.
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& actor = result.entities[static_cast<std::size_t>(slot)];

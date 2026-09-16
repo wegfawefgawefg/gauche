@@ -81,6 +81,7 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, tile.current);
         mix(hash, static_cast<std::uint64_t>(tile.surface.liquid));
         mix(hash, tile.surface.gritted);
+        mix(hash, tile.surface.reactor_fire);
         for (auto ticks : {tile.surface.liquid_ticks, tile.surface.fire_ticks, tile.surface.smoke_ticks, tile.surface.sleep_ticks, tile.surface.scent_ticks, tile.surface.warmth_ticks, tile.surface.whiteout_ticks, tile.surface.still_ticks}) mix(hash, ticks);
         mix(hash, static_cast<std::uint64_t>(tile.prop.kind));
         mix(hash, tile.prop.hp);
@@ -204,5 +205,9 @@ std::uint64_t game_hash(const Game& game) {
             mix(hash, static_cast<std::uint64_t>(handle.slot));
             mix(hash, handle.generation);
         }
+    mix(hash,game.reactor_front.size());
+    for (const ReactorEvent& event:game.reactor_front) {
+        mix(hash,event.tile);mix(hash,event.due);mix(hash,event.warned_at);
+    }
     return hash;
 }

@@ -1,3 +1,4 @@
+#include "reactor.hpp"
 #include "workfront.hpp"
 #include "freight_exchange.hpp"
 #include "assembly.hpp"
@@ -38,12 +39,14 @@ void generate_world_floor(Game& game, FloorLayout layout) {
 
     // ROUTE: Geometry and role pools share one seeded plan; no content can block its dry paths.
     game.run.layout=FloorLayout::Generated;
-    const bool freight=(layout==FloorLayout::Automatic || layout==FloorLayout::FreightExchange) &&
+    const bool reactor=(layout==FloorLayout::Automatic || layout==FloorLayout::LastShift) &&
+        make_last_shift(game,layout==FloorLayout::LastShift);
+    const bool freight=!reactor && (layout==FloorLayout::Automatic || layout==FloorLayout::FreightExchange) &&
         make_freight_exchange(game,layout==FloorLayout::FreightExchange);
-    const bool haunted = !freight && (layout==FloorLayout::Automatic || layout==FloorLayout::HauntedHouse) &&
+    const bool haunted = !reactor && !freight && (layout==FloorLayout::Automatic || layout==FloorLayout::HauntedHouse) &&
         make_haunted_floor(game, layout == FloorLayout::HauntedHouse);
     FloorPlan plan;
-    if (!haunted && !freight) {
+    if (!haunted && !freight && !reactor) {
         plan = plan_floor(game);
         carve_floor(game, plan);
         place_forest_terrain(game, plan);
@@ -91,7 +94,8 @@ void generate_world_floor(Game& game, FloorLayout layout) {
         }
     }
 
-    if (freight) populate_freight_exchange(game);
+    if (reactor) populate_last_shift(game);
+    else if (freight) populate_freight_exchange(game);
     else if (haunted) populate_haunted_house(game);
     else { populate_rooms(game, plan); scatter_room_props(game, plan); }
     emit_sound(game, SoundId::LevelStart, game.run.spawn, false);

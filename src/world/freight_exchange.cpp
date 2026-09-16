@@ -7,7 +7,7 @@
 namespace {
 void fill(Stage& stage,Cell low,Cell high,TileKind kind) {
     for (int y=low.y;y<=high.y;++y) for (int x=low.x;x<=high.x;++x)
-        *stage.at({x,y})={kind,static_cast<std::uint16_t>(kind==TileKind::Wall ? 80 : 0),0};
+        *stage.at({x,y})={kind,static_cast<std::uint16_t>(kind==TileKind::Wall ? 80 : 0),0,80};
 }
 void track(Stage& stage,Cell from,Cell to) {
     const Cell step{from.x==to.x ? 0 : 1,from.y==to.y ? 0 : 1};
@@ -32,7 +32,7 @@ bool make_freight_exchange(Game& game,bool force) {
     // One eligible stage gives a run-wide cap naturally; debug forcing is separate.
     if (!force && (game.run.floor!=10 || random_u32(game)%5!=0)) return false;
     game.stage.width=64;game.stage.height=48;
-    game.stage.tiles.assign(64*48,{TileKind::Wall,80,0});
+    game.stage.tiles.assign(64*48,{TileKind::Wall,80,0,80});
     fill(game.stage,{28,6},{36,44},TileKind::Ruin);
     fill(game.stage,{5,8},{58,16},TileKind::Ruin);
     fill(game.stage,{7,6},{18,18},TileKind::Ruin);

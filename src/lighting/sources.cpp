@@ -1,4 +1,5 @@
 #include "field.hpp"
+#include "../world/reactor.hpp"
 #include "../items/fire.hpp"
 #include "../entities/steam_leech.hpp"
 #include "../entities/lens_warden.hpp"
@@ -44,13 +45,13 @@ std::vector<LightSource> collect_light_sources(const Game& game,
             const Tile& tile = game.stage.at_or_border({x, y});
             const float charge = std::find(charged.begin(), charged.end(), Cell{x, y}) == charged.end() ? 1.0F : 1.8F;
             add_emitter(sources, cache, {x, y}, prop_light(tile.prop), heat_scale({x, y}) * charge);
-            if (tile.surface.fire_ticks == 0) continue;
+            if (tile.surface.fire_ticks == 0 || (tile.surface.reactor_fire && !exposed_reactor_cell(game.stage,{x,y}))) continue;
             // CLUSTERS: Share neighboring emitters, but isolated flames always cast light.
             bool covered = false;
             if ((x + y) % 2 != 0)
                 for (Cell side : {Cell{1, 0}, {-1, 0}, {0, 1}, {0, -1}})
                     covered |= game.stage.at_or_border(Cell{x, y} + side).surface.fire_ticks > 0;
-            if (!covered) add(sources, cache, {x, y}, 3, .65F * heat_scale({x, y}), {1, .42F, .14F});
+            if (!covered) add(sources, cache, {x, y}, 3, .65F * heat_scale({x, y}), tile.surface.reactor_fire ? LightColor{.52F,1,.24F} : LightColor{1, .42F, .14F});
         }
 
     // ACTORS: Each entity owns its emitter; a dead actor no longer illuminates.

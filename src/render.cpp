@@ -1,3 +1,4 @@
+#include "world/reactor_render.hpp"
 #include "scene_entities.hpp"
 #include "props/rail_render.hpp"
 #include "entities/freight_render.hpp"
@@ -204,7 +205,7 @@ void draw_run_status(SDL_Renderer* renderer, const Game& game, float zoom) {
         std::snprintf(floor, sizeof(floor), "%s %d/4   %s", biome_name(floor_biome(game.run.floor)),
                       biome_stage(game.run.floor),
                       game.run.has_key ? "DOOR OPEN" :
-                      (game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
+                      (game.run.layout==FloorLayout::LastShift ? "FIND SHUTDOWN" : game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
         SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
     }
     char zoom_label[24];
@@ -229,6 +230,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                                           std::span<const LightFlash>{});
     draw_tiles(renderer, graphics, game, camera, zoom, cosmetics, lighting);
     draw_surfaces(renderer, game, camera, zoom, lighting, false);
+    draw_reactor_hazards(renderer,graphics,game,camera,zoom);
     draw_contact_shadows(renderer,game,cosmetics,camera,zoom);
     if (cosmetics) draw_ice_scenery(renderer,graphics,game,*cosmetics,camera,zoom,lighting);
     draw_props(renderer, graphics, game.stage, camera, zoom, lighting,game.tick);
@@ -263,6 +265,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     draw_run_status(renderer, game, zoom);
+    draw_reactor_status(renderer,game);
     if (player != nullptr) draw_encounter_status(renderer, game, *player);
 }
 

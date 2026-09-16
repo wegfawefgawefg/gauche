@@ -10,6 +10,7 @@ struct Surface {
     std::uint16_t sleep_ticks = 0;
     std::uint16_t scent_ticks = 0;
     bool gritted = false;
+    bool reactor_fire = false;
     std::uint16_t warmth_ticks = 0;
     std::uint16_t whiteout_ticks = 0;
     std::uint16_t still_ticks = 0;

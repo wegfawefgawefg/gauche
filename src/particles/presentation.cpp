@@ -305,6 +305,10 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
         spawn_death(cosmetics, sound.cell, EntityKind::Zombie, 85.0F, seed);
         push_debris(cosmetics.debris, sound.cell, 1.6F, .07F);
         break;
+    case SoundId::ReactorBlast:
+        cosmetics.flashes.push_back({{sound.cell,64,3.5F,{.83F,1.0F,.55F}},45,45});
+        push_debris(cosmetics.debris,sound.cell,64,.24F);
+        break;
     case SoundId::Explosion: case SoundId::Explosion1:
     case SoundId::Explosion2: case SoundId::Explosion3:
         push_debris(cosmetics.debris, sound.cell, 4.0F, .24F);

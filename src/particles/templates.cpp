@@ -304,6 +304,7 @@ void spawn_sound_effect(Cosmetics& cosmetics, const SoundEvent& sound,
     case SoundId::ShellKnock:
         spray(cosmetics, sound.cell, seed, 4, Sprite::DebrisStoneChip, .05F, .01F);
         break;
+    case SoundId::ReactorBlast:
     case SoundId::Explosion: case SoundId::Explosion1:
     case SoundId::Explosion2: case SoundId::Explosion3:
         shockwave(cosmetics, sound.cell, 255, 169, 67);

@@ -135,6 +135,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
     douse_candle(game,cell);
     douse_stove(game,cell);
     tile->surface.fire_ticks = 0;
+    tile->surface.reactor_fire=false;
     for (Entity& actor : game.entities) {
         if (actor.kind == EntityKind::None || actor.cell != cell) continue;
         if (quench_exposed_fuse(actor,sound==SoundId::ColdQuench)) quenched=true;

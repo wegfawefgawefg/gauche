@@ -254,7 +254,7 @@ struct StageLight {
     Cell cell{};
     LightEmitter light{7, 1350, {240, 224, 176}};
 };
-enum class FloorLayout { Automatic, Generated, HauntedHouse, FreightExchange };
+enum class FloorLayout { Automatic, Generated, HauntedHouse, FreightExchange, LastShift };
 struct Run {
     RunPhase phase = RunPhase::Arena;
     int floor = 0;
@@ -277,10 +277,13 @@ struct Run {
     int roof_light_count = 0;
 };
 
+struct ReactorEvent {std::uint32_t tile=0;std::uint16_t due=0,warned_at=0;};
+
 struct Game {
     Stage stage{};
     std::array<Entity, max_entities> entities{};
     std::vector<FlightContact> flight_contacts;
+    std::vector<ReactorEvent> reactor_front;
     std::array<Handle, 4> players{};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;

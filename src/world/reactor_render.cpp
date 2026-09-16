@@ -24,9 +24,6 @@ void draw_reactor_hazards(SDL_Renderer* renderer,const GameGraphics& graphics,co
     }
     const int rx=static_cast<int>(320/tile_pixels(zoom))+2,ry=static_cast<int>(180/tile_pixels(zoom))+2;
     SDL_Texture* texture=texture_for(graphics,Sprite::ReactorFlame);
-    float tw=0,th=0;SDL_GetTextureSize(texture,&tw,&th);
-    // The standalone source retains its generous transparent canvas margin.
-    const SDL_FRect source{tw*.39F,th*.30F,tw*.23F,th*.38F};
     for (int y=std::max(0,static_cast<int>(camera.y)-ry);y<std::min(game.stage.height,static_cast<int>(camera.y)+ry+1);++y)
         for (int x=std::max(0,static_cast<int>(camera.x)-rx);x<std::min(game.stage.width,static_cast<int>(camera.x)+rx+1);++x) {
             const Surface& s=game.stage.at({x,y})->surface;
@@ -40,7 +37,7 @@ void draw_reactor_hazards(SDL_Renderer* renderer,const GameGraphics& graphics,co
             SDL_FRect flame{r.x+r.w*(.07F+static_cast<float>(seed%7)*.045F),r.y+r.h*.82F-height,r.w*.68F,height};
             SDL_SetTextureColorModFloat(texture,.82F,.9F,.65F);
             SDL_SetTextureAlphaModFloat(texture,.9F);
-            SDL_RenderTextureRotated(renderer,texture,&source,&flame,0,nullptr,seed%2 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            SDL_RenderTextureRotated(renderer,texture,nullptr,&flame,0,nullptr,seed%2 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             SDL_SetTextureColorModFloat(texture,1,1,1);SDL_SetTextureAlphaModFloat(texture,1);
         }
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);

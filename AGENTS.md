@@ -20,8 +20,10 @@
   must include the entity generation; stale handles must fail safely.
 - Keep random gameplay choices in saved deterministic state. Local graphics,
   particles, and sound never affect gameplay hashes.
-- Use the source PNG/OGG files for the port. New sprites may be rough generated
-  16x16 PNGs until their content survives playtesting.
+- Preserve source PNG/OGG files for the port. Generate new sprites and animation
+  poses with code, extending the Python/Pillow scripts in `tools/art/` at the
+  established pixel scale. Do not use imagegen for sprites; prioritize readable
+  silhouettes and consistency with the existing game art.
 - Every smoke run must exit by itself. Use SDL dummy drivers for autonomous
   render checks, not an interactive desktop window.
 - Commit cohesive milestones. Tag a major milestone only after its relevant

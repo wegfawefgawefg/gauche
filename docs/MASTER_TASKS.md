@@ -4,6 +4,44 @@ This is the **single live checklist**. [Content brief](design/CONTENT_FARM_BRIEF
 
 Execution started 2026-09-14. The user owns playtesting and balance feedback. Use builds and focused render/asset inspection, without large new test suites or autonomous playthroughs. Unchecked work stays visible; note uninspected visuals.
 
+## Immediate priority: ordinary Ice and Industry floors (2026-09-16)
+
+Forest feels full; Ice and Industry still feel bare despite catalog growth. Execute these concrete milestones before further isolated catalog expansion. Existing counts describe implementation, not encounter frequency or biome completeness. Each gameplay milestone includes normal-generator placement, meaningful interactions and generation coverage/static captures. Forced debug showcases alone do not complete it. Keep notes brief; no new history documents.
+
+Art cleanup, then overdue walk-under/falling scenery, then ordinary-biome integration:
+
+- [x] **ART-1:** Replace all 66 exact imagegen-source PNG matches with code-drawn sprites/poses at native pixel resolution; keep filenames/gameplay, fix obsolete rendering crops/scales, inspect contact sheets and in-game static captures. Rebuild with `python3 tools/art/underworks.py`; build, deterministic regeneration and static render inspection passed. No imagegen sprites going forward.
+- [ ] **GEN-1:** Count actual scene/enemy/item placements across a fixed sample of ordinary Ice/Industry floors; report rejected placements, fallbacks and budget starvation. Repair existing content that is effectively absent before adding more registry entries. Use generation-only diagnostics, not autonomous playthroughs.
+- [ ] **OVER-1:** Implement connected overhead groups on one gameplay plane: code-made roof art, ground anchors, actor sorting and whole-group fade/dither when a local player walks beneath. Support split-screen/co-op visibility locally; keep collision independent of opacity. Peripheral canopy masking is not this feature.
+- [ ] **OVER-2:** Place hollow fallen-log/root tunnels in ordinary Forest generation, including a rare wall-crossing shortcut. Show both entrances and fade the connected roof over occupants; wood/fire/tool interactions must not strand required objectives.
+- [ ] **OVER-3:** Place walk-under ice arches in ordinary Ice and overhead maintenance gantries in Industry. Include an open passage beneath a visible bridge-like span; no walkable upper deck or stacked navigation layer is required.
+- [ ] **FALL-1:** Add a tall Ice pillar: planted base, shake/crack tell, marked fall lane, smooth tip and timed crush, followed by breakable fallen sections. Fire visibly shrinks/melts it and produces water; never silently turn occupied cells into impassable tiles.
+- [ ] **FALL-2:** Add a tall Forest tree: axe damage and bottom-up burning, warned fall, then connected log sections with deliberate landing/occupant rules. Include ordinary placements and a useful fallen-log route; standing/falling/landed states need matching code art.
+- [ ] **FALL-3:** Add an Industrial tower/support variant with warned collapse, broken lamp or pipe, and persistent cuttable wreckage. Ordinary workrooms get placements; retain existing streetlight behavior as the smaller completed example. These first three families do not complete the eight-family-per-biome target.
+
+Distinct ordinary floors and living machinery:
+
+- [ ] **ICE-1:** Add a shelf-and-fissure geometry profile with broad spaces, branching edges and optional crossing rewards; preserve a reachable required route. Select it in ordinary Ice generation rather than only via a unique floor.
+- [ ] **ICE-2:** Add thaw-channel/cavern geometry with connected water, dry islands and frozen pockets; place existing fishing/mobility tools and appropriate enemies where those systems matter. Audit shared room carving so these profiles change navigation, not merely textures.
+- [ ] **ICE-3:** Add code-made rock-backed, clear/clouded ice and packed-snow treatments with transitions, cracks and contents. Mix materials at structural boundaries; freezing/melting/break rules must match the visible material.
+- [ ] **IND-1:** Add broad work-hall plus service-loop geometry and a separate excavation-front profile to ordinary Industry generation. Belts, heat and machinery cross former room boundaries; keep required objective access and useful diggable shortcuts.
+- [ ] **IND-2:** Route long winding belts through two or more work areas, with readable corners, loading/unloading ends and real transported objects. Small connected installations are ordinary features; do not apply rare-major-landmark limits to every connection.
+- [ ] **IND-3:** Add a mining machine that visibly attacks eligible wall and yields finite real coal onto an adjacent belt. Show working/blocked/exhausted states; respect unbreakable boundaries and stop or redirect deliberately when excavation is blocked.
+- [ ] **IND-4:** Connect belt-delivered coal and a spring-fed water intake to a consuming boiler. Show intake/outlet flow and leaks; interruption stops operation, while appropriate unsafe states give warnings before overheating/fire. No unlimited material duplication.
+- [ ] **IND-5:** Connect that boiler to an existing belt drive and one other useful machine. Fuel/water/power loss visibly stops consumers; repair or restored supply restarts them. Save the small explicit machine relationships; avoid a speculative general factory framework.
+- [ ] **IND-6:** Give an appropriate crane installation an operator who works, pauses for obstruction and reacts to interference. Preserve existing crane counterplay; make the mechanism and operator's responsibilities visible.
+- [ ] **LIFE-1:** Compose an ordinary Ice stream-work scene using fishing, currents, wildlife and a worker where appropriate; provide observable activity, interruption and worthwhile salvage before combat begins.
+- [ ] **LIFE-2:** Compose an ordinary Industry shift scene using existing excavation workers, cargo handling and connected machines. Workers do jobs before aggro; territorial danger and moving loads make passage a decision. Support participants leaving their original scene.
+
+Environmental response and loot quality:
+
+- [ ] **LAVA-1:** Animate lava with code-made crust/flow/bubbles and positional sound. Audit contact damage/ignition timing; entry must give immediate readable feedback and continued exposure clear consequences.
+- [ ] **LAVA-2:** Add warned bubbling eruptions/fireballs with safe intervals and occasional ignition of eligible adjacent material. Define cooling/extinguishing interactions and deterministic active-hazard budgets.
+- [ ] **LAVA-3:** Place steam and lava fissures in ordinary Industry routes/work areas, with visible idle/pressure/release/cooling states. Connect at least one fissure scene to water/heat tools and a useful route or reward.
+- [ ] **LOOT-1:** Classify biome items as dependable combat/survival/mobility, contextual utility, or oddity/toy; publish separate counts and set minimum subtargets within the 50-item baseline. Identify missing useful roles before adding further feed/fuel/brief-status-removal items; retain strange toys.
+- [ ] **LOOT-2:** Adjust ordinary loot/containers/shops by those roles and measured acquisition frequency. Ensure niche gear cannot consume all useful-equipment opportunities; inspect stacks/ammo and real applications for existing toys, including Fishing Line and boiler fittings.
+- [ ] **FEEDBACK-1:** Give crates a visible hit jolt, chips and damage response with fitting wood-impact sounds. Keep their authoritative collision position fixed and the broken result readable.
+
 ## Balance and original feedback (2026-09-15)
 
 [Verbatim user-message archive](user_messages/README.md) preserves the full 1–13 message, IDEA/A–C interludes, preceding screenshot notes and latest balance feedback. Keep originals intact; this file alone tracks execution. [Balance review](design/BALANCE_REVIEW.md) specifies the work below. Balance proceeds alongside content, preserving abundant toys and the enjoyable Forest experimentation.

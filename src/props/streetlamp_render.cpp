@@ -35,9 +35,10 @@ void draw_streetlamp(SDL_Renderer* renderer,const GameGraphics& graphics,const G
     if (prop.growth_ticks>pole_fall_ticks) dx+=std::sin(static_cast<float>(game.tick%100)*1.3F)*pixels*.05F;
     // The bolt plate stays anchored. Foreshorten the length toward the camera,
     // not its width: the lamp head must not disappear when the pole is end-on.
-    const float height=std::max(pixels*.16F,std::hypot(dx,dy))/.88F;
-    const float width=3*pixels/.88F*2/3;
-    const SDL_FPoint pivot{width*.48F,height*.92F};
+    // Native 16x48 art: narrow pole, foot anchored at pixel (7.5,44).
+    const float height=std::max(pixels*.16F,std::hypot(dx,dy))*48/44;
+    const float width=pixels;
+    const SDL_FPoint pivot{width*7.5F/16,height*44/48};
     SDL_FRect body{floor.x+pixels*.5F-pivot.x,floor.y+pixels*.6F-pivot.y,width,height};
     const double angle=std::atan2(dx,-dy)*180/3.141592653589793;
     SDL_Texture* texture=texture_for(graphics,Sprite::StreetLamp);

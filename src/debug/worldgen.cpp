@@ -15,6 +15,18 @@ void fit_worldgen(WorldGenViewer& v) {
                    280.0F/(8.0F*static_cast<float>(v.original->stage.height)));
 }
 
+void select_worldgen_checkpoint(WorldGenViewer& v,int checkpoint) {
+    v.checkpoint=std::clamp(checkpoint,0,std::max(0,static_cast<int>(v.trace.checkpoints.size())-1));
+    if (v.follow_step && !v.trace.checkpoints.empty()) {
+        const auto& step=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)];
+        if (step.detail) v.selected_component=step.component;
+    }
+}
+void recapture_worldgen(WorldGenViewer& v) {
+    if (!v.original) return;
+    v.seed=v.original->run.seed;v.floor=v.original->run.floor;
+    v.keep_view_on_regen=true;v.regenerate_requested=true;
+}
 void regenerate_worldgen(WorldGenViewer& v) {
     v.original=std::make_unique<Game>();
     v.population={};
@@ -25,9 +37,11 @@ void regenerate_worldgen(WorldGenViewer& v) {
     game.run.floor=v.floor;
     game.run.phase=RunPhase::Playing;
     game.run.online[0]=true;
+    v.trace.options=v.capture_options;
     generate_world_floor(game,FloorLayout::Automatic,&v.population,&v.trace);
     v.checkpoint=static_cast<int>(v.trace.checkpoints.size())-1;
-    fit_worldgen(v);
+    if (!v.keep_view_on_regen) fit_worldgen(v);
+    v.keep_view_on_regen=false;
 }
 
 void process_worldgen_requests(MenuShell& menu) {
@@ -90,9 +104,11 @@ bool worldgen_event(const SDL_Event& event) {
     if (pressed(SDLK_PAGEDOWN,SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)) {
         v.floor=v.floor==4 ? 1 : v.floor+1; v.regenerate_requested=true;
     }
-    if (pressed(SDLK_LEFTBRACKET,SDL_GAMEPAD_BUTTON_DPAD_LEFT)) --v.checkpoint;
-    if (pressed(SDLK_RIGHTBRACKET,SDL_GAMEPAD_BUTTON_DPAD_RIGHT)) ++v.checkpoint;
-    v.checkpoint=std::clamp(v.checkpoint,0,std::max(0,static_cast<int>(v.trace.checkpoints.size())-1));
+    if (key && event.key.key==SDLK_HOME) select_worldgen_checkpoint(v,0);
+    if (key && event.key.key==SDLK_END) select_worldgen_checkpoint(v,static_cast<int>(v.trace.checkpoints.size())-1);
+    if (pressed(SDLK_LEFTBRACKET,SDL_GAMEPAD_BUTTON_DPAD_LEFT)) select_worldgen_checkpoint(v,v.checkpoint-1);
+    if (pressed(SDLK_RIGHTBRACKET,SDL_GAMEPAD_BUTTON_DPAD_RIGHT)) select_worldgen_checkpoint(v,v.checkpoint+1);
+    if (key && !event.key.repeat && event.key.key==SDLK_T) {v.capture_options.details=!v.capture_options.details;recapture_worldgen(v);}
     if (pressed(SDLK_MINUS,SDL_GAMEPAD_BUTTON_DPAD_DOWN)) v.zoom=std::max(.08F,v.zoom/1.2F);
     if (pressed(SDLK_EQUALS,SDL_GAMEPAD_BUTTON_DPAD_UP)) v.zoom=std::min(8.0F,v.zoom*1.2F);
     if (pad && event.gbutton.button==SDL_GAMEPAD_BUTTON_START) debug_panels().visible=!debug_panels().visible;

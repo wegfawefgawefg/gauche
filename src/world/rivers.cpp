@@ -1,4 +1,5 @@
 #include "rivers.hpp"
+#include "generation_trace.hpp"
 #include "feature_roll.hpp"
 #include "components.hpp"
 #include "routed_path.hpp"
@@ -30,7 +31,7 @@ std::uint8_t flow_code(Cell d) {return static_cast<std::uint8_t>(d.x>0 ? 1 : d.y
 struct Outlet {Cell cell,flow;};
 struct Source {Cell cell,flow;};
 }
-void carve_forest_river(Game& game,FloorPlan& plan) {
+void carve_forest_river(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     if (!roll_generation_feature(game,plan,GenerationFeature::River)) return;
     const auto count=game.stage.tiles.size();
     std::vector<std::uint8_t> allowed(count);std::vector<Source> springs,sources;
@@ -61,6 +62,7 @@ void carve_forest_river(Game& game,FloorPlan& plan) {
         const auto spring=sources[random_u32(game)%sources.size()];
         const Cell source=spring.cell,front=source+spring.flow,back=source-spring.flow;
         const auto outlet_roll=roll_component(game,&plan.report,GenerationFeature::River,style.record,"Outlet attempt",source,ends);
+        const GenerationStep step{trace,game,plan,"River attempt",GenerationFeature::River,outlet_roll.record};
         const auto& pool=outlet_roll.value==0 ? drains : drops;
         std::vector<Outlet> far;
         for (const auto& outlet:pool) if (distance(source,outlet.cell)>=30) far.push_back(outlet);

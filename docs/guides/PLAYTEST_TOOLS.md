@@ -50,7 +50,9 @@ Main menu → Dev → World Gen inspects standalone Forest floors 1-1–1-4 with
 | Fit map | F | Y |
 | Pan | WASD | Left stick |
 | Zoom | Wheel or minus / equals | D-pad up / down |
-| Previous / next pass | [ / ] | D-pad left / right |
+| Previous / next captured step | [ / ] | D-pad left / right |
+| First / finished step | Home / End | — |
+| Toggle fine capture, same map | T | — |
 | Roof / crown visibility | O | Right stick click |
 | Fullbright | L | Left stick click |
 | Details | F1 | Start |
@@ -58,11 +60,11 @@ Main menu → Dev → World Gen inspects standalone Forest floors 1-1–1-4 with
 | Vignette | V | ImGui checkbox |
 | Copy current seed | C | ImGui button |
 
-ImGui Generation inspector edits the next seed, copies the completed map's seed/floor/build revision/settings, scrubs passes, highlights changed terrain/material/prop kinds, and shows recorded population outcomes. Room outlines reflect the selected pass; cyan is ordinary, gold is a reserved landmark. Current capture is coarse and capped at 32 complete Game snapshots (25 on ordinary Forest; memory varies with map dimensions). Generation retains no snapshots when the optional capture argument is absent.
+ImGui Generation inspector edits the next seed, copies the completed map's seed/floor/build revision/settings, scrubs passes, highlights changed terrain/material/prop kinds, and shows recorded population outcomes. Room outlines reflect the selected pass; cyan is ordinary, gold is a reserved landmark. Coarse capture is capped at 32 complete Game snapshots (25 on ordinary Forest; memory varies with map dimensions). Generation retains no snapshots when the optional capture argument is absent.
 
 The Rolls tab now covers the six large Forest landmarks, open sectors and cross-room rivers: the same registry drives their real selection chances and the 1-1–1-4 matrix. Recorded outcomes distinguish missed rolls, failed footprint searches, reservations, built geometry and suppression by whole-floor uniques. Select an entry to see candidate counts/variant, highlight its room footprints, focus them, or jump to its first appearance checkpoint. Geometry built is not a promise that all later props/loot survived.
 
-F1 → Generation inspector also reads the current locally generated game's immutable report during ordinary play, rather than a previous preview. Reports are excluded from gameplay hashes and snapshot serialization; received network snapshots explicitly show unavailable diagnostics. Ordinary room/child-component rolls, later removal attribution, fine checkpoints, network report transfer and other biome selectors remain pending.
+F1 → Generation inspector also reads the current locally generated game's immutable report during ordinary play, rather than a previous preview. Reports are excluded from gameplay hashes and snapshot serialization; received network snapshots explicitly show unavailable diagnostics. Ordinary room/child-component rolls, later removal attribution, additional fine-loop coverage, network report transfer and other biome selectors remain pending.
 
 `GAUCHE_DEV_MODE` defaults ON; OFF hides developer entry/hotkeys and manual gameplay zoom controls.
 
@@ -75,3 +77,7 @@ Spider-cave entries now include habitat reach, forked growth paths and nested po
 Giant-tree entries include outward-root reach, shell attachments and tapered branches. Cyan cells are actual material conversions; orange crosses mark skipped terrain or preserved walking paths. The Giant root growth checkpoint shows changes before population. These are normal Root walls with normal chopping/burning behavior, not a decorative overlay.
 
 The river entry separates the steering guide/banks from each actual source-to-outlet centerline/channel. Outlet attempts retain failure reasons; built channels show bank fighter and fish-shoal rolls. River channels and banks is a separate checkpoint. Initial rivers are shallow, with normal currents and standable banks; required crossings remain wadeable. Deep/fast variants and circulating rideable routes remain pending.
+
+The Capture tab enables individual sector/river attempts and spider/root branches, filters to one feature, and samples every N matching attempts. Recapture same map preserves the original seed/floor and camera even if Next seed was edited. T toggles fine capture and recaptures immediately. Fine snapshots have a separate 32-entry / approximately 48 MiB limit, so reaching it does not consume coarse pass slots. The UI reports snapshot counts, estimated storage and truncation. Fine-step selection can follow its recorded component automatically.
+
+Changed actors / loot marks additions green, removals or former positions red, and moves/changed occupants yellow. The comparison uses the preceding captured snapshot, so sampling compares across skipped attempts. Fine snapshots are resolved attempts, including rolled-back failures; they do not expose half-applied tile mutations.

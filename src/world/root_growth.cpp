@@ -1,4 +1,5 @@
 #include "root_growth.hpp"
+#include "generation_trace.hpp"
 #include "growth_paths.hpp"
 #include "growth_carving.hpp"
 #include "raster.hpp"
@@ -33,7 +34,7 @@ bool root_site(const Game& game,const FloorPlan& plan,Cell cell) {
 Cell scale(Cell c,int n) {return {c.x*n,c.y*n};}
 }
 
-void grow_giant_roots(Game& game,FloorPlan& plan) {
+void grow_giant_roots(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     if (plan.giant_trees.empty()) return;
     const auto routes=generation_walking_routes(game,plan);
     std::vector<std::uint8_t> eligible(game.stage.tiles.size(),0);
@@ -69,6 +70,7 @@ void grow_giant_roots(Game& game,FloorPlan& plan) {
                 const int parent=path.parent<0 ? attachment.record : records[static_cast<std::size_t>(path.parent)];
                 const WeightedComponent widths[]{{0,"Fine root",3},{1,"Raised root",5},{2,"Heavy buttress",reach.value==2 ? 3U : 1U}};
                 const auto branch=roll_component(game,&plan.report,GenerationFeature::GiantTree,parent,"Root branch",path.points.front(),widths);
+                const GenerationStep step{trace,game,plan,"Root branch",GenerationFeature::GiantTree,branch.record};
                 records[n]=branch.record;
                 if (branch.record>=0) plan.report.components[static_cast<std::size_t>(branch.record)].guide=path.points;
                 if (path.parent>=0) {

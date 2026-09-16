@@ -32,7 +32,7 @@
 #include <utility>
 
 void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report, GenerationTrace* trace) {
-    if (trace) *trace = {};
+    if (trace) trace->reset();
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};
     std::array<bool, 4> joined{};
@@ -103,13 +103,13 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         place_chasms(game,plan);
         carve_shelf_reward(game,plan);
         capture("Chasms and shelf routes");
-        carve_open_sectors(game,plan);
+        carve_open_sectors(game,plan,trace);
         capture("Cross-room open sectors");
-        carve_forest_river(game,plan);
+        carve_forest_river(game,plan,trace);
         capture("River channels and banks");
-        grow_spider_habitats(game,plan);
+        grow_spider_habitats(game,plan,trace);
         capture("Spider habitat growth");
-        grow_giant_roots(game,plan);
+        grow_giant_roots(game,plan,trace);
         capture("Giant root growth");
     }
 

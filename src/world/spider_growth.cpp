@@ -1,4 +1,5 @@
 #include "spider_growth.hpp"
+#include "generation_trace.hpp"
 #include "growth_paths.hpp"
 #include "growth_carving.hpp"
 #include "raster.hpp"
@@ -24,7 +25,7 @@ bool allowed(const Game& game,const FloorPlan& plan,Cell cell) {
 
 }
 
-void grow_spider_habitats(Game& game,FloorPlan& plan) {
+void grow_spider_habitats(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     if (plan.spider_caves.empty()) return;
     std::vector<std::uint8_t> mask(game.stage.tiles.size());
     for (int y=0;y<plan.height;++y) for (int x=0;x<plan.width;++x)
@@ -45,6 +46,7 @@ void grow_spider_habitats(Game& game,FloorPlan& plan) {
             const int parent=path.parent<0 ? mode.record : records[static_cast<std::size_t>(path.parent)];
             const WeightedComponent shapes[]{{1,"Narrow vein",4},{2,"Broad web gallery",3},{3,"Brood chamber",3}};
             const auto branch=roll_component(game,&plan.report,GenerationFeature::SpiderCave,parent,"Habitat branch",path.points.front(),shapes);
+            const GenerationStep step{trace,game,plan,"Spider branch",GenerationFeature::SpiderCave,branch.record};
             records[n]=branch.record;
             if (branch.record>=0) plan.report.components[static_cast<std::size_t>(branch.record)].guide=path.points;
             if (path.parent>=0 && reached[static_cast<std::size_t>(path.parent)].empty()) {

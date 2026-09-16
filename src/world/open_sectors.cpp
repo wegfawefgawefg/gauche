@@ -1,4 +1,5 @@
 #include "open_sectors.hpp"
+#include "generation_trace.hpp"
 #include "feature_roll.hpp"
 #include "components.hpp"
 #include "raster.hpp"
@@ -14,7 +15,7 @@ bool candidate(const RoomPlan& room) {
 }
 
 }
-void carve_open_sectors(Game& game,FloorPlan& plan) {
+void carve_open_sectors(Game& game,FloorPlan& plan,GenerationTrace* trace) {
     if (!roll_generation_feature(game,plan,GenerationFeature::OpenSectors)) return;
     std::vector<RouteEdge> choices;
     for (auto edge:plan.edges) if (candidate(plan.rooms[static_cast<std::size_t>(edge.a)]) &&
@@ -31,6 +32,7 @@ void carve_open_sectors(Game& game,FloorPlan& plan) {
         const Cell a=ra.center,b=rb.center,axis=rb.grid-ra.grid,side{-axis.y,axis.x};
         const Cell middle{(a.x+b.x)/2,(a.y+b.y)/2};
         const auto roll=roll_component(game,&plan.report,GenerationFeature::OpenSectors,-1,"Sector polygon",middle,modes);
+        const GenerationStep step{trace,game,plan,"Sector attempt",GenerationFeature::OpenSectors,roll.record};
         const int left=4+static_cast<int>(random_u32(game)%5),right=4+static_cast<int>(random_u32(game)%5);
         const int waist=(roll.value==2 ? 11 : 5)+static_cast<int>(random_u32(game)%5);
         const int bend=roll.value==1 ? static_cast<int>(random_u32(game)%11)-5 : 0;

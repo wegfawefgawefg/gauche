@@ -60,27 +60,19 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
             SDL_RenderLine(renderer,a.x+offset,a.y+offset,b.x+offset,b.y+offset);
         }
     }
-    if (v.changes && v.checkpoint>0) {
-        const auto& before=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game->stage;
-        for (int y=0;y<game.stage.height;++y) for (int x=0;x<game.stage.width;++x) {
-            const Cell cell{x,y}; const Tile& now=*game.stage.at(cell);
-            const Tile* old=before.at(cell);
-            if (old && old->kind==now.kind && old->material==now.material && old->prop.kind==now.prop.kind) continue;
-            SDL_SetRenderDrawColor(renderer,255,130,40,95);
-            const auto box=tile_rect(cell,v.render.camera,v.zoom); SDL_RenderFillRect(renderer,&box);
-        }
-    }
+    if ((v.changes || v.actor_changes) && v.checkpoint>0)
+        draw_worldgen_changes(renderer,v,*v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game,game);
     SDL_SetRenderDrawColor(renderer,10,14,18,240);
     const SDL_FRect top{0,0,640,24},bottom{0,321,640,39};
     SDL_RenderFillRect(renderer,&top); SDL_RenderFillRect(renderer,&bottom);
     SDL_SetRenderDrawColor(renderer,235,235,215,255);
     char title[160];
-    std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | pass %d/%zu: %s",v.original->run.floor,
+    std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | step %d/%zu: %s",v.original->run.floor,
         static_cast<unsigned long long>(v.original->run.seed),v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
     SDL_RenderDebugText(renderer,8,8,title);
     SDL_RenderDebugText(renderer,8,327,"A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
-    SDL_RenderDebugText(renderer,8,338,"Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Pass  Start/F1 Details");
-    SDL_RenderDebugText(renderer,8,349,"F6/Back: return from play | O Roofs  L Lighting  V Vignette  C Copy seed");
+    SDL_RenderDebugText(renderer,8,338,"Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
+    SDL_RenderDebugText(renderer,8,349,"F6/Back Return | O Roofs  L Light  V Vignette  T Fine  C Copy seed");
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 }
 
@@ -89,16 +81,18 @@ void draw_worldgen_details(const Game& live_game) {
     if (!v.active) { draw_live_generation_details(live_game); return; }
     if (!v.original) return;
     ImGui::SetNextWindowPos({16,100},ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize({350,480},ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize({380,540},ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Generation inspector",&v.details)) {
         ImGui::TextWrapped("Revision: %s", GAUCHE_GENERATOR_REVISION);
         if (ImGui::Button("Copy generation recipe")) {
             const std::string recipe="Forest 1-"+std::to_string(v.original->run.floor)+
                 " | seed "+std::to_string(v.original->run.seed)+
-                " | revision " GAUCHE_GENERATOR_REVISION " | standalone / automatic / default kit";
+                " | revision " GAUCHE_GENERATOR_REVISION " | standalone / automatic / default kit"+
+                " | fine "+std::to_string(v.trace.options.details)+" | feature "+std::to_string(v.trace.options.feature)+
+                " | every "+std::to_string(v.trace.options.every);
             SDL_SetClipboardText(recipe.c_str());
         }
-        ImGui::TextUnformatted("Standalone floor / automatic layout / default kit");
+        ImGui::TextWrapped("Standalone floor / automatic layout / default kit");
         if (ImGui::BeginTabBar("generation-sections")) {
         if (ImGui::BeginTabItem("View / timeline")) {
         ImGui::BeginDisabled(!v.active);
@@ -114,18 +108,38 @@ void draw_worldgen_details(const Game& live_game) {
         ImGui::Checkbox("Vignette",&v.render.overhead);
         ImGui::SameLine(); ImGui::Checkbox("Room bounds",&v.rooms);
         ImGui::Checkbox("Changed terrain / props",&v.changes);
+        ImGui::Checkbox("Changed actors / loot",&v.actor_changes);
+        if (v.actor_changes) ImGui::TextWrapped("Green: added. Red: removed/old position. Yellow: changed/moved. Compared with the preceding captured step.");
+        ImGui::Checkbox("Follow fine-step component",&v.follow_step);
+        ImGui::Text("%zu pass + %zu fine snapshots; about %.1f MiB",v.trace.coarse_count,v.trace.detail_count,static_cast<double>(v.trace.bytes)/(1024*1024));
         const int last=std::max(0,static_cast<int>(v.trace.checkpoints.size())-1);
-        ImGui::SliderInt("Pass",&v.checkpoint,0,last);
+        if (ImGui::Button("First step")) select_worldgen_checkpoint(v,0);
+        ImGui::SameLine();if (ImGui::Button("Finished step")) select_worldgen_checkpoint(v,last);
+        int selected_step=v.checkpoint;
+        if (ImGui::SliderInt("Step",&selected_step,0,last)) select_worldgen_checkpoint(v,selected_step);
         if (ImGui::BeginListBox("##passes",{-1,130})) {
             for (int i=0;i<=last;++i) {
                 const auto& step=v.trace.checkpoints[static_cast<std::size_t>(i)];
-                if (ImGui::Selectable(step.name.c_str(),v.checkpoint==i)) v.checkpoint=i;
+                if (ImGui::Selectable(step.name.c_str(),v.checkpoint==i)) select_worldgen_checkpoint(v,i);
             }
             ImGui::EndListBox();
         }
         ImGui::EndDisabled();
-        if (v.trace.truncated) ImGui::TextUnformatted("Checkpoint limit reached; Play still uses finished map.");
+        if (v.trace.truncated) ImGui::TextUnformatted("Coarse checkpoint limit reached; Play still uses finished map.");
+        if (v.trace.detail_truncated) ImGui::TextWrapped("Fine capture limit reached (32 snapshots / approximately 48 MiB). Later coarse passes are retained. Narrow the scope or increase N to inspect further.");
+        if (v.trace.options.details && !v.trace.detail_seen) ImGui::TextWrapped("No instrumented attempts matched this capture's scope.");
         ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Capture")) {
+            ImGui::Checkbox("Fine steps (next capture)",&v.capture_options.details);
+            const int ids[]{-1,static_cast<int>(GenerationFeature::OpenSectors),static_cast<int>(GenerationFeature::River),static_cast<int>(GenerationFeature::SpiderCave),static_cast<int>(GenerationFeature::GiantTree)};
+            const char* labels[]{"All instrumented features","Sector attempts","River attempts","Spider branches","Giant-tree roots"};
+            int current=0;for (int i=1;i<5;++i) if (ids[i]==v.capture_options.feature) current=i;
+            if (ImGui::Combo("Fine scope",&current,labels,5)) v.capture_options.feature=ids[current];
+            ImGui::SliderInt("Every N attempts",&v.capture_options.every,1,16);
+            if (ImGui::Button("Recapture same map")) recapture_worldgen(v);
+            ImGui::TextWrapped("Same seed/floor and camera. Capture changes inspection only. T toggles fine capture. Other generator loops remain coarse.");
+            ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Rolls")) {
             draw_generation_report(v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)].report,true);

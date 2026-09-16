@@ -56,6 +56,8 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
                 (prop.variant == 0 ? Sprite::SpiderStrand : Sprite::SpiderStrandV) : stove_lit(prop) ? Sprite::StoveLit : candle_lit(prop) ? Sprite::CandleLit : prop.kind == PropKind::AlarmClock ? alarm_clock_sprite(prop) : prop.kind == PropKind::Shoot && prop.growth_ticks <= 90 ?
                 Sprite::ShootTall : prop.kind == PropKind::IceBlock && prop.growth_ticks <= 120 ?
                 Sprite::IceBlockThaw : spec.sprite;
+            if (prop.kind==PropKind::IceSpikes || prop.kind==PropKind::SnowPile)
+                sprite=static_cast<Sprite>(static_cast<int>(prop.kind==PropKind::IceSpikes ? Sprite::IceSpikesA : Sprite::SnowPileA)+prop.variant%3);
             if (prop.kind==PropKind::Crate)
                 sprite=prop.broken ? Sprite::CrateBroken : prop.hp<=6 ? Sprite::CrateSplintered :
                     prop.hp<prop_spec(PropKind::Crate).health ? Sprite::CrateBruised : Sprite::Crate;

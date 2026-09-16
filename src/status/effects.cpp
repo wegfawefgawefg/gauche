@@ -1,3 +1,4 @@
+#include "bleeding.hpp"
 #include "../entities/rail_shunter.hpp"
 #include "../entities/bear_fishing.hpp"
 #include "../entities/tar_choir.hpp"
@@ -188,6 +189,8 @@ void step_vital_effects(Game& game, int slot) {
         if (effects.nausea == 0) effects.nausea_wait = 0;
     }
 
+    step_bleeding(game,slot);
+    if (actor.health<=0) return;
     step_recovery(actor);
 
     // CHILI: The sprint ends in a short weak burn; standing water quenches it.

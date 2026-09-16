@@ -150,6 +150,7 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.u16(entity.vitals.summer_ticks); writer.u8(entity.vitals.summer_radius);
     writer.u16(entity.vitals.sleep_guard); writer.u16(entity.vitals.stun_guard);
     writer.u16(entity.vitals.haste); writer.u16(entity.vitals.rooted);
+    writer.u16(entity.vitals.bleeding); writer.u16(entity.vitals.bleed_wait);
     writer.u16(entity.vitals.nausea); writer.u16(entity.vitals.nausea_wait);
     writer.u16(entity.vitals.floor_insulation);
     writer.u16(entity.vitals.traction); writer.u16(entity.vitals.slide_momentum);
@@ -205,6 +206,9 @@ Entity read_entity(PacketReader& reader) {
         ((entity.vitals.summer_ticks==0)!=(entity.vitals.summer_radius==0))) reader.okay=false;
     entity.vitals.sleep_guard = reader.u16(); entity.vitals.stun_guard = reader.u16();
     entity.vitals.haste = reader.u16(); entity.vitals.rooted = reader.u16();
+    entity.vitals.bleeding=reader.u16(); entity.vitals.bleed_wait=reader.u16();
+    if (entity.vitals.bleeding>1800 || entity.vitals.bleed_wait>60 ||
+        (entity.vitals.bleeding==0 && entity.vitals.bleed_wait!=0)) reader.okay=false;
     entity.vitals.nausea = reader.u16(); entity.vitals.nausea_wait = reader.u16();
     if (entity.vitals.nausea > 600 || entity.vitals.nausea_wait > 60) reader.okay = false;
     entity.vitals.floor_insulation=reader.u16();

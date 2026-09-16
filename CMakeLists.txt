@@ -139,7 +139,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/world/lava_eruptions.cpp src/world/lava_eruption_render.cpp
     src/props/light_tower.cpp src/props/light_tower_render.cpp src/world/light_towers.cpp
     src/props/tall_tree.cpp src/props/tall_tree_render.cpp src/world/tall_trees.cpp
-    src/props/ice_pillar.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp
+    src/props/ice_pillar.cpp src/props/ice_clutter.cpp src/props/ice_pillar_render.cpp src/world/ice_pillars.cpp
     src/entities/brawler.cpp src/world/brawlers.cpp src/world/ranged_groups.cpp
     src/world/chasm.cpp src/world/chasm_render.cpp src/world/chasm_generation.cpp
     src/entities/yeti.cpp
@@ -174,7 +174,7 @@ set(GAUCHE_ENTITY_SOURCES
     src/items/root_relics.cpp src/projectiles/root_drill.cpp src/projectiles/blink.cpp
     src/items/displacement.cpp src/projectiles/hook.cpp src/debris/air.cpp
     src/items/ground_tools.cpp src/entities/bird_feeding.cpp
-    src/status/recovery.cpp src/items/cold_remedies.cpp src/status/effects.cpp src/items/remedies.cpp
+    src/status/recovery.cpp src/items/cold_remedies.cpp src/status/effects.cpp src/status/bleeding.cpp src/items/remedies.cpp
     src/items/woodland_tools.cpp src/props/growth.cpp
     src/surfaces/interaction.cpp
     src/projectiles/projectile.cpp src/projectiles/arrow_fire.cpp src/items/bow.cpp src/items/action.cpp src/items/material_catalog.cpp src/items/materials.cpp src/items/firearms.cpp

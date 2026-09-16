@@ -1,3 +1,4 @@
+#include "../status/bleeding.hpp"
 #include "sleep.hpp"
 #include "../entities/dog.hpp"
 #include "../items/sled.hpp"
@@ -48,22 +49,6 @@ float hit_angle(const Game& game, Cell target, float fallback) {
     return source.y < target.y ? 180.0F : 0.0F;
 }
 
-bool bleeds(EntityKind kind) {
-    switch (kind) {
-    case EntityKind::Player: case EntityKind::ZombieStack: case EntityKind::Zombie: case EntityKind::Chicken:
-    case EntityKind::BurrowWorm:
-    case EntityKind::Wasp: case EntityKind::ForagerGoblin: case EntityKind::CarrionCrow:
-    case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:
-    case EntityKind::Bat: case EntityKind::Wolf: case EntityKind::Dog:
-    case EntityKind::Bear: case EntityKind::Boar: case EntityKind::SporeToad:
-    case EntityKind::ThornSnail: case EntityKind::LanternMoth:
-    case EntityKind::ArcWelder: case EntityKind::Yeti: case EntityKind::AvalancheRam: case EntityKind::WhiteoutDrummer: case EntityKind::SealThief: case EntityKind::FishingWidow: case EntityKind::FrozenPilgrim: case EntityKind::EchoHound: case EntityKind::LensWarden: case EntityKind::MirrorKnight: case EntityKind::SnowBurrower: case EntityKind::GlassEel: case EntityKind::IceMason: case EntityKind::BellDiver: case EntityKind::RimeSkater:
-    case EntityKind::RivetGunner: case EntityKind::Strikebreaker: case EntityKind::PowderMonkey:
-    case EntityKind::PressureRat: case EntityKind::Bunny: case EntityKind::Ember: case EntityKind::FrostBat:
-        return true;
-    default: return false;
-    }
-}
 
 float attack_angle(Cell facing) {
     if (facing.x > 0) return 45.0F;
@@ -81,7 +66,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
         [&](const FallEvent& event){return event.actor.slot==slot && event.actor.generation==pose.generation;});
     if (entity.kind == EntityKind::None) {
         // DEATH: The sweep removes an enemy in the same tick as its death sound.
-        if (pose.seen && pose.health > 0 && bleeds(pose.kind) && !fell)
+        if (pose.seen && pose.health > 0 && can_bleed(pose.kind) && !fell)
         {
             spawn_death(cosmetics, pose.cell, pose.kind,
                         hit_angle(game, pose.cell, pose.angle), seed);
@@ -132,7 +117,7 @@ void observe_entity(Cosmetics& cosmetics, const Game& game, int slot) {
             spawn_canine_bite(cosmetics,entity.point_b,entity.facing);
     }
     if (same && entity.health < pose.health && entity.health >= 0 && !fell) {
-        if (bleeds(entity.kind))
+        if (can_bleed(entity.kind))
             spawn_hit(cosmetics, entity.cell, seed, pose.health - entity.health);
         else spawn_debris(cosmetics, entity.cell, seed);
         pose.shake = std::min(0.6F, pose.shake + 0.16F);

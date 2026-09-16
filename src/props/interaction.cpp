@@ -1,6 +1,8 @@
 #include "light_tower.hpp"
 #include "tall_tree.hpp"
 #include "ice_pillar.hpp"
+#include "../status/bleeding.hpp"
+#include "../world/water.hpp"
 #include "../entities/audit_clerk.hpp"
 #include "tension_spring.hpp"
 #include "streetlamp.hpp"
@@ -158,6 +160,8 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
         return false;
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind==PropKind::Pallet || kind==PropKind::PalletStack || kind==PropKind::BoundRocks || kind==PropKind::ContainerSide) tile->prop.variant &= 1U;
+    if (kind==PropKind::IcePillar) tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));
+    if (kind==PropKind::IceSpikes || kind==PropKind::SnowPile) tile->prop.variant%=3;
     if (kind==PropKind::StreetLamp) tile->prop.variant &= 3U;
     if (kind==PropKind::PoleWreck) tile->prop.variant &= 1U;
     if (kind == PropKind::RailPoints) tile->prop.variant &= 3U;
@@ -207,6 +211,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     else if (prop.kind==PropKind::ContainerSide) emit_sound(game,SoundId::GrateHit,cell);
     else if (prop.kind == PropKind::SteamDrive) emit_sound(game,SoundId::BeltHit,cell);
     else if (prop.kind == PropKind::WaterPipe) emit_sound(game,SoundId::PipeHit,cell);
+    else if (prop.kind == PropKind::SnowPile) emit_sound(game,SoundId::SnowScrape,cell);
     else if (prop.kind == PropKind::IceRubble) emit_sound(game,SoundId::IceBlockHit,cell);
     else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);
     else if (prop.kind == PropKind::TowerWreck || prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
@@ -235,6 +240,16 @@ void step_on_prop(Game& game, int actor_slot) {
     enter_spider_strand(game,actor_slot);
     const Entity& actor = game.entities[static_cast<std::size_t>(actor_slot)];
     Tile* tile = game.stage.at(actor.cell);
+    if (tile && tile->prop.kind==PropKind::IceSpikes && !tile->prop.broken &&
+        actor.health>0 && actor.toss.ticks==0 && wading_actor(actor)) {
+        const Cell cell=actor.cell;
+        break_prop(game,cell,cell,tile->prop);
+        if (actor.vitals.traction==0 && actor.vitals.floor_insulation==0) {
+            damage_entity(game,actor_slot,1,cell,false);
+            apply_bleeding(game.entities[static_cast<std::size_t>(actor_slot)],60);
+        }
+        return;
+    }
     if (tile != nullptr && tile->prop.kind == PropKind::Thorns && !tile->prop.broken) {
         const int damage = tile->prop.variant == 0 ? 6 : tile->prop.variant;
         const Cell cell = actor.cell;

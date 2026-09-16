@@ -11,9 +11,12 @@ bool burrowable_snow(const Game& game, Cell cell) {
 
 bool clear_snow(Game& game, Cell cell) {
     Tile* tile = game.stage.at(cell);
-    if (!tile || tile->kind != TileKind::Snow) return false;
+    if (!tile) return false;
+    const bool pile=tile->prop.kind==PropKind::SnowPile && !tile->prop.broken;
+    if (tile->kind!=TileKind::Snow && !pile) return false;
+    if (pile) hit_prop(game,cell,tile->prop.hp,cell);
     // GROUND: Preserve props and liquids. Cleared ground does not regrow its snow cover.
-    tile->kind = TileKind::Empty;
+    if (tile->kind==TileKind::Snow) tile->kind = TileKind::Empty;
     if (tile->prop.kind == PropKind::SnowCache && !tile->prop.broken)
         hit_prop(game, cell, 4, cell);
     for (Entity& actor : game.entities)

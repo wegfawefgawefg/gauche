@@ -7,6 +7,8 @@
 void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, Cell target,
                      Cell direction, int cooldown) {
     share_hearth_meal(game,user,used_kind);
+    if (used_kind==ItemKind::Bandage || used_kind==ItemKind::Bandaid || used_kind==ItemKind::Medkit)
+        user.vitals.bleeding=user.vitals.bleed_wait=0;
     if (item_is_melee(used_kind)) finish_muffled_use(game, item, user.cell);
     item.cooldown = cooldown;
     user.use_flash = 8;

@@ -1,6 +1,7 @@
 #include "light_tower.hpp"
 #include "tall_tree.hpp"
 #include "ice_pillar.hpp"
+#include "ice_clutter.hpp"
 #include "../items/emergency_foam.hpp"
 #include "streetlamp.hpp"
 #include "tension_spring.hpp"
@@ -42,6 +43,7 @@ void step_prop_growth(Game& game) {
             Prop& prop = tile.prop;
             if (prop.kind==PropKind::LightTower) {step_light_tower(game,cell);continue;}
             if (prop.kind==PropKind::TallTree) {step_tall_tree(game,cell);continue;}
+            if (prop.kind==PropKind::IceSpikes || prop.kind==PropKind::SnowPile) {step_ice_clutter(game,cell);continue;}
             if (prop.kind==PropKind::IcePillar || prop.kind==PropKind::IceRubble) {step_ice_pillar(game,cell);continue;}
             if (prop.kind==PropKind::StreetLamp) {step_streetlamp(game,cell);continue;}
             if (prop.kind == PropKind::FoamCover) { step_foam_cover(game,cell); continue; }

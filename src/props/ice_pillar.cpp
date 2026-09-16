@@ -51,9 +51,10 @@ void collapse(Game& game,Cell cell,Prop& prop) {
 }
 }
 Cell pillar_direction(const Prop& prop) {return directions[prop.variant&3U];}
-int pillar_mass(const Prop& prop) {return std::max(0,pillar_melt_steps-static_cast<int>(prop.variant>>2));}
+int pillar_height(const Prop& prop) {constexpr int heights[]{3,2,4,5};return heights[prop.variant>>6];}
+int pillar_mass(const Prop& prop) {return std::max(0,pillar_melt_steps-static_cast<int>((prop.variant>>2)&15U));}
 // The tip must reach a cell's near edge before that cell is in the crush lane.
-int pillar_reach(const Prop& prop) {return (pillar_mass(prop)*3+pillar_melt_steps/2)/pillar_melt_steps;}
+int pillar_reach(const Prop& prop) {return (pillar_mass(prop)*pillar_height(prop)+pillar_melt_steps/2)/pillar_melt_steps;}
 bool hit_ice_pillar(Game& game,Cell cell,int damage,Cell source) {
     Prop& prop=game.stage.at(cell)->prop;
     if (prop.growth_ticks>0) return true;
@@ -91,7 +92,7 @@ bool valid_ice_pillar(const Prop& prop) {
     if (prop.kind==PropKind::IceRubble)
         return prop.variant<=1 && prop.growth_ticks==0 && (prop.broken || prop.hp>0);
     if (prop.kind!=PropKind::IcePillar) return true;
-    return prop.variant<52 && (prop.broken || (prop.hp>0 && pillar_mass(prop)>0)) &&
+    return ((prop.variant>>2)&15U)<=12 && (prop.broken || (prop.hp>0 && pillar_mass(prop)>0)) &&
         prop.growth_ticks<=pillar_warn_ticks+pillar_fall_ticks &&
         (prop.growth_ticks==0 || (!prop.broken && prop.hp==1));
 }

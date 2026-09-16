@@ -198,6 +198,8 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind==PropKind::Barricade && (tile.prop.variant>3 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_light_tower(tile.prop)) reader.okay=false;
         if (!valid_tree_prop(tile.prop)) reader.okay=false;
+        if ((tile.prop.kind==PropKind::IceSpikes || tile.prop.kind==PropKind::SnowPile) &&
+            (tile.prop.variant>2 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_ice_pillar(tile.prop)) reader.okay=false;
         if (!valid_streetlamp(tile.prop)) reader.okay=false;
         if (!valid_bridge_tile(tile)) reader.okay=false;

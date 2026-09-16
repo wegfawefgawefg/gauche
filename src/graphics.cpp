@@ -100,6 +100,8 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "bear_bed", "bone_pile",
     "river_fish", "bear_fish_watch", "bear_fish_paw", "bear_fish_swat", "bear_fish_eat",
     "bear_cub", "bear_mother", "bear_father", "bear_old",
+    "ice_spikes_a", "ice_spikes_b", "ice_spikes_c", "snow_pile_a", "snow_pile_b", "snow_pile_c",
+    "ice_pillar_forked", "ice_pillar_forked_cracked", "ice_pillar_broad", "ice_pillar_broad_cracked",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

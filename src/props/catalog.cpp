@@ -1,4 +1,5 @@
 #include "catalog.hpp"
+#include "ice_pillar.hpp"
 #include "candle.hpp"
 
 PropSpec prop_spec(PropKind kind) {
@@ -6,6 +7,8 @@ PropSpec prop_spec(PropKind kind) {
     case PropKind::Pallet: return {Sprite::Pallet,SoundId::CrateBreak,12,false,false};
     case PropKind::PalletStack: return {Sprite::PalletStack,SoundId::CrateBreak,28,true,false};
     case PropKind::BoundRocks: return {Sprite::BoundRocks,SoundId::OreBreak,48,true,false};
+    case PropKind::IceSpikes: return {Sprite::IceSpikesA,SoundId::IceBlockBreak,1,false,false};
+    case PropKind::SnowPile: return {Sprite::SnowPileA,SoundId::SnowScrape,2,false,true};
     case PropKind::BearBed: return {Sprite::BearBed,SoundId::LeavesCrunch,6,false,false};
     case PropKind::BonePile: return {Sprite::BonePile,SoundId::ShellKnock,4,false,true};
     case PropKind::ContainerSide: return {Sprite::ContainerSide,SoundId::GrateBreak,60,true,false};
@@ -85,6 +88,7 @@ bool prop_blocks(const Prop& prop) {
 
 int prop_max_health(const Prop& prop) {
     const int base = prop_spec(prop.kind).health;
+    if (prop.kind==PropKind::IcePillar) return pillar_height(prop)*12;
     if (prop.kind==PropKind::Barricade && (prop.variant&2U)) return base*2;
     if (prop.kind == PropKind::BridgePlank && (prop.variant&32U)) return base*2;
     if (prop.kind == PropKind::Doorstop && prop.variant == 1) return base * 2;

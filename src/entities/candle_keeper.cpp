@@ -45,7 +45,9 @@ void cast_flame(Game& game, int slot) {
     for (int i=0;i<attack.count;++i) {
         const Cell cell = attack.cells[static_cast<std::size_t>(i)];
         if (!exposed[static_cast<std::size_t>(i)]) continue;
-        hit_prop(game,cell,10,keeper.cell);
+        // Pure flame lights a wick; it has no physical blow to smash the candle.
+        if (game.stage.at_or_border(cell).prop.kind != PropKind::Candle)
+            hit_prop(game,cell,10,keeper.cell);
         ignite_surface(game,cell);
         for (int victim=0;victim<max_entities;++victim) {
             Entity& actor = game.entities[static_cast<std::size_t>(victim)];

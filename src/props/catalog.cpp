@@ -3,6 +3,12 @@
 
 PropSpec prop_spec(PropKind kind) {
     switch (kind) {
+    case PropKind::ChapelPew: return {Sprite::ChapelPew,SoundId::WoodCrack,16,true,false};
+    case PropKind::ChapelAltar: return {Sprite::ChapelAltar,SoundId::CabinetOpen,24,true,false};
+    case PropKind::ChapelRunner: return {Sprite::ChapelRunner,SoundId::DecoyTear,3,false,false};
+    case PropKind::ChapelUrn: return {Sprite::ChapelUrn,SoundId::PotBreak,8,true,false};
+    case PropKind::ChapelPewBroken: return {Sprite::ChapelPewBroken,SoundId::TwigSnap,2,false,true};
+    case PropKind::ChapelWax: return {Sprite::ChapelWax,SoundId::CandleBreak,1,false,true};
     case PropKind::StreetLamp: return {Sprite::StreetLamp,SoundId::PoleFall,32,true,false,{7,1100,{236,190,118}}};
     case PropKind::PoleWreck: return {Sprite::StreetLamp,SoundId::PoleBreak,20,true,false};
     case PropKind::RailPoints: return {Sprite::RailPoints,SoundId::PointsBreak,24,false,false};

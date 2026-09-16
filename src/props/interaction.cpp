@@ -21,6 +21,16 @@ void drop_contents(Game& game, Cell cell, PropKind kind) {
     ItemKind item = ItemKind::None;
     const std::uint32_t roll = random_u32(game) % 100;
     switch (kind) {
+    case PropKind::ChapelAltar:
+        if (roll < 35) item=ItemKind::WoolWrap;
+        else if (roll < 65) item=ItemKind::HotBroth;
+        else {place_ground_item(game,cell,ItemKind::Bandage,2);return;}
+        break;
+    case PropKind::ChapelUrn:
+        if (roll < 25) item=ItemKind::Bandage;
+        else if (roll < 50) item=ItemKind::WickSpool;
+        else place_coins(game,cell,2+static_cast<int>(random_u32(game)%4));
+        break;
     case PropKind::ScrapBin:
         if (roll<20) item=ItemKind::HorseshoeMagnet;
         else if (roll<40) item=ItemKind::ChainHook;
@@ -120,7 +130,7 @@ void break_prop(Game& game, Cell cell, Cell source, Prop& prop) {
                 distance(actor.cell, cell) <= 1)
                 apply_sleep(actor, 75);
     }
-    if (prop.kind == PropKind::ScrapBin || prop.kind == PropKind::OreBin || prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
+    if (prop.kind == PropKind::ChapelAltar || prop.kind == PropKind::ChapelUrn || prop.kind == PropKind::ScrapBin || prop.kind == PropKind::OreBin || prop.kind == PropKind::MaintenanceLocker || prop.kind == PropKind::CandleCabinet || prop.kind == PropKind::RottenLog || prop.kind == PropKind::Nest || prop.kind == PropKind::Crate ||
         prop.kind == PropKind::FrozenLunchTin || prop.kind == PropKind::FishingCreel || prop.kind == PropKind::ClayPot || prop.kind == PropKind::SnowCache || prop.kind == PropKind::LensCase) drop_contents(game, cell, prop.kind);
     if (prop.kind==PropKind::BridgePlank) collapse_bridge_plank(game,cell,source);
 }
@@ -162,6 +172,7 @@ bool hit_prop(Game& game, Cell cell, int damage, Cell source) {
     if (prop.kind==PropKind::Conveyor) hit_belt_brake(game,cell,damage);
     prop.hp = static_cast<std::uint8_t>(std::max(0, static_cast<int>(prop.hp) - damage));
     if (prop.hp == 0) break_prop(game, cell, source, prop);
+    else if (prop.kind == PropKind::ChapelUrn) emit_sound(game,SoundId::PotBreak,cell);
     else if (prop.kind == PropKind::PoleWreck) emit_sound(game,SoundId::PoleHit,cell);
     else if (prop.kind == PropKind::FoamCover) emit_sound(game,SoundId::FoamTear,cell);
     else if (prop.kind == PropKind::PayCage) emit_sound(game,SoundId::PayRattle,cell);

@@ -19,6 +19,10 @@ bool inside_shape(const RoomPlan& room, int x, int y) {
                (std::abs(x - w / 2) + std::abs(y - 1) <= h) || ay <= 1;
     case RoomShape::Courtyard: return ax + ay <= w + h - 1 && !(ax == w / 2 && ay == h / 2);
     case RoomShape::Pillars: return !(ax == w - 2 && ay >= 2 && ay <= h - 1);
+    case RoomShape::ChapelNave:
+        // NAVE: Narrow entry and apse, broad seating and a side vestry.
+        return (ay <= h-2 && ax <= w-1) || (ax <= 3 && ay <= h) ||
+            (x == w && y >= -2 && y <= (room.mirrored ? 2 : 0));
     case RoomShape::Gallery: return ay <= 2 || (ax <= w - 2 && ax % 4 <= 1);
     case RoomShape::Steps: return ax <= w - (y + h) / 4 || ay <= 1;
     }

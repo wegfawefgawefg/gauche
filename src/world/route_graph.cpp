@@ -112,7 +112,11 @@ void describe_rooms(Game& game, FloorPlan& plan) {
         if (room.role == RoomRole::CrystalGallery) room.shape = RoomShape::Clearing;
         if (room.role == RoomRole::BoilerGallery) room.shape = RoomShape::Pillars;
         if (room.role == RoomRole::ServicePassage) room.shape = RoomShape::Gallery;
-        if (room.role == RoomRole::Chapel) room.shape = RoomShape::Gallery;
+        if (room.role == RoomRole::Chapel) {
+            room.shape = RoomShape::ChapelNave;
+            room.half_width = std::max(room.half_width,7);
+            room.half_height = std::max(room.half_height,6);
+        }
         if (room.role == RoomRole::MemorialCourt) room.shape = RoomShape::Courtyard;
         if (room.role == RoomRole::CliffPath) room.shape = RoomShape::Steps;
         if (room.role == RoomRole::WeatherStation) room.shape = RoomShape::Courtyard;

@@ -18,7 +18,7 @@ constexpr RegionalItem root{"Bitter Root", "Lose 3 HP, wake and resist sleep for
 constexpr RegionalItem chili{"Chili", "Double step recovery for 4s, then burn for 6 damage over 1.5s. Water helps.",
     Sprite::Chili, {0, 0, 0, 0, 45, PatternEffect::Utility},
     ItemAction::Material, 7, 3, true, 0, 0, 0, 0, 0, SoundId::ChiliBite};
-constexpr RegionalItem bread{"Fungal Bread", "Heal immediately, then sleep for 2s. Bitter root prevents the sleep. Bring a friend.",
+constexpr RegionalItem bread{"Fungal Bread", "Bread... probably.",
     Sprite::FungalBread, {0, 0, 0, 0, 60, PatternEffect::Heal, false, 0, 25},
     ItemAction::Food, 9, 4, true, 0, 0, 0, 0, 0, SoundId::BreadMunch};
 
@@ -63,7 +63,7 @@ bool use_remedy(Game& game, int slot) {
     case ItemKind::FungalBread:
         if (user.health >= user.max_health) return false;
         user.health = std::min(user.max_health, user.health + item_pattern(item).heal);
-        apply_sleep(user, 120);
+        apply_sleep(user, fungal_bread_sleep_ticks);
         break;
     default: return false;
     }

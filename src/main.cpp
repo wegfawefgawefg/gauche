@@ -381,6 +381,9 @@ int main(int argc, char** argv) {
             static_cast<float>(elapsed), audio.master_level * audio.sound_level,
             menu.playing && !menu.visible && active.run.phase == RunPhase::Playing &&
             ambient_listener != nullptr && ambient_listener->health > 0);
+        update_body_audio(audio,active,ambient_listener==nullptr ? active.run.spawn : ambient_listener->cell,
+            menu.playing && !menu.visible && active.run.phase==RunPhase::Playing &&
+            ambient_listener!=nullptr && ambient_listener->health>0);
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);

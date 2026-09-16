@@ -228,7 +228,7 @@ add_executable(gauche
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp src/ui/offer_flow.cpp
     src/ui/interaction_render.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
-    src/audio.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
+    src/audio.cpp src/audio/body.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/net/rooms/names.cpp src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
@@ -337,7 +337,7 @@ if(BUILD_TESTING)
     add_executable(gauche_presentation_tests
         ${GAUCHE_DEBRIS_SOURCES}
         tests/presentation_test.cpp src/particles/system.cpp
-        src/particles/templates.cpp src/particles/presentation.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp
+        src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
         src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)

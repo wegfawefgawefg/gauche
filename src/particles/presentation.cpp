@@ -1,3 +1,4 @@
+#include "sleep.hpp"
 #include "../entities/dog.hpp"
 #include "../items/sled.hpp"
 #include "../entities/zombie.hpp"
@@ -421,6 +422,7 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
                     spawn_campfire_smoke(cosmetics, entity.cell, game.tick + slot * 17U);
             }
         }
+    observe_sleep(cosmetics,game,focus);
     observe_raking(cosmetics, game);
     observe_gunfire(cosmetics, game, focus);
     observe_water(cosmetics, game, focus);

@@ -17,6 +17,7 @@ enum class ParticleLayer : std::uint8_t { Ground, Flames, Foreground, Weather };
 enum class ParticleMotion : std::uint8_t { Still, Drift, Accelerate, Arc, Animated, Fall };
 
 struct SpriteParticle {
+    Handle owner{}; // Sleep motes end when this generation wakes or disappears.
     Sprite sprite = Sprite::BloodSmall;
     Sprite next_sprite = Sprite::BloodSmall;
     ParticleLayer layer = ParticleLayer::Foreground;
@@ -109,6 +110,7 @@ struct Cosmetics {
     std::array<std::uint64_t, 256> seen_events{};
     std::size_t next_event = 0;
     std::uint64_t last_tick = 0;
+    std::uint64_t sleep_tick = UINT64_MAX;
     int last_floor = -1;
     RunPhase last_phase = RunPhase::Arena;
     ViewCamera camera{};

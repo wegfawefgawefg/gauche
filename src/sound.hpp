@@ -70,6 +70,7 @@ enum class SoundId : std::size_t {
     CrateKnock1, CrateKnock2, CrateBreak,
     IceAxeSwing, IceAxeHit, TuskPikeThrust, TuskPikeHit, IceToolBreak,
     DogGrowl, DogSnap,
+    SnoreLow, SnoreHigh, Gulp, Burp,
     Count,
 };
 
@@ -137,4 +138,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "crate_knock1", "crate_knock2", "crate_break",
     "ice_axe_swing", "ice_axe_hit", "tusk_pike_thrust", "tusk_pike_hit", "ice_tool_break",
     "dog_growl", "dog_snap",
+    "snore_low", "snore_high", "gulp", "burp",
 };

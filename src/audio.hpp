@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game.hpp"
+#include "audio/body.hpp"
 #include "ambience/system.hpp"
 
 #include <SDL3_mixer/SDL_mixer.h>
@@ -11,6 +12,7 @@
 
 struct GameAudio {
     AmbientAudio ambience;
+    BodyAudio body;
     MIX_Mixer* mixer = nullptr;
     MIX_Track* music_track = nullptr;
     MIX_Track* menu_track = nullptr;

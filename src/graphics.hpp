@@ -90,6 +90,7 @@ enum class Sprite : std::size_t {
     RoofContainerA, RoofContainerB, RoofContainerC, RoofContainerEndA, RoofContainerEndB, RoofContainerEndC,
     RoofContainerFarA, RoofContainerFarB, RoofContainerFarC, RoofContainerNearA, RoofContainerNearB, RoofContainerNearC,
     DogBody, DogCrouch, DogBite,
+    SleepZ,
     Count,
 };
 

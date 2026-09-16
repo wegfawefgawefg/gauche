@@ -1,3 +1,4 @@
+#include "../items/remedies.hpp"
 #include "../props/scarecrow.hpp"
 #include "dispatch.hpp"
 #include "behavior.hpp"
@@ -85,7 +86,7 @@ void step_carrion_crow(Game& game, int slot) {
             const bool sleepy = meal.kind == ItemKind::FungalBread;
             const SoundId munch = meal.kind == ItemKind::RottenFruit ? SoundId::FruitMunch : sleepy ? SoundId::BreadMunch : SoundId::MeatMunch;
             crow.health = std::min(crow.max_health, crow.health + item_pattern(meal).heal);
-            if (sleepy) apply_sleep(crow, 120);
+            if (sleepy) apply_sleep(crow, fungal_bread_sleep_ticks);
             if (meal.kind == ItemKind::RottenFruit) {
                 crow.health = std::min(crow.max_health, crow.health + 3);
                 apply_nausea(crow, 360);

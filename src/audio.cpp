@@ -55,6 +55,7 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
         shutdown_audio(audio);
         return false;
     }
+    if (!init_body_audio(audio,error)) {shutdown_audio(audio);return false;}
     audio.music_track = MIX_CreateTrack(audio.mixer);
     audio.menu_track = MIX_CreateTrack(audio.mixer);
     if (audio.music_track == nullptr || audio.menu_track == nullptr) {
@@ -96,6 +97,7 @@ bool init_audio(GameAudio& audio, const std::filesystem::path& root, std::string
 
 void shutdown_audio(GameAudio& audio) {
     if (!audio.initialized) return;
+    stop_body_audio(audio);
     shutdown_ambience(audio.ambience);
     if (audio.music_track != nullptr) MIX_StopTrack(audio.music_track, 0);
     for (MIX_Track* track : audio.tracks)
@@ -118,6 +120,7 @@ void shutdown_audio(GameAudio& audio) {
     audio.music_track = nullptr;
     audio.menu_track = nullptr;
     audio.tracks.fill(nullptr);
+    audio.body={};
     audio.current_song = -1;
     audio.initialized = false;
     MIX_Quit();
@@ -172,7 +175,10 @@ void play_game_sounds(GameAudio& audio, const Game& game, Cell listener) {
             track = audio.tracks[audio.next_track];
             audio.next_track = (audio.next_track + 1) % audio.tracks.size();
         }
-        MIX_SetTrackAudio(track, audio.sounds[static_cast<std::size_t>(event.sound)]);
+        const auto meal=consumption_cue(event.sound);
+        const auto sample=meal==ConsumptionCue::None ? event.sound : SoundId::Gulp;
+        if (meal==ConsumptionCue::Food) queue_meal_burp(audio,game,event,key);
+        MIX_SetTrackAudio(track, audio.sounds[static_cast<std::size_t>(sample)]);
         MIX_SetTrackGain(track, volume);
         MIX_SetTrackStereo(track, &stereo);
         MIX_PlayTrack(track, 0);

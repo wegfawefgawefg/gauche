@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "arrow_fire.hpp"
 #include "../items/bolt_pouch.hpp"
 #include "../items/emergency_foam.hpp"
 #include "fishing.hpp"
@@ -128,6 +129,14 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
     if ((!fishing || shot.label_b != FishingCargo) && (!(chain || widow || harpoon) || shot.label_b == 0))
         SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
     SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+    if (burning_arrow(shot)) {
+        // Keep the flame upright and attached to the moving arrowhead.
+        const float x=rect.x+rect.w*(.5F+.32F*static_cast<float>(shot.facing.x));
+        const float y=rect.y+rect.h*(.5F+.32F*static_cast<float>(shot.facing.y));
+        const float height=pixels*((game.tick/3)%2==0 ? .38F : .46F);
+        const SDL_FRect flame{x-pixels*.13F,y-height+pixels*.08F,pixels*.26F,height};
+        SDL_RenderTexture(renderer,texture_for(graphics,(game.tick/3)%2==0 ? Sprite::FlameA : Sprite::FlameB),nullptr,&flame);
+    }
     if (foam && shot.label_b==1) {
         SDL_Texture* mound=texture_for(graphics,Sprite::FoamCover);
         const float size=.18F+.65F*(1-static_cast<float>(shot.timer_a)/foam_expand_ticks);

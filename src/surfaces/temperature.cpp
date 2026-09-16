@@ -11,6 +11,7 @@
 #include "../projectiles/exposed_fuse.hpp"
 #include "../entities/ember.hpp"
 #include "../projectiles/coal_spit.hpp"
+#include "../projectiles/arrow_fire.hpp"
 #include "../props/circuits.hpp"
 #include "../props/candle.hpp"
 #include "../props/stove.hpp"
@@ -37,6 +38,7 @@ bool entity_has_flame(const Entity& actor) {
     if (actor.kind == EntityKind::None || actor.kind == EntityKind::SteamLeech) return false;
     if (actor.kind == EntityKind::GroundItem) return hot_item(actor.ground_item);
     if (actor.kind==EntityKind::Projectile && glowing_slag(actor.ground_item)) return true;
+    if (burning_arrow(actor)) return true;
     if (actor.health <= 0) return false;
     if (burning_flare(actor)) return true;
     if (actor.kind == EntityKind::CandleKeeper && actor.timer_b == 0) return true;
@@ -144,6 +146,7 @@ void quench_cell(Game& game, Cell cell, SoundId sound) {
         if (cool_walking_kiln(actor)) quenched=true;
         if (cool_pressure_rat(actor)) quenched=true;
         if (damp_stoker(actor) || douse_coal_spit(actor)) quenched = true;
+        if (douse_arrow(actor)) quenched=true;
         if (douse_flare(game,actor)) quenched = true;
         if (douse_keeper_lamp(game,actor)) quenched = true;
         quenched |= actor.burn_ticks > 0 || actor.scorch_ticks > 0;

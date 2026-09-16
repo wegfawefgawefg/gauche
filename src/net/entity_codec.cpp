@@ -1,4 +1,5 @@
 #include "../entities/dog.hpp"
+#include "../projectiles/arrow_fire.hpp"
 #include "../entities/fishing_work.hpp"
 #include "../entities/crane_operator.hpp"
 #include "../entities/coal_cutter.hpp"
@@ -241,6 +242,8 @@ Entity read_entity(PacketReader& reader) {
         reader.okay = false;
     for (Item& item : entity.inventory.slots) item = read_item(reader);
     entity.ground_item = read_item(reader);
+    if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::Arrow) &&
+        (entity.counter_c<0 || entity.counter_c>1 || (entity.counter_c==1 && !wooden_arrow(entity)))) reader.okay=false;
     if (entity.kind == EntityKind::Projectile && entity.label_a == static_cast<int>(ProjectileKind::EchoPebble) &&
         (entity.ground_item.kind != ItemKind::EchoPebble || entity.label_b < 0 || entity.label_b > 1 ||
          entity.counter_a < 0 || entity.counter_a > 20 || entity.counter_b < 0 || entity.counter_b > 3 ||

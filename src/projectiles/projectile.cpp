@@ -1,6 +1,8 @@
 #include "tar_spit.hpp"
 #include "chain_hook.hpp"
 #include "projectile.hpp"
+#include "arrow_fire.hpp"
+#include "../items/fire.hpp"
 #include "../items/bolt_pouch.hpp"
 #include "coal_spit.hpp"
 #include "harpoon.hpp"
@@ -29,6 +31,7 @@
 // SLOTS: label_a = kind, label_b = blast radius/arrow piercing, counter_a = range left,
 // counter_b = damage, timer_a = fuse/life, timer_b = tile travel. point_a = source,
 // entity_a = current owner, ground_item = weapon spec, attack_interval = total range.
+// counter_c = wooden arrow flame flag (other projectile kinds own their slots).
 // timer_c = hard lifetime for reflecting arrow/rocket legs; never refreshed on a parry.
 void init_projectile(Entity& entity) {
     entity.health = entity.max_health = 1;
@@ -83,6 +86,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
     shot->ground_item.count = 1;
     shot->sprite = bomb ? Sprite::BombLit : rocket ? Sprite::Rocket : flask ? item_sprite(item) :
         item.kind == ItemKind::RivetGun ? Sprite::Rivet : item.kind == ItemKind::Crossbow ? Sprite::Bolt : Sprite::Arrow;
+    arrow_flame_contact(game,*shot,shot->cell);
     if (rocket) shot->light = {2, 380, {255, 162, 73}};
     if (bomb) {
         shot->light = {2, 180, {255, 156, 56}};
@@ -96,6 +100,7 @@ bool launch_projectile(Game& game, int owner_slot, const Item& item, Cell direct
 namespace {
 
 void finish_arrow(Game& game, int slot, Cell impact) {
+    ignite_arrow_impact(game,game.entities[static_cast<std::size_t>(slot)],impact);
     emit_sound(game, game.entities[static_cast<std::size_t>(slot)].ground_item.kind==ItemKind::RivetGun ? SoundId::RivetImpact : SoundId::ArrowImpact, impact);
     remove_entity(game, {slot, game.entities[static_cast<std::size_t>(slot)].generation});
 }
@@ -160,6 +165,7 @@ void step_projectile(Game& game, int slot) {
     const bool bomb = shot.label_a == static_cast<int>(ProjectileKind::Bomb);
     const bool rocket = shot.label_a == static_cast<int>(ProjectileKind::Rocket);
     const bool flask = shot.label_a == static_cast<int>(ProjectileKind::Flask);
+    arrow_flame_contact(game,shot,shot.cell);
     if (flask && (shot.timer_a == 0 || shot.counter_a == 0)) {
         const Item item = shot.ground_item;
         const Cell cell = shot.cell;
@@ -200,8 +206,12 @@ void step_projectile(Game& game, int slot) {
         return;
     }
     if (!bomb && !flask) {
-        if (!prop_shoot_through(game.stage.at_or_border(next).prop))
+        arrow_flame_contact(game,shot,next);
+        if (!prop_shoot_through(game.stage.at_or_border(next).prop)) {
+            if (blocked || game.stage.at_or_border(next).prop.kind!=PropKind::None)
+                ignite_arrow_impact(game,shot,next);
             hit_prop(game, next, shot.counter_b, shot.cell);
+        }
         if (blocked) {
             hit_terrain(game, next, shot.cell, shot.counter_b, shot.ground_item.dig_power);
             finish_arrow(game, slot, next);
@@ -223,7 +233,12 @@ void step_projectile(Game& game, int slot) {
             reflect_projectile(shot, victim, victim_slot);
             return;
         }
+        const int health=victim.health;
         damage_entity(game, victim_slot, shot.counter_b, next - shot.facing, true, shot.entity_a);
+        if (burning_arrow(shot) && victim.health<health) {
+            ignite_struck_actor(game,victim_slot);
+            ignite_arrow_impact(game,shot,next);
+        }
         emit_sound(game, shot.ground_item.kind==ItemKind::RivetGun ? SoundId::RivetImpact : SoundId::ArrowImpact, next);
         if (shot.label_b == 0) { remove_entity(game, {slot, shot.generation}); return; }
     }

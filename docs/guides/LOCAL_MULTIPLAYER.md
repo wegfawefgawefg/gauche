@@ -11,6 +11,10 @@ creates a public online room, and joins all three bots through the room service.
 The host starts when all four are ready. All-dead runs restart after two seconds;
 the launcher uses entrance respawns. It does not move or aim your player for you.
 
+Bots choose rewards automatically, exchanging a droppable item when their pack
+is full. They try one affordable shop purchase, then ready up. The fist and
+weapons currently in flight are never discarded to make room.
+
 On i3 the default puts your game on workspace 3 on the primary display and
 stacks three full-width bot windows top-to-bottom on workspace 4 on the second
 display. Bars are excluded from the usable area. The windows float without borders. It only moves

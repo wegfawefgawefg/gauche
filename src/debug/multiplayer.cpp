@@ -3,6 +3,8 @@
 #include "../menu_shell.hpp"
 #include "../menu/actions.hpp"
 #include "../net/party.hpp"
+#include "../run/offers.hpp"
+#include "../items/ground_interaction.hpp"
 #include <bit>
 #include <fstream>
 
@@ -11,6 +13,38 @@ std::uint32_t random_value(MultiplayerDebug& debug) {
     auto& value = debug.random;
     value ^= value << 13; value ^= value >> 17; value ^= value << 5;
     return value;
+}
+
+Input bot_offer_input(MultiplayerDebug& debug, const Game& game, int owner,
+                      const Entity& player) {
+    Input input;
+    input.confirm = game.run.phase == RunPhase::Shop;
+    const int first = static_cast<int>(random_value(debug) % 3);
+    for (int offset = 0; offset < 3; ++offset) {
+        const int choice = (first + offset) % 3;
+        const auto token = offer_token(game, owner, choice);
+        if (token == 0) continue;
+        const Reward offer = current_offer(game, owner, choice);
+        if (game.run.phase == RunPhase::Shop &&
+            game.run.coins[static_cast<std::size_t>(owner)] < shop_price(offer.item)) continue;
+        Inventory trial = player.inventory;
+        if (offer.kind == RewardKind::Item && !insert_item(trial, reward_item(offer))) {
+            // Exchange atomically through normal offer validation; never discard the fist
+            // or an in-flight weapon reservation to make room.
+            for (int slot = 0; slot < quick_slots; ++slot) {
+                const Item& outgoing = player.inventory.slots[static_cast<std::size_t>(slot)];
+                if (!item_can_drop(outgoing)) continue;
+                input.replace_slot = slot;
+                input.replace_kind = outgoing.kind;
+                break;
+            }
+            if (input.replace_slot < 0) continue;
+        }
+        input.select = choice;
+        input.offer_token = token;
+        return input;
+    }
+    return input;
 }
 }
 
@@ -35,10 +69,7 @@ Input multiplayer_bot_input(MultiplayerDebug& debug, const Game& game, int owner
     if (game.run.phase == RunPhase::Reward || game.run.phase == RunPhase::Shop ||
         game.run.pending_count[static_cast<std::size_t>(owner)] > 0) {
         input = {};
-        if (tick % 30 == 0) {
-            input.select = static_cast<int>(random_value(debug) % 3);
-            input.confirm = true;
-        }
+        if (tick % 30 == 0) input = bot_offer_input(debug, game, owner, *player);
     }
     return input;
 }

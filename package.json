@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test:web": "node tests/web-smoke.mjs",
+    "test:web:settings": "node tests/web-browser-settings.mjs",
     "test:web:gamepad": "node tests/web-gamepad.mjs",
     "test:web:crossplay": "node tests/web-crossplay.mjs"
   },

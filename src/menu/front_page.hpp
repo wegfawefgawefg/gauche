@@ -54,6 +54,7 @@ struct FrontPage {
     bool compiled = false;
     bool dirty = true;
     bool fullscreen = false;
+    bool auto_reports = true;
     bool vsync = true;
     bool show_fps = false;
     int window_mode = 0;

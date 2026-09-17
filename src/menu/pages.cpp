@@ -135,6 +135,16 @@ void settings_page(ViewBuilder& ui) {
 
 void display_page(ViewBuilder& ui, const FrontPage& page) {
     frame(ui, "Display Settings", 740.0F, 545.0F);
+#ifdef __EMSCRIPTEN__
+    button(ui,"window-mode",page.fullscreen ? "Exit fullscreen" : "Enter fullscreen","display:window-mode");
+    constexpr const char* caps[]{"Display refresh rate", "60 FPS", "120 FPS", "144 FPS"};
+    button(ui,"frame-cap",std::string{"Frame limit  ·  "}+caps[std::clamp(page.frame_cap,0,3)],"display:frame-cap");
+    button(ui,"show-fps",std::string{"Show FPS  ·  "}+(page.show_fps ? "On" : "Off"),"display:show-fps");
+    button(ui,"auto-reports",std::string{"Automatic error reports  ·  "}+(page.auto_reports ? "On" : "Off"),"display:auto-reports");
+    button(ui,"save-report","Save debug log","display:save-report");
+    ui.label("card","reports-help","Reports send technical diagnostics, without player names or room codes.",40.0F,15.0F);
+    footer(ui,"window-mode");
+#else
     constexpr const char* resolutions[]{"640 × 360", "960 × 540", "1280 × 720",
                                         "1920 × 1080"};
     constexpr const char* modes[]{"Windowed", "Borderless", "Fullscreen"};
@@ -152,6 +162,7 @@ void display_page(ViewBuilder& ui, const FrontPage& page) {
     button(ui, "show-fps", std::string{"Show FPS  ·  "} +
            (page.show_fps ? "On" : "Off"), "display:show-fps");
     footer(ui, "render-resolution");
+#endif
 }
 
 void audio_page(ViewBuilder& ui, const FrontPage& page) {

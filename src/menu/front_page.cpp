@@ -103,7 +103,7 @@ std::string projection(const FrontPage& page, int death_policy) {
         std::to_string(page.master_volume) + ":" +
         std::to_string(page.music_volume) + ":" +
         std::to_string(page.sfx_volume) + ":" +
-        std::to_string(page.fullscreen) + ":" + std::to_string(page.vsync);
+        std::to_string(page.fullscreen) + ":" + std::to_string(page.auto_reports) + ":" + std::to_string(page.vsync);
     result += ":" + std::to_string(page.window_mode) + ":" +
         std::to_string(page.render_resolution) + ":" +
         std::to_string(page.window_resolution) + ":" +

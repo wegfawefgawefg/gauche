@@ -18,6 +18,7 @@ npm ci
 python3 -m http.server 8787 --bind 127.0.0.1 --directory build-web/site
 # In another terminal:
 npm run test:web
+npm run test:web:settings
 npm run test:web:gamepad
 npm run test:web:crossplay  # also requires build-release/gauche
 ```
@@ -32,9 +33,11 @@ The launcher loads content-addressed assets, initializes IndexedDB-backed
 settings at `/persistent`, and opens the in-game title automatically. The canvas
 fills the browser viewport; SDL resizes its backing buffer and the default
 matched render target with it. Audio unlocks on a keypress or click. Use the
-browser fullscreen shortcut (F11 on desktop) to hide browser chrome. The native
-data directory and executable remain compatible with existing installations; the displayed
-name and browser module are Teeming. Music placeholders remain disabled.
+in-game **Settings → Display → Enter fullscreen**, or F11 on desktop.
+Fullscreen state follows browser exits too; controller-only entry may require
+a browser confirmation click. Browser shortcuts pass through SDL. The native
+data directory and executable remain compatible with existing installations;
+the displayed name and browser module are Teeming. Music placeholders remain disabled.
 
 The initial output is roughly 26 MiB before HTTP compression: a 10 MiB Wasm
 module and two asset packs smaller than 8 MiB each. Each file fits the Pages
@@ -43,7 +46,12 @@ module and two asset packs smaller than 8 MiB each. Each file fits the Pages
 ## Browser runtime and multiplayer
 
 - The shared fixed-step simulation runs inside the normal main loop, yielding
-  through Asyncify to requestAnimationFrame. Hidden tabs use a timer fallback;
+  through Asyncify to requestAnimationFrame. SDL's implicit Asyncify present
+  sleep and native V-sync pacing are disabled. The default follows the browser
+  refresh rate; explicit 60/120/144 limits skip callbacks on an absolute schedule.
+  Profiler sleep includes this wait; `window.teeming.frameTiming` reports observed
+  callback/render rates and work time. Tests inject 144 Hz callback timestamps
+  to check scheduling; this is not a physical high-refresh hardware benchmark. Hidden tabs use a timer fallback, including when an outstanding RAF is suspended;
   browsers can still suspend/throttle them. Keep the hosting tab visible during
   playtests. A short suspended-client catch-up is covered, not indefinite mobile
   background hosting. Asyncify overhead is a future optimization opportunity.
@@ -72,6 +80,29 @@ queues normal menu actions for smoke tests.
 Optional test links accept `?host=NAME&autostart=1`, `?room=CODE`, `?bot=1`,
 `?name=NAME`; ordinary visits show the title menu.
 
+## Automatic failure reports
+
+Enabled by default, with a persistent **Settings → Display → Automatic error
+reports** toggle. Captures startup/JS failures, failed joins, unexpected relay
+closure and repeated recovery events. Reports include build, seed/floor, bounded
+technical network events and state samples, browser version and frame timing.
+They omit player names, room codes, credentials and save files. F8/manual downloads
+remain available regardless of the toggle.
+
+Client uploads are deduplicated by failure type, limited to eight per page session
+and spaced at least ten seconds apart; failed uploads do not trigger more reports.
+The VPS exposes POST `/browser-reports`, proxied to a separate localhost:8792
+service. Allowed origins, 32 KiB requests, schema validation and per-IP/global
+limits bound ingestion. Private `/var/lib/teeming-reports/reports.jsonl` files
+rotate at 2 MiB with five backups (about 12 MiB total). No report read endpoint;
+IPs are used transiently for limiting and omitted from reports/access logs.
+
+`services/browser-reports/install.py` installs the separate reporting service and
+reloads Nginx without restarting roomd or the WebSocket bridge. Tests:
+`uv run --with aiohttp python tests/browser_reports_test.py` and
+`npm run test:web:settings` (uploads intercepted, fullscreen repeatedly toggled,
+automatic reporting, redaction, deduplication and persisted opt-out checked).
+
 ## Deploy and operate
 
 Commit, rebuild/package that commit, run the browser tests, then execute
@@ -94,8 +125,8 @@ rejoining, while native UDP sessions remain separate.
   transitions across mixed platforms; the native lifecycle suite remains useful
   but does not establish every browser case.
 - Datagram transport alternatives if reliable-stream latency becomes noticeable.
-- Browser-specific display settings polish; browser presentation follows its own
-  animation scheduler rather than the native V-sync/frame limiter.
+- Physical high-refresh displays, mixed-monitor refresh rates, and real controller
+  fullscreen activation across browsers; rendering throughput remains workload-dependent.
 
 ## First public deployment — 2026-09-17
 

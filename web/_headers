@@ -9,3 +9,9 @@
   Cache-Control: no-cache
 /*.wasm
   Content-Type: application/wasm
+/browser-runtime.js
+  Cache-Control: no-cache
+/reporting.js
+  Cache-Control: no-cache
+/style.css
+  Cache-Control: no-cache

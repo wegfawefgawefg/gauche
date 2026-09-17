@@ -8,6 +8,11 @@ EM_JS(char*, browser_command, (), {
 });
 EM_JS(void, browser_state, (const char* json), {Module.gameState=JSON.parse(UTF8ToString(json));});
 void browser_inspect(MenuShell& menu) {
+    menu.front.fullscreen=EM_ASM_INT({return !!Module.browserFullscreen;})!=0;
+    menu.front.auto_reports=EM_ASM_INT({return !!Module.autoReports;})!=0;
+    char* notice=reinterpret_cast<char*>(EM_ASM_PTR({const text=Module.browserNotice || "";Module.browserNotice="";return stringToNewUTF8(text);}));
+    if(*notice)menu.front.toast=notice;
+    std::free(notice);
     char* command=browser_command();
     if(*command)apply_menu_action(menu,command);
     std::free(command);
@@ -23,6 +28,10 @@ void browser_inspect(MenuShell& menu) {
         {"status",net.status},{"roomStatus",menu.front.room_status},
         {"players",game.players.size()},{"snapshot",net.last_snapshot_id},
         {"playing",menu.playing},{"menu",menu.visible},{"phase",static_cast<int>(game.run.phase)}};
+    state["seed"]=std::to_string(game.run.seed);
+    state["fullscreen"]=menu.front.fullscreen;
+    state["autoReports"]=menu.front.auto_reports;
+    state["vsync"]=menu.front.vsync;
     state["windowSize"]={frame.window_width,frame.window_height};
     state["renderSize"]={frame.render_width,frame.render_height};
     state["listedRooms"]=nlohmann::json::array();

@@ -14,6 +14,9 @@
 #include "src/graphics.hpp"
 
 #include <SDL3/SDL.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #include <algorithm>
 #include <charconv>
@@ -99,6 +102,12 @@ void back(MenuShell& menu) {
 void set_video(MenuShell& menu, std::string_view action) {
     FrontPage& page = menu.front;
     EngineState& engine = gubsy_runtime_engine(*menu.runtime);
+#ifdef __EMSCRIPTEN__
+    if (action == "display:window-mode") { EM_ASM({Module.toggleFullscreen();}); return; }
+    if (action == "display:auto-reports") { EM_ASM({Module.setAutoReports(!Module.autoReports);}); return; }
+    if (action == "display:save-report") { EM_ASM({Module.saveReport();}); return; }
+    if (action == "display:vsync" || action == "display:window-resolution" || action == "display:render-resolution") return;
+#endif
     const GubsyFrame frame = gubsy_get_frame(*menu.runtime);
     constexpr struct { int width; int height; const char* label; } sizes[]{
         {640, 360, "640x360"}, {960, 540, "960x540"},
@@ -197,6 +206,12 @@ void initialize_menu_settings(MenuShell& menu) {
     page.window_mode = mode == "fullscreen" ? 2 : (mode == "borderless" ? 1 : 0);
     page.vsync = get_top_level_setting_int(engine.top_level_game_settings,
         "gubsy.video.vsync", 1) != 0;
+#ifdef __EMSCRIPTEN__
+    // RAF owns presentation. SDL's fallback V-sync would add a second 60 Hz wait.
+    page.vsync = false;
+    set_top_level_setting_int(engine.top_level_game_settings,"gubsy.video.vsync",0);
+    set_top_level_setting_int(engine.top_level_game_settings,"gubsy.video.match_render_to_window",1);
+#endif
     // Apply the saved preference to this newly created renderer, not only when toggled.
     const auto frame = gubsy_get_frame(*menu.runtime);
     if (frame.renderer && !SDL_SetRenderVSync(frame.renderer, page.vsync ? 1 : 0))

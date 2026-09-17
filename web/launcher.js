@@ -1,3 +1,5 @@
+import {installBrowserRuntime} from './browser-runtime.js';
+import {createReporting} from './reporting.js';
 const canvas = document.querySelector('#canvas');
 const stage = document.querySelector('#stage');
 const loading = document.querySelector('#loading');
@@ -5,6 +7,7 @@ const status = document.querySelector('#status');
 const progress = document.querySelector('#progress');
 const logs = [];
 let game, build = '', starting = false, syncing = false;
+const reporting = createReporting(()=>game, ()=>build);
 function resumeAudio() {
   const context = game?.SDL3?.audioContext;
   if (context?.state === 'suspended') context.resume().catch(log);
@@ -17,13 +20,18 @@ function log(...parts) {
 }
 function failure(error) {
   log(error?.stack || String(error));
+  reporting.report('startup-failed', error?.stack || String(error));
   loading.hidden = false;
   document.querySelector('#report').hidden = false;
   status.textContent = 'Could not start: ' + error + '.';
   progress.hidden = true;
 }
-window.addEventListener('error', event => log(event.message));
-window.addEventListener('unhandledrejection', event => log(String(event.reason)));
+window.addEventListener('error', event => { log(event.message); reporting.report('javascript-error', event.error?.stack || event.message); });
+window.addEventListener('unhandledrejection', event => { log(String(event.reason)); reporting.report('unhandled-rejection', event.reason?.stack || String(event.reason)); });
+// SDL prevents default keyboard actions; leave browser shortcuts with the browser.
+for (const type of ['keydown','keyup']) window.addEventListener(type, event => {
+  if (['F11','F5','F12'].includes(event.code) || ((event.ctrlKey || event.metaKey) && ['KeyL','KeyR','KeyT','KeyW'].includes(event.code))) event.stopImmediatePropagation();
+}, true);
 
 async function load() {
   if (starting) return;
@@ -59,6 +67,12 @@ async function load() {
       }]
     });
     window.teeming = game;
+    installBrowserRuntime(game,canvas,log);
+    game.autoReports=reporting.enabled;
+    game.setAutoReports=reporting.setEnabled;
+    game.reportFailure=reporting.report;
+    game.saveReport=saveReport;
+    setInterval(reporting.observe,1000);
     const fs = game.FS;
     fs.mkdirTree('/persistent');
     fs.mount(fs.filesystems.IDBFS, {}, '/persistent');
@@ -109,7 +123,7 @@ function saveReport() {
     catch (error) { log('Network log unavailable:', error); }
   }
   const report = {build, userAgent:navigator.userAgent,
-    state:game?.gameState, audio:game?.SDL3?.audioContext?.state, networkLog, logs};
+    state:game?.gameState, timing:game?.frameTiming, autoReports:reporting.enabled, audio:game?.SDL3?.audioContext?.state, networkLog, logs};
   const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], {type:'application/json'}));
   const link = document.createElement('a'); link.href = url; link.download = 'teeming-debug.json'; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);

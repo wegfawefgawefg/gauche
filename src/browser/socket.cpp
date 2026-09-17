@@ -19,12 +19,12 @@ EM_JS(int, open_socket, (), {
         state.received.push(bytes);
     };
     socket.onerror=()=>{state.failed=true;};
-    socket.onclose=()=>{state.failed=true;};
+    socket.onclose=event=>{state.failed=true;if(!state.closing)Module.reportFailure?.('relay-disconnected','close code '+event.code);};
     return id;
 });
 EM_JS(void, close_socket, (int id), {
     const state=Module.sockets?.get(id);
-    if(state){state.socket.close();Module.sockets.delete(id);}
+    if(state){state.closing=true;state.socket.close();Module.sockets.delete(id);}
 });
 EM_JS(int, send_socket, (int id,int port,const void* data,int size), {
     const state=Module.sockets?.get(id);

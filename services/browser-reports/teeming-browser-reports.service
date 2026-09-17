@@ -1,0 +1,19 @@
+[Unit]
+Description=Teeming browser failure reports
+After=network.target
+[Service]
+User=gauche-roomd
+Group=gauche-roomd
+ExecStart=/usr/bin/python3 /opt/gauche-roomd/browser-reports.py
+Restart=on-failure
+RestartSec=2
+StateDirectory=teeming-reports
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=96M
+[Install]
+WantedBy=multi-user.target

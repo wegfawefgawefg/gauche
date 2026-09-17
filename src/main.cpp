@@ -1,9 +1,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include "browser/inspection.hpp"
-EM_ASYNC_JS(void, browser_next_frame, (), {
-    await new Promise(resolve => document.hidden ? setTimeout(resolve, 16) : requestAnimationFrame(resolve));
-});
+EM_ASYNC_JS(void, browser_next_frame, (int cap), { await Module.nextFrame(cap); });
 #endif
 #include "app/frame_pacing.hpp"
 #include "debug/performance.hpp"
@@ -51,6 +49,11 @@ constexpr double step_seconds = 1.0 / 60.0;
 } // namespace
 
 int main(int argc, char** argv) {
+#ifdef __EMSCRIPTEN__
+    // We yield once through our RAF scheduler, not again inside SDL_RenderPresent.
+    SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY,"0");
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC,"0");
+#endif
     if (has_arg(argc,argv,"--audit-supply")) return run_supply_audit();
     if (has_arg(argc,argv,"--audit-generation")) return run_generation_audit();
     if (has_arg(argc,argv,"--audit-forest")) return run_forest_audit();
@@ -484,7 +487,9 @@ int main(int argc, char** argv) {
         frame_phase.next(PerfZone::Sleep);
         const int cap=smoke ? 0 : effective_frame_cap(frame.window,frame.renderer,
             gubsy_configured_frame_cap_fps(host),menu.front.vsync,multiplayer.bot);
-#ifndef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
+        browser_next_frame(cap);
+#else
         sleep_frame_remainder(frame_begin,cap);
 #endif
         frame_phase.stop();
@@ -496,7 +501,6 @@ int main(int argc, char** argv) {
         }
 #ifdef __EMSCRIPTEN__
         browser_inspect(menu);
-        browser_next_frame();
 #endif
         if (frame_limit > 0 && frames >= frame_limit) {
             running = false;

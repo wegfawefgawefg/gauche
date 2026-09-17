@@ -15,6 +15,7 @@ void browser_inspect(MenuShell& menu) {
     const auto now=SDL_GetTicks();
     if(now-last<100)return;
     last=now;
+    const auto frame=gubsy_get_frame(*menu.runtime);
     const auto& net=*menu.network;
     const auto& game=net.role==NetRole::Solo ? *menu.solo_game : net.rollback.game;
     nlohmann::json state={{"tick",game.tick},{"netLog",net.diagnostics.log_path},{"floor",game.run.floor},{"recoveries",net.diagnostics.recovery_count},{"host",net.role==NetRole::Host},{"rtt",net.round_trip_ms},{"confirmed",net.rollback.confirmed_through},{"started",game.started},{"over",game.game_over},
@@ -22,6 +23,8 @@ void browser_inspect(MenuShell& menu) {
         {"status",net.status},{"roomStatus",menu.front.room_status},
         {"players",game.players.size()},{"snapshot",net.last_snapshot_id},
         {"playing",menu.playing},{"menu",menu.visible},{"phase",static_cast<int>(game.run.phase)}};
+    state["windowSize"]={frame.window_width,frame.window_height};
+    state["renderSize"]={frame.render_width,frame.render_height};
     state["listedRooms"]=nlohmann::json::array();
     for(const auto& room:menu.front.rooms)state["listedRooms"].push_back(room.room_code);
     if(has_player(game,net.local_owner)) {

@@ -2,17 +2,14 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10180f">
-<meta name="description" content="Teeming is a game about life. Perhaps too much life. Play solo or bring friends.">
-<title>Teeming — perhaps too much life</title>
+<meta name="theme-color" content="#080d09">
+<title>Teeming</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 <body>
-<header><a href="./">TEEMING</a><span>perhaps too much life</span><button id="fullscreen">Fullscreen</button></header>
 <main id="stage">
-<canvas id="canvas" tabindex="0" width="1280" height="720" aria-label="Teeming game"></canvas>
-<section id="welcome"><p class="eyebrow">A WORLD THAT WON’T SIT STILL</p><h1>Teeming</h1><p>Life everywhere.<br>Try to keep yours.</p><button id="play">Play</button><p id="status" role="status">Keyboard or controller · solo or with friends</p><progress id="progress" hidden></progress></section>
+<canvas id="canvas" tabindex="0" aria-label="Teeming game"></canvas>
+<section id="loading"><p id="status" role="status">Loading…</p><progress id="progress"></progress><button id="report" hidden>Save debug log</button></section>
 </main>
-<footer><span>WASD move · arrows attack · E interact · Esc menu · F1 debug</span><span>Multiplayer: Play → Host Game / Join Game</span><button id="report">Save debug log</button><small id="build"></small></footer>
 <script type="module" src="launcher.js"></script>
 </body></html>

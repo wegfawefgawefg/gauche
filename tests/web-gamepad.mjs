@@ -9,7 +9,7 @@ try{
    Object.defineProperty(navigator,'getGamepads',{value:()=>[window.pad]});
    window.pressPad=(i,pressed)=>{pad.buttons[i]={pressed,touched:pressed,value:pressed?1:0};pad.timestamp=performance.now();};
  });
- await page.goto(process.env.TEEMING_TEST_URL || 'http://127.0.0.1:8787');await page.click('#play');
+ await page.goto(process.env.TEEMING_TEST_URL || 'http://127.0.0.1:8787');
  await page.waitForFunction(()=>window.teeming?.gameState,{timeout:45000});
  await page.evaluate(()=>pressPad(0,true));await page.waitForTimeout(250);await page.evaluate(()=>pressPad(0,false));
  await page.waitForFunction(()=>window.teeming.gameState.playing,{timeout:10000});

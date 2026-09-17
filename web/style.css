@@ -1,1 +1,12 @@
-:root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#080d09;color:#dbdfc9}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;flex-direction:column}header{height:64px;padding:0 24px;display:flex;gap:24px;align-items:center;border-bottom:1px solid #263422}header a{color:#e4dfb3;text-decoration:none;font-weight:bold;letter-spacing:.2em}header span{color:#8e9a80;font-size:12px}button{font:inherit;background:#c5cf91;color:#172012;border:1px solid #d8dfa8;padding:12px 22px;cursor:pointer}button:hover{background:#e0e6be}header button{margin-left:auto;padding:7px 12px;font-size:12px}main{position:relative;flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 48% 55%,#243220,#090e09 65%);min-height:320px}canvas{display:block;width:100%;max-height:calc(100vh - 145px);object-fit:contain;outline:none;image-rendering:pixelated;visibility:hidden}main.playing canvas{visibility:visible}#welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}h1{font-size:clamp(48px,9vw,100px);font-weight:500;letter-spacing:-.07em;margin:8px 0 12px;color:#e1dfb5}p{line-height:1.7;color:#a8b29a}.eyebrow{font-size:10px;letter-spacing:.25em;color:#8a9d75}#status{font-size:12px;max-width:600px}progress{width:260px;accent-color:#c5cf91}footer{padding:16px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;color:#849277;font-size:11px}footer button{margin-left:auto;background:none;color:#a8b29a;border-color:#34402d;padding:5px 8px;font-size:11px}#build{color:#6e7d63}main:fullscreen canvas{max-height:100vh}main:fullscreen{background:#000}@media(max-width:650px){header span{display:none}footer{padding:10px;gap:8px}}
+:root { color-scheme: dark; font-family: monospace; background: #080d09; color: #dbdfc9; }
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+#stage { position: fixed; inset: 0; }
+/* Both dimensions are explicit: SDL reads this box to size its drawing buffer. */
+canvas { display: block; width: 100%; height: 100%; outline: none; image-rendering: pixelated; visibility: hidden; }
+.playing canvas { visibility: visible; }
+#loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #080d09; padding: 24px; }
+#loading[hidden] { display: none; }
+#status { max-width: 600px; overflow-wrap: anywhere; }
+progress { width: 260px; accent-color: #c5cf91; }
+button { margin-top: 20px; font: inherit; padding: 8px 16px; }

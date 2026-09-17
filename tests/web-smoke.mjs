@@ -16,12 +16,29 @@ async function open(query='') {
   pages.push(page);
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(base+'/?'+query);
-  await page.click('#play');
   await page.waitForFunction(()=>window.teeming?.gameState,{timeout:60000});
   return page;
 }
 try {
   const solo=await open();
+  assert.equal(await solo.locator('#play, header, footer').count(),0);
+  for (const size of [{width:1280,height:900},{width:800,height:600},{width:1920,height:1080},{width:960,height:540}]) {
+    await solo.setViewportSize(size);
+    await solo.waitForFunction(({width,height})=>{
+      const canvas=document.querySelector('canvas'),state=window.teeming.gameState;
+      const box=canvas.getBoundingClientRect();
+      return box.x===0 && box.y===0 && box.width===width && box.height===height &&
+        canvas.width===width && canvas.height===height &&
+        state.renderSize[0]===width && state.renderSize[1]===height &&
+        state.windowSize[0]===width && state.windowSize[1]===height &&
+        document.documentElement.scrollHeight===height;
+    },size,{timeout:5000});
+  }
+  await solo.setViewportSize({width:1280,height:900});
+  const download=solo.waitForEvent('download');
+  await solo.keyboard.press('F8');
+  assert.equal((await download).suggestedFilename(),'teeming-debug.json');
+  console.log('PASS automatic title, viewport/backing/render resize, debug download');
   await solo.screenshot({path:artifacts+'/title.png'});
   await solo.keyboard.press('Enter');
   await solo.waitForFunction(()=>window.teeming.gameState.tick>30);
@@ -39,7 +56,7 @@ try {
     return fs.readFile('/persistent/gubsy/settings_profiles/audio.lisp',{encoding:'utf8'});
   });
   await solo.screenshot({path:artifacts+'/forest.png'});
-  await solo.reload();await solo.click('#play');
+  await solo.reload();
   await solo.waitForFunction(()=>window.teeming?.gameState);
   assert.equal(await solo.evaluate(()=>window.teeming.FS.readFile('/persistent/gubsy/settings_profiles/audio.lisp',{encoding:'utf8'})),settings);
   await solo.close();

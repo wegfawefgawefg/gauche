@@ -1,11 +1,10 @@
 const canvas = document.querySelector('#canvas');
 const stage = document.querySelector('#stage');
-const welcome = document.querySelector('#welcome');
-const play = document.querySelector('#play');
+const loading = document.querySelector('#loading');
 const status = document.querySelector('#status');
 const progress = document.querySelector('#progress');
 const logs = [];
-let game, starting = false, syncing = false;
+let game, build = '', starting = false, syncing = false;
 function resumeAudio() {
   const context = game?.SDL3?.audioContext;
   if (context?.state === 'suspended') context.resume().catch(log);
@@ -18,8 +17,9 @@ function log(...parts) {
 }
 function failure(error) {
   log(error?.stack || String(error));
-  welcome.style.display = 'flex';
-  status.textContent = 'Could not start: ' + error + '. Save the debug log below.';
+  loading.hidden = false;
+  document.querySelector('#report').hidden = false;
+  status.textContent = 'Could not start: ' + error + '.';
   progress.hidden = true;
 }
 window.addEventListener('error', event => log(event.message));
@@ -28,15 +28,13 @@ window.addEventListener('unhandledrejection', event => log(String(event.reason))
 async function load() {
   if (starting) return;
   starting = true;
-  play.disabled = true;
-  play.textContent = 'Loading…';
   progress.hidden = false;
   try {
     const response = await fetch('manifest.json', {cache: 'no-cache'});
     if (!response.ok) throw new Error('Download failed: manifest');
     const manifest = await response.json();
-    document.querySelector('#build').textContent = manifest.revision;
-    status.textContent = 'Loading the world…';
+    build = manifest.revision;
+    status.textContent = 'Loading…';
     let loaded = 0;
     progress.max = manifest.assets.reduce((sum, pack) => sum + pack.bytes, 0);
     progress.value = 0;
@@ -81,7 +79,9 @@ async function load() {
     game.callMain(args);
     resumeAudio();
     stage.classList.add('playing');
-    welcome.style.display = 'none';
+    loading.hidden = true;
+    // SDL owns backing-store resizing; refresh after its saved window settings load.
+    window.dispatchEvent(new Event('resize'));
     canvas.focus();
     setInterval(() => {
       if (syncing) return;
@@ -90,32 +90,29 @@ async function load() {
     }, 5000);
   } catch (error) { failure(error); }
 }
-play.addEventListener('click', load);
-document.querySelector('#fullscreen').addEventListener('click', () => {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else stage.requestFullscreen().catch(log);
-});
 canvas.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('pointerdown', resumeAudio);
 window.addEventListener('keydown', event => {
   resumeAudio();
+  if (event.code === 'F8' && !event.repeat) { event.preventDefault(); saveReport(); }
   if (document.activeElement === canvas && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(event.key)) event.preventDefault();
 });
 // Controllers may only appear after the first button press; keep checking.
 setInterval(() => {
   const pressed = [...(navigator.getGamepads?.() || [])].some(pad => pad?.buttons.some(button => button.pressed));
-  if (!starting && pressed) load();
   if (pressed) resumeAudio();
 }, 200);
-document.querySelector('#report').addEventListener('click', () => {
+function saveReport() {
   let networkLog = '';
   if (game?.gameState?.netLog) {
     try { networkLog = game.FS.readFile(game.gameState.netLog, {encoding:'utf8'}).slice(-131072); }
     catch (error) { log('Network log unavailable:', error); }
   }
-  const report = {build: document.querySelector('#build').textContent, userAgent:navigator.userAgent,
+  const report = {build, userAgent:navigator.userAgent,
     state:game?.gameState, audio:game?.SDL3?.audioContext?.state, networkLog, logs};
   const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], {type:'application/json'}));
   const link = document.createElement('a'); link.href = url; link.download = 'teeming-debug.json'; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
+}
+document.querySelector('#report').addEventListener('click', saveReport);
+load();

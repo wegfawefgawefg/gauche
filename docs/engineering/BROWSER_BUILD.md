@@ -29,8 +29,11 @@ still need manual testing. The crossplay test runs bounded native processes
 with isolated profiles and dummy video/audio.
 
 The launcher loads content-addressed assets, initializes IndexedDB-backed
-settings at `/persistent`, and starts the normal game. The native data directory
-and executable remain compatible with existing installations; the displayed
+settings at `/persistent`, and opens the in-game title automatically. The canvas
+fills the browser viewport; SDL resizes its backing buffer and the default
+matched render target with it. Audio unlocks on a keypress or click. Use the
+browser fullscreen shortcut (F11 on desktop) to hide browser chrome. The native
+data directory and executable remain compatible with existing installations; the displayed
 name and browser module are Teeming. Music placeholders remain disabled.
 
 The initial output is roughly 26 MiB before HTTP compression: a 10 MiB Wasm
@@ -61,10 +64,11 @@ module and two asset packs smaller than 8 MiB each. Each file fits the Pages
   near the last known host tick. Regression tests cover the catch-up bound and
   coalescing a packet burst into one replay.
 
-Use **Save debug log** below the canvas for browser errors, connection state,
+Press **F8** to download a debug log with browser errors, connection state,
 RTT/recovery counters and recent native-format network events. Logs omit room
 credentials. `window.teeming.gameState` is a read-only published diagnostic
-snapshot; `window.teeming.command` queues normal menu actions for smoke tests.
+snapshot including SDL window/render dimensions; `window.teeming.command`
+queues normal menu actions for smoke tests.
 Optional test links accept `?host=NAME&autostart=1`, `?room=CODE`, `?bot=1`,
 `?name=NAME`; ordinary visits show the title menu.
 

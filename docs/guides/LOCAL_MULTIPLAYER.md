@@ -36,6 +36,9 @@ have a 30-minute limit by default; use `--seconds 3600` for an hour.
 # Exercise the VPS relay instead of attempting a direct connection first.
 ./scripts/multiplayer.sh --force-relay
 
+# Record granular frame timings in each visible client's profile.csv.
+./scripts/multiplayer.sh --profile
+
 # Skip compilation when the current binary is already built.
 ./scripts/multiplayer.sh --no-build
 

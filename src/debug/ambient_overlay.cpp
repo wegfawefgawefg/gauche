@@ -1,9 +1,11 @@
+#include "../debug/performance.hpp"
 #include "ambient_inspector.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 
 void draw_ambient_annotations(SDL_Renderer* renderer,const Game& game,ViewCamera camera,float zoom) {
+    PerfScope perf_scope(PerfZone::Annotations);
     const auto& state=ambient_inspector();
     if(!GAUCHE_DEV_MODE || !state.overlay || state.game!=&game || !state.audio)return;
     SDL_BlendMode blend;SDL_GetRenderDrawBlendMode(renderer,&blend);

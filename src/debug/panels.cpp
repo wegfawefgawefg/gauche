@@ -2,6 +2,7 @@
 #include "worldgen.hpp"
 #include "playtest.hpp"
 #include "ambient_inspector.hpp"
+#include "performance.hpp"
 #include "../input.hpp"
 
 #include <imgui.h>
@@ -54,6 +55,9 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
             if (ImGui::CollapsingHeader("Gameplay", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::Checkbox("Generation inspector", &worldgen_viewer().details);
                 ImGui::Checkbox("Ambient sound inspector", &ambient_inspector().visible);
+                if(ImGui::Checkbox("Performance profiler", &performance().visible) && performance().visible) {
+                    performance().enabled=true;playtest_tools().pause=false;
+                }
                 ImGui::Checkbox("Combat overlays", &panels.combat);
                 ImGui::Checkbox("Player status", &panels.status);
                 ImGui::Checkbox("Levels / start override", &playtest_tools().levels);
@@ -96,6 +100,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
         draw_playtest_tools(game, offline && !worldgen_viewer().active);
         if (worldgen_viewer().details) draw_worldgen_details(game);
         draw_ambient_inspector();
+        draw_performance_panel();
     }
     imgui_render_layer();
 }

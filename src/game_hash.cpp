@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "game.hpp"
 
 namespace {
@@ -19,6 +20,7 @@ void mix_light(std::uint64_t& hash, LightEmitter light) {
 } // namespace
 
 std::uint64_t game_hash(const Game& game) {
+    PerfScope perf_scope(PerfZone::Hash);
     std::uint64_t hash = 1469598103934665603ULL;
     mix(hash, game.rng);
     mix(hash, game.tick);

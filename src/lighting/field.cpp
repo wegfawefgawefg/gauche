@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "field.hpp"
 #include "canopy.hpp"
 #include "shape.hpp"
@@ -88,6 +89,7 @@ std::size_t LightingCache::index(Cell cell) const {
 
 void build_lighting(LightingCache& cache, const Game& game,
                     ViewCamera camera, float zoom, std::span<const LightFlash> flashes) {
+    PerfScope perf_scope(PerfZone::Lighting);
     cache.active = game.run.phase != RunPhase::Arena;
     if (!cache.active) return;
     const float pixels = tile_pixels(std::max(zoom, 0.5F));

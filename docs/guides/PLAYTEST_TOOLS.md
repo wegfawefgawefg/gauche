@@ -11,6 +11,20 @@ Requested 2026-09-15. Status lives in MASTER_TASKS.md.
 - In-game controller icon setting: Auto, Xbox, PlayStation, Nintendo. Set this user's preference to Xbox. This changes prompts, not physical bindings.
 - On stage entry show a modest upper-right angled banner with biome/stage number and unique name when applicable. Slight drop/fade in, then fade away.
 
+## Performance profiling
+
+F1 → Gameplay → **Performance profiler** enables collection and unpauses offline simulation. The panel has an explicit pause checkbox. Close F1 to measure normal play without the panel's drawing overhead, then reopen it to inspect the last 300 frames. Timings include simulation subsystems, rendering layers, networking/rollback/hash/snapshots, audio, menus, presentation waits and limiter sleep, with averages, P95, maxima and call counts. Nested rows overlap; these are main-thread wall timings, not GPU timings. Process CPU also includes worker/audio threads.
+
+Use **Save last 300 frames** or **Record next 600 frames**; the panel shows the CSV path under the normal Gauche preference directory. For a shareable capture without opening ImGui:
+
+```sh
+./scripts/run.sh --profile-csv /tmp/gauche-profile.csv --profile-frames 1800
+```
+
+Capture stops after that many frames (bounded to 1–36,000); the game continues. Closing the game finishes a partial capture. `multiplayer.py --profile` writes `profile.csv` inside each visible client's session directory; headless bots are excluded. CSV records the build, platform/renderer backend, actual V-sync, effective cap, render dimensions and focus/minimize state.
+
+Startup now applies the saved V-sync setting to the renderer. A requested but unavailable V-sync falls back to a display-rate software cap; explicitly disabling both V-sync and the cap remains uncapped. The software cap uses OS sleep without a busy-spin tail. Bots retain their 30 FPS cap; simulation stays at 60 ticks/sec. An older laptop can select **Settings → Display → Frame cap → 60** to reduce rendering work. Hardware temperature/bottlenecks require a capture from that machine; dummy/software-renderer checks do not establish GPU performance.
+
 ## Implemented controls
 
 F1 opens/closes debug windows; F2 toggles the selector. Choose Levels or Loadout under Gameplay. Offline simulation pauses while F1 is open by default; uncheck its pause option to observe live behavior. Jump and Apply are disabled in network games. Override files are local preferences, outside simulation snapshots.

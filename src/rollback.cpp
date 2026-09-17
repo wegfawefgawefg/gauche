@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "rollback.hpp"
 
 #include <algorithm>
@@ -19,6 +20,7 @@ void check_confirmed(RollbackSession& session) {
 }
 
 void replay_from(RollbackSession& session, std::size_t index) {
+    PerfScope perf_scope(PerfZone::Rollback);
     session.game = session.frames[index].before;
     for (std::size_t replay = index; replay < session.frames.size(); ++replay) {
         RollbackFrame& frame = session.frames[replay];

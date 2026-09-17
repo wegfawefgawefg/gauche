@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "light_tower_render.hpp"
 #include "tall_tree_render.hpp"
 #include "../entities/boiler_drive_render.hpp"
@@ -18,6 +19,7 @@
 
 void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game,
                  ViewCamera camera, float zoom, const LightingCache& lighting,std::uint64_t tick,const Cosmetics* cosmetics) {
+    PerfScope perf_scope(PerfZone::PropDraw);
     const Stage& stage=game.stage;
     const int radius_x = static_cast<int>(320.0F / tile_pixels(zoom)) + 2;
     const int radius_y = static_cast<int>(180.0F / tile_pixels(zoom)) + 2;

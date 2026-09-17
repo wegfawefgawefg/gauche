@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "system.hpp"
 #include "../surfaces/interaction.hpp"
 #include "../view.hpp"
@@ -107,6 +108,7 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
 void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
                     float zoom, const LightingCache* lighting, const Stage* stage) {
+    PerfScope perf_scope(PerfZone::Particles);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (const SpriteParticle& particle : cosmetics.sprites)

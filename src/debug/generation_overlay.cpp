@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "generation_overlay.hpp"
 #include "../lighting/render.hpp"
 #include <algorithm>
@@ -41,6 +42,7 @@ LiveGenerationInspector& bind_live_generation_report(const Game& game) {
 }
 void draw_generation_annotations(SDL_Renderer* renderer,const GenerationReport& report,
     int selected_feature,int selected_component,ViewCamera camera,float zoom,const GenerationAnnotations& options) {
+    PerfScope perf_scope(PerfZone::Annotations);
     if(report.geometry_omitted)return;
     SDL_BlendMode old_blend;SDL_GetRenderDrawBlendMode(renderer,&old_blend);
     float red=0,green=0,blue=0,alpha=0;SDL_GetRenderDrawColorFloat(renderer,&red,&green,&blue,&alpha);

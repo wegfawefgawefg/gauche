@@ -1,3 +1,5 @@
+#include "app/frame_pacing.hpp"
+#include "debug/performance.hpp"
 #include <SDL3/SDL.h>
 #include <gubsy/runtime.hpp>
 
@@ -200,6 +202,13 @@ int main(int argc, char** argv) {
                             (smoke ? 3 : 0);
 
     init_debug_panels(gubsy_get_frame(host).window, gubsy_get_frame(host).renderer);
+    performance().directory = user_data_root();
+    performance().renderer = SDL_GetRendererName(gubsy_get_frame(host).renderer);
+    if (const auto path=value_arg(argc,argv,"--profile-csv");!path.empty()) {
+        const int count=number_arg(value_arg(argc,argv,"--profile-frames")).value_or(1800);
+        if(!start_performance_capture(std::string(path),count))
+            std::fprintf(stderr,"%s\n",performance().status.c_str());
+    }
     bool running = true;
     bool lobby_smoke_failed = false;
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
@@ -213,6 +222,8 @@ int main(int argc, char** argv) {
     std::uint64_t steps = 0;
     while (running) {
         const std::uint64_t frame_begin = SDL_GetTicksNS();
+        begin_performance_frame(frame_begin);
+        PerfScope frame_phase(PerfZone::Events);
         const double elapsed = static_cast<double>(frame_begin - last_ticks) / 1.0e9;
         last_ticks = frame_begin;
         MenuInputState menu_input{};
@@ -274,6 +285,7 @@ int main(int argc, char** argv) {
                                   0.5F, 8.0F);
         }
         gubsy_update_device_state(host);
+        frame_phase.next(PerfZone::Menu);
         if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())
             apply_menu_action(menu, value_arg(argc, argv, "--smoke-menu-action"));
         if (menu_smoke) {
@@ -316,6 +328,7 @@ int main(int argc, char** argv) {
         const bool networked = network.role != NetRole::Solo;
         catch_up_network_client(network);
 
+        frame_phase.next(PerfZone::Simulation);
         accumulated += smoke ? step_seconds : std::min(elapsed, 0.25);
         if (menu.visible || debug_captures_input()) cancel_pending_use = true;
         while (accumulated >= step_seconds) {
@@ -349,6 +362,7 @@ int main(int argc, char** argv) {
             accumulated -= step_seconds;
         }
 
+        frame_phase.next(PerfZone::Menu);
         if (debug_revision != playtest_tools().revision) {
             debug_revision = playtest_tools().revision;
             cosmetics = {}; interaction = {}; input_reader = {}; cancel_pending_use = true;
@@ -385,6 +399,7 @@ int main(int argc, char** argv) {
         const int ambient_owner = networked ? network.local_owner : 0;
         const Entity* ambient_listener = ambient_owner >= 0 && ambient_owner < static_cast<int>(active.players.size()) ?
             get_entity(active, active.players[static_cast<std::size_t>(ambient_owner)]) : nullptr;
+        frame_phase.next(PerfZone::Audio);
         update_ambience(audio.ambience, active, ambient_listener == nullptr ? active.run.spawn : ambient_listener->cell,
             static_cast<float>(elapsed), ambient_inspector().mute ? 0.0F : audio.master_level * audio.sound_level,
             menu.playing && !menu.visible && active.run.phase == RunPhase::Playing &&
@@ -396,6 +411,7 @@ int main(int argc, char** argv) {
         if (active.started && menu.playing && (!networked || network.ready) &&
             audio.current_song != 1) play_song(audio, 1);
         if (!menu.playing && audio.current_song != 0) play_song(audio, 0);
+        frame_phase.next(PerfZone::Render);
         if (worldgen_viewer().active) {
             draw_worldgen(frame.renderer,graphics);
         } else if (active.started && (!networked || network.ready) && menu.playing) {
@@ -429,6 +445,7 @@ int main(int argc, char** argv) {
         if (menu.front.show_fps)
             draw_frame_rate(frame.renderer, gubsy_displayed_fps(host));
         SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
+        frame_phase.next(PerfZone::MenuDraw);
         render_menu_shell(menu, frame.renderer, frame.render_width, frame.render_height);
         if (capture != nullptr && !captured && frames >= capture_frame) {
             SDL_Surface* surface = SDL_RenderReadPixels(frame.renderer, nullptr);
@@ -439,6 +456,7 @@ int main(int argc, char** argv) {
         }
         SDL_SetRenderTarget(frame.renderer, nullptr);
         SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
+        frame_phase.next(PerfZone::WindowBlit);
         if (!gubsy_draw_frame_to_window(host)) {
             std::fprintf(stderr, "Gubsy present failed: %s\n", SDL_GetError());
             shutdown_audio(audio);
@@ -447,24 +465,29 @@ int main(int argc, char** argv) {
             cleanup_gubsy_runtime(host);
             return 1;
         }
+        frame_phase.next(PerfZone::DebugDraw);
         draw_debug_panels(active, networked ? network.local_owner : 0, !networked);
         draw_window_pointer(frame.renderer, frame.window, graphics);
+        frame_phase.next(PerfZone::Present);
         gubsy_present_frame(host);
         ++frames;
-        if (!smoke) {
-            const int cap = multiplayer.bot ? 30 : gubsy_configured_frame_cap_fps(host);
-            if (cap > 0) {
-                const std::uint64_t target_ns = std::uint64_t{1'000'000'000} /
-                    static_cast<std::uint64_t>(cap);
-                const std::uint64_t frame_elapsed = SDL_GetTicksNS() - frame_begin;
-                if (frame_elapsed < target_ns) SDL_DelayPrecise(target_ns - frame_elapsed);
-            }
+        frame_phase.next(PerfZone::Sleep);
+        const int cap=smoke ? 0 : effective_frame_cap(frame.window,frame.renderer,
+            gubsy_configured_frame_cap_fps(host),menu.front.vsync,multiplayer.bot);
+        sleep_frame_remainder(frame_begin,cap);
+        frame_phase.stop();
+        if(performance().recording) {
+            int vsync=0;SDL_GetRenderVSync(frame.renderer,&vsync);
+            const auto flags=SDL_GetWindowFlags(frame.window);
+            end_performance_frame(cap,vsync,frame.render_width,frame.render_height,
+                (flags&SDL_WINDOW_INPUT_FOCUS)!=0,(flags&SDL_WINDOW_MINIMIZED)!=0);
         }
         if (frame_limit > 0 && frames >= frame_limit) {
             running = false;
         }
     }
 
+    stop_performance_capture();
     if (frame_limit > 0) {
         const bool networked = network.role != NetRole::Solo;
         const Game& active = networked ? network.rollback.game : game;

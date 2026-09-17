@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "debug/ambient_inspector.hpp"
 #include "world/fissure_render.hpp"
 #include "debug/generation_overlay.hpp"
@@ -168,6 +169,7 @@ void draw_tile_damage(SDL_Renderer* renderer,const GameGraphics& graphics, const
 void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
                 const Game& game, ViewCamera camera, float zoom,
                 const Cosmetics* cosmetics, const LightingCache& lighting) {
+    PerfScope perf_scope(PerfZone::Tiles);
     const float pixels = tile_pixels(zoom);
     const int columns = static_cast<int>(std::ceil(320.0F / pixels)) + 2;
     const int rows = static_cast<int>(std::ceil(200.0F / pixels)) + 2;

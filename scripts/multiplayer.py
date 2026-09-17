@@ -57,6 +57,7 @@ def main():
     parser.add_argument('--service', default='https://45.77.123.14')
     parser.add_argument('--force-relay', action='store_true')
     parser.add_argument('--no-build', action='store_true')
+    parser.add_argument('--profile', action='store_true', help='capture 1800 frames per visible client to its session profile.csv')
     parser.add_argument('--dry-run', action='store_true', help='show plan without building, starting games or changing workspaces')
     args = parser.parse_args()
     if args.seconds <= 0:
@@ -117,6 +118,8 @@ def main():
             command += ['--headless']
         else:
             command += ['--window-title', title, *window_options(role, args.layout, primary)]
+            if args.profile:
+                command += ['--profile-csv', str(profile / 'profile.csv')]
         log = open(run / f'{role}.log', 'w')
         logs.append(log)
         child = subprocess.Popen(command, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)

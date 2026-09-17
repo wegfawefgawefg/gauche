@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "../world/current_render.hpp"
 #include "render.hpp"
 #include "../particles/templates.hpp"
@@ -139,6 +140,7 @@ void draw_scent(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
 
 void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
                     float zoom, const LightingCache& lighting, bool clouds) {
+    PerfScope perf_scope(PerfZone::SurfaceDraw);
     const float pixels = tile_pixels(zoom);
     const int rx = static_cast<int>(320 / pixels) + 2, ry = static_cast<int>(180 / pixels) + 2;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

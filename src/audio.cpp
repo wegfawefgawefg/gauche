@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "audio.hpp"
 
 #include <SDL3/SDL.h>
@@ -142,6 +143,7 @@ void play_song(GameAudio& audio, int song) {
 }
 
 void play_game_sounds(GameAudio& audio, const Game& game, Cell listener) {
+    PerfScope perf_scope(PerfZone::Audio);
     if (!audio.initialized) return;
     constexpr float half_pi = 1.57079632679F;
     for (int index = 0; index < game.sound_count; ++index) {

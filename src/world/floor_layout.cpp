@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "fissures.hpp"
 #include "ant_colonies.hpp"
 #include "mushroom_settlements.hpp"
@@ -40,6 +41,7 @@
 #include <utility>
 
 void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report, GenerationTrace* trace, std::uint64_t inhabitants_seed) {
+    PerfScope perf_scope(PerfZone::Generation);
     if (trace) trace->reset();
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};

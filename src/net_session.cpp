@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "net_session_internal.hpp"
 #include "net/party.hpp"
 
@@ -54,6 +55,7 @@ std::uint64_t network_clock_ms() {
 }
 
 void pump_network(NetSession& session, std::uint64_t now_ms) {
+    PerfScope perf_scope(PerfZone::NetworkPump);
     if (session.role == NetRole::Solo) return;
     // CLOCK: Polling more often must not shorten reconnect or retry deadlines.
     session.now_ms = std::max(session.now_ms, now_ms);
@@ -156,6 +158,7 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
 }
 
 void catch_up_network_client(NetSession& session) {
+    PerfScope perf_scope(PerfZone::Catchup);
     if (session.role != NetRole::Client || !session.ready || !session.match_started ||
         session.rollback.needs_snapshot) return;
     const auto target = session.host_tick + static_cast<std::uint64_t>(session.prediction_lead_ticks);
@@ -165,6 +168,7 @@ void catch_up_network_client(NetSession& session) {
 }
 
 void step_network_game(NetSession& session, Input local_input) {
+    PerfScope perf_scope(PerfZone::NetworkStep);
     if (!session.ready || !session.match_started) return;
     if (session.role == NetRole::Host) host_step(session, local_input);
     if (session.role == NetRole::Client) client_step(session, local_input);

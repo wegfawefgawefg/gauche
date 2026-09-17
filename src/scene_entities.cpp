@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "entities/crate_mimic.hpp"
 #include "props/light_tower_render.hpp"
 #include "props/tall_tree_render.hpp"
@@ -89,6 +90,7 @@ void draw_suspended_parts(SDL_Renderer* renderer,const GameGraphics& graphics,co
 void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, float zoom,
                    const Cosmetics* cosmetics, const LightingCache& lighting, ScenePass pass,const Entity* viewer,bool roofs) {
+    PerfScope perf_scope(PerfZone::EntityDraw);
     const float pixels = tile_pixels(zoom);
     // Ground effects precede the shared ground-anchor order for raised bodies.
     for (const BodyDraw& entry:body_draw_order(game,camera,zoom,pass)) {

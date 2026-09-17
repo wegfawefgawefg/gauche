@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "../entities/crate_mimic.hpp"
 #include "../status/bleeding.hpp"
 #include "sleep.hpp"
@@ -343,6 +344,7 @@ void observe_sound(Cosmetics& cosmetics, const SoundEvent& sound, Cell focus) {
 } // namespace
 
 void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float zoom) {
+    PerfScope perf_scope(PerfZone::Cosmetics);
     if (game.tick < cosmetics.last_tick || game.run.floor != cosmetics.last_floor ||
         (game.run.phase == RunPhase::Arena && cosmetics.last_phase != RunPhase::Arena))
         cosmetics = {};

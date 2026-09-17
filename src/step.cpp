@@ -1,3 +1,4 @@
+#include "debug/performance.hpp"
 #include "world/fissures.hpp"
 #include "world/lava_eruptions.hpp"
 #include "scenery/roof.hpp"
@@ -118,6 +119,7 @@ void emit_sound(Game& game, SoundId sound, Cell cell, bool positional, bool muff
 }
 
 void step_game(Game& game, const std::array<Input, 4>& inputs) {
+    PerfScope tick_scope(PerfZone::Tick);
     if (!game.started || game.game_over) return;
     ++game.tick;
     game.sound_count = 0;
@@ -127,21 +129,29 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     game.fall_count=0;
     if (step_interlude(game, inputs)) return;
 
+    PerfScope phase(PerfZone::Temperature);
     step_temperature(game);
+    phase.next(PerfZone::Surfaces);
     step_surfaces(game);
+    phase.next(PerfZone::Roofs);
     step_roofs(game);
+    phase.next(PerfZone::Props);
     step_prop_growth(game);
 
+    phase.next(PerfZone::Timers);
     // TIMERS: A cooldown reaching zero can act on this tick.
     for (int slot = 0; slot < max_entities; ++slot)
         step_entity_timers(game, slot);
     step_actor_tosses(game);
+    phase.next(PerfZone::Players);
     step_players(game, inputs);
     step_summer_auras(game);
     if (game.run.phase == RunPhase::Reward) return;
 
     // ACTORS: Newborns wait a tick; cleanup follows every attack and hazard.
+    phase.next(PerfZone::Actors);
     step_nonplayers(game);
+    phase.next(PerfZone::Hazards);
     step_water_currents(game);
     step_conveyors(game);
     step_traps(game);
@@ -149,6 +159,7 @@ void step_game(Game& game, const std::array<Input, 4>& inputs) {
     step_deep_river_contacts(game);
     step_lava_eruptions(game);
     step_fissures(game);
+    phase.next(PerfZone::Cleanup);
     sweep_dead(game);
     step_reactor(game);
 }

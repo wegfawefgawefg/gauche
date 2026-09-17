@@ -1,7 +1,9 @@
+#include "../debug/performance.hpp"
 #include "snapshot_codec.hpp"
 #include "generation_report_codec.hpp"
 
 std::vector<std::uint8_t> encode_network_snapshot(const Game& game) {
+    PerfScope perf_scope(PerfZone::Snapshot);
     const auto state=encode_game(game);
     if(state.size()+12>snapshot_wire_limit)return {};
     PacketWriter w;w.u32(0x31504e53);w.u32(static_cast<std::uint32_t>(state.size()));
@@ -13,6 +15,7 @@ std::vector<std::uint8_t> encode_network_snapshot(const Game& game) {
     return w.bytes;
 }
 bool decode_network_snapshot(std::span<const std::uint8_t> bytes,Game& game,std::string& error,std::string& diagnostic_note) {
+    PerfScope perf_scope(PerfZone::Snapshot);
     error.clear();diagnostic_note.clear();PacketReader r{bytes};
     if(bytes.size()>snapshot_wire_limit || r.u32()!=0x31504e53){error="Network snapshot envelope mismatch";return false;}
     const auto size=r.u32();

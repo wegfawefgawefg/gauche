@@ -680,6 +680,8 @@ Direction and local reference inventory: [music brief](music/MUSIC_DIRECTION.md)
 
 ## Playtest feedback: status, contact and debug visibility
 
+- [x] **PERF-INSPECT:** Optional granular frame profiler with 300-frame history, averages/P95/max/call counts, process CPU, actual V-sync/cap/resolution/focus, bounded CSV recording and launcher captures. Saved V-sync now applies at startup; unsupported requested V-sync gets a display-rate cap, and explicit caps use non-spinning OS sleep. Focused timing/count/history/CSV/determinism checks, static panel rendering and finite menu-loop capture passed. Hardware GPU/thermal diagnosis awaits a capture from the affected laptop.
+
 - [x] Show named player status indicators with remaining timers. Distinguish
   sleep, stun, chill/freeze and burning; show burn rate and remaining damage,
   and explain what each status stops or slows. Keep them compact but legible.

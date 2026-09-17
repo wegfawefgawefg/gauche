@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "overhead.hpp"
 
 #include <cmath>
@@ -75,6 +76,7 @@ void forest_canopies(SDL_Renderer* renderer, const GameGraphics& graphics,
 void draw_overhead(SDL_Renderer* renderer, const GameGraphics& graphics,
                     const Game& game, const Cosmetics* cosmetics, ViewCamera camera,
                     float zoom, const LightingCache& lighting) {
+    PerfScope perf_scope(PerfZone::Overhead);
     if (graphics.overhead_canvas == nullptr) {
         graphics.overhead_canvas = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET, 640, 360);

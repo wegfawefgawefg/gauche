@@ -1,3 +1,4 @@
+#include "../debug/performance.hpp"
 #include "../items/woodland_tools.hpp"
 #include "../items/sled.hpp"
 #include "panel.hpp"
@@ -35,6 +36,7 @@ void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
 void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
               const Game& game, const Entity& player,
               const PointerState& pointer, bool compact_details) {
+    PerfScope perf_scope(PerfZone::Hud);
     const HudScale scale{renderer};
     constexpr float width = 640.0F / ui_scale, height = 360.0F / ui_scale;
     const bool quiet = (SDL_GetModState() & SDL_KMOD_ALT) != 0;

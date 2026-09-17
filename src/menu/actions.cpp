@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <charconv>
+#include <cstdio>
 #include <filesystem>
 #include <string>
 
@@ -200,6 +201,10 @@ void initialize_menu_settings(MenuShell& menu) {
     page.window_mode = mode == "fullscreen" ? 2 : (mode == "borderless" ? 1 : 0);
     page.vsync = get_top_level_setting_int(engine.top_level_game_settings,
         "gubsy.video.vsync", 1) != 0;
+    // Apply the saved preference to this newly created renderer, not only when toggled.
+    const auto frame = gubsy_get_frame(*menu.runtime);
+    if (frame.renderer && !SDL_SetRenderVSync(frame.renderer, page.vsync ? 1 : 0))
+        std::fprintf(stderr, "Could not apply V-sync preference: %s\n", SDL_GetError());
     page.show_fps = get_top_level_setting_int(engine.top_level_game_settings,
         "gubsy.video.show_fps", 0) != 0;
     const auto resolution_index = [](int width, int height) {

@@ -1,5 +1,6 @@
 #include "performance.hpp"
 #include "playtest.hpp"
+#include "generation_build.hpp"
 #include <SDL3/SDL.h>
 #include <imgui.h>
 #include <algorithm>
@@ -26,13 +27,18 @@ void draw_performance_panel() {
         ImGui::Checkbox("Pause offline simulation while F1 is open",&playtest_tools().pause);
         static bool hide_inactive=true;
         ImGui::Checkbox("Hide inactive phases",&hide_inactive);
-        ImGui::TextWrapped("Inclusive main-thread wall times; nested rows overlap and must not be added together. Present includes command submission and driver/V-sync waits, not GPU execution time. Process CPU includes other threads and may exceed frame time.");
+        ImGui::Text("Build %s", GAUCHE_GENERATOR_REVISION);
+        ImGui::TextWrapped("Inclusive main-thread wall times; nested rows overlap and must not be added together. Present includes command submission and driver/V-sync waits, not GPU execution time. Short phases may fall below the browser clock resolution.");
         if(p.count) {
             const auto& last=p.history[(p.next+p.history.size()-1)%p.history.size()];
-            ImGui::Text("Cap %d FPS (0 = off) | actual V-sync %d | render %dx%d",last.cap,last.vsync,last.width,last.height);
+            ImGui::Text("Cap %d FPS (0 = off) | SDL V-sync %d | render %dx%d",last.cap,last.vsync,last.width,last.height);
             ImGui::Text("%s / %s | %zu frames retained",last.focused ? "Focused" : "Background",last.minimized ? "minimized" : "visible",p.count);
             ImGui::Text("Renderer: %s",p.renderer.c_str());
+#ifdef __EMSCRIPTEN__
+            ImGui::TextUnformatted("Browser animation scheduling; cap 0 follows display refresh.");
+#else
             if(!last.cap && !last.vsync)ImGui::TextUnformatted("Uncapped rendering: set a frame cap in Display settings to reduce work.");
+#endif
             std::array<float,Performance::history_limit> plot{};
             static std::array<Stats,perf_zone_count> stats{};
             static double cpu_mean=0;
@@ -54,11 +60,13 @@ void draw_performance_panel() {
             const auto present=static_cast<std::size_t>(PerfZone::Present),sleep=static_cast<std::size_t>(PerfZone::Sleep);
             ImGui::Text("Avg frame %.2f ms | outside present/sleep %.2f | present %.2f | sleep %.2f",stats[0].mean,
                 std::max(0.0,stats[0].mean-stats[present].mean-stats[sleep].mean),stats[present].mean,stats[sleep].mean);
-            ImGui::Text("Process CPU %.2f ms/frame | about %.0f%% of one core",cpu_mean,stats[0].mean>0 ? cpu_mean/stats[0].mean*100 : 0);
+            if(cpu_mean<0)ImGui::TextUnformatted("Process CPU usage unavailable in browser; these are elapsed timings.");
+            else ImGui::Text("Process CPU %.2f ms/frame | about %.0f%% of one core",cpu_mean,stats[0].mean>0 ? cpu_mean/stats[0].mean*100 : 0);
             ImGui::PlotLines("Frame ms",plot.data(),static_cast<int>(p.count),0,nullptr,0,maximum,{0,65});
-            if(ImGui::BeginTable("timings",5,ImGuiTableFlags_Borders|ImGuiTableFlags_RowBg|ImGuiTableFlags_ScrollY,{0,290})) {
+            if(ImGui::BeginTable("timings",5,ImGuiTableFlags_Borders|ImGuiTableFlags_RowBg|ImGuiTableFlags_ScrollY,{0,std::max(80.0F,ImGui::GetContentRegionAvail().y)})) {
                 ImGui::TableSetupColumn("Phase (inclusive)",ImGuiTableColumnFlags_WidthStretch,2.4F);
                 for(const char* name:{"Avg ms","P95 ms","Max ms","Calls/frame"})ImGui::TableSetupColumn(name,ImGuiTableColumnFlags_WidthStretch,1);
+                ImGui::TableSetupScrollFreeze(0,1);
                 ImGui::TableHeadersRow();
                 for(std::size_t i=0;i<stats.size();++i){const auto& s=stats[i];if(hide_inactive && s.calls==0)continue;ImGui::TableNextRow();ImGui::TableNextColumn();ImGui::TextUnformatted(perf_names[i]);for(double value:{s.mean,s.p95,s.peak,s.calls}){ImGui::TableNextColumn();ImGui::Text("%.3f",value);}}
                 ImGui::EndTable();

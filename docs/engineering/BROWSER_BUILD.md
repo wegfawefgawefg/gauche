@@ -38,6 +38,8 @@ Fullscreen state follows browser exits too; controller-only entry may require
 a browser confirmation click. Browser shortcuts pass through SDL. The native
 data directory and executable remain compatible with existing installations;
 the displayed name and browser module are Teeming. Music placeholders remain disabled.
+Browser gameplay starts at 2× zoom. +/- (including keypad) zoom between 2×
+and 8×; wheel zoom is disabled. Ctrl/Cmd +/- remains a browser shortcut. The separate generation viewer retains its inspection camera.
 
 The initial output is roughly 26 MiB before HTTP compression: a 10 MiB Wasm
 module and two asset packs smaller than 8 MiB each. Each file fits the Pages
@@ -49,7 +51,8 @@ module and two asset packs smaller than 8 MiB each. Each file fits the Pages
   through Asyncify to requestAnimationFrame. SDL's implicit Asyncify present
   sleep and native V-sync pacing are disabled. The default follows the browser
   refresh rate; explicit 60/120/144 limits skip callbacks on an absolute schedule.
-  Profiler sleep includes this wait; `window.teeming.frameTiming` reports observed
+  Profiler sleep includes this wait; browser CPU usage is unavailable (Emscripten
+  CPU clocks report elapsed time). The profiler shows the build revision; `window.teeming.frameTiming` reports observed
   callback/render rates and work time. Tests inject 144 Hz callback timestamps
   to check scheduling; this is not a physical high-refresh hardware benchmark. Hidden tabs use a timer fallback, including when an outstanding RAF is suspended;
   browsers can still suspend/throttle them. Keep the hosting tab visible during

@@ -36,8 +36,13 @@ void end_performance_frame(int cap,int vsync,int width,int height,bool focused,b
     auto& p=performance();if(!p.recording)return;
     auto& frame=p.current;
     frame.ns[0]=SDL_GetTicksNS()-p.frame_start;frame.calls[0]=1;
+#ifdef __EMSCRIPTEN__
+    // Emscripten maps process CPU clocks to monotonic elapsed time.
+    frame.cpu_ms=-1;
+#else
     const auto cpu=std::clock();frame.cpu_ms=cpu!=std::clock_t{-1} && p.cpu_start!=std::clock_t{-1} ?
         1000.0*static_cast<double>(cpu-p.cpu_start)/CLOCKS_PER_SEC : -1;
+#endif
     frame.cap=cap;frame.vsync=vsync;frame.width=width;frame.height=height;frame.focused=focused;frame.minimized=minimized;
     p.history[p.next]=frame;p.next=(p.next+1)%p.history.size();p.count=std::min(p.count+1,p.history.size());
     p.recording=false;

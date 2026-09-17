@@ -221,8 +221,15 @@ int main(int argc, char** argv) {
     }
     bool running = true;
     bool lobby_smoke_failed = false;
+#ifdef __EMSCRIPTEN__
+    constexpr float minimum_zoom = 2.0F;
+    constexpr bool keyboard_zoom = true;
+#else
+    constexpr float minimum_zoom = 0.5F;
+    constexpr bool keyboard_zoom = GAUCHE_DEV_MODE;
+#endif
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
-                            0.5F, 8.0F);
+                            minimum_zoom, 8.0F);
     InputReaderState input_reader{};
     bool cancel_pending_use = false;
     unsigned int debug_revision = playtest_tools().revision;
@@ -286,13 +293,16 @@ int main(int argc, char** argv) {
                 if (button == SDL_GAMEPAD_BUTTON_START && menu.playing && !menu.visible)
                     open_game_menu(menu);
             }
+#ifndef __EMSCRIPTEN__
             if (GAUCHE_DEV_MODE && event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
                 zoom = std::clamp(zoom + event.wheel.y * 0.25F, 0.5F, 8.0F);
-            if (GAUCHE_DEV_MODE && event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&
-                !event.key.repeat && (event.key.key == SDLK_MINUS ||
-                                      event.key.key == SDLK_EQUALS))
-                zoom = std::clamp(zoom + (event.key.key == SDLK_EQUALS ? 0.25F : -0.25F),
-                                  0.5F, 8.0F);
+#endif
+            if (keyboard_zoom && event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&
+                !event.key.repeat && !(event.key.mod & (SDL_KMOD_CTRL | SDL_KMOD_GUI | SDL_KMOD_ALT))) {
+                const bool closer = event.key.key == SDLK_EQUALS || event.key.key == SDLK_PLUS || event.key.key == SDLK_KP_PLUS;
+                const bool farther = event.key.key == SDLK_MINUS || event.key.key == SDLK_KP_MINUS;
+                if (closer || farther) zoom = std::clamp(zoom + (closer ? .25F : -.25F),minimum_zoom,8.0F);
+            }
         }
         gubsy_update_device_state(host);
         frame_phase.next(PerfZone::Menu);
@@ -500,7 +510,7 @@ int main(int argc, char** argv) {
                 (flags&SDL_WINDOW_INPUT_FOCUS)!=0,(flags&SDL_WINDOW_MINIMIZED)!=0);
         }
 #ifdef __EMSCRIPTEN__
-        browser_inspect(menu);
+        browser_inspect(menu,zoom);
 #endif
         if (frame_limit > 0 && frames >= frame_limit) {
             running = false;

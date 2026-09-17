@@ -30,7 +30,7 @@ window.addEventListener('error', event => { log(event.message); reporting.report
 window.addEventListener('unhandledrejection', event => { log(String(event.reason)); reporting.report('unhandled-rejection', event.reason?.stack || String(event.reason)); });
 // SDL prevents default keyboard actions; leave browser shortcuts with the browser.
 for (const type of ['keydown','keyup']) window.addEventListener(type, event => {
-  if (['F11','F5','F12'].includes(event.code) || ((event.ctrlKey || event.metaKey) && ['KeyL','KeyR','KeyT','KeyW'].includes(event.code))) event.stopImmediatePropagation();
+  if (['F11','F5','F12'].includes(event.code) || ((event.ctrlKey || event.metaKey) && ['KeyL','KeyR','KeyT','KeyW','Equal','Minus','Digit0','NumpadAdd','NumpadSubtract'].includes(event.code))) event.stopImmediatePropagation();
 }, true);
 
 async function load() {

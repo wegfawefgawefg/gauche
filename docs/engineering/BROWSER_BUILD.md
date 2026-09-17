@@ -92,3 +92,19 @@ rejoining, while native UDP sessions remain separate.
 - Datagram transport alternatives if reliable-stream latency becomes noticeable.
 - Browser-specific display settings polish; browser presentation follows its own
   animation scheduler rather than the native V-sync/frame limiter.
+
+## First public deployment — 2026-09-17
+
+Build `a4b1b15`, Pages deployment `bd6ae846`, production URL
+<https://teeming.pages.dev>. The same published package passed the browser
+smoke against that public URL: keyboard play, audio activation, saved settings,
+room browsing, three clients including a late join, short client suspension and
+leave. Both guests had zero recovery events before the suspension check.
+
+Local checks also passed standard Gamepad API input and both directions of
+native/browser play. Seven native menu/UI/network CTest checks passed, including
+lossy networking and regressions for batched late inputs and bounded catch-up.
+The old menu smoke assumed Play was the first title button; it now opens Rules
+explicitly and still exercises navigation/selection of the death policy.
+The deployed bridge rejected unapproved origins, arbitrary ports and oversized
+WebSocket messages. Real-world latency and longer lifecycle testing remain open.

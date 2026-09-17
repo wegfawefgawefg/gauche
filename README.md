@@ -1,6 +1,8 @@
-# Gauche
+# Teeming
 
-Gauche is a C++20, tile-step co-op dungeon run built from the original [Rust prototype](../gauche-rs). The Rust TestArena, its actors, items, train, art, and sound are the baseline. The new run adds keyed and switched exits, procedural room routes, Forest → Ice → Industrial worlds, guns, traps, artifacts, rewards, shops, lighting, and online co-op with room discovery and direct/relay connections.
+[Play in your browser](https://teeming.pages.dev/) · [Browser build and multiplayer](docs/engineering/BROWSER_BUILD.md)
+
+Teeming (formerly Gauche) is a C++20, tile-step co-op dungeon run built from the original [Rust prototype](../gauche-rs). The Rust TestArena, its actors, items, train, art, and sound are the baseline. The new run adds keyed and switched exits, procedural room routes, Forest → Ice → Industrial worlds, guns, traps, artifacts, rewards, shops, lighting, and online co-op with room discovery and direct/relay connections.
 
 The current work is tracked in one place: [the master task list](docs/MASTER_TASKS.md).
 

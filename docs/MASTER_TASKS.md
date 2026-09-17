@@ -5,7 +5,7 @@
 - [x] **WEB-SINGLEPLAYER:** Emscripten build runs Forest with keyboard, standard-gamepad test, audio activation, IndexedDB settings and browser debug-log download. [Build/run instructions](engineering/BROWSER_BUILD.md).
 - [x] **WEB-RELAY:** Add asynchronous browser room HTTP and bounded WebSocket bridge alongside existing VPS roomd. Verified browser/browser and both directions of native/browser play; fix late-snapshot historical-input replay storms.
 - [ ] **WEB-CROSSPLAY-COVERAGE:** Longer mixed-platform parties, reconnects and shared interludes, real controllers, Firefox/Safari/mobile and extended tab suspension.
-- [ ] **WEB-PREVIEW:** Deploy the tested versioned Teeming package to its separate Cloudflare Pages project, then run the browser suite against the public site. No domain purchase.
+- [x] **WEB-PREVIEW:** Deployed build `a4b1b15` to [teeming.pages.dev](https://teeming.pages.dev), served by Cloudflare Pages. Public three-browser discovery/start/late-join/suspend/leave suite passed; VPS remains multiplayer-only. No domain purchase.
 
 
 - [x] **NET-PARTICIPANTS:** Replace four-player slots with stable-ID participant records, active input/peer lists, variable codecs/ready lists and relay-safe fragmentation; configurable admission; validate 4/8/16/24 and sparse IDs. See [architecture and checks](engineering/PLAYER_PARTICIPANTS.md).

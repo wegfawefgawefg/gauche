@@ -89,6 +89,7 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             capture_network_recovery(session);
         }
     }
+    report_traversal_join(session);
     if (session.now_ms >= session.diagnostics.next_report_ms) {
         session.diagnostics.next_report_ms = session.now_ms + 5000;
         network_event(session, "network_progress", session.local_owner, session.rollback.rollback_count);

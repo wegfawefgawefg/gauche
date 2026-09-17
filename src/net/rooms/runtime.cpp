@@ -115,7 +115,7 @@ void complete_request(MenuShell& menu, RoomResult result) {
     case RoomOperation::Finalize:
         room.member = result.member;
         room.token.clear();
-        menu.front.room_status = "Connected. Ready up when you want to start.";
+        menu.front.room_status = menu.network->match_started ? "Joined the run in progress." : "Connected. Ready up when you want to start.";
         [[fallthrough]];
     case RoomOperation::Heartbeat:
         if (!result.room.room_code.empty()) menu.front.room_members = result.room.members;
@@ -265,6 +265,8 @@ void update_room_session(MenuShell& menu) {
     page.party_ready_mask = menu.network->party_ready_mask;
     page.party_code = room.code;
     page.connection_status = traversal_status(*menu.network);
+    if (room.active && !room.host && !menu.network->ready && !menu.network->status.empty())
+        page.room_status = menu.network->status;
     if (room.busy) return;
     if (room.cancel) {
         if (room.active && !room.member.empty()) submit(room, request_for(room, RoomOperation::Leave));

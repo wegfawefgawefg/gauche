@@ -294,6 +294,10 @@ if(WIN32)
 endif()
 
 if(BUILD_TESTING)
+    # Simulation tests must not pull presentation-only objects and their renderer dependencies.
+    foreach(domain GAUCHE_ENTITY_SOURCES GAUCHE_PROP_SOURCES GAUCHE_WORLD_SOURCES)
+        list(FILTER ${domain} EXCLUDE REGEX "_render[.]cpp$|/scene_entities[.]cpp$")
+    endforeach()
     set(GAUCHE_TEST_GAME_SOURCES
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp
         src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp
@@ -398,6 +402,7 @@ target_include_directories(gauche_realnet SYSTEM PUBLIC
 foreach(target gauche gauche_render_scene gauche_session_tests gauche_loss_tests)
     if(TARGET ${target})
         target_link_libraries(${target} PRIVATE gauche_realnet)
+        target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     endif()
 endforeach()
 

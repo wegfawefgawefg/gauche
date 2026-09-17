@@ -99,3 +99,21 @@ live desktop was not rearranged. Live gameplay still needs human feedback.
 
 The wire protocol changed to version 13. Rebuild and restart **all** peers together;
 the room service does not need an update for this client/host protocol change.
+
+### Joining a running game and connection reports
+
+Rooms accept newcomers during play (up to four reserved player identities), as
+well as in the lobby. Joining transfers the current world and spawns the newcomer
+near that floor's entrance; active sealed encounters place them inside instead.
+Reward/shop joins skip the current selection so they cannot hold up the party.
+The default **Next Floor** death policy revives dead players at full health on
+floor transition. **No Respawn** remains an explicit host choice.
+
+Join attempts send at most four small signed diagnostic summaries to roomd's
+existing `punch_probe_result` journal event. They contain build revision, connection
+stage, reply/rejection counts and clock mismatch magnitude, never credentials or
+full snapshots. Reports are best-effort UDP: if outbound UDP is entirely blocked,
+only local logs survive. The host UI does not yet retrieve these reports.
+Local `netlogs/session-*.log` files now name rejected control replies; the joining
+screen shows the specific failure, including authenticated clock mismatches.
+No room-server upgrade is required for these reports.

@@ -5,6 +5,8 @@
 #include <gubsy/realnet/relay.hpp>
 
 #include <algorithm>
+#include <sstream>
+#include "generation_build.hpp"
 
 namespace {
 
@@ -14,6 +16,37 @@ void send_control(NetSession& session, NetEndpoint target, std::string bytes) {
     if (!session.socket.send(target,
             {reinterpret_cast<const std::uint8_t*>(bytes.data()), bytes.size()}, error))
         network_event(session, "traversal_send_failed");
+}
+
+void reject_control(NetSession& session, const char* reason) {
+    auto& t = session.traversal;
+    ++t.rejected;
+    if (t.last_reject != reason) network_event(session, reason, -1, t.clock_delta_ms);
+    t.last_reject = reason;
+}
+
+void report_join(NetSession& session) {
+    auto& t = session.traversal;
+    if (t.host || t.punch_secret.empty() || t.terminal_reported) return;
+    const bool terminal = session.ready || t.phase == TraversalPhase::Failed;
+    if (!terminal && (t.reports >= 3 || session.now_ms < t.next_report_ms)) return;
+    t.next_report_ms = session.now_ms + 3000;
+    ++t.reports;
+    t.terminal_reported = terminal;
+    std::ostringstream summary;
+    summary << "gauche build=" << GAUCHE_GENERATOR_REVISION
+        << " phase=" << static_cast<int>(t.phase) << " ready=" << session.ready
+        << " owner=" << session.local_owner << " punch_rx=" << t.punch_received
+        << " relay_rx=" << t.relay_received << " rejected=" << t.rejected
+        << " clock_delta_ms=" << t.clock_delta_ms << " reason=" << t.last_reject;
+    realnet::Packet packet;
+    packet.kind = realnet::PacketKind::PunchResult;
+    packet.role = "joiner"; packet.room_code = t.room; packet.join_attempt_id = t.attempt;
+    packet.seq = t.sequence++; packet.ts_ms = realnet::unix_time_ms();
+    packet.result = summary.str();
+    realnet::sign_packet(packet, t.punch_secret);
+    send_control(session, t.punch_server, realnet::encode_packet(packet));
+    network_event(session, "join_report_sent", -1, static_cast<std::uint64_t>(t.reports));
 }
 
 void punch_packet(NetSession& session, realnet::PacketKind kind, NetEndpoint target,
@@ -59,22 +92,31 @@ TraversalRoute* route_for(Traversal& transport, const std::string& attempt) {
     return &route;
 }
 
-bool recent(std::uint64_t stamp) {
+bool recent(NetSession& session, std::uint64_t stamp) {
     const auto now = realnet::unix_time_ms();
-    return stamp <= now + 5000 && stamp + 30000 >= now;
+    if (stamp <= now + 5000 && stamp + 30000 >= now) return true;
+    session.traversal.clock_delta_ms = stamp > now ? stamp - now : now - stamp;
+    reject_control(session, "traversal_clock_mismatch");
+    return false;
 }
 
 void receive_punch(NetSession& session, const Datagram& datagram) {
     auto& transport = session.traversal;
     realnet::Packet packet;
     std::string error;
-    if (!realnet::decode_packet(std::string(datagram.bytes.begin(), datagram.bytes.end()), packet, error) ||
-        packet.room_code != transport.room || !recent(packet.ts_ms)) return;
+    ++transport.punch_received;
+    if (!realnet::decode_packet(std::string(datagram.bytes.begin(), datagram.bytes.end()), packet, error)) {
+        reject_control(session, "punch_decode_failed"); return;
+    }
+    if (packet.room_code != transport.room) return;
     if (!transport.host && packet.join_attempt_id != transport.attempt) return;
     if (packet.kind == realnet::PacketKind::EndpointHint) {
         const auto& key = transport.host ? transport.host_secret : transport.punch_secret;
         if (datagram.from != transport.punch_server || key.empty() ||
-            !realnet::verify_packet(packet, key) || !packet.peer_endpoint) return;
+            !realnet::verify_packet(packet, key) || !packet.peer_endpoint) {
+            reject_control(session, "punch_hint_auth_failed"); return;
+        }
+        if (!recent(session, packet.ts_ms)) return;
         auto* route = route_for(transport, packet.join_attempt_id);
         if (route == nullptr) return;
         if (!resolve_endpoint(packet.peer_endpoint->host, packet.peer_endpoint->port, route->direct, error)) return;
@@ -86,6 +128,7 @@ void receive_punch(NetSession& session, const Datagram& datagram) {
     for (auto& route : transport.routes) {
         if (route.attempt != packet.join_attempt_id || route.punch_secret.empty() ||
             route.expires_ms < session.now_ms || !realnet::verify_packet(packet, route.punch_secret)) continue;
+        if (!recent(session, packet.ts_ms)) return;
         route.direct = datagram.from;
         route.authenticated = true;
         if (packet.kind == realnet::PacketKind::PunchProbe)
@@ -94,6 +137,7 @@ void receive_punch(NetSession& session, const Datagram& datagram) {
             session.host_endpoint = datagram.from;
             session.next_hello_ms = 0;
             transport.phase = TraversalPhase::Connected;
+            transport.deadline_ms = session.now_ms + 3000;
             network_event(session, "punch_connected");
         }
         return;
@@ -104,10 +148,18 @@ bool receive_relay(NetSession& session, Datagram& datagram) {
     auto& transport = session.traversal;
     realnet::RelayPacket packet;
     std::string error;
-    if (datagram.from != transport.relay_server ||
-        !realnet::decode_relay_packet(std::string(datagram.bytes.begin(), datagram.bytes.end()), packet, error) ||
-        packet.room_code != transport.room || relay_key(transport).empty() ||
-        !realnet::verify_relay_packet(packet, relay_key(transport)) || !recent(packet.ts_ms)) return true;
+    ++transport.relay_received;
+    if (datagram.from != transport.relay_server) {
+        reject_control(session, "relay_source_mismatch"); return true;
+    }
+    if (!realnet::decode_relay_packet(std::string(datagram.bytes.begin(), datagram.bytes.end()), packet, error)) {
+        reject_control(session, "relay_decode_failed"); return true;
+    }
+    if (packet.room_code != transport.room || relay_key(transport).empty() ||
+        !realnet::verify_relay_packet(packet, relay_key(transport))) {
+        reject_control(session, "relay_auth_failed"); return true;
+    }
+    if (!recent(session, packet.ts_ms)) return true;
     if (!transport.host && (packet.allocation_id != transport.allocation ||
         packet.join_attempt_id != transport.attempt)) return true;
     auto* route = route_for(transport, packet.join_attempt_id);
@@ -134,9 +186,14 @@ bool receive_relay(NetSession& session, Datagram& datagram) {
 
 void step_traversal(NetSession& session) {
     auto& transport = session.traversal;
-    if (transport.phase == TraversalPhase::Off || transport.phase == TraversalPhase::Failed) return;
+    if (transport.phase == TraversalPhase::Off) return;
+    report_join(session);
+    if (transport.phase == TraversalPhase::Failed) return;
     if (transport.deadline_ms == 0) transport.deadline_ms = session.now_ms + 3000;
-    if (!transport.host && transport.phase == TraversalPhase::Punch &&
+    // A successful probe does not guarantee the game handshake gets through.
+    const bool stalled_direct = transport.phase == TraversalPhase::Connected &&
+        !session.host_endpoint.relayed && !session.ready && session.local_owner < 0;
+    if (!transport.host && (transport.phase == TraversalPhase::Punch || stalled_direct) &&
         (transport.force_relay || session.now_ms >= transport.deadline_ms)) {
         transport.phase = TraversalPhase::Relay;
         transport.deadline_ms = session.now_ms + 6000;
@@ -145,6 +202,12 @@ void step_traversal(NetSession& session) {
     if (!transport.host && transport.phase == TraversalPhase::Relay && session.now_ms >= transport.deadline_ms) {
         transport.phase = TraversalPhase::Failed;
         session.status = "Direct connection and relay failed; retry joining the room";
+        if (transport.last_reject == "traversal_clock_mismatch")
+            session.status = "Connection failed: system clocks differ; enable automatic date/time and retry";
+        else if (!transport.last_reject.empty())
+            session.status = "Connection replies rejected: " + transport.last_reject + "; report sent to room service";
+        else session.status = "No authenticated connection reply; check UDP/firewall and retry. Report sent to room service";
+        report_join(session);
         network_event(session, "traversal_failed");
         return;
     }
@@ -213,3 +276,5 @@ const char* traversal_status(const NetSession& session) {
     }
     return "Unknown";
 }
+
+void report_traversal_join(NetSession& session) { report_join(session); }

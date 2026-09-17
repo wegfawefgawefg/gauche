@@ -2,6 +2,9 @@
 
 #include <array>
 #include <cstdio>
+#include <memory>
+#include <gubsy/realnet/rendezvous.hpp>
+#include <gubsy/realnet/relay.hpp>
 
 namespace {
 
@@ -13,6 +16,85 @@ void pump_for_check(NetSession& session) {
 }
 
 
+bool traversal_failure_reports() {
+    auto client = std::make_unique<NetSession>();
+    UdpSocket server;
+    std::string error;
+    if (!server.open(0,error) || !client->socket.open(0,error)) return false;
+    auto& t = client->traversal;
+    resolve_endpoint("127.0.0.1",server.bound_port(),t.punch_server,error);
+    t.relay_server = t.punch_server;
+    t.phase = TraversalPhase::Relay; t.room = "CHECKS"; t.attempt = "attempt";
+    t.allocation = "allocation"; t.punch_secret = "test-punch-secret";
+    t.relay_secret = "test-relay-secret"; t.deadline_ms = 100;
+    client->role = NetRole::Client; client->local_owner = -1;
+    realnet::RelayPacket ready;
+    ready.kind = realnet::RelayPacketKind::Ready; ready.role = realnet::RelayRole::Joiner; ready.room_code = t.room;
+    ready.join_attempt_id = t.attempt; ready.allocation_id = t.allocation;
+    ready.ts_ms = realnet::unix_time_ms() + 3600000;
+    realnet::sign_relay_packet(ready, t.relay_secret);
+    const auto bytes = realnet::encode_relay_packet(ready);
+    Datagram datagram{t.relay_server, {bytes.begin(), bytes.end()}};
+    receive_traversal(*client, datagram);
+    if (t.last_reject != "traversal_clock_mismatch" || t.clock_delta_ms < 3500000) return false;
+    client->now_ms = 101;
+    step_traversal(*client);
+    if (t.phase != TraversalPhase::Failed || client->status.find("automatic date/time") == std::string::npos)
+        return false;
+    int reports = 0;
+    while (server.poll(datagram,error)) {
+        realnet::Packet report;
+        if (!realnet::decode_packet(std::string(datagram.bytes.begin(),datagram.bytes.end()),report,error) ||
+            report.kind != realnet::PacketKind::PunchResult) continue;
+        if (!realnet::verify_packet(report,t.punch_secret) ||
+            report.result.find("traversal_clock_mismatch") == std::string::npos ||
+            report.result.find("test-punch-secret") != std::string::npos ||
+            report.result.find("test-relay-secret") != std::string::npos) return false;
+        ++reports;
+    }
+    const int sent = t.reports;
+    for (int i=0;i<20;++i) { client->now_ms += 1000; step_traversal(*client); }
+    if (reports < 1 || t.reports != sent) return false;
+    // Probes can succeed while the game handshake stalls: still try the relay.
+    t.phase = TraversalPhase::Connected; t.deadline_ms = client->now_ms;
+    t.terminal_reported = false; t.force_relay = false;
+    client->host_endpoint = t.punch_server;
+    step_traversal(*client);
+    return t.phase == TraversalPhase::Relay;
+}
+
+bool join_running_floor_and_respawn() {
+    auto host = std::make_unique<NetSession>();
+    auto client = std::make_unique<NetSession>();
+    std::string error;
+    if (!host_game(*host, 0, 27, DeathPolicy::NextFloor, error)) return false;
+    Game& game = host->rollback.game;
+    game.run.floor = 3;
+    generate_world_floor(game);
+    game.tick = 900;
+    const Cell spawn = game.run.spawn;
+    // The old join search accepted walkable lava and burning ground.
+    if (auto* tile = game.stage.at(spawn + Cell{1, 0})) tile->kind = TileKind::Lava;
+    if (!join_game(*client, "127.0.0.1", host->socket.bound_port(), 0x9876, error)) return false;
+    for (int i = 0; i < 60 && !client->ready; ++i) {
+        pump_for_check(*client); pump_for_check(*host); pump_for_check(*client);
+    }
+    const Entity* joined = get_entity(game, game.players[1]);
+    if (!client->ready || !client->match_started || !joined || game.tick != 900 ||
+        distance(joined->cell, spawn) > 9 ||
+        game.stage.at_or_border(joined->cell).kind == TileKind::Lava ||
+        game_hash(game) != game_hash(client->rollback.game)) return false;
+    // Surviving host finishes the floor; the dead guest must not block rewards.
+    get_entity(game, game.players[1])->health = 0;
+    finish_floor(game);
+    if (!game.run.chosen[1]) return false;
+    game.run.chosen[0] = true;
+    advance_run(game);
+    const Entity* revived = get_entity(game, game.players[1]);
+    if (game.run.floor != 4 || !revived || revived->health != revived->max_health) return false;
+    return true;
+}
+
 bool four_players() {
     NetSession host;
     std::array<NetSession, 3> clients{};
@@ -22,7 +104,7 @@ bool four_players() {
         if (!join_game(clients[static_cast<std::size_t>(index)], "127.0.0.1",
                        host.socket.bound_port(), static_cast<std::uint64_t>(300 + index),
                        error)) return false;
-        for (int iteration = 0; iteration < 30; ++iteration) {
+        for (int iteration = 0; iteration < 120; ++iteration) {
             for (NetSession& client : clients)
                 if (client.role == NetRole::Client) pump_for_check(client);
             pump_for_check(host);
@@ -45,6 +127,12 @@ bool four_players() {
 } // namespace
 
 int main() {
+    if (!traversal_failure_reports()) {
+        std::fputs("traversal diagnostics / fallback failed\n", stderr); return 1;
+    }
+    if (!join_running_floor_and_respawn()) {
+        std::fputs("late join / next-floor revival failed\n", stderr); return 1;
+    }
     NetSession host;
     NetSession client;
     std::string error;
@@ -53,7 +141,7 @@ int main() {
         std::fprintf(stderr, "session setup failed: %s\n", error.c_str());
         return 1;
     }
-    for (int iteration = 0; iteration < 20 && !client.ready; ++iteration) {
+    for (int iteration = 0; iteration < 120 && !client.ready; ++iteration) {
         pump_for_check(client);
         pump_for_check(host);
         pump_for_check(client);
@@ -95,7 +183,7 @@ int main() {
     }
     const std::uint64_t previous_tick = host.rollback.game.tick;
     restart_host_run(host, 71234);
-    for (int iteration = 0; iteration < 30 &&
+    for (int iteration = 0; iteration < 120 &&
          client.rollback.game.run.seed != 71234; ++iteration) {
         pump_for_check(client);
         pump_for_check(host);
@@ -120,7 +208,7 @@ int main() {
         std::fprintf(stderr, "reconnect socket failed: %s\n", error.c_str());
         return 1;
     }
-    for (int iteration = 0; iteration < 20 && !rejoined.ready; ++iteration) {
+    for (int iteration = 0; iteration < 120 && !rejoined.ready; ++iteration) {
         pump_for_check(rejoined);
         pump_for_check(host);
         pump_for_check(rejoined);

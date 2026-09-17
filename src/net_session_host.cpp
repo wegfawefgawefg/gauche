@@ -31,7 +31,8 @@ Cell join_cell(const Game& game, int owner) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 const Cell candidate = center + Cell{dx, dy};
                 const Tile* tile = game.stage.at(candidate);
-                if (tile != nullptr && walkable(*tile) &&
+                if (tile != nullptr && walkable(*tile) && tile->kind != TileKind::Lava &&
+                    tile->kind != TileKind::IceHole && tile->surface.fire_ticks == 0 &&
                     entity_at(game, candidate, true) < 0) return candidate;
             }
         }

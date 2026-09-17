@@ -25,6 +25,12 @@ struct Traversal {
     std::uint64_t sequence = 1, next_hello_ms = 0, next_probe_ms = 0;
     std::uint64_t next_relay_ms = 0, deadline_ms = 0;
     std::vector<TraversalRoute> routes;
+    // Bounded, credential-free join reports also reach the existing roomd journal.
+    std::string last_reject;
+    std::uint64_t punch_received = 0, relay_received = 0, rejected = 0, clock_delta_ms = 0;
+    std::uint64_t next_report_ms = 0;
+    int reports = 0;
+    bool terminal_reported = false;
 };
 
 void step_traversal(NetSession& session);
@@ -33,3 +39,5 @@ bool send_traversal(NetSession& session, NetEndpoint target,
                     const std::vector<std::uint8_t>& bytes, std::string& error);
 bool authorized_route(const NetSession& session, NetEndpoint source);
 const char* traversal_status(const NetSession& session);
+
+void report_traversal_join(NetSession& session);

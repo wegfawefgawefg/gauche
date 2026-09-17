@@ -1,5 +1,9 @@
 # Balance while building content
 
+**2026-09-17 decision:** the user likes Forest as it currently plays. Preserve
+the [measured Forest baseline](../measurements/forest-2026-09-17/README.md) as a
+reference; earlier discussion of supply scarcity is not an approved rebalance.
+
 2026-09-15. Source: [verbatim user feedback](../user_messages/2026-09-15-balance-and-archive.txt).
 Execution status lives in [MASTER_TASKS.md](../MASTER_TASKS.md). This specification
 extends the [world interaction review](WORLD_INTERACTION_REVIEW.md).

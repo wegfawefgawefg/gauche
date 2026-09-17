@@ -1,5 +1,11 @@
 # Gauche master task list
 
+- [x] **FOREST-REFERENCE:** Archive the 1,024-map population/feature/supply investigations, counts, definitions and raw samples. User approves current Forest balance; [reference](measurements/forest-2026-09-17/README.md), not a rebalance mandate.
+- [ ] **TITLE-TEEMING:** Decide working title after reviewing [name shortlist and user's trailer sketch](design/NAME_AND_TRAILER.md); check chosen name/domain availability before any purchase or project rename.
+- [ ] **WEB-SINGLEPLAYER (proposal):** Reuse local SDL/Emscripten browser patterns; establish Forest gameplay, controller/audio activation, persistence and measured performance. [Scope](engineering/BROWSER_BUILD_PROPOSAL.md).
+- [ ] **WEB-CROSSPLAY (proposal):** Prototype authenticated browser relay and asynchronous room HTTP; validate native/browser hashes, host/join/reconnect, interludes and tab suspension.
+- [ ] **WEB-PREVIEW (proposal):** Package a versioned Pages preview after browser/crossplay checks; measure asset limits and loading, then review the concrete release. Domain purchase is separate.
+
 - [x] **NET-PARTICIPANTS:** Replace four-player slots with stable-ID participant records, active input/peer lists, variable codecs/ready lists and relay-safe fragmentation; configurable admission; validate 4/8/16/24 and sparse IDs. See [architecture and checks](engineering/PLAYER_PARTICIPANTS.md).
 - [ ] **NET-EXIT-GATHERING:** Replace one-tile crowding with a room-appropriate exit gathering area; living peers must currently be inside. Launcher bots gather when the human requests exit; explicitly enabled test bots may use a logged stuck/unreachable teleport fallback. Preserve the shared reward/shop barrier.
 

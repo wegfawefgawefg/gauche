@@ -1,0 +1,157 @@
+item	role	stage	bundle	damage	cooldown_ticks	durability	uses	loaded	spare	description
+Wall	none	1	1	0	6	0	0	0	0	
+Medkit	survival	1	1	0	300	0	0	0	0	
+Bandage	survival	1	3	0	120	0	0	0	0	
+Bandaid	oddity	1	5	0	12	0	0	0	0	
+Fist	none	1	1	4	12	0	0	0	0	
+Conductor Hat	combat	3	1	0	0	0	0	0	0	
+Buckler	combat	1	1	0	30	30	0	0	0	
+Pistol	combat	1	1	16	12	0	0	12	48	
+Musket	combat	2	1	35	40	0	0	1	12	
+Bow	combat	1	1	35	16	0	0	20	0	
+Rocket Launcher	combat	3	1	80	48	0	0	1	1	
+Ammo	utility	1	2	0	0	0	0	0	0	
+Bomb	combat	1	2	65	45	0	0	0	0	
+Sleep Meds	combat	1	3	0	30	0	0	0	0	
+Stick	combat	1	1	17	16	18	0	0	0	
+Shotgun	combat	2	1	48	32	0	0	6	6	
+SMG	combat	3	1	9	4	0	0	30	18	
+Bear Trap	combat	1	2	0	20	0	0	0	0	
+Mine	combat	1	2	0	20	0	0	0	0	
+Pickaxe	mobility	1	1	22	24	32	0	0	0	
+Raw Meat	utility	1	2	0	12	0	0	0	0	
+Cooked Meat	survival	1	2	0	90	0	0	0	0	
+Throwing Rock	combat	1	3	8	30	0	0	0	0	Flies along a line, hits for 8 damage and lands. Recover the same stone at the impact.
+Hatchet	combat	1	1	16	35	35	0	0	0	Cleave three adjacent cells. Triple damage to timber, trees, crates and logs; cannot dig stone.
+Hunting Spear	combat	1	1	12	28	45	0	0	0	Thrust through two cells, piercing actors along the shaft.
+Crossbow	combat	2	1	32	40	0	0	1	16	One traveling bolt, 32 damage on impact. Deliberate mechanical reload.
+Blunderbuss	combat	3	1	10	40	0	0	2	14	Three short lanes, 10 damage each. Two shots; recoil steps you back.
+Wooden Maul	combat	1	1	28	60	24	0	0	0	A slow 28-damage blow that shoves. An immovable surface crushes the victim.
+Rake	utility	1	1	7	24	400	0	0	0	Pull loose debris into a pile. Sweep three cells of brittle growth; 400 repairable condition.
+Flint Knife	combat	1	1	7	12	60	0	0	0	Fast 7-damage stab. Double damage against sleepers or from behind.
+Torch	combat	1	1	6	35	90	0	0	0	A portable flame. Strike and ignite dry growth, oil or sap. 90 swings.
+Lighter	utility	1	1	0	25	0	20	0	0	A tiny spark, 20 uses. Try oil, sap, or dry growth.
+Oil flask	utility	1	2	0	40	0	0	0	0	Oily ground slips a walker one extra cell. A spark turns it into spreading fire.
+Sap jar	combat	1	2	0	45	0	0	0	0	Throw a sticky cross. Slows steps and burns longer than oil.
+Water flask	survival	1	2	0	30	0	0	0	0	Pour three facing cells. Quench flames, clear spores and cool lava.
+Mushroom spores	combat	1	2	0	45	0	0	0	0	Throw a lingering sleep cloud. It catches allies and enemies alike.
+Smoke pot	combat	1	2	0	45	0	0	0	0	Throw a concealing cloud. Creatures lose sight; attacks still pass through.
+Honey pot	utility	1	1	0	35	0	0	0	0	Place a sweet bear lure on a sticky patch. Don't stand beside the diner.
+Egg	utility	1	3	0	35	0	0	0	0	Eat for 3 HP. Hold use toward a flame, or leave it on a fire, to fry one portion in 0.75s.
+Fried Egg	survival	1	2	0	60	0	0	0	0	A warm little meal. Restore 12 HP. Fried over an exposed flame.
+Digging Claws	combat	1	1	8	18	200	0	0	0	200 quick scratches for digging and fighting. Dig power 1; 8 damage. Pierces a snail's shell.
+Resin Glue	utility	1	1	0	60	0	0	0	0	Mend your most worn equipment, including sticks and digging tools. Restores condition, not ammo, fuel or charges.
+Seed Bag	combat	1	1	0	35	0	6	0	0	Dry ground grows 40-HP cover in 3s. Cut or burn it. Won't grow under actors.
+Lantern Seed	oddity	1	1	0	35	0	0	0	0	Plant a 12-HP glowing flower. A small steady light that attracts moths. Burnable.
+Herb Bag	survival	1	1	0	45	0	4	0	0	Chew healing herbs. Recover 1 HP each third of a second. Cannot stack active regeneration.
+Splint	utility	1	1	0	45	0	2	0	0	Remove stun; resist more stun for 3s. Can be used while stunned. Two uses.
+Bitter Root	utility	1	1	0	45	0	0	0	0	Lose 3 HP, wake and resist sleep for 10s. Can be chewed while asleep.
+Chili	utility	1	1	0	45	0	0	0	0	Double step recovery for 4s, then burn for 6 damage over 1.5s. Water helps.
+Fungal Bread	survival	1	1	0	60	0	0	0	0	Bread... probably.
+Bird Seed	utility	1	3	0	30	0	0	0	0	12 beakfuls. Draws idle birds and chicken flocks. Does not cancel committed attacks or family defense.
+Thorn Caltrops	combat	1	2	6	40	0	0	0	0	3 hits per patch on entry. Hurts grounded friends and foes. Flyers pass over. Cut or burn to clear.
+Hunting Horn	combat	1	1	0	100	0	8	0	0	Push each target 1 cell. Walls crush; friends too. Wakes sleepers in the cone.
+Rope Hook	mobility	1	1	0	75	0	24	0	0	Reel a target or yourself toward an anchor by up to 3 cells. Step sideways to break free.
+Root Drill	mobility	3	1	24	90	0	3	0	0	Dig-power-3 auger bores a fixed line through walls and bodies. Unbreakable terrain stops it.
+Blink Seed	mobility	3	2	0	60	0	0	0	0	Throw to blink. Walls and bodies stop it. Landing hazards apply. Roots and sealed arenas hold you.
+Boomerang	combat	1	1	16	24	0	0	0	0	Hits once each way. Returns to your reserved slot; a blocked return drops it.
+Rope Snare	combat	1	2	0	40	0	0	0	0	Holds feet for 3s; attacks work. Allies can cut or shove you free. Recover after release.
+Spring Trap	combat	2	2	0	45	0	0	0	0	Launches a grounded actor 2 cells along its arrow. Hard walls crush. One shot; friends count.
+Acorn Mine	combat	2	2	22	45	0	0	0	0	Step or break to burst four splinter lanes. Walls and bodies stop them. Friends count.
+Throwing Net	combat	2	2	0	60	0	0	0	0	A traveling wide cast. Roots the first group for 30s; they can still attack. Walls catch the net.
+Sticky Boots	survival	1	1	0	45	0	4	0	0	Grip for 6s: resist shoves and slips, but each step takes longer. Crushers still crush. Four uses.
+Rabbit Charm	mobility	3	1	0	0	0	0	0	0	Hold in your hand to run faster. No charges. Roots, ice and other hazards still apply. Stow it to fight.
+Hand Bell	oddity	1	1	0	90	0	80	0	0	Wake sleepers and draw curious creatures to this spot. Sound travels around corners, not through walls.
+Firecracker	utility	1	3	0	60	0	0	0	0	Throw, then bang after 1.5s. Small creatures stun for 0.5s and flee; larger hunters investigate. No damage.
+Stink Bomb	oddity	1	2	0	45	0	0	0	0	Throw a lingering scent. Hungry animals and scavengers sniff it out. Water or fire clears it; no damage.
+Rotten Fruit	oddity	1	3	0	45	0	0	0	0	Throw foul bait: contact causes nausea. Or eat it for 3 HP, then 6s of nausea. Water washes rot away.
+Pitch Bomb	combat	1	2	12	75	0	0	0	0	A 2s fuse, then 12 damage and burning sticky sap. Ignites growth; dangerous to friends. Water quenches it.
+Shield Lantern	combat	1	1	0	30	24	0	0	0	Shove ahead and block facing hits for 0.25s. Damage wears the shield. Lights the way while held or dropped.
+Reflecting Pan	combat	1	1	0	36	24	0	0	0	Return frontal bullets, arrows, rockets, rocks and boomerangs. No melee or blasts.
+Scarecrow	utility	1	1	0	45	0	0	0	0	Birds and rabbits avoid its ward. Won't stop a committed attack. Burns and breaks.
+Straw Decoy	combat	1	1	0	45	0	0	0	0	Draws enemy attacks. A straw body that tears and burns. Some creatures ignore it.
+Wolf Whistle	utility	1	1	0	90	0	8	0	0	Aim at a lone wolf. It hunts a nearby enemy for 5s. Packs and committed attacks resist. Harm breaks the call.
+Thunder Acorn	combat	3	2	24	60	0	0	0	0	Flies, then arcs through up to four bodies. Water or wire takes the rest as a six-step circuit. Friends too; a planted spike grounds it.
+Pocket Door	mobility	3	1	0	45	0	2	0	0	Place two linked thresholds. Step through; others can follow. Cast across ordinary walls. Sealed arenas hold.
+Grit Pouch	mobility	1	1	0	30	0	6	0	0	Scatter traction over ice. Stops slips and brakes skaters. Water washes it away; oil still slips.
+Ice Needle	combat	1	3	8	30	0	0	0	0	Throw, chill, recover. Shields block chill. Melts on a hot landing; flames resist cold.
+Air Bladder	utility	1	1	0	45	0	3	0	0	Hold to float. Use to push or float cargo.
+Cold Flask	combat	1	2	0	45	0	0	0	0	Freezes river water. Keep away from heat.
+Heat Capsule	survival	1	2	0	45	0	0	0	0	Warm a cross for 4s. Thaw ice, clear chill and resist cold. Ignites spilled oil; supplies no healing.
+Wool Wrap	survival	1	1	0	45	0	0	0	0	Clear chill; resist more for 8s. Fire burns the wrap away and leaves you burning. Cannot wrap while alight.
+Hot Broth	survival	1	2	0	45	0	0	0	0	Clear chill and heal slowly. Taking damage ends this healing. Cannot stack active regeneration.
+Ice Poultice	survival	1	2	0	45	0	0	0	0	Stop burning and heal slowly, but suffer 3s chill. Wool blocks that chill. Cannot stack active regeneration.
+Chisel	combat	1	1	9	18	40	0	0	0	Quick jab. Double damage to ice walls and blocks. Dig power 1. Wears per swing; glue repairs it.
+Ice Brick	combat	1	2	14	30	0	0	0	0	Tap-release: place cover. Hold 0.3s-release: throw. 35 HP cover lasts 10s. Heat melts it; throws shatter.
+Eel Battery	combat	2	1	14	45	0	3	0	0	Touch to shock. Water and wire carry weaker arcs. Friends and you can be hit. Eels are immune.
+Snow Scoop	utility	1	1	0	24	60	0	0	0	Clear snow and expose burrowers or buried supplies. Collects snow to pack into balls. Glue repairs it.
+Snowball	utility	1	3	1	18	0	0	0	0	A small thrown distraction. Wets on impact, douses flame and disrupts fragile windups. Breaks on landing.
+Lens Carbine	combat	3	1	18	24	0	0	3	6	Instant light beam. Mirrors turn it; lenses split it. Opaque cover stops it. Returned beams can hit you.
+Mirror Shard	utility	2	1	0	18	0	0	0	0	Place a mirror, 8 HP. Turns beams only. Rotate with a shard or empty hand. Bullets break it.
+Crystal Lens	utility	2	1	0	24	0	0	0	0	Place a fragile lens, 18 HP. Splits light into two sideways beams at half damage. Bullets break it.
+Prism Bomb	combat	3	2	16	45	0	0	0	0	Throw, then 1.5s fuse. Bursts four light beams. Mirrors turn them; lenses split them. Step out of their lanes.
+Black Felt	utility	1	2	0	18	0	0	0	0	Cover optics: blocks beams and lamp light. Burns away. Tear off with felt or empty hand; destroys cloth.
+Muffling Felt	utility	1	1	0	45	0	2	0	0	Wrap next unwrapped weapon in slot order. Six quiet uses; loud impacts/explosions. Two wraps.
+Alarm Clock	oddity	1	1	0	30	8	0	0	0	Place to lure listeners after 3s. Rings for 5s. Recover with remaining condition. Can be destroyed.
+Fishing Line	utility	1	1	0	45	0	20	0	0	Stay still to reel loose loot to your feet. Actors and cover stop the hook. Moving cuts the line.
+Smoked Fish	survival	1	2	0	90	0	0	0	0	Eat for 14 HP, or drop as bait. Eels follow fish through water. Feeding buys a pause, not a canceled shock.
+Snow Globe	combat	3	1	0	60	0	0	0	0	Break beside you: 6s of snow cover. Blocks sight for all sides, never shots. No damage.
+Salted Kelp	utility	1	2	0	60	0	0	0	0	Cure nausea for 3 HP. Can kill if too weak. Drop as bait for seals and eels. No healing.
+Brine Flask	utility	1	2	4	45	0	0	0	0	Throw salt water. Melts ice; prevents refreezing for 8s. Splash stings wounded actors, including friends.
+Candle Stub	utility	1	1	0	30	6	0	4800	0	Place a small 80s lamp. Recover fuel and condition with pickup. Water snuffs it. Used candles do not stack.
+Wick Spool	utility	1	1	0	30	0	4	0	0	Add up to 30s fuel to a candle ahead. Capacity 80s. Does not repair damage or relight a cold wick.
+Coal Lump	utility	1	3	4	30	0	0	0	0	Stove / boiler: +20s fuel, cap 120s. Cold stoves need ignition. Otherwise throw a recoverable lump. Lava burns it away.
+Steam Kettle	utility	1	1	12	45	0	0	0	0	Fill at water; heat nearby for 1.5s. Hot spray scalds friends too. Cold spray douses. Reusable; one charge.
+Pressure Valve	utility	1	1	0	30	0	0	0	0	Fit a tank: vents point away from you. Recover below 25 pressure. A started warning keeps its aim.
+Sealant	utility	1	1	0	45	0	3	0	0	Repair 20 HP of pipe, belt, drive or tank. Tank repair plugs its vent for 10s; pressure builds. Three portions.
+Skate Blade	combat	1	1	12	24	36	0	0	0	Sweep three cells across. A slip adds one forward tip for 0.2s. No digging. Glue repairs the edge.
+Crampons	mobility	1	1	0	45	0	6	0	0	Grip ice for 5s; steps take twice as long. Oil still slips; shoves still move you. Six activations.
+Signal Flare	combat	1	2	0	45	0	0	0	0	Fire to 8; lands and burns red for 15s. Contact burns for 4 HP/s. Water puts it out; heat melts ice.
+Copper Wire	utility	1	1	0	15	0	6	0	0	Lay linked wire ahead. Carries shocks within their range; never creates power. Six segments, 4 HP each.
+Grounding Spike	utility	1	1	0	30	8	0	0	0	Absorbs one circuit pulse. Cool 3s or wet it; pick up and replant to rearm.
+Storm Lantern	utility	1	1	0	12	0	0	7200	0	Aim the beam; hold Use to focus. Secondary shutters it. Stowing saves fuel. Sealed against water.
+Echo Pebble	oddity	1	1	0	36	0	0	0	0	Records nearby weapon sounds. Throw to replay three times and lure listeners. Copies sound, not attacks.
+Harpoon Gun	combat	3	1	28	36	0	0	1	8	Hold use to reel a hit enemy. Release keeps line. Secondary cuts, then reloads. Cover or stowing snaps it.
+Emergency Doorstop	utility	1	1	0	24	25	0	0	0	Jam an OPEN gate until broken or picked up. Cannot open locks. Recover from your feet or ahead.
+Borrowed Summer	survival	3	1	0	45	0	2	0	0	Carry a warm cross for 4s. Thaws nearby friends, foes and ice; ignites oil. No damage protection. Two uses.
+Heat Siphon	utility	3	1	8	45	0	0	0	0	Use: drain fire or pressurized fissures ahead. Secondary: flame cone. Partial heat weakens shots. Burns friends too.
+Thaw Charge	mobility	1	2	10	30	0	0	0	0	2s fuse melts two ice walls. Steam hits you and neighbors. Place facing ice. Water won't stop it.
+Folded Bridge	mobility	1	1	0	45	30	0	0	0	Three planks across water or a chasm; dry banks at both ends. Burnable. Unsupported falls kill.
+Tuning Fork	utility	1	1	8	48	0	24	0	0	Vibration crosses touching crystal. Shatters weak growths; disrupts shard nodes. Gaps, stone and felt stop it.
+Stillwater Bell	mobility	3	1	0	60	0	4	0	0	Calms currents, floats and ice/oil slips for 3s within four steps. Walk and attack normally; shoves still work.
+Effigy Mask	utility	1	1	0	0	0	12	0	0	Hold Use and stand still: the mask watches behind you, holding effigies still. Front gaze remains. 12s total wear.
+Ice Anchor	mobility	1	1	0	24	30	0	0	0	Place at your feet. Hold Use again to reel back up to 5 cells. Hazards apply. Secondary recovers nearby. Each step wears 1 HP.
+Snow Shelter	combat	1	1	0	45	0	2	0	0	Two low walls ahead/right. Blocks snow and flat shots; bombs lob over. Heat melts it. Needs two clear cells.
+Sled	mobility	3	1	0	30	45	0	0	0	Deploy; step aboard. Carries one item. Steer when stopped. Secondary dismounts. Pick up empty stopped sleds.
+Foreman's Whistle	utility	3	1	0	90	0	6	0	0	Direct idle miners for 4s. Anger and foreman calls override. Answered calls wake sleepers.
+Quarry Charge	mobility	1	2	24	30	0	0	0	0	3s fuse cuts 3 stone cells ahead. Backblast hits here and one cell behind. Water quenches; cold slows.
+Fuse Scissors	utility	1	1	0	24	0	12	0	0	Snip a landed exposed fuse at your feet or ahead. Recovers the bomb if it fits. Sealed fuses resist.
+Press Hammer	combat	3	1	32	48	30	0	0	0	Slow 32-damage shove. Double damage to blocking props; dig power 1. Walls can crush shoved victims.
+Rubber Mallet	combat	1	1	3	18	70	0	0	0	Quick 3-damage shove; walls can crush. Boiler taps shed 40 pressure; sealed outlets refuse. 70 condition.
+Rivet Gun	combat	3	1	9	36	0	0	12	24	Three traveling rivets, 9 damage each, 0.15s apart. Burst locks aim. Reload a 12-round magazine.
+Belt Crank	utility	1	1	0	12	0	40	0	0	Hold to turn an adjacent unpowered belt run. Forty turns; brakes and broken sections stop the drive.
+Brake Shoe	utility	1	1	0	24	0	4	0	0	Stop an adjacent cart or belt for 6s. Four shoes. A 16-damage hit breaks the brake. Trains ignore it.
+Arc Torch	combat	2	1	7	15	0	32	0	0	Hold 0.3s, then 7-damage arcs every 0.25s. 32 pulses. Cuts metal grates. Water/wire spread shocks, including back to you; grounding sinks a pulse.
+Horseshoe Magnet	utility	1	1	0	12	0	75	0	0	Hold to reel steel. Carrying it lures cranes. Move freely; 75 pulls, one tile per 0.2s. Copper/wood ignore it.
+Folding Barricade	combat	2	1	0	45	20	0	0	0	Three low steel sections. Walkers stop; bullets/arrows pass, lobbed bombs go over. Break panels to reopen gaps.
+Coolant Can	survival	1	1	0	45	0	4	0	0	Four three-cell pours. Douse fire, chill actors, drain boiler pressure. Cools lava to stone and calms fissures. Residue slips and conducts shocks for 10s.
+Pocket Drill	mobility	2	1	8	12	0	30	0	0	Hold still for 0.4s, then drill every 0.2s. Moving/turning restarts it. 30 battery beats, even in air; no ammo refill. Loud. Dig power 1.
+Tension Spring	mobility	1	3	0	36	0	0	0	0	Set underfoot, aimed. Arms in 0.3s, then launches the next walker four tiles. Cross gaps or fling pursuers; walls hurt. Single-use. Heat ruins it.
+Emergency Foam	survival	1	2	0	45	0	0	0	0	Throw to 4. After landing, expands for 1s, douses a small cross and fills empty ground with 10s soft cover. Shots tear it; heat eats it. Won't bridge gaps.
+Bolt Pouch	combat	1	3	6	42	0	0	0	0	Five flying bolts fan out to five cells. 6 damage each; all five can hit close up. Passes grates. One handful per use.
+Chain Hook	mobility	1	1	0	36	0	24	0	0	Hold to haul crates, gear, sleds or rail carts. Fixed anchors pull you. Release pauses; secondary cuts. 24 casts.
+Nail Board	combat	1	1	10	18	35	0	0	0	Swing for 10. Secondary lays a 16-damage foot trap ahead; arms in 0.3s. Recover with pickup. Shares condition: swings cost 1, traps 4. Friends count. Burns.
+Hand Bellows	combat	1	1	0	45	0	8	0	0	Eight puffs. Push a three-tile cone, drift smoke/spores forward, fan existing flames onto fuel. Walls stop pushes; hazards still hurt. Disturbs ash. Durable holds sixteen.
+Pocket Pump	survival	1	1	0	30	0	0	3	1800	Use: collect spills. Secondary: pour. Holds one liquid, three pours. Starts full of water; calms fissures.
+Nozzle Elbow	utility	1	1	0	30	18	0	0	0	Bend boiler/pump jets 90 degrees. Secondary: left/right. Recover when idle. Hits wear it. Warned jets keep their aim.
+Mold Key	utility	1	1	0	30	0	8	0	0	Open a casting mold; pick up its cargo. Eight turns. Reusable mold. Smashing it also frees the cargo.
+Steam Lance	utility	1	1	18	45	0	0	0	0	Fill at water; heat nearby for 1.5s. Wind up a two-cell scald. Cold water douses. Reusable. Hits interrupt.
+Tar Flask	combat	1	3	0	45	0	0	0	0	Throw sticky fuel. Slows walkers for 10s; fire burns it. Cold hardens it into safe crust. Water washes it away.
+Rail Switch Key	utility	1	1	0	30	0	12	0	0	Turn adjacent rail points clockwise to the next track. Twelve turns. Cannot turn points under a cart. Cut or blocked exits stop carts.
+Insulated Boots	survival	1	1	0	45	0	6	0	0	Block shocks carried through water and wire for 4s; steps take twice as long. Direct arc contact still hurts. Six activations; can stow after fitting.
+Glow Slag	oddity	1	1	4	30	0	0	1200	0	Recoverable throw to six, 4 damage. Glows and warms nearby ice for 20s. Secondary draws real heat from ahead; lava reheats fully. Water/cold quenches. Moths steal its heat.
+Steel Toe Cap	combat	1	1	3	36	0	12	0	0	Twelve kicks. Shove a creature or loose item two tiles; 3 contact damage, 6 more against a wall. Punt landed bombs without resetting their fuse. Starts carts; brakes and anchored bodies resist. Durable: 24 kicks.
+Lunch Tin	survival	1	1	0	180	0	0	2	0	Two meals: each heals 10 HP over 3s. Damage stops the remaining healing. When empty, throw the tin to five tiles for a loud distraction; pick it up again. Cannot refill.
+Ice Axe	combat	1	1	16	32	120	0	0	0	Cleave three cells for 16. Double damage to ice walls and blocks; dig power 1. 120 swings. Glue repairs it.
+Tusk Pike	combat	2	1	18	30	100	0	0	0	Thrust two cells for 18; the first body stops it. Only a tip hit shoves one tile. Walls crush; pits swallow. 100 swings; repairable.
+River Fish	survival	1	2	0	60	0	0	0	0	Still twitching. Better cooked.

@@ -181,5 +181,42 @@ void full_world_rejoin() {
     assert(!has_player(game,12345) && host->peers.empty());
     assert(game_hash(game)==before && host->departed.contains(998877));
 }
+void browser_catchup_limits() {
+    auto client=std::make_unique<NetSession>();
+    begin_rollback(client->rollback,small_game());
+    client->role=NetRole::Client; client->ready=true; client->local_owner=0;
+    client->host_tick=60;
+    for(int i=0;i<20;++i)catch_up_network_client(*client);
+    assert(client->rollback.game.tick==62);
+    for(const auto& [tick,input]:client->sent_inputs) { (void)input; assert(tick>60); }
+    for(int i=0;i<300;++i)client_step(*client,{});
+    assert(client->rollback.game.tick<=66 && !client->rollback.needs_snapshot);
 }
-void player_network_tests() {fragments();control_identity();full_world_rejoin();for(int count:{4,8,16,24})party_check(count);}
+
+void batched_late_input() {
+    auto host=std::make_unique<NetSession>();
+    auto game=small_game();
+    const auto player=spawn_entity(game,EntityKind::Player,{25,12});
+    get_entity(game,player)->owner=1;
+    player_state(game,1).controlled=player;player_state(game,1).online=true;
+    begin_rollback(host->rollback,game);
+    host->role=NetRole::Host;
+    auto& peer=host->peers[1];peer.connected=true;peer.identity=44;peer.endpoint={0x0100007f,3456};
+    for(int i=0;i<60;++i)host_step(*host,{});
+    const auto before=host->rollback.rollback_count;
+    for(std::uint64_t tick=2;tick<40;++tick) {
+        PacketWriter packet=begin_packet(WireKind::Input);
+        packet.u64(44);packet.u32(0);packet.u64(0);packet.u8(1);packet.u64(tick);
+        Input input;input.move={1,0};packet.input(input);
+        PacketReader reader{packet.bytes};WireKind kind;
+        assert(read_packet_header(reader,kind));
+        host_receive(*host,Datagram{peer.endpoint,packet.bytes},reader,kind);
+    }
+    assert(host->rollback.rollback_count==before);
+    apply_pending_host_inputs(*host);
+    assert(host->rollback.rollback_count==before+1);
+    assert(peer.late_inputs.empty() && host->timeline_revision==1);
+}
+
+}
+void player_network_tests() {browser_catchup_limits();batched_late_input();fragments();control_identity();full_world_rejoin();for(int count:{4,8,16,24})party_check(count);}

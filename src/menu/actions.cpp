@@ -1,3 +1,4 @@
+#include "../app/options.hpp"
 #include "../input/icon_set.hpp"
 #include "../debug/playtest.hpp"
 #include "../debug/worldgen.hpp"
@@ -31,12 +32,7 @@ std::uint16_t port_or_zero(std::string_view text) {
 }
 
 std::filesystem::path audio_path() {
-    char* root = SDL_GetPrefPath("gauche", "Gauche");
-    if (root == nullptr) return {};
-    const std::filesystem::path path = std::filesystem::path{root} /
-        "gubsy/settings_profiles/audio.lisp";
-    SDL_free(root);
-    return path;
+    return user_data_root() / "gubsy/settings_profiles/audio.lisp";
 }
 
 void save_audio(MenuShell& menu) {

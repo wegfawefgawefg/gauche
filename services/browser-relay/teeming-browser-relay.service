@@ -1,0 +1,16 @@
+[Unit]
+Description=Teeming browser multiplayer transport
+After=network.target gauche-roomd.service
+[Service]
+User=gauche-roomd
+Group=gauche-roomd
+ExecStart=/usr/bin/python3 /opt/gauche-roomd/browser-relay.py
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=192M
+[Install]
+WantedBy=multi-user.target

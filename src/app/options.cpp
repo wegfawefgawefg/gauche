@@ -65,6 +65,9 @@ DeathPolicy requested_death_policy(int argc, char** argv) {
 }
 
 std::filesystem::path user_data_root() {
+#ifdef __EMSCRIPTEN__
+    return "/persistent";
+#endif
     char* path = SDL_GetPrefPath("gauche", "Gauche");
     if (path == nullptr) return std::filesystem::path{GAUCHE_SOURCE_DIR} / "data";
     const std::filesystem::path result{path};
@@ -78,7 +81,7 @@ GubsyAppConfig app_config(int argc, char** argv) {
     config.project_root = GAUCHE_SOURCE_DIR;
     config.data_root = (user_data_root() / "gubsy").string();
     config.engine_assets_root = (asset_root() / "gubsy-engine").string();
-    config.window_title = "Gauche";
+    config.window_title = "Teeming";
     config.window_width = 1280;
     config.window_height = 720;
     config.render_width = 640;
@@ -91,6 +94,10 @@ GubsyAppConfig app_config(int argc, char** argv) {
     }
     config.resizable_window = true;
     config.apply_display_settings = true;
+#ifdef __EMSCRIPTEN__
+    config.apply_display_settings = false;
+    config.window_width = 1280; config.window_height = 720;
+#endif
     config.draw_fps_overlay = false;
     if (const auto title = value_arg(argc, argv, "--window-title"); !title.empty()) config.window_title = title;
     if (const auto width = number_arg(value_arg(argc, argv, "--window-width")); width && *width > 0) {

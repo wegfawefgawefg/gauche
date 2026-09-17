@@ -64,6 +64,7 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
     peer.connected = true;
     peer.last_heard_ms = session.now_ms;
     peer.pending_inputs.clear();
+    peer.late_inputs.clear();
     bool changed = false;
     if (new_player || !has_player(session.rollback.game, owner) ||
         get_entity(session.rollback.game, player_state(session.rollback.game, owner).controlled) == nullptr) {
@@ -154,31 +155,13 @@ void receive_input(NetSession& session, const Datagram& datagram, PacketReader& 
     const std::uint64_t current = session.rollback.game.tick;
     std::sort(inputs.begin(), inputs.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
-    std::vector<std::pair<std::uint64_t, Input>> late;
     for (const auto& [tick, input] : inputs) {
         if (tick == 0 || tick > current + 120) continue;
         if (tick > current) {
             peer.pending_inputs[tick] = input;
             continue;
         }
-        late.push_back({tick, input});
-    }
-    const auto corrected = revise_host_inputs(session.rollback, owner, late);
-    if (!corrected.empty()) {
-        const auto earliest = corrected.front().tick;
-        ++session.timeline_revision;
-        for (auto& [target, recipient_entry] : session.peers) {
-            auto& recipient = session.peers.at(target);
-            if (!recipient.connected) continue;
-            recipient.correction_ranges[session.timeline_revision] = earliest;
-            // A peer unable to acknowledge for a whole history window needs a snapshot.
-            if (recipient.correction_ranges.size() > 512) {
-                recipient.correction_ranges.clear();
-                recipient.correction_ranges[session.timeline_revision] = recipient.correction_from;
-            }
-            if (recipient.correction_from == 0) recipient.correction_from = earliest;
-            else recipient.correction_from = std::min(recipient.correction_from, earliest);
-        }
+        if (tick > session.rollback.input_commit_tick) peer.late_inputs[tick] = input;
     }
 }
 
@@ -201,12 +184,40 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
 
 } // namespace
 
+// Coalesce redundant packets before replaying history. A snapshot catch-up burst
+// must not replay the same hundred ticks once per received datagram.
+void apply_pending_host_inputs(NetSession& session) {
+    for (auto& [owner, peer] : session.peers) {
+        if (peer.late_inputs.empty()) continue;
+        const std::vector<std::pair<std::uint64_t, Input>> late(peer.late_inputs.begin(),peer.late_inputs.end());
+        peer.late_inputs.clear();
+        const auto corrected = revise_host_inputs(session.rollback, owner, late);
+        if (!corrected.empty()) {
+            const auto earliest = corrected.front().tick;
+            ++session.timeline_revision;
+            for (auto& [target, recipient_entry] : session.peers) {
+                auto& recipient = session.peers.at(target);
+                if (!recipient.connected) continue;
+                recipient.correction_ranges[session.timeline_revision] = earliest;
+                // A peer unable to acknowledge for a whole history window needs a snapshot.
+                if (recipient.correction_ranges.size() > 512) {
+                    recipient.correction_ranges.clear();
+                    recipient.correction_ranges[session.timeline_revision] = recipient.correction_from;
+                }
+                if (recipient.correction_from == 0) recipient.correction_from = earliest;
+                else recipient.correction_from = std::min(recipient.correction_from, earliest);
+            }
+        }
+    }
+}
+
 void disconnect_peer(NetSession& session, int owner) {
     auto& peer = session.peers.at(owner);
     if (!peer.connected) return;
     peer.connected = false;
     peer.party_ready = false;
     peer.pending_inputs.clear();
+    peer.late_inputs.clear();
     peer.snapshot = {};
     Game& game = session.rollback.game;
     const auto handle = player_state(game, owner).controlled;
@@ -244,6 +255,7 @@ void publish_host_state(NetSession& session) {
     for (auto& [owner, peer_entry] : session.peers) {
         NetPeer& peer = session.peers.at(owner);
         peer.pending_inputs.clear();
+        peer.late_inputs.clear();
         peer.correction_from = 0;
         peer.correction_ranges.clear();
         if (peer.connected) queue_snapshot(session, owner);

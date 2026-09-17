@@ -145,6 +145,9 @@ void unload_graphics(GameGraphics& graphics) {
 GameGraphics::~GameGraphics() { unload_graphics(*this); }
 
 std::filesystem::path asset_root() {
+#ifdef __EMSCRIPTEN__
+    return "/teeming/assets";
+#endif
     const std::filesystem::path beside_executable =
         std::filesystem::path{SDL_GetBasePath()} / "assets";
     if (std::filesystem::is_directory(beside_executable)) {

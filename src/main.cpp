@@ -1,3 +1,10 @@
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include "browser/inspection.hpp"
+EM_ASYNC_JS(void, browser_next_frame, (), {
+    await new Promise(resolve => document.hidden ? setTimeout(resolve, 16) : requestAnimationFrame(resolve));
+});
+#endif
 #include "app/frame_pacing.hpp"
 #include "debug/performance.hpp"
 #include <SDL3/SDL.h>
@@ -289,8 +296,10 @@ int main(int argc, char** argv) {
         if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())
             apply_menu_action(menu, value_arg(argc, argv, "--smoke-menu-action"));
         if (menu_smoke) {
-            menu_input.select = frames == 1 || frames == 3 || frames == 5;
-            menu_input.down = frames == 2 || frames == 4;
+            // The title now starts with Quick Run; exercise the rules page explicitly.
+            if (frames == 1) apply_menu_action(menu, "rules");
+            menu_input.down = frames == 3;
+            menu_input.select = frames == 5;
         }
         if (lobby_smoke || leave_smoke) {
             menu_input.select = frames == 1;
@@ -421,8 +430,11 @@ int main(int argc, char** argv) {
                         !interaction.inventory_open && !border_smoke &&
                         !has_reward_offer(active, networked ? network.local_owner : 0) &&
                         active.run.phase != RunPhase::Shop, interaction.compact_details);
-            if (networked) SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F,
-                                                network.status.c_str());
+            if (networked) {
+                const std::string status = menu.rooms.active ?
+                    "Room " + menu.rooms.code + " · " + traversal_status(network) : network.status;
+                SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F, status.c_str());
+            }
             if (!menu.visible && !interaction.inventory_open && active.run.phase == RunPhase::Playing)
                 draw_stage_announcement(frame.renderer, announcement);
             draw_interaction(frame.renderer, graphics, active,
@@ -432,7 +444,7 @@ int main(int argc, char** argv) {
         } else if (!menu.visible) {
             SDL_FRect title_rect{24.0F, 24.0F, 64.0F, 64.0F};
             SDL_RenderTexture(frame.renderer, texture_for(graphics, Sprite::Player), nullptr, &title_rect);
-            SDL_RenderDebugText(frame.renderer, 104.0F, 40.0F, "GAUCHE");
+            SDL_RenderDebugText(frame.renderer, 104.0F, 40.0F, "TEEMING");
             SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F,
                                 networked ? network.status.c_str() : "PRESS ENTER TO START");
         }
@@ -472,7 +484,9 @@ int main(int argc, char** argv) {
         frame_phase.next(PerfZone::Sleep);
         const int cap=smoke ? 0 : effective_frame_cap(frame.window,frame.renderer,
             gubsy_configured_frame_cap_fps(host),menu.front.vsync,multiplayer.bot);
+#ifndef __EMSCRIPTEN__
         sleep_frame_remainder(frame_begin,cap);
+#endif
         frame_phase.stop();
         if(performance().recording) {
             int vsync=0;SDL_GetRenderVSync(frame.renderer,&vsync);
@@ -480,6 +494,10 @@ int main(int argc, char** argv) {
             end_performance_frame(cap,vsync,frame.render_width,frame.render_height,
                 (flags&SDL_WINDOW_INPUT_FOCUS)!=0,(flags&SDL_WINDOW_MINIMIZED)!=0);
         }
+#ifdef __EMSCRIPTEN__
+        browser_inspect(menu);
+        browser_next_frame();
+#endif
         if (frame_limit > 0 && frames >= frame_limit) {
             running = false;
         }

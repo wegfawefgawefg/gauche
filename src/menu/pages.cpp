@@ -18,12 +18,14 @@ namespace {
 using namespace gauche_menu;
 
 void main_page(ViewBuilder& ui) {
-    frame(ui, "GAUCHE", 560.0F, 490.0F);
+    frame(ui, "TEEMING", 560.0F, 490.0F);
     button(ui, "quick", "Quick Run", "quick", 51.0F);
     button(ui, "play", "Play", "play", 51.0F);
     button(ui, "settings", "Settings", "settings", 51.0F);
     if (GAUCHE_DEV_MODE) button(ui, "dev", "Dev", "dev", 42.0F);
+#ifndef __EMSCRIPTEN__
     button(ui, "quit", "Quit", "quit", 51.0F);
+#endif
     if (!playtest_summary().empty()) ui.label("card", "test-overrides", playtest_summary(), 52, 14);
     ui.focus_group("menu", "quick", "card");
 }

@@ -49,7 +49,7 @@ RoomResult perform_room_request(const RoomRequest& request) {
         case RoomOperation::Attempt:
             if (!service_endpoints(api, request.url, result) ||
                 !api.fetch_room(request.url, request.code, result.room, result.error)) break;
-            if (!compatible(result.room)) { result.error = "Different Gauche build: update both games"; break; }
+            if (!compatible(result.room)) { result.error = "Different Teeming build: update both games"; break; }
             result.okay = api.create_join_attempt(request.url, request.code, request.name, result.attempt, result.error);
             break;
         case RoomOperation::Finalize:

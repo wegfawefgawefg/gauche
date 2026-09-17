@@ -58,12 +58,18 @@ void rooms_page(ViewBuilder& ui, const FrontPage& page) {
 void network_options_page(ViewBuilder& ui, const FrontPage& page) {
     frame(ui, "Advanced Connection Options", 750, 470);
     ui.label("card", "advanced-help", "Normal hosting and joining handle connections automatically.", 44, 17);
+#ifdef __EMSCRIPTEN__
+    (void)page;
+    ui.label("card", "browser-relay", "Browser games connect through the Teeming relay.", 50, 18);
+    footer(ui, "back");
+#else
     ui.text_input("card", "room-url", "Room service", "room-url", "menu", 44);
     button(ui, "room-relay", std::string("Connection  ·  ") +
         (page.force_relay ? "Force relay" : "Automatic"), "room:relay", 42);
     button(ui, "direct-host", "Host by IP / LAN", "direct-host", 42);
     button(ui, "direct-join", "Join by IP / LAN", "direct-join", 42);
     footer(ui, "room-url");
+#endif
 }
 
 void party_page(ViewBuilder& ui, const FrontPage& page) {

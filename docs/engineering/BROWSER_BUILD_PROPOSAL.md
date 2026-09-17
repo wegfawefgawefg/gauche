@@ -1,7 +1,7 @@
 # Browser multiplayer proposal
 
-2026-09-17. Feasibility review and proposed tasks; no browser port or deployment
-has been performed. Working title discussion: [Teeming](../design/NAME_AND_TRAILER.md).
+2026-09-17. Original feasibility review; implementation and operating instructions
+are now in [BROWSER_BUILD.md](BROWSER_BUILD.md). Working title discussion: [Teeming](../design/NAME_AND_TRAILER.md).
 
 ## Direction
 

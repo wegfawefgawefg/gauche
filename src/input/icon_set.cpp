@@ -1,3 +1,4 @@
+#include "../app/options.hpp"
 #include "icon_set.hpp"
 #include <SDL3/SDL.h>
 #include <filesystem>
@@ -6,11 +7,7 @@
 namespace {
 ControllerIcons icons = ControllerIcons::Auto;
 std::filesystem::path icon_path() {
-    char* root = SDL_GetPrefPath("gauche", "Gauche");
-    if (!root) return {};
-    const auto path = std::filesystem::path(root) / "controller-icons.cfg";
-    SDL_free(root);
-    return path;
+    return user_data_root() / "controller-icons.cfg";
 }
 }
 ControllerIcons controller_icons() { return icons; }

@@ -111,12 +111,18 @@ void client_receive(NetSession& session, const Datagram&,
 void client_step(NetSession& session, Input local_input) {
     if (session.local_owner < 0 || session.rollback.needs_snapshot ||
         session.rollback.game.game_over) return;
+    // A paused/slow host must not let clients run beyond retained history.
+    const auto ceiling=session.host_tick+static_cast<std::uint64_t>(session.prediction_lead_ticks)+4;
+    if(session.rollback.game.tick>=ceiling)return;
     const std::uint64_t tick = session.rollback.game.tick + 1;
     PlayerInputs inputs{};
     for (const auto& [owner, participant] : session.rollback.game.players)
         if (participant.online) inputs[owner] = missing_remote_input(session.rollback.game, owner);
     inputs[session.local_owner] = local_input;
     predict_frame(session.rollback, inputs);
+    // Catch-up replays the host's past; it must not send synthetic local inputs
+    // back to the host and rewrite that past after a late-join snapshot.
+    if(tick<=session.host_tick)return;
     session.sent_inputs[tick] = local_input;
     while (session.sent_inputs.size() > 16) session.sent_inputs.erase(session.sent_inputs.begin());
     PacketWriter packet = begin_packet(WireKind::Input);

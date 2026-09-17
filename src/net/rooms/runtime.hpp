@@ -4,6 +4,7 @@
 #include "../traversal.hpp"
 
 #include <future>
+#include <optional>
 
 struct MenuShell;
 
@@ -29,7 +30,11 @@ struct RoomResult {
 };
 
 struct RoomRuntime {
+#ifdef __EMSCRIPTEN__
+    std::optional<RoomRequest> request;
+#else
     std::future<RoomResult> pending;
+#endif
     bool busy = false, active = false, host = false, cancel = false;
     std::string url, code, member, secret, token, name;
     MatchmakingRoom metadata;

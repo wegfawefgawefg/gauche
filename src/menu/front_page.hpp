@@ -33,7 +33,7 @@ struct FrontPage {
     std::string join_port = "35355";
     std::string host_port = "35355";
     std::string room_url = "https://45.77.123.14";
-    std::string player_name = "Player", room_name = "Gauche", room_code;
+    std::string player_name = "Player", room_name = "Teeming", room_code;
     std::string room_status, party_code, connection_status;
     std::vector<MatchmakingRoom> rooms;
     std::vector<MatchmakingMember> room_members;

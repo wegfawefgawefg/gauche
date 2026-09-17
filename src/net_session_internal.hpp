@@ -7,6 +7,7 @@ void host_receive(NetSession& session, const Datagram& datagram,
                   PacketReader& reader, WireKind kind);
 void client_receive(NetSession& session, const Datagram& datagram,
                     PacketReader& reader, WireKind kind);
+void apply_pending_host_inputs(NetSession& session);
 void host_step(NetSession& session, Input local_input);
 void client_step(NetSession& session, Input local_input);
 void queue_snapshot(NetSession& session, int owner);

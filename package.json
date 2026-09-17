@@ -1,0 +1,13 @@
+{
+  "name": "teeming-browser-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:web": "node tests/web-smoke.mjs",
+    "test:web:gamepad": "node tests/web-gamepad.mjs",
+    "test:web:crossplay": "node tests/web-crossplay.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.55.0"
+  }
+}

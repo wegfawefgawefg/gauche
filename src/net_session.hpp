@@ -39,6 +39,7 @@ struct NetPeer {
     bool party_ready = false;
     std::uint64_t last_heard_ms = 0;
     std::map<std::uint64_t, Input> pending_inputs;
+    std::map<std::uint64_t, Input> late_inputs;
     SnapshotSend snapshot{};
     CorrectionSend correction{};
     std::uint64_t confirmed_tick = 0;

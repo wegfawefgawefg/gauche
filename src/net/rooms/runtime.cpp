@@ -1,3 +1,6 @@
+#ifdef __EMSCRIPTEN__
+#include "../../browser/http.hpp"
+#endif
 #include "runtime.hpp"
 #include "names.hpp"
 #include "../../menu_shell.hpp"
@@ -15,9 +18,14 @@ namespace {
 
 void submit(RoomRuntime& room, RoomRequest request) {
     room.busy = true;
+#ifdef __EMSCRIPTEN__
+    clear_browser_http();
+    room.request = std::move(request);
+#else
     room.pending = std::async(std::launch::async, [request = std::move(request)] {
         return perform_room_request(request);
     });
+#endif
 }
 
 RoomRequest request_for(const RoomRuntime& room, RoomOperation operation) {
@@ -59,6 +67,9 @@ void configure_traversal(MenuShell& menu, const RoomResult& result) {
     transport.relay_server = result.relay;
     transport.clock = result.clock;
     transport.force_relay = menu.front.force_relay || result.punch.port == 0;
+#ifdef __EMSCRIPTEN__
+    transport.force_relay = true;
+#endif
     if (!transport.host) {
         transport.attempt = result.attempt.join_attempt_id;
         transport.punch_secret = result.attempt.punch_secret;
@@ -87,7 +98,7 @@ void complete_request(MenuShell& menu, RoomResult result) {
         menu.front.rooms = std::move(result.rooms);
         menu.front.room_page = 0;
         room.next_browse_ms = network_clock_ms() + 5000;
-        menu.front.room_status = menu.front.rooms.empty() ? "No public Gauche rooms" : "Choose a room or enter its code";
+        menu.front.room_status = menu.front.rooms.empty() ? "No public Teeming rooms" : "Choose a room or enter its code";
         break;
     case RoomOperation::Create:
         room.active = true;
@@ -150,6 +161,12 @@ void load_room_preferences(MenuShell& menu) {
 }
 
 void shutdown_room_session(MenuShell& menu) {
+#ifdef __EMSCRIPTEN__
+    // Closing a tab cannot wait for HTTP. The directory expires its heartbeat.
+    clear_browser_http();
+    menu.rooms.request.reset();
+    menu.rooms.busy = menu.rooms.active = false;
+#else
     auto& room = menu.rooms;
     // EXIT: Finish the bounded HTTP request, then release any membership it created.
     if (room.busy) {
@@ -166,6 +183,7 @@ void shutdown_room_session(MenuShell& menu) {
     if (!room.member.empty()) (void)perform_room_request(request_for(room, RoomOperation::Leave));
     room.active = false;
     room.member.clear(); room.secret.clear(); room.token.clear();
+#endif
 }
 
 bool room_action(MenuShell& menu, std::string_view action) {
@@ -250,9 +268,19 @@ void leave_room_session(MenuShell& menu) {
 void update_room_session(MenuShell& menu) {
     auto& room = menu.rooms;
     auto& page = menu.front;
-    if (room.busy && room.pending.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+    std::optional<RoomResult> completed;
+#ifdef __EMSCRIPTEN__
+    if (room.busy && room.request) {
+        try { completed=perform_room_request(*room.request); room.request.reset(); }
+        catch (const BrowserHttpPending&) {}
+    }
+#else
+    if (room.busy && room.pending.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        completed=room.pending.get();
+#endif
+    if (completed) {
         room.busy = false;
-        auto result = room.pending.get();
+        auto result = std::move(*completed);
         // CANCEL: A late creation still needs its server room removed, not shown as a new party.
         if (room.cancel && result.operation == RoomOperation::Create && result.okay) {
             room.active = true; room.code = result.created.room_code;

@@ -87,6 +87,7 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             capture_network_recovery(session);
         }
     }
+    if (session.role == NetRole::Host) apply_pending_host_inputs(session);
     report_traversal_join(session);
     if (session.now_ms >= session.diagnostics.next_report_ms) {
         session.diagnostics.next_report_ms = session.now_ms + 5000;

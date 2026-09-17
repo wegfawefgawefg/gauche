@@ -1,7 +1,9 @@
 # Working title: Teeming
 
-2026-09-17. Proposal, not an approved rename. No domain availability or naming
-clearance has been checked; no domain has been purchased.
+2026-09-17. User approved Teeming for the public game title and browser release.
+An initial Steam store/API and web search found no video game titled exactly
+Teeming; The Teeming Shadowfell is a D&D supplement on itch.io. This was a
+storefront check, not trademark clearance. No domain has been purchased.
 
 The user feels the game has found its identity: crowded, lively worlds with
 creatures doing things independently of the player, and difficult survival among

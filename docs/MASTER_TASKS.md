@@ -1,10 +1,12 @@
 # Gauche master task list
 
 - [x] **FOREST-REFERENCE:** Archive the 1,024-map population/feature/supply investigations, counts, definitions and raw samples. User approves current Forest balance; [reference](measurements/forest-2026-09-17/README.md), not a rebalance mandate.
-- [ ] **TITLE-TEEMING:** Decide working title after reviewing [name shortlist and user's trailer sketch](design/NAME_AND_TRAILER.md); check chosen name/domain availability before any purchase or project rename.
-- [ ] **WEB-SINGLEPLAYER (proposal):** Reuse local SDL/Emscripten browser patterns; establish Forest gameplay, controller/audio activation, persistence and measured performance. [Scope](engineering/BROWSER_BUILD_PROPOSAL.md).
-- [ ] **WEB-CROSSPLAY (proposal):** Prototype authenticated browser relay and asynchronous room HTTP; validate native/browser hashes, host/join/reconnect, interludes and tab suspension.
-- [ ] **WEB-PREVIEW (proposal):** Package a versioned Pages preview after browser/crossplay checks; measure asset limits and loading, then review the concrete release. Domain purchase is separate.
+- [x] **TITLE-TEEMING:** User approved public title Teeming; retain native data/protocol compatibility. Initial storefront search found no exact video-game collision; domains/trademarks are not cleared.
+- [x] **WEB-SINGLEPLAYER:** Emscripten build runs Forest with keyboard, standard-gamepad test, audio activation, IndexedDB settings and browser debug-log download. [Build/run instructions](engineering/BROWSER_BUILD.md).
+- [x] **WEB-RELAY:** Add asynchronous browser room HTTP and bounded WebSocket bridge alongside existing VPS roomd. Verified browser/browser and both directions of native/browser play; fix late-snapshot historical-input replay storms.
+- [ ] **WEB-CROSSPLAY-COVERAGE:** Longer mixed-platform parties, reconnects and shared interludes, real controllers, Firefox/Safari/mobile and extended tab suspension.
+- [ ] **WEB-PREVIEW:** Deploy the tested versioned Teeming package to its separate Cloudflare Pages project, then run the browser suite against the public site. No domain purchase.
+
 
 - [x] **NET-PARTICIPANTS:** Replace four-player slots with stable-ID participant records, active input/peer lists, variable codecs/ready lists and relay-safe fragmentation; configurable admission; validate 4/8/16/24 and sparse IDs. See [architecture and checks](engineering/PLAYER_PARTICIPANTS.md).
 - [ ] **NET-EXIT-GATHERING:** Replace one-tile crowding with a room-appropriate exit gathering area; living peers must currently be inside. Launcher bots gather when the human requests exit; explicitly enabled test bots may use a logged stuck/unreachable teleport fallback. Preserve the shared reward/shop barrier.

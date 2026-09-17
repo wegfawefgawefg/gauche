@@ -27,8 +27,9 @@ std::vector<Cell> cells(PacketReader& r) {
     points.reserve(n);for(std::uint32_t i=0;i<n&&r.okay;++i)points.push_back(cell(r));return points;
 }
 std::vector<std::uint8_t> encode(const GenerationReport& report,bool geometry) {
-    PacketWriter w;w.u16(3);w.u64(report.seed);w.u64(report.initial_rng);w.i32(report.floor);
+    PacketWriter w;w.u16(4);w.u64(report.seed);w.u64(report.initial_rng);w.i32(report.floor);
     string(w,report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision);
+    w.u64(report.inhabitants_seed);
     w.u8(static_cast<std::uint8_t>(report.themes.major));w.u8(static_cast<std::uint8_t>(report.themes.minor));
     w.u8(report.components_truncated);w.u8(!geometry);
     w.u16(static_cast<std::uint16_t>(report.features.size()));
@@ -63,9 +64,10 @@ std::vector<std::uint8_t> encode_generation_report(const GenerationReport& repor
 }
 std::shared_ptr<const GenerationReport> decode_generation_report(std::span<const std::uint8_t> bytes,const Game& game) {
     if(bytes.size()>generation_report_wire_limit)return {};
-    PacketReader r{bytes};const auto version=r.u16();if(version<1 || version>3)return {};
+    PacketReader r{bytes};const auto version=r.u16();if(version<1 || version>4)return {};
     auto report=std::make_shared<GenerationReport>();report->received=true;
     report->seed=r.u64();report->initial_rng=r.u64();report->floor=r.i32();report->revision=string(r);
+    if(version>=4)report->inhabitants_seed=r.u64();
     report->themes.major=static_cast<GenerationTheme>(r.u8());report->themes.minor=static_cast<GenerationTheme>(r.u8());
     const auto capped=r.u8(),omitted=r.u8();report->components_truncated=capped!=0;report->geometry_omitted=omitted!=0;
     if(!r.okay || capped>1 || omitted>1 || report->seed!=game.run.seed || report->floor!=game.run.floor ||

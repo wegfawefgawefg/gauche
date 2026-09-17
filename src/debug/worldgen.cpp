@@ -2,6 +2,7 @@
 #include "worldgen_sidebar.hpp"
 #include "playtest.hpp"
 #include "panels.hpp"
+#include "generation_build.hpp"
 #include "../menu_shell.hpp"
 #include <algorithm>
 #include <cmath>
@@ -36,7 +37,20 @@ void select_worldgen_checkpoint(WorldGenViewer& v,int checkpoint) {
 void recapture_worldgen(WorldGenViewer& v) {
     if (!v.original) return;
     v.seed=v.original->run.seed;v.floor=v.original->run.floor;
+    v.inhabitants_seed=v.original->generation_report ? v.original->generation_report->inhabitants_seed : 0;
     v.keep_view_on_regen=true;v.regenerate_requested=true;
+}
+void reroll_worldgen_inhabitants(WorldGenViewer& v) {
+    if(!v.original || v.original->run.layout!=FloorLayout::Generated)return;
+    recapture_worldgen(v);
+    if(++v.inhabitants_seed==0)v.inhabitants_seed=1;
+}
+std::string worldgen_recipe(const GenerationReport& report) {
+    return "floor "+std::to_string(report.floor)+" | seed "+std::to_string(report.seed)+
+        " | planner RNG "+std::to_string(report.initial_rng)+
+        " | inhabitants seed "+std::to_string(report.inhabitants_seed)+
+        " (0=planner stream; override after boss geometry) | revision "+
+        (report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision);
 }
 void regenerate_worldgen(WorldGenViewer& v) {
     v.original=std::make_unique<Game>();
@@ -49,7 +63,7 @@ void regenerate_worldgen(WorldGenViewer& v) {
     game.run.phase=RunPhase::Playing;
     game.run.online[0]=true;
     v.trace.options=v.capture_options;
-    generate_world_floor(game,FloorLayout::Automatic,&v.population,&v.trace);
+    generate_world_floor(game,FloorLayout::Automatic,&v.population,&v.trace,v.inhabitants_seed);
     v.checkpoint=static_cast<int>(v.trace.checkpoints.size())-1;
     if (!v.keep_view_on_regen) fit_worldgen(v);
     v.keep_view_on_regen=false;
@@ -110,7 +124,13 @@ bool worldgen_event(const SDL_Event& event) {
         return (key && event.key.key==k) || (pad && event.gbutton.button==b);
     };
     if (pressed(SDLK_RETURN,SDL_GAMEPAD_BUTTON_SOUTH)) v.play_requested=true;
-    if (pressed(SDLK_R,SDL_GAMEPAD_BUTTON_WEST)) { ++v.seed; v.regenerate_requested=true; }
+    if (pressed(SDLK_R,SDL_GAMEPAD_BUTTON_WEST)) {
+        SDL_Gamepad* controller=pad ? SDL_GetGamepadFromID(event.gbutton.which) : nullptr;
+        if(controller && SDL_GetGamepadAxis(controller,SDL_GAMEPAD_AXIS_LEFT_TRIGGER)>16000)
+            reroll_worldgen_inhabitants(v);
+        else { ++v.seed; v.regenerate_requested=true; }
+    }
+    if(key && !event.key.repeat && event.key.key==SDLK_N)reroll_worldgen_inhabitants(v);
     if (pressed(SDLK_F,SDL_GAMEPAD_BUTTON_NORTH)) fit_worldgen(v);
     if (pressed(SDLK_PAGEUP,SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)) {
         v.floor=v.floor==1 ? 4 : v.floor-1; v.regenerate_requested=true;
@@ -132,7 +152,9 @@ bool worldgen_event(const SDL_Event& event) {
     if (key && event.key.key==SDLK_L) v.render.fullbright=!v.render.fullbright;
     if (key && event.key.key==SDLK_V) v.render.overhead=!v.render.overhead;
     if (key && event.key.key==SDLK_C) {
-        const std::string seed=std::to_string(v.original ? v.original->run.seed : v.seed); SDL_SetClipboardText(seed.c_str());
+        const std::string recipe=v.original && v.original->generation_report ?
+            worldgen_recipe(*v.original->generation_report) : std::to_string(v.seed);
+        SDL_SetClipboardText(recipe.c_str());
     }
     if (pressed(SDLK_ESCAPE,SDL_GAMEPAD_BUTTON_EAST)) {
         v.exit_requested=true;

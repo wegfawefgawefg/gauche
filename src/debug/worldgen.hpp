@@ -2,6 +2,7 @@
 #include "../world/generation_trace.hpp"
 #include "../world/population_report.hpp"
 #include "../render.hpp"
+#include "generation_overlay.hpp"
 
 struct MenuShell;
 // Local tooling only. Never copied to network rollback or save snapshots.
@@ -11,9 +12,11 @@ struct WorldGenViewer {
     bool regenerate_requested=false, play_requested=false, details=true;
     bool sidebar_visible=true,sidebar_focus=false,sidebar_children=false;
     bool rooms=true, changes=false, actor_changes=false, follow_step=true, keep_view_on_regen=false;
+    bool room_labels=false;
+    GenerationAnnotations annotations;
     GenerationTraceOptions capture_options;
     int floor=1, checkpoint=0, selected_feature=-1, selected_component=-1;
-    std::uint64_t seed=1;
+    std::uint64_t seed=1,inhabitants_seed=0;
     float zoom=1.0F;
     WorldRenderOptions render{};
     std::unique_ptr<Game> original;
@@ -25,6 +28,8 @@ void regenerate_worldgen(WorldGenViewer& viewer);
 void fit_worldgen(WorldGenViewer& viewer);
 void select_worldgen_checkpoint(WorldGenViewer& viewer,int checkpoint);
 void recapture_worldgen(WorldGenViewer& viewer);
+void reroll_worldgen_inhabitants(WorldGenViewer& viewer);
+std::string worldgen_recipe(const GenerationReport& report);
 void draw_worldgen_changes(SDL_Renderer* renderer,const WorldGenViewer& viewer,const Game& before,const Game& after);
 void process_worldgen_requests(MenuShell& menu);
 bool worldgen_event(const SDL_Event& event);

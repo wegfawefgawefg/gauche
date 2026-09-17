@@ -1,3 +1,4 @@
+#include "debug/ambient_inspector.hpp"
 #include "world/fissure_render.hpp"
 #include "debug/generation_overlay.hpp"
 #include "entities/gunner_render.hpp"
@@ -296,7 +297,10 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
         draw_overhead(renderer, graphics, game, cosmetics, camera, zoom, lighting);
         draw_canopy_shafts(renderer, game, camera, zoom);
     }
-    if (!inspection) draw_live_generation_annotations(renderer,game,camera,zoom);
+    if (!inspection) {
+        draw_live_generation_annotations(renderer,game,camera,zoom);
+        draw_ambient_annotations(renderer,game,camera,zoom);
+    }
     if (player != nullptr && show_hud)
         draw_hud(renderer, graphics, game, *player, pointer, compact_details);
     if (inspection) return;

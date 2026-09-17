@@ -1,6 +1,7 @@
 #include "worldgen.hpp"
 #include "worldgen_sidebar.hpp"
 #include "generation_overlay.hpp"
+#include "ambient_inspector.hpp"
 #include "generation_build.hpp"
 #include "../input.hpp"
 #include <imgui.h>
@@ -14,6 +15,10 @@ void room_box(SDL_Renderer* renderer,const RoomPlan& room,const WorldGenViewer& 
     box.h=static_cast<float>(room.half_height*2+1)*tile_pixels(v.zoom);
     SDL_SetRenderDrawColor(renderer,room.landmark ? 255 : 120,210,room.landmark ? 90 : 255,190);
     SDL_RenderRect(renderer,&box);
+    if(v.room_labels) {
+        const std::string label=std::string(room_name(room.role))+" / "+std::to_string(room.turns*90)+"deg"+(room.mirrored ? " mirrored" : "");
+        SDL_RenderDebugText(renderer,box.x+2,box.y+2,label.c_str());
+    }
 }
 }
 
@@ -26,7 +31,8 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
         render_game(renderer,graphics,game,0,v.zoom,nullptr,PointerState{},false,false,&v.render);
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
     if (v.rooms) for (const auto& room:selected.rooms) room_box(renderer,room,v);
-    draw_generation_annotations(renderer,selected.report,v.selected_feature,v.selected_component,v.render.camera,v.zoom);
+    draw_generation_annotations(renderer,selected.report,v.selected_feature,v.selected_component,v.render.camera,v.zoom,v.annotations);
+    draw_ambient_annotations(renderer,game,v.render.camera,v.zoom);
     if ((v.changes || v.actor_changes) && v.checkpoint>0)
         draw_worldgen_changes(renderer,v,*v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game,game);
     draw_worldgen_sidebar(renderer,v,selected.report);
@@ -37,10 +43,17 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
     char title[160];
     std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | step %d/%zu: %s",v.original->run.floor,
         static_cast<unsigned long long>(v.original->run.seed),v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
-    SDL_RenderDebugText(renderer,8,8,title);
+    if(v.original->generation_report && v.original->generation_report->inhabitants_seed) {
+        std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | inhabitants %llu",v.original->run.floor,
+            static_cast<unsigned long long>(v.original->run.seed),
+            static_cast<unsigned long long>(v.original->generation_report->inhabitants_seed));
+        SDL_RenderDebugText(renderer,8,3,title);
+        std::snprintf(title,sizeof(title),"step %d/%zu: %s",v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
+        SDL_RenderDebugText(renderer,8,14,title);
+    } else SDL_RenderDebugText(renderer,8,8,title);
     SDL_RenderDebugText(renderer,8,327,v.sidebar_focus ? "D-pad/Arrows: rolls  A/Enter: focus  B/Back/Tab: map  X/R: regen" : "A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
     SDL_RenderDebugText(renderer,8,338,v.sidebar_focus ? "Right: child rolls  Left: features  Y/F Fit  LB/RB Floor  Start/F1 Details" : "Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
-    SDL_RenderDebugText(renderer,8,349,"Back/Tab Rolls | O Roofs  L Light  V Vignette  T Fine  C Copy seed");
+    SDL_RenderDebugText(renderer,8,349,"Tab/Back Rolls | LT+X/N Later rolls | O Roofs L Light V Shade C Recipe");
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 }
 
@@ -53,9 +66,8 @@ void draw_worldgen_details(const Game& live_game) {
     if (ImGui::Begin("Generation inspector",&v.details)) {
         ImGui::TextWrapped("Revision: %s", GAUCHE_GENERATOR_REVISION);
         if (ImGui::Button("Copy generation recipe")) {
-            const std::string recipe="Forest 1-"+std::to_string(v.original->run.floor)+
-                " | seed "+std::to_string(v.original->run.seed)+
-                " | revision " GAUCHE_GENERATOR_REVISION " | standalone / automatic / default kit"+
+            const std::string recipe=worldgen_recipe(*v.original->generation_report)+
+                " | standalone / automatic / default kit"+
                 " | fine "+std::to_string(v.trace.options.details)+" | feature "+std::to_string(v.trace.options.feature)+
                 " | every "+std::to_string(v.trace.options.every);
             SDL_SetClipboardText(recipe.c_str());
@@ -98,6 +110,32 @@ void draw_worldgen_details(const Game& live_game) {
         if (v.trace.options.details && !v.trace.detail_seen) ImGui::TextWrapped("No instrumented attempts matched this capture's scope.");
         ImGui::EndTabItem();
         }
+        if (ImGui::BeginTabItem("Annotations")) {
+            ImGui::Checkbox("Room boxes",&v.rooms);
+            ImGui::Checkbox("Room role / rotation labels",&v.room_labels);
+            draw_generation_annotation_controls(v.annotations);
+            if(ImGui::Button("Inspect ambient sounds"))ambient_inspector().visible=true;
+            ImGui::TextWrapped("Ambient preview derives sources from the selected checkpoint. It does not play or consume triggers.");
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Composition")) {
+            const auto used=v.original->generation_report ? v.original->generation_report->inhabitants_seed : 0;
+            if(used)ImGui::Text("Applied inhabitants seed: %llu",static_cast<unsigned long long>(used));
+            else ImGui::TextUnformatted("Applied: ordinary planner stream");
+            const bool ordinary=v.original->run.layout==FloorLayout::Generated;
+            ImGui::BeginDisabled(!ordinary);
+            ImGui::InputScalar("Inhabitants seed",ImGuiDataType_U64,&v.inhabitants_seed);
+            if(ImGui::Button("Apply to this terrain")) {
+                const auto requested=v.inhabitants_seed;recapture_worldgen(v);v.inhabitants_seed=requested;
+            }
+            if(ImGui::Button("Next composition (N / LT+X)"))reroll_worldgen_inhabitants(v);
+            if(ImGui::Button("Restore planner stream")){recapture_worldgen(v);v.inhabitants_seed=0;}
+            ImGui::EndDisabled();
+            ImGui::TextWrapped("Keeps the current floor and layout seed through the boss-geometry checkpoint. Rerolls inhabitants, loot and every later pass, including trees, roof scenes and border scenery. Those later passes can still change terrain. Camera stays put; Play uses the finished variant.");
+            ImGui::TextWrapped("Zero restores the default stream. Copy recipe includes both seeds. Recapture same map preserves this variant. X/R changes the layout seed; LT+X or N changes only the later rolls.");
+            if(!ordinary)ImGui::TextWrapped("This whole-floor unique owns its population pipeline; the override does not apply.");
+            ImGui::EndTabItem();
+        }
         if (ImGui::BeginTabItem("Capture")) {
             if(ImGui::Checkbox("Results sidebar",&v.sidebar_visible) && !v.sidebar_visible)v.sidebar_focus=false;
             ImGui::Checkbox("Fine steps (next capture)",&v.capture_options.details);
@@ -114,7 +152,7 @@ void draw_worldgen_details(const Game& live_game) {
             }
             ImGui::SliderInt("Every N attempts",&v.capture_options.every,1,16);
             if (ImGui::Button("Recapture same map")) recapture_worldgen(v);
-            ImGui::TextWrapped("Same seed/floor and camera. Capture changes inspection only. T toggles fine capture. Other generator loops remain coarse.");
+            ImGui::TextWrapped("Same layout/inhabitants seeds, floor and camera. Capture changes inspection only. T toggles fine capture. Other generator loops remain coarse.");
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Rolls")) {

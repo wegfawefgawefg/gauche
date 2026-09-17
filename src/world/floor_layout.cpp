@@ -39,7 +39,7 @@
 #include <array>
 #include <utility>
 
-void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report, GenerationTrace* trace) {
+void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* report, GenerationTrace* trace, std::uint64_t inhabitants_seed) {
     if (trace) trace->reset();
     // Party: carry each joined player across the new stage.
     std::array<Entity, 4> previous{};
@@ -167,6 +167,12 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
         populate_shelf_reward(game,plan);
         place_forest_boss(game,plan,report);
         capture("Forest boss clearing");
+        // Inspection recipe: preserve earlier geometry and its RNG, then vary
+        // inhabitants and all later scenery. Whole-floor uniques keep their own pipeline.
+        if(inhabitants_seed) {
+            game.rng=inhabitants_seed;
+            plan.report.inhabitants_seed=inhabitants_seed;
+        }
         populate_rooms(game,plan,report,&plan.report);
         capture("Inhabitants and loot");
         populate_open_sectors(game,plan,report);

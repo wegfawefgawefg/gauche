@@ -391,7 +391,7 @@ void start_test_arena(Game& game, std::uint64_t seed);
 void start_run(Game& game, std::uint64_t seed);
 struct GenerationTrace;
 struct PopulationReport;
-void generate_world_floor(Game& game, FloorLayout layout = FloorLayout::Automatic, PopulationReport* report=nullptr, GenerationTrace* trace=nullptr);
+void generate_world_floor(Game& game, FloorLayout layout = FloorLayout::Automatic, PopulationReport* report=nullptr, GenerationTrace* trace=nullptr, std::uint64_t inhabitants_seed=0);
 bool floor_reachable(const Game& game);
 bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use = false);
 void finish_floor(Game& game);

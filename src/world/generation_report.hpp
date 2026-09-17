@@ -34,6 +34,7 @@ struct GenerationReport {
     std::string revision; // Empty for local reports; received reports name the host build.
     bool received=false,geometry_omitted=false;
     std::uint64_t seed=1,initial_rng=1;
+    std::uint64_t inhabitants_seed=0; // 0: continue the planner stream; otherwise reseed after boss geometry.
     int floor=1;
     GenerationThemes themes;
     std::vector<FeatureDecision> features;

@@ -33,6 +33,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include "debug/ambient_inspector.hpp"
 
 namespace {
 
@@ -385,9 +386,10 @@ int main(int argc, char** argv) {
         const Entity* ambient_listener = ambient_owner >= 0 && ambient_owner < static_cast<int>(active.players.size()) ?
             get_entity(active, active.players[static_cast<std::size_t>(ambient_owner)]) : nullptr;
         update_ambience(audio.ambience, active, ambient_listener == nullptr ? active.run.spawn : ambient_listener->cell,
-            static_cast<float>(elapsed), audio.master_level * audio.sound_level,
+            static_cast<float>(elapsed), ambient_inspector().mute ? 0.0F : audio.master_level * audio.sound_level,
             menu.playing && !menu.visible && active.run.phase == RunPhase::Playing &&
             ambient_listener != nullptr && ambient_listener->health > 0);
+        prepare_ambient_inspector(active,audio.ambience,ambient_listener ? ambient_listener->cell : active.run.spawn);
         update_body_audio(audio,active,ambient_listener==nullptr ? active.run.spawn : ambient_listener->cell,
             menu.playing && !menu.visible && active.run.phase==RunPhase::Playing &&
             ambient_listener!=nullptr && ambient_listener->health>0);

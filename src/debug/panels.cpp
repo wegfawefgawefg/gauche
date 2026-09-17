@@ -1,6 +1,7 @@
 #include "panels.hpp"
 #include "worldgen.hpp"
 #include "playtest.hpp"
+#include "ambient_inspector.hpp"
 #include "../input.hpp"
 
 #include <imgui.h>
@@ -52,6 +53,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
             ImGui::TextUnformatted("F1: hide/show all windows   F2: selector");
             if (ImGui::CollapsingHeader("Gameplay", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::Checkbox("Generation inspector", &worldgen_viewer().details);
+                ImGui::Checkbox("Ambient sound inspector", &ambient_inspector().visible);
                 ImGui::Checkbox("Combat overlays", &panels.combat);
                 ImGui::Checkbox("Player status", &panels.status);
                 ImGui::Checkbox("Levels / start override", &playtest_tools().levels);
@@ -93,6 +95,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
     if (panels.visible) {
         draw_playtest_tools(game, offline && !worldgen_viewer().active);
         if (worldgen_viewer().details) draw_worldgen_details(game);
+        draw_ambient_inspector();
     }
     imgui_render_layer();
 }

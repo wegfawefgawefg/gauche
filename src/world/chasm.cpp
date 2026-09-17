@@ -1,5 +1,6 @@
 #include "chasm.hpp"
 #include "../items/action.hpp"
+#include "../items/ground_interaction.hpp"
 #include "../items/sled.hpp"
 #include "../projectiles/projectile.hpp"
 #include "water.hpp"
@@ -47,6 +48,7 @@ void remove_unsupported_body(Game& game,int slot,SoundId sound) {
     Entity& actor=game.entities[static_cast<std::size_t>(slot)];
     falling_image(game,slot,sound);
     if (actor.kind==EntityKind::Player) {
+        release_player_inventory(game,actor,true);
         cancel_item_action(actor);clear_sled_links(game,actor);
         actor.toss={};actor.vitals={};actor.impassable=false;
         actor.sprite=Sprite::PlayerDead;actor.spawn_wait=180;

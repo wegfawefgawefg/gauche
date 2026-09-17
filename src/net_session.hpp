@@ -32,6 +32,8 @@ struct NetPeer {
     std::uint64_t identity = 0;
     NetEndpoint endpoint{};
     bool connected = false;
+    Entity departed_player{};
+    int departed_floor = 0;
     bool party_ready = false;
     std::uint64_t last_heard_ms = 0;
     std::map<std::uint64_t, Input> pending_inputs;
@@ -104,3 +106,5 @@ void catch_up_network_client(NetSession& session);
 void restart_host_run(NetSession& session, std::uint64_t seed);
 void leave_network_game(NetSession& session);
 std::uint64_t load_or_create_identity(const std::string& path);
+
+bool network_end_confirmed(const NetSession& session);

@@ -1,4 +1,5 @@
-#include "../src/net_session.hpp"
+#include "../src/net_session_internal.hpp"
+#include "../src/world/chasm.hpp"
 
 #include <array>
 #include <cstdio>
@@ -116,13 +117,75 @@ bool join_running_floor_and_respawn() {
         game.stage.at_or_border(joined->cell).kind == TileKind::Lava ||
         game_hash(game) != game_hash(client->rollback.game)) return false;
     // Surviving host finishes the floor; the dead guest must not block rewards.
-    get_entity(game, game.players[1])->health = 0;
+    crush_entity(game, game.players[1].slot, game.run.spawn);
     finish_floor(game);
     if (!game.run.chosen[1]) return false;
-    game.run.chosen[0] = true;
-    advance_run(game);
+    game.run.offers[0][0] = {RewardKind::Health, ItemKind::None, ArtifactKind::None, 1};
+    publish_host_state(*host);
+    for (int i=0;i<120;++i) { pump_for_check(*host); pump_for_check(*client); }
+    if (client->rollback.game.run.phase != RunPhase::Reward) return false;
+    Input choice; choice.select = 0;
+    // A predicted dead guest stays in the run while the host picks their reward.
+    step_network_game(*client, {});
+    step_network_game(*host, choice);
+    for (int i=0;i<20;++i) { pump_for_check(*host); pump_for_check(*client); }
+    if (client->rollback.needs_snapshot || client->rollback.game.game_over ||
+        game_hash(game) != game_hash(client->rollback.game)) return false;
     const Entity* revived = get_entity(game, game.players[1]);
     if (game.run.floor != 4 || !revived || revived->health != revived->max_health) return false;
+    return true;
+}
+
+bool confirmed_run_end() {
+    auto client = std::make_unique<NetSession>();
+    client->role=NetRole::Client; client->ready=true;
+    client->rollback.game.tick=12; client->rollback.game.game_over=true;
+    client->rollback.confirmed_through=11;
+    if (network_end_confirmed(*client)) return false;
+    client->rollback.confirmed_through=12;
+    if (!network_end_confirmed(*client)) return false;
+    client->rollback.game.game_over=false; client->rollback.game.run.phase=RunPhase::Won;
+    client->rollback.confirmed_through=10;
+    client->rollback.frames.emplace_back();
+    auto& frame=client->rollback.frames.back();frame.tick=11;frame.before.tick=10;
+    frame.before.run.phase=RunPhase::Playing;
+    if (network_end_confirmed(*client)) return false;
+    frame.before.run.phase=RunPhase::Won;
+    if (!network_end_confirmed(*client)) return false;
+    client->rollback.needs_snapshot=true;
+    return !network_end_confirmed(*client);
+}
+
+bool death_drops_and_pits() {
+    auto game = std::make_unique<Game>();
+    for (bool pit : {false,true}) {
+        *game = {}; game->started = true;
+        game->stage.width = game->stage.height = 12;
+        game->stage.tiles.assign(144,{TileKind::Grass});
+        const auto handle = spawn_entity(*game,EntityKind::Player,{6,6});
+        game->players[0] = handle; game->run.online[0] = true;
+        auto* player = get_entity(*game,handle); player->owner = 0;
+        player->inventory = {};
+        insert_item(player->inventory,make_item(ItemKind::Fist));
+        auto torch = make_item(ItemKind::Torch); torch.durability = 37;
+        insert_item(player->inventory,torch);
+        insert_item(player->inventory,make_item(ItemKind::Bandage,4));
+        game->run.coins[0] = 29;
+        if (pit) game->stage.at(player->cell)->kind = TileKind::Chasm;
+        crush_entity(*game,handle.slot,player->cell);
+        crush_entity(*game,handle.slot,player->cell); // A corpse cannot duplicate drops.
+        int torches=0,bandages=0,gold=0;
+        for (const auto& entity : game->entities) {
+            if (entity.kind==EntityKind::Coins) gold+=entity.counter_a;
+            if (entity.kind!=EntityKind::GroundItem) continue;
+            if (entity.ground_item.kind==ItemKind::Torch && entity.ground_item.durability==37) ++torches;
+            if (entity.ground_item.kind==ItemKind::Bandage) bandages+=entity.ground_item.count;
+        }
+        if (torches!=(pit?0:1) || bandages!=(pit?0:4) || gold!=(pit?0:29) || game->run.coins[0]!=0)
+            return false;
+        for (const auto& item : player->inventory.slots)
+            if (item.kind!=ItemKind::None && item.kind!=ItemKind::Fist) return false;
+    }
     return true;
 }
 
@@ -158,6 +221,12 @@ bool four_players() {
 } // namespace
 
 int main() {
+    if (!confirmed_run_end()) {
+        std::fputs("predicted run end was accepted\n",stderr); return 1;
+    }
+    if (!death_drops_and_pits()) {
+        std::fputs("death inventory handling failed\n",stderr); return 1;
+    }
     if (!server_clock_handshake()) {
         std::fputs("server clock handshake failed\n", stderr); return 1;
     }
@@ -230,10 +299,14 @@ int main() {
         std::fputs("host restart did not synchronize a fresh run\n", stderr);
         return 1;
     }
+    auto* departing = get_entity(host.rollback.game, host.rollback.game.players[1]);
+    departing->health = 61;
+    departing->inventory.slots[2] = make_item(ItemKind::Torch);
+    departing->inventory.slots[2].durability = 37;
     client.socket.close();
     const Handle original_slot = host.rollback.game.players[1];
     for (int iteration = 0; iteration < 370; ++iteration) pump_for_check(host);
-    if (host.rollback.game.run.online[1]) {
+    if (host.rollback.game.run.online[1] || get_entity(host.rollback.game, original_slot) != nullptr) {
         std::fputs("disconnected player still blocked the run\n", stderr);
         return 1;
     }
@@ -251,9 +324,30 @@ int main() {
     for (const Entity& entity : host.rollback.game.entities)
         if (entity.kind == EntityKind::Player) ++players;
     if (!rejoined.ready || rejoined.local_owner != 1 || players != 2 ||
-        !host.rollback.game.run.online[1] || host.rollback.game.players[1] != original_slot) {
+        !host.rollback.game.run.online[1] || host.rollback.game.players[1] == original_slot) {
         std::fprintf(stderr, "reconnect duplicated or lost player: %s\n", rejoined.status.c_str());
         return 1;
+    }
+    const auto* restored = get_entity(host.rollback.game,host.rollback.game.players[1]);
+    if (!restored || restored->health!=61 || restored->inventory.slots[2].durability!=37) {
+        std::fputs("reconnect lost character state\n",stderr); return 1;
+    }
+    crush_entity(host.rollback.game,host.rollback.game.players[1].slot,host.rollback.game.run.spawn);
+    leave_network_game(rejoined);
+    pump_for_check(host);
+    if (host.peers[1].connected || get_entity(host.rollback.game, host.rollback.game.players[1])) {
+        std::fputs("explicit leave kept a world body\n",stderr); return 1;
+    }
+    ++host.rollback.game.run.floor;
+    generate_world_floor(host.rollback.game);
+    NetSession returned;
+    if (!join_game(returned,"127.0.0.1",host.socket.bound_port(),0x12345678,error)) return 1;
+    for(int i=0;i<120 && !returned.ready;++i) {
+        pump_for_check(returned);pump_for_check(host);pump_for_check(returned);
+    }
+    restored=get_entity(host.rollback.game,host.rollback.game.players[1]);
+    if (!returned.ready || !restored || restored->health!=restored->max_health) {
+        std::fputs("dead reconnect missed next-floor revival\n",stderr); return 1;
     }
     if (!four_players()) {
         std::fputs("four-player topology failed\n", stderr);

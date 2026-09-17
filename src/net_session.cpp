@@ -101,16 +101,7 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
             if (!peer.connected) continue;
             if (session.now_ms - peer.last_heard_ms > 6000) {
                 network_event(session, "peer_timeout", owner);
-                peer.connected = false;
-                peer.pending_inputs.clear();
-                Game& game = session.rollback.game;
-                if (game.run.online[static_cast<std::size_t>(owner)]) {
-                    game.run.online[static_cast<std::size_t>(owner)] = false;
-                    if (Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]))
-                        player->impassable = false;
-                    advance_run(game);
-                    publish_host_state(session);
-                }
+                disconnect_peer(session, owner);
                 continue;
             }
             if (peer.snapshot.id != 0 &&
@@ -177,6 +168,11 @@ void step_network_game(NetSession& session, Input local_input) {
 
 void leave_network_game(NetSession& session) {
     network_event(session, "session_leave", session.local_owner);
+    if (session.role == NetRole::Client && session.ready) {
+        PacketWriter leave = begin_packet(WireKind::Leave);
+        leave.u64(session.local_identity);
+        send_wire(session, session.host_endpoint, leave);
+    }
     session.socket.close();
     session.traversal = {};
     session.role = NetRole::Solo;
@@ -218,4 +214,17 @@ std::uint64_t load_or_create_identity(const std::string& path) {
     std::ofstream output{path};
     output << std::hex << identity << '\n';
     return identity;
+}
+
+bool network_end_confirmed(const NetSession& session) {
+    if (session.role != NetRole::Client) return true;
+    if (!session.ready || session.rollback.needs_snapshot) return false;
+    if (session.rollback.confirmed_through >= session.rollback.game.tick) return true;
+    // Victory can keep ticking while clients predict ahead. Inspect the state
+    // immediately after the confirmed tick, not an arbitrary predicted future.
+    for (const auto& frame : session.rollback.frames)
+        if (frame.before.tick == session.rollback.confirmed_through)
+            return (frame.before.game_over && session.rollback.game.game_over) ||
+                (frame.before.run.phase == RunPhase::Won && session.rollback.game.run.phase == RunPhase::Won);
+    return false;
 }

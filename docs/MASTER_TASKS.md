@@ -1,5 +1,7 @@
 # Gauche master task list
 
+- [x] **NET-DEATH-LIFECYCLE:** User reports guest death on Forest 1, visible respawn on Forest 2 but guest sees Run Over; disconnected body remains. Gate terminal menus on host-confirmed state and dismiss them after recovery; remove departed bodies with reconnect state retained by host. Normal deaths drop carried items/gold; user explicitly excludes pits (cargo lost). Cover real reward-transition rollback, next-floor revival, departure/rejoin, terminal confirmation and no duplicate death drops.
+
 - [x] **NET-JOIN-DIAGNOSTICS:** Verify in-progress join/snapshot through deployed relay and next-floor revival; avoid lava/burning join cells. Log control rejection reasons, show connection errors, send bounded signed attempt summaries to existing roomd journal. Retry relay when direct probes succeed but game handshake stalls. Friend's report identified clock skew; room connections now use verified HTTPS service time plus monotonic elapsed time. Live relay join passed with client wall time shifted one hour; stale packet rejection remains enforced.
 - [ ] **NET-HOST-JOIN-POLICY:** Add an explicit host setting for allowing in-progress joins (currently allowed); expose authorized room connection reports in host debugging UI.
 

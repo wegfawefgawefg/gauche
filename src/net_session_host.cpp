@@ -1,6 +1,11 @@
 #include "net_session_internal.hpp"
 #include "net/party.hpp"
 #include "world/encounter.hpp"
+#include "items/action.hpp"
+#include "items/sled.hpp"
+#include "entities/river_raft.hpp"
+#include "items/ice_anchor.hpp"
+#include "items/pocket_door.hpp"
 
 #include <algorithm>
 #include <utility>
@@ -67,15 +72,45 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
     peer.last_heard_ms = session.now_ms;
     peer.pending_inputs.clear();
     bool changed = false;
-    if (new_player) {
+    if (new_player || get_entity(session.rollback.game, session.rollback.game.players[static_cast<std::size_t>(owner)]) == nullptr) {
         Game& game = session.rollback.game;
         const Handle player = spawn_entity(game, EntityKind::Player, join_cell(game, owner));
         game.players[static_cast<std::size_t>(owner)] = player;
         if (Entity* entity = get_entity(game, player)) {
+            const Entity& saved = peer.departed_player;
+            if (saved.kind == EntityKind::Player) {
+                const bool next_floor = peer.departed_floor != game.run.floor;
+                const auto generation = entity->generation;
+                const Cell cell = entity->cell;
+                if (!next_floor) *entity = saved;
+                else {
+                    entity->inventory = saved.inventory;
+                    entity->light = saved.light;
+                    entity->self_light = saved.self_light;
+                    entity->health = saved.health;
+                    entity->max_health = saved.max_health;
+                    entity->move_interval = saved.move_interval;
+                    entity->artifacts = saved.artifacts;
+                }
+                entity->generation = generation;
+                entity->cell = cell;
+                if (next_floor) {
+                    for (Item& item : entity->inventory.slots) {
+                        fold_unused_door(item); fold_ice_anchor(item);
+                    }
+                    if (entity->health <= 0 && game.run.death_policy != DeathPolicy::NoRespawn) {
+                        entity->health = entity->max_health;
+                        entity->sprite = Sprite::Player;
+                    }
+                }
+                entity->impassable = entity->health > 0;
+            } else {
+                entity->inventory = {};
+                insert_item(entity->inventory, make_item(ItemKind::Fist));
+                insert_item(entity->inventory, make_item(ItemKind::Bandage, 3));
+            }
             entity->owner = owner;
-            entity->inventory = {};
-            insert_item(entity->inventory, make_item(ItemKind::Fist));
-            insert_item(entity->inventory, make_item(ItemKind::Bandage, 3));
+            peer.departed_player = {};
         }
         game.run.online[static_cast<std::size_t>(owner)] = true;
         if (game.run.phase == RunPhase::Reward) game.run.chosen[static_cast<std::size_t>(owner)] = true;
@@ -167,6 +202,35 @@ void receive_snapshot_ack(NetSession& session, const Datagram& datagram, PacketR
 
 } // namespace
 
+void disconnect_peer(NetSession& session, int owner) {
+    auto& peer = session.peers[static_cast<std::size_t>(owner)];
+    if (!peer.connected) return;
+    peer.connected = false;
+    peer.party_ready = false;
+    peer.pending_inputs.clear();
+    peer.snapshot = {};
+    Game& game = session.rollback.game;
+    const auto handle = game.players[static_cast<std::size_t>(owner)];
+    if (Entity* player = get_entity(game, handle)) {
+        cancel_item_action(*player);
+        clear_sled_links(game,*player);
+        clear_river_raft(game,*player);
+        for (Item& item : player->inventory.slots) {
+            sync_ice_anchor(game,item);
+            if (item.flight.slot >= 0) item = {};
+        }
+        peer.departed_player = *player;
+        peer.departed_player.toss = {};
+        peer.departed_floor = game.run.floor;
+        remove_entity(game, handle);
+    }
+    game.players[static_cast<std::size_t>(owner)] = {};
+    game.run.online[static_cast<std::size_t>(owner)] = false;
+    advance_run(game);
+    publish_host_state(session);
+    send_party_state(session);
+}
+
 void publish_host_state(NetSession& session) {
     const Game changed = session.rollback.game;
     begin_rollback(session.rollback, changed);
@@ -189,8 +253,9 @@ void restart_host_run(NetSession& session, std::uint64_t seed) {
     fresh.tick = session.rollback.game.tick;
     fresh.run.death_policy = policy;
     for (int owner = 1; owner < 4; ++owner) {
-        const NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
-        if (peer.identity == 0) continue;
+        NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+        peer.departed_player = {};
+        if (peer.identity == 0 || !peer.connected) continue;
         const Handle handle = spawn_entity(fresh, EntityKind::Player, join_cell(fresh, owner));
         fresh.players[static_cast<std::size_t>(owner)] = handle;
         if (Entity* player = get_entity(fresh, handle)) {
@@ -210,6 +275,16 @@ void host_receive(NetSession& session, const Datagram& datagram,
                   PacketReader& reader, WireKind kind) {
     switch (kind) {
     case WireKind::Hello: accept_hello(session, datagram, reader); break;
+    case WireKind::Leave: {
+        const auto identity = reader.u64();
+        const int owner = peer_for(session, identity);
+        if (reader.finished() && owner > 0 &&
+            session.peers[static_cast<std::size_t>(owner)].endpoint == datagram.from) {
+            network_event(session, "peer_leave", owner);
+            disconnect_peer(session, owner);
+        }
+        break;
+    }
     case WireKind::Input: receive_input(session, datagram, reader); break;
     case WireKind::SnapshotRequest: {
         const std::uint64_t identity = reader.u64();
@@ -263,7 +338,11 @@ void host_step(NetSession& session, Input local_input) {
             peer.pending_inputs.erase(found);
         }
     }
+    const auto previous_phase = session.rollback.game.run.phase;
+    const auto previous_floor = session.rollback.game.run.floor;
     predict_frame(session.rollback, inputs);
+    if (previous_phase != session.rollback.game.run.phase || previous_floor != session.rollback.game.run.floor)
+        network_event(session, "run_transition");
     confirm_host_current(session.rollback);
     PacketWriter packet = begin_packet(WireKind::Canonical);
     packet.u32(session.timeline_revision);

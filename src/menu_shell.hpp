@@ -36,3 +36,5 @@ void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int h
 bool process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
                               const GubsyFrame& frame);
 void shutdown_menu_shell(MenuShell& menu);
+
+void sync_run_end_menu(MenuShell& menu);

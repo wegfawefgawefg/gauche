@@ -124,3 +124,11 @@ service this arrives through verified HTTPS. NTP is not required for the game
 handshake; packet authentication and the existing age window remain enforced.
 Services without a Date header retain the local-clock fallback. HTTPS certificate
 validation still requires a reasonably correct system date.
+
+Run Over / Run Cleared waits for host-confirmed state on clients. A correction or
+new floor that returns the party to play dismisses an old terminal screen.
+Leaving sends a departure packet; abrupt closes fall back to the six-second
+heartbeat timeout. The host removes the world body and keeps character state
+privately for the same identity to reconnect, rather than leaving a visible dummy.
+Normal deaths scatter carried items and gold; pit/deep-water deaths lose cargo.
+The built-in fist remains, and Next Floor respawns do not restore lost items.

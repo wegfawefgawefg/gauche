@@ -17,3 +17,5 @@ void publish_host_state(NetSession& session);
 
 void send_pending_correction(NetSession& session, int owner);
 void acknowledge_corrections(NetSession& session, int owner, std::uint32_t revision);
+
+void disconnect_peer(NetSession& session, int owner);

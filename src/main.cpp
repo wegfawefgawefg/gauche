@@ -371,9 +371,7 @@ int main(int argc, char** argv) {
         const Game& ended = network.role == NetRole::Solo ? game : network.rollback.game;
         cosmetics.frame_alpha = menu.visible || ended.game_over ? 1.0F :
             std::clamp(static_cast<float>(accumulated / step_seconds), 0.0F, 1.0F);
-        if (menu.playing && !menu.visible &&
-            (ended.game_over || ended.run.phase == RunPhase::Won))
-            open_end_menu(menu, ended.run.phase == RunPhase::Won);
+        sync_run_end_menu(menu);
 
         const GubsyFrame frame = gubsy_get_frame(host);
         SDL_HideCursor();

@@ -28,6 +28,9 @@ void network_event(NetSession& session, std::string_view event, int owner, std::
     // EVENTS: Callers supply fixed event names and numbers, never credential strings.
     std::ostringstream line;
     line << "ms=" << session.now_ms << " tick=" << session.rollback.game.tick
+         << " floor=" << session.rollback.game.run.floor
+         << " phase=" << static_cast<int>(session.rollback.game.run.phase)
+         << " game_over=" << session.rollback.game.game_over
          << " role=" << static_cast<int>(session.role) << " event=" << event
          << " owner=" << owner << " value=" << value
          << " host_tick=" << session.host_tick << " confirmed=" << session.rollback.confirmed_through

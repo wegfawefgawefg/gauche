@@ -10,3 +10,5 @@ bool pickup_or_drop(Game& game, Entity& player);
 const Entity* pickup_fixture(const Game& game, const Entity& player);
 const char* pickup_fixture_label(const Game& game, const Entity& fixture);
 bool use_pickup_fixture(Game& game, Entity& player);
+
+void release_player_inventory(Game& game, Entity& player, bool lost);

@@ -59,6 +59,7 @@
 #include "../entities/behavior.hpp"
 #include "../item_pattern.hpp"
 #include "../world/loot.hpp"
+#include "../items/ground_interaction.hpp"
 #include "../world/chasm.hpp"
 #include "../world/water.hpp"
 
@@ -135,6 +136,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
     if (entity.health == 0 && finish_mold_death(game,slot)) return;
     if (entity.health == 0) { entity.toss = {}; entity.vitals = {}; break_counterweight(game,entity); drop_enemy_loot(game, entity); }
     if (entity.health == 0 && entity.kind == EntityKind::Player) {
+        release_player_inventory(game, entity, false);
         entity.impassable = false;
         entity.sprite = Sprite::PlayerDead;
         entity.spawn_wait = 180;

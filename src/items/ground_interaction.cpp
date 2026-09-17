@@ -10,6 +10,8 @@
 #include "../entities/candle_keeper.hpp"
 #include "../world/floating_items.hpp"
 #include "../world/ground_items.hpp"
+#include "../world/loot.hpp"
+#include "action.hpp"
 
 namespace {
 
@@ -147,4 +149,28 @@ bool pickup_or_drop(Game& game, Entity& player) {
     player.block_ticks = 0;
     emit_sound(game, SoundId::Drop, player.cell);
     return true;
+}
+
+void release_player_inventory(Game& game, Entity& player, bool lost) {
+    cancel_item_action(player);
+    for (Item& item : player.inventory.slots) {
+        // A flight reservation is not a second physical item in the backpack.
+        if (!lost && item_can_drop(item)) {
+            const Handle handle = spawn_entity(game, EntityKind::GroundItem,
+                nearby_ground_item_cell(game, player.cell));
+            if (Entity* ground = get_entity(game, handle)) {
+                ground->ground_item = item;
+                ground->sprite = item_sprite(item);
+                ground->facing = player.facing;
+            }
+        }
+        item = {};
+    }
+    player.inventory = {};
+    insert_item(player.inventory, make_item(ItemKind::Fist));
+    if (player.owner >= 0 && player.owner < 4) {
+        auto& gold = game.run.coins[static_cast<std::size_t>(player.owner)];
+        if (!lost) place_coins(game, player.cell, gold);
+        gold = 0;
+    }
 }

@@ -235,6 +235,20 @@ void open_end_menu(MenuShell& menu, bool victory) {
     menu.visible = true;
 }
 
+void sync_run_end_menu(MenuShell& menu) {
+    const Game& game = menu.network->role == NetRole::Solo ? *menu.solo_game : menu.network->rollback.game;
+    const bool ended = game.game_over || game.run.phase == RunPhase::Won;
+    const bool end_screen = menu.front.screen == MenuScreen::Death || menu.front.screen == MenuScreen::Victory;
+    if (menu.playing && end_screen && !ended) {
+        menu.visible = menu.front_visible = false;
+        menu.front.dirty = true;
+    }
+    if (menu.playing && !menu.visible && ended && network_end_confirmed(*menu.network)) {
+        network_event(*menu.network, "run_end_menu", menu.network->local_owner, game.tick);
+        open_end_menu(menu, game.run.phase == RunPhase::Won);
+    }
+}
+
 void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
                        int width, int height) {
     update_room_session(menu);
@@ -279,6 +293,7 @@ bool process_menu_shell_event(MenuShell& menu, const SDL_Event& event,
 }
 
 void shutdown_menu_shell(MenuShell& menu) {
+    leave_network_game(*menu.network);
     shutdown_room_session(menu);
     shutdown_front_page(menu.front);
 }

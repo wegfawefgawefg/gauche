@@ -1,5 +1,6 @@
 #include "../items/supply.hpp"
 #include "panel.hpp"
+#include "party.hpp"
 #include "../items/fire_render.hpp"
 #include "interaction.hpp"
 #include "../items/ground_interaction.hpp"
@@ -255,7 +256,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool pending = game.run.phase == RunPhase::Playing;
     angled_fill(renderer,{20,16,395,28},{0.48F,0.12F,0.10F,1},{0.34F,0.08F,0.07F,1});
-    text(renderer, 32.0F, 26.0F, shop ? "TRAVELING SHOP" :
+    text(renderer, 32.0F, 26.0F, player->health <= 0 ? "FLOOR COMPLETE" : shop ? "TRAVELING SHOP" :
          (pending ? "CHOOSE MISSED REWARD" : "CHOOSE ONE REWARD"));
     if (shop) {
         char coins[40];
@@ -263,9 +264,15 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                       game.run.coins[static_cast<std::size_t>(owner)]);
         text(renderer, 518.0F, 26.0F, coins, 224, 183, 112);
     }
+    if (player->health <= 0) {
+        text(renderer, 190, 153, party_player_status(game, owner));
+        text(renderer, 190, 175, "THE PARTY CONTINUES TOGETHER", 184, 187, 177);
+        return;
+    }
     if ((shop && game.run.shop_ready[static_cast<std::size_t>(owner)]) ||
         (!shop && game.run.chosen[static_cast<std::size_t>(owner)] && !pending)) {
         text(renderer, 210.0F, 166.0F, "WAITING FOR FRIENDS");
+        text(renderer, 160, 185, "THE NEXT FLOOR STARTS WHEN EVERYONE IS READY", 184, 187, 177);
         return;
     }
     for (int index = 0; index < 3; ++index) {
@@ -366,4 +373,6 @@ void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
     SDL_SetRenderScale(renderer, scale_x, scale_y);
     const SDL_FRect rect{modal_left, modal_top, 640 * ui_scale, 360 * ui_scale};
     SDL_RenderTexture(renderer, graphics.interaction_canvas, nullptr, &rect);
+    const HudScale party_scale{renderer};
+    draw_party_status(renderer, game, owner, 20, 12, true);
 }

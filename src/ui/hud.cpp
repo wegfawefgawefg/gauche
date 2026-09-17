@@ -4,6 +4,7 @@
 #include "panel.hpp"
 #include "../items/fire_render.hpp"
 #include "presentation.hpp"
+#include "party.hpp"
 #include "status.hpp"
 #include "artifacts.hpp"
 #include "item_details.hpp"
@@ -90,6 +91,8 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
 
     draw_owned_artifacts(renderer, graphics, player, 18, 191, false);
+    if (!quiet && (game.run.phase == RunPhase::Playing || game.run.phase == RunPhase::Arena))
+        draw_party_status(renderer, game, player.owner, 18, 244, false);
 
     // VITALS: Health uses the inventory's angled silhouette and inset fill.
     panel(renderer, 14.0F, height - 32.0F, 128.0F, 22.0F);

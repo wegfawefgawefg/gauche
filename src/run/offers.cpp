@@ -5,33 +5,33 @@
 #include "../world/ground_items.hpp"
 
 Reward current_offer(const Game& game, int owner, int choice) {
-    if (owner<0 || owner>=4 || choice<0 || choice>=3) return {};
-    const auto row=static_cast<std::size_t>(owner), column=static_cast<std::size_t>(choice);
+    if (owner<0 || !has_player(game, owner) || choice<0 || choice>=3) return {};
+    const PlayerId row=owner; const auto column=static_cast<std::size_t>(choice);
     if (game.run.phase==RunPhase::Shop) {
         const ItemKind kind=game.run.shop_stock[column];
         return {RewardKind::Item,kind,ArtifactKind::None,supply_count(kind)};
     }
-    if (game.run.phase==RunPhase::Playing && game.run.pending_count[row]>0)
-        return game.run.pending_offers[row][0][column];
-    return game.run.offers[row][column];
+    if (game.run.phase==RunPhase::Playing && player_state(game, row).pending_count>0)
+        return player_state(game, row).pending_offers[0][column];
+    return player_state(game, row).offers[column];
 }
 
 std::uint64_t offer_token(const Game& game, int owner, int choice) {
-    if (owner<0 || owner>=4 || choice<0 || choice>=3) return 0;
-    const auto row=static_cast<std::size_t>(owner);
-    const Entity* player=get_entity(game,game.players[row]);
-    if (!player || player->health<=0 || !game.run.online[row]) return 0;
-    if (game.run.phase==RunPhase::Reward && game.run.chosen[row]) return 0;
-    if (game.run.phase==RunPhase::Shop && (game.run.shop_ready[row] ||
+    if (owner<0 || !has_player(game, owner) || choice<0 || choice>=3) return 0;
+    const PlayerId row = owner;
+    const Entity* player=get_entity(game,player_state(game, row).controlled);
+    if (!player || player->health<=0 || !player_state(game, row).online) return 0;
+    if (game.run.phase==RunPhase::Reward && player_state(game, row).chosen) return 0;
+    if (game.run.phase==RunPhase::Shop && (player_state(game, row).shop_ready ||
         game.run.shop_stock[static_cast<std::size_t>(choice)]==ItemKind::None)) return 0;
     if (game.run.phase!=RunPhase::Reward && game.run.phase!=RunPhase::Shop &&
-        !(game.run.phase==RunPhase::Playing && game.run.pending_count[row]>0)) return 0;
+        !(game.run.phase==RunPhase::Playing && player_state(game, row).pending_count>0)) return 0;
     const Reward reward=current_offer(game,owner,choice);
     std::uint64_t hash=1469598103934665603ULL;
     const auto mix=[&](std::uint64_t value) { hash=(hash^value)*1099511628211ULL; };
     mix(game.run.seed); mix(static_cast<unsigned>(game.run.floor));
     mix(static_cast<unsigned>(game.run.phase)); mix(static_cast<unsigned>(owner));
-    mix(player->generation); mix(static_cast<unsigned>(game.run.pending_count[row]));
+    mix(player->generation); mix(static_cast<unsigned>(player_state(game, row).pending_count));
     mix(static_cast<unsigned>(choice)); mix(static_cast<unsigned>(reward.kind));
     mix(static_cast<unsigned>(reward.item)); mix(static_cast<unsigned>(reward.artifact));
     mix(static_cast<unsigned>(reward.amount)); mix(static_cast<unsigned>(reward.attribute));

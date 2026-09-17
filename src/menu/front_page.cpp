@@ -109,7 +109,7 @@ std::string projection(const FrontPage& page, int death_policy) {
         std::to_string(page.window_resolution) + ":" +
         std::to_string(page.frame_cap) + ":" + std::to_string(page.show_fps);
     result += ":" + page.room_status + ":" + page.connection_status + ":" +
-        std::to_string(page.party_ready_mask) + ":" + std::to_string(page.party_ready) +
+        std::to_string(page.party_ready_count) + ":" + std::to_string(page.party_ready) +
         ":" + std::to_string(page.room_busy);
     if (page.backend != nullptr) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);

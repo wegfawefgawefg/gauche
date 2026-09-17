@@ -38,7 +38,7 @@ struct FrontPage {
     std::vector<MatchmakingRoom> rooms;
     std::vector<MatchmakingMember> room_members;
     int room_page = 0;
-    unsigned party_ready_mask = 0;
+    unsigned party_ready_count = 0;
     bool room_active = false, room_busy = false, party_host = false;
     bool party_ready = false, force_relay = false;
     std::string profile_name;

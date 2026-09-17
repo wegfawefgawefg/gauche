@@ -15,9 +15,9 @@ bool inside(const Entity& controller, Cell cell) {
 struct Party { int inside = 0, outside = 0; };
 Party party_at(const Game& game, const Entity& controller) {
     Party party;
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-        const Entity* player = get_entity(game, game.players[owner]);
-        if (!game.run.online[owner] || player == nullptr || player->health <= 0) continue;
+    for (const auto& [owner, participant] : game.players) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
+        if (!player_state(game, owner).online || player == nullptr || player->health <= 0) continue;
         if (inside(controller, player->cell)) ++party.inside;
         else ++party.outside;
     }

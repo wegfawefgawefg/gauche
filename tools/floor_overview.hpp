@@ -23,7 +23,7 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
         game.run.spawn = plan.rooms[0].center;
         game.run.exit = plan.rooms[static_cast<std::size_t>(plan.exit_room)].center;
         const Handle player = spawn_entity(game, EntityKind::Player, game.run.spawn);
-        game.players[0] = player;
+        player_state(game,0).controlled = player;
         populate_rooms(game, plan);
         scatter_room_props(game, plan);
     }

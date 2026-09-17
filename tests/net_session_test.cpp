@@ -111,16 +111,16 @@ bool join_running_floor_and_respawn() {
     for (int i = 0; i < 60 && !client->ready; ++i) {
         pump_for_check(*client); pump_for_check(*host); pump_for_check(*client);
     }
-    const Entity* joined = get_entity(game, game.players[1]);
+    const Entity* joined = get_entity(game, player_state(game, 1).controlled);
     if (!client->ready || !client->match_started || !joined || game.tick != 900 ||
         distance(joined->cell, spawn) > 9 ||
         game.stage.at_or_border(joined->cell).kind == TileKind::Lava ||
         game_hash(game) != game_hash(client->rollback.game)) return false;
     // Surviving host finishes the floor; the dead guest must not block rewards.
-    crush_entity(game, game.players[1].slot, game.run.spawn);
+    crush_entity(game, player_state(game, 1).controlled.slot, game.run.spawn);
     finish_floor(game);
-    if (!game.run.chosen[1]) return false;
-    game.run.offers[0][0] = {RewardKind::Health, ItemKind::None, ArtifactKind::None, 1};
+    if (!player_state(game, 1).chosen) return false;
+    player_state(game, 0).offers[0] = {RewardKind::Health, ItemKind::None, ArtifactKind::None, 1};
     publish_host_state(*host);
     for (int i=0;i<120;++i) { pump_for_check(*host); pump_for_check(*client); }
     if (client->rollback.game.run.phase != RunPhase::Reward) return false;
@@ -131,7 +131,7 @@ bool join_running_floor_and_respawn() {
     for (int i=0;i<20;++i) { pump_for_check(*host); pump_for_check(*client); }
     if (client->rollback.needs_snapshot || client->rollback.game.game_over ||
         game_hash(game) != game_hash(client->rollback.game)) return false;
-    const Entity* revived = get_entity(game, game.players[1]);
+    const Entity* revived = get_entity(game, player_state(game, 1).controlled);
     if (game.run.floor != 4 || !revived || revived->health != revived->max_health) return false;
     return true;
 }
@@ -163,14 +163,14 @@ bool death_drops_and_pits() {
         game->stage.width = game->stage.height = 12;
         game->stage.tiles.assign(144,{TileKind::Grass});
         const auto handle = spawn_entity(*game,EntityKind::Player,{6,6});
-        game->players[0] = handle; game->run.online[0] = true;
+        player_state(*game, 0).controlled = handle; player_state(*game, 0).online = true;
         auto* player = get_entity(*game,handle); player->owner = 0;
         player->inventory = {};
         insert_item(player->inventory,make_item(ItemKind::Fist));
         auto torch = make_item(ItemKind::Torch); torch.durability = 37;
         insert_item(player->inventory,torch);
         insert_item(player->inventory,make_item(ItemKind::Bandage,4));
-        game->run.coins[0] = 29;
+        player_state(*game, 0).coins = 29;
         if (pit) game->stage.at(player->cell)->kind = TileKind::Chasm;
         crush_entity(*game,handle.slot,player->cell);
         crush_entity(*game,handle.slot,player->cell); // A corpse cannot duplicate drops.
@@ -181,7 +181,7 @@ bool death_drops_and_pits() {
             if (entity.ground_item.kind==ItemKind::Torch && entity.ground_item.durability==37) ++torches;
             if (entity.ground_item.kind==ItemKind::Bandage) bandages+=entity.ground_item.count;
         }
-        if (torches!=(pit?0:1) || bandages!=(pit?0:4) || gold!=(pit?0:29) || game->run.coins[0]!=0)
+        if (torches!=(pit?0:1) || bandages!=(pit?0:4) || gold!=(pit?0:29) || player_state(*game, 0).coins!=0)
             return false;
         for (const auto& item : player->inventory.slots)
             if (item.kind!=ItemKind::None && item.kind!=ItemKind::Fist) return false;
@@ -220,7 +220,10 @@ bool four_players() {
 
 } // namespace
 
+void player_network_tests();
+
 int main() {
+    player_network_tests();
     if (!confirmed_run_end()) {
         std::fputs("predicted run end was accepted\n",stderr); return 1;
     }
@@ -250,7 +253,7 @@ int main() {
         pump_for_check(client);
     }
     if (!client.ready || client.local_owner != 1 ||
-        get_entity(host.rollback.game, host.rollback.game.players[1]) == nullptr) {
+        get_entity(host.rollback.game, player_state(host.rollback.game, 1).controlled) == nullptr) {
         std::fprintf(stderr, "join failed: %s\n", client.status.c_str());
         return 1;
     }
@@ -299,14 +302,14 @@ int main() {
         std::fputs("host restart did not synchronize a fresh run\n", stderr);
         return 1;
     }
-    auto* departing = get_entity(host.rollback.game, host.rollback.game.players[1]);
+    auto* departing = get_entity(host.rollback.game, player_state(host.rollback.game, 1).controlled);
     departing->health = 61;
     departing->inventory.slots[2] = make_item(ItemKind::Torch);
     departing->inventory.slots[2].durability = 37;
     client.socket.close();
-    const Handle original_slot = host.rollback.game.players[1];
+    const Handle original_slot = player_state(host.rollback.game, 1).controlled;
     for (int iteration = 0; iteration < 370; ++iteration) pump_for_check(host);
-    if (host.rollback.game.run.online[1] || get_entity(host.rollback.game, original_slot) != nullptr) {
+    if (player_state(host.rollback.game, 1).online || get_entity(host.rollback.game, original_slot) != nullptr) {
         std::fputs("disconnected player still blocked the run\n", stderr);
         return 1;
     }
@@ -324,18 +327,18 @@ int main() {
     for (const Entity& entity : host.rollback.game.entities)
         if (entity.kind == EntityKind::Player) ++players;
     if (!rejoined.ready || rejoined.local_owner != 1 || players != 2 ||
-        !host.rollback.game.run.online[1] || host.rollback.game.players[1] == original_slot) {
+        !player_state(host.rollback.game, 1).online || player_state(host.rollback.game, 1).controlled == original_slot) {
         std::fprintf(stderr, "reconnect duplicated or lost player: %s\n", rejoined.status.c_str());
         return 1;
     }
-    const auto* restored = get_entity(host.rollback.game,host.rollback.game.players[1]);
+    const auto* restored = get_entity(host.rollback.game,player_state(host.rollback.game, 1).controlled);
     if (!restored || restored->health!=61 || restored->inventory.slots[2].durability!=37) {
         std::fputs("reconnect lost character state\n",stderr); return 1;
     }
-    crush_entity(host.rollback.game,host.rollback.game.players[1].slot,host.rollback.game.run.spawn);
+    crush_entity(host.rollback.game,player_state(host.rollback.game, 1).controlled.slot,host.rollback.game.run.spawn);
     leave_network_game(rejoined);
     pump_for_check(host);
-    if (host.peers[1].connected || get_entity(host.rollback.game, host.rollback.game.players[1])) {
+    if (host.peers.contains(1) || get_entity(host.rollback.game, player_state(host.rollback.game, 1).controlled)) {
         std::fputs("explicit leave kept a world body\n",stderr); return 1;
     }
     ++host.rollback.game.run.floor;
@@ -345,7 +348,7 @@ int main() {
     for(int i=0;i<120 && !returned.ready;++i) {
         pump_for_check(returned);pump_for_check(host);pump_for_check(returned);
     }
-    restored=get_entity(host.rollback.game,host.rollback.game.players[1]);
+    restored=get_entity(host.rollback.game,player_state(host.rollback.game, 1).controlled);
     if (!returned.ready || !restored || restored->health!=restored->max_health) {
         std::fputs("dead reconnect missed next-floor revival\n",stderr); return 1;
     }

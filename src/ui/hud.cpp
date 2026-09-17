@@ -107,9 +107,9 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     std::snprintf(health, sizeof(health), "HP %d / %d", player.health, player.max_health);
     ui_text(renderer, 20.0F, height - 25.0F, health);
 
-    if (player.owner >= 0 && player.owner < 4) {
+    if (player.owner >= 0 && has_player(game, player.owner)) {
         char money[32];
-        std::snprintf(money, sizeof(money), "GOLD %d", game.run.coins[static_cast<std::size_t>(player.owner)]);
+        std::snprintf(money, sizeof(money), "GOLD %d", player_state(game, player.owner).coins);
         small_ui_text(renderer, 20, height - 43, money, 218, 179, 97);
     }
     draw_player_status(renderer, graphics, game, player, 17, height - 48);

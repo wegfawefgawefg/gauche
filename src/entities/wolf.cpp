@@ -78,8 +78,8 @@ void step_wolf(Game& game, int slot) {
         enemy_target(game, wolf.cell, 8);
     if (!called_prey && leader != nullptr && leader->health > 0 && (!target || target->actor.slot >= 0)) {
         const Entity* prey = get_entity(game, leader->entity_b);
-        if (prey != nullptr && prey->health > 0 && prey->owner >= 0 && prey->owner < 4 &&
-            game.run.online[static_cast<std::size_t>(prey->owner)] && distance(wolf.cell, prey->cell) < 12 &&
+        if (prey != nullptr && prey->health > 0 && prey->owner >= 0 && has_player(game, prey->owner) &&
+            player_state(game, prey->owner).online && distance(wolf.cell, prey->cell) < 12 &&
             !smoke_hides(game.stage, wolf.cell, prey->cell))
             target = EnemyTarget{prey->cell, leader->entity_b};
     }

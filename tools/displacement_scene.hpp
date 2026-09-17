@@ -17,7 +17,7 @@ inline void arrange_displacement(Game& game, Cosmetics& cosmetics, Entity& playe
     Entity* hook = get_entity(game, spawn_entity(game, EntityKind::Projectile, {18, 11}));
     hook->label_a = static_cast<int>(ProjectileKind::Hook);
     hook->label_b = 1;
-    hook->entity_a = game.players[0];
+    hook->entity_a = player_state(game,0).controlled;
     hook->entity_b = bear;
     hook->point_a = player.cell;
     hook->sprite = Sprite::HookHead;

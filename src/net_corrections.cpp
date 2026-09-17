@@ -3,7 +3,7 @@
 
 void acknowledge_corrections(NetSession& session, int owner, std::uint32_t revision) {
     if (revision > session.timeline_revision) return;
-    auto& peer = session.peers[static_cast<std::size_t>(owner)];
+    auto& peer = session.peers.at(owner);
     if (peer.correction.id != 0 && revision >= peer.correction.revision) {
         peer.correction = {};
         peer.next_correction_ms = 0;
@@ -17,7 +17,7 @@ void acknowledge_corrections(NetSession& session, int owner, std::uint32_t revis
 }
 
 void send_pending_correction(NetSession& session, int owner) {
-    auto& peer = session.peers[static_cast<std::size_t>(owner)];
+    auto& peer = session.peers.at(owner);
     if (!peer.connected || peer.snapshot.id != 0 || peer.correction_from == 0 ||
         session.now_ms < peer.next_correction_ms) return;
     auto& transfer = peer.correction;

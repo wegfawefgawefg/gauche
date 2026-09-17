@@ -23,31 +23,33 @@
 
 namespace {
 
-bool step_interlude(Game& game, const std::array<Input, 4>& inputs) {
+bool step_interlude(Game& game, const PlayerInputs& inputs) {
     if (game.run.phase == RunPhase::Reward) {
-        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-            Entity* player = get_entity(game, game.players[owner]);
+        for (const auto& [owner, participant] : game.players) {
+            const Input& input=input_for(inputs,owner);
+            Entity* player = get_entity(game, participant.controlled);
             if (player == nullptr) continue;
-            if (inputs[owner].drop) {
-                if (inputs[owner].select >= 0 && inputs[owner].select < quick_slots)
-                    player->inventory.selected = inputs[owner].select;
+            if (input.drop) {
+                if (input.select >= 0 && input.select < quick_slots)
+                    player->inventory.selected = input.select;
                 drop_player_item(game, *player);
-            } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
+            } else if (input.select >= 0 && input.select < 3)
+                apply_offer_choice(game, static_cast<int>(owner), input);
             if (game.run.phase!=RunPhase::Reward) break;
         }
         return true;
     }
     if (game.run.phase == RunPhase::Shop) {
-        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-            Entity* player = get_entity(game, game.players[owner]);
-            if (player != nullptr && inputs[owner].drop) {
-                if (inputs[owner].select >= 0 && inputs[owner].select < quick_slots)
-                    player->inventory.selected = inputs[owner].select;
+        for (const auto& [owner, participant] : game.players) {
+            const Input& input=input_for(inputs,owner);
+            Entity* player = get_entity(game, participant.controlled);
+            if (player != nullptr && input.drop) {
+                if (input.select >= 0 && input.select < quick_slots)
+                    player->inventory.selected = input.select;
                 drop_player_item(game, *player);
-            } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
-            if (inputs[owner].confirm) game.run.shop_ready[owner] = true;
+            } else if (input.select >= 0 && input.select < 3)
+                apply_offer_choice(game, static_cast<int>(owner), input);
+            if (input.confirm) player_state(game, owner).shop_ready = true;
         }
         advance_run(game);
         return true;
@@ -55,29 +57,30 @@ bool step_interlude(Game& game, const std::array<Input, 4>& inputs) {
     return game.run.phase == RunPhase::Won;
 }
 
-void step_players(Game& game, const std::array<Input, 4>& inputs) {
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-        const Handle handle = game.players[owner];
+void step_players(Game& game, const PlayerInputs& inputs) {
+    for (const auto& [owner, participant] : game.players) {
+        const Input& input=input_for(inputs,owner);
+        const Handle handle = player_state(game, owner).controlled;
         Entity* player = get_entity(game, handle);
         if (player == nullptr) continue;
-        if (player->health <= 0 || !game.run.online[owner]) { cancel_item_action(*player); continue; }
+        if (player->health <= 0 || !player_state(game, owner).online) { cancel_item_action(*player); continue; }
         if (player->toss.ticks>0) { cancel_item_action(*player); continue; }
         if (player->sleep_ticks > 0 || player->stun_ticks > 0) {
-            use_disabled_remedy(game, handle.slot, inputs[owner]);
+            use_disabled_remedy(game, handle.slot, input);
             continue;
         }
-        if (game.run.pending_count[owner] > 0) {
+        if (player_state(game, owner).pending_count > 0) {
             cancel_item_action(*player);
-            if (inputs[owner].drop) {
-                if (inputs[owner].select >= 0 && inputs[owner].select < quick_slots)
-                    player->inventory.selected = inputs[owner].select;
+            if (input.drop) {
+                if (input.select >= 0 && input.select < quick_slots)
+                    player->inventory.selected = input.select;
                 drop_player_item(game, *player);
-            } else if (inputs[owner].select >= 0 && inputs[owner].select < 3)
-                apply_offer_choice(game, static_cast<int>(owner), inputs[owner]);
+            } else if (input.select >= 0 && input.select < 3)
+                apply_offer_choice(game, static_cast<int>(owner), input);
             continue;
         }
-        if (inputs[owner].offer_token!=0) { cancel_item_action(*player); continue; }
-        step_player(game, handle.slot, inputs[owner]);
+        if (input.offer_token!=0) { cancel_item_action(*player); continue; }
+        step_player(game, handle.slot, input);
     }
 }
 
@@ -101,7 +104,7 @@ void sweep_dead(Game& game) {
             remove_entity(game, {slot, entity.generation});
     }
     bool any_alive = false;
-    for (Handle handle : game.players) {
+    for (Handle handle : controlled_entities(game)) {
         const Entity* player = get_entity(game, handle);
         any_alive |= player != nullptr && player->health > 0;
     }
@@ -118,7 +121,7 @@ void emit_sound(Game& game, SoundId sound, Cell cell, bool positional, bool muff
         {sound, cell, game.tick, sequence, positional, muffled};
 }
 
-void step_game(Game& game, const std::array<Input, 4>& inputs) {
+void step_game(Game& game, const PlayerInputs& inputs) {
     PerfScope tick_scope(PerfZone::Tick);
     if (!game.started || game.game_over) return;
     ++game.tick;

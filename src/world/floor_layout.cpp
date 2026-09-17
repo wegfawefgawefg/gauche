@@ -44,10 +44,10 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     PerfScope perf_scope(PerfZone::Generation);
     if (trace) trace->reset();
     // Party: carry each joined player across the new stage.
-    std::array<Entity, 4> previous{};
-    std::array<bool, 4> joined{};
-    for (std::size_t owner = 0; owner < 4; ++owner) {
-        if (const Entity* player = get_entity(game, game.players[owner])) {
+    std::map<PlayerId, Entity> previous;
+    std::map<PlayerId, bool> joined;
+    for (const auto& [owner, participant] : game.players) {
+        if (const Entity* player = get_entity(game, player_state(game, owner).controlled)) {
             previous[owner] = *player;
             for (Item& item : previous[owner].inventory.slots) sync_ice_anchor(game,item);
             joined[owner] = true;
@@ -58,6 +58,8 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     next.rng = game.rng;
     next.tick = game.tick;
     next.run = game.run;
+    next.players = game.players;
+    for (auto& [id, member] : next.players) member.controlled = {};
     next.started = true;
     for (int slot = 0; slot < max_entities; ++slot)
         next.entities[static_cast<std::size_t>(slot)].generation =
@@ -128,17 +130,18 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
     }
 
     // Loadouts: a new adventurer starts light; survivors keep what they found.
-    for (std::size_t owner = 0; owner < 4; ++owner) {
+    for (const auto& [owner, participant] : game.players) {
         if (!joined[owner]) continue;
         if (previous[owner].kind != EntityKind::None && previous[owner].health <= 0 &&
             game.run.death_policy == DeathPolicy::NoRespawn)
             continue;
         const Handle handle = spawn_entity(game, EntityKind::Player,
-                                            game.run.spawn + Cell{static_cast<int>(owner), 0});
-        game.players[owner] = handle;
+                                            player_spawn_cell(game, game.run.spawn));
+        player_state(game, owner).controlled = handle;
         Entity* player = get_entity(game, handle);
-        player->owner = static_cast<int>(owner);
-        player->impassable = game.run.online[owner];
+        if (!player) continue;
+        player->owner = owner;
+        player->impassable = player_state(game, owner).online;
         if (previous[owner].kind == EntityKind::None) {
             player->inventory = {};
             insert_item(player->inventory, make_item(ItemKind::Fist));

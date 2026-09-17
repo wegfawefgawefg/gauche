@@ -26,7 +26,7 @@ inline void arrange_spider_scene(Game& game, Cosmetics& cosmetics, Entity& playe
     cosmetics = {}; cosmetics.camera = {20,15}; cosmetics.camera_ready = true;
     if (caught) {
         player.cell = {18,13};
-        enter_spider_strand(game,game.players[0].slot);
+        enter_spider_strand(game,player_state(game,0).controlled.slot);
         spawn_sound_effect(cosmetics,{SoundId::SpiderCatch,player.cell},6027);
     }
 }

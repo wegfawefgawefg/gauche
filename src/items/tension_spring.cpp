@@ -22,7 +22,9 @@ bool place_tension_spring(Game& game,int slot,Cell direction) {
         if (other.kind!=EntityKind::None && other.cell==user.cell && other.hard_blocker) return false;
     int facing=0;
     while (tension_direction(static_cast<std::uint8_t>(facing))!=direction) ++facing;
-    const int owner=user.owner>=0 && user.owner<4 ? user.owner+1 : 0;
-    tile->prop={PropKind::TensionSpring,6,static_cast<std::uint8_t>(facing|(owner<<2)),false,tension_arm_ticks};
+    const int cell=user.cell.y*game.stage.width+user.cell.x;
+    game.stage.prop_owners.erase(cell);
+    if (has_player(game,user.owner)) game.stage.prop_owners[cell]=user.owner;
+    tile->prop={PropKind::TensionSpring,6,static_cast<std::uint8_t>(facing),false,tension_arm_ticks};
     return true;
 }

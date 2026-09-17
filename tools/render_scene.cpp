@@ -119,7 +119,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
     game.tick = 120;
     game.run.phase = RunPhase::Playing;
     game.run.floor = 1;
-    game.run.online[0] = true;
+    player_state(game, 0).online = true;
     game.stage.width = 28;
     game.stage.height = 18;
     game.stage.tiles.assign(28 * 18, {TileKind::Wall, 100, 0});
@@ -141,7 +141,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
     ash->self_light = {0, 0, 0};
     ash->sprite = Sprite::CampfireAsh;
     const Handle player = spawn_entity(game, EntityKind::Player, {12, 10});
-    game.players[0] = player;
+    player_state(game,0).controlled = player;
     get_entity(game, player)->scorch_ticks = 240;
     constexpr PropKind props[]{PropKind::Leaves, PropKind::Twigs, PropKind::Fern,
         PropKind::TallGrass, PropKind::Puffball, PropKind::RottenLog, PropKind::Crate,
@@ -244,9 +244,9 @@ int main(int argc, char** argv) {
         game.rng = 1;
         game.run.floor = 3;
         game.run.phase = RunPhase::Playing;
-        game.run.online[0] = true;
+        player_state(game, 0).online = true;
         make_haunted_floor(game, true);
-        game.players[0] = spawn_entity(game, EntityKind::Player, {37, 36});
+        player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, {37, 36});
         populate_haunted_house(game);
         for (Entity& fixture : game.entities) {
             if (fixture.kind == EntityKind::Encounter) {
@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
     if (mode=="rivets" || mode=="rivet-items") arrange_rivet_scene(game,cosmetics);
     if (mode=="belts" || mode=="belt-items") arrange_belt_scene(game,cosmetics);
     if (mode=="grates") arrange_grate_scene(game,cosmetics);
-    Entity& player = *get_entity(game, game.players[0]);
+    Entity& player = *get_entity(game, player_state(game,0).controlled);
     player.owner = 0;
     if (mode == "fire") { player.cell = {15, 10}; player.scorch_ticks = 0; }
     if (mode == "status" || mode == "debug") {
@@ -294,7 +294,7 @@ int main(int argc, char** argv) {
             insert_item(player.inventory, make_item(kind));
     }
     place_coins(game, player.cell + Cell{1, 1}, 12);
-    game.run.coins[0] = 27;
+    player_state(game, 0).coins = 27;
     if (mode == "projectiles" || mode == "bow") {
         player.inventory = {};
         insert_item(player.inventory, make_item(ItemKind::Bow));
@@ -456,7 +456,7 @@ int main(int argc, char** argv) {
     } else if (mode == "reward" || mode == "reward-focus") {
         interaction.offer_focus = mode == "reward-focus" ? 1 : 0;
         game.run.phase = RunPhase::Reward;
-        game.run.offers[0] = {Reward{RewardKind::Item, ItemKind::Pickaxe, ArtifactKind::None, 1},
+        player_state(game, 0).offers = {Reward{RewardKind::Item, ItemKind::Pickaxe, ArtifactKind::None, 1},
             Reward{RewardKind::Health, ItemKind::None, ArtifactKind::None, 15},
             Reward{RewardKind::Item, ItemKind::Bow, ArtifactKind::None, 1}};
     }

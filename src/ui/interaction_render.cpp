@@ -206,7 +206,7 @@ void compare_items(SDL_Renderer* renderer, const Item& left, const Item& right) 
 
 void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                        const Game& game, int owner, const InteractionUi& ui) {
-    const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    const Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr) return;
     inventory_rows(renderer, graphics, *player, ui);
     draw_owned_artifacts(renderer, graphics, *player, 204, 16, true);
@@ -251,7 +251,7 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
 
 void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, int owner, const InteractionUi& ui) {
-    const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    const Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr) return;
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool pending = game.run.phase == RunPhase::Playing;
@@ -261,7 +261,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (shop) {
         char coins[40];
         std::snprintf(coins, sizeof(coins), "GOLD %d",
-                      game.run.coins[static_cast<std::size_t>(owner)]);
+                      player_state(game, owner).coins);
         text(renderer, 518.0F, 26.0F, coins, 224, 183, 112);
     }
     if (player->health <= 0) {
@@ -269,8 +269,8 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         text(renderer, 190, 175, "THE PARTY CONTINUES TOGETHER", 184, 187, 177);
         return;
     }
-    if ((shop && game.run.shop_ready[static_cast<std::size_t>(owner)]) ||
-        (!shop && game.run.chosen[static_cast<std::size_t>(owner)] && !pending)) {
+    if ((shop && player_state(game, owner).shop_ready) ||
+        (!shop && player_state(game, owner).chosen && !pending)) {
         text(renderer, 210.0F, 166.0F, "WAITING FOR FRIENDS");
         text(renderer, 160, 185, "THE NEXT FLOOR STARTS WHEN EVERYONE IS READY", 184, 187, 177);
         return;
@@ -319,7 +319,7 @@ void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
     angled_fill(renderer,{144,96,352,27},{0.53F,0.13F,0.10F,1},{0.36F,0.08F,0.06F,1});
     const bool shop=game.run.phase==RunPhase::Shop;
     const Reward offer=reward_offer(game,owner,ui.offer_focus);
-    const Entity* player=get_entity(game,game.players[static_cast<std::size_t>(owner)]);
+    const Entity* player=get_entity(game,player_state(game, owner).controlled);
     if (!player) return;
     text(renderer,160,106,ui.replace_slot>=0 ? "CONFIRM EXCHANGE" : shop ? "CONFIRM PURCHASE" : "TAKE THIS REWARD?");
     char line[96];
@@ -335,7 +335,7 @@ void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
     }
     if (shop) {
         const int cost=shop_price(offer.item);
-        std::snprintf(line,sizeof(line),"PAY %d GOLD   |   %d LEFT",cost,game.run.coins[static_cast<std::size_t>(owner)]-cost);
+        std::snprintf(line,sizeof(line),"PAY %d GOLD   |   %d LEFT",cost,player_state(game, owner).coins-cost);
         text(renderer,164,195,line,224,183,112);
     } else text(renderer,164,195,"Choose one. The other offers are left behind.",184,187,177);
     draw_modal_hint(renderer,164,230,false,"CONFIRM");
@@ -346,7 +346,7 @@ void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
 
 void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, int owner, const InteractionUi& ui) {
-    if (owner < 0 || owner >= 4) return;
+    if (owner < 0 || !has_player(game, owner)) return;
     const bool offered = has_reward_offer(game, owner) || game.run.phase == RunPhase::Shop;
     if (!ui.inventory_open && !offered) return;
     shade(renderer);

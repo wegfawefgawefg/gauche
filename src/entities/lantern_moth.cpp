@@ -26,8 +26,8 @@ void find_lamp(Game& game, Entity& moth) {
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& source = game.entities[static_cast<std::size_t>(slot)];
         if (&source == &moth || source.kind == EntityKind::None || (source.health <= 0 && source.kind != EntityKind::GroundItem)) continue;
-        if (source.kind == EntityKind::Player && source.owner >= 0 && source.owner < 4 &&
-            !game.run.online[static_cast<std::size_t>(source.owner)]) continue;
+        if (source.kind == EntityKind::Player && source.owner >= 0 && has_player(game, source.owner) &&
+            !player_state(game, source.owner).online) continue;
         const Handle handle{slot, source.generation};
         consider(source.cell, source.light, handle,source.facing);
         consider(source.cell, item_light(*source.inventory.held()), handle,source.facing);

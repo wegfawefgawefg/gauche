@@ -14,11 +14,14 @@ bool trigger_tension_spring(Game& game,int slot) {
     if (!tile || tile->prop.kind!=PropKind::TensionSpring || tile->prop.broken || tile->prop.hp==0 ||
         tile->prop.growth_ticks>0 || actor.toss.ticks>0) return false;
     Prop& prop=tile->prop;
-    const int owner=static_cast<int>(prop.variant>>2U)-1;
-    const Handle instigator=owner>=0 && owner<4 ? game.players[static_cast<std::size_t>(owner)] : Handle{};
+    const int cell=actor.cell.y*game.stage.width+actor.cell.x;
+    const auto attribution=game.stage.prop_owners.find(cell);
+    const PlayerId owner=attribution==game.stage.prop_owners.end() ? -1 : attribution->second;
+    const Handle instigator=owner>=0 && has_player(game, owner) ? player_state(game, owner).controlled : Handle{};
     // Shared toss refuses flyers, rooted/gripping actors, sled riders and fixtures.
     // Refusal leaves the spring armed for a susceptible entrant.
     if (!toss_actor(game,slot,tension_direction(prop.variant),actor.cell,instigator)) return false;
+    game.stage.prop_owners.erase(cell);
     prop.hp=0;prop.broken=true;prop.growth_ticks=0;
     emit_sound(game,SoundId::TensionLaunch,actor.cell);
     return true;

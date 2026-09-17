@@ -29,7 +29,7 @@ void normalize_test_item(Item& item);
 void set_loadout_preset(TestLoadout& loadout, int preset);
 void apply_test_loadout(Game& game, int owner);
 void start_solo_run(Game& game, std::uint64_t seed, DeathPolicy policy);
-void step_solo_game(Game& game, const std::array<Input, 4>& inputs);
+void step_solo_game(Game& game, const PlayerInputs& inputs);
 void process_playtest_requests(MenuShell& menu);
 void draw_playtest_tools(const Game& game, bool offline);
 void draw_level_editor(bool offline);

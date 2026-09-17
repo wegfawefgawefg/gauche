@@ -8,14 +8,13 @@ void jump_to_test_level(Game& game, int selection) {
     game.run.floor = level.floor;
     game.game_over = false;
     // JUMP: Restore dead party members so No Respawn cannot leave an empty debug level.
-    for (Handle handle : game.players)
+    for (Handle handle : controlled_entities(game))
         if (Entity* player = get_entity(game, handle)) player->health = player->max_health;
-    game.run.chosen = {}; game.run.shop_ready = {}; game.run.pending_count = {};
-    game.run.pending_offers = {}; game.run.offers = {};
+    for (auto& [id, member] : game.players) { member.chosen = false; member.shop_ready = false; member.pending_count = 0; member.pending_offers = {}; member.offers = {}; }
     game.run.roof_lights = {}; game.run.roof_light_count = 0;
     generate_world_floor(game, level.layout);
     if (playtest_tools().override_loadout)
-        for (int owner = 0; owner < 4; ++owner) apply_test_loadout(game, owner);
+        for (const auto& [owner, participant] : game.players) apply_test_loadout(game, owner);
     ++playtest_tools().revision;
 }
 
@@ -31,11 +30,11 @@ void start_solo_run(Game& game, std::uint64_t seed, DeathPolicy policy) {
     }
 }
 
-void step_solo_game(Game& game, const std::array<Input, 4>& inputs) {
+void step_solo_game(Game& game, const PlayerInputs& inputs) {
     const int floor = game.run.floor;
-    std::array<bool, 4> alive{};
-    for (std::size_t owner = 0; owner < 4; ++owner) {
-        const Entity* player = get_entity(game, game.players[owner]);
+    std::map<PlayerId, bool> alive;
+    for (const auto& [owner, participant] : game.players) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
         alive[owner] = player && player->health > 0;
     }
     step_game(game, inputs);
@@ -47,7 +46,7 @@ void step_solo_game(Game& game, const std::array<Input, 4>& inputs) {
     }
     if (game.run.floor != floor) ++tools.revision;
     if (tools.override_loadout)
-        for (int owner = 0; owner < 4; ++owner)
+        for (const auto& [owner, participant] : game.players)
             if (!alive[static_cast<std::size_t>(owner)]) apply_test_loadout(game, owner);
 }
 

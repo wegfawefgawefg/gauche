@@ -37,8 +37,8 @@ bool use_borrowed_summer(Game& game, int slot) {
 void step_summer_auras(Game& game) {
     for (const Entity& source : game.entities) {
         if (source.kind==EntityKind::None || source.health<=0 || source.vitals.summer_ticks==0) continue;
-        if (source.kind==EntityKind::Player && (source.owner<0 || source.owner>=4 ||
-            !game.run.online[static_cast<std::size_t>(source.owner)])) continue;
+        if (source.kind==EntityKind::Player && (source.owner<0 || !has_player(game, source.owner) ||
+            !player_state(game, source.owner).online)) continue;
         warm_around(game,source);
     }
 }

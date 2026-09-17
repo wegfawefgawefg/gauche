@@ -10,13 +10,13 @@ inline void arrange_enemy_scene(Game& game, Cosmetics& cosmetics) {
     game.tick = 120;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game,0).online = true;
     game.stage.width = 32;
     game.stage.height = 24;
     game.stage.tiles.assign(32 * 24, {TileKind::Wall, 100, 0});
     for (int y = 3; y < 21; ++y)
         for (int x = 3; x < 29; ++x) *game.stage.at({x, y}) = {TileKind::Grass, 0, 0};
-    game.players[0] = spawn_entity(game, EntityKind::Player, {15, 12});
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, {15, 12});
     game.run.spawn = {15, 12};
     game.run.roof_light_count = 2;
     game.run.roof_lights[0] = {{10, 9}, {8, 1700, {240, 224, 176}}};

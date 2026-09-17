@@ -59,7 +59,7 @@ void capture_network_recovery(NetSession& session) {
     const auto snapshot = encode_game(frames.empty() ? session.rollback.game : frames.front().before);
     PacketWriter capture;
     capture.u32(0x4752504cU); // GRPL: Gauche recovery replay, little-endian packet encoding.
-    capture.u16(1);
+    capture.u16(2);
     capture.u16(wire_version);
     capture.u64(gameplay_version);
     capture.u64(session.rollback.confirmed_through);
@@ -68,7 +68,8 @@ void capture_network_recovery(NetSession& session) {
     capture.u32(static_cast<std::uint32_t>(frames.size()));
     for (const RollbackFrame& frame : frames) {
         capture.u64(frame.tick);
-        for (const Input& input : frame.inputs) capture.input(input);
+        capture.u32(static_cast<std::uint32_t>(frame.inputs.size()));
+        for (const auto& [id,input] : frame.inputs) { capture.i32(id); capture.input(input); }
         capture.u64(frame.hash_after);
         capture.u64(frame.host_hash);
         capture.u8(frame.confirmed ? 1 : 0);

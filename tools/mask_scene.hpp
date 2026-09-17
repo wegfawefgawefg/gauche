@@ -12,6 +12,6 @@ inline void arrange_mask_scene(Game& game,Cosmetics& cosmetics,Entity& player,bo
     for (Cell cell : {Cell{17,12},Cell{23,12},Cell{20,15}}) {
         auto h=spawn_entity(game,EntityKind::SnowEffigy,cell);get_entity(game,h)->label_b=1;
     }
-    if (active) { Input use;use.use=true;step_effigy_mask(game,game.players[0].slot,use); }
+    if (active) { Input use;use.use=true;step_effigy_mask(game,player_state(game,0).controlled.slot,use); }
     cosmetics.camera={20,12};cosmetics.camera_ready=true;
 }

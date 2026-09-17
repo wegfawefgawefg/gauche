@@ -15,7 +15,7 @@ inline void arrange_bridge_scene(Game& game, Cosmetics& cosmetics, Entity& playe
     insert_item(player.inventory,make_item(ItemKind::FoldedBridge));
     insert_item(player.inventory,make_item(ItemKind::FoldedBridge,1,ItemAttribute::Durable));
     insert_item(player.inventory,make_item(ItemKind::FoldedBridge));
-    place_folded_bridge(game,game.players[0].slot);
+    place_folded_bridge(game,player_state(game,0).controlled.slot);
     if (broken) hit_prop(game,{21,12},30,player.cell);
     if (fire) {
         ignite_surface(game,{21,12});

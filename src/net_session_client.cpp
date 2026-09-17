@@ -6,15 +6,15 @@ namespace {
 
 void receive_welcome(NetSession& session, PacketReader& reader) {
     const std::uint64_t identity = reader.u64();
-    const std::uint8_t owner = reader.u8();
+    const PlayerId owner = reader.i32();
     const std::uint64_t tick = reader.u64();
     const std::uint8_t death_policy = reader.u8();
     if (!reader.finished() || identity != session.local_identity) return;
-    if (owner == 255) {
+    if (owner < 0) {
         session.status = "Host is full or uses different game content";
         return;
     }
-    if (owner == 0 || owner >= 4 || death_policy >
+    if (owner == 0 || death_policy >
         static_cast<std::uint8_t>(DeathPolicy::NextFloor)) return;
     session.local_owner = owner;
     session.host_tick = std::max(session.host_tick, tick);
@@ -112,10 +112,10 @@ void client_step(NetSession& session, Input local_input) {
     if (session.local_owner < 0 || session.rollback.needs_snapshot ||
         session.rollback.game.game_over) return;
     const std::uint64_t tick = session.rollback.game.tick + 1;
-    std::array<Input, 4> inputs{};
-    for (int owner = 0; owner < 4; ++owner)
-        inputs[static_cast<std::size_t>(owner)] = missing_remote_input(session.rollback.game, owner);
-    inputs[static_cast<std::size_t>(session.local_owner)] = local_input;
+    PlayerInputs inputs{};
+    for (const auto& [owner, participant] : session.rollback.game.players)
+        if (participant.online) inputs[owner] = missing_remote_input(session.rollback.game, owner);
+    inputs[session.local_owner] = local_input;
     predict_frame(session.rollback, inputs);
     session.sent_inputs[tick] = local_input;
     while (session.sent_inputs.size() > 16) session.sent_inputs.erase(session.sent_inputs.begin());

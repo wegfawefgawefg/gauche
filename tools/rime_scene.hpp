@@ -18,7 +18,7 @@ inline void arrange_rime_scene(Game& game, Cosmetics& cosmetics, Entity& player)
     insert_item(player.inventory, make_item(ItemKind::GritPouch, 1, ItemAttribute::Durable));
     insert_item(player.inventory, make_item(ItemKind::GritPouch, 1, ItemAttribute::Big));
     player.inventory.slots[0].uses = 4;
-    scatter_grit(game, game.players[0].slot, player.facing);
+    scatter_grit(game, player_state(game,0).controlled.slot, player.facing);
     player.inventory.selected = 0;
     for (int phase = 0; phase < 3; ++phase) {
         Entity* skater = get_entity(game, spawn_entity(game, EntityKind::RimeSkater, {16, phase == 2 ? 14 : 9 + phase * 3}));

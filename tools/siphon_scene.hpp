@@ -21,7 +21,7 @@ inline void arrange_siphon_scene(Game& game, Cosmetics& cosmetics, Entity& playe
     place_candle(game,{20,11},make_item(ItemKind::CandleStub));
     pour_surface(game,{23,12},LiquidKind::Oil,900);
     if (fire) {
-        discharge_siphon(game,game.players[0].slot);
+        discharge_siphon(game,player_state(game,0).controlled.slot);
         for (int i=0;i<game.sound_count;++i)
             spawn_sound_effect(cosmetics,game.sounds[static_cast<std::size_t>(i)],static_cast<std::uint64_t>(300+i));
     }

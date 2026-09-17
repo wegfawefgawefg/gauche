@@ -314,7 +314,7 @@ Entity read_entity(PacketReader& reader) {
     if (!valid_boiler_state(entity) || !valid_flare_state(entity) || !valid_harpoon_state(entity) || !valid_gate_state(entity)) reader.okay = false;
     if (entity.health < 0 || entity.max_health < 0 || entity.move_wait < 0 ||
         entity.move_interval < 0 || entity.attack_wait < 0 || entity.attack_interval < 0 ||
-        entity.spawn_wait < 0 || entity.owner >= 4 || entity.burn_ticks < 0 ||
+        entity.spawn_wait < 0 || entity.owner < -1 || entity.burn_ticks < 0 ||
         entity.freeze_ticks < 0 || entity.sleep_ticks < 0 || entity.stun_ticks < 0 ||
         entity.scorch_ticks < 0 || entity.scorch_ticks > 300 || entity.fire_tramples > 5 ||
         entity.fire_dim_ticks < 0 || entity.fire_dim_ticks > 60)

@@ -30,9 +30,9 @@ std::uint64_t sound_roll(std::uint64_t value) {
 int nearest_player(const Game& game, Cell from, int radius) {
     int nearest = -1;
     int best = radius + 1;
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-        if (!game.run.online[owner]) continue;
-        const Handle handle = game.players[owner];
+    for (const auto& [owner, participant] : game.players) {
+        if (!player_state(game, owner).online) continue;
+        const Handle handle = player_state(game, owner).controlled;
         const Entity* player = get_entity(game, handle);
         if (player == nullptr || player->health <= 0) continue;
         const int length = distance(from, player->cell);

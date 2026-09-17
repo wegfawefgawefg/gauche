@@ -154,8 +154,8 @@ void step_entity_timers(Game& game, int slot) {
             if (const auto cell = free_entrance_cell(game)) {
                 entity.cell = *cell;
                 entity.health = entity.max_health;
-                entity.impassable = entity.owner < 0 || entity.owner >= 4 ||
-                    game.run.online[static_cast<std::size_t>(entity.owner)];
+                entity.impassable = entity.owner < 0 || !has_player(game, entity.owner) ||
+                    player_state(game, entity.owner).online;
                 entity.sprite = Sprite::Player;
                 entity.scorch_ticks = entity.burn_ticks = 0;
                 entity.sleep_ticks = entity.stun_ticks = entity.freeze_ticks = 0;

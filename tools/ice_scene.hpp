@@ -12,7 +12,7 @@ inline void arrange_ice_scene(Game& game, Cosmetics& cosmetics, bool generated,
     game.run.seed = game.rng;
     game.run.floor = first_floor(Biome::Ice);
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game,0).online = true;
     if (generated) {
         // PARTY: Enter through a real initial loadout, then carry it to the cold floor.
         start_run(game, seed == 0 ? 1 : seed);
@@ -32,7 +32,7 @@ inline void arrange_ice_scene(Game& game, Cosmetics& cosmetics, bool generated,
     carve_floor(game, plan);
     place_ice_terrain(game, plan);
     game.run.spawn = {19, 13};
-    game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn);
     spawn_entity(game, EntityKind::Campfire, {14, 12});
     spawn_entity(game, EntityKind::FrostBat, {24, 17});
     place_prop(game.stage, {12, 12}, PropKind::Crate);

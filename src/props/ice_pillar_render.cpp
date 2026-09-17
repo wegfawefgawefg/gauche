@@ -27,7 +27,7 @@ void draw_ice_pillar(SDL_Renderer* renderer,const GameGraphics& graphics,const G
     const auto light=light_at_cell(lighting,cell);
     SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
     bool obscures=false;
-    for (Handle h:game.players) if (const Entity* player=get_entity(game,h))
+    for (Handle h : controlled_entities(game)) if (const Entity* player=get_entity(game,h))
         if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-pillar_height(prop)) obscures=true;
     SDL_SetTextureAlphaMod(texture,obscures ? 105 : 235);
     SDL_RenderTextureRotated(renderer,texture,nullptr,&body,std::atan2(dx,-dy)*180/3.141592653589793,&pivot,SDL_FLIP_NONE);

@@ -11,9 +11,9 @@ inline void arrange_sled_scene(Game& game,Cosmetics& cosmetics,Entity& player) {
     insert_item(player.inventory,make_item(ItemKind::Sled,1,ItemAttribute::Durable));
     auto cargo=spawn_entity(game,EntityKind::GroundItem,{20,12});
     get_entity(game,cargo)->ground_item=make_item(ItemKind::Ammo);get_entity(game,cargo)->sprite=Sprite::Ammo;
-    place_sled(game,game.players[0].slot,{1,0},make_item(ItemKind::Sled));
-    player.cell={20,12};board_sled(game,game.players[0].slot);
-    const Cell before=player.cell;player.cell={18,10};place_sled(game,game.players[0].slot,{0,-1},make_item(ItemKind::Sled));
-    player.cell={23,13};place_sled(game,game.players[0].slot,{-1,0},make_item(ItemKind::Sled));player.cell=before;
+    place_sled(game,player_state(game,0).controlled.slot,{1,0},make_item(ItemKind::Sled));
+    player.cell={20,12};board_sled(game,player_state(game,0).controlled.slot);
+    const Cell before=player.cell;player.cell={18,10};place_sled(game,player_state(game,0).controlled.slot,{0,-1},make_item(ItemKind::Sled));
+    player.cell={23,13};place_sled(game,player_state(game,0).controlled.slot,{-1,0},make_item(ItemKind::Sled));player.cell=before;
     cosmetics.camera={20,12};cosmetics.camera_ready=true;
 }

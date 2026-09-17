@@ -18,7 +18,7 @@ inline void arrange_summer_scene(Game& game, Cosmetics& cosmetics, Entity& playe
     insert_item(player.inventory,make_item(ItemKind::BorrowedSummer,1,ItemAttribute::Big));
     player.inventory.selected=2;
     pour_surface(game,{23,12},LiquidKind::Oil,900);
-    use_held_item(game,game.players[0].slot,player.cell);
+    use_held_item(game,player_state(game,0).controlled.slot,player.cell);
     player.inventory.selected=0;
     game.tick=36;
     observe_surfaces(cosmetics,game,player.cell);

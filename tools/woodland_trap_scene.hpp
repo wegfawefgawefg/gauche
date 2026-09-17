@@ -25,6 +25,6 @@ inline void arrange_woodland_traps(Game& game, Cosmetics& cosmetics, Entity& pla
     Entity* caught = get_entity(game, spawn_entity(game, EntityKind::Trap, player.cell));
     caught->ground_item = make_item(ItemKind::RopeSnare);
     caught->sprite = Sprite::SnareTight;
-    caught->entity_a = game.players[0];
+    caught->entity_a = player_state(game,0).controlled;
     caught->label_a = 1; caught->timer_a = 150;
 }

@@ -100,3 +100,32 @@ bool hit_terrain(Game& game, Cell cell, Cell source, int damage, int dig_power,
                SoundId::SturdyBlockBouncedOn, cell);
     return hit;
 }
+
+// Player IDs never become coordinate offsets: search actual free, safe ground.
+Cell player_spawn_cell(const Game& game, Cell center) {
+    Cell best = center;
+    int best_distance = INT32_MAX;
+    for (int y=0; y<game.stage.height; ++y) for (int x=0; x<game.stage.width; ++x) {
+        const Cell cell{x,y};
+        const int d=distance(center,cell);
+        if (d>=best_distance) continue;
+        const Tile* tile=game.stage.at(cell);
+        if (!tile || !walkable(*tile) || tile->kind==TileKind::Lava ||
+            tile->kind==TileKind::IceHole || tile->kind==TileKind::DeepRiver || tile->surface.fire_ticks || entity_at(game,cell,true)>=0) continue;
+        best=cell; best_distance=d;
+    }
+    return best;
+}
+
+bool bind_player_control(Game& game, PlayerId id, Handle controlled) {
+    if (!has_player(game,id)) return false;
+    Entity* next=get_entity(game,controlled);
+    if (!next) return false;
+    for (const auto& [other, member] : game.players)
+        if (other!=id && member.controlled==controlled) return false;
+    auto& member=player_state(game,id);
+    if (auto* previous=get_entity(game,member.controlled)) previous->owner=-1;
+    member.controlled=controlled;
+    next->owner=id;
+    return true;
+}

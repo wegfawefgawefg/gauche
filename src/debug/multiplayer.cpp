@@ -26,7 +26,7 @@ Input bot_offer_input(MultiplayerDebug& debug, const Game& game, int owner,
         if (token == 0) continue;
         const Reward offer = current_offer(game, owner, choice);
         if (game.run.phase == RunPhase::Shop &&
-            game.run.coins[static_cast<std::size_t>(owner)] < shop_price(offer.item)) continue;
+            player_state(game, owner).coins < shop_price(offer.item)) continue;
         Inventory trial = player.inventory;
         if (offer.kind == RewardKind::Item && !insert_item(trial, reward_item(offer))) {
             // Exchange atomically through normal offer validation; never discard the fist
@@ -51,8 +51,8 @@ Input bot_offer_input(MultiplayerDebug& debug, const Game& game, int owner,
 // BOT: Local input generation only. All resulting actions use the normal network input path.
 Input multiplayer_bot_input(MultiplayerDebug& debug, const Game& game, int owner) {
     Input input;
-    if (owner < 0 || owner >= 4) return input;
-    const auto* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (owner < 0 || !has_player(game, owner)) return input;
+    const auto* player = get_entity(game, player_state(game, owner).controlled);
     if (!player) return input;
     const auto tick = ++debug.input_tick;
     if (tick % 18 == 1) {
@@ -67,7 +67,7 @@ Input multiplayer_bot_input(MultiplayerDebug& debug, const Game& game, int owner
     input.reload = tick % 151 == 0;
     if (tick % 97 == 0) input.select = static_cast<int>(random_value(debug) % quick_slots);
     if (game.run.phase == RunPhase::Reward || game.run.phase == RunPhase::Shop ||
-        game.run.pending_count[static_cast<std::size_t>(owner)] > 0) {
+        player_state(game, owner).pending_count > 0) {
         input = {};
         if (tick % 30 == 0) input = bot_offer_input(debug, game, owner, *player);
     }
@@ -75,6 +75,7 @@ Input multiplayer_bot_input(MultiplayerDebug& debug, const Game& game, int owner
 }
 
 void init_multiplayer_debug(MultiplayerDebug& debug, MenuShell& menu, int argc, char** argv) {
+    menu.network->admission_limit = std::max(1, number_arg(value_arg(argc, argv, "--max-players")).value_or(16));
     debug.bot = has_arg(argc, argv, "--bot");
     debug.random = static_cast<std::uint32_t>(number_arg(value_arg(argc, argv, "--bot-seed")).value_or(1));
     if (!debug.random) debug.random = 1;
@@ -106,7 +107,7 @@ void update_multiplayer_debug(MultiplayerDebug& debug, MenuShell& menu) {
         menu.network->party_ready = true; send_party_state(*menu.network);
     }
     if (debug.auto_start > 0 && menu.rooms.host && !menu.network->match_started &&
-        std::popcount(menu.network->party_ready_mask) >= debug.auto_start)
+        static_cast<int>(menu.network->ready_players.size()) >= debug.auto_start)
         room_action(menu, "room:start");
     if (debug.auto_restart && menu.network->role == NetRole::Host && menu.network->rollback.game.game_over) {
         if (!debug.restart_at) debug.restart_at = now + 2000;

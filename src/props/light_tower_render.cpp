@@ -18,7 +18,7 @@ void draw_light_tower(SDL_Renderer* renderer,const GameGraphics& graphics,const 
     const double angle=std::atan2(dx,-dy)*180/3.141592653589793;
     const auto light=light_at_cell(lighting,cell);
     bool obscures=false;
-    for (Handle h:game.players) if (const auto* player=get_entity(game,h))
+    for (Handle h : controlled_entities(game)) if (const auto* player=get_entity(game,h))
         if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-4) obscures=true;
     const bool dark=tower.growth_ticks>0 && (tower.growth_ticks<=tower_fall_ticks || tower.growth_ticks%12<6);
     SDL_Texture* texture=texture_for(graphics,tower.hp<50 || tower.growth_ticks ? Sprite::TowerBuckled : Sprite::LightTower);

@@ -6,14 +6,14 @@
 inline void arrange_footprint_scene(Game& game, Cosmetics& cosmetics) {
     game = {}; cosmetics = {};
     game.started = true; game.tick = 120;
-    game.run.floor = 1; game.run.phase = RunPhase::Playing; game.run.online[0] = true;
+    game.run.floor = 1; game.run.phase = RunPhase::Playing; player_state(game,0).online = true;
     game.stage.width = 28; game.stage.height = 24;
     game.stage.tiles.assign(28*24, {TileKind::Wall, 100, 0});
     for (int y = 4; y < 20; ++y)
         for (int x = 4; x < 24; ++x) *game.stage.at({x, y}) = {TileKind::Grass, 0, 0};
     game.run.spawn = {11, 12};
-    game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
-    Entity& player = *get_entity(game, game.players[0]);
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn);
+    Entity& player = *get_entity(game, player_state(game,0).controlled);
     cosmetics.frame_alpha = 1;
     update_cosmetics(cosmetics, game, player.cell);
     // PRESENTATION ONLY: Feed recorded cardinal positions into the pose/footprint

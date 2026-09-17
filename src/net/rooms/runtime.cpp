@@ -213,7 +213,7 @@ bool room_action(MenuShell& menu, std::string_view action) {
         room.metadata.host_name = room.name;
         room.metadata.session_name = page.room_name.substr(0, 64);
         room.metadata.privacy = 1;
-        room.metadata.max_players = 4;
+        room.metadata.max_players = menu.network->admission_limit;
         room.metadata.contract.game_version = std::to_string(gameplay_version);
         room.metadata.contract.net_protocol = "gauche-" + std::to_string(wire_version);
         room.metadata.contract.allow_live_mod_reload = false;
@@ -265,7 +265,7 @@ void update_room_session(MenuShell& menu) {
     page.room_busy = room.busy;
     page.party_host = menu.network->role == NetRole::Host;
     page.party_ready = menu.network->party_ready;
-    page.party_ready_mask = menu.network->party_ready_mask;
+    page.party_ready_count = static_cast<unsigned>(menu.network->ready_players.size());
     page.party_code = room.code;
     page.connection_status = traversal_status(*menu.network);
     if (room.active && !room.host && !menu.network->ready && !menu.network->status.empty())

@@ -56,8 +56,8 @@ const Entity* ridden_river_raft(const Game& game,const Entity& actor) {
         const auto* raft=get_entity(game,actor.entity_a);
         return raft && valid(*raft) && raft->entity_b==handle ? raft : nullptr;
     }
-    if (actor.kind!=EntityKind::Player || actor.health<=0 || actor.owner<0 || actor.owner>=4 ||
-        !game.run.online[static_cast<std::size_t>(actor.owner)]) return nullptr;
+    if (actor.kind!=EntityKind::Player || actor.health<=0 || actor.owner<0 || !has_player(game, actor.owner) ||
+        !player_state(game, actor.owner).online) return nullptr;
     for (const auto& raft:game.entities) if (raft.entity_a==handle && valid(raft)) return &raft;
     return nullptr;
 }
@@ -76,8 +76,8 @@ void clear_river_raft(Game& game,Entity& raft) {
 }
 void board_river_raft(Game& game,int player_slot) {
     auto& player=game.entities[static_cast<std::size_t>(player_slot)];
-    if (player.kind!=EntityKind::Player || player.health<=0 || player.toss.ticks || player.owner<0 || player.owner>=4 ||
-        !game.run.online[static_cast<std::size_t>(player.owner)] ||
+    if (player.kind!=EntityKind::Player || player.health<=0 || player.toss.ticks || player.owner<0 || !has_player(game, player.owner) ||
+        !player_state(game, player.owner).online ||
         ridden_sled(game,player) || ridden_river_raft(game,player)) return;
     for (auto& raft:game.entities) {
         if (!afloat(game,raft) || raft.point_a!=raft.cell || raft.cell!=player.cell) continue;
@@ -94,7 +94,7 @@ void step_river_raft(Game& game,int slot) {
     }
     sync_passengers(game,raft);
     // Landing hooks and teleports can arrive without an ordinary walking step.
-    for (Handle player:game.players) if (auto* rider=get_entity(game,player);rider && rider->cell==raft.cell) board_river_raft(game,player.slot);
+    for (Handle player : controlled_entities(game)) if (auto* rider=get_entity(game,player);rider && rider->cell==raft.cell) board_river_raft(game,player.slot);
     load_cargo(game,raft);
     auto* rider=get_entity(game,raft.entity_a);
     const Cell flow=water_current(game.stage.at_or_border(raft.cell));

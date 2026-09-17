@@ -15,7 +15,7 @@ inline void arrange_belt_scene(Game& game,Cosmetics& cosmetics) {
     for(int y=0;y<28;++y) for(int x=17;x<=19;++x) plan.protected_cells[static_cast<std::size_t>(y*36+x)]=1;
     place_assembly_belts(game,plan);assembly_supplies(game,room);
     brake_belt(game,{14,16});
-    auto& player=*get_entity(game,game.players[0]);player.cell={22,11};player.facing={0,-1};
+    auto& player=*get_entity(game,player_state(game,0).controlled);player.cell={22,11};player.facing={0,-1};
     player.inventory={};insert_item(player.inventory,make_item(ItemKind::BeltCrank));insert_item(player.inventory,make_item(ItemKind::BrakeShoe));
     spawn_entity(game,EntityKind::RivetGunner,{22,15});
     cosmetics.camera={18,13};

@@ -75,7 +75,7 @@ void party_page(ViewBuilder& ui, const FrontPage& page) {
         ui.label("card", "party-member-" + std::to_string(i), member.display_name +
             (member.is_host ? "  ·  Host" : ""), 34, 19);
     }
-    ui.label("card", "ready-count", std::to_string(std::popcount(page.party_ready_mask)) +
+    ui.label("card", "ready-count", std::to_string(page.party_ready_count) +
         " players ready", 34, 17);
     button(ui, "party-ready", page.party_ready ? "Ready  ·  Click to unready" : "Ready Up", "room:ready");
     if (page.party_host) button(ui, "party-start", "Start Run", "room:start");

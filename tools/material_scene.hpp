@@ -12,15 +12,15 @@ inline void arrange_material_scene(Game& game, Cosmetics& cosmetics) {
     game.tick = 120;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game,0).online = true;
     game.stage.width = 28; game.stage.height = 22;
     game.stage.tiles.assign(28 * 22, {TileKind::Wall, 100, 0});
     for (int y = 4; y < 18; ++y)
         for (int x = 4; x < 24; ++x)
             *game.stage.at({x, y}) = {TileKind::Grass, 0, 0};
     game.run.spawn = {14, 11};
-    game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
-    get_entity(game, game.players[0])->owner = 0;
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn);
+    get_entity(game, player_state(game,0).controlled)->owner = 0;
     cosmetics.camera = {14.0F, 11.0F};
     cosmetics.camera_ready = true;
     material_impact(game, make_item(ItemKind::OilFlask), {11, 9});

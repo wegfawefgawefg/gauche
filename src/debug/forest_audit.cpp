@@ -78,7 +78,7 @@ int run_forest_audit() {
     auto game=std::make_unique<Game>();
     std::puts("floor,seed,reachable,walkable,mobile_fighters,specialists,reactive,bosses,near_fighter,quiet_largest,ordinary_rooms,empty_rooms,props,interactive_props,loose_items,giant_tree,timber_grove,snake_pit,spider_cave,bear_den,root_maze,major,minor,open_sectors,rivers,ant_colonies,mushroom_districts,component_rows,report_capped,passive_life,enemy_sources,generation_us");
     for(int floor=1;floor<=4;++floor)for(unsigned seed=1;seed<=16;++seed) {
-        *game={};game->run.floor=floor;game->rng=game->run.seed=seed;game->run.online[0]=true;
+        *game={};game->run.floor=floor;game->rng=game->run.seed=seed;player_state(*game, 0).online=true;
         PopulationReport report;
         const auto start=std::chrono::steady_clock::now();
         generate_world_floor(*game,FloorLayout::Generated,&report);

@@ -41,7 +41,7 @@ void find_light(Game& game,Entity& moth) {
     for (int slot=0;slot<max_entities;++slot) {
         const Entity& e=game.entities[static_cast<std::size_t>(slot)];
         if (e.kind==EntityKind::None || e.kind==EntityKind::FurnaceMoth || (e.health<=0 && e.kind!=EntityKind::GroundItem)) continue;
-        if (e.kind==EntityKind::Player && e.owner>=0 && e.owner<4 && !game.run.online[static_cast<std::size_t>(e.owner)]) continue;
+        if (e.kind==EntityKind::Player && e.owner>=0 && has_player(game, e.owner) && !player_state(game, e.owner).online) continue;
         const Handle handle{slot,e.generation};
         consider(e.cell,e.light,handle,e.facing);
         consider(e.cell,item_light(e.kind==EntityKind::GroundItem ? e.ground_item : *e.inventory.held()),handle,e.facing);

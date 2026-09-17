@@ -249,7 +249,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
                  const Game& game, int local_owner, float zoom,
                  const Cosmetics* cosmetics, const PointerState& pointer,
                  bool show_hud, bool compact_details, const WorldRenderOptions* inspection) {
-    const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(local_owner)]);
+    const Entity* player = get_entity(game, player_state(game, local_owner).controlled);
     const ViewCamera camera = inspection ? inspection->camera : cosmetics != nullptr ?
         camera_for(*cosmetics, game, local_owner) :
         ViewCamera{player == nullptr ? Cell{32, 32} : player->cell};

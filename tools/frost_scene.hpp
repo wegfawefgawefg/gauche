@@ -30,7 +30,7 @@ inline void arrange_frost_scene(Game& game, Cosmetics& cosmetics, Entity& player
                 if (shot.kind == EntityKind::Projectile) { shot.cell = {20, 15}; shot.timer_b = 3; }
         }
     }
-    launch_recoverable(game, game.players[0].slot, player.inventory.slots[0], {-1, 0});
+    launch_recoverable(game, player_state(game,0).controlled.slot, player.inventory.slots[0], {-1, 0});
     for (Entity& shot : game.entities)
         if (shot.kind == EntityKind::Projectile && shot.ground_item.kind == ItemKind::IceNeedle) {
             shot.cell = {20, 12}; shot.timer_b = 2;

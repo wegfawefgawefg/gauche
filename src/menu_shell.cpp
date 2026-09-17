@@ -100,7 +100,7 @@ void build_policy_rows(void* data, const GubsyLobbyState&,
 void ensure_lobby_defaults(void* data, GubsyLobbyState& lobby) {
     auto& menu = *static_cast<MenuShell*>(data);
     if (menu.lobby_configured) return;
-    lobby.max_players = 4;
+    lobby.max_players = menu.network->admission_limit;
     menu.lobby_configured = true;
 }
 
@@ -117,8 +117,8 @@ nlohmann::json serialize_policy(void* data, const GubsyLobbyState&) {
 }
 
 bool validate_policy(void*, const GubsyLobbyState& lobby, std::string& message) {
-    if (lobby.max_players <= 4) return true;
-    message = "Gauche supports at most four players";
+    if (lobby.max_players > 0) return true;
+    message = "Player capacity must be positive";
     return false;
 }
 
@@ -127,11 +127,11 @@ void sync_direct_members(MenuShell& menu) {
     if (network.role == NetRole::Solo ||
         !gubsy_get_lobby_state(*menu.runtime).online) return;
     std::vector<MatchmakingMember> members;
-    for (int owner = 0; owner < 4; ++owner) {
+    for (const auto& [owner, participant] : network.rollback.game.players) {
         if (owner == network.local_owner) continue;
         const bool connected = network.role == NetRole::Host ?
-            network.peers[static_cast<std::size_t>(owner)].connected :
-            network.ready && network.rollback.game.run.online[static_cast<std::size_t>(owner)];
+            network.peers.contains(owner) && network.peers.at(owner).connected :
+            network.ready && player_state(network.rollback.game, owner).online;
         if (!connected) continue;
         MatchmakingMember member;
         member.member_id = "gauche-player-" + std::to_string(owner + 1);

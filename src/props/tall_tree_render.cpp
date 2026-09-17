@@ -22,7 +22,7 @@ void draw_tall_tree(SDL_Renderer* renderer,const GameGraphics& graphics,const Ga
     const double angle=std::atan2(dx,-dy)*180/3.141592653589793;
     const auto light=light_at_cell(lighting,cell);
     bool obscures=false;
-    for (Handle h:game.players) if (const Entity* player=get_entity(game,h))
+    for (Handle h : controlled_entities(game)) if (const Entity* player=get_entity(game,h))
         if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-tree_height(tree)) obscures=true;
     const auto draw=[&](Sprite sprite,const SDL_FRect* source,SDL_FRect rect,SDL_FPoint anchor) {
         SDL_Texture* texture=texture_for(graphics,sprite);

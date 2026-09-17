@@ -11,6 +11,6 @@ inline void arrange_breaker_scene(Game& game,Cosmetics& cosmetics,bool raised) {
         if (raised && i==1) { guard->label_a=BreakerHammer; guard->timer_a=30; guard->sprite=Sprite::BreakerRaise; }
         if (i==2) { guard->counter_c=0; guard->sprite=Sprite::BreakerUnshielded; }
     }
-    auto& player=*get_entity(game,game.players[0]);player.cell={18,17};
+    auto& player=*get_entity(game,player_state(game,0).controlled);player.cell={18,17};
     cosmetics.camera={18,13};
 }

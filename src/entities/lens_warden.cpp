@@ -54,8 +54,8 @@ bool reaches_player(const Game& game, const BeamTrace& beam) {
         const Handle hit = beam.cells[static_cast<std::size_t>(i)].target;
         const Entity* actor = get_entity(game, hit);
         if (!actor || actor->kind != EntityKind::Player || actor->health <= 0 ||
-            actor->owner < 0 || actor->owner >= 4) continue;
-        if (game.run.online[static_cast<std::size_t>(actor->owner)]) return true;
+            actor->owner < 0 || !has_player(game, actor->owner)) continue;
+        if (player_state(game, actor->owner).online) return true;
     }
     return false;
 }

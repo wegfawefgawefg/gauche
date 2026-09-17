@@ -3,9 +3,9 @@
 
 inline void arrange_motion_scene(Game& game, Cosmetics& cosmetics) {
     arrange_material_scene(game, cosmetics);
-    Entity& player = *get_entity(game, game.players[0]);
+    Entity& player = *get_entity(game, player_state(game,0).controlled);
     player.facing = {-1, 0};
-    EntityPose& pose = cosmetics.poses[static_cast<std::size_t>(game.players[0].slot)];
+    EntityPose& pose = cosmetics.poses[static_cast<std::size_t>(player_state(game,0).controlled.slot)];
     pose.seen = pose.camera_guide_ready = true;
     pose.kind = EntityKind::Player;
     pose.generation = player.generation;

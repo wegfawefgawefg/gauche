@@ -18,7 +18,7 @@ inline void arrange_recoverables(Game& game, Cosmetics& cosmetics, Entity& playe
         shot.label_a = static_cast<int>(index == 0 ? ProjectileKind::Boomerang : ProjectileKind::Rock);
         shot.ground_item = make_item(index == 0 ? ItemKind::Boomerang : ItemKind::ThrowingRock);
         shot.sprite = item_sprite(shot.ground_item);
-        shot.entity_a = game.players[0];
+        shot.entity_a = player_state(game,0).controlled;
         shot.counter_a = 3; shot.attack_interval = 6;
         shot.timer_a = 40; shot.timer_b = 1;
         shot.facing = {1, 0};

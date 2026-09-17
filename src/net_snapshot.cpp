@@ -17,8 +17,8 @@ void acknowledge(NetSession& session, std::uint32_t id) {
 } // namespace
 
 void queue_snapshot(NetSession& session, int owner) {
-    if (owner <= 0 || owner >= 4) return;
-    NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+    if (owner <= 0 || !session.peers.contains(owner)) return;
+    NetPeer& peer = session.peers.at(owner);
     if (!peer.connected) return;
     auto bytes=encode_network_snapshot(session.rollback.game);
     if(bytes.empty()){session.status="World snapshot exceeds transfer limit";return;}
@@ -38,7 +38,7 @@ void queue_snapshot(NetSession& session, int owner) {
 }
 
 void send_snapshot_chunks(NetSession& session, int owner) {
-    NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+    NetPeer& peer = session.peers.at(owner);
     SnapshotSend& transfer = peer.snapshot;
     if (!peer.connected || transfer.id == 0 || transfer.bytes.empty()) return;
     const auto count = static_cast<std::uint16_t>(
@@ -135,7 +135,7 @@ void receive_snapshot_chunk(NetSession& session, PacketReader& reader) {
 }
 
 void send_history_since(NetSession& session, int owner, std::uint64_t after_tick) {
-    const NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+    const NetPeer& peer = session.peers.at(owner);
     if (!peer.connected || peer.snapshot.id != 0) return;
     if (!session.rollback.frames.empty() &&
         session.rollback.frames.front().tick > after_tick + 1) {

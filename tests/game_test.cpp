@@ -18,7 +18,7 @@ Game small_game() {
     game.stage.width = 8;
     game.stage.height = 5;
     game.stage.tiles.resize(40);
-    game.players[0] = spawn_entity(game, EntityKind::Player, {2, 2});
+    player_state(game, 0).controlled = spawn_entity(game, EntityKind::Player, {2, 2});
     game.started = true;
     return game;
 }
@@ -29,7 +29,7 @@ bool deterministic_replay() {
     start_test_arena(first, 7654321);
     start_test_arena(second, 7654321);
     for (int tick = 0; tick < 240; ++tick) {
-        std::array<Input, 4> inputs{};
+        PlayerInputs inputs{};
         if (tick % 20 < 10) inputs[0].move = {1, 0};
         else inputs[0].move = {0, 1};
         if (tick == 50) inputs[0].select = 1;
@@ -57,14 +57,14 @@ bool handle_reuse() {
 
 bool artifact_rules() {
     Game game = small_game();
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::AllPiercing);
     player->inventory.slots[0] = make_item(ItemKind::Pistol);
     *game.stage.at({5, 2}) = {TileKind::Wall, 100, 0};
     const Handle first = spawn_entity(game, EntityKind::Zombie, {3, 2});
     const Handle second = spawn_entity(game, EntityKind::Zombie, {4, 2});
     const Handle behind_wall = spawn_entity(game, EntityKind::Zombie, {6, 2});
-    if (!check(use_held_item(game, game.players[0].slot, {6, 2}),
+    if (!check(use_held_item(game, player_state(game, 0).controlled.slot, {6, 2}),
                "piercing shot failed")) return false;
     if (!check(get_entity(game, first)->health == 24 &&
                get_entity(game, second)->health == 24 &&
@@ -78,18 +78,18 @@ bool artifact_rules() {
     player->health = 70;
     const Handle friend_handle = spawn_entity(game, EntityKind::Player, {2, 3});
     get_entity(game, friend_handle)->health = 80;
-    game.players[1] = friend_handle;
+    player_state(game, 1).controlled = friend_handle;
     for (int tick = 0; tick < 60; ++tick) step_game(game, {});
     if (!check(player->health == 70 && get_entity(game, friend_handle)->health == 80,
                "hearth must not regenerate passively")) return false;
     *player->inventory.held() = make_item(ItemKind::CookedMeat);
     const int meal_heal = item_pattern(*player->inventory.held()).heal;
-    if (!check(use_held_item(game, game.players[0].slot, player->cell) &&
+    if (!check(use_held_item(game, player_state(game, 0).controlled.slot, player->cell) &&
                player->health == std::min(100, 70 + meal_heal + 3) &&
                get_entity(game, friend_handle)->health == 83,
                "hearth cooked meal did not share a bounded bonus")) return false;
     Game reflection = small_game();
-    Entity* defender = get_entity(reflection, reflection.players[0]);
+    Entity* defender = get_entity(reflection, player_state(reflection, 0).controlled);
     defender->artifacts |= 1U << static_cast<unsigned int>(ArtifactKind::Reflector);
     const Handle attacker = spawn_entity(reflection, EntityKind::Zombie, {3, 2});
     for (std::uint64_t seed = 1; seed < 100; ++seed) {
@@ -97,17 +97,17 @@ bool artifact_rules() {
         probe.rng = seed;
         if (random_u32(probe) % 4 == 0) { reflection.rng = seed; break; }
     }
-    damage_entity(reflection, reflection.players[0].slot, 10, {3, 2});
+    damage_entity(reflection, player_state(reflection, 0).controlled.slot, 10, {3, 2});
     return check(defender->health == 90 && get_entity(reflection, attacker)->health == 35,
                  "reflector did not return a deterministic hit");
 }
 
 bool status_rules() {
     Game game = small_game();
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->inventory.slots[0] = make_item(ItemKind::SleepMeds, 2);
     const Handle wolf = spawn_entity(game, EntityKind::Wolf, {4, 2});
-    if (!check(use_held_item(game, game.players[0].slot, {4, 2}),
+    if (!check(use_held_item(game, player_state(game, 0).controlled.slot, {4, 2}),
                "sleep meds failed to sedate target")) return false;
     const Cell original = get_entity(game, wolf)->cell;
     for (int tick = 0; tick < 60; ++tick) step_game(game, {});
@@ -126,19 +126,19 @@ bool status_rules() {
 bool offline_reward_rules() {
     Game game;
     start_run(game, 4888);
-    game.run.online[1] = true;
-    game.players[1] = spawn_entity(game, EntityKind::Player, game.run.spawn + Cell{1, 0});
-    get_entity(game, game.players[1])->owner = 1;
+    player_state(game, 1).online = true;
+    player_state(game, 1).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn + Cell{1, 0});
+    get_entity(game, player_state(game, 1).controlled)->owner = 1;
     finish_floor(game);
     int safe_choice = -1;
     for (int index = 0; index < 3; ++index) {
-        const Reward reward = game.run.offers[1][static_cast<std::size_t>(index)];
+        const Reward reward = player_state(game, 1).offers[static_cast<std::size_t>(index)];
         if (reward.kind == RewardKind::Health || reward.kind == RewardKind::Speed)
             safe_choice = index;
     }
     if (!check(safe_choice >= 0, "reward offer lacks a non-item choice")) return false;
     for (int index = 0; index < 3; ++index) {
-        const Reward reward = game.run.offers[0][static_cast<std::size_t>(index)];
+        const Reward reward = player_state(game, 0).offers[static_cast<std::size_t>(index)];
         if (reward.kind == RewardKind::Health || reward.kind == RewardKind::Speed) {
             choose_reward(game, 0, index);
             break;
@@ -146,17 +146,17 @@ bool offline_reward_rules() {
     }
     if (!check(game.run.phase == RunPhase::Reward,
                "online teammate did not hold reward screen")) return false;
-    game.run.online[1] = false;
+    player_state(game, 1).online = false;
     advance_run(game);
-    if (!check(game.run.floor == 2 && game.run.pending_count[1] == 1 &&
+    if (!check(game.run.floor == 2 && player_state(game, 1).pending_count == 1 &&
                game.run.phase == RunPhase::Playing,
                "offline teammate blocked floor or lost reward")) return false;
-    game.run.online[1] = true;
-    const Reward pending = game.run.pending_offers[1][0][static_cast<std::size_t>(safe_choice)];
-    Entity* player = get_entity(game, game.players[1]);
+    player_state(game, 1).online = true;
+    const Reward pending = player_state(game, 1).pending_offers[0][static_cast<std::size_t>(safe_choice)];
+    Entity* player = get_entity(game, player_state(game, 1).controlled);
     const int before = pending.kind == RewardKind::Health ? player->max_health : player->move_interval;
     choose_pending_reward(game, 1, safe_choice);
-    return check(game.run.pending_count[1] == 0 &&
+    return check(player_state(game, 1).pending_count == 0 &&
                  (pending.kind == RewardKind::Health ?
                   player->max_health == before + pending.amount :
                   player->move_interval == std::max(3, before - pending.amount)),
@@ -168,10 +168,10 @@ bool entrance_respawn_rules() {
     game.run.phase = RunPhase::Playing;
     game.run.death_policy = DeathPolicy::Entrance;
     game.run.spawn = {2, 2};
-    game.run.online[0] = true;
-    get_entity(game, game.players[0])->owner = 0;
-    damage_entity(game, game.players[0].slot, 1000, {3, 2});
-    Entity* player = get_entity(game, game.players[0]);
+    player_state(game, 0).online = true;
+    get_entity(game, player_state(game, 0).controlled)->owner = 0;
+    damage_entity(game, player_state(game, 0).controlled.slot, 1000, {3, 2});
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->spawn_wait = 1;
     const Handle blocker = spawn_entity(game, EntityKind::Spawner, game.run.spawn);
     step_game(game, {});
@@ -183,23 +183,23 @@ bool entrance_respawn_rules() {
 
 bool held_item_direction() {
     Game game = small_game();
-    game.run.online[0] = true;
-    Entity* player = get_entity(game, game.players[0]);
+    player_state(game, 0).online = true;
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->owner = 0;
     player->inventory.held()->cooldown = 20;
-    std::array<Input, 4> inputs{};
+    PlayerInputs inputs{};
     inputs[0].aim = {12, 3};
     inputs[0].use = true;
     step_game(game, inputs);
     if (!check(player->facing == Cell{1, 0},
                "held item direction escaped its tile when use was cooling down")) return false;
     Game trigger = small_game();
-    trigger.run.online[0] = true;
-    Entity* actor = get_entity(trigger, trigger.players[0]);
+    player_state(trigger, 0).online = true;
+    Entity* actor = get_entity(trigger, player_state(trigger, 0).controlled);
     actor->owner = 0;
     actor->inventory.slots[0] = make_item(ItemKind::Wall, 1);
     actor->facing = {0, -1};
-    std::array<Input, 4> press{};
+    PlayerInputs press{};
     press[0].use = true;
     step_game(trigger, press);
     return check(trigger.stage.at({2, 1})->kind == TileKind::Wall,
@@ -209,10 +209,10 @@ bool held_item_direction() {
 bool repeated_inventory_drops() {
     Game game = small_game();
     game.run.phase = RunPhase::Reward;
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->inventory.slots[2] = make_item(ItemKind::Pickaxe);
     player->inventory.slots[3] = make_item(ItemKind::Bow);
-    std::array<Input, 4> input{};
+    PlayerInputs input{};
     input[0].select = 2;
     input[0].drop = true;
     step_game(game, input);
@@ -239,11 +239,11 @@ bool switch_route() {
     Game game;
     start_run(game, 7171);
     finish_floor(game);
-    game.run.chosen.fill(true);
+    for (auto& [id, member] : game.players) member.chosen=true;
     advance_run(game);
     if (!check(game.run.floor == 2 && game.run.objective == ObjectiveKind::Switch,
                "second floor did not use a switch route")) return false;
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     Cell switch_cell{-1, -1};
     Cell door_cell{-1, -1};
     for (const Entity& entity : game.entities) {
@@ -271,14 +271,14 @@ bool switch_route() {
 
 bool forest_tools() {
     Game game = small_game();
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->inventory.slots[0] = make_item(ItemKind::Pickaxe);
     *game.stage.at({3, 2}) = {TileKind::Wall, 100, 0};
-    if (!check(use_held_item(game, game.players[0].slot, {3, 2}) &&
+    if (!check(use_held_item(game, player_state(game, 0).controlled.slot, {3, 2}) &&
                game.stage.at({3, 2})->hp == 50,
                "pickaxe did not crack a wall")) return false;
     player->inventory.slots[0].cooldown = 0;
-    use_held_item(game, game.players[0].slot, {3, 2});
+    use_held_item(game, player_state(game, 0).controlled.slot, {3, 2});
     if (!check(game.stage.at({3, 2})->kind == TileKind::Ruin,
                "pickaxe did not open a shortcut")) return false;
 
@@ -300,17 +300,17 @@ bool forest_tools() {
                player->inventory.slots[0].kind == ItemKind::CookedMeat,
                "campfire did not cook carried meat")) return false;
     player->health = 75;
-    return check(use_held_item(game, game.players[0].slot, player->cell) &&
+    return check(use_held_item(game, player_state(game, 0).controlled.slot, player->cell) &&
                  player->health == 93,
                  "cooked meat did not heal its owner");
 }
 
 bool track_before_train() {
     Game game = small_game();
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->inventory.slots[0] = make_item(ItemKind::ConductorHat);
     *game.stage.at({5, 2}) = {TileKind::Wall, 100, 0};
-    if (!check(use_held_item(game, game.players[0].slot, player->cell),
+    if (!check(use_held_item(game, player_state(game, 0).controlled.slot, player->cell),
                "hat failed to start rail layer")) return false;
     for (int tick = 0; tick < 9; ++tick) step_game(game, {});
     bool train = false;
@@ -337,12 +337,12 @@ bool forest_progression() {
             finish_floor(game);
             choose_reward(game, 0, 1);
             if (game.run.phase == RunPhase::Reward) {
-                Entity* player = get_entity(game, game.players[0]);
+                Entity* player = get_entity(game, player_state(game, 0).controlled);
                 player->inventory.slots[0] = {};
                 choose_reward(game, 0, 1);
             }
             if (game.run.phase == RunPhase::Shop) {
-                game.run.shop_ready[0] = true;
+                player_state(game, 0).shop_ready = true;
                 advance_run(game);
             }
         }
@@ -390,7 +390,7 @@ bool crusher_room_rules() {
                "forest trick room blocked the route")) return false;
 
     Game crush = small_game();
-    Entity* victim = get_entity(crush, crush.players[0]);
+    Entity* victim = get_entity(crush, player_state(crush, 0).controlled);
     victim->cell = {4, 2};
     const Handle crusher = spawn_entity(crush, EntityKind::Crusher, {3, 2});
     get_entity(crush, crusher)->script_tick = 1;
@@ -400,7 +400,7 @@ bool crusher_room_rules() {
     if (!check(victim->health == 0, "crusher did not kill against a wall")) return false;
 
     Game push = small_game();
-    Entity* pushed = get_entity(push, push.players[0]);
+    Entity* pushed = get_entity(push, player_state(push, 0).controlled);
     pushed->cell = {4, 2};
     const Handle moving = spawn_entity(push, EntityKind::Crusher, {3, 2});
     get_entity(push, moving)->script_tick = 1;
@@ -410,7 +410,7 @@ bool crusher_room_rules() {
                "crusher killed despite a free push cell")) return false;
 
     Game train = small_game();
-    get_entity(train, train.players[0])->cell = {6, 2};
+    get_entity(train, player_state(train, 0).controlled)->cell = {6, 2};
     const Handle obstacle = spawn_entity(train, EntityKind::Crusher, {2, 2});
     const Handle engine = spawn_entity(train, EntityKind::Train, {3, 2});
     *train.stage.at({2, 2}) = {TileKind::Rail, 0, 0};
@@ -439,17 +439,17 @@ bool zombie_chicken_rules() {
 
 bool footstep_rules() {
     Game game = small_game();
-    Entity* player = get_entity(game, game.players[0]);
-    if (!check(move_entity(game, game.players[0].slot, {3, 2}) && game.sound_count == 1,
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
+    if (!check(move_entity(game, player_state(game, 0).controlled.slot, {3, 2}) && game.sound_count == 1,
                "first footstep was silent")) return false;
     const SoundId first = game.sounds[0].sound;
     game.sound_count = 0;
     player->move_wait = 0;
-    if (!check(move_entity(game, game.players[0].slot, {2, 2}) && game.sound_count == 1 &&
+    if (!check(move_entity(game, player_state(game, 0).controlled.slot, {2, 2}) && game.sound_count == 1 &&
                game.sounds[0].sound != first, "feet did not alternate")) return false;
     game.sound_count = 0;
     *game.stage.at({1, 2}) = {TileKind::Wall, 100, 0};
-    return check(!move_entity(game, game.players[0].slot, {1, 2}) &&
+    return check(!move_entity(game, player_state(game, 0).controlled.slot, {1, 2}) &&
                  player->move_wait == player->move_interval &&
                  game.sound_count == 1 && game.sounds[0].sound == SoundId::HitBlock1,
                  "blocked step did not take its beat and thump");

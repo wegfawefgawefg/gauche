@@ -10,13 +10,13 @@ inline void arrange_plant_scene(Game& game, Cosmetics& cosmetics) {
     game.tick = 120;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game,0).online = true;
     game.stage.width = 28; game.stage.height = 24;
     game.stage.tiles.assign(28*24, {TileKind::Wall, 100, 0});
     for (int y = 4; y < 20; ++y)
         for (int x = 4; x < 24; ++x) *game.stage.at({x, y}) = {TileKind::Grass, 0, 0};
     game.run.spawn = {14, 12};
-    game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn);
     cosmetics.camera = {14.5F, 12.0F}; cosmetics.camera_ready = true;
     const Handle root_handle = spawn_entity(game, EntityKind::RootTurret, {11, 11});
     Entity& root = *get_entity(game, root_handle);

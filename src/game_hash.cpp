@@ -43,22 +43,24 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(light.cell.y));
         mix_light(hash, light.light);
     }
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-        mix(hash, static_cast<std::uint64_t>(game.players[owner].slot));
-        mix(hash, game.players[owner].generation);
-        mix(hash, static_cast<std::uint64_t>(game.run.coins[owner]));
-        mix(hash, static_cast<std::uint64_t>(game.run.chosen[owner]));
-        mix(hash, static_cast<std::uint64_t>(game.run.shop_ready[owner]));
-        mix(hash, static_cast<std::uint64_t>(game.run.online[owner]));
-        mix(hash, static_cast<std::uint64_t>(game.run.pending_count[owner]));
-        for (const Reward& reward : game.run.offers[owner]) {
+    mix(hash, game.players.size());
+    for (const auto& [owner, participant] : game.players) {
+        mix(hash, static_cast<std::uint64_t>(owner));
+        mix(hash, static_cast<std::uint64_t>(participant.controlled.slot));
+        mix(hash, participant.controlled.generation);
+        mix(hash, static_cast<std::uint64_t>(participant.coins));
+        mix(hash, static_cast<std::uint64_t>(participant.chosen));
+        mix(hash, static_cast<std::uint64_t>(participant.shop_ready));
+        mix(hash, static_cast<std::uint64_t>(participant.online));
+        mix(hash, static_cast<std::uint64_t>(participant.pending_count));
+        for (const Reward& reward : participant.offers) {
             mix(hash, static_cast<std::uint64_t>(reward.kind));
             mix(hash, static_cast<std::uint64_t>(reward.item));
             mix(hash, static_cast<std::uint64_t>(reward.artifact));
             mix(hash, static_cast<std::uint64_t>(reward.amount));
             mix(hash, static_cast<std::uint64_t>(reward.attribute));
         }
-        for (const auto& offer : game.run.pending_offers[owner]) {
+        for (const auto& offer : participant.pending_offers) {
             for (const Reward& reward : offer) {
                 mix(hash, static_cast<std::uint64_t>(reward.kind));
                 mix(hash, static_cast<std::uint64_t>(reward.item));
@@ -92,6 +94,10 @@ std::uint64_t game_hash(const Game& game) {
         mix(hash, static_cast<std::uint64_t>(tile.prop.broken));
         mix(hash, tile.prop.growth_ticks);
         mix(hash, tile.prop.covered);
+    }
+    mix(hash,game.stage.prop_owners.size());
+    for (const auto& [cell,id] : game.stage.prop_owners) {
+        mix(hash,static_cast<std::uint64_t>(cell)); mix(hash,static_cast<std::uint64_t>(id));
     }
     mix(hash,game.stage.roofs.size());
     for (const RoofSpan& roof:game.stage.roofs) {

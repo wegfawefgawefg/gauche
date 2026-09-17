@@ -426,8 +426,8 @@ void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus, float 
 }
 
 ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner) {
-    if (owner >= 0 && owner < 4) {
-        const Handle handle = game.players[static_cast<std::size_t>(owner)];
+    if (owner >= 0 && has_player(game, owner)) {
+        const Handle handle = player_state(game, owner).controlled;
         if (const Entity* player = get_entity(game, handle)) {
             const EntityPose& pose = cosmetics.poses[static_cast<std::size_t>(handle.slot)];
             if (pose.seen && pose.camera_guide_ready && pose.generation == player->generation)
@@ -435,8 +435,8 @@ ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner) {
         }
     }
     if (cosmetics.camera_ready) return cosmetics.camera;
-    if (owner >= 0 && owner < 4)
-        if (const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]))
+    if (owner >= 0 && has_player(game, owner))
+        if (const Entity* player = get_entity(game, player_state(game, owner).controlled))
             return player->cell;
     return {32.0F, 32.0F};
 }

@@ -158,6 +158,7 @@ bool place_prop(Stage& stage, Cell cell, PropKind kind, std::uint8_t variant) {
     Tile* tile = stage.at(cell);
     if (tile == nullptr || !walkable(tile->kind) || tile->prop.kind != PropKind::None)
         return false;
+    stage.prop_owners.erase(cell.y*stage.width+cell.x);
     tile->prop = {kind, static_cast<std::uint8_t>(prop_spec(kind).health), variant, false};
     if (kind==PropKind::Pallet || kind==PropKind::PalletStack || kind==PropKind::BoundRocks || kind==PropKind::ContainerSide) tile->prop.variant &= 1U;
     if (kind==PropKind::IcePillar) tile->prop.hp=static_cast<std::uint8_t>(prop_max_health(tile->prop));

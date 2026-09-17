@@ -11,7 +11,7 @@ inline void arrange_water_scene(Game& game, Cosmetics& cosmetics) {
     game.tick = 120;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game,0).online = true;
     FloorPlan plan;
     plan.width = 28; plan.height = 22;
     RoomPlan brook;
@@ -27,8 +27,8 @@ inline void arrange_water_scene(Game& game, Cosmetics& cosmetics) {
             if (game.stage.at({x, y})->kind == TileKind::Spring) source = {x, y};
     game.run.spawn = source + Cell{0, 2};
     game.run.exit = {20, 16};
-    game.players[0] = spawn_entity(game, EntityKind::Player, game.run.spawn);
-    get_entity(game, game.players[0])->owner = 0;
+    player_state(game,0).controlled = spawn_entity(game, EntityKind::Player, game.run.spawn);
+    get_entity(game, player_state(game,0).controlled)->owner = 0;
     spawn_entity(game, EntityKind::Campfire, source + Cell{4, 3});
     cosmetics.camera = source + Cell{2, 2};
     cosmetics.camera_ready = true;

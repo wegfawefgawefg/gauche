@@ -12,13 +12,13 @@
 
 struct CanonicalFrame {
     std::uint64_t tick = 0;
-    std::array<Input, 4> inputs{};
+    PlayerInputs inputs{};
     std::uint64_t hash = 0;
 };
 
 struct RollbackFrame {
     Game before{};
-    std::array<Input, 4> inputs{};
+    PlayerInputs inputs{};
     std::uint64_t tick = 0;
     std::uint64_t hash_after = 0;
     std::uint64_t host_hash = 0;
@@ -39,7 +39,7 @@ struct RollbackSession {
 };
 
 void begin_rollback(RollbackSession& session, const Game& initial);
-void predict_frame(RollbackSession& session, const std::array<Input, 4>& inputs);
+void predict_frame(RollbackSession& session, const PlayerInputs& inputs);
 void confirm_frame(RollbackSession& session, const CanonicalFrame& canonical);
 void confirm_host_current(RollbackSession& session);
 std::vector<CanonicalFrame> revise_host_input(RollbackSession& session,

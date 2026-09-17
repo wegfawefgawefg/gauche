@@ -10,8 +10,8 @@ namespace {
 
 bool offering(const Game& game, int owner) {
     return game.run.phase == RunPhase::Reward ||
-        (game.run.phase == RunPhase::Playing && owner >= 0 && owner < 4 &&
-         game.run.pending_count[static_cast<std::size_t>(owner)] > 0);
+        (game.run.phase == RunPhase::Playing && owner >= 0 && has_player(game, owner) &&
+         player_state(game, owner).pending_count > 0);
 }
 
 void reset_if_run_changed(InteractionUi& ui, const Game& game) {
@@ -181,7 +181,7 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
 void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
                              GubsyRuntime& runtime, Input& input) {
     reset_if_run_changed(ui, game);
-    if (owner<0 || owner>=4) { input={}; return; }
+    if (owner<0 || !has_player(game, owner)) { input={}; return; }
     const bool offered = offering(game, owner);
     const bool shop = game.run.phase == RunPhase::Shop;
     const bool open_down = inventory_button_down(runtime);
@@ -207,7 +207,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
         ui.inventory_open = !ui.inventory_open;
         ui.compare_ground = false;
         if (ui.inventory_open && !offered && !shop) {
-            const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+            const Entity* player = get_entity(game, player_state(game, owner).controlled);
             if (player != nullptr)
                 ui.compare_ground = reachable_pickup_item(game,*player).kind != ItemKind::None;
         }
@@ -266,7 +266,7 @@ void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
         if (number >= 0 && number < quick_slots) ui.slot_focus = number;
         if (drop) {
             const Entity* player = get_entity(game,
-                game.players[static_cast<std::size_t>(owner)]);
+                player_state(game, owner).controlled);
             const Item item = player == nullptr ? Item{} :
                 player->inventory.slots[static_cast<std::size_t>(ui.slot_focus)];
             if (item_can_drop(item)) {

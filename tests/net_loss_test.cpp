@@ -91,7 +91,7 @@ int main() {
         }
         if (!started) {
             started = std::all_of(clients.begin(), clients.end(), [](const auto& c) { return c->ready; }) &&
-                std::all_of(host->peers.begin()+1, host->peers.end(), [](const auto& p) { return p.connected && p.snapshot.id == 0; });
+                std::all_of(host->peers.begin(), host->peers.end(), [](const auto& p) { return p.second.connected && p.second.snapshot.id == 0; });
         }
         if (started && playing == 600) {
             for (auto& client : clients) for (int step = 0; step < 8 && client->ready &&

@@ -168,8 +168,8 @@ void release_player_inventory(Game& game, Entity& player, bool lost) {
     }
     player.inventory = {};
     insert_item(player.inventory, make_item(ItemKind::Fist));
-    if (player.owner >= 0 && player.owner < 4) {
-        auto& gold = game.run.coins[static_cast<std::size_t>(player.owner)];
+    if (player.owner >= 0 && has_player(game, player.owner)) {
+        auto& gold = player_state(game, player.owner).coins;
         if (!lost) place_coins(game, player.cell, gold);
         gold = 0;
     }

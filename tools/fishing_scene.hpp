@@ -22,7 +22,7 @@ inline void arrange_fishing_scene(Game& game, Cosmetics& cosmetics, Entity& play
     Entity* cargo = get_entity(game,handle);
     cargo->ground_item = make_item(ItemKind::Pickaxe,1,ItemAttribute::Heavy);
     cargo->ground_item.durability = 17; cargo->sprite = item_sprite(cargo->ground_item);
-    launch_fishing_hook(game,game.players[0].slot,*player.inventory.held(),{1,0});
+    launch_fishing_hook(game,player_state(game,0).controlled.slot,*player.inventory.held(),{1,0});
     for (Entity& hook : game.entities) {
         if (hook.kind != EntityKind::Projectile) continue;
         hook.cell = caught ? cargo->cell : Cell{21,12};

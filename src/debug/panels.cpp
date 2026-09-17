@@ -1,4 +1,5 @@
 #include "panels.hpp"
+#include "../ui/party.hpp"
 #include "worldgen.hpp"
 #include "playtest.hpp"
 #include "ambient_inspector.hpp"
@@ -87,7 +88,12 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
     if (panels.visible && panels.status) {
         ImGui::SetNextWindowPos({16, 340}, ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Debug: Player status", &panels.status, ImGuiWindowFlags_AlwaysAutoResize)) {
-            const Entity* player = owner >= 0 && owner < 4 ? get_entity(game, game.players[static_cast<std::size_t>(owner)]) : nullptr;
+            ImGui::BeginChild("Party", {400, 150});
+            for (const auto& [id, member] : game.players) {
+                ImGui::Text("Player %d: %s", id+1, party_player_status(game,id));
+            }
+            ImGui::EndChild();
+            const Entity* player = owner >= 0 && has_player(game, owner) ? get_entity(game, player_state(game, owner).controlled) : nullptr;
             if (player != nullptr) {
                 ImGui::Text("HP %d/%d | cell %d,%d", player->health, player->max_health, player->cell.x, player->cell.y);
                 ImGui::Text("Scorch %d | burn %d | sleep %d | stun %d | chill %d ticks",

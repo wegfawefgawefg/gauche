@@ -18,7 +18,7 @@ std::optional<Cell> neighbor(const Game& game,const Entity& zombie,bool hunt_ani
         const Entity& target = game.entities[static_cast<std::size_t>(other_slot)];
         if (target.health <= 0 || distance(zombie.cell, target.cell) != 1) continue;
         const bool player = target.kind == EntityKind::Player && target.owner >= 0 &&
-            target.owner < 4 && game.run.online[static_cast<std::size_t>(target.owner)];
+            has_player(game, target.owner) && player_state(game, target.owner).online;
         if (player || (hunt_animals && (target.kind==EntityKind::Chicken || target.kind==EntityKind::Bunny)))
             return target.cell;
     }

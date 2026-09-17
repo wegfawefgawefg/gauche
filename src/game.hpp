@@ -1,5 +1,10 @@
 #pragma once
 
+#include <map>
+#include <ranges>
+#include <cstdint>
+using PlayerId = std::int32_t;
+
 #include "biome.hpp"
 #include "graphics.hpp"
 #include "sound.hpp"
@@ -94,6 +99,8 @@ struct Stage {
     int width = 0;
     int height = 0;
     std::vector<Tile> tiles;
+    // Sparse attribution for player-placed props; never pack a player ID into artwork bits.
+    std::map<int, PlayerId> prop_owners;
     std::vector<RoofSpan> roofs;
     bool in_bounds(Cell cell) const;
     Tile* at(Cell cell);
@@ -205,7 +212,7 @@ struct Entity {
     Sprite sprite = Sprite::Player;
     LightEmitter light{};
     LightTint self_light{0, 0, 0};
-    int owner = -1;
+    PlayerId owner = -1;
     int health = 0;
     int max_health = 0;
     int move_wait = 0;
@@ -256,6 +263,13 @@ struct Input {
 };
 
 enum class RunPhase : std::uint8_t { Arena, Playing, Reward, Shop, Won };
+using PlayerInputs = std::map<PlayerId, Input>;
+inline const Input& input_for(const PlayerInputs& inputs, PlayerId id) {
+    static const Input idle{};
+    const auto found = inputs.find(id);
+    return found == inputs.end() ? idle : found->second;
+}
+
 enum class DeathPolicy : std::uint8_t { NoRespawn, Entrance, NextFloor };
 enum class ObjectiveKind : std::uint8_t { Key, Switch };
 enum class RewardKind : std::uint8_t { Item, Artifact, Health, Speed };
@@ -276,19 +290,20 @@ struct StageLight {
     LightEmitter light{7, 1350, {240, 224, 176}};
 };
 enum class FloorLayout { Automatic, Generated, HauntedHouse, FreightExchange, LastShift };
+struct PlayerState {
+    Handle controlled{};
+    int coins = 0;
+    bool chosen = false, shop_ready = false, online = false;
+    std::array<Reward, 3> offers{};
+    int pending_count = 0;
+    std::array<std::array<Reward, 3>, 12> pending_offers{};
+};
 struct Run {
     RunPhase phase = RunPhase::Arena;
     int floor = 0;
     FloorLayout layout = FloorLayout::Generated;
-    std::array<int, 4> coins{};
     bool has_key = false;
     ObjectiveKind objective = ObjectiveKind::Key;
-    std::array<bool, 4> chosen{};
-    std::array<bool, 4> shop_ready{};
-    std::array<bool, 4> online{};
-    std::array<std::array<Reward, 3>, 4> offers{};
-    std::array<int, 4> pending_count{};
-    std::array<std::array<std::array<Reward, 3>, 12>, 4> pending_offers{};
     std::array<ItemKind, 3> shop_stock{};
     std::uint64_t seed = 1;
     DeathPolicy death_policy = DeathPolicy::NextFloor;
@@ -349,7 +364,7 @@ struct Game {
     std::vector<IndustrialShift> industrial_shifts;
     std::vector<LavaVent> lava_vents;
     std::vector<Fissure> fissures;
-    std::array<Handle, 4> players{};
+    std::map<PlayerId, PlayerState> players{{0, {}}};
     std::uint64_t rng = 1;
     std::uint64_t tick = 0;
     bool started = false;
@@ -400,6 +415,21 @@ void choose_pending_reward(Game& game, int owner, int choice, int replace_slot =
 void buy_shop_item(Game& game, int owner, int choice, int replace_slot = -1, ItemKind expected = ItemKind::None);
 int shop_price(ItemKind kind);
 void advance_run(Game& game);
-void step_game(Game& game, const std::array<Input, 4>& inputs);
+void step_game(Game& game, const PlayerInputs& inputs);
 void step_traps(Game& game);
 std::uint64_t game_hash(const Game& game);
+
+inline PlayerState& player_state(Game& game, PlayerId id) { return game.players[id]; }
+inline const PlayerState& player_state(const Game& game, PlayerId id) {
+    static const PlayerState absent{};
+    const auto found = game.players.find(id);
+    return found == game.players.end() ? absent : found->second;
+}
+inline bool has_player(const Game& game, PlayerId id) { return game.players.contains(id); }
+
+inline auto controlled_entities(const Game& game) {
+    return game.players | std::views::values | std::views::transform([](const PlayerState& player) { return player.controlled; });
+}
+
+Cell player_spawn_cell(const Game& game, Cell center);
+bool bind_player_control(Game& game, PlayerId id, Handle controlled);

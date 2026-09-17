@@ -9,7 +9,7 @@ inline void arrange_stoker_scene(Game& game,Cosmetics& cosmetics,bool quenched) 
     for (int slot=0;slot<max_entities;++slot)
         if (game.entities[static_cast<std::size_t>(slot)].kind!=EntityKind::Player)
             remove_entity(game,{slot,game.entities[static_cast<std::size_t>(slot)].generation});
-    auto& player=*get_entity(game,game.players[0]); player.cell={18,14}; player.facing={0,-1};
+    auto& player=*get_entity(game,player_state(game,0).controlled); player.cell={18,14}; player.facing={0,-1};
     const auto first=spawn_entity(game,EntityKind::Ember,{18,9});
     auto& a=*get_entity(game,first); a.label_a=StokerPack; a.timer_a=18;
     a.point_a=a.cell; a.point_b={0,1}; a.sprite=Sprite::StokerPack;

@@ -7,9 +7,9 @@
 namespace {
 
 bool player_near(const Game& game, Cell cell) {
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-        if (!game.run.online[owner]) continue;
-        const Entity* player = get_entity(game, game.players[owner]);
+    for (const auto& [owner, participant] : game.players) {
+        if (!player_state(game, owner).online) continue;
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
         if (player != nullptr && player->health > 0 && distance(player->cell, cell) <= 6)
             return true;
     }

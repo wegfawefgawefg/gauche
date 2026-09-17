@@ -14,10 +14,10 @@ void cancel_offer_flow(InteractionUi& ui) {
 void begin_offer_flow(InteractionUi& ui, const Game& game, int owner, int choice) {
     const auto token=offer_token(game,owner,choice);
     if (token==0) { ui.notice="That offer is no longer available."; return; }
-    const auto row=static_cast<std::size_t>(owner);
-    const Entity* player=get_entity(game,game.players[row]);
+    const PlayerId row = owner;
+    const Entity* player=get_entity(game,player_state(game, row).controlled);
     const Reward offer=current_offer(game,owner,choice);
-    if (game.run.phase==RunPhase::Shop && game.run.coins[row]<shop_price(offer.item)) {
+    if (game.run.phase==RunPhase::Shop && player_state(game, row).coins<shop_price(offer.item)) {
         ui.notice="NOT ENOUGH GOLD"; return;
     }
     ui.offer_focus=choice;
@@ -51,7 +51,7 @@ void update_offer_flow(InteractionUi& ui, const Game& game, int owner,
         return;
     }
     if (!confirm) return;
-    const Entity* player=get_entity(game,game.players[static_cast<std::size_t>(owner)]);
+    const Entity* player=get_entity(game,player_state(game, owner).controlled);
     if (ui.offer_mode==OfferMode::Replace) {
         const Item& outgoing=player->inventory.slots[static_cast<std::size_t>(ui.slot_focus)];
         if (!item_can_drop(outgoing)) { ui.notice="This item cannot be replaced."; return; }

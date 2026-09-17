@@ -4,7 +4,7 @@
 
 inline void draw_anchor_tether(SDL_Renderer* renderer,const Game& game,const Entity& anchor,
     ViewCamera camera,float zoom,const LightingCache& lighting) {
-    for (Handle handle : game.players) {
+    for (Handle handle : controlled_entities(game)) {
         const Entity* user=get_entity(game,handle);
         if (!user || user->health<=0 || user->inventory.held()->kind!=ItemKind::IceAnchor ||
             get_entity(game,user->inventory.held()->anchor)!=&anchor ||

@@ -4,6 +4,7 @@
 #include "net_socket.hpp"
 #include "net/diagnostics.hpp"
 #include "net/traversal.hpp"
+#include "net/fragment.hpp"
 
 #include <array>
 #include <cstdint>
@@ -34,6 +35,7 @@ struct NetPeer {
     bool connected = false;
     Entity departed_player{};
     int departed_floor = 0;
+    PlayerState departed_state{};
     bool party_ready = false;
     std::uint64_t last_heard_ms = 0;
     std::map<std::uint64_t, Input> pending_inputs;
@@ -62,13 +64,24 @@ struct CorrectionReceive {
     std::size_t received = 0;
 };
 
+struct RetainedParticipant {
+    PlayerId id = -1;
+    Entity body{};
+    PlayerState state{};
+    int floor = 0;
+};
+
 struct NetSession {
+    std::vector<FragmentReceive> fragments;
     NetDiagnostics diagnostics;
     Traversal traversal;
     NetRole role = NetRole::Solo;
     UdpSocket socket;
     RollbackSession rollback;
-    std::array<NetPeer, 4> peers{};
+    std::map<PlayerId, NetPeer> peers;
+    std::map<std::uint64_t, RetainedParticipant> departed;
+    PlayerId next_player_id = 1;
+    int admission_limit = 16; // Host policy, not storage/protocol capacity.
     NetEndpoint host_endpoint{};
     std::uint64_t local_identity = 0;
     int local_owner = 0;
@@ -91,7 +104,7 @@ struct NetSession {
     std::map<std::uint64_t, Input> sent_inputs;
     bool ready = false;
     bool match_started = true, party_ready = true;
-    std::uint8_t party_ready_mask = 1;
+    std::vector<PlayerId> ready_players{0};
     std::string status;
 };
 

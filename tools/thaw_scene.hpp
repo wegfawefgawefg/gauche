@@ -17,7 +17,7 @@ inline void arrange_thaw_scene(Game& game, Cosmetics& cosmetics, Entity& player,
     insert_item(player.inventory,make_item(ItemKind::ThawCharge,3));
     insert_item(player.inventory,make_item(ItemKind::ThawCharge,3,ItemAttribute::Big));
     insert_item(player.inventory,make_item(ItemKind::ThawCharge,3,ItemAttribute::Strong));
-    use_held_item(game,game.players[0].slot,player.cell);
+    use_held_item(game,player_state(game,0).controlled.slot,player.cell);
     player.cell={19,12};
     if (burst)
         for (int slot=0;slot<max_entities;++slot) {

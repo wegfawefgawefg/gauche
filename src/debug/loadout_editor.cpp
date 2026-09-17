@@ -134,13 +134,13 @@ void draw_loadout_editor(const Game& game, bool offline) {
         constexpr const char* presets[]{"Forest entry", "Forest veteran", "Ice entry", "Industrial entry", "Projectile lab"};
         ImGui::Combo("Preset", &tools.preset, presets, 5);
         if (ImGui::Button("Load preset into editor")) { set_loadout_preset(kit, tools.preset); changed = true; }
-        const Entity* player = get_entity(game, game.players[0]);
+        const Entity* player = get_entity(game, player_state(game, 0).controlled);
         ImGui::SameLine();
         ImGui::BeginDisabled(!player);
         if (ImGui::Button("Copy current equipment")) {
             kit.inventory = player->inventory; kit.artifacts = player->artifacts;
             kit.health = player->max_health; kit.step_ticks = player->move_interval;
-            kit.gold = game.run.coins[0]; changed = true;
+            kit.gold = player_state(game, 0).coins; changed = true;
         }
         ImGui::EndDisabled();
         ImGui::SeparatorText("Inventory slots");

@@ -263,8 +263,8 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
             input.select = index;
     const bool previous = down(runtime, Action::PreviousSlot);
     const bool next = down(runtime, Action::NextSlot);
-    if (input.select < 0 && owner >= 0 && owner < 4) {
-        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (input.select < 0 && owner >= 0 && has_player(game, owner)) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
         if (player != nullptr) {
             if (next && !reader.next_slot_down)
                 input.select = (player->inventory.selected + 1) % quick_slots;
@@ -277,7 +277,7 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
 
     const PointerState pointer = read_pointer(frame, game, owner, zoom, camera);
     if (pointer.inside && pointer.left) {
-        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
         input.aim = pointer.cell - player->cell;
         input.use = true;
     }
@@ -287,7 +287,7 @@ Input read_local_input(GubsyRuntime& runtime, const Game& game,
 PointerState read_pointer(const GubsyFrame& frame, const Game& game,
                           int owner, float zoom, ViewCamera camera) {
     PointerState pointer;
-    if (!pointer_device_active() || frame.window == nullptr || owner < 0 || owner >= 4)
+    if (!pointer_device_active() || frame.window == nullptr || owner < 0 || !has_player(game, owner))
         return pointer;
     float mouse_x = 0.0F;
     float mouse_y = 0.0F;
@@ -308,8 +308,8 @@ PointerState read_pointer(const GubsyFrame& frame, const Game& game,
                        static_cast<float>(frame.render_height) * scale) * 0.5F;
     const float render_x = (mouse_x - left) / scale;
     const float render_y = (mouse_y - top) / scale;
-    const Entity* player = owner >= 0 && owner < 4 ?
-        get_entity(game, game.players[static_cast<std::size_t>(owner)]) : nullptr;
+    const Entity* player = owner >= 0 && has_player(game, owner) ?
+        get_entity(game, player_state(game, owner).controlled) : nullptr;
     if (player == nullptr || render_x < 0.0F || render_y < 0.0F ||
         render_x >= static_cast<float>(frame.render_width) ||
         render_y >= static_cast<float>(frame.render_height)) return pointer;

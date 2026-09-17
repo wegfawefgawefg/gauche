@@ -102,7 +102,7 @@ void step_reactor(Game& game) {
     // Terminal event ignores the ordinary Entrance respawn policy. Paused fixed
     // steps and completed floors never reach here; disconnected players cannot
     // return after detonation to revive a finished run.
-    for (Handle handle:game.players)
+    for (Handle handle : controlled_entities(game))
         if (const Entity* player=get_entity(game,handle);player && player->health>0)
             crush_entity(game,handle.slot,core.cell);
     game.game_over=true;

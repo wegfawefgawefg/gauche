@@ -1,5 +1,8 @@
 # Gauche master task list
 
+- [x] **NET-PARTICIPANTS:** Replace four-player slots with stable-ID participant records, active input/peer lists, variable codecs/ready lists and relay-safe fragmentation; configurable admission; validate 4/8/16/24 and sparse IDs. See [architecture and checks](engineering/PLAYER_PARTICIPANTS.md).
+- [ ] **NET-EXIT-GATHERING:** Replace one-tile crowding with a room-appropriate exit gathering area; living peers must currently be inside. Launcher bots gather when the human requests exit; explicitly enabled test bots may use a logged stuck/unreachable teleport fallback. Preserve the shared reward/shop barrier.
+
 - [x] **NET-PARTY-INTERLUDE:** Keep the party on one shared floor; verify reward/shop barriers and dead-player exclusion. Show each connected player's choosing/shopping/ready/revive state during interludes and on the gameplay HUD, with an explicit wait screen for dead players.
 
 - [x] **NET-DEATH-LIFECYCLE:** User reports guest death on Forest 1, visible respawn on Forest 2 but guest sees Run Over; disconnected body remains. Gate terminal menus on host-confirmed state and dismiss them after recovery; remove departed bodies with reconnect state retained by host. Normal deaths drop carried items/gold; user explicitly excludes pits (cargo lost). Cover real reward-transition rollback, next-floor revival, departure/rejoin, terminal confirmation and no duplicate death drops.

@@ -61,7 +61,7 @@ void regenerate_worldgen(WorldGenViewer& v) {
     game.run.seed=game.rng;
     game.run.floor=v.floor;
     game.run.phase=RunPhase::Playing;
-    game.run.online[0]=true;
+    player_state(game, 0).online=true;
     v.trace.options=v.capture_options;
     generate_world_floor(game,FloorLayout::Automatic,&v.population,&v.trace,v.inhabitants_seed);
     v.checkpoint=static_cast<int>(v.trace.checkpoints.size())-1;

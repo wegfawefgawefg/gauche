@@ -12,9 +12,9 @@ std::optional<Cell> vent_space(const Game& game, const Entity& vent) {
         const Tile* tile = game.stage.at(cell);
         if (tile == nullptr || !walkable(*tile) || entity_at(game, cell, true) >= 0) continue;
         bool close = false;
-        for (std::size_t owner = 0; owner < game.players.size(); ++owner) {
-            const Entity* player = get_entity(game, game.players[owner]);
-            if (game.run.online[owner] && player != nullptr && player->health > 0 &&
+        for (const auto& [owner, participant] : game.players) {
+            const Entity* player = get_entity(game, player_state(game, owner).controlled);
+            if (player_state(game, owner).online && player != nullptr && player->health > 0 &&
                 distance(cell, player->cell) < 3) close = true;
         }
         if (!close) return cell;
@@ -29,9 +29,9 @@ void spawn_encounter_wave(Game& game, int slot) {
     if (controller.label_b >= controller.counter_a) return;
     ++controller.label_b;
     int players = 0;
-    for (std::size_t owner = 0; owner < game.players.size(); ++owner)
-        if (game.run.online[owner])
-            if (const Entity* player = get_entity(game, game.players[owner]))
+    for (const auto& [owner, participant] : game.players)
+        if (player_state(game, owner).online)
+            if (const Entity* player = get_entity(game, player_state(game, owner).controlled))
                 if (player->health > 0) ++players;
     controller.counter_b = 3 + controller.label_b * 2 + players * 2;
     controller.label_a = static_cast<int>(EncounterPhase::Fighting);

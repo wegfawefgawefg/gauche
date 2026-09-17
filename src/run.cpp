@@ -94,13 +94,13 @@ void start_run(Game& game, std::uint64_t seed) {
     game.run.seed = game.rng;
     game.run.floor = 1;
     game.run.phase = RunPhase::Playing;
-    game.run.online[0] = true;
+    player_state(game, 0).online = true;
     generate_world_floor(game);
 }
 
 bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
-    if (owner < 0 || owner >= 4) return false;
-    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (owner < 0 || !has_player(game, owner)) return false;
+    Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr || player->health <= 0 || distance(player->cell, target) > 1)
         return false;
     for (Entity& fixture : game.entities) {
@@ -140,9 +140,9 @@ bool interact_with_fixture(Game& game, int owner, Cell target, bool held_use) {
         if (fixture.kind == EntityKind::Exit && game.run.phase == RunPhase::Playing) {
             if (game.run.layout==FloorLayout::LastShift && !game.run.has_key) return false;
             if (!encounter_released(game, fixture.entity_a)) return false;
-            for (std::size_t member_owner = 0; member_owner < 4; ++member_owner) {
-                if (!game.run.online[member_owner]) continue;
-                const Entity* member = get_entity(game, game.players[member_owner]);
+            for (const auto& [member_owner, participant] : game.players) {
+                if (!player_state(game, member_owner).online) continue;
+                const Entity* member = get_entity(game, player_state(game, member_owner).controlled);
                 if (member != nullptr && member->health > 0 &&
                     distance(member->cell, fixture.cell) > 1) return false;
             }
@@ -160,14 +160,14 @@ void finish_floor(Game& game) {
     finish_recoverables(game);
     game.run.phase = RunPhase::Reward;
     emit_sound(game, SoundId::LevelWin, game.run.exit, false);
-    game.run.chosen.fill(false);
-    for (std::size_t owner = 0; owner < 4; ++owner) {
-        const Entity* player = get_entity(game, game.players[owner]);
+    for (auto& [id, member] : game.players) member.chosen = false;
+    for (const auto& [owner, participant] : game.players) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
         if (player == nullptr || player->health <= 0) {
-            game.run.chosen[owner] = true;
+            player_state(game, owner).chosen = true;
             continue;
         }
-        auto& offers = game.run.offers[owner];
+        auto& offers = player_state(game, owner).offers;
         for (int index = 0; index < 3; ++index) offers[static_cast<std::size_t>(index)] =
             random_reward(game, index);
         for (int index = 2; index > 0; --index)
@@ -205,59 +205,59 @@ bool grant_reward(Game& game, Entity& player, Reward reward, int replace_slot, I
 } // namespace
 
 void choose_reward(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
-    if (game.run.phase != RunPhase::Reward || owner < 0 || owner >= 4 ||
-        choice < 0 || choice >= 3 || game.run.chosen[static_cast<std::size_t>(owner)]) return;
-    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (game.run.phase != RunPhase::Reward || owner < 0 || !has_player(game, owner) ||
+        choice < 0 || choice >= 3 || player_state(game, owner).chosen) return;
+    Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr || player->health<=0 || !grant_reward(game,*player,
-        game.run.offers[static_cast<std::size_t>(owner)][static_cast<std::size_t>(choice)],replace_slot,expected)) return;
-    game.run.chosen[static_cast<std::size_t>(owner)] = true;
+        player_state(game, owner).offers[static_cast<std::size_t>(choice)],replace_slot,expected)) return;
+    player_state(game, owner).chosen = true;
     emit_sound(game,SoundId::Confirm,player->cell,false);
     advance_run(game);
 }
 
 void choose_pending_reward(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
-    if (owner < 0 || owner >= 4 || choice < 0 || choice >= 3 ||
-        game.run.pending_count[static_cast<std::size_t>(owner)] == 0) return;
-    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    if (owner < 0 || !has_player(game, owner) || choice < 0 || choice >= 3 ||
+        player_state(game, owner).pending_count == 0) return;
+    Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr || player->health <= 0 || !grant_reward(game,*player,
-        game.run.pending_offers[static_cast<std::size_t>(owner)][0]
+        player_state(game, owner).pending_offers[0]
                                [static_cast<std::size_t>(choice)],replace_slot,expected)) return;
-    const std::size_t index = static_cast<std::size_t>(owner);
-    for (int pending = 1; pending < game.run.pending_count[index]; ++pending)
-        game.run.pending_offers[index][static_cast<std::size_t>(pending - 1)] =
-            game.run.pending_offers[index][static_cast<std::size_t>(pending)];
-    game.run.pending_offers[index][static_cast<std::size_t>(--game.run.pending_count[index])] = {};
+    const PlayerId index = owner;
+    for (int pending = 1; pending < player_state(game, index).pending_count; ++pending)
+        player_state(game, index).pending_offers[static_cast<std::size_t>(pending - 1)] =
+            player_state(game, index).pending_offers[static_cast<std::size_t>(pending)];
+    player_state(game, index).pending_offers[static_cast<std::size_t>(--player_state(game, index).pending_count)] = {};
     emit_sound(game,SoundId::Confirm,player->cell,false);
 }
 
 void buy_shop_item(Game& game, int owner, int choice, int replace_slot, ItemKind expected) {
-    if (game.run.phase != RunPhase::Shop || owner < 0 || owner >= 4 ||
+    if (game.run.phase != RunPhase::Shop || owner < 0 || !has_player(game, owner) ||
         choice < 0 || choice >= 3) return;
     const ItemKind kind = game.run.shop_stock[static_cast<std::size_t>(choice)];
-    if (kind == ItemKind::None || game.run.coins[static_cast<std::size_t>(owner)] < price(kind))
+    if (kind == ItemKind::None || player_state(game, owner).coins < price(kind))
         return;
-    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-    if (player == nullptr || player->health<=0 || game.run.shop_ready[static_cast<std::size_t>(owner)] ||
+    Entity* player = get_entity(game, player_state(game, owner).controlled);
+    if (player == nullptr || player->health<=0 || player_state(game, owner).shop_ready ||
         !accept_offer_item(game,*player,supply_item(kind),replace_slot,expected)) return;
-    game.run.coins[static_cast<std::size_t>(owner)] -= price(kind);
+    player_state(game, owner).coins -= price(kind);
     game.run.shop_stock[static_cast<std::size_t>(choice)] = ItemKind::None;
     emit_sound(game,SoundId::Confirm,player->cell,false);
 }
 
 void advance_run(Game& game) {
     if (game.run.phase == RunPhase::Reward) {
-        for (std::size_t owner = 0; owner < 4; ++owner)
-            if (game.run.online[owner] && !game.run.chosen[owner]) return;
-        for (std::size_t owner = 0; owner < 4; ++owner) {
-            if (game.run.online[owner] || game.run.chosen[owner] ||
-                game.run.pending_count[owner] >= 12) continue;
-            game.run.pending_offers[owner]
-                [static_cast<std::size_t>(game.run.pending_count[owner]++)] = game.run.offers[owner];
-            game.run.chosen[owner] = true;
+        for (const auto& [owner, participant] : game.players)
+            if (player_state(game, owner).online && !player_state(game, owner).chosen) return;
+        for (const auto& [owner, participant] : game.players) {
+            if (player_state(game, owner).online || player_state(game, owner).chosen ||
+                player_state(game, owner).pending_count >= 12) continue;
+            player_state(game, owner).pending_offers
+                [static_cast<std::size_t>(player_state(game, owner).pending_count++)] = player_state(game, owner).offers;
+            player_state(game, owner).chosen = true;
         }
         if (game.run.floor % 2 == 0) {
             game.run.phase = RunPhase::Shop;
-            game.run.shop_ready.fill(false);
+            for (auto& [id, member] : game.players) member.shop_ready = false;
             game.run.shop_stock[0]=ItemKind::Bandage;
             game.run.shop_stock[1]=roll_item_supply(game,LootSource::Shop,true,ItemKind::Bandage);
             game.run.shop_stock[2]=roll_item_supply(game,LootSource::Weapon,true,game.run.shop_stock[1]);
@@ -265,10 +265,10 @@ void advance_run(Game& game) {
         }
         ready_next_floor(game);
     } else if (game.run.phase == RunPhase::Shop) {
-        for (std::size_t owner = 0; owner < 4; ++owner) {
-            const Entity* player = get_entity(game, game.players[owner]);
-            if (game.run.online[owner] && player != nullptr && player->health > 0 &&
-                !game.run.shop_ready[owner]) return;
+        for (const auto& [owner, participant] : game.players) {
+            const Entity* player = get_entity(game, player_state(game, owner).controlled);
+            if (player_state(game, owner).online && player != nullptr && player->health > 0 &&
+                !player_state(game, owner).shop_ready) return;
         }
         ready_next_floor(game);
     }

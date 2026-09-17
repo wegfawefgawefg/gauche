@@ -23,7 +23,7 @@ inline void arrange_heat_scene(Game& game, Cosmetics& cosmetics, Entity& player)
     *game.stage.at({20, 12}) = {TileKind::IceHole, 0, 0};
     freeze_water(game, {20, 12}, 480);
     player.inventory.selected = 2;
-    use_held_item(game, game.players[0].slot, player.cell);
+    use_held_item(game, player_state(game,0).controlled.slot, player.cell);
     player.inventory.selected = 0;
     // CAPTURE: Place visible steam and surface fire without advancing the simulation.
     game.tick = 36;

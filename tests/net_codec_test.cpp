@@ -14,9 +14,9 @@ int main() {
     Game original;
     start_run(original, 22991);
     for (int tick = 0; tick < 120; ++tick) step_game(original, {});
-    if (Entity* player = get_entity(original, original.players[0])) {
+    if (Entity* player = get_entity(original, player_state(original, 0).controlled)) {
         player->encounter = {401, 17};
-        player->entity_a = original.players[0];
+        player->entity_a = player_state(original, 0).controlled;
         player->entity_b = {400, 91}; // A stale reference is valid saved behavior state.
         player->point_a = {13, 27}; player->point_b = {19, 8};
         player->counter_a = 4; player->counter_b = -8;
@@ -43,7 +43,7 @@ int main() {
     // REFERENCES: A carried or dropped half keeps its placed threshold. A reflected
     // boomerang still reserves its original owner's slot, not the new attacker's.
     const Handle threshold = spawn_entity(original, EntityKind::PocketDoor, {8, 8});
-    Entity* owner = get_entity(original, original.players[0]);
+    Entity* owner = get_entity(original, player_state(original, 0).controlled);
     owner->inventory.slots[4] = make_item(ItemKind::PocketDoor);
     owner->inventory.slots[4].uses = 1;
     owner->inventory.slots[4].anchor = threshold;
@@ -51,7 +51,7 @@ int main() {
     Entity* shot = get_entity(original, shot_handle);
     shot->label_a = static_cast<int>(ProjectileKind::Boomerang);
     shot->entity_a = spawn_entity(original, EntityKind::Wolf, {10, 8});
-    shot->entity_b = original.players[0];
+    shot->entity_b = player_state(original, 0).controlled;
     shot->ground_item = make_item(ItemKind::Boomerang);
     owner->inventory.slots[3] = shot->ground_item;
     owner->inventory.slots[3].flight = shot_handle;
@@ -78,7 +78,7 @@ int main() {
     original.stage.tiles[5].surface.liquid_ticks = 321;
     Entity* keeper = get_entity(original,spawn_entity(original,EntityKind::CandleKeeper,{11,8}));
     keeper->timer_b = 119; keeper->light = {}; keeper->point_b = {12,8};
-    keeper->entity_b = original.players[0]; keeper->attack_wait = 299;
+    keeper->entity_b = player_state(original, 0).controlled; keeper->attack_wait = 299;
     original.stage.tiles[13].prop = {PropKind::Stove,23,1,false,7011};
     Entity* coal = get_entity(original,spawn_entity(original,EntityKind::GroundItem,{22,8}));
     coal->ground_item = make_item(ItemKind::CoalLump,7,ItemAttribute::Long);
@@ -88,7 +88,7 @@ int main() {
     Entity* spider = get_entity(original,spawn_entity(original,EntityKind::IcicleSpider,{3,5}));
     spider->point_a = {2,5}; spider->point_b = {7,5};
     spider->counter_a = 1; spider->label_a = SpiderWait;
-    spider->entity_a = original.players[0]; spider->timer_b = 117;
+    spider->entity_a = player_state(original, 0).controlled; spider->timer_b = 117;
     for (Cell cell : spider_strand_cells(*spider)) {
         *original.stage.at(cell) = {TileKind::Ruin,0,0};
         original.stage.at(cell)->prop = {PropKind::SpiderStrand,1,0,false};
@@ -109,7 +109,7 @@ int main() {
     auto* flare = get_entity(original,spawn_entity(original,EntityKind::Projectile,{17,8}));
     flare->label_a=static_cast<int>(ProjectileKind::Flare); flare->label_b=1; flare->timer_a=713;
     flare->ground_item=make_item(ItemKind::SignalFlare); flare->sprite=Sprite::FlareBurning;
-    flare->light={7,1350,{255,69,42}}; flare->entity_a=original.players[0];
+    flare->light={7,1350,{255,69,42}}; flare->entity_a=player_state(original, 0).controlled;
     original.stage.tiles[14].prop = {PropKind::MaintenanceLocker,13,0,false};
     original.stage.tiles[12].prop = {PropKind::CandleCabinet,9,0,false};
     original.stage.tiles[11].prop = {PropKind::Candle, 3, 3, false, 1234};
@@ -138,8 +138,8 @@ int main() {
     wire_loot->ground_item.uses = 9;
     original.stage.tiles[1].prop = {PropKind::Crate, 7, 42, false};
     original.stage.tiles[2].prop = {PropKind::Puffball, 0, 9, true};
-    original.run.pending_count[0] = 1;
-    original.run.pending_offers[0][0][0] =
+    player_state(original, 0).pending_count = 1;
+    player_state(original, 0).pending_offers[0][0] =
         {RewardKind::Item, ItemKind::RocketLauncher, ArtifactKind::None,
          1, ItemAttribute::Big};
     // COLONY: Surviving nodes keep the old generation as their grouping identity.
@@ -166,7 +166,7 @@ int main() {
     launch_harpoon(original,fisher.slot,*fisher_actor.inventory.held(),{1,0});
     Entity* tether = get_entity(original,fisher_actor.inventory.held()->flight);
     tether->label_b = 1; tether->counter_a = 0; tether->timer_b = 7;
-    tether->entity_b = original.players[0]; tether->fixture_open = true;
+    tether->entity_b = player_state(original, 0).controlled; tether->fixture_open = true;
     *original.stage.at({28,8})={TileKind::Ruin,0,0};
     Entity* sluice=get_entity(original,spawn_entity(original,EntityKind::EncounterGate,{28,8}));
     configure_timed_gate(*sluice); sluice->timer_a=74;

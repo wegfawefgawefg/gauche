@@ -29,7 +29,7 @@ void start_test_arena(Game& game, std::uint64_t seed) {
     game = {};
     game.rng = seed == 0 ? 1 : seed;
     game.run.phase = RunPhase::Arena;
-    game.run.online[0] = true;
+    player_state(game, 0).online = true;
     game.stage.width = 64;
     game.stage.height = 64;
     game.stage.tiles.resize(64U * 64U);
@@ -46,8 +46,8 @@ void start_test_arena(Game& game, std::uint64_t seed) {
         }
     }
     const Cell center{32, 32};
-    game.players[0] = spawn_entity(game, EntityKind::Player, open_cell(game, center, 5));
-    if (Entity* player = get_entity(game, game.players[0])) player->owner = 0;
+    player_state(game, 0).controlled = spawn_entity(game, EntityKind::Player, open_cell(game, center, 5));
+    if (Entity* player = get_entity(game, player_state(game, 0).controlled)) player->owner = 0;
     for (int index = 0; index < 32; ++index) {
         spawn_entity(game, EntityKind::Zombie, open_cell(game, center, 31));
         spawn_entity(game, EntityKind::Chicken, open_cell(game, center, 31));

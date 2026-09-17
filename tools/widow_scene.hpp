@@ -34,7 +34,7 @@ inline void arrange_widow_scene(Game& game, Cosmetics& cosmetics, Entity& player
         widow->entity_a = launch_widow_hook(game,owner.slot);
         widow->label_a = WidowLine; widow->sprite = Sprite::WidowReel;
         Entity* hook = get_entity(game,widow->entity_a);
-        hook->cell = player.cell; hook->entity_b = game.players[0];
+        hook->cell = player.cell; hook->entity_b = player_state(game,0).controlled;
         hook->label_b = 1; hook->counter_a = 0; hook->timer_b = 5;
     } else {
         player.cell = {17,16};

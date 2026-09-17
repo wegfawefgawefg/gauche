@@ -21,11 +21,11 @@ void place_coins(Game& game, Cell cell, int amount) {
 }
 
 void collect_coins(Game& game, Entity& player) {
-    if (player.owner < 0 || player.owner >= 4 || player.health <= 0) return;
+    if (player.owner < 0 || !has_player(game, player.owner) || player.health <= 0) return;
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& pile = game.entities[static_cast<std::size_t>(slot)];
         if (pile.kind != EntityKind::Coins || pile.cell != player.cell) continue;
-        game.run.coins[static_cast<std::size_t>(player.owner)] += pile.counter_a;
+        player_state(game, player.owner).coins += pile.counter_a;
         remove_entity(game, {slot, pile.generation});
         emit_sound(game, SoundId::CoinPickup, player.cell);
     }

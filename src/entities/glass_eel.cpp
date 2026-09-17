@@ -35,9 +35,9 @@ bool swim(Game& game, int slot, Cell cell) {
 const Entity* nearest_player(const Game& game, Cell cell) {
     const Entity* best = nullptr;
     int gap = 10;
-    for (int owner = 0; owner < 4; ++owner) {
-        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-        if (!game.run.online[static_cast<std::size_t>(owner)] || !player || player->health <= 0) continue;
+    for (const auto& [owner, participant] : game.players) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
+        if (!player_state(game, owner).online || !player || player->health <= 0) continue;
         const int candidate = distance(player->cell, cell);
         if (candidate < gap) { gap = candidate; best = player; }
     }
@@ -45,9 +45,9 @@ const Entity* nearest_player(const Game& game, Cell cell) {
 }
 
 bool player_in_circuit(const Game& game, const WetWave& wave) {
-    for (int owner = 0; owner < 4; ++owner) {
-        const Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
-        if (!game.run.online[static_cast<std::size_t>(owner)] || !player || !water_shock_target(game, *player)) continue;
+    for (const auto& [owner, participant] : game.players) {
+        const Entity* player = get_entity(game, player_state(game, owner).controlled);
+        if (!player_state(game, owner).online || !player || !water_shock_target(game, *player)) continue;
         for (int i = 0; i < wave.count; ++i)
             if (player->cell == wave.nodes[static_cast<std::size_t>(i)].cell) return true;
     }

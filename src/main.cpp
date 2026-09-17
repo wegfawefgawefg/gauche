@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
     Game& opening_game = network.role != NetRole::Solo ? network.rollback.game : game;
     play_song(audio, opening_game.started ? 1 : 0);
     if (opening_game.started) {
-        const Entity* listener = get_entity(opening_game, opening_game.players[0]);
+        const Entity* listener = get_entity(opening_game, player_state(opening_game, 0).controlled);
         play_game_sounds(audio, opening_game, listener == nullptr ? Cell{} : listener->cell);
     }
     const char* capture = capture_arg(argc, argv);
@@ -340,21 +340,21 @@ int main(int argc, char** argv) {
                  (networked || !debug_panels().visible || !playtest_tools().pause)) ||
                 (network.role == NetRole::Client && network.ready && network.match_started && network.host_tick > 0);
             if (ready && active.started && !active.game_over && simulating) {
-                std::array<Input, 4> inputs{};
-                for (Input& idle : inputs) idle.cancel_use = true;
+                PlayerInputs inputs{};
+                for (const auto& [id, member] : active.players) inputs[id].cancel_use = true;
                 if (!multiplayer.bot && !smoke && menu.playing && !menu.visible && !debug_captures_input()) {
-                    Input& local = inputs[static_cast<std::size_t>(owner)];
+                    Input& local = inputs[owner];
                     local = read_local_input(host, active, gubsy_get_frame(host), owner, zoom,
                                              camera_for(cosmetics, active, owner), input_reader);
                     apply_interaction_input(interaction, active, owner, host, local);
                     local.cancel_use |= cancel_pending_use;
                     cancel_pending_use = false;
                 }
-                if (multiplayer.bot) inputs[static_cast<std::size_t>(owner)] = multiplayer_bot_input(multiplayer, active, owner);
-                if (networked) step_network_game(network, inputs[static_cast<std::size_t>(owner)]);
+                if (multiplayer.bot) inputs[owner] = multiplayer_bot_input(multiplayer, active, owner);
+                if (networked) step_network_game(network, inputs[owner]);
                 else step_solo_game(game, inputs);
                 const Entity* listener = get_entity(active,
-                    active.players[static_cast<std::size_t>(owner)]);
+                    player_state(active, owner).controlled);
                 play_game_sounds(audio, active, listener == nullptr ? Cell{} : listener->cell);
                 update_cosmetics(cosmetics, active,
                                  listener == nullptr ? Cell{} : listener->cell, zoom);
@@ -395,8 +395,8 @@ int main(int argc, char** argv) {
         const Game& active = networked ? network.rollback.game : game;
         if (border_smoke) { cosmetics.camera = active.run.roof_lights[0].cell; cosmetics.camera_ready = true; }
         const int ambient_owner = networked ? network.local_owner : 0;
-        const Entity* ambient_listener = ambient_owner >= 0 && ambient_owner < static_cast<int>(active.players.size()) ?
-            get_entity(active, active.players[static_cast<std::size_t>(ambient_owner)]) : nullptr;
+        const Entity* ambient_listener = ambient_owner >= 0 && has_player(active, ambient_owner) ?
+            get_entity(active, player_state(active, ambient_owner).controlled) : nullptr;
         frame_phase.next(PerfZone::Audio);
         update_ambience(audio.ambience, active, ambient_listener == nullptr ? active.run.spawn : ambient_listener->cell,
             static_cast<float>(elapsed), ambient_inspector().mute ? 0.0F : audio.master_level * audio.sound_level,
@@ -504,7 +504,7 @@ int main(int argc, char** argv) {
     lobby_smoke_failed |= lobby_smoke &&
         (network.role != NetRole::Host || !menu.playing ||
          network.rollback.game.run.death_policy != requested_death_policy(argc, argv) ||
-         gubsy_get_lobby_state(host).max_players != 4);
+         gubsy_get_lobby_state(host).max_players != network.admission_limit);
     if (lobby_smoke_failed) std::fprintf(stderr, "Gubsy direct lobby did not start the hosted run\n");
     const bool leave_smoke_failed = leave_smoke &&
         (network.role != NetRole::Solo || menu.playing || !menu.visible ||

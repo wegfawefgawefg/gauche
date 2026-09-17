@@ -22,9 +22,9 @@ void rest(Entity& effigy, int ticks) {
 }
 
 bool watched(const Game& game, const Entity& effigy) {
-    for (std::size_t owner=0;owner<game.players.size();++owner) {
-        if (!game.run.online[owner]) continue;
-        const Entity* player = get_entity(game,game.players[owner]);
+    for (const auto& [owner, participant] : game.players) {
+        if (!player_state(game, owner).online) continue;
+        const Entity* player = get_entity(game,player_state(game, owner).controlled);
         if (player && player->health > 0 && player->sleep_ticks == 0 &&
             (observer_faces_cell(game,*player,effigy.cell) || (effigy_mask_active(*player) &&
              observer_faces_direction(game,*player,effigy.cell,Cell{-player->facing.x,-player->facing.y})))) return true;
@@ -35,9 +35,9 @@ bool watched(const Game& game, const Entity& effigy) {
 std::optional<Cell> target_cell(const Game& game, const Entity& effigy) {
     std::optional<Cell> chosen;
     int best = 8;
-    for (std::size_t owner=0;owner<game.players.size();++owner) {
-        if (!game.run.online[owner]) continue;
-        const Entity* player = get_entity(game,game.players[owner]);
+    for (const auto& [owner, participant] : game.players) {
+        if (!player_state(game, owner).online) continue;
+        const Entity* player = get_entity(game,player_state(game, owner).controlled);
         if (!player || player->health <= 0) continue;
         const int gap = distance(effigy.cell,player->cell);
         if (gap < best && clear_attack_sight(game,effigy.cell,player->cell)) {

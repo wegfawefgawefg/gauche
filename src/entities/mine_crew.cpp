@@ -177,7 +177,7 @@ void step_mine_worker(Game& game,int slot) {
     }
     const Entity* threat=get_entity(game,worker.entity_b);
     if (worker.attack_wait>0 && threat && threat->health>0 &&
-        (threat->kind!=EntityKind::Player || (threat->owner>=0 && threat->owner<4 && game.run.online[static_cast<std::size_t>(threat->owner)]))) {
+        (threat->kind!=EntityKind::Player || (threat->owner>=0 && has_player(game, threat->owner) && player_state(game, threat->owner).online))) {
         if (distance(worker.cell,threat->cell)==1) { begin(game,worker,threat->cell,false); return; }
         if (worker.kind==EntityKind::Pickhand) advance_worker(game,slot,threat->cell);
         else if (worker.move_wait==0) {

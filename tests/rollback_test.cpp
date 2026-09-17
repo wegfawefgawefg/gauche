@@ -17,10 +17,10 @@ Game two_player_game() {
     game.stage.width = 12;
     game.stage.height = 5;
     game.stage.tiles.resize(60);
-    game.players[0] = spawn_entity(game, EntityKind::Player, {2, 2});
-    game.players[1] = spawn_entity(game, EntityKind::Player, {7, 2});
-    get_entity(game, game.players[0])->owner = 0;
-    get_entity(game, game.players[1])->owner = 1;
+    player_state(game, 0).controlled = spawn_entity(game, EntityKind::Player, {2, 2});
+    player_state(game, 1).controlled = spawn_entity(game, EntityKind::Player, {7, 2});
+    get_entity(game, player_state(game, 0).controlled)->owner = 0;
+    get_entity(game, player_state(game, 1).controlled)->owner = 1;
     spawn_entity(game, EntityKind::Zombie, {9, 3});
     game.started = true;
     return game;
@@ -32,7 +32,7 @@ bool correction_and_resync() {
     begin_rollback(client, host);
     std::vector<CanonicalFrame> canonical;
     for (int tick = 1; tick <= 80; ++tick) {
-        std::array<Input, 4> inputs{};
+        PlayerInputs inputs{};
         if (tick % 17 < 8) inputs[0].move = {1, 0};
         else inputs[0].move = {-1, 0};
         if (tick % 13 < 6) inputs[1].move = {-1, 0};
@@ -52,7 +52,7 @@ bool correction_and_resync() {
         return false;
 
     client.game.stage.at({0, 0})->kind = TileKind::Wall;
-    std::array<Input, 4> neutral{};
+    PlayerInputs neutral{};
     step_game(host, neutral);
     predict_frame(client, neutral);
     confirm_frame(client, {host.tick, neutral, game_hash(host)});
@@ -76,9 +76,9 @@ bool host_late_input_batches() {
     RollbackSession client;
     begin_rollback(host, baseline);
     begin_rollback(client, baseline);
-    std::vector<std::array<Input, 4>> actual;
+    std::vector<PlayerInputs> actual;
     for (int tick = 1; tick <= 40; ++tick) {
-        std::array<Input, 4> inputs{};
+        PlayerInputs inputs{};
         inputs[0].move = tick % 12 < 6 ? Cell{1, 0} : Cell{-1, 0};
         inputs[1].move = tick % 10 < 5 ? Cell{-1, 0} : Cell{1, 0};
         actual.push_back(inputs);

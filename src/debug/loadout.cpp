@@ -81,7 +81,7 @@ void set_loadout_preset(TestLoadout& kit, int preset) {
 }
 
 void apply_test_loadout(Game& game, int owner) {
-    Entity* player = get_entity(game, game.players[static_cast<std::size_t>(owner)]);
+    Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr || player->health <= 0) return;
     const auto& kit = playtest_tools().loadout;
     // REPLACE: Remove owned in-flight/placed tools before discarding their references.
@@ -96,5 +96,5 @@ void apply_test_loadout(Game& game, int owner) {
     player->health = player->max_health = kit.health;
     player->move_interval = kit.step_ticks;
     player->move_wait = player->attack_wait = player->block_ticks = 0;
-    game.run.coins[static_cast<std::size_t>(owner)] = kit.gold;
+    player_state(game, owner).coins = kit.gold;
 }

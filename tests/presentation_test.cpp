@@ -30,8 +30,8 @@ int main() {
     game.stage.width = game.stage.height = 8;
     game.stage.tiles.resize(64);
     game.started = true;
-    game.run.online[0] = true;
-    game.players[0] = spawn_entity(game, EntityKind::Player, {2, 2});
+    player_state(game, 0).online = true;
+    player_state(game, 0).controlled = spawn_entity(game, EntityKind::Player, {2, 2});
     const Handle zombie = spawn_entity(game, EntityKind::Zombie, {4, 2});
     const Handle chicken = spawn_entity(game, EntityKind::Chicken, {5, 5});
     Cosmetics cosmetics;
@@ -40,7 +40,7 @@ int main() {
 
     // Movement should leave distinct local prints without changing the game hash.
     game.tick = 2;
-    move_entity(game, game.players[0].slot, {3, 2});
+    move_entity(game, player_state(game, 0).controlled.slot, {3, 2});
     move_entity(game, zombie.slot, {4, 3});
     const std::uint64_t before_prints = game_hash(game);
     update_cosmetics(cosmetics, game, {3, 2});
@@ -52,12 +52,12 @@ int main() {
         !check(game_hash(game) == before_prints, "footprints changed gameplay state"))
         return 1;
 
-    Entity* player = get_entity(game, game.players[0]);
+    Entity* player = get_entity(game, player_state(game, 0).controlled);
     player->facing = {0, -1};
     player->use_flash = 6;
     game.tick = 3;
     update_cosmetics(cosmetics, game, {3, 2});
-    if (!check(cosmetics.poses[static_cast<std::size_t>(game.players[0].slot)].angle == 180.0F,
+    if (!check(cosmetics.poses[static_cast<std::size_t>(player_state(game, 0).controlled.slot)].angle == 180.0F,
                "upward attack did not flip the attacker")) return 1;
 
     game.tick = 4;

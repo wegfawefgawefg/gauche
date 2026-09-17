@@ -43,11 +43,12 @@ def stop_children(children):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--layout', choices=['quad', 'split', 'headless'], default='split',
+    parser.add_argument('--layout', choices=['quad', 'split', 'headless'], nargs='?', const='split', default='split',
                         help='quad: four windows; split: human on 3, bots on 4; headless: human window only')
     parser.add_argument('--join', metavar='CODE', help='launch bots into an existing room, without a human host')
     parser.add_argument('--follow-host', metavar='NAME', help='headless bots wait for a public room hosted by this name')
-    parser.add_argument('--bots', type=int, choices=range(1, 4), default=3)
+    parser.add_argument('--bots', type=int, default=3)
+    parser.add_argument('--max-players', type=int, help='host admission limit (default at least 16)')
     parser.add_argument('--name', default='Local Tester', help='human host display name')
     parser.add_argument('--seconds', type=int, default=1800, help='bounded lifetime, default 30 minutes')
     parser.add_argument('--workspace', default='3', help='human/quad workspace')
@@ -60,6 +61,13 @@ def main():
     parser.add_argument('--profile', action='store_true', help='capture 1800 frames per visible client to its session profile.csv')
     parser.add_argument('--dry-run', action='store_true', help='show plan without building, starting games or changing workspaces')
     args = parser.parse_args()
+    if args.bots < 1:
+        parser.error('--bots must be positive')
+    if args.layout == 'quad' and args.bots > 3:
+        parser.error('quad fits four windows; use split or headless for more bots')
+    capacity = args.max_players if args.max_players is not None else max(16, args.bots+1)
+    if capacity < args.bots+1 and not (args.join or args.follow_host):
+        parser.error('--max-players must fit the host and all bots')
     if args.seconds <= 0:
         parser.error('--seconds must be positive')
     if args.join and args.follow_host:
@@ -135,7 +143,7 @@ def main():
             code_path = run / 'room-code'
             host = launch('human', ['--host-room', f'Local multiplayer {token}', '--player-name', args.name,
                                    '--room-file', str(code_path), '--auto-start', str(args.bots + 1),
-                                   '--auto-restart', '--death', 'entrance'])
+                                   '--auto-restart', '--death', 'entrance', '--max-players', str(capacity)])
             until = time.monotonic() + 25
             while time.monotonic() < until and not code_path.exists() and host.poll() is None:
                 time.sleep(.1)

@@ -20,7 +20,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(67);
+    writer.u32(68);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -50,6 +50,8 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.cell(roof.start);writer.u8(static_cast<std::uint8_t>(roof.kind));
         writer.u8(roof.length);writer.u8(roof.vertical);writer.u8(roof.hp);writer.u8(roof.height);writer.u8(roof.width);
     }
+    writer.u32(static_cast<std::uint32_t>(game.stage.prop_owners.size()));
+    for (const auto& [cell, id] : game.stage.prop_owners) { writer.i32(cell); writer.i32(id); }
     const Run& run = game.run;
     writer.u8(static_cast<std::uint8_t>(run.phase));
     writer.i32(run.floor); writer.u64(run.seed);
@@ -63,22 +65,24 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
         writer.cell(light.cell);
         writer.light(light.light);
     }
-    for (std::size_t owner = 0; owner < 4; ++owner) {
-        writer.i32(game.players[owner].slot);
-        writer.u32(game.players[owner].generation);
-        writer.i32(run.coins[owner]);
-        writer.u8(static_cast<std::uint8_t>(run.chosen[owner]));
-        writer.u8(static_cast<std::uint8_t>(run.shop_ready[owner]));
-        writer.u8(static_cast<std::uint8_t>(run.online[owner]));
-        writer.i32(run.pending_count[owner]);
-        for (const Reward& reward : run.offers[owner]) {
+    writer.u32(static_cast<std::uint32_t>(game.players.size()));
+    for (const auto& [owner, participant] : game.players) {
+        writer.i32(owner);
+        writer.i32(participant.controlled.slot);
+        writer.u32(participant.controlled.generation);
+        writer.i32(participant.coins);
+        writer.u8(static_cast<std::uint8_t>(participant.chosen));
+        writer.u8(static_cast<std::uint8_t>(participant.shop_ready));
+        writer.u8(static_cast<std::uint8_t>(participant.online));
+        writer.i32(participant.pending_count);
+        for (const Reward& reward : participant.offers) {
             writer.u8(static_cast<std::uint8_t>(reward.kind));
             writer.u8(static_cast<std::uint8_t>(reward.item));
             writer.u8(static_cast<std::uint8_t>(reward.artifact));
             writer.i32(reward.amount);
             writer.u8(static_cast<std::uint8_t>(reward.attribute));
         }
-        for (const auto& offer : run.pending_offers[owner]) {
+        for (const auto& offer : participant.pending_offers) {
             for (const Reward& reward : offer) {
                 writer.u8(static_cast<std::uint8_t>(reward.kind));
                 writer.u8(static_cast<std::uint8_t>(reward.item));
@@ -128,7 +132,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 67) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 68) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -194,7 +198,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         if (tile.prop.kind==PropKind::Conveyor && (tile.prop.variant>7 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::FoamCover && (tile.prop.variant!=0 || (!tile.prop.broken && (tile.prop.hp==0 || tile.prop.growth_ticks==0)))) reader.okay=false;
         if (tile.prop.kind==PropKind::PayCage && (tile.prop.variant!=0 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
-        if (tile.prop.kind==PropKind::TensionSpring && (tile.prop.variant>19 || tile.prop.growth_ticks>18 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
+        if (tile.prop.kind==PropKind::TensionSpring && (tile.prop.variant>3 || tile.prop.growth_ticks>18 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (tile.prop.kind==PropKind::Barricade && (tile.prop.variant>3 || (!tile.prop.broken && tile.prop.hp==0))) reader.okay=false;
         if (!valid_light_tower(tile.prop)) reader.okay=false;
         if (!valid_tree_prop(tile.prop)) reader.okay=false;
@@ -237,6 +241,15 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         roof.length=reader.u8();roof.vertical=reader.u8();roof.hp=reader.u8();roof.height=reader.u8();roof.width=reader.u8();
         if (!valid_roof(result.stage,roof)) reader.okay=false;
     }
+    const auto owned_props=reader.u32();
+    if (!reader.okay || owned_props>result.stage.tiles.size() || owned_props>(reader.bytes.size()-reader.position)/8) {
+        error="Invalid prop owner count"; return false;
+    }
+    for (std::uint32_t i=0;i<owned_props;++i) {
+        const int cell=reader.i32(); const auto id=reader.i32();
+        if (cell<0 || static_cast<std::size_t>(cell)>=result.stage.tiles.size() || id<0 ||
+            !result.stage.prop_owners.emplace(cell,id).second) { error="Invalid prop owner"; return false; }
+    }
     Run& run = result.run;
     const std::uint8_t phase = reader.u8();
     if (phase > static_cast<std::uint8_t>(RunPhase::Won)) reader.okay = false;
@@ -258,19 +271,30 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         light.cell = reader.cell();
         light.light = reader.light();
     }
-    for (std::size_t owner = 0; owner < 4; ++owner) {
-        result.players[owner].slot = reader.i32();
-        result.players[owner].generation = reader.u32();
-        if (result.players[owner].slot < -1 || result.players[owner].slot >= max_entities)
+    const auto participants = reader.u32();
+    if (!reader.okay || participants == 0 || participants > (reader.bytes.size()-reader.position)/331) {
+        error = "Invalid participant count"; return false;
+    }
+    result.players.clear();
+    PlayerId last_id = -1;
+    for (std::uint32_t index = 0; index < participants; ++index) {
+        const auto owner = reader.i32();
+        if (owner < 0 || owner <= last_id) { error = "Invalid participant ID"; return false; }
+        last_id = owner;
+        auto& participant=player_state(result,owner);
+
+        participant.controlled.slot = reader.i32();
+        participant.controlled.generation = reader.u32();
+        if (participant.controlled.slot < -1 || participant.controlled.slot >= max_entities)
             reader.okay = false;
-        run.coins[owner] = reader.i32();
-        run.chosen[owner] = reader.u8() != 0;
-        run.shop_ready[owner] = reader.u8() != 0;
-        run.online[owner] = reader.u8() != 0;
-        run.pending_count[owner] = reader.i32();
-        if (run.pending_count[owner] < 0 || run.pending_count[owner] > 12)
+        participant.coins = reader.i32();
+        participant.chosen = reader.u8() != 0;
+        participant.shop_ready = reader.u8() != 0;
+        participant.online = reader.u8() != 0;
+        participant.pending_count = reader.i32();
+        if (participant.pending_count < 0 || participant.pending_count > 12)
             reader.okay = false;
-        for (Reward& reward : run.offers[owner]) {
+        for (Reward& reward : participant.offers) {
             reward.kind = static_cast<RewardKind>(reader.u8());
             reward.item = static_cast<ItemKind>(reader.u8());
             reward.artifact = static_cast<ArtifactKind>(reader.u8());
@@ -281,7 +305,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
                 reward.attribute > ItemAttribute::Restorative)
                 reader.okay = false;
         }
-        for (auto& offer : run.pending_offers[owner]) {
+        for (auto& offer : participant.pending_offers) {
             for (Reward& reward : offer) {
                 reward.kind = static_cast<RewardKind>(reader.u8());
                 reward.item = static_cast<ItemKind>(reader.u8());
@@ -384,8 +408,10 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
         }
     }
     if (!reader.finished()) { error = "Invalid or truncated snapshot"; return false; }
-    for (Handle handle : result.players) {
-        if (handle.slot >= 0 && get_entity(result, handle) == nullptr) {
+    for (const auto& [id, member] : result.players) {
+        const Handle handle=member.controlled;
+        const Entity* actor=get_entity(result,handle);
+        if (handle.slot >= 0 && (!actor || actor->owner!=id)) {
             error = "Snapshot player handle is stale";
             return false;
         }

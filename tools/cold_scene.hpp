@@ -26,7 +26,7 @@ inline void arrange_cold_scene(Game& game, Cosmetics& cosmetics, Entity& player)
     const Handle chilled = spawn_entity(game, EntityKind::RimeSkater, {21, 11});
     apply_chill(*get_entity(game, chilled), 180);
     // CAPTURE: A flying flask and the pool's settled result, with no simulation advance.
-    launch_projectile(game, game.players[0].slot, player.inventory.slots[0], {1, 0}, 5);
+    launch_projectile(game, player_state(game,0).controlled.slot, player.inventory.slots[0], {1, 0}, 5);
     for (Entity& shot : game.entities)
         if (shot.kind == EntityKind::Projectile) { shot.cell = {19, 12}; shot.counter_a = 4; }
     cosmetics.camera = {21, 12};

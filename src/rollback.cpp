@@ -40,7 +40,7 @@ void begin_rollback(RollbackSession& session, const Game& initial) {
     session.confirmed_through = initial.tick;
 }
 
-void predict_frame(RollbackSession& session, const std::array<Input, 4>& inputs) {
+void predict_frame(RollbackSession& session, const PlayerInputs& inputs) {
     if (session.needs_snapshot) return;
     const std::uint64_t tick = session.game.tick + 1;
     RollbackFrame frame;
@@ -107,15 +107,15 @@ std::vector<CanonicalFrame> revise_host_input(RollbackSession& session,
 
 std::vector<CanonicalFrame> revise_host_inputs(RollbackSession& session, int owner,
     std::span<const std::pair<std::uint64_t, Input>> inputs) {
-    if (owner < 0 || owner >= 4) return {};
+    if (!has_player(session.game, owner)) return {};
     std::size_t index = session.frames.size();
     for (const auto& [tick, input] : inputs) {
         if (tick <= session.input_commit_tick) continue;
         const auto found = std::find_if(session.frames.begin(), session.frames.end(),
             [tick](const RollbackFrame& frame) { return frame.tick == tick; });
-        if (found == session.frames.end() || found->inputs[static_cast<std::size_t>(owner)] == input)
+        if (found == session.frames.end() || found->inputs[owner] == input)
             continue;
-        found->inputs[static_cast<std::size_t>(owner)] = input;
+        found->inputs[owner] = input;
         index = std::min(index, static_cast<std::size_t>(found - session.frames.begin()));
     }
     if (index == session.frames.size()) return {};

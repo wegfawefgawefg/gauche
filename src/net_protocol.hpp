@@ -8,13 +8,13 @@
 
 enum class WireKind : std::uint8_t {
     Hello = 1, Welcome, Input, Canonical, Correction,
-    SnapshotChunk, SnapshotRequest, SnapshotAck, Heartbeat, PartyState, PartyReady, Leave,
+    SnapshotChunk, SnapshotRequest, SnapshotAck, Heartbeat, PartyState, PartyReady, Leave, Fragment,
 };
 
 constexpr std::uint32_t wire_magic = 0x47415543U;
-constexpr std::uint16_t wire_version = 15;
-constexpr std::uint64_t gameplay_version = 0x2026091779ULL;
-// Six 176-byte canonical frames plus headers fit the relay's 1200-byte payload.
+constexpr std::uint16_t wire_version = 16;
+constexpr std::uint64_t gameplay_version = 0x2026091780ULL;
+// Small parties retain redundant history in one datagram; larger messages fragment.
 constexpr std::size_t canonical_frames_per_packet = 6;
 constexpr std::size_t max_correction_chunks = 20;
 

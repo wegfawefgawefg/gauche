@@ -26,7 +26,7 @@ void draw_streetlamp(SDL_Renderer* renderer,const GameGraphics& graphics,const G
     const auto light=light_at_cell(lighting,cell);
     SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
     bool obscures=false;
-    for (Handle handle:game.players) if (const Entity* player=get_entity(game,handle))
+    for (Handle handle : controlled_entities(game)) if (const Entity* player=get_entity(game,handle))
         if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-3) obscures=true;
     SDL_SetTextureAlphaMod(texture,obscures ? 90 : 255);
     SDL_RenderTextureRotated(renderer,texture,nullptr,&body,angle,&pivot,SDL_FLIP_NONE);

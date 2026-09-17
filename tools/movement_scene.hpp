@@ -25,7 +25,7 @@ inline void arrange_movement_tools(Game& game, Cosmetics& cosmetics, Entity& pla
     shot->facing = {1, 0};
     shot->counter_a = 2; shot->attack_interval = 3;
     shot->timer_a = 12; shot->timer_b = 2;
-    shot->entity_a = game.players[0];
+    shot->entity_a = player_state(game,0).controlled;
     Entity* wolf = get_entity(game, spawn_entity(game, EntityKind::Wolf, {16, 12}));
     wolf->vitals.rooted = 110; wolf->vitals.root_kind = RootKind::Net;
     for (Cell cell : {Cell{12, 10}, {12, 11}, {12, 12}})

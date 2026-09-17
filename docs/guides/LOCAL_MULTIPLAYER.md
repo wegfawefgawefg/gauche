@@ -25,6 +25,12 @@ have a 30-minute limit by default; use `--seconds 3600` for an hour.
 ## Layouts and connection scenarios
 
 ```sh
+# Sixteen participants: your window plus fifteen headless bots.
+./scripts/multiplayer.sh --layout headless --bots 15
+
+# Admission can be raised without changing player storage or protocol.
+./scripts/multiplayer.sh --layout headless --bots 23 --max-players 24
+
 # Four quadrants on one display instead of the default two-monitor layout.
 ./scripts/multiplayer.sh --layout quad
 
@@ -136,3 +142,7 @@ heartbeat timeout. The host removes the world body and keeps character state
 privately for the same identity to reconnect, rather than leaving a visible dummy.
 Normal deaths scatter carried items and gold; pit/deep-water deaths lose cargo.
 The built-in fist remains, and Next Floor respawns do not restore lost items.
+
+Participant IDs and packet contents are independent of the host admission limit
+(default 16, configurable with `--max-players`). Every participant needs the new
+wire-version-16 build. See [participant architecture](../engineering/PLAYER_PARTICIPANTS.md).

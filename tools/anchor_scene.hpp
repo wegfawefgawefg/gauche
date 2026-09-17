@@ -8,10 +8,10 @@ inline void arrange_anchor_scene(Game& game,Cosmetics& cosmetics,Entity& player,
     player.cell={18,12};player.facing={1,0};player.inventory={};player.scorch_ticks=0;
     insert_item(player.inventory,make_item(ItemKind::IceAnchor));
     insert_item(player.inventory,make_item(ItemKind::IceAnchor,1,ItemAttribute::Durable));
-    Input use;use.use=true;step_anchor_action(game,game.players[0].slot,use);
+    Input use;use.use=true;step_anchor_action(game,player_state(game,0).controlled.slot,use);
     player.inventory.held()->opened=false;player.inventory.held()->cooldown=0;
     player.cell={22,13};
     if (blocked) *game.stage.at({20,12})={TileKind::Wall,60,0};
-    else step_anchor_action(game,game.players[0].slot,use);
+    else step_anchor_action(game,player_state(game,0).controlled.slot,use);
     cosmetics.camera={20,12};cosmetics.camera_ready=true;
 }

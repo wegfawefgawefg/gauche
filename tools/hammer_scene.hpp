@@ -3,7 +3,7 @@
 
 inline void arrange_hammer_scene(Game& game,Cosmetics& cosmetics) {
     arrange_quarry_scene(game,cosmetics,true);
-    auto& player=*get_entity(game,game.players[0]);
+    auto& player=*get_entity(game,player_state(game,0).controlled);
     player.inventory={};
     insert_item(player.inventory,make_item(ItemKind::PressHammer));
     insert_item(player.inventory,make_item(ItemKind::RubberMallet));

@@ -10,14 +10,7 @@
 #include <random>
 
 void send_wire(NetSession& session, NetEndpoint to, const PacketWriter& packet) {
-    std::string error;
-    if (!send_traversal(session, to, packet.bytes, error)) {
-        session.status = error;
-        network_event(session, "send_failed");
-    } else {
-        ++session.diagnostics.sent_packets;
-        session.diagnostics.sent_bytes += packet.bytes.size();
-    }
+    send_fragmented(session, to, packet);
 }
 
 bool host_game(NetSession& session, std::uint16_t port, std::uint64_t seed,
@@ -80,6 +73,11 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
         PacketReader reader{datagram.bytes};
         WireKind kind{};
         if (!read_packet_header(reader, kind)) continue;
+        if (kind == WireKind::Fragment) {
+            if (!receive_fragment(session, datagram, reader)) continue;
+            reader = PacketReader{datagram.bytes};
+            if (!read_packet_header(reader, kind) || kind == WireKind::Fragment) continue;
+        }
         if (receive_party_state(session, datagram, reader, kind)) continue;
         if (session.role == NetRole::Host)
             host_receive(session, datagram, reader, kind);
@@ -96,8 +94,9 @@ void pump_network(NetSession& session, std::uint64_t now_ms) {
     }
     if (heartbeat_due) send_party_state(session);
     if (session.role == NetRole::Host) {
-        for (int owner = 1; owner < 4; ++owner) {
-            NetPeer& peer = session.peers[static_cast<std::size_t>(owner)];
+        for (auto it=session.peers.begin(); it!=session.peers.end();) {
+            const auto owner=it->first;
+            NetPeer& peer=(it++)->second;
             if (!peer.connected) continue;
             if (session.now_ms - peer.last_heard_ms > 6000) {
                 network_event(session, "peer_timeout", owner);
@@ -178,6 +177,8 @@ void leave_network_game(NetSession& session) {
     session.role = NetRole::Solo;
     session.rollback = {};
     session.peers = {};
+    session.departed.clear();
+    session.fragments.clear();
     session.host_endpoint = {};
     session.local_identity = 0;
     session.local_owner = 0;
@@ -197,7 +198,8 @@ void leave_network_game(NetSession& session) {
     session.sent_inputs.clear();
     session.ready = false;
     session.match_started = session.party_ready = true;
-    session.party_ready_mask = 1;
+    session.ready_players = {0};
+    session.next_player_id = 1;
     session.status.clear();
 }
 

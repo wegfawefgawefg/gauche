@@ -49,7 +49,7 @@ void load_cargo(Game& game,Entity& sled) {
 void sync_passengers(Game& game,Entity& sled) {
     Entity* rider=get_entity(game,sled.entity_a);
     if (!rider || rider->kind!=EntityKind::Player || rider->health<=0 || rider->cell!=sled.cell ||
-        (rider->owner>=0 && !game.run.online[static_cast<std::size_t>(rider->owner)])) sled.entity_a={};
+        (rider->owner>=0 && !player_state(game, rider->owner).online)) sled.entity_a={};
     Entity* cargo=get_entity(game,sled.entity_b);
     if (!cargo || !sled_cargo(game,*cargo)) {
         if (cargo && cargo->kind==EntityKind::GroundItem && cargo->label_a==2 &&

@@ -6,7 +6,7 @@ namespace {
 
 bool service_endpoints(GaucheMatchmaking& api, const std::string& url, RoomResult& result) {
     RoomServerCapabilities capabilities;
-    if (!api.fetch_capabilities(url, capabilities, result.error)) return false;
+    if (!api.fetch_capabilities(url, capabilities, result.error, &result.clock)) return false;
     const std::string server = room_server_host(url);
     const auto resolve = [&](const RoomServerUdpServiceCapabilities& service, NetEndpoint& endpoint) {
         if (!service.enabled || service.port < 1 || service.port > 65535) return false;
@@ -69,5 +69,6 @@ RoomResult perform_room_request(const RoomRequest& request) {
         result.okay = false;
         result.error = "Malformed room service response";
     }
+    if (api.last_clock.epoch_ms != 0) result.clock = api.last_clock;
     return result;
 }

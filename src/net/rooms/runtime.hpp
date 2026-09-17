@@ -25,6 +25,7 @@ struct RoomResult {
     MatchmakingRoom room;
     std::vector<MatchmakingRoom> rooms;
     NetEndpoint punch{}, relay{};
+    ServerClock clock;
 };
 
 struct RoomRuntime {

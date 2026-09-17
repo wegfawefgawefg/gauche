@@ -1,6 +1,6 @@
 # Gauche master task list
 
-- [x] **NET-JOIN-DIAGNOSTICS:** Verify in-progress join/snapshot through deployed relay and next-floor revival; avoid lava/burning join cells. Log control rejection reasons, show connection errors, send bounded signed attempt summaries to existing roomd journal. Retry relay when direct probes succeed but game handshake stalls. Remote friend's exact failure still needs a fresh report.
+- [x] **NET-JOIN-DIAGNOSTICS:** Verify in-progress join/snapshot through deployed relay and next-floor revival; avoid lava/burning join cells. Log control rejection reasons, show connection errors, send bounded signed attempt summaries to existing roomd journal. Retry relay when direct probes succeed but game handshake stalls. Friend's report identified clock skew; room connections now use verified HTTPS service time plus monotonic elapsed time. Live relay join passed with client wall time shifted one hour; stale packet rejection remains enforced.
 - [ ] **NET-HOST-JOIN-POLICY:** Add an explicit host setting for allowing in-progress joins (currently allowed); expose authorized room connection reports in host debugging UI.
 
 This is the **single live checklist**. [Content brief](design/CONTENT_FARM_BRIEF.md): scale/constraints; [forest ideas](design/FOREST_CONTENT_IDEAS.md): candidates; [NEXT_TASKS.md](archive/NEXT_TASKS.md): history. Preserve dark, readable lighting.

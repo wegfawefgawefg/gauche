@@ -69,8 +69,8 @@ bool room_from_json(const nlohmann::json& json, MatchmakingRoom& out) {
 
 bool GaucheMatchmaking::fetch_capabilities(const std::string& server_url,
                                                RoomServerCapabilities& out,
-                                               std::string& err) {
-    auto json = get_json(server_url, "/health", err);
+                                               std::string& err, ServerClock* clock) {
+    auto json = get_json(server_url, "/health", err, clock);
     if (!json)
         return false;
     out = RoomServerCapabilities{};
@@ -211,7 +211,7 @@ bool GaucheMatchmaking::fetch_room(const std::string& server_url,
                                        std::string& err) {
     auto json = get_json(server_url,
                          "/rooms/" + normalized_room_code(room_code),
-                         err);
+                         err, &last_clock);
     if (!json)
         return false;
     return room_from_json((*json)["room"], out);

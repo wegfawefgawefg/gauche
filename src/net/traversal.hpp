@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../net_socket.hpp"
+#include "server_clock.hpp"
 
 #include <cstdint>
 #include <string>
@@ -22,6 +23,7 @@ struct Traversal {
     bool host = false, force_relay = false, relay_ready = false;
     std::string room, host_secret, attempt, punch_secret, allocation, relay_secret;
     NetEndpoint punch_server{}, relay_server{};
+    ServerClock clock;
     std::uint64_t sequence = 1, next_hello_ms = 0, next_probe_ms = 0;
     std::uint64_t next_relay_ms = 0, deadline_ms = 0;
     std::vector<TraversalRoute> routes;

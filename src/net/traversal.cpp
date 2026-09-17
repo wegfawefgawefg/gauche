@@ -38,11 +38,12 @@ void report_join(NetSession& session) {
         << " phase=" << static_cast<int>(t.phase) << " ready=" << session.ready
         << " owner=" << session.local_owner << " punch_rx=" << t.punch_received
         << " relay_rx=" << t.relay_received << " rejected=" << t.rejected
+        << " server_clock=" << (t.clock.epoch_ms != 0)
         << " clock_delta_ms=" << t.clock_delta_ms << " reason=" << t.last_reject;
     realnet::Packet packet;
     packet.kind = realnet::PacketKind::PunchResult;
     packet.role = "joiner"; packet.room_code = t.room; packet.join_attempt_id = t.attempt;
-    packet.seq = t.sequence++; packet.ts_ms = realnet::unix_time_ms();
+    packet.seq = t.sequence++; packet.ts_ms = server_time_ms(session.traversal.clock);
     packet.result = summary.str();
     realnet::sign_packet(packet, t.punch_secret);
     send_control(session, t.punch_server, realnet::encode_packet(packet));
@@ -58,7 +59,7 @@ void punch_packet(NetSession& session, realnet::PacketKind kind, NetEndpoint tar
     packet.room_code = transport.room;
     packet.join_attempt_id = attempt;
     packet.seq = transport.sequence++;
-    packet.ts_ms = realnet::unix_time_ms();
+    packet.ts_ms = server_time_ms(session.traversal.clock);
     realnet::sign_packet(packet, secret);
     send_control(session, target, realnet::encode_packet(packet));
 }
@@ -72,7 +73,7 @@ realnet::RelayPacket relay_packet(NetSession& session, realnet::RelayPacketKind 
     packet.join_attempt_id = transport.attempt;
     packet.allocation_id = transport.allocation;
     packet.seq = transport.sequence++;
-    packet.ts_ms = realnet::unix_time_ms();
+    packet.ts_ms = server_time_ms(session.traversal.clock);
     return packet;
 }
 
@@ -93,7 +94,7 @@ TraversalRoute* route_for(Traversal& transport, const std::string& attempt) {
 }
 
 bool recent(NetSession& session, std::uint64_t stamp) {
-    const auto now = realnet::unix_time_ms();
+    const auto now = server_time_ms(session.traversal.clock);
     if (stamp <= now + 5000 && stamp + 30000 >= now) return true;
     session.traversal.clock_delta_ms = stamp > now ? stamp - now : now - stamp;
     reject_control(session, "traversal_clock_mismatch");

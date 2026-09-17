@@ -63,6 +63,37 @@ bool traversal_failure_reports() {
     return t.phase == TraversalPhase::Relay;
 }
 
+bool server_clock_handshake() {
+    auto client = std::make_unique<NetSession>();
+    auto& t = client->traversal;
+    t.phase = TraversalPhase::Relay; t.room = "CLOCKS"; t.attempt = "attempt";
+    t.allocation = "allocation"; t.relay_secret = "relay-secret";
+    t.relay_server = {123, 8790};
+    // Deliberately disagree with this machine's wall clock by an hour.
+    const auto service_now = realnet::unix_time_ms() + 3600000;
+    t.clock = {service_now, steady_milliseconds()};
+    realnet::RelayPacket ready;
+    ready.kind = realnet::RelayPacketKind::Ready; ready.role = realnet::RelayRole::Joiner;
+    ready.room_code = t.room; ready.join_attempt_id = t.attempt;
+    ready.allocation_id = t.allocation; ready.ts_ms = service_now;
+    const auto deliver = [&] {
+        realnet::sign_relay_packet(ready,t.relay_secret);
+        const auto bytes = realnet::encode_relay_packet(ready);
+        Datagram datagram{t.relay_server,{bytes.begin(),bytes.end()}};
+        receive_traversal(*client,datagram);
+    };
+    deliver();
+    if (t.phase != TraversalPhase::Connected || !client->host_endpoint.relayed || t.rejected != 0)
+        return false;
+    ready.ts_ms = service_now - 31000;
+    deliver();
+    if (t.last_reject != "traversal_clock_mismatch") return false;
+    const auto now = steady_milliseconds();
+    t.clock = {service_now,now-10000};
+    const auto advanced = server_time_ms(t.clock);
+    return advanced >= service_now+10000 && advanced < service_now+11000;
+}
+
 bool join_running_floor_and_respawn() {
     auto host = std::make_unique<NetSession>();
     auto client = std::make_unique<NetSession>();
@@ -127,6 +158,9 @@ bool four_players() {
 } // namespace
 
 int main() {
+    if (!server_clock_handshake()) {
+        std::fputs("server clock handshake failed\n", stderr); return 1;
+    }
     if (!traversal_failure_reports()) {
         std::fputs("traversal diagnostics / fallback failed\n", stderr); return 1;
     }

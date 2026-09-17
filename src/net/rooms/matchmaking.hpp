@@ -1,12 +1,14 @@
 #pragma once
 
 #include <gubsy/lobby/room_matchmaking.hpp>
+#include "../server_clock.hpp"
 
 class GaucheMatchmaking final : public IMatchmaking {
 public:
+    ServerClock last_clock;
     bool fetch_capabilities(const std::string& server_url,
                             RoomServerCapabilities& out,
-                            std::string& err);
+                            std::string& err, ServerClock* clock = nullptr);
     bool create_room(const std::string& server_url,
                      const MatchmakingRoom& room,
                      MatchmakingCreateResult& out,

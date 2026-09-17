@@ -117,3 +117,10 @@ only local logs survive. The host UI does not yet retrieve these reports.
 Local `netlogs/session-*.log` files now name rejected control replies; the joining
 screen shows the specific failure, including authenticated clock mismatches.
 No room-server upgrade is required for these reports.
+
+Room connections use the service's HTTP Date as their packet timestamp reference,
+advanced with local monotonic time and refreshed on room heartbeats. On the public
+service this arrives through verified HTTPS. NTP is not required for the game
+handshake; packet authentication and the existing age window remain enforced.
+Services without a Date header retain the local-clock fallback. HTTPS certificate
+validation still requires a reasonably correct system date.

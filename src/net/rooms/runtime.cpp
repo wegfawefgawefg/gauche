@@ -57,6 +57,7 @@ void configure_traversal(MenuShell& menu, const RoomResult& result) {
     transport.host_secret = menu.rooms.secret;
     transport.punch_server = result.punch;
     transport.relay_server = result.relay;
+    transport.clock = result.clock;
     transport.force_relay = menu.front.force_relay || result.punch.port == 0;
     if (!transport.host) {
         transport.attempt = result.attempt.join_attempt_id;
@@ -108,7 +109,8 @@ void complete_request(MenuShell& menu, RoomResult result) {
         room.metadata = result.room;
         room.token = result.attempt.join_token;
         configure_traversal(menu, result);
-        menu.front.room_status = "Connecting to room " + room.code;
+        menu.network->status = "Connecting to room " + room.code;
+        menu.front.room_status = menu.network->status;
         show_party(menu);
         break;
     }
@@ -118,6 +120,7 @@ void complete_request(MenuShell& menu, RoomResult result) {
         menu.front.room_status = menu.network->match_started ? "Joined the run in progress." : "Connected. Ready up when you want to start.";
         [[fallthrough]];
     case RoomOperation::Heartbeat:
+        if (result.clock.epoch_ms != 0) menu.network->traversal.clock = result.clock;
         if (!result.room.room_code.empty()) menu.front.room_members = result.room.members;
         break;
     case RoomOperation::Leave:

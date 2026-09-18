@@ -74,12 +74,14 @@ void forest_canopies(tr::Renderer* renderer, const GameGraphics& graphics,
     const int grid_x = static_cast<int>(std::floor(camera.x / 6));
     const int grid_y = static_cast<int>(std::floor(camera.y / 6));
     const int columns = static_cast<int>(std::ceil(320 / (pixels * 6))) + 2;
-    const int rows = static_cast<int>(std::ceil(180 / (pixels * 6))) + 2;
+    const int rows = static_cast<int>(std::ceil(180 / (pixels * 6))) + 3;
     for (int gy = grid_y - rows; gy <= grid_y + rows; ++gy)
         for (int gx = grid_x - columns; gx <= grid_x + columns; ++gx) {
             const std::uint32_t bits = tree_bits(gx, gy, game.run.seed);
             const Cell anchor{gx * 6 + static_cast<int>(bits % 3), gy * 6 + static_cast<int>((bits >> 4) % 3)};
-            if (!game.stage.in_bounds(anchor) || game.stage.at_or_border(anchor).kind != TileKind::Wall || bits % 5 == 0) continue;
+            // Decorative parallax field continues over rooms and beyond map bounds.
+            // Only the viewport and opening mask determine what is visible.
+            if (bits % 5 == 0) continue;
             const float depth = 1.08F + static_cast<float>((bits >> 8) % 5) * .015F;
             const float size = pixels * (7 + static_cast<float>((bits >> 16) % 4));
             const float x = view_center_x + (static_cast<float>(anchor.x) - camera.x) * pixels * depth;

@@ -67,31 +67,36 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
                 ImGui::Checkbox("Loadout / spawn override", &playtest_tools().loadouts);
                 ImGui::Checkbox("Pause offline world while F1 is open", &playtest_tools().pause);
             }
-            if (ImGui::CollapsingHeader("Presentation", ImGuiTreeNodeFlags_DefaultOpen)) {
-                if (debug_renderer) {
-                    ImGui::Text("Renderer: %s", tr::renderer_name(debug_renderer));
-                    ImGui::Combo("Terrain lighting", &debug_renderer->lighting_style,
-                        "Flat tiles\0Triangle interpolation (old)\0Bilinear (current)\0");
-                    ImGui::TextUnformatted("Same light propagation; presentation only.");
-                    ImGui::Text("%llu batches | %llu triangles | %zu atlas pages",
-                        static_cast<unsigned long long>(debug_renderer->last.batches),
-                        static_cast<unsigned long long>(debug_renderer->last.triangles), debug_renderer->atlases.size());
-                }
-#ifdef __EMSCRIPTEN__
-                ImGui::Checkbox("Allow zoom below 2x", &panels.unlocked_zoom);
-                ImGui::TextUnformatted("Use - / + to test down to 0.5x.");
-#endif
-                ImGui::Combo("Canopy opening", &panels.canopy_style,
-                    "Oval stipple (old)\0Rounded rectangle\0Full canopy preview\0Hidden\0");
-                ImGui::Checkbox("Upright canopy trees", &panels.canopy_upright);
-                ImGui::SliderFloat("Clear area", &panels.canopy_opening, .60F, .94F, "%.2f");
-                ImGui::SliderFloat("Edge fade width", &panels.canopy_fade, .02F, .25F, "%.2f");
-                ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
-                ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
-                ImGui::Checkbox("Prop shadows", &panels.shadow_props);
-                ImGui::Checkbox("Loose debris shadows", &panels.shadow_debris);
-                ImGui::TextUnformatted("Ground anchors only; independent of lights.");
+            ImGui::Checkbox("Presentation", &panels.presentation);
+        }
+        ImGui::End();
+    }
+    if (panels.visible && panels.presentation) {
+        ImGui::SetNextWindowPos({380, 16}, ImGuiCond_FirstUseEver);
+        if (ImGui::Begin("Presentation", &panels.presentation, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (debug_renderer) {
+                ImGui::Text("Renderer: %s", tr::renderer_name(debug_renderer));
+                ImGui::Combo("Terrain lighting", &debug_renderer->lighting_style,
+                    "Flat tiles\0Triangle interpolation (old)\0Bilinear (current)\0");
+                ImGui::TextUnformatted("Same light propagation; presentation only.");
+                ImGui::Text("%llu batches | %llu triangles | %zu atlas pages",
+                    static_cast<unsigned long long>(debug_renderer->last.batches),
+                    static_cast<unsigned long long>(debug_renderer->last.triangles), debug_renderer->atlases.size());
             }
+#ifdef __EMSCRIPTEN__
+            ImGui::Checkbox("Allow zoom below 2x", &panels.unlocked_zoom);
+            ImGui::TextUnformatted("Use - / + to test down to 0.5x.");
+#endif
+            ImGui::Combo("Canopy opening", &panels.canopy_style,
+                "Oval stipple (old)\0Rounded rectangle\0Full canopy preview\0Hidden\0");
+            ImGui::Checkbox("Upright canopy trees", &panels.canopy_upright);
+            ImGui::SliderFloat("Clear area", &panels.canopy_opening, .60F, .94F, "%.2f");
+            ImGui::SliderFloat("Edge fade width", &panels.canopy_fade, .02F, .25F, "%.2f");
+            ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
+            ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
+            ImGui::Checkbox("Prop shadows", &panels.shadow_props);
+            ImGui::Checkbox("Loose debris shadows", &panels.shadow_debris);
+            ImGui::TextUnformatted("Ground anchors only; independent of lights.");
         }
         ImGui::End();
     }

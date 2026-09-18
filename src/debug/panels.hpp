@@ -6,6 +6,7 @@
 struct DebugPanels {
     bool visible = false;
     bool selector = true;
+    bool presentation = false;
     bool combat = false;
     bool status = false;
     bool unlocked_zoom = false;

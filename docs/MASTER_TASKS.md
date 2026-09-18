@@ -890,3 +890,14 @@ playtesting; use builds and focused static captures for implementation checks.
   quenched state passed a focused direct-call/snapshot check; no live playtest.
 
 - [ ] **CANOPY-VARIETY** (user feedback 2026-09-18): Prefer mixed oak/pine crowns. Add thinner branches at varied left/right angles, foliage or pine needles along branches, and wider overall tree-size variation. Deferred; retain the selected post-GPU-playtest presentation defaults for now.
+
+## Reward and basic-action brainstorm — 2026-09-18
+
+- [ ] **REWARD-POOL-REVIEW:** Forest is feeling finished to the user and brother after extensive playtesting. Review end-of-stage choices around permanent, incrementally useful upgrades; removing item offers is the current proposed direction because shops/world loot already provide equipment. Build a candidate pool of modest health, damage, weapon condition, ammo, healing, stack-size and light improvements. Specific entries/numbers remain proposals. Nerf movement-speed gains; preserve fun environmental interactions rather than granting automatic trap avoidance.
+- [ ] **STRONG-ARMS:** User direction: slower attack/use windups for more damage across weapons, including guns. Do not silently narrow this to melee or the basic attack. Prototype small stackable increments and compare feel/output.
+- [ ] **QUICK-HANDS-DESIGN:** Explore faster use with slightly less damage. Basic-action-only versus all-weapons variants remain undecided; distinguish these clearly if both exist.
+- [ ] **BASIC-SLAP:** Selected concept: replace the permanent fist with a 1-damage slap that rotates enemies. Decide turn amount and interaction with committed attacks; prevent unlimited attack denial.
+- [ ] **BASIC-PARRY-PAN:** Selected concept: a tightly timed parry blocks/returns damage and reflects suitable projectiles. Define timing and failed-parry recovery; no held invulnerability.
+- [ ] **BASIC-JUMP-EXPERIMENT:** Explore losing the basic attack for an unlimited, animated two-tile forward jump. Decide occupied landing behavior and show the destination; landing hazards still matter. User has not selected a collision/punishment rule yet.
+- [ ] **BASIC-GRAPPLE:** Favored concept: pick up and throw creatures, boxes and a broad range of loose objects; heavy targets resist. Audit compatible targets by shared weight/anchoring rules, rather than making it useful on only a few enemy types.
+- [ ] **INDUSTRIAL-CRUSH-SHIELD:** Add an industrial shield item inspired by Spelunky's crushing interaction. Distinguish pushing from pinning/crushing against solid terrain; settle which enemies/props can be crushed and the limits. This is equipment, separate from permanent basic-action replacements.

@@ -36,6 +36,23 @@ try {
  timing=await page.evaluate(()=>teeming.frameTiming);
  assert(timing.renderFps>=50 && timing.renderFps<=65,JSON.stringify(timing));
  console.log('PASS high-refresh scheduler and working 60 FPS cap',timing);
+ // Save a lower render scale, verify resize/fullscreen, then reload the preference.
+ await page.evaluate(()=>teeming.command='display:render-scale');
+ await page.waitForFunction(()=>teeming.gameState.renderPercent===75);
+ await page.evaluate(()=>teeming.command='display:render-scale');
+ await page.waitForFunction(()=>teeming.gameState.renderPercent===50 &&
+  teeming.gameState.renderSize[0]===480 && teeming.gameState.renderSize[1]===360);
+ await page.keyboard.press('Enter');await page.waitForFunction(()=>!!document.fullscreenElement);
+ await page.waitForFunction(()=>teeming.gameState.renderSize[0]===Math.round(canvas.width*.5) &&
+  teeming.gameState.renderSize[1]===Math.round(canvas.height*.5));
+ await page.evaluate(()=>document.exitFullscreen());
+ await page.waitForFunction(()=>!teeming.gameState.fullscreen);
+ await page.evaluate(()=>new Promise((resolve,reject)=>teeming.FS.syncfs(false,e=>e?reject(e):resolve())));
+ await page.reload();await page.waitForFunction(()=>window.teeming?.gameState);
+ await page.waitForFunction(()=>teeming.gameState.renderPercent===50 && teeming.gameState.renderSize[0]===480);
+ await page.evaluate(()=>teeming.command='display:render-scale');
+ await page.waitForFunction(()=>teeming.gameState.renderPercent===100 && teeming.gameState.renderSize[0]===960);
+ console.log('PASS render scale, fullscreen sizing, persistence and restoring 100%');
  // Browser shortcut is not cancelled by SDL.
  assert.equal(await page.evaluate(()=>{const e=new KeyboardEvent('keydown',{code:'F11',key:'F11',bubbles:true,cancelable:true});canvas.dispatchEvent(e);return e.defaultPrevented;}),false);
  // Exercise the same automatic path used by unhandled application failures.

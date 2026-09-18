@@ -137,6 +137,7 @@ void display_page(ViewBuilder& ui, const FrontPage& page) {
     frame(ui, "Display Settings", 740.0F, 545.0F);
 #ifdef __EMSCRIPTEN__
     button(ui,"window-mode",page.fullscreen ? "Exit fullscreen" : "Enter fullscreen","display:window-mode");
+    button(ui,"render-scale", "Render resolution  ·  " + std::to_string(page.browser_render_percent) + "%", "display:render-scale");
     constexpr const char* caps[]{"Display refresh rate", "60 FPS", "120 FPS", "144 FPS"};
     button(ui,"frame-cap",std::string{"Frame limit  ·  "}+caps[std::clamp(page.frame_cap,0,3)],"display:frame-cap");
     button(ui,"show-fps",std::string{"Show FPS  ·  "}+(page.show_fps ? "On" : "Off"),"display:show-fps");

@@ -1,6 +1,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include "browser/inspection.hpp"
+#include "browser/display.hpp"
 EM_ASYNC_JS(void, browser_next_frame, (int cap), { await Module.nextFrame(cap); });
 #endif
 #include "app/frame_pacing.hpp"
@@ -307,6 +308,9 @@ int main(int argc, char** argv) {
         }
         zoom = std::clamp(zoom, minimum_zoom(), 8.0F);
         gubsy_update_device_state(host);
+#ifdef __EMSCRIPTEN__
+        (void)sync_browser_render_resolution(menu);
+#endif
         frame_phase.next(PerfZone::Menu);
         if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())
             apply_menu_action(menu, value_arg(argc, argv, "--smoke-menu-action"));

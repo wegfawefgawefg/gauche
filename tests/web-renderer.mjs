@@ -37,6 +37,23 @@ try {
       await page.waitForFunction(({width, height}) => teeming.gameState.renderSize[0] === width &&
         teeming.gameState.renderSize[1] === height, size);
     }
+    // Changing internal resolution must retain the full-size canvas and survive resize.
+    for (const percent of [75, 50, 100]) {
+      await page.evaluate(() => { teeming.command = 'display:render-scale'; });
+      await page.waitForFunction(percent => teeming.gameState.renderPercent === percent &&
+        teeming.gameState.renderSize[0] === Math.round(1280 * percent / 100) &&
+        teeming.gameState.renderSize[1] === Math.round(720 * percent / 100), percent);
+      assert.deepEqual(await page.evaluate(() => {
+        const c = document.querySelector('canvas'); return [c.width, c.height];
+      }), [1280, 720]);
+      if (percent === 50) {
+        await page.setViewportSize({width: 960, height: 640});
+        await page.waitForFunction(() => teeming.gameState.renderSize[0] === 480 &&
+          teeming.gameState.renderSize[1] === 320);
+        await page.setViewportSize({width: 1280, height: 720});
+        await page.waitForFunction(() => teeming.gameState.renderSize[0] === 640);
+      }
+    }
     await page.keyboard.press('F1');
     await page.waitForTimeout(300);
     await page.screenshot({path: `${artifacts}/${mode}-debug.png`});
@@ -58,7 +75,7 @@ try {
     }
     await page.screenshot({path: `${artifacts}/${mode}-forest.png`});
     assert.deepEqual(errors, []);
-    console.log(`PASS ${mode}: ${state.renderer}, resize, game, ImGui, ${state.drawBatches} batches / ${state.triangles} triangles`);
+    console.log(`PASS ${mode}: ${state.renderer}, resize, render scales, game, ImGui, ${state.drawBatches} batches / ${state.triangles} triangles`);
     await page.close();
   }
 } finally {

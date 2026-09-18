@@ -31,8 +31,10 @@ with isolated profiles and dummy video/audio.
 
 The launcher loads content-addressed assets, initializes IndexedDB-backed
 settings at `/persistent`, and opens the in-game title automatically. The canvas
-fills the browser viewport; SDL resizes its backing buffer and the default
-matched render target with it. Audio unlocks on a keypress or click. Use the
+fills the browser viewport; SDL resizes its backing buffer with it. **Settings →
+Display → Render resolution** cycles the internal target through 100%, 75%, and
+50% of those dimensions. The saved percentage follows window resizing and
+fullscreen; 100% is the default. The game fills the canvas at every setting. Audio unlocks on a keypress or click. Use the
 in-game **Settings → Display → Enter fullscreen**, or F11 on desktop.
 Fullscreen state follows browser exits too; controller-only entry may require
 a browser confirmation click. Browser shortcuts pass through SDL. The native

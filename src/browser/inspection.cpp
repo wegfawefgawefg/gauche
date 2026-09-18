@@ -33,6 +33,7 @@ void browser_inspect(MenuShell& menu, float zoom) {
     state["drawBatches"]=frame.renderer->last.batches;
     state["triangles"]=frame.renderer->last.triangles;
     state["lightmap"]=frame.renderer->smooth_lighting;
+    state["renderPercent"]=menu.front.browser_render_percent;
     state["zoom"]=zoom;
     state["zoomUnlocked"]=debug_panels().unlocked_zoom;
     state["seed"]=std::to_string(game.run.seed);

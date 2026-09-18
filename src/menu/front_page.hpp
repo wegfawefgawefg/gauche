@@ -60,6 +60,7 @@ struct FrontPage {
     bool show_fps = false;
     int window_mode = 0;
     int render_resolution = 0;
+    int browser_render_percent = 100;
     int window_resolution = 0;
     int frame_cap = 0;
     float master_volume = 1.0F;

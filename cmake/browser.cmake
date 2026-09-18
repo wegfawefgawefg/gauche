@@ -1,7 +1,7 @@
 get_target_property(browser_sources gauche SOURCES)
 list(REMOVE_ITEM browser_sources src/net/rooms/http.cpp src/net_socket.cpp)
 set_property(TARGET gauche PROPERTY SOURCES ${browser_sources})
-target_sources(gauche PRIVATE src/browser/http.cpp src/browser/socket.cpp src/browser/inspection.cpp)
+target_sources(gauche PRIVATE src/browser/http.cpp src/browser/socket.cpp src/browser/inspection.cpp src/browser/display.cpp)
 set_target_properties(gauche PROPERTIES OUTPUT_NAME teeming SUFFIX .js)
 target_link_options(gauche PRIVATE
     -sASYNCIFY=1 -sASSERTIONS=1 -sASYNCIFY_STACK_SIZE=131072

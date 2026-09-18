@@ -16,6 +16,7 @@
 #include <SDL3/SDL.h>
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include "../browser/display.hpp"
 #endif
 
 #include <algorithm>
@@ -106,6 +107,17 @@ void set_video(MenuShell& menu, std::string_view action) {
     if (action == "display:window-mode") { EM_ASM({Module.toggleFullscreen();}); return; }
     if (action == "display:auto-reports") { EM_ASM({Module.setAutoReports(!Module.autoReports);}); return; }
     if (action == "display:save-report") { EM_ASM({Module.saveReport();}); return; }
+    if (action == "display:render-scale") {
+        const int previous = page.browser_render_percent;
+        page.browser_render_percent = previous == 100 ? 75 : previous == 75 ? 50 : 100;
+        if (sync_browser_render_resolution(menu)) {
+            set_top_level_setting_int(engine.top_level_game_settings,
+                "teeming.video.browser_render_percent", page.browser_render_percent);
+            (void)save_top_level_game_settings(engine.top_level_game_settings);
+        } else page.browser_render_percent = previous;
+        page.dirty = true;
+        return;
+    }
     if (action == "display:vsync" || action == "display:window-resolution" || action == "display:render-resolution") return;
 #endif
     const GubsyFrame frame = gubsy_get_frame(*menu.runtime);
@@ -210,7 +222,10 @@ void initialize_menu_settings(MenuShell& menu) {
     // RAF owns presentation. SDL's fallback V-sync would add a second 60 Hz wait.
     page.vsync = false;
     set_top_level_setting_int(engine.top_level_game_settings,"gubsy.video.vsync",0);
-    set_top_level_setting_int(engine.top_level_game_settings,"gubsy.video.match_render_to_window",1);
+    const int saved_percent = get_top_level_setting_int(engine.top_level_game_settings,
+        "teeming.video.browser_render_percent", 100);
+    page.browser_render_percent = saved_percent == 50 || saved_percent == 75 ? saved_percent : 100;
+    (void)sync_browser_render_resolution(menu);
 #endif
     // Apply the saved preference to this newly created renderer, not only when toggled.
     const auto frame = gubsy_get_frame(*menu.runtime);

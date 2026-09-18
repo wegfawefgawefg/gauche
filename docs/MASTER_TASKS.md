@@ -888,3 +888,5 @@ playtesting; use builds and focused static captures for implementation checks.
 - [x] A returning owl notices nearby reachable seed before flying home. Committed
   attacks, landing recovery and fright still take priority. Seed behavior and
   quenched state passed a focused direct-call/snapshot check; no live playtest.
+
+- [ ] **CANOPY-VARIETY** (user feedback 2026-09-18): Prefer mixed oak/pine crowns. Add thinner branches at varied left/right angles, foliage or pine needles along branches, and wider overall tree-size variation. Deferred; retain the selected post-GPU-playtest presentation defaults for now.

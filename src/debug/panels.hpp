@@ -10,10 +10,10 @@ struct DebugPanels {
     bool combat = false;
     bool status = false;
     bool unlocked_zoom = false;
-    int canopy_style = 4; // 0: stipple, 1: mask, 2: full, 3: hidden, 4: object fade, 5: slide
+    int canopy_style = 1; // 0: stipple, 1: mask, 2: full, 3: hidden, 4: object fade, 5: slide
     bool canopy_upright = true;
-    float canopy_opening = .80F;
-    float canopy_fade = .12F;
+    float canopy_opening = .83F;
+    float canopy_fade = .25F;
     int canopy_reference = 0; // 0: sprite center, 1: root
     float canopy_near = .45F;
     float canopy_transition = .40F;

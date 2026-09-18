@@ -15,4 +15,4 @@ struct BeamTrace {
 bool optical_prop(const Prop& prop);
 BeamTrace trace_beam(const Game& game, Cell source, Cell direction, int damage, int reach, bool piercing);
 BeamTrace trace_beam_burst(const Game& game, Cell source, int damage, int reach, bool piercing);
-void resolve_beam(Game& game, const BeamTrace& trace);
+void resolve_beam(Game& game, const BeamTrace& trace, Handle instigator = {});

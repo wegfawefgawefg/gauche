@@ -1,3 +1,5 @@
+#include "artifacts/powers.hpp"
+#include "items/basic_actions.hpp"
 #include "items/lunch_tin.hpp"
 #include "items/steam_lance.hpp"
 #include "items/pocket_pump.hpp"
@@ -107,6 +109,17 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     bool used = false;
     int cooldown = 0;
     switch (item.kind) {
+    case ItemKind::Slap:
+    case ItemKind::ParryPan:
+    case ItemKind::Jump:
+    case ItemKind::Grapple:
+    case ItemKind::Shove:
+    case ItemKind::Kick:
+    case ItemKind::Elbow:
+    case ItemKind::GodFist:
+    case ItemKind::Balloon:
+    case ItemKind::CrushShield:
+        used=use_basic_action(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
     case ItemKind::PocketPump: return collect_pocket_pump(game,user_slot,direction);
     case ItemKind::ChainHook: return launch_chain_hook(game,user_slot,direction);
     case ItemKind::LunchTin: return use_lunch_tin(game,user_slot,direction);
@@ -309,7 +322,7 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
             (user.vitals.bleeding>0 && (used_kind==ItemKind::Bandage || used_kind==ItemKind::Bandaid || used_kind==ItemKind::Medkit)) ||
             hearth_meal_needed(game,user,used_kind))) {
             const ItemPattern pattern = item_pattern(item);
-            user.health = std::min(user.max_health, user.health + pattern.heal);
+            user.health = std::min(user.max_health, user.health + power_healing(user,pattern.heal));
             used = true;
             cooldown = pattern.cooldown;
         }
@@ -331,7 +344,9 @@ bool use_held_item(Game& game, int user_slot, Cell target) {
     case ItemKind::SkateBlade: case ItemKind::Chisel:
     case ItemKind::Hatchet: case ItemKind::HuntingSpear: case ItemKind::WoodenMaul:
     case ItemKind::DiggingClaws: case ItemKind::Rake: case ItemKind::FlintKnife:
-    case ItemKind::Fist: case ItemKind::Stick: case ItemKind::Pickaxe:
+    case ItemKind::Fist:
+        used=use_basic_action(game,user_slot,direction); cooldown=item_pattern(item).cooldown; break;
+    case ItemKind::Stick: case ItemKind::Pickaxe:
         if (range >= 1 && range <= item_pattern(item).maximum) {
             const ItemPattern pattern = item_pattern(item);
             strike_melee(game, user_slot, direction, item);

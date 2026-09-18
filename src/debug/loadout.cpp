@@ -1,3 +1,5 @@
+#include "../items/basic_actions.hpp"
+#include "../artifacts/powers.hpp"
 #include "../items/heated_water.hpp"
 #include "../items/pocket_pump.hpp"
 #include "../items/muffling.hpp"
@@ -16,6 +18,8 @@ void normalize_test_item(Item& item) {
     if (item.kind <= ItemKind::None || item.kind >= ItemKind::Count) { item = {}; return; }
     if (!item_accepts_attribute(item.kind, item.attribute)) item.attribute = ItemAttribute::None;
     Item fresh = make_item(item.kind, 1, item.attribute);
+    Entity technician;technician.powers[static_cast<std::size_t>(ArtifactKind::Technical)]=std::min(item.technical_level,max_power_stacks);
+    improve_pickup(technician,fresh);
     fresh.count = std::clamp(item.count, 1, std::max(1, fresh.max_count));
     if (fresh.max_durability) fresh.durability = std::clamp(item.durability, 1, fresh.max_durability);
     if (fresh.max_uses) fresh.uses = std::clamp(item.uses, 1, fresh.max_uses);
@@ -23,6 +27,7 @@ void normalize_test_item(Item& item) {
         fresh.loaded = std::clamp(item.loaded, 0, make_item(item.kind).loaded);
         fresh.spare = std::clamp(item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::Balloon) fresh.loaded=std::clamp(item.loaded,0,3600);
     if (item.kind==ItemKind::LunchTin) fresh.loaded=std::clamp(item.loaded,0,2);
     if (item.kind==ItemKind::GlowSlag) fresh.loaded=std::clamp(item.loaded,0,1200);
     if (item.kind==ItemKind::NozzleElbow) fresh.loaded=std::clamp(item.loaded,0,1);
@@ -92,8 +97,12 @@ void apply_test_loadout(Game& game, int owner) {
     }
     player->inventory = kit.inventory;
     for (Item& item : player->inventory.slots) normalize_test_item(item);
-    player->artifacts = kit.artifacts;
-    player->health = player->max_health = kit.health;
+    release_grapple(game,*player,false,player->facing);
+    player->basic={};player->powers=kit.powers;player->artifacts = kit.artifacts;
+    player->action_fraction=player->move_fraction=player->regen_progress=0;player->action_steps=1;
+    set_basic_action(*player,kit.basic_action);
+    for (auto& item:player->inventory.slots) improve_pickup(*player,item);
+    player->health = player->max_health = kit.health+20*static_cast<int>(artifact_count(*player,ArtifactKind::Vitality));
     player->move_interval = kit.step_ticks;
     player->move_wait = player->attack_wait = player->block_ticks = 0;
     player_state(game, owner).coins = kit.gold;

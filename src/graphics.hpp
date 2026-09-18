@@ -109,6 +109,7 @@ enum class Sprite : std::size_t {
     GnomeStick, GnomeStickWalk, GnomeStickTell, GnomeStickHit, GnomeBow, GnomeBowWalk, GnomeBowTell, GnomeBowHit, GnomeCrossbow, GnomeCrossbowWalk, GnomeCrossbowTell, GnomeCrossbowHit, GnomeRider, GnomeRiderWalk, GnomeRiderTell, GnomeRiderHit,
     GnomeHouse, GnomeHouseClosed, GnomeHouseBlue, GnomeHouseBlueClosed, GnomeHouseOchre, GnomeHouseOchreClosed, TallMushroom, TallMushroomBlue, TallMushroomOchre,
     OldGrowthBear, OldGrowthRear, OldGrowthSwipe, OldGrowthPaw, OldGrowthRush, OldGrowthStagger, TallTreeSnowCap, RiverLily, RiverLog,
+    Slap, ParryPan, Jump, Grapple, Shove, Kick, Elbow, GodFist, Balloon, CrushShield, PowerPierce, PowerReflect, PowerHearth, PowerSpeed, PowerStrong, PowerQuick, PowerHealth, PowerDodge, PowerRegen, PowerCrit, PowerCritPower, PowerArmor, PowerTechnical, PowerMedic, PowerReuse, PowerGold, PowerBig, PowerSweep, PowerIron, PowerChef,
     Count,
 };
 

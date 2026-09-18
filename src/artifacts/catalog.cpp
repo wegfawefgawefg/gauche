@@ -1,46 +1,37 @@
 #include "catalog.hpp"
-
-// PASSIVES: One vocabulary for the reward offer and the player's owned effects.
-const char* artifact_name(ArtifactKind kind) {
-    switch (kind) {
-    case ArtifactKind::AllPiercing: return "All Piercing";
-    case ArtifactKind::Reflector: return "Reflector";
-    case ArtifactKind::Hearth: return "Hearth";
-    case ArtifactKind::FleetFeet: return "Fleet Feet";
-    case ArtifactKind::None: return "None";
-    }
-    return "Unknown";
+namespace {
+struct Definition { const char* name; const char* description; const char* summary; Sprite icon; };
+constexpr Definition definitions[]{
+    {"None", "", "", Sprite::Fist},
+    {"All Piercing", "Straight through.", "Shots pierce actors and armor", Sprite::PowerPierce},
+    {"Reflector", "Return to sender.", "25%: return half a survived hit", Sprite::PowerReflect},
+    {"Hearth", "Enough to share.", "Cooked meal: nearby friends +3 HP", Sprite::PowerHearth},
+    {"Fleet Feet", "Places to be.", "Movement speed +5% / stack", Sprite::PowerSpeed},
+    {"Strong Arms", "Put your back into it.", "Damage +25%; action time +15%", Sprite::PowerStrong},
+    {"Quick Hands", "Light work.", "Use speed +20%; damage /1.10", Sprite::PowerQuick},
+    {"HP Up", "More of you.", "Maximum HP +20 / stack", Sprite::PowerHealth},
+    {"Dodge", "Missed me.", "Dodge: stacks / (stacks + 19)", Sprite::PowerDodge},
+    {"Regeneration", "Still ticking.", "1 HP / 20 seconds / stack", Sprite::PowerRegen},
+    {"Critical Chance", "Found a soft spot.", "Critical chance +5% / stack", Sprite::PowerCrit},
+    {"Critical Power", "Right in the soft spot.", "Critical multiplier +1x / stack", Sprite::PowerCritPower},
+    {"Armor", "A thicker skin.", "Damage taken: 10 / (10 + stacks)", Sprite::PowerArmor},
+    {"Technical", "Good as new. Better, even.", "Picked-up tool condition +50%", Sprite::PowerTechnical},
+    {"Medic", "Doctor-ish.", "Healing items +25% / stack", Sprite::PowerMedic},
+    {"Spare Throw", "Another one.", "Keep throw: stacks / (stacks + 4)", Sprite::PowerReuse},
+    {"Golddigger", "Shiny.", "Gold pickup value +25% / stack", Sprite::PowerGold},
+    {"Oversized", "A bit much.", "Basic action: reach / parry window", Sprite::PowerBig},
+    {"Sweeping", "Room for everyone.", "Basic action: wider contact", Sprite::PowerSweep},
+    {"Iron", "Clang.", "Basic contact +4; harder impacts", Sprite::PowerIron},
+    {"Chef's Touch", "Well done.", "Basic actions cook raw food", Sprite::PowerChef},
+    {"God Fist", "An unreasonable hand.", "Replaces basic action; huge launch", Sprite::GodFist},
+};
+static_assert(std::size(definitions)==static_cast<std::size_t>(ArtifactKind::Count));
+const Definition& definition(ArtifactKind kind) {
+    const auto i=static_cast<std::size_t>(kind);
+    return definitions[i<std::size(definitions) ? i : 0];
 }
-
-const char* artifact_description(ArtifactKind kind) {
-    switch (kind) {
-    case ArtifactKind::AllPiercing: return "Shots pass through actors until a wall. Ignore directional enemy armor.";
-    case ArtifactKind::Reflector: return "25% chance to return half of a survived, blockable hit to its attacker.";
-    case ArtifactKind::Hearth: return "Cooked meals give you and visible friends within 4 tiles +3 HP. Meat, fried eggs, smoked fish and hot broth.";
-    case ArtifactKind::FleetFeet: return "Move one tile about 0.03 seconds sooner, down to 0.05 seconds per step.";
-    case ArtifactKind::None: return "";
-    }
-    return "";
 }
-
-const char* artifact_summary(ArtifactKind kind) {
-    switch (kind) {
-    case ArtifactKind::AllPiercing: return "Pierce actors and armor";
-    case ArtifactKind::Reflector: return "25%: return half a hit";
-    case ArtifactKind::Hearth: return "Cooked meal: nearby +3 HP";
-    case ArtifactKind::FleetFeet: return "Step -0.033s; min 0.05s";
-    case ArtifactKind::None: return "";
-    }
-    return "";
-}
-
-Sprite artifact_icon(ArtifactKind kind) {
-    switch (kind) {
-    case ArtifactKind::AllPiercing: return Sprite::Musket;
-    case ArtifactKind::Reflector: return Sprite::Buckler;
-    case ArtifactKind::Hearth: return Sprite::Campfire;
-    case ArtifactKind::FleetFeet: return Sprite::PlayerFootprint;
-    case ArtifactKind::None: return Sprite::Fist;
-    }
-    return Sprite::Fist;
-}
+const char* artifact_name(ArtifactKind kind) {return definition(kind).name;}
+const char* artifact_description(ArtifactKind kind) {return definition(kind).description;}
+const char* artifact_summary(ArtifactKind kind) {return definition(kind).summary;}
+Sprite artifact_icon(ArtifactKind kind) {return definition(kind).icon;}

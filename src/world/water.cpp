@@ -1,3 +1,4 @@
+#include "../items/basic_actions.hpp"
 #include "water.hpp"
 #include "currents.hpp"
 #include "../entities/bell_diver.hpp"
@@ -22,7 +23,7 @@ bool supports_wall_spring(const Stage& stage,Cell cell) {
 }
 
 bool wading_actor(const Entity& actor) {
-    if (actor.toss.ticks>0 || actor.move_interval <= 0 || actor.health <= 0 || diver_submerged(actor)) return false;
+    if (basic_airborne(actor) || actor.toss.ticks>0 || actor.move_interval <= 0 || actor.health <= 0 || diver_submerged(actor)) return false;
     switch (actor.kind) {
     case EntityKind::Wasp: case EntityKind::CarrionCrow:
     case EntityKind::Mosquito: case EntityKind::Owl: case EntityKind::Woodpecker:

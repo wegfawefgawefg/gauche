@@ -38,7 +38,7 @@ constexpr std::array<ItemSupply, static_cast<std::size_t>(ItemKind::Count)> entr
     {ItemKind::Pickaxe, ItemOrigin::Shared, 8, 1, 1, R|S|C|T|W|M, ItemRole::Mobility},
     {ItemKind::RawMeat, ItemOrigin::Shared, 8, 1, 2, R|S|C|T, ItemRole::Utility},
     {ItemKind::CookedMeat, ItemOrigin::Shared, 8, 1, 2, R|S|C|T, ItemRole::Survival},
-    {ItemKind::ThrowingRock, ItemOrigin::Forest, 8, 1, 3, R|S|C|T, ItemRole::Combat},
+    {ItemKind::ThrowingRock, ItemOrigin::Forest, 8, 1, 6, R|S|C|T, ItemRole::Combat},
     {ItemKind::Hatchet, ItemOrigin::Forest, 8, 1, 1, R|S|C|T|W|M, ItemRole::Combat},
     {ItemKind::HuntingSpear, ItemOrigin::Forest, 3, 1, 1, R|S|C|T|W, ItemRole::Combat},
     {ItemKind::Crossbow, ItemOrigin::Forest, 3, 2, 1, R|S|C|T|W, ItemRole::Combat},
@@ -172,6 +172,16 @@ constexpr std::array<ItemSupply, static_cast<std::size_t>(ItemKind::Count)> entr
     {ItemKind::IceAxe, ItemOrigin::Ice, 8, 1, 1, R|S|C|T|W|M, ItemRole::Combat},
     {ItemKind::TuskPike, ItemOrigin::Ice, 6, 2, 1, R|S|C|T|W, ItemRole::Combat},
     {ItemKind::RiverFish, ItemOrigin::Forest, 0, 1, 2, 0, ItemRole::Survival},
+    {ItemKind::Slap, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::ParryPan, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Jump, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Grapple, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Shove, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Kick, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Elbow, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::GodFist, ItemOrigin::Shared, 0, 1, 1, 0, ItemRole::None},
+    {ItemKind::Balloon, ItemOrigin::Shared, 3, 1, 1, S|C|T, ItemRole::Mobility},
+    {ItemKind::CrushShield, ItemOrigin::Industrial, 3, 2, 1, S|W|C|T, ItemRole::Combat},
 }};
 constexpr bool valid_entries() {
     if (entries.size()!=static_cast<std::size_t>(ItemKind::Count)) return false;

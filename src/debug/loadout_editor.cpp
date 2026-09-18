@@ -1,3 +1,5 @@
+#include "../items/basic_actions.hpp"
+#include "../artifacts/powers.hpp"
 #include "../items/heated_water.hpp"
 #include "../surfaces/liquid_transfer.hpp"
 #include "../items/pocket_pump.hpp"
@@ -48,6 +50,7 @@ bool edit_item(Item& item) {
         changed |= ImGui::SliderInt(item.kind == ItemKind::Bow ? "Arrows" : "Loaded", &item.loaded, 0, make_item(item.kind).loaded);
         if (item.kind != ItemKind::Bow) changed |= ImGui::SliderInt("Reserve (this weapon)", &item.spare, 0, 999);
     }
+    if (item.kind==ItemKind::Balloon) {int seconds=(item.loaded+59)/60; if (ImGui::SliderInt("Lift seconds", &seconds, 1, 60)) {item.loaded=seconds*60;changed=true;}}
     if (item.kind==ItemKind::LunchTin) changed |= ImGui::SliderInt("Meals remaining",&item.loaded,0,2);
     if (item.kind==ItemKind::GlowSlag) {
         int heat=(item.loaded+59)/60;
@@ -138,11 +141,26 @@ void draw_loadout_editor(const Game& game, bool offline) {
         ImGui::SameLine();
         ImGui::BeginDisabled(!player);
         if (ImGui::Button("Copy current equipment")) {
-            kit.inventory = player->inventory; kit.artifacts = player->artifacts;
-            kit.health = player->max_health; kit.step_ticks = player->move_interval;
+            kit.inventory = player->inventory; kit.artifacts = player->artifacts;kit.powers=player->powers;kit.basic_action=player->basic_action;
+            kit.health = std::max(1,player->max_health-20*static_cast<int>(artifact_count(*player,ArtifactKind::Vitality))); kit.step_ticks = player->move_interval;
             kit.gold = player_state(game, 0).coins; changed = true;
         }
         ImGui::EndDisabled();
+        ImGui::BeginDisabled(!offline || !player || player->health<=0);
+        if (ImGui::Button("Apply edited loadout now")) tools.equip_requested=true;
+        ImGui::EndDisabled();
+        ImGui::SeparatorText("Basic action");
+        if (ImGui::BeginCombo("Permanent action",item_name(kit.basic_action))) {
+            for (auto kind:basic_actions) if (ImGui::Selectable(item_name(kind),kit.basic_action==kind)) {
+                kit.basic_action=kind;
+                bool replaced=false;
+                for (auto& item:kit.inventory.slots) if (is_basic_action(item.kind)) {item=make_item(kind);replaced=true;break;}
+                if (!replaced) kit.inventory.slots[0]=make_item(kind);
+                changed=true;
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::TextWrapped("Fist, slap, timed parry, hop, grab/throw, wall-crush shove, kick, rear elbow. God Fist is the rare replacement.");
         ImGui::SeparatorText("Inventory slots");
         for (int slot = 0; slot < quick_slots; ++slot) {
             ImGui::PushID(slot);
@@ -158,17 +176,28 @@ void draw_loadout_editor(const Game& game, bool offline) {
         ImGui::SeparatorText("Player / artifacts");
         changed |= ImGui::SliderInt("Maximum HP", &kit.health, 1, 999);
         changed |= ImGui::SliderInt("Step interval (ticks)", &kit.step_ticks, 1, 60);
-        ImGui::TextDisabled("Final step interval, including Fleet Feet; lower is faster.");
+        ImGui::TextDisabled("Base step interval. Fleet Feet applies its percentage on top.");
         changed |= ImGui::SliderInt("Gold", &kit.gold, 0, 9999);
+        ImGui::SeparatorText("Permanent powerups");
+        ImGui::TextWrapped("Counts stack up to 1,000,000. HP is base HP; the total below includes HP Up.");
+        if (ImGui::Button("Clear powers")) {kit.powers={};kit.artifacts=0;changed=true;}
         for (auto artifact : artifact_kinds) {
-            const auto bit = 1U << static_cast<unsigned int>(artifact);
-            bool enabled = (kit.artifacts & bit) != 0;
-            if (ImGui::Checkbox(artifact_name(artifact), &enabled)) {
-                if (enabled) kit.artifacts |= bit; else kit.artifacts &= ~bit;
-                changed = true;
+            const auto index=static_cast<std::size_t>(artifact);
+            const auto bit=1U<<static_cast<unsigned>(artifact);
+            int count=static_cast<int>(kit.powers[index] ? kit.powers[index] : (kit.artifacts&bit) ? 1U : 0U);
+            bool edited=false;
+            if (artifact_stackable(artifact)) edited=ImGui::InputInt(artifact_name(artifact),&count,1,10);
+            else {bool enabled=count>0;edited=ImGui::Checkbox(artifact_name(artifact),&enabled);count=enabled ? 1 : 0;}
+            if (edited) {
+                kit.powers[index]=static_cast<std::uint32_t>(std::clamp(count,0,static_cast<int>(max_power_stacks)));
+                if (count>0) kit.artifacts|=bit;else kit.artifacts&=~bit;
+                if (artifact==ArtifactKind::GodHand && count>0) kit.basic_action=ItemKind::GodFist;
+                changed=true;
             }
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", artifact_description(artifact));
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s",artifact_summary(artifact));
         }
+        Entity preview;preview.powers=kit.powers;preview.artifacts=kit.artifacts;
+        ImGui::Text("Total HP: %u | damage at base 100: %d",static_cast<unsigned>(kit.health)+20*artifact_count(preview,ArtifactKind::Vitality),power_damage(preview,100));
         ImGui::Separator();
         ImGui::BeginDisabled(!offline || !player || player->health <= 0);
         if (ImGui::Button("Apply to player now")) tools.equip_requested = true;

@@ -30,7 +30,7 @@ bool step_bow(Game& game, int slot, const Input& input) {
             return true;
         }
         if (user.counter_a == 0) emit_weapon_sound(game, bow, SoundId::BowDraw, user.cell);
-        user.counter_a = std::min(user.counter_a + 1, 12);
+        user.counter_a = std::min(user.counter_a + user.action_steps, 12);
         user.label_b = user.inventory.selected + 1;
         user.point_b = user.facing;
         return true;

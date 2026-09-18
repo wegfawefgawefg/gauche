@@ -1,3 +1,5 @@
+#include "../artifacts/powers.hpp"
+#include "../items/basic_actions.hpp"
 #include "../items/heated_water.hpp"
 #include "../items/magnet.hpp"
 #include "../items/echo_pebble.hpp"
@@ -67,7 +69,7 @@ const char* item_description(ItemKind kind) {
     case ItemKind::Medkit: return "Restore up to 100 health. One use consumes one kit.";
     case ItemKind::Bandage: return "Restore 10 health. Quick, modest field medicine.";
     case ItemKind::Bandaid: return "Restore 1 health when there is time to spare.";
-    case ItemKind::Fist: return "A weak emergency punch. Always available; real weapons hit harder.";
+    case ItemKind::Fist: return "It\'s ur fist.";
     case ItemKind::ConductorHat: return "Lay track and call a train that tears through walls.";
     case ItemKind::Buckler: return "Block a hit, then shove the actor in front of you.";
     case ItemKind::Pistol: return "A reliable short-cooldown shot along a straight line.";
@@ -110,7 +112,7 @@ void draw_item_details(tr::Renderer* renderer, const GameGraphics& graphics,
     if (item_stackable(item))
         std::snprintf(line, sizeof(line), "x%d  %s", item.count, item.cooldown > 0 ? "COOLING" : "READY");
     else std::snprintf(line, sizeof(line), "%s", item.cooldown > 0 ? "COOLING" : "READY");
-    if (item.kind==ItemKind::GlowSlag || item.kind==ItemKind::NozzleElbow || item.kind==ItemKind::PocketPump || item.kind==ItemKind::HeatSiphon || item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
+    if (item.kind==ItemKind::Balloon || item.kind==ItemKind::GlowSlag || item.kind==ItemKind::NozzleElbow || item.kind==ItemKind::PocketPump || item.kind==ItemKind::HeatSiphon || item.kind==ItemKind::StormLantern) std::snprintf(line,sizeof(line),"%s",item_state_text(item,false).c_str());
     if (item.flight.slot >= 0) std::snprintf(line, sizeof(line), item.kind == ItemKind::HarpoonGun ? "LINE OUT" : "IN FLIGHT");
     if (item.attribute != ItemAttribute::None) {
         text(renderer, x + 39.0F, y + 34.0F,
@@ -121,7 +123,10 @@ void draw_item_details(tr::Renderer* renderer, const GameGraphics& graphics,
     wrapped(renderer, x + 10.0F, y + 59.0F,
             static_cast<int>((width - 20.0F) / 6.0F), 4,
             item_description(item.kind));
-    const ItemPattern pattern = item_pattern(item);
+    ItemPattern pattern = active_item_pattern(item,player);
+    if (is_basic_action(item.kind) && has_artifact(player,ArtifactKind::Iron)) pattern.damage+=4;
+    pattern.damage=power_damage(player,pattern.damage);
+    pattern.heal=power_healing(player,pattern.heal);
     if (pattern.damage > 0 && item.dig_power > 0)
         std::snprintf(line, sizeof(line), "DAMAGE %d  DIG %d", pattern.damage, item.dig_power);
     else if (pattern.damage > 0)

@@ -1,3 +1,5 @@
+#include "items/basic_actions.hpp"
+#include "artifacts/powers.hpp"
 #include "entities/river_raft.hpp"
 #include "entities/mine_crew.hpp"
 #include "items/sled.hpp"
@@ -66,7 +68,7 @@ void remove_entity(Game& game, Handle handle) {
 int entity_at(const Game& game, Cell cell, bool impassable_only) {
     for (int slot = 0; slot < max_entities; ++slot) {
         const Entity& entity = game.entities[static_cast<std::size_t>(slot)];
-        if (entity.kind != EntityKind::None && entity.cell == cell &&
+        if (entity.kind != EntityKind::None && entity.basic.carried_by.slot<0 && entity.cell == cell &&
             (!impassable_only || entity.impassable)) return slot;
     }
     return -1;
@@ -78,9 +80,9 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     const Tile* tile = game.stage.at(destination);
     if (entity.kind == EntityKind::None || entity.vitals.rooted > 0) return false;
     const int occupant = entity_at(game, destination, true);
-    if (tile == nullptr || (!walkable(*tile) && !open_drop(tile->kind)) || (occupant >= 0 && occupant != slot)) {
+    if (tile == nullptr || (!walkable(*tile) && !open_drop(tile->kind) && !(tile->kind==TileKind::Water && balloon_floating(entity))) || (occupant >= 0 && occupant != slot)) {
         // A blocked step still takes its beat, as it did in the Rust arena.
-        entity.move_wait = entity.move_interval;
+        entity.move_wait = power_move_interval(entity);
         return false;
     }
     entity.vitals.slide_momentum = 0;
@@ -91,7 +93,7 @@ bool move_entity(Game& game, int slot, Cell destination, bool allow_slip) {
     if (entity.kind==EntityKind::Player && entity.cell==destination) {board_sled(game,slot);board_river_raft(game,slot);}
     if (allow_slip && entity.cell == destination && !ridden_sled(game,entity) &&
         !ridden_river_raft(game,entity) && slip_on_surface(game, slot, direction)) return true;
-    entity.move_wait = entity.move_interval;
+    entity.move_wait = power_move_interval(entity);
     // LANDING: A spring can move us again during contact; effects use the final cell.
     if (entity.health <= 0) return true;
     tile = game.stage.at(entity.cell);

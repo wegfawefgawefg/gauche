@@ -108,18 +108,11 @@ void reward_card(tr::Renderer* renderer, const GameGraphics& graphics,
     if (reward.kind == RewardKind::Health)
         std::snprintf(line, sizeof(line), "MAX HP %d -> %d", player.max_health,
                       player.max_health + reward.amount);
-    else if (reward.kind == RewardKind::Speed ||
-             (reward.kind == RewardKind::Artifact &&
-              reward.artifact == ArtifactKind::FleetFeet)) {
-        const int reduction = reward.kind == RewardKind::Speed ? reward.amount : 2;
-        const int after = std::max(3, player.move_interval - reduction);
-        std::snprintf(line, sizeof(line), "STEP %.2fs -> %.2fs",
-                      static_cast<double>(player.move_interval) / 60.0,
-                      static_cast<double>(after) / 60.0);
-    } else if (reward.kind == RewardKind::Artifact &&
-               has_artifact(player, reward.artifact))
-        std::snprintf(line, sizeof(line), "ALREADY OWNED");
-    else std::snprintf(line, sizeof(line), "PASSIVE ARTIFACT");
+    else if (reward.kind==RewardKind::Artifact) {
+        const auto count=artifact_count(player,reward.artifact);
+        std::snprintf(line,sizeof(line),"STACKS %u -> %u",count,count+1);
+        wrapped(renderer,x+10,y+120,static_cast<int>((width-20)/6),3,artifact_summary(reward.artifact));
+    } else std::snprintf(line,sizeof(line),"PERMANENT UPGRADE");
     text(renderer, x + 10.0F, y + 160.0F, line, 136, 213, 147);
 }
 

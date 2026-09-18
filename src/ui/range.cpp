@@ -80,7 +80,8 @@ void draw_item_range_top(tr::Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, ViewCamera camera,
                          float zoom, const PointerState& pointer) {
     const Item& held = *player.inventory.held();
-    const Cell facing = player.label_b < 0 ? player.point_b : player.facing;
+    Cell facing = player.label_b < 0 ? player.point_b : player.facing;
+    if (held.kind==ItemKind::Elbow) facing={-facing.x,-facing.y};
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
     tr::set_blend(renderer, SDL_BLENDMODE_BLEND);

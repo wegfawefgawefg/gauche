@@ -61,7 +61,7 @@ bool fire_weapon(Game& game, int user_slot, Cell direction, Item& item) {
         const Cell source = origin + Cell{sideways.x * lane, sideways.y * lane};
         if (item.kind == ItemKind::LensCarbine)
             resolve_beam(game, trace_beam(game, source, direction, pattern.damage, pattern.maximum,
-                pattern.piercing || has_artifact(user, ArtifactKind::AllPiercing)));
+                pattern.piercing || has_artifact(user, ArtifactKind::AllPiercing)),{user_slot,user.generation});
         else fire_bullet(game, user_slot, source, direction, item, lane == 0);
     }
     --item.loaded;

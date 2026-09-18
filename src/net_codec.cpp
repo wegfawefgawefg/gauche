@@ -20,7 +20,7 @@
 // SNAPSHOT: World and run fields precede entities and cross-entity reservations.
 std::vector<std::uint8_t> encode_game(const Game& game) {
     PacketWriter writer;
-    writer.u32(68);
+    writer.u32(69);
     writer.u64(game.rng); writer.u64(game.tick);
     writer.u8(static_cast<std::uint8_t>(game.started));
     writer.u8(static_cast<std::uint8_t>(game.game_over));
@@ -132,7 +132,7 @@ std::vector<std::uint8_t> encode_game(const Game& game) {
 
 bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& error) {
     PacketReader reader{bytes};
-    if (reader.u32() != 68) { error = "Snapshot version mismatch"; return false; }
+    if (reader.u32() != 69) { error = "Snapshot version mismatch"; return false; }
     Game result;
     result.rng = reader.u64(); result.tick = reader.u64();
     result.started = reader.u8() != 0;
@@ -301,7 +301,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
             reward.amount = reader.i32();
             reward.attribute = static_cast<ItemAttribute>(reader.u8());
             if (reward.kind > RewardKind::Speed || reward.item >= ItemKind::Count ||
-                reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0 ||
+                reward.artifact >= ArtifactKind::Count || reward.amount < 0 ||
                 reward.attribute > ItemAttribute::Restorative)
                 reader.okay = false;
         }
@@ -313,7 +313,7 @@ bool decode_game(std::span<const std::uint8_t> bytes, Game& game, std::string& e
                 reward.amount = reader.i32();
                 reward.attribute = static_cast<ItemAttribute>(reader.u8());
                 if (reward.kind > RewardKind::Speed || reward.item >= ItemKind::Count ||
-                    reward.artifact > ArtifactKind::FleetFeet || reward.amount < 0 ||
+                    reward.artifact >= ArtifactKind::Count || reward.amount < 0 ||
                     reward.attribute > ItemAttribute::Restorative)
                     reader.okay = false;
             }

@@ -1,3 +1,5 @@
+#include "../artifacts/powers.hpp"
+#include "parry.hpp"
 #include "../entities/crate_mimic.hpp"
 #include "../entities/dog.hpp"
 #include "../entities/bear_fishing.hpp"
@@ -147,7 +149,7 @@ void apply_health_damage(Game& game, int slot, int damage, Cell attacker) {
 } // namespace
 
 void crush_entity(Game& game, int slot, Cell attacker) {
-    apply_health_damage(game, slot, 1000000, attacker);
+    apply_health_damage(game, slot, game.entities[static_cast<std::size_t>(slot)].health, attacker);
 }
 
 void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockable, Handle instigator) {
@@ -161,6 +163,17 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
     const Entity* culprit=get_entity(game,instigator);
     // A stale projectile owner cannot blame an unrelated actor in its old slot.
     const Cell responsible=instigator.slot<0 ? attacker : culprit ? culprit->cell : Cell{-1000,-1000};
+    const int source_slot = instigator.slot<0 ? entity_at(game,attacker,true) : -1;
+    const Entity* source = culprit ? culprit : source_slot>=0 ? &game.entities[static_cast<std::size_t>(source_slot)] : nullptr;
+    if (source && source!=&entity && source->kind==EntityKind::Player)
+        damage=roll_power_damage(game,*source,damage);
+    if (blockable && entity.inventory.held()->kind==ItemKind::ParryPan && parry_active(entity) &&
+        (entity.facing==cardinal_toward(entity.cell,attacker,entity.facing) || has_artifact(entity,ArtifactKind::Sweeping))) {
+        emit_sound(game,SoundId::PanReflect,entity.cell);entity.use_flash=8;
+        const int parried_slot=culprit ? instigator.slot : entity_at(game,attacker,true);
+        if (parried_slot>=0 && parried_slot!=slot) apply_health_damage(game,parried_slot,damage+(has_artifact(entity,ArtifactKind::Iron) ? 4 : 0),entity.cell);
+        return;
+    }
     if (blockable && breaker_blocks(entity,attacker)) {
         hit_breaker_shield(game,slot,damage,responsible);
         return;
@@ -177,6 +190,8 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
         }
         return;
     }
+    damage=defend_with_powers(game,entity,damage,blockable);
+    if (damage<=0) return;
     damage = enemy_defense(game, slot, damage, attacker, blockable);
     apply_health_damage(game, slot, damage, responsible);
     if (blockable && entity.health > 0 && has_artifact(entity, ArtifactKind::Reflector) &&

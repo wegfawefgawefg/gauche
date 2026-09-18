@@ -76,8 +76,8 @@ bool equipment_rules() {
                "weapons shared a magazine")) return false;
     player->inventory.selected = 2;
     use_held_item(game, player_state(game, 0).controlled.slot, player->cell);
-    if (!check(player->inventory.slots[0].spare == 48 &&
-               player->inventory.slots[1].spare == 210,
+    if (!check(player->inventory.slots[0].spare == 10 &&
+               player->inventory.slots[1].spare == 36,
                "ammo did not refill each gun independently")) return false;
 
     Game trap_game = small_game();
@@ -122,10 +122,10 @@ bool item_attribute_rules() {
                get_entity(big, distant)->health == 28,
                "big attribute changed the preview but not the melee reach")) return false;
     striker->inventory.held()->cooldown = 0;
-    striker->inventory.held()->uses = 1;
+    striker->inventory.held()->durability = 1;
     use_held_item(big, player_state(big, 0).controlled.slot, {4, 2});
     if (!check(striker->inventory.held()->kind == ItemKind::None,
-               "limited-use stick did not break")) return false;
+               "worn-out stick did not break")) return false;
 
     const Item durable = make_item(ItemKind::Buckler, 1, ItemAttribute::Durable);
     const Item restorative = make_item(ItemKind::Bandage, 1, ItemAttribute::Restorative);
@@ -181,7 +181,10 @@ bool pattern_layout_rules() {
 }
 } // namespace
 
+bool basic_actions_and_powers_tests();
+
 int main() {
+    if (!basic_actions_and_powers_tests()) return 1;
     if (!buckler_rules() || !equipment_rules() ||
         !item_attribute_rules() || !item_stack_rules() ||
         !pattern_layout_rules()) return 1;

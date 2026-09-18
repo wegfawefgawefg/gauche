@@ -8,7 +8,7 @@ bool parry_active(const Entity& actor) {
     const Item& held = *actor.inventory.held();
     return actor.health > 0 && actor.sleep_ticks == 0 && actor.stun_ticks == 0 &&
         actor.block_ticks > 0 && actor.guard_slot == actor.inventory.selected &&
-        held.kind == ItemKind::ReflectingPan && held.count > 0 && held.durability > 0;
+        (held.kind == ItemKind::ReflectingPan || held.kind==ItemKind::ParryPan) && held.count > 0 && (held.kind==ItemKind::ParryPan || held.durability > 0);
 }
 
 // CONTACT: Called only by direct ranged impacts, never melee, explosions or hazards.
@@ -19,12 +19,13 @@ bool parry_ranged_hit(Game& game, int defender_slot, Cell incoming) {
         emit_sound(game, SoundId::KnightReflect, defender.cell);
         return true;
     }
-    if (!parry_active(defender) || defender.facing != Cell{-incoming.x, -incoming.y}) return false;
+    if (!parry_active(defender) || (defender.facing != Cell{-incoming.x, -incoming.y} && !(defender.inventory.held()->kind==ItemKind::ParryPan && has_artifact(defender,ArtifactKind::Sweeping)))) return false;
     Item& pan = *defender.inventory.held();
-    pan.durability -= parry_wear;
+    const bool permanent=pan.kind==ItemKind::ParryPan;
+    if (!permanent) pan.durability -= parry_wear;
     defender.use_flash = 8;
     emit_sound(game, SoundId::PanReflect, defender.cell);
-    if (pan.durability <= 0) {
+    if (!permanent && pan.durability <= 0) {
         pan = {};
         defender.block_ticks = 0;
         emit_sound(game, SoundId::PanBreak, defender.cell);

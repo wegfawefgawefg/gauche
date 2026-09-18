@@ -54,7 +54,7 @@ PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
 
 void draw_pattern_diagram(tr::Renderer* renderer, const Item& item,
                           float x, float y, float width, float height, const Entity* user) {
-    const ItemPattern pattern = item_pattern(item);
+    const ItemPattern pattern = user ? active_item_pattern(item,*user) : item_pattern(item);
     if (pattern.effect == PatternEffect::None || width <= 0 || height <= 0) return;
     PatternDiagramLayout layout = pattern_diagram_layout(pattern, x, y, width, height);
     if (item.kind == ItemKind::EffigyMask) {
@@ -78,6 +78,9 @@ void draw_pattern_diagram(tr::Renderer* renderer, const Item& item,
         layout.x=x+(width-7.0F*layout.cell_size)*.5F;
         layout.y=y+(height-static_cast<float>(layout.rows)*layout.cell_size)*.5F;
     }
+    if (item.kind==ItemKind::Elbow) {
+        layout.min_x=-pattern.maximum-1;layout.max_x=1;
+    }
     // GRID: The backing follows the effect's bounds instead of filling the whole card.
     for (int row = layout.min_y; row <= layout.max_y; ++row)
         for (int column = layout.min_x; column <= layout.max_x; ++column) {
@@ -91,7 +94,11 @@ void draw_pattern_diagram(tr::Renderer* renderer, const Item& item,
         }
 
     // EFFECT: Dashed travel has no hit; the destination and nearby lanes do.
-    if (item.kind == ItemKind::EffigyMask) {
+    if (item.kind==ItemKind::Elbow) {
+        for (int reach=1;reach<=pattern.maximum;++reach)
+            for (int lane=-pattern.half_width;lane<=pattern.half_width;++lane)
+                colored_cell(renderer,layout,-reach,lane,pattern.effect,false);
+    } else if (item.kind == ItemKind::EffigyMask) {
         // Rear mask gaze is solid; ordinary forward observation is outlined.
         // Both have the effigy's Manhattan-seven, ninety-degree sight bounds.
         for (int dx=-7;dx<=7;++dx) for (int dy=-3;dy<=3;++dy)

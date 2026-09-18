@@ -68,7 +68,8 @@ bool step_pocket_drill(Game& game,int slot,const Input& input) {
     if (user.cell!=user.point_a || user.facing!=user.point_b) {
         user.counter_a=0;user.point_a=user.cell;user.point_b=user.facing;
     }
-    if (user.counter_a<drill_prime_ticks && ++user.counter_a<drill_prime_ticks) return true;
+    user.counter_a=std::min(drill_prime_ticks,user.counter_a+user.action_steps);
+    if (user.counter_a<drill_prime_ticks) return true;
     if (item.cooldown==0 && item.uses>0) pulse(game,slot);
     return true;
 }

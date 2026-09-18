@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "rivet_gun.hpp"
 #include "action.hpp"
 #include "firearms.hpp"
@@ -28,7 +29,7 @@ bool step_rivet_action(Game& game,int slot,const Input& input) {
         reload_held_item(game,slot); return true;
     }
     if (rivet_burst_active(user)) {
-        if (--user.counter_a>0) return true;
+        if ((user.counter_a=std::max(0,user.counter_a-user.action_steps))>0) return true;
         if (!fire_weapon(game,slot,user.point_b,item) || --user.counter_b==0) finish(user);
         else user.counter_a=9;
         return true;

@@ -64,7 +64,7 @@ void step_players(Game& game, const PlayerInputs& inputs) {
         Entity* player = get_entity(game, handle);
         if (player == nullptr) continue;
         if (player->health <= 0 || !player_state(game, owner).online) { cancel_item_action(*player); continue; }
-        if (player->toss.ticks>0) { cancel_item_action(*player); continue; }
+        if (player->toss.ticks>0 || player->basic.jump_ticks>0 || player->basic.carried_by.slot>=0) { cancel_item_action(*player); continue; }
         if (player->sleep_ticks > 0 || player->stun_ticks > 0) {
             use_disabled_remedy(game, handle.slot, input);
             continue;
@@ -90,7 +90,7 @@ void step_nonplayers(Game& game) {
         if (entity.kind == EntityKind::None || entity.birth_tick == game.tick ||
             (entity.health == 0 && entity.kind != EntityKind::RailLayer &&
              entity.kind != EntityKind::GroundItem) ||
-            entity.toss.ticks>0 || entity.sleep_ticks > 0 || entity.stun_ticks > 0) continue;
+            entity.basic.carried_by.slot>=0 || entity.toss.ticks>0 || entity.sleep_ticks > 0 || entity.stun_ticks > 0) continue;
         step_entity(game, slot);
     }
 }

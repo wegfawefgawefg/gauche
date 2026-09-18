@@ -1,6 +1,7 @@
 #include "pocket_drill.hpp"
 #include "arc_torch.hpp"
 #include "action.hpp"
+#include "basic_actions.hpp"
 #include "catalog.hpp"
 #include "muffling.hpp"
 #include "../item_attribute.hpp"
@@ -12,6 +13,12 @@ int item_windup(const Item& item) {
     if (item.kind==ItemKind::ArcTorch) return arc_prime_ticks;
     int ticks = 0;
     switch (item.kind) {
+    case ItemKind::Slap: ticks=3;break;
+    case ItemKind::Shove: ticks=10;break;
+    case ItemKind::Kick: ticks=7;break;
+    case ItemKind::Elbow: ticks=4;break;
+    case ItemKind::GodFist: ticks=24;break;
+    case ItemKind::CrushShield: ticks=12;break;
     case ItemKind::IceAxe: ticks = 9; break;
     case ItemKind::TuskPike: ticks = 8; break;
     case ItemKind::SteamLance: ticks = 27; break;
@@ -58,7 +65,7 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
             cancel_item_action(user);
             return melee;
         }
-        if (--user.counter_a > 0) return true;
+        if ((user.counter_a=std::max(0,user.counter_a-user.action_steps)) > 0) return true;
         const Cell facing = user.point_b;
         user.label_b = 0;
         user.ground_item = {};
@@ -84,7 +91,7 @@ bool step_melee_action(Game& game, int slot, const Input& input) {
     user.point_b = user.facing;
     user.ground_item = held;
     const RegionalItem* spec = regional_item(held.kind);
-    emit_weapon_sound(game, held, held.kind==ItemKind::TuningFork ? SoundId::ForkWindup : spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
+    emit_weapon_sound(game, held, held.kind==ItemKind::TuningFork ? SoundId::ForkWindup : is_basic_action(held.kind) ? SoundId::FistWindup : spec != nullptr ? spec->sound : held.kind == ItemKind::Fist ?
         SoundId::FistWindup : held.kind == ItemKind::Pickaxe ? SoundId::PickaxeWindup : SoundId::StickWindup, user.cell);
     return true;
 }

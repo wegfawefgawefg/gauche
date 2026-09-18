@@ -1,3 +1,4 @@
+#include "../items/basic_actions.hpp"
 #include "chasm.hpp"
 #include "../items/action.hpp"
 #include "../items/ground_interaction.hpp"
@@ -28,6 +29,7 @@ void falling_image(Game& game,int slot,SoundId sound=SoundId::ChasmFall) {
 
 bool gap_flyer(const Entity& actor) {
     if (actor.health<=0) return false;
+    if (basic_airborne(actor)) return true;
     switch (actor.kind) {
     case EntityKind::Bat: case EntityKind::FrostBat: case EntityKind::Owl:
     case EntityKind::Wasp: case EntityKind::Mosquito: case EntityKind::Woodpecker:

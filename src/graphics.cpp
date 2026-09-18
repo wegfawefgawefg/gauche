@@ -113,6 +113,7 @@ constexpr std::array<std::string_view, static_cast<std::size_t>(Sprite::Count)> 
     "gnome_stick", "gnome_stick_walk", "gnome_stick_tell", "gnome_stick_hit", "gnome_bow", "gnome_bow_walk", "gnome_bow_tell", "gnome_bow_hit", "gnome_crossbow", "gnome_crossbow_walk", "gnome_crossbow_tell", "gnome_crossbow_hit", "gnome_rider", "gnome_rider_walk", "gnome_rider_tell", "gnome_rider_hit",
     "gnome_house", "gnome_house_closed", "gnome_house_blue", "gnome_house_blue_closed", "gnome_house_ochre", "gnome_house_ochre_closed", "tall_mushroom", "tall_mushroom_blue", "tall_mushroom_ochre",
     "old_growth_bear", "old_growth_rear", "old_growth_swipe", "old_growth_paw", "old_growth_rush", "old_growth_stagger", "tall_tree_snow_cap", "river_lily", "river_log",
+    "slap", "parry_pan", "jump", "grapple", "shove", "kick", "elbow", "god_fist", "balloon", "crush_shield", "power_pierce", "power_reflect", "power_hearth", "power_speed", "power_strong", "power_quick", "power_health", "power_dodge", "power_regen", "power_crit", "power_crit_power", "power_armor", "power_technical", "power_medic", "power_reuse", "power_gold", "power_big", "power_sweep", "power_iron", "power_chef",
 };
 
 std::filesystem::path named_asset(const std::filesystem::path& root,

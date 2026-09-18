@@ -6,9 +6,9 @@ namespace {
 constexpr RegionalItem boomerang{"Boomerang", "Hits once each way. Returns to your reserved slot; a blocked return drops it.",
     Sprite::Boomerang, {1, 6, 0, 16, 24, PatternEffect::Damage, true, 0, 0, true},
     ItemAction::Throw, 24, 1, false, 0, 0, 0, 0, 0, SoundId::BoomerangThrow};
-constexpr RegionalItem rock{"Throwing Rock", "Flies along a line, hits for 8 damage and lands. Recover the same stone at the impact.",
-    Sprite::ThrowingRock, {1, 6, 0, 8, 30, PatternEffect::Damage, true},
-    ItemAction::Throw, 3, 6, true, 0, 0, 0, 60, 0, SoundId::RockThrow};
+constexpr RegionalItem rock{"Throwing Rock", "A good throwing rock.",
+    Sprite::ThrowingRock, {1, 6, 0, 28, 24, PatternEffect::Damage, true},
+    ItemAction::Throw, 3, 12, true, 0, 0, 0, 60, 0, SoundId::RockThrow};
 constexpr RegionalItem hatchet{"Hatchet", "Cleave three adjacent cells. Triple damage to timber, trees, crates and logs; cannot dig stone.",
     Sprite::Hatchet, {1, 1, 0, 16, 35, PatternEffect::Damage, false, 1},
     ItemAction::Melee, 14, 1, false, 0, 0, 0, 60, 0, SoundId::AxeSwing, 35};

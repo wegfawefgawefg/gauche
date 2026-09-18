@@ -7,6 +7,8 @@ struct MenuShell;
 struct TestLoadout {
     Inventory inventory{};
     std::uint32_t artifacts = 0;
+    ArtifactStacks powers{};
+    ItemKind basic_action=ItemKind::Fist;
     int health = 100;
     int step_ticks = 7;
     int gold = 0;

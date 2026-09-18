@@ -1,5 +1,6 @@
 #include "items/heated_water.hpp"
 #include "item_pattern.hpp"
+#include "items/basic_actions.hpp"
 #include "items/catalog.hpp"
 
 #include <algorithm>
@@ -115,6 +116,10 @@ Cell aimed_item_target(const Entity& user, Cell aim, ItemPattern pattern) {
 
 ItemPattern active_item_pattern(const Item& item, const Entity& user) {
     ItemPattern pattern=item_pattern(item);
+    if (is_basic_action(item.kind)) {
+        if (has_artifact(user,ArtifactKind::Oversized)) ++pattern.maximum;
+        if (has_artifact(user,ArtifactKind::Sweeping)) ++pattern.half_width;
+    }
     if (user.vitals.slide_momentum==0) pattern.momentum_tip=0;
     return pattern;
 }

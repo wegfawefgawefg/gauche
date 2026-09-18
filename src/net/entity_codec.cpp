@@ -1,4 +1,5 @@
 #include "../entities/river_raft.hpp"
+#include "../items/basic_actions.hpp"
 #include "../entities/crate_mimic.hpp"
 #include "../entities/dog.hpp"
 #include "../projectiles/arrow_fire.hpp"
@@ -73,7 +74,7 @@ void write_item(PacketWriter& writer, const Item& item) {
     writer.light(item.light);
     writer.i32(item.dig_power);
     writer.i32(item.flame_ticks);
-    writer.u8(item.muffled_uses);
+    writer.u8(item.muffled_uses); writer.u32(item.technical_level);
     writer.i32(item.flight.slot); writer.u32(item.flight.generation);
     writer.i32(item.anchor.slot); writer.u32(item.anchor.generation);
 }
@@ -92,7 +93,8 @@ Item read_item(PacketReader& reader) {
     item.light = reader.light();
     item.dig_power = reader.i32();
     item.flame_ticks = reader.i32();
-    item.muffled_uses = reader.u8();
+    item.muffled_uses = reader.u8(); item.technical_level=reader.u32();
+    if (item.technical_level>max_power_stacks) reader.okay=false;
     if (item.muffled_uses > 6 || (item.muffled_uses > 0 && !muffleable_item(item))) reader.okay = false;
     item.flight = {reader.i32(), reader.u32()};
     item.anchor = {reader.i32(), reader.u32()};
@@ -100,6 +102,7 @@ Item read_item(PacketReader& reader) {
         (item.anchor.slot >= 0 && item.kind != ItemKind::PocketDoor && item.kind != ItemKind::IceAnchor)) reader.okay = false;
     if (item.flight.slot < -1 || item.flight.slot >= max_entities ||
         (item.flight.slot >= 0 && item.kind != ItemKind::Boomerang && item.kind != ItemKind::HarpoonGun && item.kind != ItemKind::ChainHook)) reader.okay = false;
+    if (item.kind==ItemKind::Balloon && item.loaded>3600) reader.okay=false;
     if (item.kind==ItemKind::LunchTin && (item.loaded>2 || item.spare!=0 || item.count>1)) reader.okay=false;
     if (item.kind==ItemKind::GlowSlag && (item.loaded>1200 || item.spare!=0 || item.count>1)) reader.okay=false;
     if (item.kind==ItemKind::EffigyMask && (item.spare>59 || item.loaded!=0)) reader.okay=false;
@@ -161,6 +164,16 @@ void write_entity(PacketWriter& writer, const Entity& entity) {
     writer.i32(entity.toss.instigator.slot); writer.u32(entity.toss.instigator.generation);
     writer.i32(entity.toss.ticks);
     writer.i32(entity.script_tick); writer.u32(entity.artifacts);
+    for (auto count:entity.powers) writer.u32(count);
+    writer.i32(entity.action_fraction); writer.i32(entity.action_steps);
+    writer.i32(entity.move_fraction); writer.i32(entity.regen_progress);
+    writer.u8(static_cast<std::uint8_t>(entity.basic_action));
+    const auto& basic=entity.basic;
+    writer.i32(basic.jump_ticks);writer.cell(basic.jump_origin);writer.cell(basic.jump_destination);
+    for (Handle handle:{basic.grabbed,basic.carried_by}) {writer.i32(handle.slot);writer.u32(handle.generation);}
+    writer.u8(static_cast<std::uint8_t>(basic.held_prop.kind));writer.u8(basic.held_prop.hp);
+    writer.u8(basic.held_prop.variant);writer.u8(basic.held_prop.broken);writer.u16(basic.held_prop.growth_ticks);writer.u8(basic.held_prop.covered);
+    writer.cell(basic.prop_cell);writer.cell(basic.prop_direction);writer.i32(basic.prop_ticks);
     writer.i32(entity.train_cars_left); writer.i32(entity.spawn_wait);
     writer.cell(entity.train_origin);
     for (Handle handle : {entity.entity_a, entity.entity_b, entity.encounter}) {
@@ -218,13 +231,29 @@ Entity read_entity(PacketReader& reader) {
     entity.vitals.traction = reader.u16(); entity.vitals.slide_momentum = reader.u16();
     if (entity.vitals.traction > 300 || entity.vitals.slide_momentum > 12) reader.okay = false;
     entity.vitals.grip = reader.u16(); entity.vitals.root_kind = static_cast<RootKind>(reader.u8());
-    if (entity.vitals.healing_left > 1000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
+    if (entity.vitals.healing_left > 60000 || entity.vitals.healing_wait > recovery_interval(entity.vitals) ||
         entity.vitals.recovery > RecoveryKind::Meal || entity.vitals.chill_guard > 480 ||
         entity.vitals.sleep_guard > 600 || entity.vitals.stun_guard > 180 ||
         entity.vitals.haste > 240 || entity.vitals.rooted > root_tick_limit(entity.vitals.root_kind) || entity.vitals.grip > 360 || entity.vitals.root_kind > RootKind::Net) reader.okay = false;
     entity.toss.origin=reader.cell(); entity.toss.direction=reader.cell(); entity.toss.source=reader.cell();
     entity.toss.instigator={reader.i32(),reader.u32()}; entity.toss.ticks=reader.i32();
     entity.script_tick = reader.i32(); entity.artifacts = reader.u32();
+    for (auto& count:entity.powers) {count=reader.u32();if (count>max_power_stacks) reader.okay=false;}
+    entity.action_fraction=reader.i32(); entity.action_steps=reader.i32();
+    entity.move_fraction=reader.i32(); entity.regen_progress=reader.i32();
+    entity.basic_action=static_cast<ItemKind>(reader.u8());
+    if (!is_basic_action(entity.basic_action)) reader.okay=false;
+    auto& basic=entity.basic;
+    basic.jump_ticks=reader.i32();basic.jump_origin=reader.cell();basic.jump_destination=reader.cell();
+    basic.grabbed={reader.i32(),reader.u32()};basic.carried_by={reader.i32(),reader.u32()};
+    for (Handle handle:{basic.grabbed,basic.carried_by}) if (handle.slot< -1 || handle.slot>=max_entities) reader.okay=false;
+    basic.held_prop.kind=static_cast<PropKind>(reader.u8());basic.held_prop.hp=reader.u8();
+    basic.held_prop.variant=reader.u8();basic.held_prop.broken=reader.u8()!=0;basic.held_prop.growth_ticks=reader.u16();basic.held_prop.covered=reader.u8()!=0;
+    basic.prop_cell=reader.cell();basic.prop_direction=reader.cell();basic.prop_ticks=reader.i32();
+    if (basic.jump_ticks<0 || basic.jump_ticks>18 || basic.prop_ticks<0 || basic.prop_ticks>24 ||
+        basic.held_prop.kind>=PropKind::Count || (basic.prop_ticks && distance({},basic.prop_direction)!=1)) reader.okay=false;
+    if (entity.action_fraction<0 || entity.action_fraction>=1000000 || entity.action_steps<0 || entity.action_steps>200001 ||
+        entity.move_fraction<0 || entity.move_fraction>=1000000 || entity.regen_progress<0 || entity.regen_progress>=1200) reader.okay=false;
     entity.train_cars_left = reader.i32(); entity.spawn_wait = reader.i32();
     entity.train_origin = reader.cell();
     entity.entity_a = {reader.i32(), reader.u32()};

@@ -6,6 +6,7 @@
 
 namespace {
 int entity_priority(const Entity& entity) {
+    if (entity.basic.carried_by.slot>=0) return 4;
     // Flat fixtures belong below ground flames and all standing bodies.
     if (diver_submerged(entity) || entity.kind==EntityKind::Campfire ||
         entity.kind==EntityKind::Sled || entity.kind==EntityKind::RiverRaft || entity.kind==EntityKind::IceAnchor ||

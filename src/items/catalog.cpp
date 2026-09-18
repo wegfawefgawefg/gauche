@@ -1,4 +1,5 @@
 #include "ice_melee.hpp"
+#include "basic_actions.hpp"
 #include "lunch_tin.hpp"
 #include "steel_toe.hpp"
 #include "glow_slag.hpp"
@@ -244,6 +245,16 @@ constexpr std::array<Entry, static_cast<std::size_t>(ItemKind::Count)> entries{{
     {ItemKind::IceAxe, ice_melee_item},
     {ItemKind::TuskPike, ice_melee_item},
     {ItemKind::RiverFish, fish_item},
+    {ItemKind::Slap, basic_action_item},
+    {ItemKind::ParryPan, basic_action_item},
+    {ItemKind::Jump, basic_action_item},
+    {ItemKind::Grapple, basic_action_item},
+    {ItemKind::Shove, basic_action_item},
+    {ItemKind::Kick, basic_action_item},
+    {ItemKind::Elbow, basic_action_item},
+    {ItemKind::GodFist, basic_action_item},
+    {ItemKind::Balloon, basic_action_item},
+    {ItemKind::CrushShield, basic_action_item},
 }};
 constexpr bool valid_entries() {
     if (entries.size() != static_cast<std::size_t>(ItemKind::Count)) return false;

@@ -84,7 +84,7 @@ BeamTrace trace_beam_burst(const Game& game, Cell source, int damage, int reach,
     return trace_paths(game, source, sides, damage, reach, piercing, true);
 }
 
-void resolve_beam(Game& game, const BeamTrace& trace) {
+void resolve_beam(Game& game, const BeamTrace& trace, Handle instigator) {
     // SNAPSHOT: Broken cover and death drops cannot change this shot's already traced route.
     for (int i = 0; i < trace.count; ++i) {
         const BeamCell& hit = trace.cells[static_cast<std::size_t>(i)];
@@ -109,6 +109,6 @@ void resolve_beam(Game& game, const BeamTrace& trace) {
         }
         if (!hit.optic && !hit.covered && !prop_shoot_through(game.stage.at_or_border(hit.cell).prop)) hit_prop(game, hit.cell, hit.damage, hit.from);
         if (get_entity(game, hit.target))
-            damage_entity(game, hit.target.slot, hit.damage, hit.from, hit.from != hit.cell);
+            damage_entity(game, hit.target.slot, hit.damage, hit.from, hit.from != hit.cell,instigator);
     }
 }

@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "offers.hpp"
 #include "../items/supply.hpp"
 #include "../items/ground_interaction.hpp"
@@ -51,6 +52,7 @@ void apply_offer_choice(Game& game, int owner, const Input& input) {
 
 bool accept_offer_item(Game& game, Entity& player, Item incoming,
                        int replace_slot, ItemKind expected) {
+    improve_pickup(player,incoming);
     if (replace_slot<0) return insert_item(player.inventory,incoming);
     if (replace_slot>=quick_slots || incoming.kind==ItemKind::None || incoming.count<=0 ||
         incoming.count>(item_stackable(incoming) ? incoming.max_count : 1)) return false;

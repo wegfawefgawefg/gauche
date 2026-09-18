@@ -1,3 +1,5 @@
+#include "../artifacts/powers.hpp"
+#include "basic_actions.hpp"
 #include "../entities/rail_cart.hpp"
 #include "../entities/casting_mold.hpp"
 #include "../traps/nail_board.hpp"
@@ -62,7 +64,7 @@ int release_fixture(Game& game,Entity& player,Cell cell,ItemKind kind) {
 } // namespace
 
 bool item_can_drop(const Item& item) {
-    return item.kind != ItemKind::None && item.kind != ItemKind::Fist && item.count > 0 && item.flight.slot < 0;
+    return item.kind != ItemKind::None && !is_basic_action(item.kind) && item.count > 0 && item.flight.slot < 0;
 }
 
 Item pickup_item_at(const Game& game, Cell cell) {
@@ -119,6 +121,7 @@ bool pickup_or_drop(Game& game, Entity& player) {
         return player.inventory.held()->kind == ItemKind::None;
     }
     Entity& ground = game.entities[static_cast<std::size_t>(slot)];
+    improve_pickup(player,ground.ground_item);
     if (transfer_item(player.inventory, ground.ground_item) > 0) {
         if (ground.ground_item.count == 0) {
             stop_item_float(game, ground);
@@ -153,6 +156,7 @@ bool pickup_or_drop(Game& game, Entity& player) {
 
 void release_player_inventory(Game& game, Entity& player, bool lost) {
     cancel_item_action(player);
+    release_grapple(game,player,false,player.facing);
     for (Item& item : player.inventory.slots) {
         // A flight reservation is not a second physical item in the backpack.
         if (!lost && item_can_drop(item)) {
@@ -167,10 +171,10 @@ void release_player_inventory(Game& game, Entity& player, bool lost) {
         item = {};
     }
     player.inventory = {};
-    insert_item(player.inventory, make_item(ItemKind::Fist));
+    insert_item(player.inventory, make_item(player.basic_action));
     if (player.owner >= 0 && has_player(game, player.owner)) {
         auto& gold = player_state(game, player.owner).coins;
-        if (!lost) place_coins(game, player.cell, gold);
+        if (!lost) place_coins(game, player.cell, gold,true);
         gold = 0;
     }
 }

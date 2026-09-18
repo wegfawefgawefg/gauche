@@ -94,6 +94,8 @@ set(GAUCHE_ENTITY_SOURCES
     src/world/assembly.cpp
     src/props/conveyor_render.cpp
     src/props/conveyor.cpp
+    src/items/basic_catalog.cpp src/items/basic_actions.cpp src/items/grapple.cpp
+    src/artifacts/powers.cpp src/artifacts/catalog.cpp
     src/items/reload.cpp
     src/items/coolant.cpp
     src/world/cooling_works.cpp
@@ -240,7 +242,7 @@ add_executable(gauche
     src/entities/shard_render.cpp src/entities/crane_render.cpp src/entities/boiler_render.cpp
     src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/hit_render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
-    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/artifacts/catalog.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
+    src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp src/ui/offer_flow.cpp
     src/ui/interaction_render.cpp src/ui/party.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
     src/audio.cpp src/audio/body.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/ice_arch_render.cpp src/scenery/hollow_tree_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
@@ -299,7 +301,7 @@ endif()
 if(BUILD_TESTING)
     # Simulation tests must not pull presentation-only objects and their renderer dependencies.
     foreach(domain GAUCHE_ENTITY_SOURCES GAUCHE_PROP_SOURCES GAUCHE_WORLD_SOURCES)
-        list(FILTER ${domain} EXCLUDE REGEX "_render[.]cpp$|/scene_entities[.]cpp$")
+        list(FILTER ${domain} EXCLUDE REGEX "_render[.]cpp$|/scene_entities[.]cpp$|/debug/generation_audit[.]cpp$")
     endforeach()
     set(GAUCHE_TEST_GAME_SOURCES
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp
@@ -308,23 +310,26 @@ if(BUILD_TESTING)
     add_executable(gauche_tests
         tests/game_test.cpp ${GAUCHE_TEST_GAME_SOURCES})
     target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME game_rules COMMAND gauche_tests)
-    add_executable(gauche_item_tests tests/item_test.cpp
+    add_executable(gauche_item_tests tests/item_test.cpp tests/basic_actions_test.cpp
         src/ui/pattern_diagram.cpp ${GAUCHE_TEST_GAME_SOURCES})
-    target_link_libraries(gauche_item_tests PRIVATE SDL3::SDL3)
+    target_link_libraries(gauche_item_tests PRIVATE SDL3::SDL3 teeming_renderer)
     target_compile_options(gauche_item_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME item_rules COMMAND gauche_item_tests)
     add_executable(gauche_rollback_tests
         tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
         src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_rollback_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
     add_executable(gauche_codec_tests
         tests/net_codec_test.cpp ${GAUCHE_CODEC_SOURCES} src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
         src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_codec_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
     add_executable(gauche_socket_tests tests/net_socket_test.cpp src/net_socket.cpp)
@@ -339,6 +344,7 @@ if(BUILD_TESTING)
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
         ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_session_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
         target_link_libraries(gauche_session_tests PRIVATE ws2_32)
@@ -350,6 +356,7 @@ if(BUILD_TESTING)
         src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
         ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_loss_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
         target_link_libraries(gauche_loss_tests PRIVATE ws2_32)
@@ -362,12 +369,14 @@ if(BUILD_TESTING)
         src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
         src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
     target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_presentation_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME presentation_rules COMMAND gauche_presentation_tests)
     add_executable(gauche_lighting_tests
         tests/lighting_test.cpp src/lighting/field.cpp src/lighting/canopy.cpp
         src/lighting/sources.cpp src/stage.cpp)
     target_link_libraries(gauche_lighting_tests PRIVATE SDL3::SDL3)
+    target_include_directories(gauche_lighting_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
     target_compile_options(gauche_lighting_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     add_test(NAME lighting_rules COMMAND gauche_lighting_tests)
     add_test(NAME border_lighting COMMAND gauche --smoke-border --frames 3)

@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "machine_fittings.hpp"
 #include "../entities/boiler_tank.hpp"
 #include "../entities/emergency_pump.hpp"
@@ -85,9 +86,11 @@ void drop_machine_fitting(Game& game,const Entity& machine) {
 }
 bool valid_nozzle_elbow(const Item& item) {
     if (item.kind!=ItemKind::NozzleElbow) return true;
+    Entity technician;technician.powers[static_cast<std::size_t>(ArtifactKind::Technical)]=item.technical_level;
+    Item expected=make_item(item.kind,1,item.attribute);improve_pickup(technician,expected);
     return item.count==1 && item.max_count==1 && item.loaded>=0 && item.loaded<=1 && item.spare==0 &&
         item.durability>0 && item.durability<=item.max_durability &&
-        item.max_durability==(item.attribute==ItemAttribute::Durable ? 36 : 18) &&
+        item.max_durability==expected.max_durability &&
         (item.attribute==ItemAttribute::None || item.attribute==ItemAttribute::Durable);
 }
 bool valid_machine_fitting(const Entity& machine) {

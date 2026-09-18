@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "effects.hpp"
 #include "../game.hpp"
 
@@ -11,7 +12,7 @@ bool begin_recovery(Entity& actor, RecoveryKind kind, int health) {
     VitalEffects& effects = actor.vitals;
     if (actor.health <= 0 || health <= 0 || effects.healing_left > 0) return false;
     effects.recovery = kind;
-    effects.healing_left = static_cast<std::uint16_t>(std::clamp(health, 1, 1000));
+    effects.healing_left = static_cast<std::uint16_t>(std::clamp(power_healing(actor,health), 1, 60000));
     effects.healing_wait = static_cast<std::uint16_t>(recovery_interval(effects));
     return true;
 }

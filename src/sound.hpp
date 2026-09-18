@@ -73,6 +73,7 @@ enum class SoundId : std::size_t {
     SnoreLow, SnoreHigh, Gulp, Burp,
     GnomeSqueal, GnomeDoor,
     GrowthRoar, GrowthRush, GrowthMaul, GrowthCrash, GrowthDeath,
+    SlapHit, JumpLift, JumpLand, GrappleLift, GrappleThrow, ShoveHit, KickHit, ElbowHit, GodImpact, BalloonPop, PowerDodge,
     Count,
 };
 
@@ -143,4 +144,5 @@ inline constexpr std::array<std::string_view, static_cast<std::size_t>(SoundId::
     "snore_low", "snore_high", "gulp", "burp",
     "gnome_squeal", "gnome_door",
     "growth_roar", "growth_rush", "growth_maul", "growth_crash", "growth_death",
+    "slap_hit", "jump_lift", "jump_land", "grapple_lift", "grapple_throw", "shove_hit", "kick_hit", "elbow_hit", "god_impact", "balloon_pop", "power_dodge",
 };

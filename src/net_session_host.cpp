@@ -90,6 +90,7 @@ void accept_hello(NetSession& session, const Datagram& datagram, PacketReader& r
                     entity->max_health = saved.max_health;
                     entity->move_interval = saved.move_interval;
                     entity->artifacts = saved.artifacts;
+                    entity->powers = saved.powers; entity->basic_action = saved.basic_action;
                 }
                 entity->generation = generation;
                 entity->cell = cell;

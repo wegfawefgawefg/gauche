@@ -73,6 +73,7 @@ Item make_item(ItemKind kind, int count, ItemAttribute attribute) {
         if (item.max_uses > 0) item.max_uses = std::max(1, item.max_uses / 2);
         if (item.max_durability > 0) item.max_durability = std::max(1, item.max_durability / 2);
     }
+    if (kind==ItemKind::Balloon) item.loaded=3600;
     if (kind==ItemKind::PocketPump) {item.loaded=static_cast<int>(LiquidKind::Water);item.spare=pump_capacity;}
     if (kind == ItemKind::StormLantern) { item.loaded = lantern_fuel_ticks; item.opened = true; }
     if (kind == ItemKind::CandleStub) item.loaded = candle_fuel_ticks;

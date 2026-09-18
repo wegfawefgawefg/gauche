@@ -18,6 +18,7 @@ bool compatible(const Item& a, const Item& b) {
     if (a.kind == ItemKind::EchoPebble && (a.loaded != b.loaded || a.spare != b.spare)) return false;
     return item_stackable(a) && item_stackable(b) && a.kind == b.kind &&
         a.flight.slot < 0 && b.flight.slot < 0 && a.flame_ticks == b.flame_ticks && a.muffled_uses == b.muffled_uses && a.attribute == b.attribute && a.opened == b.opened && a.dig_power == b.dig_power &&
+        a.max_durability == b.max_durability && a.technical_level == b.technical_level &&
         a.max_count == b.max_count && a.consume_on_use == b.consume_on_use &&
         a.light.radius == b.light.radius && a.light.strength == b.light.strength &&
         a.light.color.red == b.light.color.red && a.light.color.green == b.light.color.green &&

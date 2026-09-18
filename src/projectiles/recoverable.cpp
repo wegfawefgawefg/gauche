@@ -34,7 +34,7 @@ void land(Game& game, int slot, bool hot_impact = false) {
     const bool burned=coal_lava_contact(game,item,cell);
     if (Item* held = reservation(game, shot, handle)) *held = {};
     remove_entity(game, handle);
-    if (burned) return;
+    if (burned || item.count==0) return;
     if (melted) { emit_sound(game, SoundId::IceMelt, cell); return; }
     // CAPACITY: Converting a projectile frees a slot before its physical item is restored.
     if (Entity* loose = get_entity(game, spawn_entity(game, EntityKind::GroundItem, cell))) {

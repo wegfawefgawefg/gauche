@@ -1,3 +1,4 @@
+#include "items/basic_actions.hpp"
 #include "traps/nail_board.hpp"
 #include "game.hpp"
 #include "traps/woodland.hpp"
@@ -74,7 +75,7 @@ void step_traps(Game& game) {
         if (nail_board_trap(trap)) {step_nail_board_trap(game,slot);continue;}
         if (woodland_trap(trap)) { step_woodland_trap(game, slot); continue; }
         const int victim = entity_at(game, trap.cell, true);
-        if (victim < 0 || game.entities[static_cast<std::size_t>(victim)].toss.ticks>0) continue;
+        if (victim < 0 || (game.entities[static_cast<std::size_t>(victim)].toss.ticks>0 || basic_airborne(game.entities[static_cast<std::size_t>(victim)]))) continue;
         const Cell cell = trap.cell;
         const ItemKind kind = trap.ground_item.kind;
         if (kind == ItemKind::Mine) {

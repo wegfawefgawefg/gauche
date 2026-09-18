@@ -1,3 +1,5 @@
+#include "../artifacts/powers.hpp"
+#include "../items/basic_actions.hpp"
 #include "crate_mimic.hpp"
 #include "dog.hpp"
 #include "brawler.hpp"
@@ -76,9 +78,11 @@ std::optional<Cell> free_entrance_cell(const Game& game) {
 } // namespace
 
 void step_entity_timers(Game& game, int slot) {
+    step_basic_state(game,slot);
     if (chasm_contact(game,slot)) return;
     Entity& entity = game.entities[static_cast<std::size_t>(slot)];
     if (entity.kind == EntityKind::None) return;
+    step_player_powers(game,entity);
     if (game.tick % static_cast<std::uint64_t>(movement_slow_factor(entity)) == 0)
         entity.move_wait = std::max(0, entity.move_wait - movement_recovery_rate(entity));
     wet_landed_fuse(game,slot);
@@ -177,7 +181,10 @@ void step_entity_timers(Game& game, int slot) {
     step_lantern_fuel(game,entity.ground_item,entity.cell,entity.kind==EntityKind::GroundItem,false);
     for (int index=0;index<quick_slots;++index) {
         Item& item=entity.inventory.slots[static_cast<std::size_t>(index)];
+        const int previous_cooldown=item.cooldown;
         step_item_state(game,item,entity.cell,wet && wading_actor(entity));
+        if (entity.kind==EntityKind::Player && power_attack_item(item.kind))
+            item.cooldown=std::max(0,previous_cooldown-entity.action_steps);
         sync_ice_anchor(game,item);
         stow_effigy_mask(item,entity.health>0 && entity.sleep_ticks==0 && entity.stun_ticks==0 && index==entity.inventory.selected);
         step_lantern_fuel(game,item,entity.cell,entity.health>0 && index==entity.inventory.selected,true);

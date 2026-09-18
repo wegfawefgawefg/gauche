@@ -114,6 +114,12 @@ bool buildable(TileKind kind);
 bool damage_tile(Stage& stage, Cell cell, int damage, int dig_power = 0,
                  TileImpact impact = TileImpact::Strike);
 
+enum class ArtifactKind : std::uint8_t { None, AllPiercing, Reflector, Hearth, FleetFeet,
+    StrongArms, QuickHands, Vitality, Dodge, Regeneration, CriticalChance, CriticalPower,
+    Armor, Technical, Medic, Reusable, Golddigger, Oversized, Sweeping, Iron, Chef, GodHand, Count };
+using ArtifactStacks = std::array<std::uint32_t, static_cast<std::size_t>(ArtifactKind::Count)>;
+inline constexpr std::uint32_t max_power_stacks = 1000000;
+
 enum class ItemKind : std::uint8_t {
     None, Wall, Medkit, Bandage, Bandaid, Fist, ConductorHat,
     Buckler, Pistol, Musket, Bow, RocketLauncher, Ammo, Bomb, SleepMeds,
@@ -125,6 +131,7 @@ enum class ItemKind : std::uint8_t {
     BirdSeed, ThornCaltrops, HuntingHorn, RopeHook, RootDrill, BlinkSeed, Boomerang, RopeSnare, SpringTrap, AcornMine, ThrowingNet, StickyBoots, RabbitCharm, HandBell, Firecracker, StinkBomb, RottenFruit, PitchBomb, ShieldLantern, ReflectingPan, Scarecrow, StrawDecoy, WolfWhistle, ThunderAcorn, PocketDoor, GritPouch, IceNeedle, AirBladder, ColdFlask, HeatCapsule, WoolWrap, HotBroth, IcePoultice, Chisel, IceBrick, EelBattery, SnowScoop, Snowball, LensCarbine, MirrorShard, CrystalLens, PrismBomb, BlackFelt, MufflingFelt, AlarmClock, FishingLine, SmokedFish, SnowGlobe, SaltedKelp, BrineFlask, CandleStub, WickSpool, CoalLump, SteamKettle, PressureValve, Sealant, SkateBlade, Crampons, SignalFlare, CopperWire, GroundingSpike, StormLantern, EchoPebble, HarpoonGun, EmergencyDoorstop, BorrowedSummer, HeatSiphon, ThawCharge, FoldedBridge, TuningFork, StillwaterBell, EffigyMask, IceAnchor, SnowShelter, Sled,
     ForemanWhistle, QuarryCharge, FuseScissors, PressHammer, RubberMallet, RivetGun, BeltCrank, BrakeShoe, ArcTorch, HorseshoeMagnet, FoldingBarricade, CoolantCan, PocketDrill, TensionSpring, EmergencyFoam, BoltPouch, ChainHook, NailBoard, HandBellows, PocketPump, NozzleElbow, MoldKey, SteamLance, TarFlask, RailSwitchKey, InsulatedBoots, GlowSlag, SteelToeCap, LunchTin,
     IceAxe, TuskPike, RiverFish,
+    Slap, ParryPan, Jump, Grapple, Shove, Kick, Elbow, GodFist, Balloon, CrushShield,
     Count,
 };
 
@@ -154,6 +161,7 @@ struct Item {
     int max_durability = 0;
     int uses = 0;
     int max_uses = 0;
+    std::uint32_t technical_level = 0; // Highest pickup improvement already applied.
     bool opened = false;
     LightEmitter light{};
     int dig_power = 0;
@@ -196,6 +204,15 @@ struct ActorToss {
     int ticks = 0;
 };
 
+struct BasicState {
+    int jump_ticks=0;
+    Cell jump_origin{}, jump_destination{};
+    Handle grabbed{}, carried_by{};
+    Prop held_prop{};
+    Cell prop_cell{}, prop_direction{};
+    int prop_ticks=0;
+};
+
 struct Entity {
     EntityKind kind = EntityKind::None;
     std::uint32_t generation = 0;
@@ -233,6 +250,10 @@ struct Entity {
     ActorToss toss{};
     int script_tick = 0;
     std::uint32_t artifacts = 0;
+    ArtifactStacks powers{};
+    int action_fraction = 0, action_steps = 1, move_fraction = 0, regen_progress = 0;
+    ItemKind basic_action = ItemKind::Fist;
+    BasicState basic{};
     int train_cars_left = 0;
     int spawn_wait = 0;
     Cell train_origin{};
@@ -273,10 +294,11 @@ inline const Input& input_for(const PlayerInputs& inputs, PlayerId id) {
 enum class DeathPolicy : std::uint8_t { NoRespawn, Entrance, NextFloor };
 enum class ObjectiveKind : std::uint8_t { Key, Switch };
 enum class RewardKind : std::uint8_t { Item, Artifact, Health, Speed };
-enum class ArtifactKind : std::uint8_t { None, AllPiercing, Reflector, Hearth, FleetFeet };
-constexpr bool has_artifact(const Entity& entity, ArtifactKind kind) {
-    return (entity.artifacts & (1U << static_cast<unsigned int>(kind))) != 0;
+constexpr std::uint32_t artifact_count(const Entity& entity, ArtifactKind kind) {
+    const auto count = entity.powers[static_cast<std::size_t>(kind)];
+    return count ? count : (entity.artifacts & (1U << static_cast<unsigned int>(kind))) ? 1U : 0U;
 }
+constexpr bool has_artifact(const Entity& entity, ArtifactKind kind) { return artifact_count(entity, kind) != 0; }
 struct Reward {
     RewardKind kind = RewardKind::Item;
     ItemKind item = ItemKind::None;

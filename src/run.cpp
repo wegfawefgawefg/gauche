@@ -1,3 +1,5 @@
+#include "artifacts/powers.hpp"
+#include "artifacts/catalog.hpp"
 #include "world/reactor.hpp"
 #include "items/supply.hpp"
 #include "run/offers.hpp"
@@ -24,36 +26,23 @@ void unlock_exit_light(Game& game) {
             entity.light.color = {84, 255, 135};
 }
 
-ItemAttribute rare_attribute(Game& game, ItemKind kind) {
-    if (random_u32(game) % 7 != 0) return ItemAttribute::None;
-    constexpr ItemAttribute choices[]{ItemAttribute::Strong, ItemAttribute::Agile,
-        ItemAttribute::Durable, ItemAttribute::Fragile, ItemAttribute::Heavy,
-        ItemAttribute::Big, ItemAttribute::Long, ItemAttribute::Piercing,
-        ItemAttribute::Restorative};
-    std::array<ItemAttribute, 9> eligible{};
-    int count = 0;
-    for (ItemAttribute choice : choices)
-        if (item_accepts_attribute(kind, choice))
-            eligible[static_cast<std::size_t>(count++)] = choice;
-    return count == 0 ? ItemAttribute::None :
-        eligible[random_u32(game) % static_cast<std::uint32_t>(count)];
-}
-
-Reward random_reward(Game& game, int category) {
-    if (category == 0) {
-        const ItemKind kind=roll_item_supply(game,LootSource::Reward);
-        return {RewardKind::Item,kind,ArtifactKind::None,supply_count(kind),rare_attribute(game,kind)};
+std::array<Reward,3> roll_rewards(Game& game,const Entity& player) {
+    std::array<Reward,3> offers{};
+    for (int slot=0;slot<3;++slot) {
+        std::vector<ArtifactKind> choices;
+        for (const auto kind:artifact_kinds) {
+            if (!artifact_eligible(player,kind)) continue;
+            bool duplicate=false;
+            for (int i=0;i<slot;++i) duplicate|=offers[static_cast<std::size_t>(i)].artifact==kind;
+            if (duplicate) continue;
+            const int weight=kind==ArtifactKind::GodHand ? 1 : artifact_stackable(kind) ? 12 : 4;
+            for (int i=0;i<weight;++i) choices.push_back(kind);
+        }
+        if (!choices.empty()) offers[static_cast<std::size_t>(slot)]={RewardKind::Artifact,ItemKind::None,
+            choices[random_u32(game)%choices.size()],1};
+        else offers[static_cast<std::size_t>(slot)]={RewardKind::Health,ItemKind::None,ArtifactKind::None,20};
     }
-    if (category == 1) {
-        constexpr std::array<ArtifactKind, 4> artifacts{
-            ArtifactKind::AllPiercing, ArtifactKind::Reflector,
-            ArtifactKind::Hearth, ArtifactKind::FleetFeet};
-        return {RewardKind::Artifact, ItemKind::None,
-                artifacts[random_u32(game) % artifacts.size()], 1};
-    }
-    return random_u32(game) % 2 == 0 ?
-        Reward{RewardKind::Health, ItemKind::None, ArtifactKind::None, 20} :
-        Reward{RewardKind::Speed, ItemKind::None, ArtifactKind::None, 1};
+    return offers;
 }
 
 int price(ItemKind kind) {
@@ -168,11 +157,7 @@ void finish_floor(Game& game) {
             continue;
         }
         auto& offers = player_state(game, owner).offers;
-        for (int index = 0; index < 3; ++index) offers[static_cast<std::size_t>(index)] =
-            random_reward(game, index);
-        for (int index = 2; index > 0; --index)
-            std::swap(offers[static_cast<std::size_t>(index)],
-                      offers[random_u32(game) % static_cast<std::uint32_t>(index + 1)]);
+        offers=roll_rewards(game,*player);
     }
 }
 
@@ -185,11 +170,8 @@ bool grant_reward(Game& game, Entity& player, Reward reward, int replace_slot, I
         if (!accept_offer_item(game,player,reward_item(reward),replace_slot,expected)) return false;
         break;
     case RewardKind::Artifact:
-        if (!has_artifact(player, reward.artifact)) {
-            player.artifacts |= 1U << static_cast<unsigned int>(reward.artifact);
-            if (reward.artifact == ArtifactKind::FleetFeet)
-                player.move_interval = std::max(3, player.move_interval - 2);
-        }
+        if (!artifact_eligible(player,reward.artifact)) return false;
+        grant_artifact(player,reward.artifact);
         break;
     case RewardKind::Health:
         player.max_health += reward.amount;

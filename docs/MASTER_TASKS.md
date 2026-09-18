@@ -893,11 +893,16 @@ playtesting; use builds and focused static captures for implementation checks.
 
 ## Reward and basic-action brainstorm — 2026-09-18
 
-- [ ] **REWARD-POOL-REVIEW:** Forest is feeling finished to the user and brother after extensive playtesting. Review end-of-stage choices around permanent, incrementally useful upgrades; removing item offers is the current proposed direction because shops/world loot already provide equipment. Build a candidate pool of modest health, damage, weapon condition, ammo, healing, stack-size and light improvements. Specific entries/numbers remain proposals. Nerf movement-speed gains; preserve fun environmental interactions rather than granting automatic trap avoidance.
-- [ ] **STRONG-ARMS:** User direction: slower attack/use windups for more damage across weapons, including guns. Do not silently narrow this to melee or the basic attack. Prototype small stackable increments and compare feel/output.
-- [ ] **QUICK-HANDS-DESIGN:** Explore faster use with slightly less damage. Basic-action-only versus all-weapons variants remain undecided; distinguish these clearly if both exist.
-- [ ] **BASIC-SLAP:** Selected concept: replace the permanent fist with a 1-damage slap that rotates enemies. Decide turn amount and interaction with committed attacks; prevent unlimited attack denial.
-- [ ] **BASIC-PARRY-PAN:** Selected concept: a tightly timed parry blocks/returns damage and reflects suitable projectiles. Define timing and failed-parry recovery; no held invulnerability.
-- [ ] **BASIC-JUMP-EXPERIMENT:** Explore losing the basic attack for an unlimited, animated two-tile forward jump. Decide occupied landing behavior and show the destination; landing hazards still matter. User has not selected a collision/punishment rule yet.
-- [ ] **BASIC-GRAPPLE:** Favored concept: pick up and throw creatures, boxes and a broad range of loose objects; heavy targets resist. Audit compatible targets by shared weight/anchoring rules, rather than making it useful on only a few enemy types.
-- [ ] **INDUSTRIAL-CRUSH-SHIELD:** Add an industrial shield item inspired by Spelunky's crushing interaction. Distinguish pushing from pinning/crushing against solid terrain; settle which enemies/props can be crushed and the limits. This is equipment, separate from permanent basic-action replacements.
+- [x] **REWARD-POOL-REVIEW:** Pick-three now offers distinct eligible permanent powers; shops keep equipment. Crit Power requires crit chance. God Fist is rare.
+- [x] **STRONG-ARMS:** Stackable global weapon damage and action clocks, including guns, bow draw and continuous weapons. +25% damage / +15% action time per stack; up to 1,000,000.
+- [x] **QUICK-HANDS-DESIGN:** All-weapon use speed +20% per stack, damage divided by (1 + 0.10 × stacks); up to 1,000,000.
+- [x] **BASIC-SLAP:** One damage and a quarter-turn. Committed enemy attacks retain their targets; no stun lock.
+- [x] **BASIC-PARRY-PAN:** Six-tick frontal parry, returns melee damage and reflects suitable projectiles. Misses leave a recovery window.
+- [x] **BASIC-JUMP-EXPERIMENT:** Animated two-cell jump, stops short of occupied/solid landings; pit and deep-water landings remain fatal.
+- [x] **BASIC-GRAPPLE:** Lift/throw light creatures, loose items and portable props; heavy or anchored targets resist. Changing hands releases cargo.
+- [x] **BASIC-ACTIONS:** Fist, Slap, Parry Pan, Jump, Grapple, wall-crushing two-cell Shove, non-crushing Kick, rear Elbow. Saved loadout selector and distinct Python sprites/sounds.
+- [x] **POWER-PLAYTEST:** Fleet Feet (+5%/stack), HP Up (+20), Dodge, slow Regeneration, crit chance/power, Armor, Technical, Medic, Spare Throw, Golddigger. Oversized, Sweeping, Iron, Chef's Touch and rare God Fist. Saved ImGui stack editor.
+- [x] **BALLOON:** Selected hand supports pits/deep water for 60 seconds total; countdown persists when stowed/dropped, safe time pauses while stowed. Expiry over a gap is fatal.
+- [x] **INDUSTRIAL-CRUSH-SHIELD:** Durable front shield, pushes creatures two cells and crushes when pinned against solid terrain. Industrial shop/cache/weapon supplies.
+- [x] **THROW-BASELINE:** Rocks 28 damage / six per supply; ice needles 24 damage. Spare Throw saves consumables without duplicating recoverable rocks on landing.
+- [ ] **POWER-POOL-100:** Grow toward ~50 incremental stats, 30 action/weapon modifiers, 15 utilities and 5 rare transformations. Current batch is for feel/tuning; don't pad the pool with conditional filler. Heavy overlaps Strong Arms and Recovery lacks a useful general stagger stat, so neither is a separate power.

@@ -23,7 +23,7 @@ void land(Game& game,int slot,bool impact) {
     const Tile* tile=game.stage.at(actor.cell);
     // Deep water is an actual hole, like a broken bridge. Flying species never
     // enter this system. A shortened flight does not teleport to a safe bank.
-    if (!tile || tile->kind==TileKind::Water) {
+    if (!tile || (tile->kind==TileKind::Water && !gap_flyer(actor))) {
         crush_entity(game,slot,flight.source);
         emit_sound(game,SoundId::BridgeSplash,actor.cell);
         return;

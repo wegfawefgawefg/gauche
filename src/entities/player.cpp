@@ -1,4 +1,5 @@
 #include "../items/pocket_pump.hpp"
+#include "../items/basic_actions.hpp"
 #include "../items/cooking.hpp"
 #include "../items/nail_board.hpp"
 #include "../items/chain_hook.hpp"
@@ -58,6 +59,8 @@ void step_player(Game& game, int slot, const Input& incoming) {
     // AIM: Explicit aim overrides movement, including an unsuccessful step.
     player.facing = facing_from_aim(input.aim, player.facing);
     collect_coins(game, player);
+    if (Entity* cargo=get_entity(game,player.basic.grabbed)) cargo->cell=player.cell;
+    if (player.inventory.held()->kind!=ItemKind::Grapple || input.drop || input.pickup || input.cancel_use) release_grapple(game,player,false,player.facing);
 
     // INTERACTIONS: The player owns pickup, fixture use, and the held item.
     if (input.pickup || input.drop || input.interact || input.cancel_use) {

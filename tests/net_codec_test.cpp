@@ -1,3 +1,5 @@
+#include "../src/artifacts/powers.hpp"
+#include "../src/items/basic_actions.hpp"
 #include "../src/entities/gate.hpp"
 #include "../src/props/doorstop.hpp"
 #include "../src/projectiles/harpoon.hpp"
@@ -32,10 +34,17 @@ int main() {
         player->vitals.healing_wait = 27;
         player->sleep_ticks = 31;
         player->stun_ticks = 3;
+        player->powers[static_cast<std::size_t>(ArtifactKind::StrongArms)]=54321;
+        player->powers[static_cast<std::size_t>(ArtifactKind::CriticalPower)]=93;
+        player->basic_action=ItemKind::Grapple;
+        player->basic.held_prop={PropKind::Crate,17,2,false,0,false};
+        player->basic.prop_ticks=12;player->basic.prop_direction={1,0};player->basic.prop_cell={14,27};
+        player->action_fraction=321432;player->move_fraction=762431;player->regen_progress=754;
+        player->basic.grabbed={402,17}; // Generation-aware stale references round-trip too.
         player->artifacts = 1U << static_cast<unsigned int>(ArtifactKind::Hearth);
         player->inventory.slots[2] =
             make_item(ItemKind::Pickaxe, 1, ItemAttribute::Durable);
-        player->inventory.slots[2].uses = 7;
+        player->inventory.slots[2].durability = 7;
         player->light = {9, 1700, {180, 210, 255}};
         player->self_light = {40, 60, 80};
         player->inventory.slots[2].light = {2, 500, {10, 200, 30}};
@@ -186,6 +195,25 @@ int main() {
             std::fprintf(stderr, "truncated snapshot accepted at %zu\n", size);
             return 1;
         }
+    }
+    // Every pickup kind accepts Technical without creating an invalid network snapshot.
+    Entity* tester=get_entity(original,player_state(original,0).controlled);
+    tester->powers[static_cast<std::size_t>(ArtifactKind::Technical)]=7;
+    for (int kind=1;kind<static_cast<int>(ItemKind::Count);++kind) {
+        tester->inventory.slots[0]=make_item(static_cast<ItemKind>(kind));
+        improve_pickup(*tester,tester->inventory.slots[0]);
+        if (!decode_game(encode_game(original),restored,error) || game_hash(original)!=game_hash(restored)) {
+            std::fprintf(stderr,"upgraded %s snapshot failed: %s\n",item_name(static_cast<ItemKind>(kind)),error.c_str());return 1;
+        }
+    }
+    // New jump/carry clocks survive a restore and advance identically on both peers.
+    tester->inventory.slots[0]=make_item(ItemKind::Grapple);
+    tester->basic.jump_ticks=12;tester->basic.jump_origin=tester->cell;
+    tester->basic.jump_destination=tester->cell+Cell{2,0};
+    if (!decode_game(encode_game(original),restored,error)) return 1;
+    for (int i=0;i<30;++i) {
+        step_game(original,{});step_game(restored,{});
+        if (game_hash(original)!=game_hash(restored)) {std::fputs("new action restore diverged\n",stderr);return 1;}
     }
     PacketWriter writer;
     Input input;

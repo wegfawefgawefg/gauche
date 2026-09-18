@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "../entities/tar_choir.hpp"
 #include "../items/machine_fittings.hpp"
 #include "../entities/emergency_pump.hpp"
@@ -8,16 +9,16 @@
 
 #include <algorithm>
 
-void place_coins(Game& game, Cell cell, int amount) {
+void place_coins(Game& game, Cell cell, int amount, bool player_drop) {
     if (amount <= 0) return;
     const Cell destination = nearby_ground_item_cell(game, cell);
     for (Entity& pile : game.entities)
-        if (pile.kind == EntityKind::Coins && pile.cell == destination) {
+        if (pile.kind == EntityKind::Coins && pile.cell == destination && pile.label_b==static_cast<int>(player_drop)) {
             pile.counter_a += amount;
             return;
         }
     Entity* pile = get_entity(game, spawn_entity(game, EntityKind::Coins, destination));
-    if (pile != nullptr) pile->counter_a = amount;
+    if (pile != nullptr) {pile->counter_a = amount;pile->label_b=static_cast<int>(player_drop);}
 }
 
 void collect_coins(Game& game, Entity& player) {
@@ -25,7 +26,7 @@ void collect_coins(Game& game, Entity& player) {
     for (int slot = 0; slot < max_entities; ++slot) {
         Entity& pile = game.entities[static_cast<std::size_t>(slot)];
         if (pile.kind != EntityKind::Coins || pile.cell != player.cell) continue;
-        player_state(game, player.owner).coins += pile.counter_a;
+        player_state(game, player.owner).coins = std::min(100000000,player_state(game, player.owner).coins + (pile.label_b ? pile.counter_a : power_gold(player,pile.counter_a)));
         remove_entity(game, {slot, pile.generation});
         emit_sound(game, SoundId::CoinPickup, player.cell);
     }

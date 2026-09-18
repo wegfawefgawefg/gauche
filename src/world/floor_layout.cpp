@@ -160,6 +160,7 @@ void generate_world_floor(Game& game, FloorLayout layout, PopulationReport* repo
             player->health = previous[owner].health > 0 ? previous[owner].health : player->max_health;
             player->move_interval = previous[owner].move_interval;
             player->artifacts = previous[owner].artifacts;
+            player->powers = previous[owner].powers; player->basic_action = previous[owner].basic_action;
         }
     }
 

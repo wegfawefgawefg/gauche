@@ -1,3 +1,4 @@
+#include "items/basic_actions.hpp"
 #include "debug/performance.hpp"
 #include "entities/crate_mimic.hpp"
 #include "props/light_tower_render.hpp"
@@ -171,7 +172,12 @@ void draw_entities(tr::Renderer* renderer, const GameGraphics& graphics,
             rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
                       pose->shake * pixels;
         }
-        rect.y-=actor_toss_height(entity)*pixels;
+        rect.y-=(actor_toss_height(entity)+basic_jump_height(entity)+(entity.basic.carried_by.slot>=0 ? .85F : balloon_floating(entity) ? .12F : 0.F))*pixels;
+        if (entity.basic.held_prop.kind!=PropKind::None) {
+            SDL_FRect cargo_rect=entity.basic.prop_ticks>0 ? SDL_FRect{rect.x+static_cast<float>(entity.basic.prop_cell.x-entity.cell.x)*pixels,rect.y+static_cast<float>(entity.basic.prop_cell.y-entity.cell.y)*pixels,pixels,pixels} : rect;
+            cargo_rect.y-=pixels*.8F;
+            tr::draw_texture(renderer,texture_for(graphics,prop_spec(entity.basic.held_prop.kind).sprite),nullptr,&cargo_rect);
+        }
         tr::Texture* texture = texture_for(graphics, entity.kind == EntityKind::GroundItem &&
             (entity.ground_item.kind==ItemKind::LunchTin || entity.ground_item.kind==ItemKind::GlowSlag || entity.ground_item.kind == ItemKind::SteamKettle || entity.ground_item.kind==ItemKind::SteamLance || entity.ground_item.kind == ItemKind::HeatSiphon) ? item_sprite(entity.ground_item) : entity.sprite);
         const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
@@ -306,15 +312,18 @@ void draw_entities(tr::Renderer* renderer, const GameGraphics& graphics,
         }
         if (held->kind != ItemKind::None && (held->flight.slot < 0 || held->kind == ItemKind::HarpoonGun || held->kind == ItemKind::ChainHook) && entity.kind != EntityKind::GroundItem) {
             const bool winding = entity.kind == EntityKind::Player && entity.label_b < 0;
-            const Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;
+            Cell held_facing = (winding || rivet_burst_active(entity)) ? entity.point_b : entity.facing;
+            if (held->kind==ItemKind::Elbow) held_facing={-held_facing.x,-held_facing.y};
             const float forward = pocket_drill_active(entity) ? pixels*(.38F+(game.tick%2==0 ? .015F : -.015F)) : winding ? -pixels * .1F : entity.use_flash > 0 ? pixels * 0.5F : pixels * 0.28F;
             SDL_FRect held_rect{rect.x + pixels * 0.25F +
                                 static_cast<float>(held_facing.x) * forward,
                                 rect.y + pixels * 0.25F +
                                 static_cast<float>(held_facing.y) * forward,
                                 pixels * 0.5F, pixels * 0.5F};
+            if (held->kind==ItemKind::Balloon) {held_rect.y-=pixels;held_rect.w=held_rect.h=pixels*.9F;}
+            if (held->kind==ItemKind::Kick || held->kind==ItemKind::Jump) held_rect.y+=pixels*.2F;
             if (held->kind==ItemKind::SteelToeCap) held_rect.y+=pixels*.2F;
-            const double angle = std::atan2(static_cast<double>(held_facing.y),
+            const double angle = held->kind==ItemKind::Balloon ? 0 : std::atan2(static_cast<double>(held_facing.y),
                                             static_cast<double>(held_facing.x)) *
                                  180.0 / 3.141592653589793;
             const Sprite held_sprite = parry_active(entity) ? Sprite::PanReady : held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&

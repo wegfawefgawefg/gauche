@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "use_completion.hpp"
 #include "catalog.hpp"
 #include "../item_attribute.hpp"
@@ -15,7 +16,7 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
     if (const RegionalItem* spec = regional_item(used_kind)) {
         if (used_kind == ItemKind::CandleStub)
             emit_sound(game, item.loaded > 0 ? SoundId::CandleLight : SoundId::Drop, user.cell + direction);
-        else if (!item_is_melee(used_kind) && used_kind != ItemKind::CoalLump && used_kind != ItemKind::SteamKettle && used_kind != ItemKind::SteamLance) emit_sound(game, spec->sound,
+        else if (used_kind!=ItemKind::Grapple && !item_is_melee(used_kind) && used_kind != ItemKind::CoalLump && used_kind != ItemKind::SteamKettle && used_kind != ItemKind::SteamLance) emit_sound(game, spec->sound,
             used_kind == ItemKind::SnowGlobe ? user.cell + direction : user.cell);
     }
     else switch (used_kind) {
@@ -77,5 +78,13 @@ void finish_item_use(Game& game, Entity& user, Item& item, ItemKind used_kind, C
         item = {};
         return;
     }
-    if (item.consume_on_use && --item.count <= 0) item = {};
+    if (item.consume_on_use) {
+        const bool retained=preserve_throw(game,user,used_kind);
+        if (retained && (used_kind==ItemKind::ThrowingRock || used_kind==ItemKind::IceNeedle)) {
+            for (auto& shot:game.entities) if (shot.kind==EntityKind::Projectile && shot.birth_tick==game.tick &&
+                shot.entity_a==Handle{static_cast<int>(&user-game.entities.data()),user.generation} && shot.ground_item.kind==used_kind)
+                shot.ground_item.count=0; // The retained copy owns this object; no second pickup on landing.
+        }
+        if (!retained && --item.count<=0) item={};
+    }
 }

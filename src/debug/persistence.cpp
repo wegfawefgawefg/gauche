@@ -1,3 +1,5 @@
+#include "../items/basic_actions.hpp"
+#include "../artifacts/powers.hpp"
 #include "playtest.hpp"
 #include "levels.hpp"
 #include "../item_attribute.hpp"
@@ -36,9 +38,16 @@ void init_playtest_tools(const std::filesystem::path& path) {
             item.durability=item.uses;item.uses=0;break;
         default: break;
         }
+        if (version>=4) input>>item.technical_level;
         normalize_test_item(item);
     }
-    if (!input || (version < 1 || version > 3)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
+    if (version>=4) {
+        int action=0; input>>action;
+        kit.basic_action=static_cast<ItemKind>(action);
+        if (!is_basic_action(kit.basic_action)) input.setstate(std::ios::failbit);
+        for (auto& count:kit.powers) {input>>count;count=std::min(count,max_power_stacks);}
+    }
+    if (!input || (version < 1 || version > 4)) { state.save_error = "Could not read saved playtest settings; defaults are active."; return; }
     loaded.selected_level = std::clamp(loaded.selected_level, 0, static_cast<int>(test_levels.size())-1);
     loaded.starting_level = std::clamp(loaded.starting_level, 0, static_cast<int>(test_levels.size())-1);
     loaded.repeat_level = std::clamp(loaded.repeat_level, 0, static_cast<int>(test_levels.size())-1);
@@ -64,7 +73,7 @@ void save_playtest_tools() {
     auto temporary = state.path; temporary += ".tmp";
     std::ofstream out(temporary);
     const auto& kit = state.loadout;
-    out << 3 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
+    out << 4 << ' ' << state.selected_level << ' ' << state.override_start << ' ' << state.starting_level
         << ' ' << state.repeat << ' ' << state.repeat_level << ' ' << state.override_loadout
         << ' ' << kit.health << ' ' << kit.step_ticks << ' ' << kit.gold << ' ' << kit.artifacts
         << ' ' << kit.inventory.selected << '\n';
@@ -72,7 +81,10 @@ void save_playtest_tools() {
         out << static_cast<int>(item.kind) << ' ' << static_cast<int>(item.attribute) << ' '
             << item.count << ' ' << item.durability << ' ' << item.uses << ' ' << item.loaded << ' '
             << item.spare << ' ' << item.opened << ' ' << item.flame_ticks << ' '
-            << static_cast<int>(item.light.shape) << ' ' << static_cast<int>(item.muffled_uses) << '\n';
+            << static_cast<int>(item.light.shape) << ' ' << static_cast<int>(item.muffled_uses) << ' ' << item.technical_level << '\n';
+    out<<static_cast<int>(kit.basic_action);
+    for (auto count:kit.powers) out<<' '<<count;
+    out<<'\n';
     out.close();
     if (out) std::filesystem::rename(temporary, state.path, error);
     state.save_error = !out || error ? "Could not save playtest settings." : "";

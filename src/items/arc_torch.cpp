@@ -56,7 +56,8 @@ bool step_arc_torch(Game& game,int slot,const Input& input) {
         user.counter_a=0;user.ground_item=item;
         emit_sound(game,SoundId::ArcPrime,user.cell);
     }
-    if (user.counter_a<arc_prime_ticks && ++user.counter_a<arc_prime_ticks) return true;
+    user.counter_a=std::min(arc_prime_ticks,user.counter_a+user.action_steps);
+    if (user.counter_a<arc_prime_ticks) return true;
     if (item.cooldown==0 && item.uses>0) pulse(game,slot);
     return true;
 }

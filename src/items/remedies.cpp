@@ -1,3 +1,4 @@
+#include "../artifacts/powers.hpp"
 #include "remedies.hpp"
 #include "action.hpp"
 
@@ -62,7 +63,7 @@ bool use_remedy(Game& game, int slot) {
         break;
     case ItemKind::FungalBread:
         if (user.health >= user.max_health) return false;
-        user.health = std::min(user.max_health, user.health + item_pattern(item).heal);
+        user.health = std::min(user.max_health, user.health + power_healing(user,item_pattern(item).heal));
         apply_sleep(user, fungal_bread_sleep_ticks);
         break;
     default: return false;

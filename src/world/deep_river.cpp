@@ -11,14 +11,14 @@ bool river_swimmer(const Entity& actor) {
 
 bool finish_deep_river_death(Game& game,int slot) {
     const auto& actor=game.entities[static_cast<std::size_t>(slot)];
-    if (actor.health>0 || game.stage.at_or_border(actor.cell).kind!=TileKind::DeepRiver) return false;
+    if (actor.health>0 || (game.stage.at_or_border(actor.cell).kind!=TileKind::DeepRiver && game.stage.at_or_border(actor.cell).kind!=TileKind::Water)) return false;
     remove_unsupported_body(game,slot,SoundId::BridgeSplash);return true;
 }
 
 bool deep_river_contact(Game& game,int slot) {
     auto& actor=game.entities[static_cast<std::size_t>(slot)];
     if (actor.kind==EntityKind::None || actor.toss.ticks>0 ||
-        game.stage.at_or_border(actor.cell).kind!=TileKind::DeepRiver || gap_flyer(actor) || river_swimmer(actor)) return false;
+        (game.stage.at_or_border(actor.cell).kind!=TileKind::DeepRiver && game.stage.at_or_border(actor.cell).kind!=TileKind::Water) || gap_flyer(actor) || river_swimmer(actor)) return false;
     if (actor.kind==EntityKind::Projectile && !grounded_projectile(actor)) return false;
     if (actor.kind==EntityKind::GroundItem && (actor.ground_item.flight.slot>=0 ||
         actor.ground_item.kind==ItemKind::RiverFish || floating_item(actor))) return false;

@@ -11,11 +11,6 @@ SDL_FColor vertex_color(LightColor light, LightColor tint) {
             std::clamp(light.blue * tint.blue, 0.0F, 1.0F), 1.0F};
 }
 
-SDL_FColor blend(SDL_FColor a, SDL_FColor b, float t) {
-    return {a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t,
-            a.b + (b.b - a.b) * t, 1.0F};
-}
-
 } // namespace
 
 void draw_flat_tile(SDL_Renderer* renderer, SDL_Texture* texture, SDL_FRect rect,
@@ -48,41 +43,24 @@ void draw_lit_tile(SDL_Renderer* renderer, SDL_Texture* texture,
     const SDL_FColor sw = vertex_color(light_at_corner(lighting, cell + Cell{0, 1}), tint);
     const SDL_FColor se = vertex_color(light_at_corner(lighting, cell + Cell{1, 1}), tint);
 
-    // GRADIENT: A single diagonal splits nonplanar corner colors into two visible facets.
-    // Bilinear subdivision preserves shared edges and the original four light samples.
-    constexpr int divisions = 4, stride = divisions + 1;
-    std::array<SDL_Vertex, stride * stride> vertices{};
-    for (int y = 0; y <= divisions; ++y)
-        for (int x = 0; x <= divisions; ++x) {
-            const float u = static_cast<float>(x) / divisions;
-            const float v = static_cast<float>(y) / divisions;
-            float tu=u,tv=v;
-            for (int turn=0;turn<(quarter_turns&3);++turn) {
-                const float old=tu;tu=tv;tv=1-old;
-            }
-            if (flip_horizontal) tu=1-tu;
-            vertices[static_cast<std::size_t>(y * stride + x)] = {
-                {rect.x + rect.w * u, rect.y + rect.h * v},
-                blend(blend(nw, ne, u), blend(sw, se, u), v),
-                {uv.x+tu*uv.w,uv.y+tv*uv.h}};
-            vertices[static_cast<std::size_t>(y * stride + x)].color.a=opacity;
+    constexpr std::array<SDL_FPoint, 4> points{{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
+    const std::array<SDL_FColor, 4> colors{nw, ne, se, sw};
+    std::array<SDL_Vertex, 4> vertices{};
+    for (std::size_t i = 0; i < points.size(); ++i) {
+        const auto p = points[i];
+        float u = p.x, v = p.y;
+        for (int turn = 0; turn < (quarter_turns & 3); ++turn) {
+            const float old = u;
+            u = v;
+            v = 1 - old;
         }
-    static constexpr auto indices = [] {
-        std::array<int, divisions * divisions * 6> result{};
-        int next = 0;
-        // Keep opposite triangles apart. SDL's software quad shortcut truncates
-        // origin/extent independently, opening seams at fractional zoom even
-        // inside this lighting mesh. Triangles rasterize their shared endpoints.
-        for (int half = 0; half < 2; ++half)
-            for (int y = 0; y < divisions; ++y)
-                for (int x = 0; x < divisions; ++x) {
-                    const int a = y * stride + x;
-                    for (int index : half == 0 ? std::array{a, a + 1, a + stride + 1} :
-                                               std::array{a, a + stride + 1, a + stride})
-                        result[static_cast<std::size_t>(next++)] = index;
-                }
-        return result;
-    }();
+        if (flip_horizontal) u = 1 - u;
+        auto color = colors[i];
+        color.a = opacity;
+        vertices[i] = {{rect.x + rect.w * p.x, rect.y + rect.h * p.y},
+                       color, {uv.x + uv.w * u, uv.y + uv.h * v}};
+    }
+    constexpr std::array<int, 6> indices{0, 1, 2, 0, 2, 3};
     SDL_RenderGeometry(renderer, texture, vertices.data(),
                        static_cast<int>(vertices.size()),
                        indices.data(), static_cast<int>(indices.size()));

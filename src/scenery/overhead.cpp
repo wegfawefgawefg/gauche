@@ -67,6 +67,39 @@ std::uint32_t tree_bits(int x, int y, std::uint64_t seed) {
     return static_cast<std::uint32_t>(value);
 }
 
+float smooth_fraction(float value) {
+    const float t=std::clamp(value,0.F,1.F);
+    return t*t*(3-2*t);
+}
+
+// Evaluate the unshifted object reference, never individual sprite pixels.
+// Positions derive from the camera, so slowing/stopping/reversing needs no timers.
+float canopy_object(SDL_FRect& rect, std::uint32_t bits) {
+    const auto& options=debug_panels();
+    if (options.canopy_style < 4) return 1;
+    const float x=rect.x+rect.w*.5F;
+    const float y=rect.y+rect.h*(options.canopy_reference == 1 ? 1.F : .5F);
+    float dx=x-view_center_x, dy=y-view_center_y;
+    const float distance=std::hypot(dx/view_center_x,dy/view_center_y);
+    // Slight per-tree variation keeps neighboring crowns from acting as a ring.
+    const float variation=.9F+static_cast<float>((bits>>12)%101)*.002F;
+    const float visible=smooth_fraction((distance-options.canopy_near*variation)/options.canopy_transition);
+    if (options.canopy_style == 4) return visible;
+
+    // Move the entire bounding box out along its approach direction. At the
+    // center, either direction is safe: the tree is already completely offscreen.
+    if (std::abs(dx)+std::abs(dy)<.001F) { dx=(bits&1) ? 1.F : -1.F; dy=0; }
+    const float length=std::hypot(dx,dy);
+    dx/=length; dy/=length;
+    const float exit_x=dx>.0001F ? (640-rect.x)/dx :
+        dx<-.0001F ? -(rect.x+rect.w)/dx : 1e6F;
+    const float exit_y=dy>.0001F ? (360-rect.y)/dy :
+        dy<-.0001F ? -(rect.y+rect.h)/dy : 1e6F;
+    const float shift=std::max(0.F,std::min(exit_x,exit_y)+1)*(1-visible);
+    rect.x+=dx*shift; rect.y+=dy*shift;
+    return 1;
+}
+
 void forest_canopies(tr::Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, ViewCamera camera, float zoom, const LightingCache& lighting) {
     const bool upright = debug_panels().canopy_upright;
@@ -86,8 +119,10 @@ void forest_canopies(tr::Renderer* renderer, const GameGraphics& graphics,
             const float size = pixels * (7 + static_cast<float>((bits >> 16) % 4));
             const float x = view_center_x + (static_cast<float>(anchor.x) - camera.x) * pixels * depth;
             const float y = view_center_y + (static_cast<float>(anchor.y) - camera.y) * pixels * depth;
-            const SDL_FRect rect{x - size * .5F, y - size * (upright ? 1.1F : .5F), size,
+            SDL_FRect rect{x - size * .5F, y - size * (upright ? 1.1F : .5F), size,
                 size * (upright ? 4.F/3 : 1.F)};
+            const float alpha=canopy_object(rect,bits);
+            if (alpha <= 0) continue;
             if (rect.x + size < 0 || rect.y + rect.h < 0 || rect.x > 640 || rect.y > 360) continue;
             tr::Texture* texture = texture_for(graphics, bits % 2 == 0 ? Sprite::CanopyOak : Sprite::CanopyPine);
             const LightColor light = light_at_cell(lighting, anchor);
@@ -95,7 +130,7 @@ void forest_canopies(tr::Renderer* renderer, const GameGraphics& graphics,
             // Keep their daylight color at one fifth intensity so the crown stays peripheral.
             tr::texture_color(texture, .20F*std::max(.80F, light.red),
                 .20F*std::max(.88F, light.green), .20F*std::max(.72F, light.blue));
-            tr::texture_alpha_bytes(texture, 225);
+            tr::texture_alpha(texture, (225.F/255)*alpha);
             tr::draw_rotated(renderer, texture, nullptr, &rect,
                 upright ? 0 : static_cast<double>((bits >> 22) % 4) * 90, nullptr,
                 upright && (bits & 1) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
@@ -110,7 +145,9 @@ void draw_overhead(tr::Renderer* renderer, const GameGraphics& graphics,
                     const Game& game, const Cosmetics* cosmetics, ViewCamera camera,
                     float zoom, const LightingCache& lighting) {
     PerfScope perf_scope(PerfZone::Overhead);
-    const int style=debug_panels().canopy_style;
+    const bool forest=game.run.phase != RunPhase::Arena && forest_floor(game.run.floor);
+    const int selected=debug_panels().canopy_style;
+    const int style=!forest && selected>=4 ? 1 : selected;
     if (style == 3) return;
     if (graphics.overhead_canvas == nullptr) {
         graphics.overhead_canvas = tr::create_texture(renderer, SDL_PIXELFORMAT_RGBA8888,
@@ -126,7 +163,7 @@ void draw_overhead(tr::Renderer* renderer, const GameGraphics& graphics,
     tr::set_scale(renderer, 1, 1);
     tr::set_color_bytes(renderer, 0, 0, 0, 0);
     tr::clear(renderer);
-    if (game.run.phase != RunPhase::Arena && forest_floor(game.run.floor))
+    if (forest)
         forest_canopies(renderer, graphics, game, camera, zoom, lighting);
     else if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);

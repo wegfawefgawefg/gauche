@@ -87,11 +87,20 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
             ImGui::Checkbox("Allow zoom below 2x", &panels.unlocked_zoom);
             ImGui::TextUnformatted("Use - / + to test down to 0.5x.");
 #endif
-            ImGui::Combo("Canopy opening", &panels.canopy_style,
-                "Oval stipple (old)\0Rounded rectangle\0Full canopy preview\0Hidden\0");
+            ImGui::Combo("Canopy behavior", &panels.canopy_style,
+                "Oval stipple (old)\0Rounded rectangle\0Full canopy preview\0Hidden\0Whole-tree fade\0Slide trees aside\0");
             ImGui::Checkbox("Upright canopy trees", &panels.canopy_upright);
-            ImGui::SliderFloat("Clear area", &panels.canopy_opening, .60F, .94F, "%.2f");
-            ImGui::SliderFloat("Edge fade width", &panels.canopy_fade, .02F, .25F, "%.2f");
+            if (panels.canopy_style >= 4) {
+                ImGui::Combo("Tree reference", &panels.canopy_reference, "Center\0Root\0");
+                ImGui::SliderFloat("Approach radius", &panels.canopy_near, .10F, .85F, "%.2f");
+                ImGui::SliderFloat("Transition distance", &panels.canopy_transition, .05F, .70F, "%.2f");
+                ImGui::TextUnformatted(panels.canopy_style == 4 ?
+                    "Each tree fades as one object; no screen mask." :
+                    "Whole trees move outward as you approach.");
+            } else if (panels.canopy_style == 1) {
+                ImGui::SliderFloat("Clear area", &panels.canopy_opening, .60F, .94F, "%.2f");
+                ImGui::SliderFloat("Edge fade width", &panels.canopy_fade, .02F, .25F, "%.2f");
+            }
             ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
             ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
             ImGui::Checkbox("Prop shadows", &panels.shadow_props);

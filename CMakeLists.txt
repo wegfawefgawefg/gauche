@@ -417,3 +417,5 @@ else()
         target_link_libraries(${target} PRIVATE CURL::libcurl)
     endforeach()
 endif()
+
+include(cmake/renderer.cmake)

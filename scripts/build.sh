@@ -2,6 +2,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+source "$repo_root/scripts/build-jobs.sh"
+teeming_configure_build_jobs
 preset="${GAUCHE_PRESET:-release}"
 
 case "$preset" in
@@ -11,4 +13,4 @@ case "$preset" in
 esac
 
 cmake -S "$repo_root" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_type"
-cmake --build "$build_dir" --target gauche --parallel
+cmake --build "$build_dir" --target gauche --parallel "$CMAKE_BUILD_PARALLEL_LEVEL"

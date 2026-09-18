@@ -40,6 +40,22 @@ Lua is not needed for Gauche's build. This package list follows the engine's
 Linux setup plus Gauche's font dependencies; a clean-machine install has not
 been verified here.
 
+Build scripts limit compiler workers using roughly half the available CPU threads
+and an estimated 2 GiB of available RAM per worker, reserving at least 2 GiB
+(or 25% of total RAM) for the desktop. Swap is not counted. Unknown available
+memory falls back to one worker. This limits concurrency, not individual compiler
+or linker memory usage. The same limit applies to native, web, and multiplayer
+launcher builds, including CMake dependency sub-builds.
+
+For a struggling machine, force one worker:
+
+```sh
+TEEMING_BUILD_JOBS=1 ./scripts/run.sh
+```
+
+`TEEMING_BUILD_JOBS` overrides the automatic budget; an existing explicit
+`CMAKE_BUILD_PARALLEL_LEVEL` is also respected.
+
 Builds use published, commit-pinned Gubsy, GView and GLayout sources by default,
 even if other checkouts exist beside Gauche. Engine/UI development can opt into
 those sibling checkouts with `-DGAUCHE_USE_LOCAL_DEPS=ON`; the `GAUCHE_GUBSY_DIR`,

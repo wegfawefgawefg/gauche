@@ -8,7 +8,9 @@ The current work is tracked in one place: [the master task list](docs/MASTER_TAS
 
 ## Build and run
 
-The project uses SDL3 and the pinned Gubsy host. Building requires Git, CMake
+The project uses our Vulkan renderer on Linux, WebGPU with WebGL 2 fallback in
+the browser, SDL3 for platform services, and the pinned Gubsy host. See the
+[renderer guide](docs/engineering/RENDERER.md). Building requires Git, CMake
 3.24 or newer, a C++20 compiler and a native build tool. The shell scripts also
 require Bash. CMake fetches the pinned engine/UI sources and missing SDL
 dependencies; the first build needs internet access. Native platform development
@@ -26,7 +28,8 @@ sudo apt install -y build-essential cmake ninja-build pkg-config git \
   libxrandr-dev libxrender-dev libxss-dev \
   libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev \
   libasound2-dev libpulse-dev libpipewire-0.3-dev \
-  libdrm-dev libgbm-dev libudev-dev libgl1-mesa-dev libegl1-mesa-dev
+  libdrm-dev libgbm-dev libudev-dev libgl1-mesa-dev libegl1-mesa-dev \
+  libvulkan-dev mesa-vulkan-drivers
 cmake --version
 ```
 

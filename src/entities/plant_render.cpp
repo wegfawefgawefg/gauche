@@ -3,9 +3,9 @@
 
 #include <algorithm>
 
-void draw_plant_lash(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
+void draw_plant_lash(tr::Renderer* renderer, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     for (const Entity& root : game.entities) {
         if (root.kind != EntityKind::RootTurret || root.health <= 0 ||
             root.label_a != 2 || root.timer_a < 80) continue;
@@ -18,25 +18,25 @@ void draw_plant_lash(SDL_Renderer* renderer, const Game& game, ViewCamera camera
             if (!clear_sight(game, root.cell, cell, false)) break;
             const LightColor light = lit_sprite_color(lighting, cell);
             const auto channel = [](float value) { return static_cast<Uint8>(std::clamp(value, 0.0F, 255.0F)); };
-            SDL_SetRenderDrawColor(renderer, channel(light.red*170), channel(light.green*183),
+            tr::set_color_bytes(renderer, channel(light.red*170), channel(light.green*183),
                 channel(light.blue*86), channel(fade*255));
             const float along = static_cast<float>(step)*.5F;
             const float side = (step%2 == 0 ? .07F : -.07F)*fade;
             const SDL_FPoint next{start.x+start.w*(.5F+static_cast<float>(root.facing.x)*along-static_cast<float>(root.facing.y)*side),
                 start.y+start.h*(.5F+static_cast<float>(root.facing.y)*along+static_cast<float>(root.facing.x)*side)};
-            SDL_RenderLine(renderer, previous.x, previous.y, next.x, next.y);
+            tr::line(renderer, previous.x, previous.y, next.x, next.y);
             previous = next;
         }
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }
 
 // AIM: A tiny bright bud turns with the root; the full lane remains a debug overlay.
-void draw_root_head(SDL_Renderer* renderer, const Entity& root, SDL_FRect rect, LightColor light) {
+void draw_root_head(tr::Renderer* renderer, const Entity& root, SDL_FRect rect, LightColor light) {
     const float size = root.label_a == 1 ? .18F : .12F;
     SDL_FRect bud{rect.x+rect.w*(.5F + static_cast<float>(root.facing.x)*.19F-size*.5F),
         rect.y+rect.h*(.45F + static_cast<float>(root.facing.y)*.19F-size*.5F), rect.w*size, rect.h*size};
     const auto channel = [](float value) { return static_cast<Uint8>(std::clamp(value, 0.0F, 255.0F)); };
-    SDL_SetRenderDrawColor(renderer, channel(light.red*225), channel(light.green*199), channel(light.blue*120), 255);
-    SDL_RenderFillRect(renderer, &bud);
+    tr::set_color_bytes(renderer, channel(light.red*225), channel(light.green*199), channel(light.blue*120), 255);
+    tr::fill_rect(renderer, &bud);
 }

@@ -1,11 +1,12 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "text.hpp"
 
 #include <cstdio>
 
 // Frame diagnostics: use the HUD's logical coordinates, below the zoom label.
-inline void draw_frame_rate(SDL_Renderer* renderer, int fps) {
+inline void draw_frame_rate(tr::Renderer* renderer, int fps) {
     char text[24];
     if (fps <= 0) std::snprintf(text, sizeof(text), "FPS --");
     else std::snprintf(text, sizeof(text), "FPS %d", fps);

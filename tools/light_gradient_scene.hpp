@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../src/lighting/render.hpp"
 #include "../src/ui/text.hpp"
@@ -8,7 +9,7 @@
 #include <cstdio>
 
 // Static diagnostic: enlarge the canopy cell with the strongest diagonal gradient.
-inline void render_light_gradient(SDL_Renderer* renderer, const Game& game, ViewCamera camera) {
+inline void render_light_gradient(tr::Renderer* renderer, const Game& game, ViewCamera camera) {
     LightingCache light;
     build_lighting(light, game, camera, 2);
     Cell example{12, 10};
@@ -25,7 +26,7 @@ inline void render_light_gradient(SDL_Renderer* renderer, const Game& game, View
     SDL_Surface* pixel = SDL_CreateSurface(1, 1, SDL_PIXELFORMAT_RGBA32);
     if (pixel == nullptr) return;
     SDL_FillSurfaceRect(pixel, nullptr, SDL_MapSurfaceRGB(pixel, 255, 255, 255));
-    SDL_Texture* white = SDL_CreateTextureFromSurface(renderer, pixel);
+    tr::Texture* white = tr::texture_from_surface(renderer, pixel);
     SDL_DestroySurface(pixel);
     if (white == nullptr) return;
     const auto color = [&light](Cell cell) {
@@ -40,12 +41,12 @@ inline void render_light_gradient(SDL_Renderer* renderer, const Game& game, View
         {{40, 315}, color(example + Cell{0, 1}), {0, 1}},
     };
     constexpr int indices[]{0, 1, 2, 0, 2, 3};
-    SDL_RenderGeometry(renderer, white, original, 4, indices, 6);
+    tr::geometry(renderer, white, original, 4, indices, 6);
     draw_lit_tile(renderer, white, {360, 75, 240, 240}, example, light);
-    small_ui_text(renderer, 40, 45, "TWO TRIANGLES");
-    small_ui_text(renderer, 360, 45, "BILINEAR SUBDIVISION");
+    small_ui_text(renderer, 40, 45, "VERTEX LIGHTING");
+    small_ui_text(renderer, 360, 45, "SHADER LIGHTMAP");
     small_ui_text(renderer, 40, 330, "SAME CORNERS / SAME CANOPY FIELD");
-    std::printf("Canopy cell %d,%d: former diagonal-center error %.5f; subdivision bound %.5f\n",
-        example.x, example.y, static_cast<double>(worst), static_cast<double>(worst / 16));
-    SDL_DestroyTexture(white);
+    std::printf("Canopy cell %d,%d: vertex diagonal-center error %.5f; both use two triangles\n",
+        example.x, example.y, static_cast<double>(worst));
+    tr::destroy_texture(white);
 }

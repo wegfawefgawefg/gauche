@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstring>
 
-void draw_encounter_status(SDL_Renderer* renderer, const Game& game, const Entity& player) {
+void draw_encounter_status(tr::Renderer* renderer, const Game& game, const Entity& player) {
     for (const Entity& controller : game.entities) {
         if (controller.kind != EntityKind::Encounter || distance(player.cell, controller.cell) > 60) continue;
         const auto phase = static_cast<EncounterPhase>(controller.label_a);

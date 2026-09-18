@@ -4,7 +4,7 @@
 #include "../props/stove.hpp"
 #include <cmath>
 
-void draw_ice_scenery(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_ice_scenery(tr::Renderer* renderer, const GameGraphics& graphics,
     const Game& game, const Cosmetics& cosmetics, ViewCamera camera, float zoom,
     const LightingCache& lighting) {
     prepare_ice_scenery(cosmetics.ice_scenery,game);
@@ -25,9 +25,9 @@ void draw_ice_scenery(SDL_Renderer* renderer, const GameGraphics& graphics,
             angle=std::sin(static_cast<double>(game.tick)/55)*3;
         auto* texture=texture_for(graphics,sprites[static_cast<int>(site.kind)]);
         const auto light=lit_sprite_color(lighting,site.cell);
-        SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
-        SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,angle,nullptr,SDL_FLIP_NONE);
-        SDL_SetTextureColorModFloat(texture,1,1,1);
+        tr::texture_color(texture,light.red,light.green,light.blue);
+        tr::draw_rotated(renderer,texture,nullptr,&rect,angle,nullptr,SDL_FLIP_NONE);
+        tr::texture_color(texture,1,1,1);
     }
 }
 

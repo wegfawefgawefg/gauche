@@ -3,9 +3,9 @@
 #include "../projectiles/projectile.hpp"
 #include <algorithm>
 
-void draw_gunner_aim(SDL_Renderer* renderer,const Game& game,ViewCamera camera,
+void draw_gunner_aim(tr::Renderer* renderer,const Game& game,ViewCamera camera,
                      float zoom,const LightingCache& lighting) {
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
     for (const Entity& actor:game.entities) {
         if (actor.kind!=EntityKind::RivetGunner || actor.health<=0 || actor.sleep_ticks>0 ||
             actor.stun_ticks>0 || actor.freeze_ticks>0 || actor.vitals.rooted>0 ||
@@ -25,9 +25,9 @@ void draw_gunner_aim(SDL_Renderer* renderer,const Game& game,ViewCamera camera,
             const float x=rect.x+rect.w*.5F,y=rect.y+rect.h*.5F;
             const float dx=static_cast<float>(actor.point_b.x)*rect.w*.16F;
             const float dy=static_cast<float>(actor.point_b.y)*rect.h*.16F;
-            SDL_SetRenderDrawColor(renderer,216,169,90,static_cast<Uint8>(level*strength*180));
-            SDL_RenderLine(renderer,x-dx,y-dy,x+dx,y+dy);
+            tr::set_color_bytes(renderer,216,169,90,static_cast<Uint8>(level*strength*180));
+            tr::line(renderer,x-dx,y-dy,x+dx,y+dy);
         }
     }
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer,SDL_BLENDMODE_NONE);
 }

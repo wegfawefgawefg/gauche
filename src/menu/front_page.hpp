@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include <gview/gview.hpp>
 #include <gview/sdl3_renderer.hpp>
@@ -20,7 +21,7 @@ enum class MenuScreen {
 struct FrontPage {
     gview::Runtime runtime{};
     std::unique_ptr<gview::Sdl3Renderer> painter;
-    std::unordered_map<std::string, SDL_Texture*> textures;
+    std::unordered_map<std::string, tr::Texture*> textures;
     GubsyRuntime* backend = nullptr;
     GameAudio* audio = nullptr;
     std::string hovered_control;
@@ -68,7 +69,7 @@ struct FrontPage {
     int height = 0;
 };
 
-bool init_front_page(FrontPage& page, GubsyRuntime& backend, SDL_Renderer* renderer);
+bool init_front_page(FrontPage& page, GubsyRuntime& backend, tr::Renderer* renderer);
 void shutdown_front_page(FrontPage& page);
 bool front_page_event(FrontPage& page, const SDL_Event& event, const GubsyFrame& frame);
 std::string update_front_page(FrontPage& page, const MenuInputState& input,

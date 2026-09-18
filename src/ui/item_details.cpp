@@ -25,7 +25,7 @@
 
 namespace {
 
-void plate(SDL_Renderer* renderer, float x, float y, float width, float height,
+void plate(tr::Renderer* renderer, float x, float y, float width, float height,
            SDL_FColor color) {
     const SDL_Vertex vertices[4]{
         {{x + 4.0F, y}, color, {}},
@@ -34,16 +34,16 @@ void plate(SDL_Renderer* renderer, float x, float y, float width, float height,
         {{x, y + height}, color, {}},
     };
     constexpr int indices[]{0, 1, 2, 0, 2, 3};
-    SDL_RenderGeometry(renderer, nullptr, vertices, 4, indices, 6);
+    tr::geometry(renderer, nullptr, vertices, 4, indices, 6);
 }
 
-void text(SDL_Renderer* renderer, float x, float y, std::string_view words,
+void text(tr::Renderer* renderer, float x, float y, std::string_view words,
           std::uint8_t red = 235, std::uint8_t green = 230,
           std::uint8_t blue = 214) {
     small_ui_text(renderer, x, y, words, red, green, blue);
 }
 
-void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
+void wrapped(tr::Renderer* renderer, float x, float y, int columns,
              int lines, std::string_view words) {
     for (int line = 0; line < lines && !words.empty(); ++line) {
         std::size_t count = std::min(words.size(), static_cast<std::size_t>(columns));
@@ -91,10 +91,10 @@ const char* item_description(ItemKind kind) {
     return "";
 }
 
-void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_item_details(tr::Renderer* renderer, const GameGraphics& graphics,
                        const Entity& player, const Item& item, float x, float y,
                        float width, float height, const char* label, bool highlight) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     plate(renderer, x + 6.0F, y + 7.0F, width, height,
           {0.01F, 0.01F, 0.01F, 0.72F});
     plate(renderer, x, y, width, height,
@@ -102,7 +102,7 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_item_banner(renderer, x, y, width, label, highlight);
     if (item.kind == ItemKind::None) return;
     SDL_FRect icon{x + 9.0F, y + 22.0F, 24.0F, 24.0F};
-    SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
+    tr::draw_texture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
     draw_muffled_count(renderer, item, x + 18, y + 39);
     text(renderer, x + 39.0F, y + 22.0F, item.flame_ticks > 0 ? "Lit Stick" : item_name(item.kind));
@@ -448,18 +448,18 @@ void draw_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
 }
 
-void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_compact_item_details(tr::Renderer* renderer, const GameGraphics& graphics,
                                const Item& item, float x, float y,
                                float width, const char* label) {
     if (item.kind == ItemKind::None) return;
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     plate(renderer, x + 4.0F, y + 4.0F, width, 31.0F,
           {0.01F, 0.01F, 0.01F, 0.72F});
     plate(renderer, x, y, width, 31.0F,
           {0.075F, 0.085F, 0.09F, 0.96F});
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     SDL_FRect icon{x + 5.0F, y + 7.0F, 17.0F, 17.0F};
-    SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
+    tr::draw_texture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
     draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
     draw_muffled_count(renderer, item, x + 8, y + 22);
     if (item.flame_ticks > 0) {
@@ -474,11 +474,11 @@ void draw_compact_item_details(SDL_Renderer* renderer, const GameGraphics& graph
          item_cooldown_text(item), 217, 183, 128);
 }
 
-void draw_item_banner(SDL_Renderer* renderer, float x, float y, float width,
+void draw_item_banner(tr::Renderer* renderer, float x, float y, float width,
                       const char* label, bool highlight) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     plate(renderer, x-6, y-8, width+8, 18, highlight ?
         SDL_FColor{.56F, .16F, .14F, .98F} : SDL_FColor{.14F, .17F, .15F, .98F});
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     text(renderer, x+3, y-5, label);
 }

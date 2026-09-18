@@ -9,37 +9,37 @@
 #include <cstdio>
 
 namespace {
-void room_box(SDL_Renderer* renderer,const RoomPlan& room,const WorldGenViewer& v) {
+void room_box(tr::Renderer* renderer,const RoomPlan& room,const WorldGenViewer& v) {
     SDL_FRect box=tile_rect(room.center-Cell{room.half_width,room.half_height},v.render.camera,v.zoom);
     box.w=static_cast<float>(room.half_width*2+1)*tile_pixels(v.zoom);
     box.h=static_cast<float>(room.half_height*2+1)*tile_pixels(v.zoom);
-    SDL_SetRenderDrawColor(renderer,room.landmark ? 255 : 120,210,room.landmark ? 90 : 255,190);
-    SDL_RenderRect(renderer,&box);
+    tr::set_color_bytes(renderer,room.landmark ? 255 : 120,210,room.landmark ? 90 : 255,190);
+    tr::rect(renderer,&box);
     if(v.room_labels) {
         const std::string label=std::string(room_name(room.role))+" / "+std::to_string(room.turns*90)+"deg"+(room.mirrored ? " mirrored" : "");
-        SDL_RenderDebugText(renderer,box.x+2,box.y+2,label.c_str());
+        tr::debug_text(renderer,box.x+2,box.y+2,label.c_str());
     }
 }
 }
 
-void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
+void draw_worldgen(tr::Renderer* renderer,const GameGraphics& graphics) {
     const auto& v=worldgen_viewer();
     if (!v.original || v.trace.checkpoints.empty()) return;
     const auto& selected=v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint)];
     const Game& game=*selected.game;
     if (game.stage.width>0)
         render_game(renderer,graphics,game,0,v.zoom,nullptr,PointerState{},false,false,&v.render);
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
     if (v.rooms) for (const auto& room:selected.rooms) room_box(renderer,room,v);
     draw_generation_annotations(renderer,selected.report,v.selected_feature,v.selected_component,v.render.camera,v.zoom,v.annotations);
     draw_ambient_annotations(renderer,game,v.render.camera,v.zoom);
     if ((v.changes || v.actor_changes) && v.checkpoint>0)
         draw_worldgen_changes(renderer,v,*v.trace.checkpoints[static_cast<std::size_t>(v.checkpoint-1)].game,game);
     draw_worldgen_sidebar(renderer,v,selected.report);
-    SDL_SetRenderDrawColor(renderer,10,14,18,240);
+    tr::set_color_bytes(renderer,10,14,18,240);
     const SDL_FRect top{0,0,640,24},bottom{0,321,640,39};
-    SDL_RenderFillRect(renderer,&top); SDL_RenderFillRect(renderer,&bottom);
-    SDL_SetRenderDrawColor(renderer,235,235,215,255);
+    tr::fill_rect(renderer,&top); tr::fill_rect(renderer,&bottom);
+    tr::set_color_bytes(renderer,235,235,215,255);
     char title[160];
     std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | step %d/%zu: %s",v.original->run.floor,
         static_cast<unsigned long long>(v.original->run.seed),v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
@@ -47,14 +47,14 @@ void draw_worldgen(SDL_Renderer* renderer,const GameGraphics& graphics) {
         std::snprintf(title,sizeof(title),"FOREST 1-%d | seed %llu | inhabitants %llu",v.original->run.floor,
             static_cast<unsigned long long>(v.original->run.seed),
             static_cast<unsigned long long>(v.original->generation_report->inhabitants_seed));
-        SDL_RenderDebugText(renderer,8,3,title);
+        tr::debug_text(renderer,8,3,title);
         std::snprintf(title,sizeof(title),"step %d/%zu: %s",v.checkpoint+1,v.trace.checkpoints.size(),selected.name.c_str());
-        SDL_RenderDebugText(renderer,8,14,title);
-    } else SDL_RenderDebugText(renderer,8,8,title);
-    SDL_RenderDebugText(renderer,8,327,v.sidebar_focus ? "D-pad/Arrows: rolls  A/Enter: focus  B/Back/Tab: map  X/R: regen" : "A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
-    SDL_RenderDebugText(renderer,8,338,v.sidebar_focus ? "Right: child rolls  Left: features  Y/F Fit  LB/RB Floor  Start/F1 Details" : "Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
-    SDL_RenderDebugText(renderer,8,349,"Tab/Back Rolls | LT+X/N Later rolls | O Roofs L Light V Shade C Recipe");
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+        tr::debug_text(renderer,8,14,title);
+    } else tr::debug_text(renderer,8,8,title);
+    tr::debug_text(renderer,8,327,v.sidebar_focus ? "D-pad/Arrows: rolls  A/Enter: focus  B/Back/Tab: map  X/R: regen" : "A/Enter Play  B/Esc Exit  X/R Regen  Y/F Fit  LB/RB Floor");
+    tr::debug_text(renderer,8,338,v.sidebar_focus ? "Right: child rolls  Left: features  Y/F Fit  LB/RB Floor  Start/F1 Details" : "Stick/WASD Pan  D-pad Up/Down Zoom  Left/Right Step  Start/F1 Details");
+    tr::debug_text(renderer,8,349,"Tab/Back Rolls | LT+X/N Later rolls | O Roofs L Light V Shade C Recipe");
+    tr::set_blend(renderer,SDL_BLENDMODE_NONE);
 }
 
 void draw_worldgen_details(const Game& live_game) {

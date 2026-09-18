@@ -18,7 +18,7 @@ struct StatusRow {
 
 } // namespace
 
-void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_player_status(tr::Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, float x, float bottom) {
     if (player.health <= 0) return;
     char burning[80];
@@ -75,19 +75,19 @@ void draw_player_status(SDL_Renderer* renderer, const GameGraphics& graphics,
     for (const StatusRow& row : rows) {
         if (row.ticks <= 0) continue;
         bottom -= 25;
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
         SDL_FRect panel{x, bottom, 201, 23};
-        SDL_SetRenderDrawColor(renderer, 16, 21, 22, 225);
-        SDL_RenderFillRect(renderer, &panel);
+        tr::set_color_bytes(renderer, 16, 21, 22, 225);
+        tr::fill_rect(renderer, &panel);
         SDL_FRect stripe{x, bottom, 2, 23};
-        SDL_SetRenderDrawColor(renderer, row.color.r, row.color.g, row.color.b, 235);
-        SDL_RenderFillRect(renderer, &stripe);
+        tr::set_color_bytes(renderer, row.color.r, row.color.g, row.color.b, 235);
+        tr::fill_rect(renderer, &stripe);
         SDL_FRect icon{x + 4, bottom + 4, 13, 13};
-        SDL_RenderTexture(renderer, texture_for(graphics, row.icon), nullptr, &icon);
+        tr::draw_texture(renderer, texture_for(graphics, row.icon), nullptr, &icon);
         char label[64];
         std::snprintf(label, sizeof(label), "%s  %.1fs", row.name, static_cast<double>(row.ticks) / 60.0);
         small_ui_text(renderer, x + 20, bottom + 3, label, row.color.r, row.color.g, row.color.b);
         small_ui_text(renderer, x + 20, bottom + 13, row.effect, 187, 190, 179);
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+        tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     }
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../item_pattern.hpp"
 
@@ -11,5 +12,5 @@ struct PatternDiagramLayout {
 PatternDiagramLayout pattern_diagram_layout(ItemPattern pattern,
                                              float x, float y,
                                              float width, float height);
-void draw_pattern_diagram(SDL_Renderer* renderer, const Item& item,
+void draw_pattern_diagram(tr::Renderer* renderer, const Item& item,
                           float x, float y, float width, float height, const Entity* user = nullptr);

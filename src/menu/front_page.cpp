@@ -125,7 +125,7 @@ std::string projection(const FrontPage& page, int death_policy) {
 
 } // namespace
 
-bool init_front_page(FrontPage& page, GubsyRuntime& backend, SDL_Renderer* renderer) {
+bool init_front_page(FrontPage& page, GubsyRuntime& backend, tr::Renderer* renderer) {
     if (page.painter) return true;
     page.backend = &backend;
     const auto root = asset_root();
@@ -134,17 +134,17 @@ bool init_front_page(FrontPage& page, GubsyRuntime& backend, SDL_Renderer* rende
     if (!page.painter->ready()) return false;
     for (const TextureAsset& entry : textures) {
         const std::string path = (root / entry.path).string();
-        SDL_Texture* texture = IMG_LoadTexture(renderer, path.c_str());
+        tr::Texture* texture = tr::load_texture(renderer, path.c_str());
         if (texture == nullptr) {
             std::fprintf(stderr, "Gauche menu texture failed: %s: %s\n",
                          path.c_str(), SDL_GetError());
             return false;
         }
-        (void)SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+        (void)tr::texture_filter(texture, SDL_SCALEMODE_NEAREST);
         page.painter->register_texture(entry.id, texture);
         page.textures.emplace(entry.id, texture);
     }
-    page.painter->register_surface("control-diagram", [&page](SDL_Renderer* target,
+    page.painter->register_surface("control-diagram", [&page](tr::Renderer* target,
         const gview::PaintCommand& command) { draw_control_diagram(target, command, page); });
     return true;
 }
@@ -157,7 +157,7 @@ void shutdown_front_page(FrontPage& page) {
     }
     for (auto& [id, texture] : page.textures) {
         if (page.painter) page.painter->unregister_texture(id);
-        SDL_DestroyTexture(texture);
+        tr::destroy_texture(texture);
     }
     page.textures.clear();
     page.painter.reset();

@@ -2,11 +2,11 @@
 #include <algorithm>
 #include <cmath>
 
-int effective_frame_cap(SDL_Window* window,SDL_Renderer* renderer,int configured,bool wants_vsync,bool bot) {
+int effective_frame_cap(SDL_Window* window,tr::Renderer* renderer,int configured,bool wants_vsync,bool bot) {
     if(bot)return 30;
     if(configured>0)return configured;
     int actual=0;
-    if(!wants_vsync || (SDL_GetRenderVSync(renderer,&actual) && actual!=0))return 0;
+    if(!wants_vsync || (tr::get_vsync(renderer,&actual) && actual!=0))return 0;
     // A backend may reject V-sync. Match the display in software instead of
     // silently running uncapped when the user requested synchronized rendering.
     const auto* mode=SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(window));

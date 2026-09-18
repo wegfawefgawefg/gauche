@@ -132,7 +132,7 @@ Sprite tile_sprite(const Tile& tile, std::uint64_t tick, Cell cell, Biome biome,
     }
 }
 
-void draw_tile_damage(SDL_Renderer* renderer,const GameGraphics& graphics, const Tile& tile, Cell cell,
+void draw_tile_damage(tr::Renderer* renderer,const GameGraphics& graphics, const Tile& tile, Cell cell,
                       SDL_FRect rect, const LightingCache& lighting,int turns=0) {
     if (tile.kind != TileKind::Wall || tile.hp >= tile.max_hp || tile.max_hp == 0) return;
     const float remaining = static_cast<float>(tile.hp) / static_cast<float>(tile.max_hp);
@@ -142,31 +142,31 @@ void draw_tile_damage(SDL_Renderer* renderer,const GameGraphics& graphics, const
         return;
     }
     // FRACTURES: Mineral walls retain their branching cuts and condition bar.
-    SDL_SetRenderDrawColorFloat(renderer, light.red * 0.08F, light.green * 0.07F,
+    tr::set_color(renderer, light.red * 0.08F, light.green * 0.07F,
                                light.blue * 0.06F, 1.0F);
     const float flip = ((cell.x + cell.y) % 2 == 0) ? 1.0F : -1.0F;
     const float cx = rect.x + rect.w * 0.5F;
     const float cy = rect.y + rect.h * 0.48F;
-    SDL_RenderLine(renderer, cx, cy, cx + flip * rect.w * 0.16F, cy - rect.h * 0.26F);
-    SDL_RenderLine(renderer, cx, cy, cx - flip * rect.w * 0.20F, cy + rect.h * 0.22F);
+    tr::line(renderer, cx, cy, cx + flip * rect.w * 0.16F, cy - rect.h * 0.26F);
+    tr::line(renderer, cx, cy, cx - flip * rect.w * 0.20F, cy + rect.h * 0.22F);
     if (remaining < 0.65F) {
-        SDL_RenderLine(renderer, cx, cy, cx + flip * rect.w * 0.33F, cy + rect.h * 0.16F);
-        SDL_RenderLine(renderer, cx - flip * rect.w * 0.1F, cy + rect.h * 0.11F,
+        tr::line(renderer, cx, cy, cx + flip * rect.w * 0.33F, cy + rect.h * 0.16F);
+        tr::line(renderer, cx - flip * rect.w * 0.1F, cy + rect.h * 0.11F,
                        cx - flip * rect.w * 0.35F, cy + rect.h * 0.06F);
     }
     if (remaining < 0.3F)
-        SDL_RenderLine(renderer, cx, cy, cx - flip * rect.w * 0.38F, cy - rect.h * 0.35F);
+        tr::line(renderer, cx, cy, cx - flip * rect.w * 0.38F, cy - rect.h * 0.35F);
     // CONDITION: Dark-room bars inherit the material's light instead of glowing through walls.
     SDL_FRect bar{rect.x + rect.w * 0.12F, rect.y + rect.h * 0.87F,
                   rect.w * 0.76F, std::max(1.0F, rect.h * 0.045F)};
-    SDL_RenderFillRect(renderer, &bar);
+    tr::fill_rect(renderer, &bar);
     bar.w *= remaining;
-    SDL_SetRenderDrawColorFloat(renderer, light.red * 0.88F, light.green * 0.68F,
+    tr::set_color(renderer, light.red * 0.88F, light.green * 0.68F,
                                light.blue * 0.40F, 1.0F);
-    SDL_RenderFillRect(renderer, &bar);
+    tr::fill_rect(renderer, &bar);
 }
 
-void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_tiles(tr::Renderer* renderer, const GameGraphics& graphics,
                 const Game& game, ViewCamera camera, float zoom,
                 const Cosmetics* cosmetics, const LightingCache& lighting) {
     PerfScope perf_scope(PerfZone::Tiles);
@@ -209,11 +209,11 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
             const int turns=deck ? deck->quarter_turns : tile.kind==TileKind::Spring ?
                 spring_turn : tile.material==TileMaterial::Root ? root_turns(game.stage,cell) : log_support_turns(game.stage,cell);
             const Sprite id = deck ? deck->sprite : tile.material==TileMaterial::Root && !log_cap ? root_sprite(game.stage,cell) : tile_sprite(log_cap ? Tile{TileKind::Grass} : tile, game.tick, cell, biome, arena);
-            SDL_Texture* texture = texture_for(graphics, id);
+            tr::Texture* texture = texture_for(graphics, id);
             const LightColor tint{1.0F, 1.0F, 1.0F};
             draw_lit_tile(renderer, texture, rect, cell, lighting, tint,{0,0,1,1},turns);
             if (log_cap) {
-                SDL_Texture* cap=texture_for(graphics,*log_cap);
+                tr::Texture* cap=texture_for(graphics,*log_cap);
                 draw_lit_tile(renderer,cap,rect,cell,lighting,tint);
             }
             if (!arena && (biome==Biome::Ice || tile.kind==TileKind::Snow || tile.kind==TileKind::Ice)) draw_ice_material_details(renderer,graphics,game.stage,cell,rect,lighting);
@@ -227,25 +227,25 @@ void draw_tiles(SDL_Renderer* renderer, const GameGraphics& graphics,
 }
 
 
-void draw_run_status(SDL_Renderer* renderer, const Game& game, float zoom) {
+void draw_run_status(tr::Renderer* renderer, const Game& game, float zoom) {
     const HudScale scale{renderer};
-    SDL_SetRenderDrawColor(renderer, 235, 230, 214, 255);
+    tr::set_color_bytes(renderer, 235, 230, 214, 255);
     if (game.run.phase != RunPhase::Arena) {
         char floor[64];
         std::snprintf(floor, sizeof(floor), "%s %d/4   %s", biome_name(floor_biome(game.run.floor)),
                       biome_stage(game.run.floor),
                       game.run.has_key ? "DOOR OPEN" :
                       (game.run.layout==FloorLayout::LastShift ? "FIND SHUTDOWN" : game.run.objective == ObjectiveKind::Key ? "FIND KEY" : "FIND SWITCH"));
-        SDL_RenderDebugText(renderer, 18.0F, 12.0F, floor);
+        tr::debug_text(renderer, 18.0F, 12.0F, floor);
     }
     char zoom_label[24];
     std::snprintf(zoom_label, sizeof(zoom_label), "ZOOM %.2fX", static_cast<double>(zoom));
-    SDL_RenderDebugText(renderer, 640.0F / ui_scale - 103.0F, 12.0F, zoom_label);
+    tr::debug_text(renderer, 640.0F / ui_scale - 103.0F, 12.0F, zoom_label);
 }
 
 } // namespace
 
-void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
+void render_game(tr::Renderer* renderer, const GameGraphics& graphics,
                  const Game& game, int local_owner, float zoom,
                  const Cosmetics* cosmetics, const PointerState& pointer,
                  bool show_hud, bool compact_details, const WorldRenderOptions* inspection) {
@@ -311,7 +311,7 @@ void render_game(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (player != nullptr) draw_encounter_status(renderer, game, *player);
 }
 
-void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
+void render_title_backdrop(tr::Renderer* renderer, const GameGraphics& graphics,
                            const Game& scene) {
     const ViewCamera camera = scene.run.spawn + Cell{2, 0};
     LightingCache lighting;
@@ -320,9 +320,9 @@ void render_title_backdrop(SDL_Renderer* renderer, const GameGraphics& graphics,
     draw_props(renderer, graphics, scene, camera, 2.0F, lighting);
     for (auto pass:{ScenePass::Ground,ScenePass::Bodies})
         draw_entities(renderer, graphics, scene, camera, 2.0F, nullptr, lighting, pass,nullptr);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 3, 7, 7, 172);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_color_bytes(renderer, 3, 7, 7, 172);
     const SDL_FRect shade{0.0F, 0.0F, 640.0F, 360.0F};
-    SDL_RenderFillRect(renderer, &shade);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::fill_rect(renderer, &shade);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../src/particles/motion.hpp"
 #include "../src/ui/text.hpp"
@@ -8,7 +9,7 @@
 #include <cstdio>
 #include <vector>
 
-inline void render_camera_path(SDL_Renderer* renderer) {
+inline void render_camera_path(tr::Renderer* renderer) {
     // RECORDED POSES: Examine only the camera filter. No game stepping or inputs.
     Entity player;
     player.kind = EntityKind::Player;
@@ -35,12 +36,12 @@ inline void render_camera_path(SDL_Renderer* renderer) {
     const auto screen = [](ViewCamera cell) -> SDL_FPoint {
         return {55 + cell.x * 22, 300 - cell.y * 16};
     };
-    SDL_SetRenderDrawColor(renderer, 12, 17, 18, 255); SDL_RenderClear(renderer);
+    tr::set_color_bytes(renderer, 12, 17, 18, 255); tr::clear(renderer);
     const auto line = [&](const std::vector<ViewCamera>& positions, SDL_Color color) {
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        tr::set_color_bytes(renderer, color.r, color.g, color.b, color.a);
         for (std::size_t i = 1; i < positions.size(); ++i) {
             const auto a = screen(positions[i-1]), b = screen(positions[i]);
-            SDL_RenderLine(renderer, a.x, a.y, b.x, b.y);
+            tr::line(renderer, a.x, a.y, b.x, b.y);
         }
     };
     line(bodies, {97, 108, 104, 255}); line(cameras, {222, 183, 98, 255});

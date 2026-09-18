@@ -21,21 +21,21 @@
 
 namespace {
 
-void text(SDL_Renderer* renderer, float x, float y, std::string_view value,
+void text(tr::Renderer* renderer, float x, float y, std::string_view value,
           std::uint8_t red = 235, std::uint8_t green = 230,
           std::uint8_t blue = 214) {
     small_ui_text(renderer, x, y, value, red, green, blue);
 }
 
-void shade(SDL_Renderer* renderer) {
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 4, 7, 8, 215);
+void shade(tr::Renderer* renderer) {
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_color_bytes(renderer, 4, 7, 8, 215);
     const SDL_FRect full{0.0F, 0.0F, 640.0F, 360.0F};
-    SDL_RenderFillRect(renderer, &full);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::fill_rect(renderer, &full);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }
 
-void frame(SDL_Renderer* renderer, float x, float y, float width, float height,
+void frame(tr::Renderer* renderer, float x, float y, float width, float height,
            bool selected) {
     angled_panel(renderer, {x,y,width,height}, selected ? SDL_Color{202,151,82,210} : SDL_Color{90,86,78,210});
 }
@@ -70,7 +70,7 @@ const char* reward_description(const Reward& reward) {
     return "";
 }
 
-void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
+void wrapped(tr::Renderer* renderer, float x, float y, int columns,
              int lines, std::string_view words) {
     for (int line = 0; line < lines && !words.empty(); ++line) {
         std::size_t count = std::min(words.size(), static_cast<std::size_t>(columns));
@@ -85,7 +85,7 @@ void wrapped(SDL_Renderer* renderer, float x, float y, int columns,
     }
 }
 
-void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
+void reward_card(tr::Renderer* renderer, const GameGraphics& graphics,
                  const Entity& player, Reward reward, float x, float y,
                  float width, bool selected, const char* label) {
     if (reward.kind == RewardKind::Item) {
@@ -99,7 +99,7 @@ void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
     frame(renderer, x, y, width, 214.0F, selected);
     draw_item_banner(renderer, x, y, width, label, selected);
     SDL_FRect icon{x + 10.0F, y + 39.0F, 26.0F, 26.0F};
-    SDL_RenderTexture(renderer, texture_for(graphics, reward_icon(reward)), nullptr, &icon);
+    tr::draw_texture(renderer, texture_for(graphics, reward_icon(reward)), nullptr, &icon);
     text(renderer, x + 43.0F, y + 46.0F, reward_name(reward));
     wrapped(renderer, x + 10.0F, y + 89.0F,
             static_cast<int>((width - 20.0F) / 6.0F), 5,
@@ -123,7 +123,7 @@ void reward_card(SDL_Renderer* renderer, const GameGraphics& graphics,
     text(renderer, x + 10.0F, y + 160.0F, line, 136, 213, 147);
 }
 
-void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
+void inventory_rows(tr::Renderer* renderer, const GameGraphics& graphics,
                     const Entity& player, const InteractionUi& ui) {
     const float slide = ui.slide;
     const float x = 22.0F - (1.0F - slide) * 180.0F;
@@ -138,7 +138,7 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind == ItemKind::None) continue;
         SDL_FRect icon{x + 26.0F, y + 5.0F, 18.0F, 18.0F};
-        SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
+        tr::draw_texture(renderer, texture_for(graphics, item_sprite(item)), nullptr, &icon);
         draw_item_flame(renderer, graphics, item, icon, {1, 0}, static_cast<std::uint64_t>(item.flame_ticks));
         text(renderer, x + 49.0F, y + 5.0F,
              item_display_name(item).substr(0, item.flame_ticks > 0 ? 12 : 17),
@@ -164,7 +164,7 @@ void inventory_rows(SDL_Renderer* renderer, const GameGraphics& graphics,
     }
 }
 
-void compare_items(SDL_Renderer* renderer, const Item& left, const Item& right) {
+void compare_items(tr::Renderer* renderer, const Item& left, const Item& right) {
     const ItemPattern first = item_pattern(left);
     const ItemPattern second = item_pattern(right);
     const int shape = first.blast_radius != second.blast_radius ?
@@ -204,7 +204,7 @@ void compare_items(SDL_Renderer* renderer, const Item& left, const Item& right) 
     text(renderer, 208.0F, 310.0F, line, 188, 205, 181);
 }
 
-void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
+void inventory_overlay(tr::Renderer* renderer, const GameGraphics& graphics,
                        const Game& game, int owner, const InteractionUi& ui) {
     const Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr) return;
@@ -249,7 +249,7 @@ void inventory_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
     if (!ui.notice.empty()) text(renderer, 26.0F, 342.0F, ui.notice, 231, 111, 87);
 }
 
-void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
+void offer_overlay(tr::Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, int owner, const InteractionUi& ui) {
     const Entity* player = get_entity(game, player_state(game, owner).controlled);
     if (player == nullptr) return;
@@ -312,7 +312,7 @@ void offer_overlay(SDL_Renderer* renderer, const GameGraphics& graphics,
         text(renderer, 25.0F, 342.0F, ui.notice, 231, 111, 87);
 }
 
-void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
+void confirmation_overlay(tr::Renderer* renderer, const Game& game, int owner,
                           const InteractionUi& ui) {
     shade(renderer);
     frame(renderer,144,96,352,172,true);
@@ -344,35 +344,35 @@ void confirmation_overlay(SDL_Renderer* renderer, const Game& game, int owner,
 
 } // namespace
 
-void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_interaction(tr::Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, int owner, const InteractionUi& ui) {
     if (owner < 0 || !has_player(game, owner)) return;
     const bool offered = has_reward_offer(game, owner) || game.run.phase == RunPhase::Shop;
     if (!ui.inventory_open && !offered) return;
     shade(renderer);
     if (graphics.interaction_canvas == nullptr) {
-        graphics.interaction_canvas = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+        graphics.interaction_canvas = tr::create_texture(renderer, SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET, 1920, 1080);
         if (graphics.interaction_canvas == nullptr) return;
-        SDL_SetTextureBlendMode(graphics.interaction_canvas, SDL_BLENDMODE_BLEND);
-        SDL_SetTextureScaleMode(graphics.interaction_canvas, SDL_SCALEMODE_NEAREST);
+        tr::texture_blend(graphics.interaction_canvas, SDL_BLENDMODE_BLEND);
+        tr::texture_filter(graphics.interaction_canvas, SDL_SCALEMODE_NEAREST);
     }
     // MODAL: Reuse the full comparison layout, centered at the same scale as the edge HUD.
-    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    tr::Texture* target = tr::get_target(renderer);
     float scale_x = 1, scale_y = 1;
-    SDL_GetRenderScale(renderer, &scale_x, &scale_y);
-    SDL_SetRenderTarget(renderer, graphics.interaction_canvas);
+    tr::get_scale(renderer, &scale_x, &scale_y);
+    tr::set_target(renderer, graphics.interaction_canvas);
     // TEXT: Render glyphs above native pixel size before shrinking the composed panel.
-    SDL_SetRenderScale(renderer, 3, 3);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
+    tr::set_scale(renderer, 3, 3);
+    tr::set_color_bytes(renderer, 0, 0, 0, 0);
+    tr::clear(renderer);
     if (ui.inventory_open) inventory_overlay(renderer, graphics, game, owner, ui);
     else offer_overlay(renderer, graphics, game, owner, ui);
     if (ui.offer_mode==OfferMode::Confirm) confirmation_overlay(renderer,game,owner,ui);
-    SDL_SetRenderTarget(renderer, target);
-    SDL_SetRenderScale(renderer, scale_x, scale_y);
+    tr::set_target(renderer, target);
+    tr::set_scale(renderer, scale_x, scale_y);
     const SDL_FRect rect{modal_left, modal_top, 640 * ui_scale, 360 * ui_scale};
-    SDL_RenderTexture(renderer, graphics.interaction_canvas, nullptr, &rect);
+    tr::draw_texture(renderer, graphics.interaction_canvas, nullptr, &rect);
     const HudScale party_scale{renderer};
     draw_party_status(renderer, game, owner, 20, 12, true);
 }

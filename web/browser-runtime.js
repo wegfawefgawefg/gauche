@@ -1,4 +1,4 @@
-// Browser presentation owns fullscreen and frame scheduling; SDL only draws.
+// Browser presentation owns fullscreen and frame scheduling.
 export function installBrowserRuntime(game, canvas, log) {
   const prompt = document.querySelector('#fullscreen-prompt');
   let pending = false;

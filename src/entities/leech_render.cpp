@@ -15,7 +15,7 @@ void apply_leech_pose(const Entity& leech, std::uint64_t tick, SDL_FRect& rect, 
     rect.w *= pulse; rect.h *= pulse;
 }
 
-void draw_leech_tether(SDL_Renderer* renderer, const Game& game, const Entity& leech,
+void draw_leech_tether(tr::Renderer* renderer, const Game& game, const Entity& leech,
     ViewCamera camera, float zoom, const LightingCache& lighting) {
     if (!leech_attached(game, leech)) return;
     Cell source;
@@ -23,8 +23,8 @@ void draw_leech_tether(SDL_Renderer* renderer, const Game& game, const Entity& l
     const SDL_FRect body = tile_rect(leech.cell, camera, zoom);
     const SDL_FRect heat = tile_rect(source, camera, zoom);
     const LightColor light = lit_sprite_color(lighting, leech.cell, light_color(leech.self_light));
-    SDL_SetRenderDrawColorFloat(renderer, light.red * .8F, light.green * .5F, light.blue * .25F, 1);
+    tr::set_color(renderer, light.red * .8F, light.green * .5F, light.blue * .25F, 1);
     const SDL_FPoint start{body.x + body.w * (.5F + static_cast<float>(leech.facing.x) * .3F),
         body.y + body.h * (.5F + static_cast<float>(leech.facing.y) * .3F)};
-    SDL_RenderLine(renderer, start.x, start.y, heat.x + heat.w * .5F, heat.y + heat.h * .5F);
+    tr::line(renderer, start.x, start.y, heat.x + heat.w * .5F, heat.y + heat.h * .5F);
 }

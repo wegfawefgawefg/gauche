@@ -78,7 +78,7 @@
 #include <cmath>
 
 namespace {
-void draw_suspended_parts(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
+void draw_suspended_parts(tr::Renderer* renderer,const GameGraphics& graphics,const Game& game,
                           const Entity& entity,ViewCamera camera,float zoom,const LightingCache& lighting) {
     if (entity.kind==EntityKind::MagnetCrane)
         draw_crane_parts(renderer,graphics,game,camera,zoom,lighting,false,&entity);
@@ -87,7 +87,7 @@ void draw_suspended_parts(SDL_Renderer* renderer,const GameGraphics& graphics,co
 }
 }
 
-void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_entities(tr::Renderer* renderer, const GameGraphics& graphics,
                    const Game& game, ViewCamera camera, float zoom,
                    const Cosmetics* cosmetics, const LightingCache& lighting, ScenePass pass,const Entity* viewer,bool roofs) {
     PerfScope perf_scope(PerfZone::EntityDraw);
@@ -172,12 +172,12 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                       pose->shake * pixels;
         }
         rect.y-=actor_toss_height(entity)*pixels;
-        SDL_Texture* texture = texture_for(graphics, entity.kind == EntityKind::GroundItem &&
+        tr::Texture* texture = texture_for(graphics, entity.kind == EntityKind::GroundItem &&
             (entity.ground_item.kind==ItemKind::LunchTin || entity.ground_item.kind==ItemKind::GlowSlag || entity.ground_item.kind == ItemKind::SteamKettle || entity.ground_item.kind==ItemKind::SteamLance || entity.ground_item.kind == ItemKind::HeatSiphon) ? item_sprite(entity.ground_item) : entity.sprite);
         const LightColor self = entity.max_health > 0 && entity.health <= 0 ?
             LightColor{} : light_color(entity.self_light);
         const LightColor brightness = lit_sprite_color(lighting, entity.cell, self);
-        SDL_SetTextureColorModFloat(texture, brightness.red,
+        tr::texture_color(texture, brightness.red,
                                     brightness.green, brightness.blue);
         const int bodies = entity.kind == EntityKind::ZombieStack ?
                            std::clamp(entity.counter_a, 1, 5) : 1;
@@ -263,21 +263,21 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                 body_rect.y+=pixels*lean*static_cast<float>(entity.facing.y);
             }
 
-            SDL_RenderTextureRotated(renderer, texture, nullptr, &body_rect, angle,
+            tr::draw_rotated(renderer, texture, nullptr, &body_rect, angle,
                 nullptr, ((entity.kind==EntityKind::Dog || (entity.kind==EntityKind::Wolf && entity.label_a!=0) || entity.kind==EntityKind::EmergencyPump || entity.kind==EntityKind::SlagSnail || entity.kind==EntityKind::WalkingKiln || entity.kind==EntityKind::PressureRat || entity.kind==EntityKind::CableCrawler) ? entity.facing.x<0 :
                     !worm && entity.kind != EntityKind::Ant && entity.kind != EntityKind::GlassEel && entity.kind != EntityKind::SteamLeech && pose != nullptr && pose->horizontal_flip) ?
                          SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
         }
-        SDL_SetTextureAlphaMod(texture, 255);
-        SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
+        tr::texture_alpha_bytes(texture, 255);
+        tr::texture_color(texture, 1.0F, 1.0F, 1.0F);
         if (entity.kind == EntityKind::GroundItem)
             draw_item_flame(renderer, graphics, entity.ground_item, rect, {1, 0}, game.tick);
         // PAIRS: Both thresholds carry the same small letter beneath passing actors.
         if (entity.kind == EntityKind::PocketDoor && entity.fixture_open) {
             const int pair = std::min(static_cast<int>(slot), entity.entity_a.slot);
             const char label[]{static_cast<char>('A' + std::max(0, pair) % 26), '\0'};
-            SDL_SetRenderDrawColorFloat(renderer, brightness.red * .8F, brightness.green * .9F, brightness.blue, 1);
-            SDL_RenderDebugText(renderer, rect.x + rect.w * .25F, rect.y + rect.h * .25F, label);
+            tr::set_color(renderer, brightness.red * .8F, brightness.green * .9F, brightness.blue, 1);
+            tr::debug_text(renderer, rect.x + rect.w * .25F, rect.y + rect.h * .25F, label);
         }
         if (entity.kind == EntityKind::Strikebreaker) draw_breaker_shield(renderer,graphics,entity,rect,brightness);
         if (entity.kind == EntityKind::MirrorKnight) draw_knight_shield(renderer, graphics, entity, rect, brightness);
@@ -293,11 +293,11 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             draw_leech_tether(renderer, game, entity, camera, zoom, lighting);
         if (entity.vitals.rooted > 0 && entity.health > 0) {
             const bool netted = entity.vitals.root_kind == RootKind::Net;
-            SDL_Texture* rope = texture_for(graphics, netted ? Sprite::NetCaught : Sprite::SnareTight);
-            SDL_SetTextureColorModFloat(rope, brightness.red, brightness.green, brightness.blue);
+            tr::Texture* rope = texture_for(graphics, netted ? Sprite::NetCaught : Sprite::SnareTight);
+            tr::texture_color(rope, brightness.red, brightness.green, brightness.blue);
             SDL_FRect feet = netted ? rect : SDL_FRect{rect.x, rect.y + rect.h * .55F, rect.w, rect.h * .45F};
-            SDL_RenderTexture(renderer, rope, nullptr, &feet);
-            SDL_SetTextureColorModFloat(rope, 1, 1, 1);
+            tr::draw_texture(renderer, rope, nullptr, &feet);
+            tr::texture_color(rope, 1, 1, 1);
         }
         Item displayed_gun;
         const Item* held = entity.inventory.held();
@@ -319,17 +319,17 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
                                  180.0 / 3.141592653589793;
             const Sprite held_sprite = parry_active(entity) ? Sprite::PanReady : held->kind == ItemKind::Bow && entity.kind == EntityKind::Player &&
                 entity.counter_a > 0 ? Sprite::BowDrawn : item_sprite(*held);
-            SDL_Texture* held_texture = texture_for(graphics, held_sprite);
-            SDL_SetTextureColorModFloat(held_texture, brightness.red,
+            tr::Texture* held_texture = texture_for(graphics, held_sprite);
+            tr::texture_color(held_texture, brightness.red,
                                         brightness.green, brightness.blue);
-            SDL_RenderTextureRotated(renderer, held_texture, nullptr, &held_rect,
+            tr::draw_rotated(renderer, held_texture, nullptr, &held_rect,
                                      angle, nullptr, held_facing.x < 0 ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
-            SDL_SetTextureColorModFloat(held_texture, 1.0F, 1.0F, 1.0F);
+            tr::texture_color(held_texture, 1.0F, 1.0F, 1.0F);
             draw_item_flame(renderer, graphics, *held, held_rect, held_facing, game.tick);
             if (held->kind == ItemKind::Buckler ||
                 (held->kind == ItemKind::ShieldLantern && entity.block_ticks > 0)) {
-                SDL_SetRenderDrawColor(renderer, 168, 185, 192, 230);
-                SDL_RenderRect(renderer, &held_rect);
+                tr::set_color_bytes(renderer, 168, 185, 192, 230);
+                tr::rect(renderer, &held_rect);
             }
         }
         draw_effigy_mask(renderer,graphics,entity,rect,brightness);
@@ -343,8 +343,8 @@ void draw_entities(SDL_Renderer* renderer, const GameGraphics& graphics,
             SDL_FRect bar{rect.x + 2.0F, rect.y - 4.0F,
                           (rect.w - 4.0F) * static_cast<float>(entity.health) /
                           static_cast<float>(entity.max_health), 2.0F};
-            SDL_SetRenderDrawColor(renderer, 198, 65, 59, 255);
-            SDL_RenderFillRect(renderer, &bar);
+            tr::set_color_bytes(renderer, 198, 65, 59, 255);
+            tr::fill_rect(renderer, &bar);
         }
     }
 }

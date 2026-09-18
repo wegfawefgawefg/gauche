@@ -12,12 +12,14 @@
 namespace {
 
 DebugPanels panels;
+tr::Renderer* debug_renderer = nullptr;
 
 } // namespace
 
 DebugPanels& debug_panels() { return panels; }
 
-void init_debug_panels(SDL_Window* window, SDL_Renderer* renderer) {
+void init_debug_panels(SDL_Window* window, tr::Renderer* renderer) {
+    debug_renderer = renderer;
     if (!init_imgui_layer(window, renderer)) return;
     // INPUT: Gamepads remain owned by Gubsy's binding profiles.
     ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
@@ -66,6 +68,13 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
                 ImGui::Checkbox("Pause offline world while F1 is open", &playtest_tools().pause);
             }
             if (ImGui::CollapsingHeader("Presentation", ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (debug_renderer) {
+                    ImGui::Text("Renderer: %s", tr::renderer_name(debug_renderer));
+                    ImGui::Checkbox("Bilinear terrain lightmap", &debug_renderer->smooth_lighting);
+                    ImGui::Text("%llu batches | %llu triangles | %zu atlas pages",
+                        static_cast<unsigned long long>(debug_renderer->last.batches),
+                        static_cast<unsigned long long>(debug_renderer->last.triangles), debug_renderer->atlases.size());
+                }
                 ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
                 ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
                 ImGui::Checkbox("Prop shadows", &panels.shadow_props);

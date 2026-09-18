@@ -42,27 +42,27 @@ void control_reference(gauche_menu::ViewBuilder& ui, std::string_view parent,
 }
 
 // DIAGRAM: Physical layout uses SDL's face labels; the legend explains bindings.
-void draw_control_diagram(SDL_Renderer* renderer, const gview::PaintCommand& command,
+void draw_control_diagram(tr::Renderer* renderer, const gview::PaintCommand& command,
                           const FrontPage& page) {
     float sx = 1, sy = 1;
-    SDL_GetRenderScale(renderer, &sx, &sy);
+    tr::get_scale(renderer, &sx, &sy);
     const float scale = std::min(command.rect.w / 210, command.rect.h / 76);
     if (scale <= 0) return;
-    const bool clipped = SDL_RenderClipEnabled(renderer);
+    const bool clipped = tr::clip_enabled(renderer);
     SDL_Rect clip{};
-    SDL_GetRenderClipRect(renderer, &clip);
-    SDL_SetRenderScale(renderer, sx * scale, sy * scale);
+    tr::get_clip(renderer, &clip);
+    tr::set_scale(renderer, sx * scale, sy * scale);
     if (clipped) {
         const SDL_Rect scaled{static_cast<int>(std::floor(static_cast<float>(clip.x) / scale)),
             static_cast<int>(std::floor(static_cast<float>(clip.y) / scale)),
             static_cast<int>(std::ceil(static_cast<float>(clip.w) / scale)),
             static_cast<int>(std::ceil(static_cast<float>(clip.h) / scale))};
-        SDL_SetRenderClipRect(renderer, &scaled);
+        tr::set_clip(renderer, &scaled);
     }
     const float x = command.rect.x / scale + (command.rect.w / scale - 210) * .5F;
     const float y = command.rect.y / scale;
     if (controller_input_active()) {
-        SDL_SetRenderDrawColor(renderer, 102, 111, 102, 255);
+        tr::set_color_bytes(renderer, 102, 111, 102, 255);
         SDL_FPoint outline[]{{x+48,y+16},{x+163,y+16},{x+177,y+28},{x+187,y+66},
             {x+174,y+71},{x+149,y+51},{x+63,y+51},{x+38,y+71},{x+25,y+66},
             {x+35,y+28},{x+48,y+16}};
@@ -73,7 +73,7 @@ void draw_control_diagram(SDL_Renderer* renderer, const gview::PaintCommand& com
         for (int i=0; i<10; ++i) {
             triangles[i*3] = 0; triangles[i*3+1] = i+1; triangles[i*3+2] = i+2;
         }
-        SDL_RenderGeometry(renderer, nullptr, vertices, 12, triangles, 30);
+        tr::geometry(renderer, nullptr, vertices, 12, triangles, 30);
         draw_prompt(renderer, x+45, y+1, pad_button_prompt(SDL_GAMEPAD_BUTTON_LEFT_SHOULDER));
         draw_prompt(renderer, x+150, y+1, pad_button_prompt(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER));
         constexpr SDL_GamepadButton buttons[]{SDL_GAMEPAD_BUTTON_NORTH,
@@ -93,15 +93,15 @@ void draw_control_diagram(SDL_Renderer* renderer, const gview::PaintCommand& com
         for (int i=0; i<4; ++i)
             draw_prompt(renderer, x+positions[i].x, y+positions[i].y, action_prompt(actions[i], id));
         draw_prompt(renderer, x+48, y+51, action_prompt(Action::Use, id));
-        SDL_SetRenderDrawColor(renderer, 155, 163, 143, 255);
+        tr::set_color_bytes(renderer, 155, 163, 143, 255);
         const SDL_FRect mouse{x+155,y+16,24,37};
-        SDL_RenderFillRect(renderer, &mouse);
-        SDL_SetRenderDrawColor(renderer, 42, 48, 42, 255);
+        tr::fill_rect(renderer, &mouse);
+        tr::set_color_bytes(renderer, 42, 48, 42, 255);
         const SDL_FRect split{x+166,y+16,2,16}, wheel{x+164,y+24,6,10};
-        SDL_RenderFillRect(renderer, &split); SDL_RenderFillRect(renderer, &wheel);
+        tr::fill_rect(renderer, &split); tr::fill_rect(renderer, &wheel);
     }
-    SDL_SetRenderScale(renderer, sx, sy);
-    SDL_SetRenderClipRect(renderer, clipped ? &clip : nullptr);
+    tr::set_scale(renderer, sx, sy);
+    tr::set_clip(renderer, clipped ? &clip : nullptr);
 }
 
 void update_control_preview(FrontPage& page) {

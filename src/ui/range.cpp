@@ -37,7 +37,7 @@ ItemRange item_range(ItemKind kind) {
 
 namespace {
 
-void mark(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
+void mark(tr::Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
           PatternEffect effect, bool travel = false) {
     const SDL_FRect rect = tile_rect(cell, camera, zoom);
     const std::uint8_t red = effect == PatternEffect::Damage ? 225 :
@@ -46,18 +46,18 @@ void mark(SDL_Renderer* renderer, Cell cell, ViewCamera camera, float zoom,
                                (effect == PatternEffect::Heal ? 219 : 225);
     const std::uint8_t blue = effect == PatternEffect::Damage ? 57 :
                               (effect == PatternEffect::Heal ? 110 : 210);
-    SDL_SetRenderDrawColor(renderer, red, green, blue, travel ? 30 : 49);
-    SDL_RenderFillRect(renderer, &rect);
-    SDL_SetRenderDrawColor(renderer, red, green, blue, travel ? 90 : 155);
+    tr::set_color_bytes(renderer, red, green, blue, travel ? 30 : 49);
+    tr::fill_rect(renderer, &rect);
+    tr::set_color_bytes(renderer, red, green, blue, travel ? 90 : 155);
     if (travel) {
         const float side = rect.w * 0.28F;
-        SDL_RenderLine(renderer, rect.x, rect.y, rect.x + side, rect.y);
-        SDL_RenderLine(renderer, rect.x + rect.w - side, rect.y + rect.h,
+        tr::line(renderer, rect.x, rect.y, rect.x + side, rect.y);
+        tr::line(renderer, rect.x + rect.w - side, rect.y + rect.h,
                        rect.x + rect.w, rect.y + rect.h);
-    } else SDL_RenderRect(renderer, &rect);
+    } else tr::rect(renderer, &rect);
 }
 
-bool circuit_marks(SDL_Renderer* renderer,const Game& game,Cell cell,ViewCamera camera,float zoom) {
+bool circuit_marks(tr::Renderer* renderer,const Game& game,Cell cell,ViewCamera camera,float zoom) {
     const WetWave wave=wet_wave(game,cell,6);
     if (!conductive_cell(game,cell) && wave.ground_node<0) return false;
     if (wave.ground_node>=0) mark(renderer,wave.ground,camera,zoom,PatternEffect::Utility);
@@ -66,7 +66,7 @@ bool circuit_marks(SDL_Renderer* renderer,const Game& game,Cell cell,ViewCamera 
     return true;
 }
 
-void blast_marks(SDL_Renderer* renderer, Cell center, int radius,
+void blast_marks(tr::Renderer* renderer, Cell center, int radius,
                  ViewCamera camera, float zoom, PatternEffect effect) {
     for (int dy = -radius; dy <= radius; ++dy)
         for (int dx = -radius; dx <= radius; ++dx)
@@ -76,14 +76,14 @@ void blast_marks(SDL_Renderer* renderer, Cell center, int radius,
 
 } // namespace
 
-void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_item_range_top(tr::Renderer* renderer, const GameGraphics& graphics,
                          const Game& game, const Entity& player, ViewCamera camera,
                          float zoom, const PointerState& pointer) {
     const Item& held = *player.inventory.held();
     const Cell facing = player.label_b < 0 ? player.point_b : player.facing;
     const ItemPattern pattern = active_item_pattern(held,player);
     if (pattern.effect == PatternEffect::None || held.flight.slot >= 0) return;
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     if (held.kind==ItemKind::SnowShelter) {
         for (Cell cell : snow_shelter_cells(player.cell,facing)) mark(renderer,cell,camera,zoom,PatternEffect::Utility);
     } else if (held.kind==ItemKind::StormLantern) {
@@ -321,14 +321,14 @@ void draw_item_range_top(SDL_Renderer* renderer, const GameGraphics& graphics,
                         camera, zoom, pattern.effect);
         } else mark(renderer, target, camera, zoom, pattern.effect);
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     if (!pointer.inside || held.kind == ItemKind::None) return;
     const SDL_FRect target = tile_rect(pointer.cell, camera, zoom);
     const float side = target.w * 0.45F;
     SDL_FRect icon{target.x + (target.w - side) * 0.5F,
                    target.y + (target.h - side) * 0.5F, side, side};
-    SDL_Texture* texture = texture_for(graphics, item_sprite(held.kind));
-    SDL_SetTextureAlphaMod(texture, 150);
-    SDL_RenderTexture(renderer, texture, nullptr, &icon);
-    SDL_SetTextureAlphaMod(texture, 255);
+    tr::Texture* texture = texture_for(graphics, item_sprite(held.kind));
+    tr::texture_alpha_bytes(texture, 150);
+    tr::draw_texture(renderer, texture, nullptr, &icon);
+    tr::texture_alpha_bytes(texture, 255);
 }

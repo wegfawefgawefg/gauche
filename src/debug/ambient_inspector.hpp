@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 #include "../ambience/system.hpp"
 #include "../render.hpp"
 
@@ -19,4 +20,4 @@ struct AmbientInspector {
 AmbientInspector& ambient_inspector();
 void prepare_ambient_inspector(const Game& live,const AmbientAudio& audio,Cell listener);
 void draw_ambient_inspector();
-void draw_ambient_annotations(SDL_Renderer* renderer,const Game& game,ViewCamera camera,float zoom);
+void draw_ambient_annotations(tr::Renderer* renderer,const Game& game,ViewCamera camera,float zoom);

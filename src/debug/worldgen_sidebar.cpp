@@ -14,12 +14,12 @@ int selected_row(const std::vector<int>& rows,int value) {
     const auto found=std::find(rows.begin(),rows.end(),value);
     return found==rows.end() ? 0 : static_cast<int>(found-rows.begin());
 }
-void text(SDL_Renderer* renderer,float y,const std::string& label,int indent=0) {
+void text(tr::Renderer* renderer,float y,const std::string& label,int indent=0) {
     const int chars=23-indent;
     const auto clipped=label.size()>static_cast<std::size_t>(chars) ? label.substr(0,static_cast<std::size_t>(chars-2))+".." : label;
-    SDL_RenderDebugText(renderer,6+static_cast<float>(indent*8),y,clipped.c_str());
+    tr::debug_text(renderer,6+static_cast<float>(indent*8),y,clipped.c_str());
 }
-void wrapped(SDL_Renderer* renderer,float& y,std::string label,int lines) {
+void wrapped(tr::Renderer* renderer,float& y,std::string label,int lines) {
     while(!label.empty() && lines-->0) {
         std::size_t end=std::min<std::size_t>(23,label.size());
         if(end<label.size()) {const auto space=label.rfind(' ',end);if(space!=std::string::npos && space>0)end=space;}
@@ -96,10 +96,10 @@ bool worldgen_sidebar_event(const SDL_Event& event,WorldGenViewer& v) {
     return false;
 }
 
-void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const GenerationReport& report) {
+void draw_worldgen_sidebar(tr::Renderer* renderer,const WorldGenViewer& v,const GenerationReport& report) {
     if(!v.sidebar_visible)return;
-    SDL_SetRenderDrawColor(renderer,12,17,18,245);const SDL_FRect panel{0,24,width,297};SDL_RenderFillRect(renderer,&panel);
-    SDL_SetRenderDrawColor(renderer,v.sidebar_focus ? 255 : 145,v.sidebar_focus ? 226 : 170,130,255);
+    tr::set_color_bytes(renderer,12,17,18,245);const SDL_FRect panel{0,24,width,297};tr::fill_rect(renderer,&panel);
+    tr::set_color_bytes(renderer,v.sidebar_focus ? 255 : 145,v.sidebar_focus ? 226 : 170,130,255);
     text(renderer,29,v.sidebar_children ? "CHILD CHOICES" : "FLOOR ROLLS");
     text(renderer,40,v.sidebar_focus ? "D-pad select | A focus" : "Back/Tab: browse rolls");
     const auto rows=children(report,v.selected_feature);
@@ -108,8 +108,8 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
     const int first=std::clamp(selected-5,0,std::max(0,count-11));
     for(int n=first;n<std::min(count,first+11);++n) {
         const float y=56+static_cast<float>((n-first)*12);
-        if(n==selected){SDL_SetRenderDrawColor(renderer,60,67,45,255);const SDL_FRect box{2,y-1,width-4,12};SDL_RenderFillRect(renderer,&box);}
-        SDL_SetRenderDrawColor(renderer,n==selected ? 255 : 185,n==selected ? 235 : 194,n==selected ? 145 : 181,255);
+        if(n==selected){tr::set_color_bytes(renderer,60,67,45,255);const SDL_FRect box{2,y-1,width-4,12};tr::fill_rect(renderer,&box);}
+        tr::set_color_bytes(renderer,n==selected ? 255 : 185,n==selected ? 235 : 194,n==selected ? 145 : 181,255);
         if(v.sidebar_children) {
             const auto& c=report.components[static_cast<std::size_t>(rows[static_cast<std::size_t>(n)])];
             int depth=0,parent=c.parent;
@@ -120,7 +120,7 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
             text(renderer,y,std::string(status(d ? d->outcome : GenerationOutcome::Pending))+" "+rule.name);
         }
     }
-    SDL_SetRenderDrawColor(renderer,170,184,177,255);
+    tr::set_color_bytes(renderer,170,184,177,255);
     text(renderer,192,std::to_string(count ? first+1 : 0)+"-"+std::to_string(std::min(count,first+11))+" / "+std::to_string(count));
     float y=205;
     if(v.sidebar_children && !rows.empty()) {
@@ -135,7 +135,7 @@ void draw_worldgen_sidebar(SDL_Renderer* renderer,const WorldGenViewer& v,const 
         wrapped(renderer,y,d ? generation_outcome_name(d->outcome) : "Pending",2);
         if(d)wrapped(renderer,y,d->variant.empty() ? d->reason : d->variant,4);
     } else {wrapped(renderer,y,"+ built | R reserved",2);wrapped(renderer,y,"- missed | X ineligible",2);}
-    SDL_SetRenderDrawColor(renderer,195,197,173,255);
+    tr::set_color_bytes(renderer,195,197,173,255);
     text(renderer,299,v.sidebar_focus ? "Right: child  Left: up" : "Start/F1: weights/info");
     text(renderer,310,v.sidebar_focus ? "B/Back/Tab: map" : "+ built  ! failed  ? next");
 }

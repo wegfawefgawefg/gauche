@@ -27,7 +27,7 @@ std::optional<Sprite> log_far_support(const Stage& stage,Cell cell) {
     return {};
 }
 
-void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,const RoofSpan& roof,int row,
+void draw_roof_row(tr::Renderer* renderer,const GameGraphics& graphics,const Stage& stage,const RoofSpan& roof,int row,
                    const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     constexpr std::array<Sprite,4> bodies{Sprite::RoofLogA,Sprite::RoofFrozenLogA,Sprite::RoofGantryA,Sprite::RoofContainerA};
     constexpr std::array<Sprite,4> ends{Sprite::RoofLogEndA,Sprite::RoofFrozenLogEndA,Sprite::RoofGantryEndA,Sprite::RoofContainerEndA};
@@ -52,7 +52,7 @@ void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Sta
         const auto base=upright_cap ? cap :
             (end ? ends : bodies)[static_cast<std::size_t>(roof.kind)];
         const Sprite sprite=static_cast<Sprite>(static_cast<int>(base)+(roof.vertical && !upright_cap ? 2-across : across));
-        SDL_Texture* texture=texture_for(graphics,sprite);
+        tr::Texture* texture=texture_for(graphics,sprite);
         const float charred=roof.kind==RoofKind::Log ? .45F+.55F*condition : 1;
         const float opacity=reveal ? 42.0F/255 : roof.kind==RoofKind::FrozenLog ? (170+70*condition)/255 : 1;
         // A roof is one surface: shared corner lighting avoids cell-sized
@@ -62,7 +62,7 @@ void draw_roof_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Sta
     }
 }
 
-void draw_roofs(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
+void draw_roofs(tr::Renderer* renderer,const GameGraphics& graphics,const Game& game,
                 const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     for (const auto& roof:game.stage.roofs)
         for (int row=0;row<roof_rows(roof);++row)

@@ -28,6 +28,10 @@ void browser_inspect(MenuShell& menu, float zoom) {
         {"status",net.status},{"roomStatus",menu.front.room_status},
         {"players",game.players.size()},{"snapshot",net.last_snapshot_id},
         {"playing",menu.playing},{"menu",menu.visible},{"phase",static_cast<int>(game.run.phase)}};
+    state["renderer"]=tr::renderer_name(frame.renderer);
+    state["drawBatches"]=frame.renderer->last.batches;
+    state["triangles"]=frame.renderer->last.triangles;
+    state["lightmap"]=frame.renderer->smooth_lighting;
     state["zoom"]=zoom;
     state["seed"]=std::to_string(game.run.seed);
     state["fullscreen"]=menu.front.fullscreen;

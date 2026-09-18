@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-void draw_item_flame(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_item_flame(tr::Renderer* renderer, const GameGraphics& graphics,
     const Item& item, SDL_FRect rect, Cell facing, std::uint64_t tick) {
     if (item.flame_ticks <= 0) return;
     // TIP: Match the held sprite's rotation and left-facing vertical flip. Fire
@@ -14,6 +14,6 @@ void draw_item_flame(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float flicker = 1 + .10F*std::sin(static_cast<float>(tick % 120)*.8F);
     const float height = rect.h*.80F*flicker;
     SDL_FRect flame{x-rect.w*.25F, y-height+rect.h*.12F, rect.w*.50F, height};
-    SDL_Texture* texture = texture_for(graphics, (tick/6)%2 == 0 ? Sprite::FlameA : Sprite::FlameB);
-    SDL_RenderTexture(renderer, texture, nullptr, &flame);
+    tr::Texture* texture = texture_for(graphics, (tick/6)%2 == 0 ? Sprite::FlameA : Sprite::FlameB);
+    tr::draw_texture(renderer, texture, nullptr, &flame);
 }

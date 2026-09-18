@@ -173,10 +173,10 @@ int main(int argc, char** argv) {
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
     if (!SDL_Init(SDL_INIT_VIDEO)) return 1;
-    SDL_Surface* surface = SDL_CreateSurface(1920, 1080, SDL_PIXELFORMAT_RGBA32);
-    SDL_Renderer* renderer = surface == nullptr ? nullptr : SDL_CreateSoftwareRenderer(surface);
+    SDL_Window* window = tr::create_window("Static capture", 1920, 1080, SDL_WINDOW_HIDDEN);
+    tr::Renderer* renderer = window == nullptr ? nullptr : tr::create_renderer(window, nullptr);
     if (renderer == nullptr) return 1;
-    SDL_SetRenderScale(renderer, 3.0F, 3.0F);
+    tr::set_scale(renderer, 3.0F, 3.0F);
     GameGraphics graphics;
     std::string error;
     if (!load_graphics(graphics, renderer,
@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
     const std::string_view mode = argc >= 3 ? argv[2] : "terrain";
     SDL_Window* debug_window = nullptr;
     if (mode == "debug" || mode == "debug-levels" || mode == "debug-loadout") {
-        debug_window = SDL_CreateWindow("Static debug capture", 1920, 1080, SDL_WINDOW_HIDDEN);
+        debug_window = tr::create_window("Static debug capture", 1920, 1080, SDL_WINDOW_HIDDEN);
         init_debug_panels(debug_window, renderer);
         debug_panels().visible = true;
         debug_panels().combat = mode == "debug";
@@ -460,11 +460,11 @@ int main(int argc, char** argv) {
             Reward{RewardKind::Health, ItemKind::None, ArtifactKind::None, 15},
             Reward{RewardKind::Item, ItemKind::Bow, ArtifactKind::None, 1}};
     }
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    tr::set_color_bytes(renderer, 0, 0, 0, 255);
+    tr::clear(renderer);
     if (mode == "overhead") {
-        SDL_SetRenderDrawColor(renderer, 80, 98, 77, 255);
-        SDL_RenderClear(renderer);
+        tr::set_color_bytes(renderer, 80, 98, 77, 255);
+        tr::clear(renderer);
         for (Tile& tile : game.stage.tiles) tile.kind = TileKind::Wall;
         draw_overhead(renderer, graphics, game, &cosmetics, cosmetics.camera, 2, {});
     } else if (mode == "light-gradient") render_light_gradient(renderer, game, cosmetics.camera);
@@ -484,17 +484,19 @@ int main(int argc, char** argv) {
     }
     if (mode == "fps") draw_frame_rate(renderer, 60);
     if (mode == "debug" || mode == "debug-levels" || mode == "debug-loadout") {
-        SDL_SetRenderScale(renderer, 1, 1);
+        tr::set_scale(renderer, 1, 1);
         draw_debug_panels(game, 0);
         draw_debug_panels(game, 0);
         shutdown_debug_panels();
     }
-    SDL_RenderPresent(renderer);
-    const bool saved = IMG_SavePNG(surface, argv[1]);
+    tr::present(renderer);
+    SDL_Surface* surface = tr::read_pixels(renderer, nullptr);
+    const bool saved = surface && IMG_SavePNG(surface, argv[1]);
     unload_graphics(graphics);
-    SDL_DestroyRenderer(renderer);
+    tr::destroy_renderer(renderer);
     SDL_DestroySurface(surface);
     SDL_DestroyWindow(debug_window);
+    SDL_DestroyWindow(window);
     SDL_Quit();
     return saved ? 0 : 1;
 }

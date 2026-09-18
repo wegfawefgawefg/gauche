@@ -17,7 +17,7 @@ constexpr std::array<Sprite, static_cast<std::size_t>(DebrisKind::Count)> sprite
 };
 }
 
-void draw_debris(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_debris(tr::Renderer* renderer, const GameGraphics& graphics,
                   const LooseDebris& debris, ViewCamera camera, float zoom,
                   const LightingCache& lighting) {
     const float pixels = tile_pixels(zoom);
@@ -28,11 +28,11 @@ void draw_debris(SDL_Renderer* renderer, const GameGraphics& graphics,
         const float size = pixels * (.35F + static_cast<float>(std::min<int>(p.count, 6)) * .025F);
         const SDL_FRect rect{x - size * .5F, y - size * .5F, size, size};
         const Sprite sprite = sprites[static_cast<std::size_t>(p.kind)];
-        SDL_Texture* texture = texture_for(graphics, sprite);
+        tr::Texture* texture = texture_for(graphics, sprite);
         const LightColor light = light_at_cell(lighting,
             {static_cast<int>(std::floor(p.x)), static_cast<int>(std::floor(p.y))});
-        SDL_SetTextureColorModFloat(texture, light.red * .78F, light.green * .78F, light.blue * .78F);
-        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, p.angle, nullptr, SDL_FLIP_NONE);
-        SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+        tr::texture_color(texture, light.red * .78F, light.green * .78F, light.blue * .78F);
+        tr::draw_rotated(renderer, texture, nullptr, &rect, p.angle, nullptr, SDL_FLIP_NONE);
+        tr::texture_color(texture, 1, 1, 1);
     }
 }

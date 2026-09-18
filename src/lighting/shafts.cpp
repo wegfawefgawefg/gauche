@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <array>
 
-void draw_canopy_shafts(SDL_Renderer* renderer, const Game& game,
+void draw_canopy_shafts(tr::Renderer* renderer, const Game& game,
                         ViewCamera camera, float zoom) {
     PerfScope perf_scope(PerfZone::Overhead);
     if (game.run.phase == RunPhase::Arena || !forest_floor(game.run.floor)) return;
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (int i = 0; i < game.run.roof_light_count; ++i) {
         const StageLight& source = game.run.roof_lights[static_cast<std::size_t>(i)];
@@ -53,8 +53,8 @@ void draw_canopy_shafts(SDL_Renderer* renderer, const Game& game,
                     indices[static_cast<std::size_t>(index_count++)] = vertex;
             }
         }
-        SDL_RenderGeometry(renderer, nullptr, beam.data(), static_cast<int>(beam.size()),
+        tr::geometry(renderer, nullptr, beam.data(), static_cast<int>(beam.size()),
                            indices.data(), index_count);
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }

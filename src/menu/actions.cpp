@@ -140,7 +140,7 @@ void set_video(MenuShell& menu, std::string_view action) {
         } else page.toast = "Could not change window mode";
     } else if (action == "display:vsync") {
         const bool next = !page.vsync;
-        if (frame.renderer && SDL_SetRenderVSync(frame.renderer, next ? 1 : 0)) {
+        if (frame.renderer && tr::set_vsync(frame.renderer, next ? 1 : 0)) {
             page.vsync = next;
             set_top_level_setting_int(engine.top_level_game_settings,
                 "gubsy.video.vsync", next ? 1 : 0);
@@ -214,7 +214,7 @@ void initialize_menu_settings(MenuShell& menu) {
 #endif
     // Apply the saved preference to this newly created renderer, not only when toggled.
     const auto frame = gubsy_get_frame(*menu.runtime);
-    if (frame.renderer && !SDL_SetRenderVSync(frame.renderer, page.vsync ? 1 : 0))
+    if (frame.renderer && !tr::set_vsync(frame.renderer, page.vsync ? 1 : 0))
         std::fprintf(stderr, "Could not apply V-sync preference: %s\n", SDL_GetError());
     page.show_fps = get_top_level_setting_int(engine.top_level_game_settings,
         "gubsy.video.show_fps", 0) != 0;

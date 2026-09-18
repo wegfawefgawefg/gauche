@@ -16,9 +16,9 @@ SDL_FRect jolted_prop_rect(SDL_FRect rect,Cell cell,const Cosmetics* cosmetics) 
     return rect;
 }
 
-void draw_wood_splits(SDL_Renderer* renderer,const GameGraphics& graphics,
+void draw_wood_splits(tr::Renderer* renderer,const GameGraphics& graphics,
     SDL_FRect rect,Cell cell,int hp,int max_hp,int turns,const LightingCache& lighting) {
     if (hp<=0 || hp>=max_hp) return;
-    SDL_Texture* texture=texture_for(graphics,hp*2>max_hp ? Sprite::WoodBruised : Sprite::WoodSplit);
+    tr::Texture* texture=texture_for(graphics,hp*2>max_hp ? Sprite::WoodBruised : Sprite::WoodSplit);
     draw_lit_tile(renderer,texture,rect,cell,lighting,{1,1,1},{0,0,1,1},turns);
 }

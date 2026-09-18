@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../game.hpp"
 #include "../view.hpp"
@@ -40,7 +41,7 @@ void scatter_material(LooseDebris& debris, Cell cell, DebrisKind kind,
 void push_debris(LooseDebris& debris, Cell cell, float radius, float force,
                   Cell direction = {});
 void step_debris(LooseDebris& debris, const Stage& stage, std::uint64_t tick, bool wind);
-void draw_debris(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_debris(tr::Renderer* renderer, const GameGraphics& graphics,
                   const LooseDebris& debris, ViewCamera camera, float zoom,
                   const LightingCache& lighting);
 

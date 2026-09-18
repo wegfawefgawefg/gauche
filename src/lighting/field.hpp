@@ -39,6 +39,7 @@ struct LightingCache {
     int width = 0;
     int height = 0;
     bool active = false;
+    std::uint64_t revision = 0;
     std::vector<float> ambient;
     std::vector<LightColor> cast;
 

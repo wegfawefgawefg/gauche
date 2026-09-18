@@ -37,20 +37,20 @@ void apply_flight_pose(const Entity& bird, std::uint64_t tick, SDL_FRect& rect, 
 }
 
 // LANDING: A small wing shadow marks the remembered cell, not a full debug grid.
-void draw_owl_landing(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game,
+void draw_owl_landing(tr::Renderer* renderer, const GameGraphics& graphics, const Game& game,
     ViewCamera camera, float zoom, const LightingCache& lighting) {
-    SDL_Texture* texture = texture_for(graphics, Sprite::OwlFlying);
+    tr::Texture* texture = texture_for(graphics, Sprite::OwlFlying);
     for (const Entity& owl : game.entities) {
         if (owl.kind != EntityKind::Owl || owl.health <= 0 || owl.sleep_ticks > 0 ||
             owl.stun_ticks > 0 || (owl.label_a != 1 && owl.label_a != 2)) continue;
         SDL_FRect rect = tile_rect(owl.point_b, camera, zoom);
         if (rect.x < -rect.w || rect.x > 640 || rect.y < -rect.h || rect.y > 360) continue;
         const LightColor light = lit_sprite_color(lighting, owl.point_b);
-        SDL_SetTextureColorModFloat(texture, light.red*.18F, light.green*.18F, light.blue*.18F);
-        SDL_SetTextureAlphaMod(texture, 180);
+        tr::texture_color(texture, light.red*.18F, light.green*.18F, light.blue*.18F);
+        tr::texture_alpha_bytes(texture, 180);
         rect.x += rect.w*.16F; rect.y += rect.h*.3F; rect.w *= .68F; rect.h *= .4F;
-        SDL_RenderTexture(renderer, texture, nullptr, &rect);
+        tr::draw_texture(renderer, texture, nullptr, &rect);
     }
-    SDL_SetTextureColorModFloat(texture, 1, 1, 1);
-    SDL_SetTextureAlphaMod(texture, 255);
+    tr::texture_color(texture, 1, 1, 1);
+    tr::texture_alpha_bytes(texture, 255);
 }

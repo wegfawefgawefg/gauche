@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-void draw_ice_pillar(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
+void draw_ice_pillar(tr::Renderer* renderer,const GameGraphics& graphics,const Game& game,
                      Cell cell,ViewCamera camera,float zoom,const LightingCache& lighting) {
     const Prop& prop=game.stage.at(cell)->prop;
     const SDL_FRect floor=tile_rect(cell,camera,zoom);
@@ -23,30 +23,30 @@ void draw_ice_pillar(SDL_Renderer* renderer,const GameGraphics& graphics,const G
     const Sprite sprite=family==2 ? (cracked ? Sprite::IcePillarForkedCracked : Sprite::IcePillarForked) :
         family==3 ? (cracked ? Sprite::IcePillarBroadCracked : Sprite::IcePillarBroad) :
         cracked ? Sprite::IcePillarCracked : Sprite::IcePillar;
-    SDL_Texture* texture=texture_for(graphics,sprite);
+    tr::Texture* texture=texture_for(graphics,sprite);
     const auto light=light_at_cell(lighting,cell);
-    SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
+    tr::texture_color(texture,light.red,light.green,light.blue);
     bool obscures=false;
     for (Handle h : controlled_entities(game)) if (const Entity* player=get_entity(game,h))
         if (player->health>0 && std::abs(player->cell.x-cell.x)<=1 && player->cell.y<cell.y && player->cell.y>=cell.y-pillar_height(prop)) obscures=true;
-    SDL_SetTextureAlphaMod(texture,obscures ? 105 : 235);
-    SDL_RenderTextureRotated(renderer,texture,nullptr,&body,std::atan2(dx,-dy)*180/3.141592653589793,&pivot,SDL_FLIP_NONE);
-    SDL_SetTextureAlphaMod(texture,255);SDL_SetTextureColorModFloat(texture,1,1,1);
+    tr::texture_alpha_bytes(texture,obscures ? 105 : 235);
+    tr::draw_rotated(renderer,texture,nullptr,&body,std::atan2(dx,-dy)*180/3.141592653589793,&pivot,SDL_FLIP_NONE);
+    tr::texture_alpha_bytes(texture,255);tr::texture_color(texture,1,1,1);
 }
-void draw_pillar_shadow(SDL_Renderer* renderer,const Stage& stage,Cell cell,ViewCamera camera,float zoom) {
+void draw_pillar_shadow(tr::Renderer* renderer,const Stage& stage,Cell cell,ViewCamera camera,float zoom) {
     const Prop& prop=stage.at(cell)->prop;
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
     SDL_FRect base=tile_rect(cell,camera,zoom);base.x+=base.w*.1F;base.y+=base.h*.48F;base.w*=.8F;base.h*=.22F;
-    SDL_SetRenderDrawColor(renderer,0,0,0,150);SDL_RenderFillRect(renderer,&base);
+    tr::set_color_bytes(renderer,0,0,0,150);tr::fill_rect(renderer,&base);
     if (prop.growth_ticks) {
         const Cell dir=pillar_direction(prop);
         for (int i=1;i<=pillar_reach(prop);++i) {
             const Cell target=cell+Cell{dir.x*i,dir.y*i};
             if (!walkable(stage.at_or_border(target).kind)) break;
             SDL_FRect rect=tile_rect(target,camera,zoom);rect.x+=rect.w*.12F;rect.y+=rect.h*.22F;rect.w*=.76F;rect.h*=.56F;
-            SDL_SetRenderDrawColor(renderer,0,0,0,170);SDL_RenderFillRect(renderer,&rect);
-            SDL_SetRenderDrawColor(renderer,166,204,217,200);SDL_RenderRect(renderer,&rect);
+            tr::set_color_bytes(renderer,0,0,0,170);tr::fill_rect(renderer,&rect);
+            tr::set_color_bytes(renderer,166,204,217,200);tr::rect(renderer,&rect);
         }
     }
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer,SDL_BLENDMODE_NONE);
 }

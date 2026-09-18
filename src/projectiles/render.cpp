@@ -11,14 +11,14 @@
 
 namespace {
 
-void draw_net(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity& shot,
+void draw_net(tr::Renderer* renderer, const GameGraphics& graphics, const Entity& shot,
               const Game& game, ViewCamera camera, float zoom, const LightingCache& lighting) {
     const int width = item_pattern(shot.ground_item).half_width;
     const Cell side{-shot.facing.y, shot.facing.x};
     const float travel = projectile_blocked(game, shot.cell + shot.facing) ? 0 :
         std::clamp(1 - static_cast<float>(shot.timer_b) / 4, 0.0F, 1.0F);
     const float pixels = tile_pixels(zoom);
-    SDL_Texture* texture = texture_for(graphics, Sprite::NetFlight);
+    tr::Texture* texture = texture_for(graphics, Sprite::NetFlight);
     const double angle = std::atan2(static_cast<double>(shot.facing.y), static_cast<double>(shot.facing.x)) * 180 / 3.141592653589793;
     for (int lane = -width; lane <= width; ++lane) {
         if ((shot.label_b & (1 << (lane + width))) == 0) continue;
@@ -29,10 +29,10 @@ void draw_net(SDL_Renderer* renderer, const GameGraphics& graphics, const Entity
         rect.x += static_cast<float>(shot.facing.x) * offset * pixels;
         rect.y += static_cast<float>(shot.facing.y) * offset * pixels;
         const LightColor light = lit_sprite_color(lighting, cell);
-        SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
+        tr::texture_color(texture, light.red, light.green, light.blue);
+        tr::draw_rotated(renderer, texture, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
     }
-    SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+    tr::texture_color(texture, 1, 1, 1);
 }
 
 } // namespace
@@ -70,7 +70,7 @@ ProjectilePose projectile_pose(const Entity& shot,const Game& game,ViewCamera ca
     return pose;
 }
 
-void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_projectile(tr::Renderer* renderer, const GameGraphics& graphics,
                      const Entity& shot, const Game& game, ViewCamera camera,
                      float zoom, const LightingCache& lighting) {
     if (shot.label_a == static_cast<int>(ProjectileKind::Net)) { draw_net(renderer, graphics, shot, game, camera, zoom, lighting); return; }
@@ -101,78 +101,78 @@ void draw_projectile(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (const Entity* victim=get_entity(game,shot.entity_b)) render_cell=victim->cell;
     rect.x += pixels * .17F; rect.y += pixels * .17F;
     rect.w = rect.h = pixels * .66F;
-    SDL_Texture* texture = texture_for(graphics, shot.ground_item.kind==ItemKind::GlowSlag ? item_sprite(shot.ground_item) : shot.sprite);
+    tr::Texture* texture = texture_for(graphics, shot.ground_item.kind==ItemKind::GlowSlag ? item_sprite(shot.ground_item) : shot.sprite);
     const LightColor light = lit_sprite_color(lighting, render_cell);
-    SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
+    tr::texture_color(texture, light.red, light.green, light.blue);
     const double angle = spinning ? static_cast<double>(game.tick % 12) * 30 : blink ? static_cast<double>(game.tick % 18) * 20 : thrown ? (shot.counter_a > 0 ? static_cast<double>(game.tick % 60) * 9 : 0) :
         shot.facing.x > 0 ? 0 : shot.facing.x < 0 ? 180 : shot.facing.y > 0 ? 90 : -90;
     const double wobble = drill ? ((game.tick / 3) % 2 == 0 ? -7.0 : 7.0) : 0;
     if (hook) {
         if (const Entity* owner = get_entity(game, shot.entity_a)) {
             const SDL_FRect hand = tile_rect(owner->cell, camera, zoom);
-            SDL_SetRenderDrawColorFloat(renderer, light.red * (fishing ? .70F : .57F),
+            tr::set_color(renderer, light.red * (fishing ? .70F : .57F),
                 light.green * (fishing ? .72F : .47F), light.blue * (fishing ? .67F : .31F), 1);
             const float x=hand.x+hand.w*.5F,y=hand.y+hand.h*.5F;
             const float dx=rect.x+rect.w*.5F-x,dy=rect.y+rect.h*.5F-y;
             if (chain) {
-                SDL_SetRenderDrawColorFloat(renderer,light.red*.55F,light.green*.58F,light.blue*.60F,1);
+                tr::set_color(renderer,light.red*.55F,light.green*.58F,light.blue*.60F,1);
                 const int links=std::max(1,static_cast<int>(std::hypot(dx,dy)/4));
                 for (int i=0;i<links;++i) {
                     const float a=static_cast<float>(i)/static_cast<float>(links);
                     const float b=(static_cast<float>(i)+.7F)/static_cast<float>(links);
-                    SDL_RenderLine(renderer,x+dx*a,y+dy*a,x+dx*b,y+dy*b);
+                    tr::line(renderer,x+dx*a,y+dy*a,x+dx*b,y+dy*b);
                 }
-            } else SDL_RenderLine(renderer,x,y,x+dx,y+dy);
+            } else tr::line(renderer,x,y,x+dx,y+dy);
         }
     }
     // CARGO: The actual item is already drawn at this cell; keep the hook off its icon.
     if ((!fishing || shot.label_b != FishingCargo) && (!(chain || widow || harpoon) || shot.label_b == 0))
-        SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
-    SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+        tr::draw_rotated(renderer, texture, nullptr, &rect, angle + wobble, nullptr, SDL_FLIP_NONE);
+    tr::texture_color(texture, 1, 1, 1);
     if (burning_arrow(shot)) {
         // Keep the flame upright and attached to the moving arrowhead.
         const float x=rect.x+rect.w*(.5F+.32F*static_cast<float>(shot.facing.x));
         const float y=rect.y+rect.h*(.5F+.32F*static_cast<float>(shot.facing.y));
         const float height=pixels*((game.tick/3)%2==0 ? .38F : .46F);
         const SDL_FRect flame{x-pixels*.13F,y-height+pixels*.08F,pixels*.26F,height};
-        SDL_RenderTexture(renderer,texture_for(graphics,(game.tick/3)%2==0 ? Sprite::FlameA : Sprite::FlameB),nullptr,&flame);
+        tr::draw_texture(renderer,texture_for(graphics,(game.tick/3)%2==0 ? Sprite::FlameA : Sprite::FlameB),nullptr,&flame);
     }
     if (foam && shot.label_b==1) {
-        SDL_Texture* mound=texture_for(graphics,Sprite::FoamCover);
+        tr::Texture* mound=texture_for(graphics,Sprite::FoamCover);
         const float size=.18F+.65F*(1-static_cast<float>(shot.timer_a)/foam_expand_ticks);
         SDL_FRect cloud=tile_rect(shot.cell,camera,zoom);
         cloud.x+=cloud.w*(1-size)*.5F;cloud.y+=cloud.h*(1-size);cloud.w*=size;cloud.h*=size;
-        SDL_SetTextureColorModFloat(mound,light.red,light.green,light.blue);
-        SDL_RenderTexture(renderer,mound,nullptr,&cloud);
-        SDL_SetTextureColorModFloat(mound,1,1,1);
+        tr::texture_color(mound,light.red,light.green,light.blue);
+        tr::draw_texture(renderer,mound,nullptr,&cloud);
+        tr::texture_color(mound,1,1,1);
     }
     if (echo && shot.use_flash>0) {
         const float spread = pixels*(1-static_cast<float>(shot.use_flash)/12);
         const float x = rect.x+rect.w*.5F, y = rect.y+rect.h*.5F;
-        SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer,139,198,211,static_cast<Uint8>(shot.use_flash*12));
+        tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
+        tr::set_color_bytes(renderer,139,198,211,static_cast<Uint8>(shot.use_flash*12));
         const SDL_FPoint wave[]{{x-spread,y},{x,y-spread*.5F},{x+spread,y},{x,y+spread*.5F},{x-spread,y}};
-        SDL_RenderLines(renderer,wave,5);
-        SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+        tr::lines(renderer,wave,5);
+        tr::set_blend(renderer,SDL_BLENDMODE_NONE);
     }
     if (rocket) {
-        SDL_SetRenderDrawColor(renderer, 255, 181, 76, 255);
+        tr::set_color_bytes(renderer, 255, 181, 76, 255);
         const float x = rect.x + rect.w * .5F, y = rect.y + rect.h * .5F;
-        SDL_RenderLine(renderer, x - static_cast<float>(shot.facing.x) * pixels * .35F,
+        tr::line(renderer, x - static_cast<float>(shot.facing.x) * pixels * .35F,
             y - static_cast<float>(shot.facing.y) * pixels * .35F,
             x - static_cast<float>(shot.facing.x) * pixels * .65F,
             y - static_cast<float>(shot.facing.y) * pixels * .65F);
     }
     if (thaw || flare || prism || bomb || cracker || pitch) {
         // FUSE: A few local sparks communicate danger without a debug attack grid.
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < 3; ++i) {
             const float beat = static_cast<float>((game.tick + static_cast<std::uint64_t>(i * 5)) % 17) / 17;
-            SDL_SetRenderDrawColor(renderer, shot.freeze_ticks>0 ? 133 : prism ? 186 : 255, static_cast<Uint8>(shot.freeze_ticks>0 ? 211 : flare ? 65 : prism ? 218 : 180 - i * 25), shot.freeze_ticks>0 ? 235 : flare ? 42 : prism ? 255 : 62,
+            tr::set_color_bytes(renderer, shot.freeze_ticks>0 ? 133 : prism ? 186 : 255, static_cast<Uint8>(shot.freeze_ticks>0 ? 211 : flare ? 65 : prism ? 218 : 180 - i * 25), shot.freeze_ticks>0 ? 235 : flare ? 42 : prism ? 255 : 62,
                 static_cast<Uint8>(230 * (1-beat)));
-            SDL_RenderPoint(renderer, rect.x + rect.w * .68F + pixels * beat * (i == 1 ? -.18F : .12F),
+            tr::point(renderer, rect.x + rect.w * .68F + pixels * beat * (i == 1 ? -.18F : .12F),
                 rect.y + rect.h * .1F - pixels * beat * .35F);
         }
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+        tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     }
 }

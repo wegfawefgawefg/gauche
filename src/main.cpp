@@ -50,7 +50,7 @@ constexpr double step_seconds = 1.0 / 60.0;
 
 int main(int argc, char** argv) {
 #ifdef __EMSCRIPTEN__
-    // We yield once through our RAF scheduler, not again inside SDL_RenderPresent.
+    // We yield once through our RAF scheduler, not again inside tr::present.
     SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY,"0");
     SDL_SetHint(SDL_HINT_RENDER_VSYNC,"0");
 #endif
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
 
     init_debug_panels(gubsy_get_frame(host).window, gubsy_get_frame(host).renderer);
     performance().directory = user_data_root();
-    performance().renderer = SDL_GetRendererName(gubsy_get_frame(host).renderer);
+    performance().renderer = tr::renderer_name(gubsy_get_frame(host).renderer);
     if (const auto path=value_arg(argc,argv,"--profile-csv");!path.empty()) {
         const int count=number_arg(value_arg(argc,argv,"--profile-frames")).value_or(1800);
         if(!start_performance_capture(std::string(path),count))
@@ -407,13 +407,13 @@ int main(int argc, char** argv) {
             cleanup_gubsy_runtime(host);
             return 1;
         }
-        SDL_SetRenderTarget(frame.renderer, frame.render_target);
-        SDL_SetRenderScale(frame.renderer,
+        tr::set_target(frame.renderer, frame.render_target);
+        tr::set_scale(frame.renderer,
                            static_cast<float>(frame.render_width) / 640.0F,
                            static_cast<float>(frame.render_height) / 360.0F);
-        SDL_SetRenderDrawColor(frame.renderer, 11, 14, 12, 255);
-        SDL_RenderClear(frame.renderer);
-        SDL_SetRenderDrawColor(frame.renderer, 175, 206, 164, 255);
+        tr::set_color_bytes(frame.renderer, 11, 14, 12, 255);
+        tr::clear(frame.renderer);
+        tr::set_color_bytes(frame.renderer, 175, 206, 164, 255);
         const Game& active = networked ? network.rollback.game : game;
         if (border_smoke) { cosmetics.camera = active.run.roof_lights[0].cell; cosmetics.camera_ready = true; }
         const int ambient_owner = networked ? network.local_owner : 0;
@@ -446,7 +446,7 @@ int main(int argc, char** argv) {
             if (networked) {
                 const std::string status = menu.rooms.active ?
                     "Room " + menu.rooms.code + " · " + traversal_status(network) : network.status;
-                SDL_RenderDebugText(frame.renderer, 18.0F, 272.0F, status.c_str());
+                tr::debug_text(frame.renderer, 18.0F, 272.0F, status.c_str());
             }
             if (!menu.visible && !interaction.inventory_open && active.run.phase == RunPhase::Playing)
                 draw_stage_announcement(frame.renderer, announcement);
@@ -456,29 +456,29 @@ int main(int argc, char** argv) {
             render_title_backdrop(frame.renderer, graphics, title_scene);
         } else if (!menu.visible) {
             SDL_FRect title_rect{24.0F, 24.0F, 64.0F, 64.0F};
-            SDL_RenderTexture(frame.renderer, texture_for(graphics, Sprite::Player), nullptr, &title_rect);
-            SDL_RenderDebugText(frame.renderer, 104.0F, 40.0F, "TEEMING");
-            SDL_RenderDebugText(frame.renderer, 104.0F, 60.0F,
+            tr::draw_texture(frame.renderer, texture_for(graphics, Sprite::Player), nullptr, &title_rect);
+            tr::debug_text(frame.renderer, 104.0F, 40.0F, "TEEMING");
+            tr::debug_text(frame.renderer, 104.0F, 60.0F,
                                 networked ? network.status.c_str() : "PRESS ENTER TO START");
         }
         if (worldgen_viewer().playing) {
-            SDL_SetRenderDrawColor(frame.renderer,235,235,215,255);
-            SDL_RenderDebugText(frame.renderer,160,348,"F6 / controller Back: return to generation viewer");
+            tr::set_color_bytes(frame.renderer,235,235,215,255);
+            tr::debug_text(frame.renderer,160,348,"F6 / controller Back: return to generation viewer");
         }
         if (menu.front.show_fps)
             draw_frame_rate(frame.renderer, gubsy_displayed_fps(host));
-        SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
+        tr::set_scale(frame.renderer, 1.0F, 1.0F);
         frame_phase.next(PerfZone::MenuDraw);
         render_menu_shell(menu, frame.renderer, frame.render_width, frame.render_height);
         if (capture != nullptr && !captured && frames >= capture_frame) {
-            SDL_Surface* surface = SDL_RenderReadPixels(frame.renderer, nullptr);
+            SDL_Surface* surface = tr::read_pixels(frame.renderer, nullptr);
             if (surface == nullptr || !SDL_SaveBMP(surface, capture)) {
                 std::fprintf(stderr, "Capture failed: %s\n", SDL_GetError());
             } else captured = true;
             SDL_DestroySurface(surface);
         }
-        SDL_SetRenderTarget(frame.renderer, nullptr);
-        SDL_SetRenderScale(frame.renderer, 1.0F, 1.0F);
+        tr::set_target(frame.renderer, nullptr);
+        tr::set_scale(frame.renderer, 1.0F, 1.0F);
         frame_phase.next(PerfZone::WindowBlit);
         if (!gubsy_draw_frame_to_window(host)) {
             std::fprintf(stderr, "Gubsy present failed: %s\n", SDL_GetError());
@@ -504,7 +504,7 @@ int main(int argc, char** argv) {
 #endif
         frame_phase.stop();
         if(performance().recording) {
-            int vsync=0;SDL_GetRenderVSync(frame.renderer,&vsync);
+            int vsync=0;tr::get_vsync(frame.renderer,&vsync);
             const auto flags=SDL_GetWindowFlags(frame.window);
             end_performance_frame(cap,vsync,frame.render_width,frame.render_height,
                 (flags&SDL_WINDOW_INPUT_FOCUS)!=0,(flags&SDL_WINDOW_MINIMIZED)!=0);

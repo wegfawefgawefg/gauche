@@ -72,6 +72,22 @@ async function load() {
     game.setAutoReports=reporting.setEnabled;
     game.reportFailure=reporting.report;
     game.saveReport=saveReport;
+    game.rendererFailure = message => {
+      loading.hidden = false;
+      status.textContent = message;
+      progress.hidden = true;
+      document.querySelector('#report').hidden = false;
+      let retry = document.querySelector('#renderer-retry');
+      if (!retry) {
+        retry = document.createElement('button'); retry.id = 'renderer-retry';
+        retry.textContent = 'Reload with WebGL 2';
+        retry.onclick = () => {
+          const url = new URL(location.href); url.searchParams.set('renderer', 'webgl2');
+          location.replace(url);
+        };
+        loading.append(retry);
+      }
+    };
     setInterval(reporting.observe,1000);
     const fs = game.FS;
     fs.mkdirTree('/persistent');

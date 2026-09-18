@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../game.hpp"
 
@@ -16,7 +17,7 @@ struct DebugPanels {
 };
 
 DebugPanels& debug_panels();
-void init_debug_panels(SDL_Window* window, SDL_Renderer* renderer);
+void init_debug_panels(SDL_Window* window, tr::Renderer* renderer);
 void shutdown_debug_panels();
 bool debug_event(const SDL_Event& event);
 void draw_debug_panels(const Game& game, int owner, bool offline = true);

@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../game.hpp"
 
@@ -50,5 +51,5 @@ bool interaction_event(InteractionUi& ui, const SDL_Event& event,
                        const GubsyFrame& frame, const Game& game, int owner);
 void apply_interaction_input(InteractionUi& ui, const Game& game, int owner,
                              GubsyRuntime& runtime, Input& input);
-void draw_interaction(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_interaction(tr::Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, int owner, const InteractionUi& ui);

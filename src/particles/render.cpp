@@ -18,7 +18,7 @@ float screen_y(float y, ViewCamera camera, float pixels, float parallax) {
     return view_center_y + (y - camera.y) * parallax * pixels;
 }
 
-void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_sprite(tr::Renderer* renderer, const GameGraphics& graphics,
                  const SpriteParticle& particle, ViewCamera camera, float pixels,
                  const LightingCache* lighting) {
     const float age = static_cast<float>(particle.span - particle.life);
@@ -36,12 +36,12 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
     const Sprite id = particle.motion == ParticleMotion::Animated &&
                       (static_cast<int>(age) / 12) % 2 != 0 ?
                       particle.next_sprite : particle.sprite;
-    SDL_Texture* texture = texture_for(graphics, id);
+    tr::Texture* texture = texture_for(graphics, id);
     if (lighting != nullptr && particle.layer != ParticleLayer::Weather) {
         const LightColor light = light_at_cell(*lighting,
             {static_cast<int>(std::floor(particle.x)),
              static_cast<int>(std::floor(particle.y))});
-        SDL_SetTextureColorModFloat(texture, std::max(light.red, particle.self_glow.red),
+        tr::texture_color(texture, std::max(light.red, particle.self_glow.red),
             std::max(light.green, particle.self_glow.green),
             std::max(light.blue, particle.self_glow.blue));
     }
@@ -49,24 +49,24 @@ void draw_sprite(SDL_Renderer* renderer, const GameGraphics& graphics,
         static_cast<float>(particle.life) / static_cast<float>(particle.span) :
         std::min(1.0F, static_cast<float>(particle.life) /
                        std::max(1.0F, static_cast<float>(particle.span) * 0.25F));
-    SDL_SetTextureAlphaMod(texture, static_cast<std::uint8_t>(
+    tr::texture_alpha_bytes(texture, static_cast<std::uint8_t>(
         std::clamp(particle.alpha * fade, 0.0F, 1.0F) * 255.0F));
-    SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, particle.angle,
+    tr::draw_rotated(renderer, texture, nullptr, &rect, particle.angle,
                              nullptr, SDL_FLIP_NONE);
-    SDL_SetTextureAlphaMod(texture, 255);
-    SDL_SetTextureColorModFloat(texture, 1.0F, 1.0F, 1.0F);
+    tr::texture_alpha_bytes(texture, 255);
+    tr::texture_color(texture, 1.0F, 1.0F, 1.0F);
 }
 
-void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
+void draw_ribbon(tr::Renderer* renderer, const RibbonParticle& ribbon,
                  ViewCamera camera, float pixels) {
     if (ribbon.count < 2) return;
     const auto alpha = static_cast<std::uint8_t>(
         220 * ribbon.life / std::max(1, ribbon.span));
-    SDL_SetRenderDrawColor(renderer, ribbon.red, ribbon.green, ribbon.blue, alpha);
+    tr::set_color_bytes(renderer, ribbon.red, ribbon.green, ribbon.blue, alpha);
     for (int index = 1; index < ribbon.count; ++index) {
         const SDL_FPoint first = ribbon.points[static_cast<std::size_t>(index - 1)];
         const SDL_FPoint second = ribbon.points[static_cast<std::size_t>(index)];
-        SDL_RenderLine(renderer,
+        tr::line(renderer,
             screen_x(first.x, camera, pixels, 1.0F),
             screen_y(first.y, camera, pixels, 1.0F),
             screen_x(second.x, camera, pixels, 1.0F),
@@ -74,13 +74,13 @@ void draw_ribbon(SDL_Renderer* renderer, const RibbonParticle& ribbon,
     }
 }
 
-void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
+void draw_ring(tr::Renderer* renderer, const RingParticle& ring,
                ViewCamera camera, float pixels, const LightingCache* lighting, const Stage* stage) {
     const auto alpha = static_cast<std::uint8_t>(
         205 * ring.life / std::max(1, ring.span));
     const LightColor light = lighting != nullptr && ring.water ? light_at_cell(*lighting,
         {static_cast<int>(ring.x), static_cast<int>(ring.y)}) : LightColor{1, 1, 1};
-    SDL_SetRenderDrawColorFloat(renderer, light.red * static_cast<float>(ring.red) / 255,
+    tr::set_color(renderer, light.red * static_cast<float>(ring.red) / 255,
         light.green * static_cast<float>(ring.green) / 255,
         light.blue * static_cast<float>(ring.blue) / 255, static_cast<float>(alpha) / 255);
     const float cx = screen_x(ring.x, camera, pixels, 1.0F);
@@ -95,7 +95,7 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
                 static_cast<int>(std::floor(ring.y + std::sin(first) * ring.radius * height))};
             if (!surface_wet(stage->at_or_border(cell))) continue;
         }
-        SDL_RenderLine(renderer,
+        tr::line(renderer,
             cx + std::cos(first) * ring.radius * pixels,
             cy + std::sin(first) * ring.radius * pixels * height,
             cx + std::cos(second) * ring.radius * pixels,
@@ -105,11 +105,11 @@ void draw_ring(SDL_Renderer* renderer, const RingParticle& ring,
 
 } // namespace
 
-void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_particles(tr::Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
                     float zoom, const LightingCache* lighting, const Stage* stage) {
     PerfScope perf_scope(PerfZone::Particles);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     const float pixels = tile_pixels(zoom);
     for (const SpriteParticle& particle : cosmetics.sprites)
         if (particle.layer == layer)
@@ -118,5 +118,5 @@ void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
         if (ribbon.layer == layer) draw_ribbon(renderer, ribbon, camera, pixels);
     for (const RingParticle& ring : cosmetics.rings)
         if (ring.layer == layer) draw_ring(renderer, ring, camera, pixels, lighting, stage);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }

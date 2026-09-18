@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../game.hpp"
 
@@ -15,4 +16,4 @@ void spawn_encounter_wave(Game& game, int slot);
 void step_encounter_spawn(Game& game, int slot);
 bool make_haunted_floor(Game& game, bool force = false);
 void populate_haunted_house(Game& game);
-void draw_encounter_status(SDL_Renderer* renderer, const Game& game, const Entity& player);
+void draw_encounter_status(tr::Renderer* renderer, const Game& game, const Entity& player);

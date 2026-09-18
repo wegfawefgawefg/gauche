@@ -2,13 +2,13 @@
 #include <algorithm>
 
 namespace {
-void piece(SDL_Renderer* renderer,const GameGraphics& graphics,Sprite sprite,SDL_FRect rect,
+void piece(tr::Renderer* renderer,const GameGraphics& graphics,Sprite sprite,SDL_FRect rect,
     LightColor light,float alpha,SDL_FlipMode flip=SDL_FLIP_NONE,float lean=0) {
     if (rect.x+rect.w+lean<0 || rect.y+rect.h<0 || rect.x>640 || rect.y>360) return;
     auto* texture=texture_for(graphics,sprite);
-    SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
-    SDL_SetTextureAlphaModFloat(texture,alpha);
-    if (lean==0) SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,0,nullptr,flip);
+    tr::texture_color(texture,light.red,light.green,light.blue);
+    tr::texture_alpha(texture,alpha);
+    if (lean==0) tr::draw_rotated(renderer,texture,nullptr,&rect,0,nullptr,flip);
     else {
         // A slight eastward cant exposes the north/south arch's open side.
         // The feet stay rooted; rotating a tall sprite would rotate its height.
@@ -18,14 +18,14 @@ void piece(SDL_Renderer* renderer,const GameGraphics& graphics,Sprite sprite,SDL
             {{rect.x+lean,rect.y},tint,{left,0}},{{rect.x+rect.w+lean,rect.y},tint,{right,0}},
             {{rect.x+rect.w,rect.y+rect.h},tint,{right,1}},{{rect.x,rect.y+rect.h},tint,{left,1}}};
         constexpr int indices[]{0,1,2,0,2,3};
-        SDL_SetTextureColorModFloat(texture,1,1,1);SDL_SetTextureAlphaMod(texture,255);
-        SDL_RenderGeometry(renderer,texture,vertices,4,indices,6);
+        tr::texture_color(texture,1,1,1);tr::texture_alpha_bytes(texture,255);
+        tr::geometry(renderer,texture,vertices,4,indices,6);
     }
-    SDL_SetTextureColorModFloat(texture,1,1,1);SDL_SetTextureAlphaMod(texture,255);
+    tr::texture_color(texture,1,1,1);tr::texture_alpha_bytes(texture,255);
 }
 }
 
-void draw_ice_arch_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
+void draw_ice_arch_row(tr::Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
     const RoofSpan& roof,int row,const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     if (!roof.vertical && row!=1) return;
     const bool reveal=viewer && reveal_roof(roof,viewer->cell);

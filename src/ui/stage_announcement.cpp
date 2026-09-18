@@ -21,7 +21,7 @@ void update_stage_announcement(StageAnnouncement& banner, const Game& game,
 }
 
 // PRESENTATION: Compact angled strip below the zoom/FPS; no simulation timer or modal input.
-void draw_stage_announcement(SDL_Renderer* renderer, const StageAnnouncement& banner) {
+void draw_stage_announcement(tr::Renderer* renderer, const StageAnnouncement& banner) {
     if (banner.age >= 3.5F || banner.title.empty()) return;
     const float enter = std::clamp(banner.age / .25F, 0.0F, 1.0F);
     const float fade = enter * std::clamp((3.5F-banner.age) / .8F, 0.0F, 1.0F);
@@ -31,16 +31,16 @@ void draw_stage_announcement(SDL_Renderer* renderer, const StageAnnouncement& ba
         SDL_Vertex vertices[]{{{450+offset,y+offset},color,{}},{{632+offset,y+offset},color,{}},
             {{627+offset,y+height+offset},color,{}},{{445+offset,y+height+offset},color,{}}};
         constexpr int indices[]{0,1,2,0,2,3};
-        SDL_RenderGeometry(renderer, nullptr, vertices, 4, indices, 6);
+        tr::geometry(renderer, nullptr, vertices, 4, indices, 6);
     };
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     quad(2, {0,0,0,.6F*fade});
     quad(0, {.16F,.065F,.06F,.94F*fade});
-    SDL_SetRenderDrawColor(renderer, 235, 230, 214, static_cast<Uint8>(255*fade));
-    SDL_RenderDebugText(renderer, 458, y+6, banner.title.c_str());
+    tr::set_color_bytes(renderer, 235, 230, 214, static_cast<Uint8>(255*fade));
+    tr::debug_text(renderer, 458, y+6, banner.title.c_str());
     if (!banner.subtitle.empty()) {
-        SDL_SetRenderDrawColor(renderer, 198, 181, 145, static_cast<Uint8>(255*fade));
-        SDL_RenderDebugText(renderer, 458, y+18, banner.subtitle.c_str());
+        tr::set_color_bytes(renderer, 198, 181, 145, static_cast<Uint8>(255*fade));
+        tr::debug_text(renderer, 458, y+18, banner.subtitle.c_str());
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }

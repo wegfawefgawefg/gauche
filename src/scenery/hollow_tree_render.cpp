@@ -21,7 +21,7 @@ float hollow_tree_opacity(const RoofSpan& roof,Cell viewer) {
 }
 
 namespace {
-void crown(SDL_Renderer* renderer,SDL_Texture* texture,SDL_FRect rect,Cell cell,SDL_FRect uv,
+void crown(tr::Renderer* renderer,tr::Texture* texture,SDL_FRect rect,Cell cell,SDL_FRect uv,
     const LightingCache& lighting,float alpha,float condition) {
     // The upper foliage receives a little skylight even above an unlit trunk.
     const auto tint=[&](Cell corner) {
@@ -36,10 +36,10 @@ void crown(SDL_Renderer* renderer,SDL_Texture* texture,SDL_FRect rect,Cell cell,
         {{rect.x+rect.w,rect.y+rect.h},tint(cell+Cell{1,1}),{uv.x+uv.w,uv.y+uv.h}},
         {{rect.x,rect.y+rect.h},tint(cell+Cell{0,1}),{uv.x,uv.y+uv.h}}};
     constexpr int indices[]{0,1,2,0,2,3};
-    SDL_RenderGeometry(renderer,texture,vertices,4,indices,6);
+    tr::geometry(renderer,texture,vertices,4,indices,6);
 }
 }
-void draw_hollow_tree_row(SDL_Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
+void draw_hollow_tree_row(tr::Renderer* renderer,const GameGraphics& graphics,const Stage& stage,
     const RoofSpan& roof,int row,const Entity* viewer,ViewCamera camera,float zoom,const LightingCache& lighting) {
     const float opacity=viewer ? hollow_tree_opacity(roof,viewer->cell) : 1;
     const float condition=static_cast<float>(roof.hp)/static_cast<float>(roof_health(roof.kind));

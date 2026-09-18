@@ -8,7 +8,7 @@
 
 namespace {
 
-void draw_whiteout(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+void draw_whiteout(tr::Renderer* renderer, SDL_FRect rect, LightColor light,
                    const Stage& stage, std::uint64_t tick, Cell cell) {
     // EDGES: Shared corner coverage softens the patch into adjoining clear cells.
     constexpr Cell corners[]{{0,0},{1,0},{1,1},{0,1}};
@@ -26,7 +26,7 @@ void draw_whiteout(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
     }
     if (!visible) return;
     constexpr int indices[]{0,1,2,0,2,3};
-    SDL_RenderGeometry(renderer,nullptr,vertices,4,indices,6);
+    tr::geometry(renderer,nullptr,vertices,4,indices,6);
     const int ticks = stage.at_or_border(cell).surface.whiteout_ticks;
     if (ticks <= 0) return;
     const float fade = std::min(1.0F,static_cast<float>(ticks)/12);
@@ -36,13 +36,13 @@ void draw_whiteout(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
         const float age = static_cast<float>((tick+offset)%48)/48;
         const float x = rect.x+rect.w*age;
         const float y = rect.y+rect.h*(.15F+static_cast<float>(i)*.29F+age*.12F);
-        SDL_SetRenderDrawColorFloat(renderer,light.red*.81F,light.green*.88F,light.blue*.94F,
+        tr::set_color(renderer,light.red*.81F,light.green*.88F,light.blue*.94F,
             .7F*fade*std::sin(age*3.14159265F));
-        SDL_RenderLine(renderer,x,y,x+rect.w*.14F,y+rect.h*.03F);
+        tr::line(renderer,x,y,x+rect.w*.14F,y+rect.h*.03F);
     }
 }
 
-void draw_warmth(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+void draw_warmth(tr::Renderer* renderer, SDL_FRect rect, LightColor light,
                  int ticks, std::uint64_t tick, Cell cell, bool steam) {
     const float fade = std::min(1.0F, static_cast<float>(ticks) / 60);
     if (steam) {
@@ -50,38 +50,38 @@ void draw_warmth(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
         for (int i = 0; i < 2; ++i) {
             const auto offset = static_cast<std::uint64_t>(cell.x * 17 + cell.y * 29 + i * 41);
             const float age = static_cast<float>((tick + offset) % 90) / 90;
-            SDL_SetRenderDrawColorFloat(renderer, light.red * .74F, light.green * .70F,
+            tr::set_color(renderer, light.red * .74F, light.green * .70F,
                 light.blue * .58F, fade * .22F * std::sin(age * 3.14159265F));
             const float x = rect.x + rect.w * (.32F + static_cast<float>(i) * .34F);
             const float y = rect.y + rect.h * (.75F - age * .4F);
             const SDL_FPoint points[]{{x, y}, {x + rect.w * .05F, y - rect.h * .13F},
                 {x - rect.w * .02F, y - rect.h * .23F}};
-            SDL_RenderLines(renderer, points, 3);
+            tr::lines(renderer, points, 3);
         }
         return;
     }
-    SDL_SetRenderDrawColorFloat(renderer, light.red * .77F, light.green * .48F,
+    tr::set_color(renderer, light.red * .77F, light.green * .48F,
         light.blue * .22F, fade * .9F);
     for (Cell grain : {Cell{4, 6}, {10, 4}, {8, 12}}) {
         const SDL_FRect flake{rect.x + rect.w * static_cast<float>(grain.x) / 16,
             rect.y + rect.h * static_cast<float>(grain.y) / 16, rect.w / 16, rect.h / 16};
-        SDL_RenderFillRect(renderer, &flake);
+        tr::fill_rect(renderer, &flake);
     }
 }
 
-void draw_grit(SDL_Renderer* renderer, SDL_FRect rect, LightColor light, Cell cell) {
+void draw_grit(tr::Renderer* renderer, SDL_FRect rect, LightColor light, Cell cell) {
     constexpr Cell grains[]{{3, 5}, {10, 3}, {7, 11}, {12, 10}, {4, 13}};
-    SDL_SetRenderDrawColorFloat(renderer, light.red * .62F, light.green * .54F,
+    tr::set_color(renderer, light.red * .62F, light.green * .54F,
         light.blue * .39F, 1);
     for (Cell grain : grains) {
         const int x = (cell.x + cell.y) % 2 == 0 ? grain.x : 15 - grain.x;
         const SDL_FRect dot{rect.x + rect.w * static_cast<float>(x) / 16,
             rect.y + rect.h * static_cast<float>(grain.y) / 16, rect.w / 16, rect.h / 16};
-        SDL_RenderFillRect(renderer, &dot);
+        tr::fill_rect(renderer, &dot);
     }
 }
 
-void draw_puddle(SDL_Renderer* renderer, const Stage& stage, Cell cell,
+void draw_puddle(tr::Renderer* renderer, const Stage& stage, Cell cell,
                  SDL_FRect rect, LiquidKind kind) {
     const auto same = [&](Cell side) {
         const Surface& neighbor = stage.at_or_border(cell + side).surface;
@@ -96,34 +96,34 @@ void draw_puddle(SDL_Renderer* renderer, const Stage& stage, Cell cell,
         const float begin = left ? 0 : inset, end = right ? 1 : 1 - inset;
         const SDL_FRect strip{rect.x + rect.w * begin, rect.y + rect.h * static_cast<float>(row) / 8,
                               rect.w * (end - begin), rect.h / 8};
-        SDL_RenderFillRect(renderer, &strip);
+        tr::fill_rect(renderer, &strip);
     }
 }
 
-void draw_haze(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+void draw_haze(tr::Renderer* renderer, SDL_FRect rect, LightColor light,
                bool sleep, float opacity, std::uint64_t tick, Cell cell) {
     const float drift = std::sin(static_cast<float>(tick % 360) / 57.3F + static_cast<float>(cell.x));
     rect.x -= rect.w * (.12F + drift * .04F); rect.y -= rect.h * .22F;
     rect.w *= 1.24F; rect.h *= 1.24F;
     for (int row = 0; row < 8; ++row) {
         const float inset = row == 0 || row == 7 ? .30F : row == 1 || row == 6 ? .14F : .04F;
-        SDL_SetRenderDrawColorFloat(renderer, light.red * (sleep ? .48F : .30F),
+        tr::set_color(renderer, light.red * (sleep ? .48F : .30F),
             light.green * (sleep ? .43F : .31F), light.blue * (sleep ? .65F : .32F),
             opacity * (row == 0 || row == 7 ? .35F : row == 1 || row == 6 ? .65F : 1));
         const SDL_FRect strip{rect.x + rect.w * inset, rect.y + rect.h * static_cast<float>(row) / 8,
                               rect.w * (1 - inset * 2), rect.h / 8};
-        SDL_RenderFillRect(renderer, &strip);
+        tr::fill_rect(renderer, &strip);
     }
 }
 
 // SCENT: A few rising strokes leave the underlying ground readable.
-void draw_scent(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
+void draw_scent(tr::Renderer* renderer, SDL_FRect rect, LightColor light,
                 float fade, std::uint64_t tick, Cell cell) {
     for (int wisp = 0; wisp < 2; ++wisp) {
         const int offset = (cell.x * 13 + cell.y * 29 + wisp * 47) % 90;
         const float age = static_cast<float>((tick + static_cast<std::uint64_t>(offset + 90)) % 90) / 90;
         const float opacity = .65F * fade * std::sin(age * 3.14159265F);
-        SDL_SetRenderDrawColorFloat(renderer, light.red * .60F, light.green * .73F,
+        tr::set_color(renderer, light.red * .60F, light.green * .73F,
             light.blue * .32F, opacity);
         SDL_FPoint points[6];
         for (int i = 0; i < 6; ++i) {
@@ -132,18 +132,18 @@ void draw_scent(SDL_Renderer* renderer, SDL_FRect rect, LightColor light,
                 .08F * std::sin(phase * 6.2831853F + age * 4)),
                 rect.y + rect.h * (.80F - age * .35F - phase * .4F)};
         }
-        SDL_RenderLines(renderer, points, 6);
+        tr::lines(renderer, points, 6);
     }
 }
 
 } // namespace
 
-void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
+void draw_surfaces(tr::Renderer* renderer, const Game& game, ViewCamera camera,
                     float zoom, const LightingCache& lighting, bool clouds) {
     PerfScope perf_scope(PerfZone::SurfaceDraw);
     const float pixels = tile_pixels(zoom);
     const int rx = static_cast<int>(320 / pixels) + 2, ry = static_cast<int>(180 / pixels) + 2;
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
     for (int y = std::max(0, static_cast<int>(camera.y) - ry); y < std::min(game.stage.height, static_cast<int>(camera.y) + ry); ++y)
         for (int x = std::max(0, static_cast<int>(camera.x) - rx); x < std::min(game.stage.width, static_cast<int>(camera.x) + rx); ++x) {
             const Cell cell{x, y};
@@ -181,11 +181,11 @@ void draw_surfaces(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
             case LiquidKind::Honey: color = {.58F, .40F, .15F}; break;
             default: continue;
             }
-            SDL_SetRenderDrawColorFloat(renderer, light.red * color.red, light.green * color.green,
+            tr::set_color(renderer, light.red * color.red, light.green * color.green,
                 light.blue * color.blue, .65F * std::min(1.0F, static_cast<float>(surface.liquid_ticks) / 90));
             draw_puddle(renderer, game.stage, cell, rect, surface.liquid);
         }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
 }
 
 void observe_surfaces(Cosmetics& cosmetics, const Game& game, Cell focus) {

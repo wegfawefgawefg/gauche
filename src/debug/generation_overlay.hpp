@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 #include "../render.hpp"
 #include "../world/generation_report.hpp"
 #include <memory>
@@ -17,8 +18,8 @@ struct LiveGenerationInspector {
 };
 LiveGenerationInspector& live_generation_inspector();
 LiveGenerationInspector& bind_live_generation_report(const Game& game);
-void draw_generation_annotations(SDL_Renderer* renderer,const GenerationReport& report,
+void draw_generation_annotations(tr::Renderer* renderer,const GenerationReport& report,
     int selected_feature,int selected_component,ViewCamera camera,float zoom,
     const GenerationAnnotations& options={});
 void draw_generation_annotation_controls(GenerationAnnotations& options);
-void draw_live_generation_annotations(SDL_Renderer* renderer,const Game& game,ViewCamera camera,float zoom);
+void draw_live_generation_annotations(tr::Renderer* renderer,const Game& game,ViewCamera camera,float zoom);

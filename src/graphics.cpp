@@ -132,12 +132,12 @@ bool require_file(const std::filesystem::path& path, std::string& error) {
 } // namespace
 
 void unload_graphics(GameGraphics& graphics) {
-    SDL_DestroyTexture(graphics.overhead_canvas);
+    tr::destroy_texture(graphics.overhead_canvas);
     graphics.overhead_canvas = nullptr;
-    SDL_DestroyTexture(graphics.interaction_canvas);
+    tr::destroy_texture(graphics.interaction_canvas);
     graphics.interaction_canvas = nullptr;
-    for (SDL_Texture*& texture : graphics.textures) {
-        SDL_DestroyTexture(texture);
+    for (tr::Texture*& texture : graphics.textures) {
+        tr::destroy_texture(texture);
         texture = nullptr;
     }
 }
@@ -178,21 +178,21 @@ bool validate_assets(const std::filesystem::path& root, std::string& error) {
     return true;
 }
 
-bool load_graphics(GameGraphics& graphics, SDL_Renderer* renderer,
+bool load_graphics(GameGraphics& graphics, tr::Renderer* renderer,
                    const std::filesystem::path& root, std::string& error) {
     for (std::size_t index = 0; index < sprite_names.size(); ++index) {
         const auto path = named_asset(root, "graphics", sprite_names[index], ".png");
-        SDL_Texture* texture = IMG_LoadTexture(renderer, path.string().c_str());
+        tr::Texture* texture = tr::load_texture(renderer, path.string().c_str());
         if (texture == nullptr) {
             error = "Unable to load " + path.string() + ": " + SDL_GetError();
             return false;
         }
-        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+        tr::texture_filter(texture, SDL_SCALEMODE_NEAREST);
         graphics.textures[index] = texture;
     }
     return true;
 }
 
-SDL_Texture* texture_for(const GameGraphics& graphics, Sprite sprite) {
+tr::Texture* texture_for(const GameGraphics& graphics, Sprite sprite) {
     return graphics.textures[static_cast<std::size_t>(sprite)];
 }

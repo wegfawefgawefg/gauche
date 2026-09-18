@@ -11,7 +11,7 @@ SDL_FColor rim_color(LightColor light, LightColor tint) {
             std::clamp(light.blue * tint.blue * .23F, 0.0F, 1.0F), 1};
 }
 
-void edge(SDL_Renderer* renderer, SDL_FRect rect, SDL_FColor a, SDL_FColor b,
+void edge(tr::Renderer* renderer, SDL_FRect rect, SDL_FColor a, SDL_FColor b,
            bool horizontal) {
     const std::array<SDL_Vertex, 4> corners{{
         {{rect.x, rect.y}, a, {}},
@@ -20,12 +20,12 @@ void edge(SDL_Renderer* renderer, SDL_FRect rect, SDL_FColor a, SDL_FColor b,
         {{rect.x, rect.y + rect.h}, horizontal ? a : b, {}},
     }};
     constexpr int indices[]{0, 1, 2, 0, 2, 3};
-    SDL_RenderGeometry(renderer, nullptr, corners.data(), 4, indices, 6);
+    tr::geometry(renderer, nullptr, corners.data(), 4, indices, 6);
 }
 
 } // namespace
 
-void draw_wall_contour(SDL_Renderer* renderer, const Stage& stage, Cell cell,
+void draw_wall_contour(tr::Renderer* renderer, const Stage& stage, Cell cell,
                        SDL_FRect rect, const LightingCache& lighting, LightColor tint) {
     const float stroke = std::max(.5F, rect.w / 16);
     const SDL_FColor nw = rim_color(light_at_corner(lighting, cell), tint);

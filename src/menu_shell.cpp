@@ -282,7 +282,7 @@ void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
     gubsy_update_runtime(*menu.runtime, dt);
 }
 
-void render_menu_shell(MenuShell& menu, SDL_Renderer* renderer, int width, int) {
+void render_menu_shell(MenuShell& menu, tr::Renderer* renderer, int width, int) {
     if (menu.front_visible) render_front_page(menu.front);
     gubsy_render_alerts(*menu.runtime, renderer, width);
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../game.hpp"
 #include "../view.hpp"
@@ -122,7 +123,7 @@ void step_particles(Cosmetics& cosmetics);
 void update_cosmetics(Cosmetics& cosmetics, const Game& game, Cell focus,
                       float zoom = 2.0F);
 ViewCamera camera_for(const Cosmetics& cosmetics, const Game& game, int owner);
-void draw_particles(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_particles(tr::Renderer* renderer, const GameGraphics& graphics,
                     const Cosmetics& cosmetics, ParticleLayer layer, ViewCamera camera,
                     float zoom, const LightingCache* lighting = nullptr,
                     const Stage* stage = nullptr);

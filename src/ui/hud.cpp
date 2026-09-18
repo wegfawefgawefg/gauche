@@ -23,18 +23,18 @@
 
 namespace {
 
-void ui_text(SDL_Renderer* renderer, float x, float y, const char* value) {
+void ui_text(tr::Renderer* renderer, float x, float y, const char* value) {
     small_ui_text(renderer, x, y, value);
 }
 
-void panel(SDL_Renderer* renderer, float x, float y, float width, float height,
+void panel(tr::Renderer* renderer, float x, float y, float width, float height,
            bool selected = false) {
     angled_panel(renderer, {x,y,width,height}, selected ? SDL_Color{202,151,82,230} : SDL_Color{90,86,78,210});
 }
 
 } // namespace
 
-void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_hud(tr::Renderer* renderer, const GameGraphics& graphics,
               const Game& game, const Entity& player,
               const PointerState& pointer, bool compact_details) {
     PerfScope perf_scope(PerfZone::Hud);
@@ -54,7 +54,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         const Item& item = player.inventory.slots[static_cast<std::size_t>(index)];
         if (item.kind != ItemKind::None) {
             SDL_FRect icon{x + 3.0F, y + 3.0F, 12.0F, 12.0F};
-            SDL_RenderTexture(renderer, texture_for(graphics, item_sprite(item)),
+            tr::draw_texture(renderer, texture_for(graphics, item_sprite(item)),
                               nullptr, &icon);
             draw_item_flame(renderer, graphics, item, icon, {1, 0}, game.tick);
             if (!quiet) {
@@ -85,7 +85,7 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
         }
         if (selected) {
             SDL_FRect arrow{x - 14.0F, y + 3.0F, 11.0F, 11.0F};
-            SDL_RenderTexture(renderer, texture_for(graphics, Sprite::SelectedArrow),
+            tr::draw_texture(renderer, texture_for(graphics, Sprite::SelectedArrow),
                               nullptr, &arrow);
         }
     }
@@ -99,9 +99,9 @@ void draw_hud(SDL_Renderer* renderer, const GameGraphics& graphics,
     const float fraction = player.max_health > 0 ?
         std::clamp(static_cast<float>(player.health) / static_cast<float>(player.max_health), 0.0F, 1.0F) : 0.0F;
     if (fraction > 0) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        tr::set_blend(renderer, SDL_BLENDMODE_BLEND);
         angled_fill(renderer, {16,height-30,124*fraction,18}, {.72F,.16F,.14F,.95F}, {.50F,.10F,.09F,.95F});
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+        tr::set_blend(renderer, SDL_BLENDMODE_NONE);
     }
     char health[48];
     std::snprintf(health, sizeof(health), "HP %d / %d", player.health, player.max_health);

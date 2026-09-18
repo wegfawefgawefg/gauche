@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -112,9 +113,9 @@ enum class Sprite : std::size_t {
 };
 
 struct GameGraphics {
-    mutable SDL_Texture* interaction_canvas = nullptr;
-    mutable SDL_Texture* overhead_canvas = nullptr;
-    std::array<SDL_Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
+    mutable tr::Texture* interaction_canvas = nullptr;
+    mutable tr::Texture* overhead_canvas = nullptr;
+    std::array<tr::Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
     GameGraphics() = default;
     GameGraphics(const GameGraphics&) = delete;
     GameGraphics& operator=(const GameGraphics&) = delete;
@@ -124,6 +125,6 @@ struct GameGraphics {
 void unload_graphics(GameGraphics& graphics);
 std::filesystem::path asset_root();
 bool validate_assets(const std::filesystem::path& root, std::string& error);
-bool load_graphics(GameGraphics& graphics, SDL_Renderer* renderer,
+bool load_graphics(GameGraphics& graphics, tr::Renderer* renderer,
                    const std::filesystem::path& root, std::string& error);
-SDL_Texture* texture_for(const GameGraphics& graphics, Sprite sprite);
+tr::Texture* texture_for(const GameGraphics& graphics, Sprite sprite);

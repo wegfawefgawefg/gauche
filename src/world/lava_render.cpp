@@ -1,23 +1,23 @@
 #include "lava_render.hpp"
 
-bool draw_lava(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,Cell cell,
+bool draw_lava(tr::Renderer* renderer,const GameGraphics& graphics,const Game& game,Cell cell,
                        SDL_FRect rect,const LightingCache& lighting) {
     const auto& tile=game.stage.at_or_border(cell);
     if (tile.kind!=TileKind::Lava) return false;
     const auto tick=tile.surface.still_ticks>0 ? 0 : game.tick;
-    SDL_Texture* texture=texture_for(graphics,lava_sprite(tick));
+    tr::Texture* texture=texture_for(graphics,lava_sprite(tick));
     // One native-resolution pattern spans eight tiles in each direction.
     const SDL_FRect uv{static_cast<float>((cell.x%8+8)%8)/8,
         static_cast<float>((cell.y%8+8)%8)/8,1.0F/8,1.0F/8};
     draw_lit_tile(renderer,texture,rect,cell,lighting,{1,1,1},uv);
     const auto light=lit_sprite_color(lighting,cell);
     const auto fill=[&](int x,int y,int w,int h,SDL_Color color) {
-        SDL_SetRenderDrawColorFloat(renderer,light.red*color.r/255.0F,
+        tr::set_color(renderer,light.red*color.r/255.0F,
             light.green*color.g/255.0F,light.blue*color.b/255.0F,1);
         const SDL_FRect part{rect.x+rect.w*static_cast<float>(x)/16,
             rect.y+rect.h*static_cast<float>(y)/16,rect.w*static_cast<float>(w)/16,
             rect.h*static_cast<float>(h)/16};
-        SDL_RenderFillRect(renderer,&part);
+        tr::fill_rect(renderer,&part);
     };
     // Crust follows the pool boundary, never outlines each molten cell.
     constexpr SDL_Color crust{55,37,30,255},rim{104,49,27,255};

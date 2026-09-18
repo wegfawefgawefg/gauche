@@ -7,15 +7,15 @@ bool void_tile(const Tile& tile) {
 }
 }
 
-bool draw_chasm(SDL_Renderer* renderer,const Game& game,Cell cell,SDL_FRect rect,const LightingCache& lighting) {
+bool draw_chasm(tr::Renderer* renderer,const Game& game,Cell cell,SDL_FRect rect,const LightingCache& lighting) {
     if (!void_tile(game.stage.at_or_border(cell))) return false;
     const LightColor light=lit_sprite_color(lighting,cell);
     const bool ice=ice_floor(game.run.floor);
     const auto fill=[&](float x,float y,float w,float h,float value) {
-        SDL_SetRenderDrawColorFloat(renderer,light.red*value*(ice ? .75F : 1),
+        tr::set_color(renderer,light.red*value*(ice ? .75F : 1),
             light.green*value*(ice ? .9F : .92F),light.blue*value,1);
         const SDL_FRect part{rect.x+rect.w*x,rect.y+rect.h*y,rect.w*w,rect.h*h};
-        SDL_RenderFillRect(renderer,&part);
+        tr::fill_rect(renderer,&part);
     };
     draw_flat_tile(renderer,nullptr,rect,{light.red*.012F*(ice ? .75F : 1),
         light.green*.012F*(ice ? .9F : .92F),light.blue*.012F,1});

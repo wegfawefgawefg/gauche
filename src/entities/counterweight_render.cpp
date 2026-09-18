@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-void draw_counterweights(SDL_Renderer* renderer,const GameGraphics& graphics,const Game& game,
+void draw_counterweights(tr::Renderer* renderer,const GameGraphics& graphics,const Game& game,
                          ViewCamera camera,float zoom,const LightingCache& lighting,bool shadows,const Entity* only) {
     const float pixels=tile_pixels(zoom);
     for (const Entity& actor:game.entities) {
@@ -32,21 +32,21 @@ void draw_counterweights(SDL_Renderer* renderer,const GameGraphics& graphics,con
         if (shadows) {
             const float size=pixels*(.55F+.25F*(1-height));
             SDL_FRect shade{ground.x-size*.5F,ground.y-size*.32F,size,size*.64F};
-            SDL_SetRenderDrawColor(renderer,0,0,0,175);SDL_RenderFillRect(renderer,&shade);
+            tr::set_color_bytes(renderer,0,0,0,175);tr::fill_rect(renderer,&shade);
             // Always-visible diegetic warning, independent of debug attack overlays.
             if (actor.label_a==WeightWarn || actor.label_a==WeightDrop) {
                 SDL_FRect rim{mark.x+pixels*.12F,mark.y+pixels*.12F,pixels*.76F,pixels*.76F};
-                SDL_SetRenderDrawColorFloat(renderer,light.red*.85F,light.green*.57F,light.blue*.25F,.95F);
-                SDL_RenderRect(renderer,&rim);
+                tr::set_color(renderer,light.red*.85F,light.green*.57F,light.blue*.25F,.95F);
+                tr::rect(renderer,&rim);
             }
             continue;
         }
         const float rise=pixels*(.25F+height*1.55F);
         const float shake=actor.label_a==WeightWarn ? static_cast<float>((actor.timer_a/3)%3-1)*pixels*.035F : 0;
         const SDL_FPoint top{ground.x+shake,ground.y-rise};
-        SDL_SetRenderDrawColorFloat(renderer,light.red*.65F,light.green*.60F,light.blue*.49F,1);
-        SDL_RenderLine(renderer,base.x+pixels*.5F,base.y,top.x,top.y-pixels*.8F);
-        SDL_RenderLine(renderer,top.x,top.y-pixels*.8F,top.x,top.y-pixels*.3F);
+        tr::set_color(renderer,light.red*.65F,light.green*.60F,light.blue*.49F,1);
+        tr::line(renderer,base.x+pixels*.5F,base.y,top.x,top.y-pixels*.8F);
+        tr::line(renderer,top.x,top.y-pixels*.8F,top.x,top.y-pixels*.3F);
         SDL_FRect block{top.x-pixels*.45F,top.y-pixels*.4F,pixels*.9F,pixels*.9F};
         draw_lit_tile(renderer,texture_for(graphics,Sprite::WeightBlock),block,light_cell,lighting);
     }

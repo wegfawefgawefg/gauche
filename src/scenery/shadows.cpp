@@ -92,7 +92,7 @@ void entity_shadow(ShadowBatch& batch,const Game& game,const Entity& actor,ViewC
 }
 }
 
-void draw_contact_shadows(SDL_Renderer* renderer,const Game& game,
+void draw_contact_shadows(tr::Renderer* renderer,const Game& game,
                           const Cosmetics* cosmetics,ViewCamera camera,float zoom) {
     const DebugPanels& options=debug_panels();
     if (!options.contact_shadows) return;
@@ -131,9 +131,9 @@ void draw_contact_shadows(SDL_Renderer* renderer,const Game& game,
         for (const Entity& actor:game.entities) entity_shadow(batch,game,actor,camera,zoom);
     if (batch.vertices.empty()) return;
     SDL_BlendMode previous;
-    SDL_GetRenderDrawBlendMode(renderer,&previous);
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
-    SDL_RenderGeometry(renderer,nullptr,batch.vertices.data(),static_cast<int>(batch.vertices.size()),
+    tr::get_blend(renderer,&previous);
+    tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
+    tr::geometry(renderer,nullptr,batch.vertices.data(),static_cast<int>(batch.vertices.size()),
         batch.indices.data(),static_cast<int>(batch.indices.size()));
-    SDL_SetRenderDrawBlendMode(renderer,previous);
+    tr::set_blend(renderer,previous);
 }

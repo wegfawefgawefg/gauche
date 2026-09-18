@@ -39,7 +39,7 @@ std::uint32_t tree_bits(int x, int y, std::uint64_t seed) {
     return static_cast<std::uint32_t>(value);
 }
 
-void forest_canopies(SDL_Renderer* renderer, const GameGraphics& graphics,
+void forest_canopies(tr::Renderer* renderer, const GameGraphics& graphics,
                       const Game& game, ViewCamera camera, float zoom, const LightingCache& lighting) {
     const float pixels = tile_pixels(zoom);
     const int grid_x = static_cast<int>(std::floor(camera.x / 6));
@@ -57,51 +57,51 @@ void forest_canopies(SDL_Renderer* renderer, const GameGraphics& graphics,
             const float y = view_center_y + (static_cast<float>(anchor.y) - camera.y) * pixels * depth;
             const SDL_FRect rect{x - size * .5F, y - size * .5F, size, size};
             if (rect.x + size < 0 || rect.y + size < 0 || rect.x > 640 || rect.y > 360) continue;
-            SDL_Texture* texture = texture_for(graphics, bits % 2 == 0 ? Sprite::CanopyOak : Sprite::CanopyPine);
+            tr::Texture* texture = texture_for(graphics, bits % 2 == 0 ? Sprite::CanopyOak : Sprite::CanopyPine);
             const LightColor light = light_at_cell(lighting, anchor);
             // CANOPY: These leaves sit above the dark floor and receive skylight.
             // Keep their daylight color at one fifth intensity so the crown stays peripheral.
-            SDL_SetTextureColorModFloat(texture, .20F*std::max(.80F, light.red),
+            tr::texture_color(texture, .20F*std::max(.80F, light.red),
                 .20F*std::max(.88F, light.green), .20F*std::max(.72F, light.blue));
-            SDL_SetTextureAlphaMod(texture, 225);
-            SDL_RenderTextureRotated(renderer, texture, nullptr, &rect,
+            tr::texture_alpha_bytes(texture, 225);
+            tr::draw_rotated(renderer, texture, nullptr, &rect,
                 static_cast<double>((bits >> 22) % 4) * 90, nullptr, SDL_FLIP_NONE);
-            SDL_SetTextureAlphaMod(texture, 255);
-            SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+            tr::texture_alpha_bytes(texture, 255);
+            tr::texture_color(texture, 1, 1, 1);
         }
 }
 
 } // namespace
 
-void draw_overhead(SDL_Renderer* renderer, const GameGraphics& graphics,
+void draw_overhead(tr::Renderer* renderer, const GameGraphics& graphics,
                     const Game& game, const Cosmetics* cosmetics, ViewCamera camera,
                     float zoom, const LightingCache& lighting) {
     PerfScope perf_scope(PerfZone::Overhead);
     if (graphics.overhead_canvas == nullptr) {
-        graphics.overhead_canvas = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+        graphics.overhead_canvas = tr::create_texture(renderer, SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET, 640, 360);
         if (graphics.overhead_canvas == nullptr) return;
-        SDL_SetTextureBlendMode(graphics.overhead_canvas, SDL_BLENDMODE_BLEND);
-        SDL_SetTextureScaleMode(graphics.overhead_canvas, SDL_SCALEMODE_NEAREST);
+        tr::texture_blend(graphics.overhead_canvas, SDL_BLENDMODE_BLEND);
+        tr::texture_filter(graphics.overhead_canvas, SDL_SCALEMODE_NEAREST);
     }
-    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    tr::Texture* target = tr::get_target(renderer);
     float sx = 1, sy = 1;
-    SDL_GetRenderScale(renderer, &sx, &sy);
-    SDL_SetRenderTarget(renderer, graphics.overhead_canvas);
-    SDL_SetRenderScale(renderer, 1, 1);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
+    tr::get_scale(renderer, &sx, &sy);
+    tr::set_target(renderer, graphics.overhead_canvas);
+    tr::set_scale(renderer, 1, 1);
+    tr::set_color_bytes(renderer, 0, 0, 0, 0);
+    tr::clear(renderer);
     if (game.run.phase != RunPhase::Arena && forest_floor(game.run.floor))
         forest_canopies(renderer, graphics, game, camera, zoom, lighting);
     else if (cosmetics != nullptr)
         draw_particles(renderer, graphics, *cosmetics, ParticleLayer::Weather, camera, zoom);
     // MASK: Clear alpha with unblended fills; transparent geometry can be discarded by software renderers.
     static const Cutout cutout;
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderFillRects(renderer, cutout.rectangles.data(), static_cast<int>(cutout.rectangles.size()));
-    SDL_SetRenderTarget(renderer, target);
-    SDL_SetRenderScale(renderer, sx, sy);
+    tr::set_blend(renderer, SDL_BLENDMODE_NONE);
+    tr::set_color_bytes(renderer, 0, 0, 0, 0);
+    tr::fill_rects(renderer, cutout.rectangles.data(), static_cast<int>(cutout.rectangles.size()));
+    tr::set_target(renderer, target);
+    tr::set_scale(renderer, sx, sy);
     const SDL_FRect rect{0, 0, 640, 360};
-    SDL_RenderTexture(renderer, graphics.overhead_canvas, nullptr, &rect);
+    tr::draw_texture(renderer, graphics.overhead_canvas, nullptr, &rect);
 }

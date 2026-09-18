@@ -4,9 +4,9 @@
 
 #include <algorithm>
 
-void draw_shard_links(SDL_Renderer* renderer, const Game& game, ViewCamera camera,
+void draw_shard_links(tr::Renderer* renderer, const Game& game, ViewCamera camera,
                       float zoom, const LightingCache& lighting) {
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    tr::set_blend(renderer,SDL_BLENDMODE_BLEND);
     for (int slot=0;slot<max_entities;++slot) {
         const Entity& node = game.entities[static_cast<std::size_t>(slot)];
         if (node.kind != EntityKind::ShardColony || node.health <= 0 ||
@@ -25,15 +25,15 @@ void draw_shard_links(SDL_Renderer* renderer, const Game& game, ViewCamera camer
                 const LightColor seen = lit_sprite_color(lighting,cell);
                 const float level = std::clamp(std::max({seen.red,seen.green,seen.blue}),.18F,1.0F);
                 const float alpha = level*(pulse ? .95F : .24F);
-                SDL_SetRenderDrawColorFloat(renderer,.52F,.83F,.95F,alpha);
-                if (!first) SDL_RenderLine(renderer,previous.x,previous.y,center.x,center.y);
+                tr::set_color(renderer,.52F,.83F,.95F,alpha);
+                if (!first) tr::line(renderer,previous.x,previous.y,center.x,center.y);
                 const float size = tile.w*(pulse ? .12F : .065F);
                 const SDL_FRect mote{center.x-size*.5F,center.y-size*.5F,size,size};
-                SDL_SetRenderDrawColorFloat(renderer,.72F,.93F,1.0F,level*(pulse ? 1.0F : .65F));
-                SDL_RenderFillRect(renderer,&mote);
+                tr::set_color(renderer,.72F,.93F,1.0F,level*(pulse ? 1.0F : .65F));
+                tr::fill_rect(renderer,&mote);
                 previous = center; first = false;
             }
         }
     }
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+    tr::set_blend(renderer,SDL_BLENDMODE_NONE);
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "renderer/device.hpp"
 
 #include "../src/world/route.hpp"
 #include "../src/ui/text.hpp"
@@ -6,7 +7,7 @@
 #include <algorithm>
 #include <cstdio>
 
-inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, const Game* supplied = nullptr) {
+inline void render_floor_overview(tr::Renderer* renderer, std::uint64_t seed, const Game* supplied = nullptr) {
     Game game;
     game.rng = seed == 0 ? 1 : seed;
     game.run.floor = 1;
@@ -42,10 +43,10 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
             if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Tree) color = {71, 65, 37, 255};
             if (tile.kind == TileKind::Wall && tile.material == TileMaterial::Timber) color = {111, 80, 45, 255};
             if (tile.prop.kind != PropKind::None) color = {133, 112, 65, 255};
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+            tr::set_color_bytes(renderer, color.r, color.g, color.b, color.a);
             const SDL_FRect rect{left + static_cast<float>(x) * scale,
                                  top + static_cast<float>(y) * scale, scale, scale};
-            SDL_RenderFillRect(renderer, &rect);
+            tr::fill_rect(renderer, &rect);
         }
     for (const Entity& entity : game.entities) {
         SDL_Color color{225, 91, 85, 255};
@@ -54,10 +55,10 @@ inline void render_floor_overview(SDL_Renderer* renderer, std::uint64_t seed, co
         if (entity.kind == EntityKind::Player) color = {130, 215, 255, 255};
         if (entity.kind == EntityKind::Key) color = {255, 225, 80, 255};
         if (entity.kind == EntityKind::Exit) color = {125, 255, 140, 255};
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        tr::set_color_bytes(renderer, color.r, color.g, color.b, color.a);
         const SDL_FRect rect{left + static_cast<float>(entity.cell.x) * scale,
                              top + static_cast<float>(entity.cell.y) * scale, scale, scale};
-        SDL_RenderFillRect(renderer, &rect);
+        tr::fill_rect(renderer, &rect);
     }
     for (const RoomPlan& room : plan.rooms)
         small_ui_text(renderer, left + static_cast<float>(room.center.x - room.half_width) * scale,

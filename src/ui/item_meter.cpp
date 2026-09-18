@@ -121,25 +121,25 @@ int item_meter_current(const Item& item) {
     return item.count;
 }
 
-void draw_item_meter(SDL_Renderer* renderer, float x, float y,
+void draw_item_meter(tr::Renderer* renderer, float x, float y,
                      float width, float height, int current, int maximum,
                      SDL_Color color) {
     if (maximum <= 0) return;
     SDL_FRect base{x, y, width, height};
-    SDL_SetRenderDrawColor(renderer, 45, 49, 44, 230);
-    SDL_RenderFillRect(renderer, &base);
+    tr::set_color_bytes(renderer, 45, 49, 44, 230);
+    tr::fill_rect(renderer, &base);
     const float amount = std::clamp(static_cast<float>(current) /
                                     static_cast<float>(maximum), 0.0F, 1.0F);
     base.w *= amount;
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 240);
-    SDL_RenderFillRect(renderer, &base);
+    tr::set_color_bytes(renderer, color.r, color.g, color.b, 240);
+    tr::fill_rect(renderer, &base);
 }
 
-void draw_muffled_count(SDL_Renderer* renderer, const Item& item, float x, float y) {
+void draw_muffled_count(tr::Renderer* renderer, const Item& item, float x, float y) {
     if (item.muffled_uses == 0) return;
     const SDL_FRect badge{x, y, 14, 8};
-    SDL_SetRenderDrawColor(renderer, 27, 42, 43, 255);
-    SDL_RenderFillRect(renderer, &badge);
+    tr::set_color_bytes(renderer, 27, 42, 43, 255);
+    tr::fill_rect(renderer, &badge);
     const char label[]{'Q', static_cast<char>('0' + item.muffled_uses), '\0'};
     small_ui_text(renderer, x + 1, y, label, 162, 210, 202);
 }

@@ -24,7 +24,7 @@ const char* party_player_status(const Game& game, int owner) {
     return "EXPLORING";
 }
 
-void draw_party_status(SDL_Renderer* renderer, const Game& game, int local_owner,
+void draw_party_status(tr::Renderer* renderer, const Game& game, int local_owner,
                        float x, float y, bool horizontal) {
     int count = 0;
     for (const auto& [id, member] : game.players) if (member.online) ++count;

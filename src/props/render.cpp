@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <cmath>
 
-void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game& game,
+void draw_props(tr::Renderer* renderer, const GameGraphics& graphics, const Game& game,
                  ViewCamera camera, float zoom, const LightingCache& lighting,std::uint64_t tick,const Cosmetics* cosmetics) {
     PerfScope perf_scope(PerfZone::PropDraw);
     const Stage& stage=game.stage;
@@ -35,10 +35,10 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             }
             if (prop.kind==PropKind::WaterPipe) {
                 const auto light=light_at_cell(lighting,cell);const auto rect=tile_rect(cell,camera,zoom);
-                SDL_Texture* texture=texture_for(graphics,prop.broken ? Sprite::WaterPipeBroken : Sprite::WaterPipe);
-                SDL_SetTextureColorModFloat(texture,light.red,light.green,light.blue);
-                SDL_RenderTextureRotated(renderer,texture,nullptr,&rect,prop.variant ? 90 : 0,nullptr,SDL_FLIP_NONE);
-                SDL_SetTextureColorModFloat(texture,1,1,1);continue;
+                tr::Texture* texture=texture_for(graphics,prop.broken ? Sprite::WaterPipeBroken : Sprite::WaterPipe);
+                tr::texture_color(texture,light.red,light.green,light.blue);
+                tr::draw_rotated(renderer,texture,nullptr,&rect,prop.variant ? 90 : 0,nullptr,SDL_FLIP_NONE);
+                tr::texture_color(texture,1,1,1);continue;
             }
             if (prop.kind==PropKind::LightTower || prop.kind==PropKind::TowerWreck) {
                 draw_tower_ground(renderer,graphics,game,cell,camera,zoom,lighting);continue;
@@ -68,7 +68,7 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (freight && prop.broken)
                 sprite=prop.kind==PropKind::BoundRocks ? Sprite::BoundRocksBroken :
                     prop.kind==PropKind::ContainerSide ? Sprite::ContainerSideBroken : Sprite::PalletBroken;
-            SDL_Texture* texture = texture_for(graphics, sprite);
+            tr::Texture* texture = texture_for(graphics, sprite);
             SDL_FRect rect = tile_rect(cell, camera, zoom);
             if (prop.kind==PropKind::Crate && !prop.broken)
                 rect=jolted_prop_rect(rect,cell,cosmetics);
@@ -82,22 +82,22 @@ void draw_props(SDL_Renderer* renderer, const GameGraphics& graphics, const Game
             if (prop.kind==PropKind::RailPoints) {draw_rail_points(renderer,graphics,prop,rect,light);continue;}
             if (prop.kind==PropKind::Conveyor) { draw_conveyor(renderer,graphics,game,cell,rect,light,tick); continue; }
             if (prop.kind == PropKind::CopperWire) draw_wire_connections(renderer,stage,cell,rect,light);
-            SDL_SetTextureColorModFloat(texture, light.red, light.green, light.blue);
-            SDL_RenderTextureRotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble || prop.kind==PropKind::ContainerSide) && (prop.variant&1U) ? 90 : 0, nullptr,
+            tr::texture_color(texture, light.red, light.green, light.blue);
+            tr::draw_rotated(renderer, texture, nullptr, &rect, prop.kind==PropKind::TensionSpring ? static_cast<double>(prop.variant&3U)*90 : (prop.kind==PropKind::Barricade || prop.kind==PropKind::IceRubble || prop.kind==PropKind::ContainerSide) && (prop.variant&1U) ? 90 : 0, nullptr,
                 (prop.kind==PropKind::ContainerSide || prop.kind == PropKind::PayCage || prop.kind == PropKind::TensionSpring || prop.kind == PropKind::Grate || prop.kind==PropKind::Barricade || prop.kind == PropKind::SnowWindbreak || prop.kind == PropKind::BridgePlank || prop.kind == PropKind::Doorstop || prop.kind == PropKind::GroundingSpike || prop.kind == PropKind::SpiderStrand || prop.kind == PropKind::Candle || prop.kind == PropKind::Stove || prop.variant % 2 == 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL);
-            SDL_SetTextureColorModFloat(texture, 1, 1, 1);
+            tr::texture_color(texture, 1, 1, 1);
             if (prop.covered) {
-                SDL_Texture* cloth = texture_for(graphics, Sprite::FeltCover);
-                SDL_SetTextureColorModFloat(cloth, light.red, light.green, light.blue);
-                SDL_RenderTexture(renderer, cloth, nullptr, &rect);
-                SDL_SetTextureColorModFloat(cloth, 1, 1, 1);
+                tr::Texture* cloth = texture_for(graphics, Sprite::FeltCover);
+                tr::texture_color(cloth, light.red, light.green, light.blue);
+                tr::draw_texture(renderer, cloth, nullptr, &rect);
+                tr::texture_color(cloth, 1, 1, 1);
             }
             if (!prop.broken && prop.hp < prop_max_health(prop)) {
                 SDL_FRect bar{rect.x + rect.w * .2F, rect.y + rect.h * .87F,
                     rect.w * .6F * static_cast<float>(prop.hp) / static_cast<float>(prop_max_health(prop)), 1};
-                SDL_SetRenderDrawColorFloat(renderer, light.red * .8F,
+                tr::set_color(renderer, light.red * .8F,
                                            light.green * .6F, light.blue * .3F, 1);
-                SDL_RenderFillRect(renderer, &bar);
+                tr::fill_rect(renderer, &bar);
             }
         }
 }

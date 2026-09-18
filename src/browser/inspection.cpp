@@ -1,4 +1,5 @@
 #include "inspection.hpp"
+#include "../debug/panels.hpp"
 #include "../menu_shell.hpp"
 #include "../menu/actions.hpp"
 #include <emscripten.h>
@@ -33,6 +34,7 @@ void browser_inspect(MenuShell& menu, float zoom) {
     state["triangles"]=frame.renderer->last.triangles;
     state["lightmap"]=frame.renderer->smooth_lighting;
     state["zoom"]=zoom;
+    state["zoomUnlocked"]=debug_panels().unlocked_zoom;
     state["seed"]=std::to_string(game.run.seed);
     state["fullscreen"]=menu.front.fullscreen;
     state["autoReports"]=menu.front.auto_reports;

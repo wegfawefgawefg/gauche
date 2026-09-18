@@ -102,6 +102,7 @@ async function load() {
     if (query.get('host')) args.push('--host-room', query.get('host').slice(0, 64));
     if (/^[A-Z0-9]{6}$/i.test(query.get('room') || '')) args.push('--join-room', query.get('room').toUpperCase());
     if (query.get('name')) args.push('--player-name', query.get('name').slice(0, 40));
+    if (query.get('debugzoom') === '1') args.push('--unlock-zoom');
     if (query.get('bot') === '1') args.push('--bot');
     if (query.get('autostart') === '1') args.push('--auto-start', '2');
     if (query.get('smoke') === '1') args.push('--smoke-run', '--frames', '120');

@@ -8,6 +8,7 @@ struct DebugPanels {
     bool selector = true;
     bool combat = false;
     bool status = false;
+    bool unlocked_zoom = false;
     bool contact_shadows = true;
     bool shadow_entities = true;
     bool shadow_props = true;

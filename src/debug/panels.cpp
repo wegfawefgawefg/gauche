@@ -75,6 +75,10 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
                         static_cast<unsigned long long>(debug_renderer->last.batches),
                         static_cast<unsigned long long>(debug_renderer->last.triangles), debug_renderer->atlases.size());
                 }
+#ifdef __EMSCRIPTEN__
+                ImGui::Checkbox("Allow zoom below 2x", &panels.unlocked_zoom);
+                ImGui::TextUnformatted("Use - / + to test down to 0.5x.");
+#endif
                 ImGui::Checkbox("Contact shadows", &panels.contact_shadows);
                 ImGui::Checkbox("Creature / item shadows", &panels.shadow_entities);
                 ImGui::Checkbox("Prop shadows", &panels.shadow_props);

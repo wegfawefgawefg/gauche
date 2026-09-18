@@ -38,6 +38,10 @@ switches back to vertex corner lighting for visual comparison. The same section
 shows the backend, batches, triangles and atlas page count. These counters are
 not GPU execution timings.
 
+For a browser zoom stress test, enable F1 → Presentation → **Allow zoom below 2x**,
+close F1 and use `-` / `+` down to 0.5x. `?debugzoom=1` enables this on startup.
+Disabling the option restores the 2x minimum. Wheel zoom remains disabled.
+
 Vulkan shaders are in `shaders/renderer/`. Regenerate the checked-in SPIR-V header
 with `python3 tools/compile_renderer_shaders.py` (requires `glslangValidator`).
 WebGL shaders live in `src/renderer/webgl.cpp`; WGSL and browser device operations

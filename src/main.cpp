@@ -222,14 +222,15 @@ int main(int argc, char** argv) {
     bool running = true;
     bool lobby_smoke_failed = false;
 #ifdef __EMSCRIPTEN__
-    constexpr float minimum_zoom = 2.0F;
+    debug_panels().unlocked_zoom = has_arg(argc, argv, "--unlock-zoom");
+    const auto minimum_zoom = [] { return debug_panels().unlocked_zoom ? 0.5F : 2.0F; };
     constexpr bool keyboard_zoom = true;
 #else
-    constexpr float minimum_zoom = 0.5F;
+    const auto minimum_zoom = [] { return 0.5F; };
     constexpr bool keyboard_zoom = GAUCHE_DEV_MODE;
 #endif
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
-                            minimum_zoom, 8.0F);
+                            minimum_zoom(), 8.0F);
     InputReaderState input_reader{};
     bool cancel_pending_use = false;
     unsigned int debug_revision = playtest_tools().revision;
@@ -301,9 +302,10 @@ int main(int argc, char** argv) {
                 !event.key.repeat && !(event.key.mod & (SDL_KMOD_CTRL | SDL_KMOD_GUI | SDL_KMOD_ALT))) {
                 const bool closer = event.key.key == SDLK_EQUALS || event.key.key == SDLK_PLUS || event.key.key == SDLK_KP_PLUS;
                 const bool farther = event.key.key == SDLK_MINUS || event.key.key == SDLK_KP_MINUS;
-                if (closer || farther) zoom = std::clamp(zoom + (closer ? .25F : -.25F),minimum_zoom,8.0F);
+                if (closer || farther) zoom = std::clamp(zoom + (closer ? .25F : -.25F),minimum_zoom(),8.0F);
             }
         }
+        zoom = std::clamp(zoom, minimum_zoom(), 8.0F);
         gubsy_update_device_state(host);
         frame_phase.next(PerfZone::Menu);
         if (frames == 1 && !value_arg(argc, argv, "--smoke-menu-action").empty())

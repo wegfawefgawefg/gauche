@@ -1,4 +1,5 @@
 #include "../combat/toss.hpp"
+#include "../items/basic_actions.hpp"
 #include "shadows.hpp"
 #include "../entities/gnome.hpp"
 #include "roof.hpp"
@@ -83,12 +84,18 @@ void entity_shadow(ShadowBatch& batch,const Game& game,const Entity& actor,ViewC
             pixels*width*(1+pose.height*.18F),pixels*.10F,.30F/(1+pose.height*.6F));
         return;
     }
-    const SDL_FRect rect=tile_rect(actor.cell,camera,zoom);
+    SDL_FRect rect=tile_rect(actor.cell,camera,zoom);
+    if (actor.basic.jump_ticks>0) {
+        const float progress=static_cast<float>(18-actor.basic.jump_ticks)/18;
+        const Cell travel=actor.basic.jump_destination-actor.basic.jump_origin;
+        rect.x+=static_cast<float>(travel.x)*progress*pixels;
+        rect.y+=static_cast<float>(travel.y)*progress*pixels;
+    }
     const bool small=actor.kind==EntityKind::GroundItem || actor.kind==EntityKind::Coins || actor.kind==EntityKind::Key || actor.sprite==Sprite::Chick;
     const bool insect=actor.kind==EntityKind::Mosquito || actor.kind==EntityKind::Wasp || actor.kind==EntityKind::LanternMoth || actor.kind==EntityKind::FurnaceMoth;
     const float width=actor.kind==EntityKind::Train ? 1.3F : small ? .32F : insect ? .30F : .58F;
     const float height=actor.kind==EntityKind::Train ? .3F : small || insect ? .10F : .17F;
-    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width*(actor.kind==EntityKind::ForestSpider ? forest_spider_size(actor) : actor.kind==EntityKind::Bear ? bear_size(actor) : actor.kind==EntityKind::OldGrowthBear ? 2.1F : 1),pixels*height,(insect ? .22F : .38F)/(1+actor_toss_height(actor)));
+    batch.add(rect.x+pixels*.5F,rect.y+pixels*(small ? .67F : .83F),pixels*width*(actor.kind==EntityKind::ForestSpider ? forest_spider_size(actor) : actor.kind==EntityKind::Bear ? bear_size(actor) : actor.kind==EntityKind::OldGrowthBear ? 2.1F : 1),pixels*height,(insect ? .22F : .38F)/(1+actor_toss_height(actor)+basic_jump_height(actor)));
 }
 }
 

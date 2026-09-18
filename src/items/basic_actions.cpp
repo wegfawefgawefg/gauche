@@ -25,7 +25,7 @@ bool movable(const Entity& target) {
     return !target.hard_blocker && !target.vitals.grip && target.basic.carried_by.slot<0 &&
         (target.kind==EntityKind::GroundItem || (target.health>0 && target.move_interval>0));
 }
-void push(Game& game,int slot,Cell direction,Cell source,int steps,bool crush) {
+void push(Game& game,int slot,Cell direction,Cell source,int steps,bool crush,bool crush_after_move=true) {
     const Handle handle{slot,game.entities[static_cast<std::size_t>(slot)].generation};
     for (int n=0;n<steps;++n) {
         Entity* target=get_entity(game,handle);
@@ -39,7 +39,7 @@ void push(Game& game,int slot,Cell direction,Cell source,int steps,bool crush) {
             if (target->health>0) damage_entity(game,slot,4,source);
             break;
         }
-        if (!crush && ((!walkable(tile) && !open_drop(tile.kind)) || blocker>=0)) break;
+        if ((!crush || (n>0 && !crush_after_move)) && ((!walkable(tile) && !open_drop(tile.kind)) || blocker>=0)) break;
         if (!shove_actor(game,slot,direction,source)) break;
     }
 }
@@ -71,14 +71,17 @@ bool start_jump(Game& game,int slot,Cell direction) {
     Entity& user=game.entities[static_cast<std::size_t>(slot)];
     if (user.vitals.rooted || user.basic.jump_ticks || user.toss.ticks) return false;
     const int reach=2+(has_artifact(user,ArtifactKind::Oversized) ? 1 : 0);
-    Cell destination=user.cell;
+    Cell destination=user.cell, cursor=user.cell;
     for (int i=0;i<reach;++i) {
-        const Cell next=destination+direction;
+        const Cell next=cursor+direction;
         const Tile* tile=game.stage.at(next);
-        if (!tile || (!walkable(*tile) && !open_drop(tile->kind) && tile->kind!=TileKind::Water) || entity_at(game,next,true)>=0) break;
-        destination=next;
+        const int occupant=entity_at(game,next,true);
+        if (!tile || (!walkable(*tile) && !open_drop(tile->kind) && tile->kind!=TileKind::Water) ||
+            (occupant>=0 && game.entities[static_cast<std::size_t>(occupant)].hard_blocker)) break;
+        cursor=next;
+        if (occupant<0) destination=next;
     }
-    if (destination==user.cell) {emit_sound(game,SoundId::BumpStone,user.cell);return false;}
+    if (destination==user.cell) {user.inventory.held()->cooldown=12;return false;}
     user.basic.jump_origin=user.cell; user.basic.jump_destination=destination; user.basic.jump_ticks=18;
     return true;
 }
@@ -120,7 +123,7 @@ bool use_basic_action(Game& game,int slot,Cell direction) {
             const Cell cell=user.cell+Cell{direction.x*reach+side.x*lane,direction.y*reach+side.y*lane};
             if (!clear_attack_sight(game,user.cell,cell,false,true)) break;
             basic_contact(game,user,cell);
-            if ((kind==ItemKind::Shove || kind==ItemKind::Kick || kind==ItemKind::CrushShield) &&
+            if ((kind==ItemKind::Shove || kind==ItemKind::CrushShield) &&
                 push_prop(game,cell,direction,user.cell,kind!=ItemKind::Kick)) {contact=true;break;}
             const int damage=pattern.damage+(has_artifact(user,ArtifactKind::Iron) ? 4 : 0);
             const int prop_damage=power_damage(user,std::max(4,damage))*(has_artifact(user,ArtifactKind::Iron) ? 2 : 1);
@@ -136,7 +139,7 @@ bool use_basic_action(Game& game,int slot,Cell direction) {
             if (kind==ItemKind::Slap && target.health>0 && !target.hard_blocker)
                 target.facing={-target.facing.y,target.facing.x};
             if ((kind==ItemKind::Shove || kind==ItemKind::CrushShield || kind==ItemKind::GodFist || kind==ItemKind::Kick) && movable(target))
-                push(game,victim,direction,user.cell,kind==ItemKind::GodFist ? 8 : 2,kind!=ItemKind::Kick);
+                push(game,victim,direction,user.cell,kind==ItemKind::GodFist ? 8 : 2,kind!=ItemKind::Kick,kind!=ItemKind::Shove);
         }
     if (contact) emit_sound(game,kind==ItemKind::Fist ? SoundId::Punch1 : basic_action_item(kind)->sound,user.cell);
     if (has_artifact(user,ArtifactKind::Iron)) emit_sound(game,SoundId::PanReflect,user.cell);
@@ -163,19 +166,24 @@ void step_basic_state(Game& game,int slot) {
         if (--held.loaded==0) {held={};emit_sound(game,SoundId::BalloonPop,user.cell);}
     }
     if (user.basic.jump_ticks<=0) return;
-    --user.basic.jump_ticks;
+    // Reserve the takeoff cell while the sprite travels. Bodies below the arc
+    // cannot block it, and a newly occupied landing has a guaranteed fallback.
+    if (user.health<=0 || user.cell!=user.basic.jump_origin) {
+        user.basic.jump_ticks=0;user.basic.jump_origin=user.basic.jump_destination={};return;
+    }
+    if (--user.basic.jump_ticks>0) return;
     const auto motion=user.basic;
-    if (user.health<=0) {user.basic.jump_ticks=0;return;}
-    const int span=distance(motion.jump_origin,motion.jump_destination);
-    const int progress=(18-motion.jump_ticks)*span/18;
     const Cell direction=cardinal_toward(motion.jump_origin,motion.jump_destination,user.facing);
-    const Cell next=motion.jump_origin+Cell{direction.x*progress,direction.y*progress};
-    const auto* tile=game.stage.at(next);
-    const int blocker=entity_at(game,next,true);
-    if (!tile || (blocker>=0 && blocker!=slot) || (!walkable(*tile) && !open_drop(tile->kind) && tile->kind!=TileKind::Water)) {
-        user.basic.jump_ticks=0;user.move_wait=8;
-    } else user.cell=next;
-    if (user.basic.jump_ticks) return;
+    Cell landing=motion.jump_origin;
+    for (int i=1;i<=distance(motion.jump_origin,motion.jump_destination);++i) {
+        const Cell next=motion.jump_origin+Cell{direction.x*i,direction.y*i};
+        const auto* tile=game.stage.at(next);
+        const int blocker=entity_at(game,next,true);
+        if (!tile || (!walkable(*tile) && !open_drop(tile->kind) && tile->kind!=TileKind::Water) ||
+            (blocker>=0 && game.entities[static_cast<std::size_t>(blocker)].hard_blocker)) break;
+        if (blocker<0) landing=next;
+    }
+    user.cell=landing;
     user.basic.jump_origin=user.basic.jump_destination={};
     emit_sound(game,SoundId::JumpLand,user.cell);
     enter_actor_cell(game,slot);

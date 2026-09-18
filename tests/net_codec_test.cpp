@@ -1,4 +1,5 @@
 #include "../src/artifacts/powers.hpp"
+#include "../src/combat/parry.hpp"
 #include "../src/items/basic_actions.hpp"
 #include "../src/entities/gate.hpp"
 #include "../src/props/doorstop.hpp"
@@ -206,6 +207,17 @@ int main() {
             std::fprintf(stderr,"upgraded %s snapshot failed: %s\n",item_name(static_cast<ItemKind>(kind)),error.c_str());return 1;
         }
     }
+    // Empowered returned shots remain valid late-join snapshots.
+    const auto returned_handle=spawn_entity(original,EntityKind::Projectile,tester->cell);
+    auto& returned=*get_entity(original,returned_handle);
+    returned.label_a=static_cast<int>(ProjectileKind::CoalSpit);returned.label_b=1;
+    returned.counter_b=12;returned.attack_interval=8;returned.timer_c=164;returned.facing={1,0};
+    tester->inventory.selected=0;tester->inventory.slots[0]=make_item(ItemKind::ParryPan);
+    reflect_projectile(returned,*tester,player_state(original,0).controlled.slot);
+    if (returned.counter_b!=36 || !decode_game(encode_game(original),restored,error) || game_hash(original)!=game_hash(restored)) {
+        std::fprintf(stderr,"reflected pan shot snapshot failed: %s\n",error.c_str());return 1;
+    }
+    remove_entity(original,returned_handle);
     // New jump/carry clocks survive a restore and advance identically on both peers.
     tester->inventory.slots[0]=make_item(ItemKind::Grapple);
     tester->basic.jump_ticks=12;tester->basic.jump_origin=tester->cell;

@@ -171,7 +171,7 @@ void damage_entity(Game& game, int slot, int damage, Cell attacker, bool blockab
         (entity.facing==cardinal_toward(entity.cell,attacker,entity.facing) || has_artifact(entity,ArtifactKind::Sweeping))) {
         emit_sound(game,SoundId::PanReflect,entity.cell);entity.use_flash=8;
         const int parried_slot=culprit ? instigator.slot : entity_at(game,attacker,true);
-        if (parried_slot>=0 && parried_slot!=slot) apply_health_damage(game,parried_slot,damage+(has_artifact(entity,ArtifactKind::Iron) ? 4 : 0),entity.cell);
+        if (parried_slot>=0 && parried_slot!=slot) apply_health_damage(game,parried_slot,parry_return_damage(entity,damage)+(has_artifact(entity,ArtifactKind::Iron) ? 4 : 0),entity.cell);
         return;
     }
     if (blockable && breaker_blocks(entity,attacker)) {

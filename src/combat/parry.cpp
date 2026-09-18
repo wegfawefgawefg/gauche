@@ -4,6 +4,11 @@
 
 #include <algorithm>
 
+int parry_return_damage(const Entity& defender,int incoming_damage) {
+    if (defender.inventory.held()->kind!=ItemKind::ParryPan) return incoming_damage;
+    return static_cast<int>(std::clamp<std::int64_t>(3LL*incoming_damage,24,100000000));
+}
+
 bool parry_active(const Entity& actor) {
     const Item& held = *actor.inventory.held();
     return actor.health > 0 && actor.sleep_ticks == 0 && actor.stun_ticks == 0 &&
@@ -36,6 +41,7 @@ bool parry_ranged_hit(Game& game, int defender_slot, Cell incoming) {
 // FLIGHT: Reverse the same object. timer_c is its original, finite lifetime budget.
 // Repeated parries may refresh a flight leg, but never extend that outer deadline.
 void reflect_projectile(Entity& shot, const Entity& defender, int defender_slot) {
+    shot.counter_b=parry_return_damage(defender,shot.counter_b);
     shot.cell = defender.cell;
     shot.point_a = defender.cell;
     shot.entity_a = {defender_slot, defender.generation};

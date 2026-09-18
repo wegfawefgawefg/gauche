@@ -47,7 +47,15 @@ bool contact_rules() {
     const auto blocker=spawn_entity(game,EntityKind::Zombie,{5,4});
     act(game,ItemKind::Shove);
     if (!check(get_entity(game,front)->health==36 && get_entity(game,blocker)->health==36,"body collision is an impact, not a crush")) return false;
-    remove_entity(game,blocker);remove_entity(game,front);
+    remove_entity(game,blocker);
+    *game.stage.at({6,4})={TileKind::Wall,100,0};
+    act(game,ItemKind::Shove);
+    if (!check(get_entity(game,front)->health==36 && get_entity(game,front)->cell==Cell{5,4},"shove stops at a wall after crossing one empty cell")) return false;
+    remove_entity(game,front);*game.stage.at({6,4})={};
+    game.stage.at({4,4})->prop={PropKind::ClayPot,5};
+    act(game,ItemKind::Kick);
+    if (!check(game.stage.at({4,4})->prop.broken && game.stage.at({5,4})->prop.kind==PropKind::None,"kick breaks a pot instead of pushing it")) return false;
+    game.stage.at({4,4})->prop={};
     user.inventory.slots[0]=make_item(ItemKind::CrushShield);
     game.stage.at({4,4})->prop={PropKind::Crate,20};
     use_held_item(game,0,{4,4});
@@ -65,14 +73,33 @@ bool parry_rules() {
     const int slot=player_state(game,0).controlled.slot;
     act(game,ItemKind::ParryPan);
     damage_entity(game,slot,9,{4,4},true,foe);
-    if (!check(user.health==100 && get_entity(game,foe)->health==31,"tight pan returns melee damage")) return false;
+    if (!check(user.health==100 && get_entity(game,foe)->health==13,"tight pan returns melee damage")) return false;
     damage_entity(game,slot,5,{2,4},true);
     if (!check(user.health==95,"rear hit bypasses pan")) return false;
     user.block_ticks=0;damage_entity(game,slot,5,{4,4},true,foe);
     if (!check(user.health==90,"missed parry takes damage")) return false;
     act(game,ItemKind::ParryPan);
     fire_bullet(game,foe.slot,{4,4},{-1,0},make_item(ItemKind::Pistol),true);
-    return check(user.health==90 && get_entity(game,foe)->health==15 && user.inventory.held()->kind==ItemKind::ParryPan,"pan reflects a shot and never wears out");
+    return check(user.health==90 && get_entity(game,foe)->health==0 && user.inventory.held()->kind==ItemKind::ParryPan,"pan reflects a shot and never wears out");
+}
+bool jump_obstacle_rules() {
+    for (const auto kind:{EntityKind::Zombie,EntityKind::Bat}) {
+        auto world=arena();auto& game=*world;auto& user=player(game);
+        const auto foe=spawn_entity(game,kind,{4,4});const int hp=get_entity(game,foe)->health;
+        if (!check(act(game,ItemKind::Jump),"jump can start over a creature")) return false;
+        for (int i=0;i<18;++i) step_basic_state(game,0);
+        if (!check(user.cell==Cell{5,4} && user.health==100 && get_entity(game,foe)->health==hp,"jump clears zombie or bat without collision damage")) return false;
+    }
+    auto world=arena();auto& game=*world;auto& user=player(game);
+    const auto foe=spawn_entity(game,EntityKind::Zombie,{4,4});
+    act(game,ItemKind::Jump);
+    const auto late=spawn_entity(game,EntityKind::Zombie,{5,4});
+    for (int i=0;i<18;++i) step_basic_state(game,0);
+    if (!check(user.cell==Cell{3,4},"occupied landing safely returns to reserved takeoff cell")) return false;
+    remove_entity(game,foe);remove_entity(game,late);*game.stage.at({4,4})={TileKind::Wall,100,0};
+    set_basic_action(user,ItemKind::Jump);game.sound_count=0;
+    for (int i=0;i<60;++i) use_held_item(game,0,{4,4});
+    return check(user.basic.jump_ticks==0 && game.sound_count==0 && user.inventory.held()->cooldown>0,"blocked jump has retry delay and no repeated buzz");
 }
 bool jump_balloon_rules() {
     auto world=arena();auto& game=*world;auto& user=player(game);const int slot=player_state(game,0).controlled.slot;
@@ -183,5 +210,5 @@ bool stack_rules() {
 }
 }
 bool basic_actions_and_powers_tests() {
-    return contact_rules() && parry_rules() && jump_balloon_rules() && grapple_rules() && stack_rules();
+    return contact_rules() && parry_rules() && jump_obstacle_rules() && jump_balloon_rules() && grapple_rules() && stack_rules();
 }

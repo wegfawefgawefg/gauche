@@ -6,7 +6,7 @@
 
 namespace {
 int entity_priority(const Entity& entity) {
-    if (entity.basic.carried_by.slot>=0) return 4;
+    if (entity.basic.carried_by.slot>=0 || entity.basic.jump_ticks>0) return 4;
     // Flat fixtures belong below ground flames and all standing bodies.
     if (diver_submerged(entity) || entity.kind==EntityKind::Campfire ||
         entity.kind==EntityKind::Sled || entity.kind==EntityKind::RiverRaft || entity.kind==EntityKind::IceAnchor ||
@@ -28,7 +28,14 @@ std::vector<BodyDraw> body_draw_order(const Game& game,ViewCamera camera,float z
             (entity.kind==EntityKind::Door && entity.fixture_open)) continue;
         const int priority=entity_priority(entity);
         if ((priority==0)!=(pass==ScenePass::Ground)) continue;
-        order.push_back({slot,entity.cell,BodyKind::Entity,priority});
+        Cell ground=entity.cell;
+        if (entity.basic.jump_ticks>0) {
+            const Cell travel=entity.basic.jump_destination-entity.basic.jump_origin;
+            const float progress=static_cast<float>(18-entity.basic.jump_ticks)/18;
+            ground.x+=static_cast<int>(std::round(static_cast<float>(travel.x)*progress));
+            ground.y+=static_cast<int>(std::round(static_cast<float>(travel.y)*progress));
+        }
+        order.push_back({slot,ground,BodyKind::Entity,priority});
     }
     if (pass==ScenePass::Bodies) {
         const int rx=static_cast<int>(320/tile_pixels(zoom))+6,ry=static_cast<int>(180/tile_pixels(zoom))+7;

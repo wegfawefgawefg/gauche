@@ -906,3 +906,11 @@ playtesting; use builds and focused static captures for implementation checks.
 - [x] **INDUSTRIAL-CRUSH-SHIELD:** Durable front shield, pushes creatures two cells and crushes when pinned against solid terrain. Industrial shop/cache/weapon supplies.
 - [x] **THROW-BASELINE:** Rocks 28 damage / six per supply; ice needles 24 damage. Spare Throw saves consumables without duplicating recoverable rocks on landing.
 - [ ] **POWER-POOL-100:** Grow toward ~50 incremental stats, 30 action/weapon modifiers, 15 utilities and 5 rare transformations. Current batch is for feel/tuning; don't pad the pool with conditional filler. Heavy overlaps Strong Arms and Recovery lacks a useful general stagger stat, so neither is a separate power.
+
+### Basic-action playtest feedback — 2026-09-18
+
+- [x] **ACTION-FEEL-02:** User: God Fist feels good; Elbow is funny, difficult and strong. Keep those. Slap needs a satisfying smack: replace the thin tonal hit with a broad crack and palm thump.
+- [x] **PARRY-PAYOFF:** Keep the difficult timing, increase permanent Pan returns to 3× incoming damage, minimum 24, for melee and reflected shots.
+- [x] **JUMP-CREATURES:** Clear zombies and bats with a free landing; no wall-jump buzzing. Reserve takeoff space for interrupted or newly blocked landings.
+- [x] **SHOVE-PINNING:** User saw kills with an empty tile behind the target. Only crush already-pinned targets; stop safely after crossing a gap toward a wall.
+- [x] **KICK-IDENTITY:** Damaging kick breaks pots rather than sliding them; knocks creatures back without wall crush. Shove moves objects and crushes pinned creatures.

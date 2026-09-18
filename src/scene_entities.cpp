@@ -172,6 +172,12 @@ void draw_entities(tr::Renderer* renderer, const GameGraphics& graphics,
             rect.y += (static_cast<float>((jitter >> 8) & 255U) / 127.5F - 1.0F) *
                       pose->shake * pixels;
         }
+        if (entity.basic.jump_ticks>0) {
+            const float progress=static_cast<float>(18-entity.basic.jump_ticks)/18;
+            const Cell travel=entity.basic.jump_destination-entity.basic.jump_origin;
+            rect.x+=static_cast<float>(travel.x)*progress*pixels;
+            rect.y+=static_cast<float>(travel.y)*progress*pixels;
+        }
         rect.y-=(actor_toss_height(entity)+basic_jump_height(entity)+(entity.basic.carried_by.slot>=0 ? .85F : balloon_floating(entity) ? .12F : 0.F))*pixels;
         if (entity.basic.held_prop.kind!=PropKind::None) {
             SDL_FRect cargo_rect=entity.basic.prop_ticks>0 ? SDL_FRect{rect.x+static_cast<float>(entity.basic.prop_cell.x-entity.cell.x)*pixels,rect.y+static_cast<float>(entity.basic.prop_cell.y-entity.cell.y)*pixels,pixels,pixels} : rect;

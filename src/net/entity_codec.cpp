@@ -301,7 +301,7 @@ Entity read_entity(PacketReader& reader) {
         entity.label_b<0 || entity.label_b>1)) reader.okay=false;
     if (entity.kind==EntityKind::Projectile && entity.label_a==static_cast<int>(ProjectileKind::CoalSpit) &&
         (entity.label_b<0 || entity.label_b>1 || entity.counter_a<0 || entity.counter_a>8 ||
-         entity.counter_b!=(entity.label_b==1 ? 12 : 4) || entity.timer_c>164)) reader.okay=false;
+         (entity.counter_b!=(entity.label_b==1 ? 12 : 4) && (entity.counter_b<24 || entity.counter_b>100000000)) || entity.timer_c>164)) reader.okay=false;
     if (!valid_coal_cutter(entity)) reader.okay=false;
     if (!valid_rail_cart(entity) || !valid_rail_shunter(entity)) reader.okay=false;
     if (!valid_tar_singer(entity) || !valid_tar_spit(entity)) reader.okay=false;

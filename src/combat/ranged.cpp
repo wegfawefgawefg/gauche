@@ -16,7 +16,7 @@ void trace_event(Game& game, Cell source, Cell end, bool impact, bool muzzle, It
 void fire_bullet(Game& game, int owner_slot, Cell source, Cell direction,
                  const Item& weapon, bool muzzle) {
     const Entity& owner = game.entities[static_cast<std::size_t>(owner_slot)];
-    const ItemPattern pattern = item_pattern(weapon);
+    ItemPattern pattern = item_pattern(weapon);
     const bool piercing = pattern.piercing || has_artifact(owner, ArtifactKind::AllPiercing);
     const bool burning = owner.kind == EntityKind::Ember;
     const ItemKind kind = burning ? ItemKind::None : weapon.kind;
@@ -46,6 +46,7 @@ void fire_bullet(Game& game, int owner_slot, Cell source, Cell direction,
         if (shooter == Handle{target, actor.generation}) continue;
         if (parry_ranged_hit(game, target, direction)) {
             trace_event(game, source, cell, true, muzzle, kind);
+            pattern.damage=parry_return_damage(actor,pattern.damage);
             source = attacker = cell;
             shooter = {target, actor.generation};
             direction = {-direction.x, -direction.y};

@@ -4,6 +4,7 @@
 
 constexpr int parry_ticks = 10;
 constexpr int parry_wear = 4;
+int parry_return_damage(const Entity& defender, int incoming_damage);
 bool parry_active(const Entity& actor);
 bool parry_ranged_hit(Game& game, int defender_slot, Cell incoming);
 void reflect_projectile(Entity& shot, const Entity& defender, int defender_slot);

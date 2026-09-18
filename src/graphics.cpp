@@ -134,6 +134,9 @@ bool require_file(const std::filesystem::path& path, std::string& error) {
 void unload_graphics(GameGraphics& graphics) {
     tr::destroy_texture(graphics.overhead_canvas);
     graphics.overhead_canvas = nullptr;
+    tr::destroy_texture(graphics.overhead_mask);
+    graphics.overhead_mask = nullptr;
+    graphics.overhead_opening = graphics.overhead_fade = -1;
     tr::destroy_texture(graphics.interaction_canvas);
     graphics.interaction_canvas = nullptr;
     for (tr::Texture*& texture : graphics.textures) {

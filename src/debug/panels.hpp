@@ -9,6 +9,10 @@ struct DebugPanels {
     bool combat = false;
     bool status = false;
     bool unlocked_zoom = false;
+    int canopy_style = 1; // 0: old stipple, 1: rounded rectangle, 2: no cutout, 3: hidden
+    bool canopy_upright = true;
+    float canopy_opening = .80F;
+    float canopy_fade = .12F;
     bool contact_shadows = true;
     bool shadow_entities = true;
     bool shadow_props = true;

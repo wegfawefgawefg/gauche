@@ -90,14 +90,15 @@ void draw_lit_tile(tr::Renderer *renderer, tr::Texture *texture, SDL_FRect rect,
     return;
   }
   tr::Texture *map =
-      renderer->smooth_lighting ? lightmap(renderer, lighting) : nullptr;
+      renderer->lighting_style == 2 ? lightmap(renderer, lighting) : nullptr;
   constexpr std::array<SDL_FPoint, 4> points{{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
   std::array<SDL_FColor, 4> colors{};
   if (!map) {
     constexpr Cell offsets[]{{0, 0}, {1, 0}, {1, 1}, {0, 1}};
     for (std::size_t i = 0; i < colors.size(); ++i)
       colors[i] =
-          vertex_color(light_at_corner(lighting, cell + offsets[i]), tint);
+          vertex_color(renderer->lighting_style == 0 ? light_at_cell(lighting, cell) :
+                       light_at_corner(lighting, cell + offsets[i]), tint);
   }
   std::array<SDL_Vertex, 4> vertices{};
   std::array<SDL_FPoint, 4> light_uv{};

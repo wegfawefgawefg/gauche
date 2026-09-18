@@ -74,7 +74,8 @@ struct TeemingRenderer {
   tr::Texture *white = nullptr;
   tr::Texture *font = nullptr;
   tr::Texture *lightmap = nullptr;
-  bool smooth_lighting = true;
+  // Local presentation only: flat cells, triangle interpolation, bilinear lightmap.
+  int lighting_style = 2;
   const void *light_source = nullptr;
   std::uint64_t light_revision = 0;
   std::vector<tr::AtlasPage> atlases;

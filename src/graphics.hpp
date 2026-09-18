@@ -115,6 +115,8 @@ enum class Sprite : std::size_t {
 struct GameGraphics {
     mutable tr::Texture* interaction_canvas = nullptr;
     mutable tr::Texture* overhead_canvas = nullptr;
+    mutable tr::Texture* overhead_mask = nullptr;
+    mutable float overhead_opening = -1, overhead_fade = -1;
     std::array<tr::Texture*, static_cast<std::size_t>(Sprite::Count)> textures{};
     GameGraphics() = default;
     GameGraphics(const GameGraphics&) = delete;

@@ -119,6 +119,18 @@ int main() {
   near(pixel(s, 16, 16).r, 173, "BGRA conversion red");
   near(pixel(s, 16, 16).b, 19, "BGRA conversion blue");
   SDL_DestroySurface(s);
+  // Canopy masking must fade premultiplied color AND alpha, exposing the world.
+  for (auto& value : values) value = 0x80808080;
+  require(tr::update_texture(light, nullptr, values, 8), "canopy mask upload");
+  tr::set_color(r, 0, 0, 1, 1);
+  tr::clear(r);
+  tr::texture_blend(red, SDL_BLENDMODE_BLEND_PREMULTIPLIED);
+  tr::geometry(r, red, vertices, 4, indices, 6, light, uv);
+  s = tr::read_pixels(r, nullptr);
+  require(s, "masked canopy readback");
+  near(pixel(s, 64, 64).r, 128, "canopy mask color");
+  near(pixel(s, 64, 64).b, 127, "canopy mask reveals background");
+  SDL_DestroySurface(s);
   tr::destroy_renderer(r);
   SDL_DestroyWindow(window);
   SDL_Quit();

@@ -32,7 +32,7 @@ void browser_inspect(MenuShell& menu, float zoom) {
     state["renderer"]=tr::renderer_name(frame.renderer);
     state["drawBatches"]=frame.renderer->last.batches;
     state["triangles"]=frame.renderer->last.triangles;
-    state["lightmap"]=frame.renderer->smooth_lighting;
+    state["lightmap"]=frame.renderer->lighting_style == 2;
     state["menuScreen"] = static_cast<int>(menu.front.screen);
     state["volumes"] = {menu.front.master_volume, menu.front.music_volume, menu.front.sfx_volume};
     state["focusedControl"] = "";
@@ -42,6 +42,8 @@ void browser_inspect(MenuShell& menu, float zoom) {
     for (std::size_t i=0; i<menu.front.runtime.state().size(); ++i)
         if (menu.front.runtime.state()[i].open) state["openControls"].push_back(menu.front.runtime.view().nodes[i].source.layout_id);
     state["renderPercent"]=menu.front.browser_render_percent;
+    state["lightingStyle"]=frame.renderer->lighting_style;
+    state["canopyStyle"]=debug_panels().canopy_style;
     state["zoom"]=zoom;
     state["zoomUnlocked"]=debug_panels().unlocked_zoom;
     state["seed"]=std::to_string(game.run.seed);

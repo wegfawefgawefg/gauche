@@ -56,7 +56,7 @@ struct VertexOut { @builtin(position) position: vec4f, @location(0) color: vec4f
  var out: VertexOut; out.position = vec4f(p.x / size.x * 2 - 1, 1 - p.y / size.y * 2, p.z, 1);
  out.color=color; out.uv=uv; out.lightUV=lightUV; return out;
 }
-@fragment fn fs(v: VertexOut) -> @location(0) vec4f { return textureSample(sprite,spriteSampler,v.uv)*v.color*vec4f(textureSample(lightmap,lightSampler,v.lightUV).rgb,1); }
+@fragment fn fs(v: VertexOut) -> @location(0) vec4f { return textureSample(sprite,spriteSampler,v.uv)*v.color*textureSample(lightmap,lightSampler,v.lightUV); }
 `});
   gpu.layout = device.createBindGroupLayout({entries: [
     {binding:0,visibility:GPUShaderStage.FRAGMENT,sampler:{}},

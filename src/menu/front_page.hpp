@@ -29,6 +29,7 @@ struct FrontPage {
     MenuScreen screen = MenuScreen::Main;
     MenuScreen settings_return = MenuScreen::Main;
     std::string action;
+    std::vector<std::pair<std::string, gview::Value>> setting_edits;
     std::string toast;
     std::string join_host = "127.0.0.1";
     std::string join_port = "35355";
@@ -59,10 +60,7 @@ struct FrontPage {
     bool vsync = true;
     bool show_fps = false;
     int window_mode = 0;
-    int render_resolution = 0;
     int browser_render_percent = 100;
-    int window_resolution = 0;
-    int frame_cap = 0;
     float master_volume = 1.0F;
     float music_volume = 1.0F;
     float sfx_volume = 1.0F;

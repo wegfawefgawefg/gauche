@@ -23,7 +23,7 @@ Use **Save last 300 frames** or **Record next 600 frames**; the panel shows the 
 
 Capture stops after that many frames (bounded to 1–36,000); the game continues. Closing the game finishes a partial capture. `multiplayer.py --profile` writes `profile.csv` inside each visible client's session directory; headless bots are excluded. CSV records the build, platform/renderer backend, actual V-sync, effective cap, render dimensions and focus/minimize state.
 
-Startup now applies the saved V-sync setting to the renderer. A requested but unavailable V-sync falls back to a display-rate software cap; explicitly disabling both V-sync and the cap remains uncapped. The software cap uses OS sleep without a busy-spin tail. Bots retain their 30 FPS cap; simulation stays at 60 ticks/sec. An older laptop can select **Settings → Display → Frame cap → 60** to reduce rendering work. Hardware temperature/bottlenecks require a capture from that machine; dummy/software-renderer checks do not establish GPU performance.
+Startup now applies the saved V-sync setting to the renderer. A requested but unavailable V-sync falls back to a display-rate software cap; explicitly disabling both V-sync and the cap remains uncapped. The software cap uses OS sleep without a busy-spin tail. Bots retain their 30 FPS cap; simulation stays at 60 ticks/sec. An older laptop can select **Settings → Display → Frame limit → 60 FPS** to reduce rendering work. Hardware temperature/bottlenecks require a capture from that machine; dummy/software-renderer checks do not establish GPU performance.
 
 ## Implemented controls
 
@@ -32,6 +32,8 @@ F1 opens/closes debug windows; F2 toggles the selector. Choose Levels or Loadout
 Levels lists Forest 1-1 through Ice 2-4 and Industrial 3-4 plus Haunted House and Freight Exchange (Industrial 3-2). Starting stage and repeat target are separately saved; selecting another list row does not silently change either. Rewards and shops resolve before repeating. Normal survivors carry their loot forward; spawn kits apply on new runs, debug jumps and returning from death.
 
 Loadout presets: Forest entry/veteran, Ice entry, Industrial entry, Projectile lab. Six slots support the current single attribute system, permitted stack/HP/uses/ammo, bow arrows, lantern/candle fuel, kettle contents/heat, opened bear trap, lit stick and gun muffling. Entity references and pending attacks are never saved in a kit. Four artifacts are selectable; step interval is the final value, including any Fleet Feet adjustment.
+
+Audio settings use 0–100% sliders: drag with the mouse or adjust by 1% with left/right. Values clamp at the ends and apply immediately. Display choices and controller icons use dropdowns; Enter/A selects, Escape/B cancels an open dropdown before leaving the page. On/off settings use toggles. Preferences persist between launches.
 
 Settings and Controller Options expose Auto/Xbox/PlayStation/Nintendo prompts. This machine's controller-icons.cfg is set to Xbox. Physical bindings stay as configured. All action legends and controller diagrams share the icon selection.
 

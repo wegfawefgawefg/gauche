@@ -133,8 +133,8 @@ void input_options_page(ViewBuilder& ui, const FrontPage& page) {
                         {glayout::LengthKind::Fill, 1.0F},
                         {glayout::LengthKind::Fill, 1.0F}, 5.0F);
     ui.scrolling("input-list");
-    ui.button("input-list", "controller-icons", std::string{"Button icons: "} + controller_icon_name(),
-              "controller-icons", "menu", 42);
+    ui.select("input-list", "controller-icons", "Button icons", "setting:icons",
+              {"Auto", "Xbox", "PlayStation", "Nintendo"}, "menu", 42);
     ui.slider("input-list", "controller-sensitivity", "Controller sensitivity",
               "input:controller-sensitivity", "menu", 0.4, 2.0, 0.05, 46.0F);
     ui.slider("input-list", "stick-deadzone", "Stick deadzone",

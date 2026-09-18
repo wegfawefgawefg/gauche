@@ -61,7 +61,7 @@ try {
   await solo.waitForTimeout(200);
   assert.notDeepEqual((await state(solo)).position,before.position,'Keyboard should move player');
   assert.equal(await solo.evaluate(()=>window.teeming.SDL3.audioContext.state),'running');
-  await command(solo,'audio:master');
+  await command(solo,'setting:master:50');
   await solo.waitForTimeout(300);
   const settings=await solo.evaluate(async()=>{
     const fs=window.teeming.FS;

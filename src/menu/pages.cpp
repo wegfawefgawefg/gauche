@@ -1,6 +1,7 @@
 #include "../debug/levels.hpp"
 #include "../input/icon_set.hpp"
 #include "pages.hpp"
+#include "settings_page.hpp"
 #include "page_chrome.hpp"
 #include "control_pages.hpp"
 #include "control_reference.hpp"
@@ -89,7 +90,7 @@ void direct_join_page(ViewBuilder& ui, const FrontPage& page) {
 void players_page(ViewBuilder& ui, const FrontPage& page) {
     const GubsyLobbyState& lobby = gubsy_get_lobby_state(*page.backend);
     frame(ui, "Players", 760.0F, 440.0F);
-    ui.label("card", "player-count", "One player per machine · four per game", 36.0F, 16.0F);
+    ui.label("card", "player-count", "One player per machine", 36.0F, 16.0F);
     for (int index = 0; index < static_cast<int>(lobby.local_players.size()); ++index) {
         const auto& player = lobby.local_players[static_cast<std::size_t>(index)];
         const BindsProfile* profile = gubsy_find_binds_profile(*page.backend,
@@ -122,62 +123,6 @@ void player_page(ViewBuilder& ui, const FrontPage& page) {
                    std::to_string(pad.device_id));
     }
     footer(ui, "player-keyboard");
-}
-
-void settings_page(ViewBuilder& ui) {
-    frame(ui, "Settings", 620.0F, 400.0F);
-    button(ui, "display", "Display", "display");
-    button(ui, "audio", "Audio", "audio");
-    button(ui, "controls", "Controls", "controls");
-    button(ui, "controller-icons", std::string{"Controller icons  ·  "} + controller_icon_name(), "controller-icons");
-    footer(ui, "display");
-}
-
-void display_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Display Settings", 740.0F, 545.0F);
-#ifdef __EMSCRIPTEN__
-    button(ui,"window-mode",page.fullscreen ? "Exit fullscreen" : "Enter fullscreen","display:window-mode");
-    button(ui,"render-scale", "Render resolution  ·  " + std::to_string(page.browser_render_percent) + "%", "display:render-scale");
-    constexpr const char* caps[]{"Display refresh rate", "60 FPS", "120 FPS", "144 FPS"};
-    button(ui,"frame-cap",std::string{"Frame limit  ·  "}+caps[std::clamp(page.frame_cap,0,3)],"display:frame-cap");
-    button(ui,"show-fps",std::string{"Show FPS  ·  "}+(page.show_fps ? "On" : "Off"),"display:show-fps");
-    button(ui,"auto-reports",std::string{"Automatic error reports  ·  "}+(page.auto_reports ? "On" : "Off"),"display:auto-reports");
-    button(ui,"save-report","Save debug log","display:save-report");
-    ui.label("card","reports-help","Reports send technical diagnostics, without player names or room codes.",40.0F,15.0F);
-    footer(ui,"window-mode");
-#else
-    constexpr const char* resolutions[]{"640 × 360", "960 × 540", "1280 × 720",
-                                        "1920 × 1080"};
-    constexpr const char* modes[]{"Windowed", "Borderless", "Fullscreen"};
-    constexpr const char* caps[]{"Unlimited", "60 FPS", "120 FPS", "144 FPS"};
-    button(ui, "render-resolution", std::string{"Game resolution  ·  "} +
-           resolutions[std::clamp(page.render_resolution, 0, 3)], "display:render-resolution");
-    button(ui, "window-resolution", std::string{"Window size  ·  "} +
-           resolutions[std::clamp(page.window_resolution, 0, 3)], "display:window-resolution");
-    button(ui, "window-mode", std::string{"Window mode  ·  "} +
-           modes[std::clamp(page.window_mode, 0, 2)], "display:window-mode");
-    button(ui, "vsync", std::string{"Vertical sync  ·  "} +
-           (page.vsync ? "On" : "Off"), "display:vsync");
-    button(ui, "frame-cap", std::string{"Frame cap  ·  "} +
-           caps[std::clamp(page.frame_cap, 0, 3)], "display:frame-cap");
-    button(ui, "show-fps", std::string{"Show FPS  ·  "} +
-           (page.show_fps ? "On" : "Off"), "display:show-fps");
-    footer(ui, "render-resolution");
-#endif
-}
-
-void audio_page(ViewBuilder& ui, const FrontPage& page) {
-    frame(ui, "Audio Settings", 700.0F, 440.0F);
-    const auto percent = [](float level) { return std::to_string(static_cast<int>(level * 100)); };
-    button(ui, "master", "Master volume  ·  " + percent(page.master_volume) + "%",
-           "audio:master");
-    button(ui, "music", "Music volume  ·  " + percent(page.music_volume) + "%",
-           "audio:music");
-    button(ui, "sfx", "Effects volume  ·  " + percent(page.sfx_volume) + "%",
-           "audio:sfx");
-    ui.label("card", "audio-help", "Select a row to cycle through volume levels.",
-             40.0F, 15.0F);
-    footer(ui, "master");
 }
 
 void pause_page(ViewBuilder& ui, const FrontPage& page) {
@@ -227,7 +172,7 @@ gview::View build_menu_page(const FrontPage& page, int width, int height,
     case MenuScreen::Join: rooms_page(ui, page); break;
     case MenuScreen::Players: players_page(ui, page); break;
     case MenuScreen::Player: player_page(ui, page); break;
-    case MenuScreen::Settings: settings_page(ui); break;
+    case MenuScreen::Settings: settings_page(ui, page); break;
     case MenuScreen::Display: display_page(ui, page); break;
     case MenuScreen::Audio: audio_page(ui, page); break;
     case MenuScreen::Controls: controls_page(ui, page); break;

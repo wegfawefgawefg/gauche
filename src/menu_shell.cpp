@@ -1,5 +1,6 @@
 #include "debug/playtest.hpp"
 #include "menu_shell.hpp"
+#include "menu/settings.hpp"
 #include "input.hpp"
 #include "menu/actions.hpp"
 
@@ -273,10 +274,13 @@ void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
             menu.quit_requested = true;
             return;
         }
-        if (input.back && !menu.front.capturing_bind &&
+        const auto& widgets = menu.front.runtime.state();
+        const bool popup = std::any_of(widgets.begin(), widgets.end(), [](const auto& node) { return node.open; });
+        if (input.back && !popup && !menu.front.capturing_bind &&
             !menu.front.text_input_active) apply_menu_action(menu, "back");
         else apply_menu_action(menu, update_front_page(menu.front, input, width, height,
                                   policy_index(menu.death_policy)));
+        apply_pending_settings(menu);
         return;
     }
     gubsy_update_runtime(*menu.runtime, dt);

@@ -39,7 +39,7 @@ try {
     }
     // Changing internal resolution must retain the full-size canvas and survive resize.
     for (const percent of [75, 50, 100]) {
-      await page.evaluate(() => { teeming.command = 'display:render-scale'; });
+      await page.evaluate(percent => { teeming.command = 'setting:render-scale:' + JSON.stringify(percent + '%'); }, percent);
       await page.waitForFunction(percent => teeming.gameState.renderPercent === percent &&
         teeming.gameState.renderSize[0] === Math.round(1280 * percent / 100) &&
         teeming.gameState.renderSize[1] === Math.round(720 * percent / 100), percent);

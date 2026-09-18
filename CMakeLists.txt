@@ -248,7 +248,7 @@ add_executable(gauche
     src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/net/rooms/names.cpp src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
     src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp
-    src/menu/actions.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
+    src/menu/actions.cpp src/menu/settings.cpp src/menu/settings_page.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
 target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
 if(WIN32)

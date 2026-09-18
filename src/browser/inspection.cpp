@@ -33,6 +33,14 @@ void browser_inspect(MenuShell& menu, float zoom) {
     state["drawBatches"]=frame.renderer->last.batches;
     state["triangles"]=frame.renderer->last.triangles;
     state["lightmap"]=frame.renderer->smooth_lighting;
+    state["menuScreen"] = static_cast<int>(menu.front.screen);
+    state["volumes"] = {menu.front.master_volume, menu.front.music_volume, menu.front.sfx_volume};
+    state["focusedControl"] = "";
+    const auto focus = menu.front.runtime.focus();
+    if (focus != gview::invalid_node) state["focusedControl"] = menu.front.runtime.view().nodes[focus].source.layout_id;
+    state["openControls"] = nlohmann::json::array();
+    for (std::size_t i=0; i<menu.front.runtime.state().size(); ++i)
+        if (menu.front.runtime.state()[i].open) state["openControls"].push_back(menu.front.runtime.view().nodes[i].source.layout_id);
     state["renderPercent"]=menu.front.browser_render_percent;
     state["zoom"]=zoom;
     state["zoomUnlocked"]=debug_panels().unlocked_zoom;

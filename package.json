@@ -6,6 +6,7 @@
     "test:web:renderer": "node tests/web-renderer.mjs",
     "test:web": "node tests/web-smoke.mjs",
     "test:web:settings": "node tests/web-browser-settings.mjs",
+    "test:web:menus": "node tests/web-menu-controls.mjs",
     "test:web:gamepad": "node tests/web-gamepad.mjs",
     "test:web:crossplay": "node tests/web-crossplay.mjs"
   },

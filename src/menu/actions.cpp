@@ -3,6 +3,8 @@
 #include "../debug/playtest.hpp"
 #include "../debug/worldgen.hpp"
 #include "actions.hpp"
+#include "settings.hpp"
+#include <nlohmann/json.hpp>
 #include "profiles.hpp"
 #include "audio.hpp"
 #include "../menu_shell.hpp"
@@ -34,27 +36,6 @@ std::uint16_t port_or_zero(std::string_view text) {
         parsed < 1 || parsed > 65535) return 0;
     return static_cast<std::uint16_t>(parsed);
 }
-
-std::filesystem::path audio_path() {
-    return user_data_root() / "gubsy/settings_profiles/audio.lisp";
-}
-
-void save_audio(MenuShell& menu) {
-    EngineState& engine = gubsy_runtime_engine(*menu.runtime);
-    engine.audio_settings.vol_master = menu.front.master_volume;
-    engine.audio_settings.vol_music = menu.front.music_volume;
-    engine.audio_settings.vol_sfx = menu.front.sfx_volume;
-    set_top_level_setting_float(engine.top_level_game_settings,
-        "gubsy.audio.master_volume", menu.front.master_volume);
-    set_top_level_setting_float(engine.top_level_game_settings,
-        "gubsy.audio.music_volume", menu.front.music_volume);
-    set_top_level_setting_float(engine.top_level_game_settings,
-        "gubsy.audio.sfx_volume", menu.front.sfx_volume);
-    (void)save_top_level_game_settings(engine.top_level_game_settings);
-    const auto path = audio_path();
-    if (!path.empty()) (void)save_audio_settings(engine, path.string());
-}
-
 
 void leave_session(MenuShell& menu) {
     if (menu.rooms.active || menu.rooms.busy) { leave_room_session(menu); return; }
@@ -100,86 +81,13 @@ void back(MenuShell& menu) {
     }
 }
 
-void set_video(MenuShell& menu, std::string_view action) {
-    FrontPage& page = menu.front;
-    EngineState& engine = gubsy_runtime_engine(*menu.runtime);
+void display_action(std::string_view action) {
 #ifdef __EMSCRIPTEN__
-    if (action == "display:window-mode") { EM_ASM({Module.toggleFullscreen();}); return; }
-    if (action == "display:auto-reports") { EM_ASM({Module.setAutoReports(!Module.autoReports);}); return; }
-    if (action == "display:save-report") { EM_ASM({Module.saveReport();}); return; }
-    if (action == "display:render-scale") {
-        const int previous = page.browser_render_percent;
-        page.browser_render_percent = previous == 100 ? 75 : previous == 75 ? 50 : 100;
-        if (sync_browser_render_resolution(menu)) {
-            set_top_level_setting_int(engine.top_level_game_settings,
-                "teeming.video.browser_render_percent", page.browser_render_percent);
-            (void)save_top_level_game_settings(engine.top_level_game_settings);
-        } else page.browser_render_percent = previous;
-        page.dirty = true;
-        return;
-    }
-    if (action == "display:vsync" || action == "display:window-resolution" || action == "display:render-resolution") return;
+    if (action == "display:window-mode") EM_ASM({Module.toggleFullscreen();});
+    if (action == "display:save-report") EM_ASM({Module.saveReport();});
+#else
+    (void)action;
 #endif
-    const GubsyFrame frame = gubsy_get_frame(*menu.runtime);
-    constexpr struct { int width; int height; const char* label; } sizes[]{
-        {640, 360, "640x360"}, {960, 540, "960x540"},
-        {1280, 720, "1280x720"}, {1920, 1080, "1920x1080"},
-    };
-    if (action == "display:render-resolution") {
-        const int next = (page.render_resolution + 1) % 4;
-        if (set_render_resolution(engine, sizes[next].width, sizes[next].height)) {
-            page.render_resolution = next;
-            set_top_level_setting_int(engine.top_level_game_settings,
-                "gubsy.video.match_render_to_window", 0);
-            set_top_level_setting_string(engine.top_level_game_settings,
-                "gubsy.video.render_resolution", sizes[next].label);
-        } else page.toast = "Could not set game resolution";
-    } else if (action == "display:window-resolution") {
-        const int next = (page.window_resolution + 1) % 4;
-        if (set_window_dimensions(engine, sizes[next].width, sizes[next].height)) {
-            page.window_resolution = next;
-            set_top_level_setting_string(engine.top_level_game_settings,
-                "gubsy.video.window_resolution", sizes[next].label);
-        } else page.toast = "Could not resize window";
-    } else if (action == "display:window-mode") {
-        const int next = (page.window_mode + 1) % 3;
-        if (set_window_display_mode(engine, static_cast<WindowDisplayMode>(next))) {
-            page.window_mode = next;
-            page.fullscreen = next == 2;
-            constexpr const char* labels[]{"windowed", "borderless", "fullscreen"};
-            set_top_level_setting_string(engine.top_level_game_settings,
-                "gubsy.video.window_mode", labels[next]);
-        } else page.toast = "Could not change window mode";
-    } else if (action == "display:vsync") {
-        const bool next = !page.vsync;
-        if (frame.renderer && tr::set_vsync(frame.renderer, next ? 1 : 0)) {
-            page.vsync = next;
-            set_top_level_setting_int(engine.top_level_game_settings,
-                "gubsy.video.vsync", next ? 1 : 0);
-        } else page.toast = SDL_GetError();
-    } else if (action == "display:frame-cap") {
-        page.frame_cap = (page.frame_cap + 1) % 4;
-        constexpr const char* caps[]{"0", "60", "120", "144"};
-        set_top_level_setting_string(engine.top_level_game_settings,
-            "gubsy.video.frame_cap", caps[page.frame_cap]);
-    } else if (action == "display:show-fps") {
-        page.show_fps = !page.show_fps;
-        set_top_level_setting_int(engine.top_level_game_settings,
-            "gubsy.video.show_fps", page.show_fps ? 1 : 0);
-    }
-    (void)save_top_level_game_settings(engine.top_level_game_settings);
-    page.dirty = true;
-}
-
-void set_audio(MenuShell& menu, std::string_view action) {
-    float* level = nullptr;
-    if (action == "audio:master") level = &menu.front.master_volume;
-    if (action == "audio:music") level = &menu.front.music_volume;
-    if (action == "audio:sfx") level = &menu.front.sfx_volume;
-    if (level == nullptr) return;
-    *level = *level >= 0.99F ? 0.0F : std::min(1.0F, *level + 0.1F);
-    save_audio(menu);
-    menu.front.dirty = true;
 }
 
 void start_local(MenuShell& menu) {
@@ -233,19 +141,6 @@ void initialize_menu_settings(MenuShell& menu) {
         std::fprintf(stderr, "Could not apply V-sync preference: %s\n", SDL_GetError());
     page.show_fps = get_top_level_setting_int(engine.top_level_game_settings,
         "gubsy.video.show_fps", 0) != 0;
-    const auto resolution_index = [](int width, int height) {
-        if (width >= 1920 || height >= 1080) return 3;
-        if (width >= 1280 || height >= 720) return 2;
-        if (width >= 960 || height >= 540) return 1;
-        return 0;
-    };
-    const auto render = get_render_dimensions(engine);
-    const auto window = get_window_dimensions(engine);
-    page.render_resolution = resolution_index(render.x, render.y);
-    page.window_resolution = resolution_index(window.x, window.y);
-    const std::string cap = get_top_level_setting_string(engine.top_level_game_settings,
-        "gubsy.video.frame_cap", "0");
-    page.frame_cap = cap == "60" ? 1 : (cap == "120" ? 2 : (cap == "144" ? 3 : 0));
     page.master_volume = engine.audio_settings.vol_master;
     page.music_volume = engine.audio_settings.vol_music;
     page.sfx_volume = engine.audio_settings.vol_sfx;
@@ -254,16 +149,22 @@ void initialize_menu_settings(MenuShell& menu) {
 }
 
 void apply_menu_action(MenuShell& menu, std::string_view action) {
+    // Explicit values also support browser inspection and scripted checks.
+    if (action.starts_with("setting:")) {
+        const auto separator = action.find(':', 8);
+        if (separator == std::string_view::npos) return;
+        const auto data = nlohmann::json::parse(action.substr(separator + 1), nullptr, false);
+        const auto key = action.substr(0, separator);
+        if (data.is_boolean()) apply_menu_setting(menu, key, data.get<bool>());
+        else if (data.is_number()) apply_menu_setting(menu, key, data.get<double>());
+        else if (data.is_string()) apply_menu_setting(menu, key, data.get<std::string>());
+        return;
+    }
     if (action.empty()) return;
     if (room_action(menu, action)) { menu.front.dirty = true; return; }
     FrontPage& page = menu.front;
     if (page.screen == MenuScreen::ProfileEditor && !save_profile_name(page)) return;
     if (action == "back") { menu_back_sound(page); back(menu); return; }
-    if (action == "controller-icons") {
-        const auto next = static_cast<ControllerIcons>((static_cast<int>(controller_icons()) + 1) % 4);
-        if (!set_controller_icons(next)) page.toast = "Could not save controller icon preference";
-        page.dirty = true; return;
-    }
     if (action == "join" || action == "rooms") {
         show_menu_screen(page, MenuScreen::Rooms);
         room_action(menu, "room:browse"); return;
@@ -355,6 +256,6 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
     if (action == "input-options") {
         show_menu_screen(page, MenuScreen::InputOptions); return;
     }
-    if (action.starts_with("display:")) { set_video(menu, action); return; }
-    if (action.starts_with("audio:")) { set_audio(menu, action); return; }
+    if (action.starts_with("display:")) { display_action(action); return; }
+
 }

@@ -1,5 +1,6 @@
 #include "front_page.hpp"
 #include "pages.hpp"
+#include "settings.hpp"
 #include "profiles.hpp"
 #include "text_edit.hpp"
 #include "control_reference.hpp"
@@ -100,14 +101,9 @@ std::string projection(const FrontPage& page, int death_policy) {
         std::to_string(static_cast<int>(page.selected_bind_type)) + ":" +
         std::to_string(page.selected_bind_action) + ":" +
         std::to_string(page.capturing_bind) + ":" +
-        std::to_string(page.master_volume) + ":" +
-        std::to_string(page.music_volume) + ":" +
-        std::to_string(page.sfx_volume) + ":" +
         std::to_string(page.fullscreen) + ":" + std::to_string(page.auto_reports) + ":" + std::to_string(page.vsync);
     result += ":" + std::to_string(page.window_mode) + ":" +
-        std::to_string(page.render_resolution) + ":" +
-        std::to_string(page.window_resolution) + ":" +
-        std::to_string(page.frame_cap) + ":" + std::to_string(page.show_fps);
+        std::to_string(page.show_fps);
     result += ":" + page.room_status + ":" + page.connection_status + ":" +
         std::to_string(page.party_ready_count) + ":" + std::to_string(page.party_ready) +
         ":" + std::to_string(page.room_busy);
@@ -237,9 +233,11 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
         nav(page.input, input.left, gview::NavAction::Left);
         nav(page.input, input.right, gview::NavAction::Right);
         nav(page.input, input.select, gview::NavAction::Confirm);
+        nav(page.input, input.back, gview::NavAction::Back);
     }
     gview::Host host;
     host.read = [&page](std::string_view key) -> gview::Value {
+        if (auto value = read_menu_setting(page, key)) return *value;
         if (key == "room-url") return page.room_url;
         if (key == "room-name") return page.room_name;
         if (key == "player-name") return page.player_name;
@@ -260,6 +258,7 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
         return {};
     };
     host.write = [&page](std::string_view key, const gview::Value& value) {
+        if (key.starts_with("setting:")) { page.setting_edits.emplace_back(key, value); return; }
         const std::string* text = std::get_if<std::string>(&value);
         if (text != nullptr) {
             if (key == "room-url") page.room_url = text->substr(0, 256);

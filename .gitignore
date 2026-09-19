@@ -1,6 +1,6 @@
 /build*/
 /data/
-/imgui.ini
+imgui.ini
 *.DS_Store
 __pycache__/
 key.bla

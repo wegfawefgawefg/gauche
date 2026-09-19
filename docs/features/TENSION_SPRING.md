@@ -82,5 +82,5 @@ water landing, failed placement, heat damage and malformed snapshot rejection.
 Supply and modifier rules passed. Nine of 32 authored salvage placements offered
 spring bundles; 32 generated Industry floors retained reachability and required
 exit locks. SDL dummy loading covered the sprite and four sound assets; inspected
-static capture: `/tmp/gauche-tension-spring.png`. No interactive playtest or new
+static capture: `/tmp/teeming-tension-spring.png`. No interactive playtest or new
 permanent test suite; balance and feel await user feedback.

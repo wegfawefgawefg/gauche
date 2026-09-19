@@ -67,7 +67,7 @@ hearing, no ammo refill, supported variants, native supply membership, snapshot
 roundtrip and invalid prime rejection. In 2,000 deterministic native weapon
 rolls at Industry stage two, 169 selected the drill; that is a fixture result,
 not a universal loot-rate promise. SDL dummy loading checked the four sound
-assets. Static held-tool capture: `/tmp/gauche-pocket-drill.png`.
+assets. Static held-tool capture: `/tmp/teeming-pocket-drill.png`.
 
 No interactive playtest or permanent test suite was added. Sound balance and
 combat feel remain for the user's playtesting feedback.

@@ -6,7 +6,7 @@
 
 namespace {
 void header(std::ostream& out) {
-    out<<"# Gauche "<<GAUCHE_GENERATOR_REVISION<<"; inclusive main-thread wall timings, not GPU timings; process CPU may include other threads\n";
+    out<<"# Teeming "<<TEEMING_GENERATOR_REVISION<<"; inclusive main-thread wall timings, not GPU timings; process CPU may include other threads\n";
     out<<"# Platform "<<SDL_GetPlatform()<<"; renderer "<<performance().renderer<<"; logical CPUs "<<SDL_GetNumLogicalCPUCores()<<'\n';
     out<<"frame,cap_fps,vsync,render_width,render_height,focused,minimized,process_cpu_ms";
     for(const char* name:perf_names)out<<",\""<<name<<" ms\",\""<<name<<" calls\"";

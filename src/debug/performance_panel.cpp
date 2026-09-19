@@ -27,7 +27,7 @@ void draw_performance_panel() {
         ImGui::Checkbox("Pause offline simulation while F1 is open",&playtest_tools().pause);
         static bool hide_inactive=true;
         ImGui::Checkbox("Hide inactive phases",&hide_inactive);
-        ImGui::Text("Build %s", GAUCHE_GENERATOR_REVISION);
+        ImGui::Text("Build %s", TEEMING_GENERATOR_REVISION);
         ImGui::TextWrapped("Inclusive main-thread wall times; nested rows overlap and must not be added together. Present includes command submission and driver/V-sync waits, not GPU execution time. Short phases may fall below the browser clock resolution.");
         if(p.count) {
             const auto& last=p.history[(p.next+p.history.size()-1)%p.history.size()];

@@ -1,4 +1,4 @@
-# Teeming docs (formerly Gauche)
+# Teeming docs
 
 - [engineering/BROWSER_BUILD.md](engineering/BROWSER_BUILD.md): browser build, Pages hosting, multiplayer bridge and test commands.
 - [MASTER_TASKS.md](MASTER_TASKS.md): the single active checklist.

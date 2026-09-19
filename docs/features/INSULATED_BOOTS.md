@@ -54,7 +54,7 @@ Built-in image generator, preserved original RGBA copied to
 `assets/graphics/insulated_boots.png`. Prompt:
 
 > Use case: stylized-concept. Asset: one tiny inventory sprite for top-down
-> pixel-art roguelike Gauche, a pair of insulated electrician's rubber
+> pixel-art roguelike Teeming, a pair of insulated electrician's rubber
 > overshoes. Two squat chunky charcoal-blue rubber boots with very thick dull
 > mustard-yellow soles and one muted yellow cuff stripe, staggered side-by-side
 > angled toward lower right. Minimal logical 16x16 pixel design enlarged

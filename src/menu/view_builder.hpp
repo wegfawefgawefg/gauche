@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-namespace gauche_menu {
+namespace teeming_menu {
 
 class ViewBuilder {
   public:
@@ -69,4 +69,4 @@ class ViewBuilder {
     int height_ = 720;
 };
 
-} // namespace gauche_menu
+} // namespace teeming_menu

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <unordered_set>
 
-namespace gauche_menu {
+namespace teeming_menu {
 
 namespace {
 
@@ -42,7 +42,7 @@ ViewBuilder::ViewBuilder(std::string id, int width, int height) {
     view_.layout.root.id = "root";
     view_.layout.root.container = glayout::ContainerKind::Stack;
     view_.themes = default_themes();
-    view_.active_theme = "gauche-stone-unified";
+    view_.active_theme = "teeming-stone-unified";
 }
 
 float ViewBuilder::scale() const {
@@ -325,4 +325,4 @@ void ViewBuilder::scrolling(std::string_view id) {
     view_.nodes.push_back(std::move(scroll));
 }
 
-} // namespace gauche_menu
+} // namespace teeming_menu

@@ -1,11 +1,11 @@
-# Gauche C++ port plan
+# Teeming C++ port plan
 
 Original architectural blueprint. Current open work is tracked in the
-[Gauche master task list](../MASTER_TASKS.md).
+[Teeming master task list](../MASTER_TASKS.md).
 
 ## Target
 
-Make `gauche` the new C++ game and keep the original Rust history in
+Make `teeming` the new C++ game and keep the original Rust history in
 `gauche-rs`. Port the *observable* June 2025 prototype closely as the mechanics
 and visual baseline: compact pixel art, dark presentation, inventory, tile
 damage, chickens, zombies, rail/train behavior, particles, sound, and HUD.
@@ -23,10 +23,10 @@ types, free functions, a visible loop in `main`, direct mode switches, and
 focused files. Use `splonks-cpp` as the implementation reference for the
 Gubsy-owned window/render target, input bindings, asset lifetime, audio,
 fixed-step simulation, menu/settings shell, and useful lobby/transport hooks.
-Adapt its rollback mechanisms to Gauche's simpler state, leaving its
+Adapt its rollback mechanisms to Teeming's simpler state, leaving its
 Spelunky-specific gameplay, network content protocol, theme, and large debug
-infrastructure. Gauche's in-game HUD
-remains Gauche's HUD; Gubsy owns the surrounding menus and settings.
+infrastructure. Teeming's in-game HUD
+remains Teeming's HUD; Gubsy owns the surrounding menus and settings.
 
 ## Source baseline
 
@@ -75,7 +75,7 @@ entity/fixture layer with explicit state and spatial membership. Keys and
 weapons use inventory/item rules. This preserves bespoke entity steps while
 allowing room prefabs to compose the same small pieces in different layouts.
 
-Combat should be fast and readable on rectilinear terrain. **Keep Gauche's
+Combat should be fast and readable on rectilinear terrain. **Keep Teeming's
 tile-step actor movement**: its quick cadence and hard cell occupancy are part
 of the game, and make blocking or opening a tile tactically meaningful. Weapons,
 rockets, explosives, and placeable traps can use small top-down hit, projectile,
@@ -167,7 +167,7 @@ Start with a forest world that mixes leafy outdoor rooms and grassy caves
 with shafts of light from the roof. Give it authored room pieces, forest dens
 as optional set pieces (especially plausible on floors two or four), and
 encounters featuring bats, wolves, and bears. Seed its item pool with a bow
-and visible arrow projectiles, a musket, and bear traps alongside other Gauche
+and visible arrow projectiles, a musket, and bear traps alongside other Teeming
 tools. The bow owns its own arrow count and nocking behavior; it does not draw
 from a pistol or launcher.
 
@@ -177,7 +177,7 @@ change the decisions in a run, not just recolor the same floor. The third-
 floor special and fourth-floor harder pattern should help make each world
 recognizable while leaving room for rare variants.
 
-Lighting is part of the target game's readability and tension. Add a Gauche
+Lighting is part of the target game's readability and tension. Add a Teeming
 2D light pass with dark ambient, tile/wall occlusion, and sources such as
 players, exits, muzzle flashes, rockets, fires, and active machinery. Borrow
 useful SDL/render-target techniques from Splonks, without its entire light
@@ -210,36 +210,36 @@ activation/iteration rules on all peers even when players split up.
 
 | Part | C++ ownership and source reference |
 | --- | --- |
-| `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Gauche's top-down game and co-op needs. |
-| `state`, `stage`, `entity`, `inventory`, `item` | Plain Gauche gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A compact flat tile array with explicit dynamic width/height supports source TestArena and larger generated floors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
+| `main` / shell | Own Gubsy runtime, SDL3 window/renderer/target, graphics, audio, event pump, fixed-step accumulator, drawing and shutdown. Start from the `splonks-cpp` owned-frame path, focused on Teeming's top-down game and co-op needs. |
+| `state`, `stage`, `entity`, `inventory`, `item` | Plain Teeming gameplay data and direct operations, based on the Rust rules. Keep a fixed entity pool and versioned handles; maintain a spatial grid. A compact flat tile array with explicit dynamic width/height supports source TestArena and larger generated floors. Give player avatars stable ownership IDs so online co-op does not require untangling a global single-player assumption later. Preserve tile-step actor positions and integer timers; use fixed point for fractional projectile or other values that affect rules. |
 | `rooms`, `objectives`, `fixtures` | Assemble themed four-floor worlds from authored and random rooms, each with a validated spawn-to-exit progression graph. Place locks/keys, switches, spawners, fixed encounters, dens, traps, and loot as gameplay objects, reusing the entity and tile rules. |
 | `run`, `rewards`, `shop`, `status` | Track world/floor cadence, per-player three-choice drafts, occasional announced shops, passive artifacts, and small explicit status timers. Keep six quick-use slots separate from artifacts; each weapon instance stores its own ammo. Let the host generate offers and stock; serialize every gameplay-relevant choice and effect. |
 | `inputs`, `step` | Gubsy actions and live mouse coordinates feed explicit input snapshots per player and tick. A pure 60 Hz gameplay step processes movement/items, AI, fixtures, projectiles, terrain, objectives, cleanup, then transitions. Own deterministic gameplay RNG in `State`; keep graphics, audio, weather and other cosmetics outside the hashed simulation. |
-| `graphics`, `render`, `render_ui`, `lighting` | Reuse the SDL texture load/unload and render-target pattern, but load Gauche's individual PNGs through a small `Sprite` enum/path table. Draw Gauche-specific world and HUD layers, then an occluded top-down light pass. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
-| `particles` / presentation | Keep Gauche's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |
-| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Gauche sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets plus a small run-route, reward, and shop UI without importing the Splonks theme. Expose the host's co-op death policy in game/lobby settings. |
-| `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, snapshot resync, and reconnect to a retained player slot. Every peer simulates the same Gauche gameplay state; the host canonicalizes inputs and owns session decisions. Initial snapshots include generated terrain, fixtures, objectives, and actors. Use Gubsy host/join UI and suitable transport hooks, while keeping Gauche's sync code separate from the game rules. |
+| `graphics`, `render`, `render_ui`, `lighting` | Reuse the SDL texture load/unload and render-target pattern, but load Teeming's individual PNGs through a small `Sprite` enum/path table. Draw Teeming-specific world and HUD layers, then an occluded top-down light pass. Convert mouse coordinates using the actual presented viewport, render size, zoom, and camera. |
+| `particles` / presentation | Keep Teeming's blood, debris, footprints, corpses, and camera-relative clouds in local presentation state. Spawn them from gameplay event IDs or local weather decisions, with a separate cosmetic RNG. They never affect simulation rules. |
+| `audio`, `menus` | Reuse the SDL3 audio device/lifetime and music/SFX ideas with a small Teeming sound table, volume, and per-effect cooldowns. Add source/listener positions for world sounds, with distance attenuation and a small left/right stereo pan; UI sounds stay centered. Use plain Gubsy menu/settings/input/lobby widgets plus a small run-route, reward, and shop UI without importing the Splonks theme. Expose the host's co-op death policy in game/lobby settings. |
+| `network` | Add host-arbitrated input lockstep with client prediction, bounded rollback, confirmed-frame hashes, snapshot resync, and reconnect to a retained player slot. Every peer simulates the same Teeming gameplay state; the host canonicalizes inputs and owns session decisions. Initial snapshots include generated terrain, fixtures, objectives, and actors. Use Gubsy host/join UI and suitable transport hooks, while keeping Teeming's sync code separate from the game rules. |
 
 ## What to take from Splonks, and what to leave there
 
-| Reuse or adapt | Omit from Gauche |
+| Reuse or adapt | Omit from Teeming |
 | --- | --- |
-| Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. Adapt the useful idea of authored room pieces in generated stages to Gauche's spawn-to-exit maps. | Splonks's biome, quest, shop, and progression content and large data systems. Write Gauche's smaller themed worlds, rewards, and shops for its own run structure. The Rust TestArena is only a baseline. |
-| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Gauche's simpler gameplay state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
-| SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Gauche's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
-| Gauche's grid occupancy/collision, tile damage, intended water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions and top-down projectiles. Build a focused 2D light pass. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and full lighting pipeline. |
-| Gauche's 53 OGG files with music, effects and cooldowns; adapt Splonks' small stereo-pan calculation for positioned world sounds. | Splonks' full audio emitter graph, reverb, low-pass filters, and other acoustic processing unless a specific Gauche sound later needs them. |
+| Gubsy-owned SDL3 window, renderer, render target, resize/present path, and a visible fixed-tick loop. Adapt the useful idea of authored room pieces in generated stages to Teeming's spawn-to-exit maps. | Splonks's biome, quest, shop, and progression content and large data systems. Write Teeming's smaller themed worlds, rewards, and shops for its own run structure. The Rust TestArena is only a baseline. |
+| Gubsy input binding and generic title, pause, settings, controller, host, and join UI. Adapt Splonks' input-frame, prediction/rollback, state-hash, and snapshot-resync patterns to Teeming's simpler gameplay state. | Splonks' game-specific lobby policies, network entity/content protocol, elaborate replay UI, mod hosting, theme, and broad debug UI. |
+| SDL texture/audio loading, deterministic cleanup, useful error handling, and simple asset reload only if it helps iteration. | AFrame annotations, animation database, atlas pipeline, per-frame hit/physics boxes, tile source/contact metadata. Teeming's 41 graphics files are individual PNGs with enum names; two water variants and particle sprite lists can switch directly. |
+| Teeming's grid occupancy/collision, tile damage, intended water sprite flip, and small particle update rules. Use integer tile positions/tick counters and `gfxp` fixed scalars for rule-relevant fractions and top-down projectiles. Build a focused 2D light pass. | Splonks rigid/platformer physics, gravity, broad fixed-point vector/AABB physics layer, contact solver, fluid/water/lava simulation, and full lighting pipeline. |
+| Teeming's 53 OGG files with music, effects and cooldowns; adapt Splonks' small stereo-pan calculation for positioned world sounds. | Splonks' full audio emitter graph, reverb, low-pass filters, and other acoustic processing unless a specific Teeming sound later needs them. |
 
 The omission boundary is about game behavior, not a ban on ordinary velocity
-or animation calculations. Gauche's blood, debris, footprints, and clouds
+or animation calculations. Teeming's blood, debris, footprints, and clouds
 still need their original small particle motions. Keep Rust's distance fade
-and dark palette as the presentation baseline, then add Gauche's own lighting
+and dark palette as the presentation baseline, then add Teeming's own lighting
 to serve room navigation and combat. Rust requests the missing shader at
 startup but never uses it for drawing.
 
 ## Asset loading and ownership
 
-Keep Gauche's individual PNGs and OGGs, `Sprite`/`SoundEffect`/`Song` IDs, and
+Keep Teeming's individual PNGs and OGGs, `Sprite`/`SoundEffect`/`Song` IDs, and
 simple direct lookup. The current enum-to-filename convention is already
 coherent; no atlas, annotations, YAML database, or asset converter is needed.
 Use a small explicit ID/path table or a checked enum-name mapping, with SDL3
@@ -259,7 +259,7 @@ Resolve assets from a packaged/executable-relative root rather than assuming
 the shell's working directory is the repo root. Arrange CMake's development
 run path and release bundle so the same table works in both. Borrow Splonks'
 SDL texture/audio creation, error handling, and deterministic cleanup; keep
-Gauche's own asset naming and omit AFrame/annotation parsing. Remove the unused
+Teeming's own asset naming and omit AFrame/annotation parsing. Remove the unused
 shader request. Decide explicitly where title and playing music should start:
 the Rust files exist but the current game never calls `play_song`. Add a small
 asset-ID-to-file check at the bootstrap gate, plus a normal renderer/audio load
@@ -343,7 +343,7 @@ the meaningful Rust update order for each type and use stable pool-slot
 iteration for deterministic multiplayer. Gameplay-affecting random choices
 use saved gameplay RNG; growl timing and shake use cosmetic RNG outside hashes.
 
-Design this port for a larger, compositional Gauche, even though the source
+Design this port for a larger, compositional Teeming, even though the source
 prototype is small. Put each entity's authored initialization and bespoke step
 in focused code; central enum switches only dispatch to those functions.
 Share a helper when two steps use the same rule, and retain simple
@@ -384,7 +384,7 @@ identity through level transitions so a late return can still rejoin.
 Make death policy a host-configured run setting, shared in the session
 handshake and deterministic state. Splonks already offers the useful three
 choices: no respawn (permadeath for that run), respawn at entrance, and return
-on the next level. Implement the corresponding Gauche rules explicitly,
+on the next level. Implement the corresponding Teeming rules explicitly,
 including what happens when the party reaches an exit with a dead member.
 Reconnecting never overrides the selected death rule. Pick the default after
 the first co-op playtest rather than burying it in the network layer.
@@ -415,7 +415,7 @@ actually changes.
 2. **Bootstrap the host.** Add CMake/C++20, SDL3 and Gubsy at a pinned revision,
    a simple run path, and the owned window/render-target loop. Port PNG/OGG
    files, make small sprite/sound lookup tables, validate all declared paths,
-   and package an executable-relative asset root. Render the Gauche title and
+   and package an executable-relative asset root. Render the Teeming title and
    make a finite headless smoke/capture command. This gate is a clean build,
    successful asset loads, and a captured title frame.
 3. **Port the world and player.** Implement state, versioned entities, tile
@@ -432,11 +432,11 @@ actually changes.
    item use and pickup/drop, health/damage, destructible tiles, zombie and
    chicken behavior, rail layers and trains. Validate each against the Rust
    rules; make entity removal safe and grid membership consistent.
-5. **Match presentation and sound.** Recreate Gauche's world draw order,
+5. **Match presentation and sound.** Recreate Teeming's world draw order,
    distance fade, particles/weather, shakes, camera, cursor, range indicators,
    inventory, item details, health bars, and sound cues. Decide how to start
    and stop the two authored music tracks, which Rust loads but never plays.
-   Add stereo panning for positioned events while keeping Gauche's existing
+   Add stereo panning for positioned events while keeping Teeming's existing
    distance falloff and centered UI/music. Reuse Gubsy menus/settings as host
    UI while preserving the game's visual identity. Omit the unused shader.
 6. **Build one real run.** Make an authored level with a party spawn,
@@ -452,7 +452,7 @@ actually changes.
    gate includes a complete solo clear-and-continue loop. Test at least two
    different stage dimensions rather than baking the Rust TestArena size into
    gameplay.
-7. **Add rollback co-op.** Wire Gubsy host/join to a Gauche session. Send a
+7. **Add rollback co-op.** Wire Gubsy host/join to a Teeming session. Send a
    full initial level snapshot and tick-stamped per-player input; have the host
    publish canonical inputs. Predict locally, retain a bounded pre-tick
    snapshot history, roll back and replay on input corrections, exchange
@@ -482,7 +482,7 @@ actually changes.
    focused deterministic checks for entity handles/grid and item rules, then
    a sanitizer build and normal desktop smoke. Document genuine differences.
    Rename the current GitHub Rust repository to `gauche-rs`, create/push the
-   new GitHub `gauche`, update the local origins and links, and make C++ the
+   new GitHub `teeming`, update the local origins and links, and make C++ the
    primary README/download target after a playable co-op run is reviewable.
 
 ## Implementation decisions

@@ -135,7 +135,7 @@ void sync_direct_members(MenuShell& menu) {
             network.ready && player_state(network.rollback.game, owner).online;
         if (!connected) continue;
         MatchmakingMember member;
-        member.member_id = "gauche-player-" + std::to_string(owner + 1);
+        member.member_id = "teeming-player-" + std::to_string(owner + 1);
         member.display_name = owner == 0 ? "Host" : "Player " + std::to_string(owner + 1);
         member.client_label = "Direct UDP";
         member.is_host = owner == 0;
@@ -257,7 +257,7 @@ void update_menu_shell(MenuShell& menu, MenuInputState input, float dt,
     if (menu.network->role == NetRole::Client && menu.network->ready && menu.visible) {
         const GubsyLobbyState& lobby = gubsy_get_lobby_state(*menu.runtime);
         if (lobby.direct_join_pending)
-            gubsy_confirm_lobby_direct_join(*menu.runtime, "Joined Gauche host");
+            gubsy_confirm_lobby_direct_join(*menu.runtime, "Joined Teeming host");
         if (menu.network->match_started && menu.network->host_tick > 0)
             gubsy_set_lobby_session_phase(*menu.runtime, "in_game");
     }

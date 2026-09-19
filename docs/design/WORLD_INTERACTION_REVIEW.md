@@ -150,7 +150,7 @@ sprites; do not reject the look based on hypothetical performance concerns.
 Measure the actual renderer on representative scenes if cost becomes relevant,
 rather than promising an unmeasured hundreds-of-thousands-per-frame capacity.
 
-Keep shadow darkness restrained under Gauche's already-dark lighting and bound
+Keep shadow darkness restrained under Teeming's already-dark lighting and bound
 overlapping darkness where necessary. Prototype an ImGui toggle and static paired
 captures: lit floor, deep shade, clutter including small sticks/leaves, flying
 actor, raised item and falling log. Judge appearance first. Cosmetic shadow
@@ -280,7 +280,7 @@ Pocket Door family:
 
 ## Shop/reward presentation and transactional input
 
-Prominently announce SHOP and CHOOSE ONE OF THREE with Gauche's angled styling,
+Prominently announce SHOP and CHOOSE ONE OF THREE with Teeming's angled styling,
 strong focus and a merchant/cart/greeting at shops. Bottom-left text is inadequate.
 Show the offer's benefit and owned artifacts. Levers separately need unmistakable
 operable silhouettes, position changes and physical latch/mechanism sounds;

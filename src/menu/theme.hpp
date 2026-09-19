@@ -4,8 +4,8 @@
 
 #include <vector>
 
-namespace gauche_menu {
+namespace teeming_menu {
 
 std::vector<gview::Theme> default_themes();
 
-} // namespace gauche_menu
+} // namespace teeming_menu

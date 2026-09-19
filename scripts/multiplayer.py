@@ -77,7 +77,7 @@ def main():
     for name in [args.workspace, args.bot_workspace]:
         if not name.isdecimal():
             parser.error('workspace names must be numbers')
-    binary = ROOT / ('build-debug' if os.environ.get('GAUCHE_PRESET') == 'dev' else 'build-release') / 'gauche'
+    binary = ROOT / ('build-debug' if os.environ.get('TEEMING_PRESET', os.environ.get('GAUCHE_PRESET')) == 'dev' else 'build-release') / 'teeming'
     outputs = []
     try:
         outputs = [o for o in i3() if o.get('active')]
@@ -99,7 +99,7 @@ def main():
         subprocess.run([str(ROOT / 'scripts/build.sh')], cwd=ROOT, check=True)
     if not binary.exists():
         parser.error(f'binary missing: {binary}')
-    base = Path(os.environ.get('XDG_STATE_HOME', str(Path.home()/'.local/state'))) / 'gauche/multiplayer'
+    base = Path(os.environ.get('XDG_STATE_HOME', str(Path.home()/'.local/state'))) / 'teeming/multiplayer'
     base.mkdir(parents=True, exist_ok=True)
     run = Path(tempfile.mkdtemp(prefix='session-', dir=base))
     print(f'Profiles and logs: {run}', flush=True)
@@ -120,7 +120,7 @@ def main():
             env['SDL_VIDEODRIVER'] = 'x11'
         if role != 'human':
             env['SDL_AUDIODRIVER'] = 'dummy'
-        title = f'Gauche {token} {role}'
+        title = f'Teeming {token} {role}'
         command = [str(binary), *common, *extra]
         if headless:
             command += ['--headless']

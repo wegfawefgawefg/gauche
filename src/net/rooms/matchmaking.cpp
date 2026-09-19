@@ -67,7 +67,7 @@ bool room_from_json(const nlohmann::json& json, MatchmakingRoom& out) {
 
 } // namespace
 
-bool GaucheMatchmaking::fetch_capabilities(const std::string& server_url,
+bool TeemingMatchmaking::fetch_capabilities(const std::string& server_url,
                                                RoomServerCapabilities& out,
                                                std::string& err, ServerClock* clock) {
     auto json = get_json(server_url, "/health", err, clock);
@@ -100,7 +100,7 @@ bool GaucheMatchmaking::fetch_capabilities(const std::string& server_url,
     return out.ok;
 }
 
-bool GaucheMatchmaking::create_room(const std::string& server_url,
+bool TeemingMatchmaking::create_room(const std::string& server_url,
                                         const MatchmakingRoom& room,
                                         MatchmakingCreateResult& out,
                                         std::string& err) {
@@ -113,7 +113,7 @@ bool GaucheMatchmaking::create_room(const std::string& server_url,
     return true;
 }
 
-bool GaucheMatchmaking::join_room(const std::string& server_url,
+bool TeemingMatchmaking::join_room(const std::string& server_url,
                                       const std::string& room_code,
                                       const std::string& display_name,
                                       const std::string& join_token,
@@ -132,7 +132,7 @@ bool GaucheMatchmaking::join_room(const std::string& server_url,
     return true;
 }
 
-bool GaucheMatchmaking::create_join_attempt(const std::string& server_url,
+bool TeemingMatchmaking::create_join_attempt(const std::string& server_url,
                                                 const std::string& room_code,
                                                 const std::string& display_name,
                                                 MatchmakingJoinAttemptResult& out,
@@ -155,7 +155,7 @@ bool GaucheMatchmaking::create_join_attempt(const std::string& server_url,
     return true;
 }
 
-bool GaucheMatchmaking::leave_room(const std::string& server_url,
+bool TeemingMatchmaking::leave_room(const std::string& server_url,
                                        const std::string& room_code,
                                        const std::string& member_id,
                                        const std::string& host_secret,
@@ -169,7 +169,7 @@ bool GaucheMatchmaking::leave_room(const std::string& server_url,
                      err).has_value();
 }
 
-bool GaucheMatchmaking::remove_member(const std::string& server_url,
+bool TeemingMatchmaking::remove_member(const std::string& server_url,
                                           const std::string& room_code,
                                           const std::string& host_secret,
                                           const std::string& target_member_id,
@@ -184,7 +184,7 @@ bool GaucheMatchmaking::remove_member(const std::string& server_url,
                      err).has_value();
 }
 
-bool GaucheMatchmaking::heartbeat_room(const std::string& server_url,
+bool TeemingMatchmaking::heartbeat_room(const std::string& server_url,
                                            const std::string& room_code,
                                            const std::string& member_id,
                                            const std::string& display_name,
@@ -205,7 +205,7 @@ bool GaucheMatchmaking::heartbeat_room(const std::string& server_url,
                      err).has_value();
 }
 
-bool GaucheMatchmaking::fetch_room(const std::string& server_url,
+bool TeemingMatchmaking::fetch_room(const std::string& server_url,
                                        const std::string& room_code,
                                        MatchmakingRoom& out,
                                        std::string& err) {
@@ -217,7 +217,7 @@ bool GaucheMatchmaking::fetch_room(const std::string& server_url,
     return room_from_json((*json)["room"], out);
 }
 
-bool GaucheMatchmaking::list_rooms(const std::string& server_url,
+bool TeemingMatchmaking::list_rooms(const std::string& server_url,
                                        std::vector<MatchmakingRoom>& out,
                                        std::string& err) {
     auto json = get_json(server_url, "/rooms", err);

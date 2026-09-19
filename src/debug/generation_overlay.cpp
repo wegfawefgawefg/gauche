@@ -129,7 +129,7 @@ void draw_generation_annotations(tr::Renderer* renderer,const GenerationReport& 
     tr::set_blend(renderer,old_blend);
 }
 void draw_live_generation_annotations(tr::Renderer* renderer,const Game& game,ViewCamera camera,float zoom) {
-    if(!GAUCHE_DEV_MODE)return;
+    if(!TEEMING_DEV_MODE)return;
     auto& state=bind_live_generation_report(game);
     if(!state.overlay || !game.generation_report)return;
     draw_generation_annotations(renderer,*game.generation_report,state.selected_feature,state.selected_component,camera,zoom,state.annotations);

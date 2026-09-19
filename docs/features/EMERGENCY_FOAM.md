@@ -86,5 +86,5 @@ cells, water/lava refusal, near-side landing, closed-over-can containment, seale
 reaction and native supply membership. Sixty-four generated Industry floors
 retained reachable routes and necessary exit locks; four foam bundles appeared.
 SDL dummy loaded both sprites and all six sounds; the inspected static capture
-is `/tmp/gauche-emergency-foam.png`. No interactive playtest or permanent test
+is `/tmp/teeming-emergency-foam.png`. No interactive playtest or permanent test
 suite was added. Balance and combat feel still await the user's playtesting.

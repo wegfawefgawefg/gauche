@@ -8,7 +8,7 @@
 #include <cmath>
 
 // REFERENCE: A compact live legend beside the chosen profile and pause actions.
-void control_reference(gauche_menu::ViewBuilder& ui, std::string_view parent,
+void control_reference(teeming_menu::ViewBuilder& ui, std::string_view parent,
                        const FrontPage& page, int id) {
     const auto* profile = gubsy_find_binds_profile(*page.backend, id);
     const bool pad = controller_input_active();

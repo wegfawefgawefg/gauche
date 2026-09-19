@@ -19,7 +19,7 @@ ufw allow 8790/udp
 ufw default deny incoming
 ufw default allow outgoing
 ufw --force enable
-printf 'PasswordAuthentication no\nPermitRootLogin prohibit-password\n' > /etc/ssh/sshd_config.d/00-gauche-key-only.conf
+printf 'PasswordAuthentication no\nPermitRootLogin prohibit-password\n' > /etc/ssh/sshd_config.d/00-teeming-key-only.conf
 sshd -t
 systemctl reload ssh
 

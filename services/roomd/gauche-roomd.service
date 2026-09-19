@@ -1,5 +1,5 @@
 [Unit]
-Description=Gauche room directory, NAT rendezvous and relay
+Description=Teeming room directory, NAT rendezvous and relay
 After=network-online.target
 Wants=network-online.target
 

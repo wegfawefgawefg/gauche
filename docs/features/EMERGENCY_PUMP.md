@@ -69,7 +69,7 @@ coolant/boiler contact, retained loot, snapshot continuation and invalid-state
 rejection. A full cosmetic sound buffer did not change the simulation hash.
 Sixty-four generated Industry floors preserved reachable routes and required
 locks; 25 pumps were placed. Four sound assets loaded, and an SDL dummy static
-render at `/tmp/gauche-emergency-pump.png` was inspected.
+render at `/tmp/teeming-emergency-pump.png` was inspected.
 
 The first direct check caught doors receiving liquid because their fixture HP is
 one; closed door/gate exclusion was corrected before the passing run. No

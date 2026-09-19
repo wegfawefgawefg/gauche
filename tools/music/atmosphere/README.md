@@ -40,10 +40,10 @@ Numba compiles the feedback recurrences; it is only an offline authoring depende
 Do not add it to the game's build dependencies.
 
 ```sh
-python3 -m venv --system-site-packages /tmp/gauche-music-venv
-/tmp/gauche-music-venv/bin/pip install numba
-/tmp/gauche-music-venv/bin/python tools/music/atmosphere/render.py
-/tmp/gauche-music-venv/bin/python tools/music/atmosphere/publish.py
+python3 -m venv --system-site-packages /tmp/teeming-music-venv
+/tmp/teeming-music-venv/bin/pip install numba
+/tmp/teeming-music-venv/bin/python tools/music/atmosphere/render.py
+/tmp/teeming-music-venv/bin/python tools/music/atmosphere/publish.py
 ```
 
 If the system lacks the numerical/plotting packages, install `numpy scipy

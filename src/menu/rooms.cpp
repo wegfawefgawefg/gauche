@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <bit>
 
-using namespace gauche_menu;
+using namespace teeming_menu;
 
 namespace {
 void player_name_row(ViewBuilder& ui) {

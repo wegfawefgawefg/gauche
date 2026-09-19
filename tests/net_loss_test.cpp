@@ -60,7 +60,7 @@ int main() {
     std::array<std::unique_ptr<NetSession>, 3> clients;
     std::array<LossyRelay, 3> relays;
     const auto log_root = std::filesystem::temp_directory_path() /
-        ("gauche-loss-regression-" + std::to_string(network_clock_ms()));
+        ("teeming-loss-regression-" + std::to_string(network_clock_ms()));
     std::string error;
     if (!host_game(*host, 0, 82413, DeathPolicy::NextFloor, error)) return 1;
     for (int index = 0; index < 3; ++index) {

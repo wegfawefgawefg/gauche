@@ -53,7 +53,7 @@ lava conversion, coolant actor/boiler behavior, existing-can parity, stowing,
 debug normalization, snapshot continuation/rejection, combined input and full
 cosmetic buffers. Sixty-four generated Industry floors kept required locks and
 reachable routes; two pumps appeared. Both sounds loaded in an SDL dummy render.
-The inventory render at `/tmp/gauche-pocket-pump.png` was inspected; quickbar
+The inventory render at `/tmp/teeming-pocket-pump.png` was inspected; quickbar
 text was shortened after the first render exposed cooldown overlap.
 
 The same material review fixed Hoist Wreck being mistaken for dry vegetation by

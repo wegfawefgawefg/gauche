@@ -3,7 +3,7 @@
 #include "front_page.hpp"
 #include "view_builder.hpp"
 
-void control_reference(gauche_menu::ViewBuilder& ui, std::string_view parent,
+void control_reference(teeming_menu::ViewBuilder& ui, std::string_view parent,
                        const FrontPage& page, int profile_id);
 void draw_control_diagram(tr::Renderer* renderer, const gview::PaintCommand& command,
                           const FrontPage& page);

@@ -90,5 +90,5 @@ blocked sound, unknown-source investigation, no reinforcements, cage/death
 recovery, snapshot roundtrip and malformed-state rejection. Sixty-four generated
 Industry floors retained reachable routes and necessary exit locks; eight complete
 pay offices appeared. SDL dummy loaded all four sprites and eight sounds; the
-inspected static capture is `/tmp/gauche-pay-office.png`. No interactive playtest
+inspected static capture is `/tmp/teeming-pay-office.png`. No interactive playtest
 or permanent test suite was added. Balance remains for the user's playtesting.

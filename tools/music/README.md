@@ -52,7 +52,7 @@ quality or audibility in a busy game mix.
 
 ## Instrument provenance
 
-Compositions and custom synthesized layers are original to this Gauche pass.
+Compositions and custom synthesized layers are original to this Teeming pass.
 The supplied video references were not sampled or embedded in these renders.
 Sampled instruments use **FluidR3** by Frank Wen and contributors, released under
 the MIT license. See `assets/music/sketches/INSTRUMENT_LICENSE.txt` for its copyright

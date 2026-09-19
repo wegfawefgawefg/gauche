@@ -78,5 +78,5 @@ eight-wire lifetime limit, snapshot roundtrip and malformed reserve rejection.
 Reserved-footprint failure leaves the game hash unchanged. Across 64 generated
 Industry floors, all remained reachable and properly locked; 38 crawlers and
 16 complete five-wire trenches were found. SDL dummy loading covered the four
-sound assets. Static scene/charged-pose capture: `/tmp/gauche-cable-trench.png`.
+sound assets. Static scene/charged-pose capture: `/tmp/teeming-cable-trench.png`.
 No interactive playtest or permanent test suite was added; tuning awaits feedback.

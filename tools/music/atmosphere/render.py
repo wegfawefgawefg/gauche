@@ -74,7 +74,7 @@ def render(piece,output,masters=None,instruments=None):
     print(f"Rendering {piece.title} ({piece.seconds:g}s, {len(piece.events)} gestures)",flush=True)
     mix = synthesize(piece,instruments)
     output.mkdir(parents=True,exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="gauche-music-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="teeming-music-") as temporary:
         source = Path(temporary)/"master.wav"
         wavfile.write(source,RATE,mix.astype(np.float32))
         before = measure(source)
@@ -88,7 +88,7 @@ def render(piece,output,masters=None,instruments=None):
         destination = output/(piece.slug+".ogg")
         subprocess.run(["ffmpeg","-v","error","-y","-i",str(source),"-c:a","libvorbis",
                         "-q:a","6","-metadata","title="+piece.title,"-metadata",
-                        "artist=Gauche original atmosphere studies",str(destination)],check=True)
+                        "artist=Teeming original atmosphere studies",str(destination)],check=True)
         encoded = measure(destination)
     report = asdict(piece)
     report["encoded"] = encoded

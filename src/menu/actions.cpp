@@ -171,8 +171,8 @@ void apply_menu_action(MenuShell& menu, std::string_view action) {
     }
     if (action == "host") page.room_status.clear();
     if (action == "play") { show_menu_screen(page, MenuScreen::Lobby); return; }
-    if (GAUCHE_DEV_MODE && action == "dev") { show_menu_screen(page,MenuScreen::Dev); return; }
-    if (GAUCHE_DEV_MODE && action == "worldgen") { worldgen_viewer().open_requested=true; return; }
+    if (TEEMING_DEV_MODE && action == "dev") { show_menu_screen(page,MenuScreen::Dev); return; }
+    if (TEEMING_DEV_MODE && action == "worldgen") { worldgen_viewer().open_requested=true; return; }
     if (action == "quick") { start_local(menu); return; }
     if (action == "quit") { menu.quit_requested = true; return; }
     if (action == "resume" || action == "restart" || action == "title") {

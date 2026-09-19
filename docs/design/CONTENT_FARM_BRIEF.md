@@ -1,4 +1,4 @@
-# Gauche content farm brief
+# Teeming content farm brief
 
 This records the requested direction for a large content-design pass. It is a
 brief for ideation and iteration, not a claim that these enemies, items, rooms,
@@ -113,7 +113,7 @@ combine naturally without hand-coding every pair.
 ## Sound and impact
 
 - Make actual new sound assets for new enemies, weapons, props, tiles, drops,
-  doors, hazards, and room events. The inherited Gauche sounds are a starting
+  doors, hazards, and room events. The inherited Teeming sounds are a starting
   set, not the quality or coverage target. Important repeated actions should
   have variations so a busy room does not sound identical every second.
 - Generate sounds **offline** when useful: Python synthesis may use LFSR-like

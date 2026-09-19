@@ -157,7 +157,7 @@ std::filesystem::path asset_root() {
     if (std::filesystem::is_directory(beside_executable)) {
         return beside_executable;
     }
-    return std::filesystem::path{GAUCHE_SOURCE_DIR} / "assets";
+    return std::filesystem::path{TEEMING_SOURCE_DIR} / "assets";
 }
 
 bool validate_assets(const std::filesystem::path& root, std::string& error) {

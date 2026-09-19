@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
     constexpr bool keyboard_zoom = true;
 #else
     const auto minimum_zoom = [] { return 0.5F; };
-    constexpr bool keyboard_zoom = GAUCHE_DEV_MODE;
+    constexpr bool keyboard_zoom = TEEMING_DEV_MODE;
 #endif
     float zoom = std::clamp(decimal_arg(value_arg(argc, argv, "--zoom")).value_or(2.0F),
                             minimum_zoom(), 8.0F);
@@ -296,7 +296,7 @@ int main(int argc, char** argv) {
                     open_game_menu(menu);
             }
 #ifndef __EMSCRIPTEN__
-            if (GAUCHE_DEV_MODE && event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
+            if (TEEMING_DEV_MODE && event.type == SDL_EVENT_MOUSE_WHEEL && menu.playing && !menu.visible)
                 zoom = std::clamp(zoom + event.wheel.y * 0.25F, 0.5F, 8.0F);
 #endif
             if (keyboard_zoom && event.type == SDL_EVENT_KEY_DOWN && menu.playing && !menu.visible &&

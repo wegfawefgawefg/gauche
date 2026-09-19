@@ -6,7 +6,7 @@ portable, broadly useful gear. Utility needs a matching situation, target or
 other equipment. Oddities provide small effects, play or distraction. These are
 availability labels, not restrictions on creative use or promises of equal power.
 
-Print the current registry with `build-release/gauche --audit-supply`; counts go
+Print the current registry with `build-release/teeming --audit-supply`; counts go
 to stderr, per-item CSV to stdout. `--audit-generation` also reports actual
 initial ground pickups by role in ordinary Ice/Industry floors.
 

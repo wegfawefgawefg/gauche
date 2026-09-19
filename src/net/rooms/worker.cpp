@@ -4,7 +4,7 @@
 
 namespace {
 
-bool service_endpoints(GaucheMatchmaking& api, const std::string& url, RoomResult& result) {
+bool service_endpoints(TeemingMatchmaking& api, const std::string& url, RoomResult& result) {
     RoomServerCapabilities capabilities;
     if (!api.fetch_capabilities(url, capabilities, result.error, &result.clock)) return false;
     const std::string server = room_server_host(url);
@@ -22,7 +22,7 @@ bool service_endpoints(GaucheMatchmaking& api, const std::string& url, RoomResul
 
 bool compatible(const MatchmakingRoom& room) {
     return room.contract.game_version == std::to_string(gameplay_version) &&
-        room.contract.net_protocol == "gauche-" + std::to_string(wire_version);
+        room.contract.net_protocol == std::string(room_protocol_prefix) + std::to_string(wire_version);
 }
 
 } // namespace
@@ -30,14 +30,14 @@ bool compatible(const MatchmakingRoom& room) {
 RoomResult perform_room_request(const RoomRequest& request) {
     RoomResult result;
     result.operation = request.operation;
-    GaucheMatchmaking api;
+    TeemingMatchmaking api;
     // WORKER: Only immutable request copies cross threads; no SDL or simulation state.
     try {
         switch (request.operation) {
         case RoomOperation::Browse:
             result.okay = api.list_rooms(request.url, result.rooms, result.error);
             std::erase_if(result.rooms, [](const auto& room) {
-                return !room.contract.net_protocol.starts_with("gauche-");
+                return !room.contract.net_protocol.starts_with(room_protocol_prefix);
             });
             break;
         case RoomOperation::Create:

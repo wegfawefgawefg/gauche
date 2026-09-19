@@ -7,7 +7,7 @@
 void draw_ambient_annotations(tr::Renderer* renderer,const Game& game,ViewCamera camera,float zoom) {
     PerfScope perf_scope(PerfZone::Annotations);
     const auto& state=ambient_inspector();
-    if(!GAUCHE_DEV_MODE || !state.overlay || state.game!=&game || !state.audio)return;
+    if(!TEEMING_DEV_MODE || !state.overlay || state.game!=&game || !state.audio)return;
     SDL_BlendMode blend;tr::get_blend(renderer,&blend);
     float r=0,g=0,b=0,a=0;tr::get_color(renderer,&r,&g,&b,&a);
     tr::set_blend(renderer,SDL_BLENDMODE_BLEND);

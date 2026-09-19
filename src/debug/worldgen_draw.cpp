@@ -64,7 +64,7 @@ void draw_worldgen_details(const Game& live_game) {
     ImGui::SetNextWindowPos({16,100},ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize({380,540},ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Generation inspector",&v.details)) {
-        ImGui::TextWrapped("Revision: %s", GAUCHE_GENERATOR_REVISION);
+        ImGui::TextWrapped("Revision: %s", TEEMING_GENERATOR_REVISION);
         if (ImGui::Button("Copy generation recipe")) {
             const std::string recipe=worldgen_recipe(*v.original->generation_report)+
                 " | standalone / automatic / default kit"+

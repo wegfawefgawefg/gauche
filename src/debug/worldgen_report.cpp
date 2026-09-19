@@ -105,7 +105,7 @@ void draw_live_generation_details(const Game& game) {
             ImGui::Text("Current floor %d | run seed %llu",report.floor,static_cast<unsigned long long>(report.seed));
             ImGui::Text("Planner RNG %llu",static_cast<unsigned long long>(report.initial_rng));
             if(report.inhabitants_seed)ImGui::Text("Inhabitants seed %llu (after boss geometry)",static_cast<unsigned long long>(report.inhabitants_seed));
-            const char* revision=report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision.c_str();
+            const char* revision=report.revision.empty() ? TEEMING_GENERATOR_REVISION : report.revision.c_str();
             ImGui::TextWrapped("Generator build: %s",revision);
             if(ImGui::Button("Copy floor diagnostics")) {
                 const std::string text=worldgen_recipe(report);

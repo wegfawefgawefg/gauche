@@ -48,7 +48,7 @@ void show_party(MenuShell& menu) {
     menu.front.room_active = true;
     auto& lobby = gubsy_lobby_state(gubsy_runtime_engine(*menu.runtime));
     lobby.online = true; lobby.is_host = menu.rooms.host;
-    // DIRECTORY: Gauche owns asynchronous room traffic; Gubsy keeps local player/config UI.
+    // DIRECTORY: Teeming owns asynchronous room traffic; Gubsy keeps local player/config UI.
     lobby.room_code.clear(); lobby.member_id.clear(); lobby.host_secret.clear();
     lobby.direct_join_pending = false;
     lobby.advertised_endpoint = "Room " + menu.rooms.code;
@@ -233,7 +233,7 @@ bool room_action(MenuShell& menu, std::string_view action) {
         room.metadata.privacy = 1;
         room.metadata.max_players = menu.network->admission_limit;
         room.metadata.contract.game_version = std::to_string(gameplay_version);
-        room.metadata.contract.net_protocol = "gauche-" + std::to_string(wire_version);
+        room.metadata.contract.net_protocol = std::string(room_protocol_prefix) + std::to_string(wire_version);
         room.metadata.contract.allow_live_mod_reload = false;
         room.metadata.contract.game_config = {{"death_policy", static_cast<int>(menu.death_policy)}};
         submit(room, request_for(room, RoomOperation::Create));

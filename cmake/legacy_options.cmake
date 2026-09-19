@@ -1,0 +1,10 @@
+# Preserve explicit settings in pre-rename build directories and old CLI calls.
+foreach(suffix DEV_MODE STRICT WARN_AS_ERROR USE_LOCAL_DEPS GUBSY_DIR GVIEW_DIR GLAYOUT_DIR GUBSY_SOURCE_DIR)
+    if(DEFINED GAUCHE_${suffix} AND NOT DEFINED TEEMING_${suffix})
+        get_property(option_type CACHE GAUCHE_${suffix} PROPERTY TYPE)
+        if(NOT option_type OR option_type STREQUAL "UNINITIALIZED")
+            set(option_type STRING)
+        endif()
+        set(TEEMING_${suffix} "${GAUCHE_${suffix}}" CACHE ${option_type} "Migrated pre-rename option")
+    endif()
+endforeach()

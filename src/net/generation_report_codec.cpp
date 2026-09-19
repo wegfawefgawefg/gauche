@@ -2,7 +2,7 @@
 #if __has_include("generation_build.hpp")
 #include "generation_build.hpp"
 #else
-#define GAUCHE_GENERATOR_REVISION "revision unavailable"
+#define TEEMING_GENERATOR_REVISION "revision unavailable"
 #endif
 #include <algorithm>
 #include <array>
@@ -28,7 +28,7 @@ std::vector<Cell> cells(PacketReader& r) {
 }
 std::vector<std::uint8_t> encode(const GenerationReport& report,bool geometry) {
     PacketWriter w;w.u16(4);w.u64(report.seed);w.u64(report.initial_rng);w.i32(report.floor);
-    string(w,report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision);
+    string(w,report.revision.empty() ? TEEMING_GENERATOR_REVISION : report.revision);
     w.u64(report.inhabitants_seed);
     w.u8(static_cast<std::uint8_t>(report.themes.major));w.u8(static_cast<std::uint8_t>(report.themes.minor));
     w.u8(report.components_truncated);w.u8(!geometry);

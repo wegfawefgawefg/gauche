@@ -1,4 +1,4 @@
-# Gauche content sketch: forest world
+# Teeming content sketch: forest world
 
 This is a candidate pool, not a locked item list. The first forest floor should
 make fists, a stick, a bow, herbs, animals, traps, and route shortcuts feel
@@ -239,7 +239,7 @@ floor; a shop is an occasional extra stop.
 
 ## Art and production note
 
-Rust Gauche draws 16-pixel tiles, and most of its tile, actor, and item PNGs
+Rust Teeming draws 16-pixel tiles, and most of its tile, actor, and item PNGs
 are 16×16. Chick is 8×8; many blood/footprint particles are 4×4; one train
 detail is 32×32. For new content, rough Python-generated 16×16 pixel sprites
 are acceptable working assets. Make silhouettes and colors readable first,
@@ -253,12 +253,12 @@ decide this plan.
   content. Borrow the distinct-find goal, not its whole equipment/stat sheet.
 - [SYNTHETIK's weapon notes](https://www.synthetikgame.com/weapons) and
   [item notes](https://www.synthetikgame.com/items) show the value of different
-  handling, variants, and weapon-item synergies. Gauche can keep its own
+  handling, variants, and weapon-item synergies. Teeming can keep its own
   simpler ammo and movement rules.
 - [Slay the Spire's official page](https://store.steampowered.com/app/646570/Slay_the_Spire/)
-  emphasizes path choices and relic interactions; the Gauche draft should
+  emphasizes path choices and relic interactions; the Teeming draft should
   produce that kind of build decision with physical items and co-op effects.
 - [Caves of Qud's developer roadmap](https://cavesofqud.com/roadmap/)
   describes mixing authored places, procedural detail, fauna, and item
-  modifications. Use that compositional spirit for Gauche's faster tile-step
+  modifications. Use that compositional spirit for Teeming's faster tile-step
   floors, at whatever size gives its rooms enough room to breathe.

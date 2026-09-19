@@ -1,4 +1,4 @@
-# Gauche Rust source audit
+# Teeming Rust source audit
 
 - Rust source: [gauche-rs at `5d7e74b`](https://github.com/wegfawefgawefg/gauche-rs/tree/5d7e74b).
   At the audit it was clean and `cargo check --locked` passed with warnings.
@@ -21,17 +21,17 @@
 - Rust inventory has ten quick slots. It has no between-floor rewards, shops,
   artifacts, or implemented sleep/stun/freeze/burn rules; an unused
   `can_be_stunned` entity field is not a status system.
-- Gauche water is a generated, impassable tile with two intended PNG variants.
+- Teeming water is a generated, impassable tile with two intended PNG variants.
   Its two flip passes currently cancel, leaving each cell on its randomized
   initial sprite. It has no fluid amount, flow, buoyancy, or water simulation.
   Actors move between grid cells after tile/occupancy checks; their stored
   velocity field is unused. Particle velocities and accelerations are local
   visual effects, not world physics.
-- Rust Gauche already attenuates some world sounds by distance from its sole
+- Rust Teeming already attenuates some world sounds by distance from its sole
   player, but it applies one volume to both channels. It has no left/right
   panning or persistent positional sound instances. It also has one
   `player_vid` and no network/session state.
-- Rust Gauche stores particles in `State`, but gameplay only spawns and steps
+- Rust Teeming stores particles in `State`, but gameplay only spawns and steps
   them; no collision, damage, inventory, or AI rule reads particle data. Clouds
   also spawn relative to the local camera. They are presentation, not
   synchronized world state.

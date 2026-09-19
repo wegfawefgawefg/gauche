@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
-project(gauche VERSION 0.1.0 LANGUAGES CXX)
+project(teeming VERSION 0.1.0 LANGUAGES CXX)
 
 include(FetchContent)
+include(cmake/legacy_options.cmake)
 if(EMSCRIPTEN)
     include(cmake/browser_options.cmake)
 endif()
@@ -10,36 +11,36 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(GAUCHE_DEV_MODE "Enable local developer tools" ON)
+option(TEEMING_DEV_MODE "Enable local developer tools" ON)
 execute_process(COMMAND git describe --always --dirty
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE GAUCHE_GENERATOR_REVISION OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-if(NOT GAUCHE_GENERATOR_REVISION)
-    set(GAUCHE_GENERATOR_REVISION "source archive (revision unavailable)")
+    OUTPUT_VARIABLE TEEMING_GENERATOR_REVISION OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+if(NOT TEEMING_GENERATOR_REVISION)
+    set(TEEMING_GENERATOR_REVISION "source archive (revision unavailable)")
 endif()
 
-option(GAUCHE_STRICT "Enable strict compiler warnings" ON)
-option(GAUCHE_WARN_AS_ERROR "Treat warnings as errors" ON)
+option(TEEMING_STRICT "Enable strict compiler warnings" ON)
+option(TEEMING_WARN_AS_ERROR "Treat warnings as errors" ON)
 # Published revisions used by this game, including the transitive layout library.
-set(GAUCHE_GUBSY_REV c4d5408c74e61914f3886099db799919a2637696)
-set(GAUCHE_GVIEW_REV 71956a3f3884a7e542b65cadd413637b9b3cff0e)
-set(GAUCHE_GLAYOUT_REV 50861b524e58195f937e48984b33c1ca65e9631d)
-option(GAUCHE_USE_LOCAL_DEPS "Use developer checkouts instead of published dependency pins" OFF)
-set(GAUCHE_GUBSY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../Splonks/gubsy"
-    CACHE PATH "Developer Gubsy checkout (requires GAUCHE_USE_LOCAL_DEPS)")
-set(GAUCHE_GVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../gview"
-    CACHE PATH "Developer GView checkout (requires GAUCHE_USE_LOCAL_DEPS)")
-set(GAUCHE_GLAYOUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../glayout"
-    CACHE PATH "Developer GLayout checkout (requires GAUCHE_USE_LOCAL_DEPS)")
-if(GAUCHE_USE_LOCAL_DEPS)
-    foreach(source IN ITEMS "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GVIEW_DIR}" "${GAUCHE_GLAYOUT_DIR}")
+set(TEEMING_GUBSY_REV c4d5408c74e61914f3886099db799919a2637696)
+set(TEEMING_GVIEW_REV 71956a3f3884a7e542b65cadd413637b9b3cff0e)
+set(TEEMING_GLAYOUT_REV 50861b524e58195f937e48984b33c1ca65e9631d)
+option(TEEMING_USE_LOCAL_DEPS "Use developer checkouts instead of published dependency pins" OFF)
+set(TEEMING_GUBSY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../Splonks/gubsy"
+    CACHE PATH "Developer Gubsy checkout (requires TEEMING_USE_LOCAL_DEPS)")
+set(TEEMING_GVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../gview"
+    CACHE PATH "Developer GView checkout (requires TEEMING_USE_LOCAL_DEPS)")
+set(TEEMING_GLAYOUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../glayout"
+    CACHE PATH "Developer GLayout checkout (requires TEEMING_USE_LOCAL_DEPS)")
+if(TEEMING_USE_LOCAL_DEPS)
+    foreach(source IN ITEMS "${TEEMING_GUBSY_DIR}" "${TEEMING_GVIEW_DIR}" "${TEEMING_GLAYOUT_DIR}")
         if(NOT EXISTS "${source}/CMakeLists.txt")
-            message(FATAL_ERROR "Missing developer dependency: ${source}. Disable GAUCHE_USE_LOCAL_DEPS to fetch the published pins.")
+            message(FATAL_ERROR "Missing developer dependency: ${source}. Disable TEEMING_USE_LOCAL_DEPS to fetch the published pins.")
         endif()
     endforeach()
-    message(STATUS "Gauche: using developer dependency checkouts")
+    message(STATUS "Teeming: using developer dependency checkouts")
 else()
-    message(STATUS "Gauche: fetching published Gubsy/GView/GLayout pins")
+    message(STATUS "Teeming: fetching published Gubsy/GView/GLayout pins")
 endif()
 
 set(GUB_MODE consumer CACHE STRING "" FORCE)
@@ -49,14 +50,14 @@ set(GUB_ENABLE_LUA_MOD_HOST OFF CACHE BOOL "" FORCE)
 set(GUB_ENABLE_STEAM OFF CACHE BOOL "" FORCE)
 set(GUB_FETCH_DEPS ON CACHE BOOL "" FORCE)
 
-if(GAUCHE_USE_LOCAL_DEPS)
-    add_subdirectory("${GAUCHE_GUBSY_DIR}" gubsy)
+if(TEEMING_USE_LOCAL_DEPS)
+    add_subdirectory("${TEEMING_GUBSY_DIR}" gubsy)
 else()
     FetchContent_Declare(gubsy
         GIT_REPOSITORY https://github.com/wegfawefgawefg/gubsy.git
-        GIT_TAG ${GAUCHE_GUBSY_REV})
+        GIT_TAG ${TEEMING_GUBSY_REV})
     FetchContent_MakeAvailable(gubsy)
-    set(GAUCHE_GUBSY_DIR "${gubsy_SOURCE_DIR}")
+    set(TEEMING_GUBSY_DIR "${gubsy_SOURCE_DIR}")
 endif()
 
 set(GLAYOUT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -69,24 +70,24 @@ set(GVIEW_WITH_IMGUI OFF CACHE BOOL "" FORCE)
 set(GVIEW_WITH_SDL3_RENDERER ON CACHE BOOL "" FORCE)
 set(GVIEW_SDL3_TARGET SDL3::SDL3 CACHE STRING "" FORCE)
 # Provide glayout::graph before GView, so its older fallback pin is never selected.
-if(GAUCHE_USE_LOCAL_DEPS)
-    add_subdirectory("${GAUCHE_GLAYOUT_DIR}" glayout)
-    add_subdirectory("${GAUCHE_GVIEW_DIR}" gview)
+if(TEEMING_USE_LOCAL_DEPS)
+    add_subdirectory("${TEEMING_GLAYOUT_DIR}" glayout)
+    add_subdirectory("${TEEMING_GVIEW_DIR}" gview)
 else()
     FetchContent_Declare(glayout
         GIT_REPOSITORY https://github.com/wegfawefgawefg/glayout.git
-        GIT_TAG ${GAUCHE_GLAYOUT_REV})
+        GIT_TAG ${TEEMING_GLAYOUT_REV})
     FetchContent_MakeAvailable(glayout)
     FetchContent_Declare(gview
         GIT_REPOSITORY https://github.com/wegfawefgawefg/gview.git
-        GIT_TAG ${GAUCHE_GVIEW_REV})
+        GIT_TAG ${TEEMING_GVIEW_REV})
     FetchContent_MakeAvailable(gview)
 endif()
 
-set(GAUCHE_CODEC_SOURCES
+set(TEEMING_CODEC_SOURCES
     src/net_codec.cpp src/net/packet.cpp src/net/entity_codec.cpp src/net/generation_report_codec.cpp src/net/snapshot_codec.cpp)
 
-set(GAUCHE_ENTITY_SOURCES
+set(TEEMING_ENTITY_SOURCES
     src/props/industrial.cpp
     src/entities/strikebreaker.cpp src/entities/breaker_render.cpp src/entities/gunner_render.cpp
     src/entities/rivet_gunner.cpp
@@ -223,197 +224,199 @@ set(GAUCHE_ENTITY_SOURCES
     src/entities/contact.cpp
 )
 
-set(GAUCHE_WORLD_SOURCES src/world/room_decisions.cpp src/world/loose_finds.cpp src/world/supply_rolls.cpp src/world/generation_trace.cpp src/world/routed_path.cpp src/world/rivers.cpp src/world/river_loop.cpp src/world/river_depth.cpp src/world/river_rafts.cpp src/world/river_population.cpp src/world/root_growth.cpp src/world/growth_paths.cpp src/world/growth_carving.cpp src/world/spider_growth.cpp src/world/spider_growth_population.cpp src/world/raster.cpp src/world/open_sectors.cpp src/world/components.cpp src/world/landmark_supplies.cpp src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/world/ice_arches.cpp src/scenery/ice_arch.cpp src/world/shipping_yard.cpp src/scenery/roof.cpp src/scenery/hollow_tree.cpp
+set(TEEMING_WORLD_SOURCES src/world/room_decisions.cpp src/world/loose_finds.cpp src/world/supply_rolls.cpp src/world/generation_trace.cpp src/world/routed_path.cpp src/world/rivers.cpp src/world/river_loop.cpp src/world/river_depth.cpp src/world/river_rafts.cpp src/world/river_population.cpp src/world/root_growth.cpp src/world/growth_paths.cpp src/world/growth_carving.cpp src/world/spider_growth.cpp src/world/spider_growth_population.cpp src/world/raster.cpp src/world/open_sectors.cpp src/world/components.cpp src/world/landmark_supplies.cpp src/world/scrap_yard.cpp src/world/repair_bay.cpp src/world/workfront.cpp src/world/ice_terrain.cpp src/world/floor_layout.cpp src/world/floor_reachability.cpp src/world/roof_scenes.cpp src/world/ice_arches.cpp src/scenery/ice_arch.cpp src/world/shipping_yard.cpp src/scenery/roof.cpp src/scenery/hollow_tree.cpp
     src/world/ground_items.cpp src/world/route_graph.cpp src/world/room_shapes.cpp src/world/room_gates.cpp src/world/forest_terrain.cpp src/world/forest_den.cpp src/world/forest_den_terrain.cpp src/world/forest_den_population.cpp src/world/spider_cave.cpp src/world/snake_tunnel.cpp src/world/snake_terrain.cpp src/world/snake_reward.cpp src/world/snake_population.cpp src/world/root_maze.cpp src/world/giant_tree.cpp src/world/tree_hollow.cpp src/world/giant_tree_population.cpp src/world/four_room_block.cpp src/world/timber_grove.cpp src/world/timber_fuel.cpp src/world/timber_population.cpp src/world/bear_stream.cpp src/world/bear_clearings.cpp
     src/world/ice_shelves.cpp src/world/ice_thaw.cpp src/world/ice_material.cpp src/world/ice_material_render.cpp src/world/room_population.cpp src/world/forest_encounters.cpp src/world/forest_encounter_rules.cpp src/world/forest_outskirts.cpp src/world/generation_themes.cpp src/world/forest_theme_layers.cpp src/world/forest_boss.cpp src/world/forest_border.cpp src/world/mushroom_settlements.cpp src/world/ant_colonies.cpp src/world/ant_crew.cpp src/world/industrial_population.cpp src/world/industrial_geometry.cpp src/debug/generation_audit.cpp src/debug/forest_audit.cpp src/world/salvage.cpp src/world/encounter.cpp src/world/encounter_spawn.cpp
     src/world/haunted_house.cpp src/world/freight_exchange.cpp src/world/last_shift.cpp src/world/reactor.cpp src/world/reactor_render.cpp src/world/loot.cpp)
 
-set(GAUCHE_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)
+set(TEEMING_PROP_SOURCES src/props/catalog.cpp src/props/interaction.cpp src/props/placement.cpp)
 
-set(GAUCHE_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
+set(TEEMING_DEBRIS_SOURCES src/debris/motion.cpp src/debris/sweep.cpp src/debris/scatter.cpp)
 
-add_compile_definitions(GAUCHE_DEV_MODE=$<BOOL:${GAUCHE_DEV_MODE}>)
+add_compile_definitions(TEEMING_DEV_MODE=$<BOOL:${TEEMING_DEV_MODE}>)
 file(CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/generation_build.hpp"
-    CONTENT "#pragma once\n#define GAUCHE_GENERATOR_REVISION \"@GAUCHE_GENERATOR_REVISION@\"\n" @ONLY)
+    CONTENT "#pragma once\n#define TEEMING_GENERATOR_REVISION \"@TEEMING_GENERATOR_REVISION@\"\n" @ONLY)
 
-add_executable(gauche
-    src/main.cpp src/debug/performance.cpp src/debug/performance_panel.cpp src/app/frame_pacing.cpp src/debug/worldgen.cpp src/debug/worldgen_changes.cpp src/debug/worldgen_draw.cpp src/debug/worldgen_sidebar.cpp src/debug/generation_overlay.cpp src/debug/ambient_inspector.cpp src/debug/ambient_overlay.cpp src/debug/worldgen_report.cpp src/debug/worldgen_encounters.cpp src/debug/worldgen_components.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
+add_executable(teeming
+    src/main.cpp src/debug/performance.cpp src/debug/performance_panel.cpp src/app/frame_pacing.cpp src/debug/worldgen.cpp src/debug/worldgen_changes.cpp src/debug/worldgen_draw.cpp src/debug/worldgen_sidebar.cpp src/debug/generation_overlay.cpp src/debug/ambient_inspector.cpp src/debug/ambient_overlay.cpp src/debug/worldgen_report.cpp src/debug/worldgen_encounters.cpp src/debug/worldgen_components.cpp src/debug/multiplayer.cpp src/debug/headless.cpp src/app/options.cpp src/app/data_migration.cpp src/debug/panels.cpp src/debug/runtime.cpp src/debug/persistence.cpp src/debug/loadout.cpp src/debug/level_editor.cpp src/debug/loadout_editor.cpp src/ui/status.cpp src/ui/stage_announcement.cpp src/graphics.cpp src/input_device.cpp src/stage.cpp ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES}
+    src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES} src/input.cpp src/input/prompts.cpp src/input/icon_set.cpp
     src/entities/shard_render.cpp src/entities/crane_render.cpp src/entities/boiler_render.cpp
-    src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/hit_render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${GAUCHE_DEBRIS_SOURCES}
+    src/render.cpp src/world/floating_render.cpp src/items/fire_render.cpp src/items/quarry_render.cpp src/entities/eel_render.cpp src/entities/leech_render.cpp src/entities/mason_render.cpp src/entities/knight_render.cpp src/entities/drummer_render.cpp src/entities/warden_render.cpp src/entities/flight_render.cpp src/entities/plant_render.cpp src/entities/wolf_render.cpp src/entities/intent_render.cpp src/world/wall_render.cpp src/world/encounter_render.cpp src/props/render.cpp src/props/hit_render.cpp src/props/circuit_render.cpp src/debris/render.cpp ${TEEMING_DEBRIS_SOURCES}
     src/lighting/field.cpp src/lighting/canopy.cpp src/lighting/sources.cpp
     src/lighting/render.cpp src/lighting/shafts.cpp src/ui/hud.cpp src/ui/panel.cpp src/ui/artifacts.cpp src/ui/prompts.cpp src/ui/item_details.cpp src/ui/item_meter.cpp
     src/ui/pattern_diagram.cpp src/ui/interaction.cpp src/ui/offer_flow.cpp
     src/ui/interaction_render.cpp src/ui/party.cpp src/ui/range.cpp src/ui/pointer.cpp src/ui/text.cpp
-    src/audio.cpp src/audio/body.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/ice_arch_render.cpp src/scenery/hollow_tree_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${GAUCHE_CODEC_SOURCES} src/net_socket.cpp
+    src/audio.cpp src/audio/body.cpp src/ambience/mixer.cpp src/ambience/placement.cpp src/ambience/ice.cpp src/ambience/industrial.cpp src/ambience/source.cpp src/scenery/ice.cpp src/scenery/ice_render.cpp src/particles/system.cpp src/particles/render.cpp src/particles/water.cpp src/projectiles/render.cpp src/entities/gate_render.cpp src/scenery/overhead.cpp src/scenery/roof_render.cpp src/scenery/ice_arch_render.cpp src/scenery/hollow_tree_render.cpp src/scenery/shadows.cpp src/surfaces/render.cpp src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp src/menu_shell.cpp src/rollback.cpp ${TEEMING_CODEC_SOURCES} src/net_socket.cpp
     src/net_protocol.cpp src/net_session.cpp src/net/fragment.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp src/net_snapshot.cpp
     src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp src/menu/front_page.cpp
     src/net/rooms/names.cpp src/net/rooms/http.cpp src/net/rooms/matchmaking.cpp src/net/rooms/worker.cpp src/net/rooms/runtime.cpp src/menu/rooms.cpp
     src/menu/pages.cpp src/menu/control_pages.cpp src/menu/control_reference.cpp src/menu/page_chrome.cpp src/menu/view_builder.cpp src/menu/theme.cpp
     src/menu/actions.cpp src/menu/settings.cpp src/menu/settings_page.cpp src/menu/audio.cpp src/menu/text_edit.cpp src/menu/profiles.cpp src/menu/bindings.cpp)
-target_link_libraries(gauche PRIVATE gubsy::engine SDL3::SDL3
+target_link_libraries(teeming PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
 if(WIN32)
-    target_link_libraries(gauche PRIVATE ws2_32)
+    target_link_libraries(teeming PRIVATE ws2_32)
 endif()
-target_compile_definitions(gauche PRIVATE
-    GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(gauche PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
+target_compile_definitions(teeming PRIVATE
+    TEEMING_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(teeming PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${TEEMING_GUBSY_DIR}" "${TEEMING_GUBSY_DIR}/imgui")
 
 if(MSVC)
-    target_compile_options(gauche PRIVATE /W4 /permissive-)
-    if(GAUCHE_WARN_AS_ERROR)
-        target_compile_options(gauche PRIVATE /WX)
+    target_compile_options(teeming PRIVATE /W4 /permissive-)
+    if(TEEMING_WARN_AS_ERROR)
+        target_compile_options(teeming PRIVATE /WX)
     endif()
 else()
-    target_compile_options(gauche PRIVATE -Wall -Wextra -Wpedantic)
-    if(GAUCHE_STRICT)
-        target_compile_options(gauche PRIVATE -Wconversion -Wsign-conversion -Wshadow)
+    target_compile_options(teeming PRIVATE -Wall -Wextra -Wpedantic)
+    if(TEEMING_STRICT)
+        target_compile_options(teeming PRIVATE -Wconversion -Wsign-conversion -Wshadow)
     endif()
-    if(GAUCHE_WARN_AS_ERROR)
-        target_compile_options(gauche PRIVATE -Werror)
+    if(TEEMING_WARN_AS_ERROR)
+        target_compile_options(teeming PRIVATE -Werror)
     endif()
 endif()
 
-add_custom_command(TARGET gauche POST_BUILD
+add_custom_command(TARGET teeming POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:gauche>/assets"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:teeming>/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${GAUCHE_GUBSY_DIR}/src/assets" "$<TARGET_FILE_DIR:gauche>/assets/gubsy-engine")
+        "${TEEMING_GUBSY_DIR}/src/assets" "$<TARGET_FILE_DIR:teeming>/assets/gubsy-engine")
 
 include(CTest)
 
 # ART REVIEW: Static arrangements render without input, AI, networking, or playthroughs.
-get_target_property(GAUCHE_CAPTURE_SOURCES gauche SOURCES)
-list(REMOVE_ITEM GAUCHE_CAPTURE_SOURCES src/main.cpp)
-target_compile_definitions(gauche PRIVATE GAUCHE_PERF_ENABLED=1)
+get_target_property(TEEMING_CAPTURE_SOURCES teeming SOURCES)
+list(REMOVE_ITEM TEEMING_CAPTURE_SOURCES src/main.cpp)
+target_compile_definitions(teeming PRIVATE TEEMING_PERF_ENABLED=1)
 
-add_executable(gauche_render_scene EXCLUDE_FROM_ALL
-    tools/render_scene.cpp ${GAUCHE_CAPTURE_SOURCES})
-target_link_libraries(gauche_render_scene PRIVATE gubsy::engine SDL3::SDL3
+add_executable(teeming_render_scene EXCLUDE_FROM_ALL
+    tools/render_scene.cpp ${TEEMING_CAPTURE_SOURCES})
+target_link_libraries(teeming_render_scene PRIVATE gubsy::engine SDL3::SDL3
     SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer gview::sdl3)
-target_include_directories(gauche_render_scene PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${GAUCHE_GUBSY_DIR}" "${GAUCHE_GUBSY_DIR}/imgui")
-target_compile_definitions(gauche_render_scene PRIVATE GAUCHE_PERF_ENABLED=1 GAUCHE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(teeming_render_scene PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated" "${TEEMING_GUBSY_DIR}" "${TEEMING_GUBSY_DIR}/imgui")
+target_compile_definitions(teeming_render_scene PRIVATE TEEMING_PERF_ENABLED=1 TEEMING_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 if(WIN32)
-    target_link_libraries(gauche_render_scene PRIVATE ws2_32)
+    target_link_libraries(teeming_render_scene PRIVATE ws2_32)
 endif()
 
 if(BUILD_TESTING)
+    add_executable(teeming_data_tests tests/data_migration_test.cpp src/app/data_migration.cpp)
+    add_test(NAME data_migration COMMAND teeming_data_tests)
     # Simulation tests must not pull presentation-only objects and their renderer dependencies.
-    foreach(domain GAUCHE_ENTITY_SOURCES GAUCHE_PROP_SOURCES GAUCHE_WORLD_SOURCES)
+    foreach(domain TEEMING_ENTITY_SOURCES TEEMING_PROP_SOURCES TEEMING_WORLD_SOURCES)
         list(FILTER ${domain} EXCLUDE REGEX "_render[.]cpp$|/scene_entities[.]cpp$|/debug/generation_audit[.]cpp$")
     endforeach()
-    set(GAUCHE_TEST_GAME_SOURCES
-        src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp
+    set(TEEMING_TEST_GAME_SOURCES
+        src/stage.cpp ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES} src/inventory.cpp
         src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp
-        src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    add_executable(gauche_tests
-        tests/game_test.cpp ${GAUCHE_TEST_GAME_SOURCES})
-    target_link_libraries(gauche_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME game_rules COMMAND gauche_tests)
-    add_executable(gauche_item_tests tests/item_test.cpp tests/basic_actions_test.cpp
-        src/ui/pattern_diagram.cpp ${GAUCHE_TEST_GAME_SOURCES})
-    target_link_libraries(gauche_item_tests PRIVATE SDL3::SDL3 teeming_renderer)
-    target_compile_options(gauche_item_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME item_rules COMMAND gauche_item_tests)
-    add_executable(gauche_rollback_tests
-        tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    target_link_libraries(gauche_rollback_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_rollback_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME rollback_rules COMMAND gauche_rollback_tests)
-    add_executable(gauche_codec_tests
-        tests/net_codec_test.cpp ${GAUCHE_CODEC_SOURCES} src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES}
-        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    target_link_libraries(gauche_codec_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_codec_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME snapshot_codec COMMAND gauche_codec_tests)
-    add_executable(gauche_socket_tests tests/net_socket_test.cpp src/net_socket.cpp)
+        src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    add_executable(teeming_tests
+        tests/game_test.cpp ${TEEMING_TEST_GAME_SOURCES})
+    target_link_libraries(teeming_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME game_rules COMMAND teeming_tests)
+    add_executable(teeming_item_tests tests/item_test.cpp tests/basic_actions_test.cpp
+        src/ui/pattern_diagram.cpp ${TEEMING_TEST_GAME_SOURCES})
+    target_link_libraries(teeming_item_tests PRIVATE SDL3::SDL3 teeming_renderer)
+    target_compile_options(teeming_item_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME item_rules COMMAND teeming_item_tests)
+    add_executable(teeming_rollback_tests
+        tests/rollback_test.cpp src/rollback.cpp src/stage.cpp ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES}
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    target_link_libraries(teeming_rollback_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_rollback_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_rollback_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME rollback_rules COMMAND teeming_rollback_tests)
+    add_executable(teeming_codec_tests
+        tests/net_codec_test.cpp ${TEEMING_CODEC_SOURCES} src/stage.cpp ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES}
+        src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    target_link_libraries(teeming_codec_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_codec_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_codec_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME snapshot_codec COMMAND teeming_codec_tests)
+    add_executable(teeming_socket_tests tests/net_socket_test.cpp src/net_socket.cpp)
     if(WIN32)
-        target_link_libraries(gauche_socket_tests PRIVATE ws2_32)
+        target_link_libraries(teeming_socket_tests PRIVATE ws2_32)
     endif()
-    target_compile_options(gauche_socket_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME udp_loopback COMMAND gauche_socket_tests)
-    add_executable(gauche_session_tests
+    target_compile_options(teeming_socket_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME udp_loopback COMMAND teeming_socket_tests)
+    add_executable(teeming_session_tests
         tests/net_session_test.cpp tests/player_network_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/fragment.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp
-        src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    target_link_libraries(gauche_session_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_session_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+        src/net_socket.cpp ${TEEMING_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
+        ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    target_link_libraries(teeming_session_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_session_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_session_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
-        target_link_libraries(gauche_session_tests PRIVATE ws2_32)
+        target_link_libraries(teeming_session_tests PRIVATE ws2_32)
     endif()
-    add_test(NAME direct_session COMMAND gauche_session_tests)
-    add_executable(gauche_loss_tests
+    add_test(NAME direct_session COMMAND teeming_session_tests)
+    add_executable(teeming_loss_tests
         tests/net_loss_test.cpp src/net_protocol.cpp src/net_session.cpp src/net/fragment.cpp src/net/diagnostics.cpp src/net/traversal.cpp src/net/party.cpp
         src/net_snapshot.cpp src/net_session_host.cpp src/net_corrections.cpp src/net_session_client.cpp
-        src/net_socket.cpp ${GAUCHE_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
-        ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    target_link_libraries(gauche_loss_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_loss_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+        src/net_socket.cpp ${TEEMING_CODEC_SOURCES} src/rollback.cpp src/stage.cpp
+        ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    target_link_libraries(teeming_loss_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_loss_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_loss_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
     if(WIN32)
-        target_link_libraries(gauche_loss_tests PRIVATE ws2_32)
+        target_link_libraries(teeming_loss_tests PRIVATE ws2_32)
     endif()
-    add_test(NAME lossy_session COMMAND gauche_loss_tests)
-    add_executable(gauche_presentation_tests
-        ${GAUCHE_DEBRIS_SOURCES}
+    add_test(NAME lossy_session COMMAND teeming_loss_tests)
+    add_executable(teeming_presentation_tests
+        ${TEEMING_DEBRIS_SOURCES}
         tests/presentation_test.cpp src/particles/system.cpp
         src/particles/templates.cpp src/particles/presentation.cpp src/particles/sleep.cpp src/particles/gunfire.cpp src/particles/electricity.cpp src/particles/motion.cpp
-        src/stage.cpp ${GAUCHE_ENTITY_SOURCES} ${GAUCHE_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
-        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${GAUCHE_WORLD_SOURCES})
-    target_link_libraries(gauche_presentation_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_presentation_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME presentation_rules COMMAND gauche_presentation_tests)
-    add_executable(gauche_lighting_tests
+        src/stage.cpp ${TEEMING_ENTITY_SOURCES} ${TEEMING_PROP_SOURCES} src/inventory.cpp src/item.cpp src/item_attribute.cpp src/item_pattern.cpp
+        src/step.cpp src/game_hash.cpp src/trap.cpp src/run.cpp src/run/offers.cpp src/artifacts/hearth.cpp ${TEEMING_WORLD_SOURCES})
+    target_link_libraries(teeming_presentation_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_presentation_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_presentation_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME presentation_rules COMMAND teeming_presentation_tests)
+    add_executable(teeming_lighting_tests
         tests/lighting_test.cpp src/lighting/field.cpp src/lighting/canopy.cpp
         src/lighting/sources.cpp src/stage.cpp)
-    target_link_libraries(gauche_lighting_tests PRIVATE SDL3::SDL3)
-    target_include_directories(gauche_lighting_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    target_compile_options(gauche_lighting_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    add_test(NAME lighting_rules COMMAND gauche_lighting_tests)
-    add_test(NAME border_lighting COMMAND gauche --smoke-border --frames 3)
+    target_link_libraries(teeming_lighting_tests PRIVATE SDL3::SDL3)
+    target_include_directories(teeming_lighting_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_options(teeming_lighting_tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    add_test(NAME lighting_rules COMMAND teeming_lighting_tests)
+    add_test(NAME border_lighting COMMAND teeming --smoke-border --frames 3)
     set_tests_properties(border_lighting PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
-    add_test(NAME menu_shell COMMAND gauche --smoke-menu --frames 8)
+    add_test(NAME menu_shell COMMAND teeming --smoke-menu --frames 8)
     set_tests_properties(menu_shell PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     foreach(screen reward inventory)
-        add_test(NAME ui_${screen} COMMAND gauche --smoke-${screen} --frames 3)
+        add_test(NAME ui_${screen} COMMAND teeming --smoke-${screen} --frames 3)
         set_tests_properties(ui_${screen} PROPERTIES ENVIRONMENT
             "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     endforeach()
-    add_test(NAME direct_lobby COMMAND gauche --smoke-lobby --death entrance --frames 8)
+    add_test(NAME direct_lobby COMMAND teeming --smoke-lobby --death entrance --frames 8)
     set_tests_properties(direct_lobby PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
-    add_test(NAME menu_leave COMMAND gauche --smoke-leave --frames 14)
+    add_test(NAME menu_leave COMMAND teeming --smoke-leave --frames 14)
     set_tests_properties(menu_leave PROPERTIES ENVIRONMENT
         "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     foreach(page lobby settings controls profile bindings detail input death victory)
-        add_test(NAME menu_${page} COMMAND gauche --smoke-menu-page ${page} --frames 2)
+        add_test(NAME menu_${page} COMMAND teeming --smoke-menu-page ${page} --frames 2)
         set_tests_properties(menu_${page} PROPERTIES ENVIRONMENT
             "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy")
     endforeach()
 endif()
 
 # TRANSPORT: Reuse Gubsy's wire protocols without requiring its game runtime in net tools.
-add_library(gauche_realnet STATIC
-    "${GAUCHE_GUBSY_DIR}/src/realnet/config.cpp"
-    "${GAUCHE_GUBSY_DIR}/src/realnet/crypto.cpp"
-    "${GAUCHE_GUBSY_DIR}/src/realnet/rendezvous.cpp"
-    "${GAUCHE_GUBSY_DIR}/src/realnet/relay.cpp")
-target_include_directories(gauche_realnet SYSTEM PUBLIC
-    "${GAUCHE_GUBSY_DIR}/include" "${GAUCHE_GUBSY_DIR}/third_party")
-foreach(target gauche gauche_render_scene gauche_session_tests gauche_loss_tests)
+add_library(teeming_realnet STATIC
+    "${TEEMING_GUBSY_DIR}/src/realnet/config.cpp"
+    "${TEEMING_GUBSY_DIR}/src/realnet/crypto.cpp"
+    "${TEEMING_GUBSY_DIR}/src/realnet/rendezvous.cpp"
+    "${TEEMING_GUBSY_DIR}/src/realnet/relay.cpp")
+target_include_directories(teeming_realnet SYSTEM PUBLIC
+    "${TEEMING_GUBSY_DIR}/include" "${TEEMING_GUBSY_DIR}/third_party")
+foreach(target teeming teeming_render_scene teeming_session_tests teeming_loss_tests)
     if(TARGET ${target})
-        target_link_libraries(${target} PRIVATE gauche_realnet)
+        target_link_libraries(${target} PRIVATE teeming_realnet)
         target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     endif()
 endforeach()
@@ -422,7 +425,7 @@ if(EMSCRIPTEN)
     include(cmake/browser.cmake)
 else()
     find_package(CURL REQUIRED)
-    foreach(target gauche gauche_render_scene)
+    foreach(target teeming teeming_render_scene)
         target_link_libraries(${target} PRIVATE CURL::libcurl)
     endforeach()
 endif()

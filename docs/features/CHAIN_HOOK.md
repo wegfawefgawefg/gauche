@@ -55,7 +55,7 @@ reservation, saved mid-haul continuation, invalid phase rejection, loaded/ridden
 sled transport, full entity-pool refusal and protected-footprint rejection.
 64 generated Industry floors retained reachable routes and required locks and
 contained 34 hooks. SDL dummy drivers decoded the five OGGs and rendered the
-live tether to `/tmp/gauche-chain-hook.png`; that static render was inspected.
+live tether to `/tmp/teeming-chain-hook.png`; that static render was inspected.
 No autonomous playthrough. Cast count, haul pacing and acquisition balance still
 need human play feedback. Powered carts beyond the existing sled remain future
 content; this does not claim to implement the planned transport network.

@@ -44,7 +44,7 @@ spacing, protective aggression and sound feel await user playtesting.
 
 ## Bow and fused bomb projectiles
 
-Splonks' bow arms on press and fires on release. Gauche follows that interaction:
+Splonks' bow arms on press and fires on release. Teeming follows that interaction:
 20-arrow quiver, no reload command, a drawn sprite/twang, 16-tick recovery. Each
 arrow travels one tile per three ticks, damages on contact and splinters into
 local wood/feather debris. Bombs throw up to three tiles, land against obstacles,
@@ -130,7 +130,7 @@ Persistent spells and other regional throws remain catalog work.
 
 ## Earlier completed slice notes
 
-Rust Gauche did not have a sequence of cracked wall sprites: damaged breakable
+Rust Teeming did not have a sequence of cracked wall sprites: damaged breakable
 tiles had a health bar and shake, hits threw debris, and a destroyed wall became
 Ruin. Before this pass the C++ port let any damage lower wall HP and drew a dark red
 rectangle over damaged walls. The new implementation replaces this with shared

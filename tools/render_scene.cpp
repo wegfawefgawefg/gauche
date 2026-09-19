@@ -168,7 +168,7 @@ void arrange_terrain(Game& game, Cosmetics& cosmetics) {
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 4) {
-        std::fprintf(stderr, "Usage: gauche_render_scene output.png [hud|inventory|reward|canopy|stack|layout|floor|mansion|mansion-map] [seed]\n");
+        std::fprintf(stderr, "Usage: teeming_render_scene output.png [hud|inventory|reward|canopy|stack|layout|floor|mansion|mansion-map] [seed]\n");
         return 1;
     }
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
     GameGraphics graphics;
     std::string error;
     if (!load_graphics(graphics, renderer,
-                       std::filesystem::path{GAUCHE_SOURCE_DIR} / "assets", error)) {
+                       std::filesystem::path{TEEMING_SOURCE_DIR} / "assets", error)) {
         std::fprintf(stderr, "%s\n", error.c_str());
         return 1;
     }

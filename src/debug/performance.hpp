@@ -53,7 +53,7 @@ void stop_performance_capture();
 bool export_performance_history(const std::filesystem::path& path);
 void draw_performance_panel();
 struct PerfScope {
-#if defined(GAUCHE_PERF_ENABLED)
+#if defined(TEEMING_PERF_ENABLED)
     PerfZone zone;
     std::uint64_t start=0;
     explicit PerfScope(PerfZone value);

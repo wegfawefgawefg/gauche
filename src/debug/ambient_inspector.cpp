@@ -8,7 +8,7 @@ AmbientInspector& ambient_inspector(){static AmbientInspector state;return state
 void prepare_ambient_inspector(const Game& live,const AmbientAudio& audio,Cell listener) {
     auto& state=ambient_inspector();
     state.game=nullptr;state.audio=nullptr;
-    if(!GAUCHE_DEV_MODE || (!state.visible && !state.overlay))return;
+    if(!TEEMING_DEV_MODE || (!state.visible && !state.overlay))return;
     const auto& viewer=worldgen_viewer();
     const bool preview=viewer.active && viewer.original && !viewer.trace.checkpoints.empty();
     const Game& game=preview ? *viewer.trace.checkpoints[static_cast<std::size_t>(viewer.checkpoint)].game : live;

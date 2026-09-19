@@ -34,7 +34,7 @@ void report_join(NetSession& session) {
     ++t.reports;
     t.terminal_reported = terminal;
     std::ostringstream summary;
-    summary << "gauche build=" << GAUCHE_GENERATOR_REVISION
+    summary << "teeming build=" << TEEMING_GENERATOR_REVISION
         << " phase=" << static_cast<int>(t.phase) << " ready=" << session.ready
         << " owner=" << session.local_owner << " punch_rx=" << t.punch_received
         << " relay_rx=" << t.relay_received << " rejected=" << t.rejected

@@ -42,14 +42,14 @@ nginx -t
 systemctl reload nginx
 cat > /etc/systemd/system/gauche-certbot.service <<'EOF'
 [Unit]
-Description=Renew Gauche room API certificate
+Description=Renew Teeming room API certificate
 [Service]
 Type=oneshot
 ExecStart=/opt/gauche-certbot/bin/certbot renew --quiet --deploy-hook "systemctl reload nginx"
 EOF
 cat > /etc/systemd/system/gauche-certbot.timer <<'EOF'
 [Unit]
-Description=Check Gauche certificate renewal twice daily
+Description=Check Teeming certificate renewal twice daily
 [Timer]
 OnCalendar=*-*-* 00,12:00:00
 RandomizedDelaySec=1800

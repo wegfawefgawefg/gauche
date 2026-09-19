@@ -20,7 +20,7 @@ python3 -m http.server 8787 --bind 127.0.0.1 --directory build-web/site
 npm run test:web
 npm run test:web:settings
 npm run test:web:gamepad
-npm run test:web:crossplay  # also requires build-release/gauche
+npm run test:web:crossplay  # also requires build-release/teeming
 ```
 
 `TEEMING_TEST_URL` selects a deployed URL; `CHROME` selects the Chrome binary

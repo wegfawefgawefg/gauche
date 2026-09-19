@@ -1,4 +1,4 @@
-# Gauche implementation decisions
+# Teeming implementation decisions
 
 - Keep the old Rust commit/history intact. Do not transplant Rust history into
   the new C++ repository; link it as the source reference.
@@ -9,13 +9,13 @@
   inventory, pickup/drop, zoom). Gubsy remapping can expose those same actions.
 - The first pass should use the original authored PNG/OGG assets. Load each
   PNG directly by its `Sprite` name. Keep asset metadata in code unless a
-  concrete Gauche asset later needs richer data. New-content placeholder
+  concrete Teeming asset later needs richer data. New-content placeholder
   sprites may be generated with a small Python script at the source's usual
   16×16 scale.
 - Pin the Gubsy dependency rather than relying on whichever of the two local
   Gubsy checkouts happens to be on disk. They currently differ.
 - The Rust history remains in `gauche-rs`; the new C++ history is published as
-  `gauche`. Both local checkouts track their matching GitHub repository. The
+  `teeming`. Both local checkouts track their matching GitHub repository. The
   `port-finish` and `direct-netcode-finish` tags mark the playable port and
   direct rollback milestones.
 
@@ -27,7 +27,7 @@ Earlier completed content notes are archived in
 
 Adventures with Chickens transitions its displayed actor to a finite guide point
 and centers the camera on that same displayed position, then interpolates across
-simulation ticks. Gauche now uses that approach: local actor poses finish each
+simulation ticks. Teeming now uses that approach: local actor poses finish each
 step over the movement beat (capped at twelve ticks); the render remainder
 interpolates positions and the local camera together. Teleports/new generations
 reset their guide immediately. Actor poses remain outside game state. A static
@@ -37,7 +37,7 @@ smoothness across the user's monitor/frame rate awaits their playtesting.
 Left-facing held art now mirrors its local vertical axis before the 180-degree
 rotation, keeping the top upright. The custom cursor draws once after menus and
 ImGui at window resolution, with high-DPI conversion; the OS/ImGui cursors stay
-hidden. Pad mode still hides Gauche's cursor. Removed duplicate casing emission
+hidden. Pad mode still hides Teeming's cursor. Removed duplicate casing emission
 from the old pose observer; actual shot events own firearm casings.
 
 ## Contextual ground items and input prompts
@@ -64,12 +64,12 @@ hardware/layout switching and pickup feel await user playtesting.
 ## Profile management and menu reference
 
 Defaults are read-only in name editing, binding capture/removal, and controller
-settings. Creating a profile copies Gauche's default bindings and selects it for
+settings. Creating a profile copies Teeming's default bindings and selects it for
 the indicated local player; duplication copies both bindings and tuning. The
 profile list marks Active, selects on its main row, and exposes Edit/View as a
 separate action. Names commit on Enter, navigating away, outside click or ending
 editing with Back. Invalid/reserved/duplicate names retain the previous name.
-GView's Confirm-only text commit is handled at the Gauche integration boundary.
+GView's Confirm-only text commit is handled at the Teeming integration boundary.
 
 Profiles, editing and pause have a device-specific bindings legend and schematic.
 Hover/focus previews a profile without selecting it. Create is above/right of the
@@ -315,20 +315,20 @@ in snapshot 18; gameplay compatibility is CA. No gameplay or networking playtest
 
 ## Frame-rate display
 
-Gubsy measured FPS only when its ImGui/debug frame began. Gauche owns that frame
+Gubsy measured FPS only when its ImGui/debug frame began. Teeming owns that frame
 itself, so the counter stayed zero. Measurement now counts actual presented frames
 over half-second wall-clock windows, including frame caps and vsync, independently
 of debug UI. Gubsy exposes that value and lets hosts opt out of its default overlay.
-Gauche places a quiet counter beneath its zoom label, clear of the floor title;
+Teeming places a quiet counter beneath its zoom label, clear of the floor title;
 the initial unmeasured value is `--`. Show FPS still uses the existing saved setting.
 Strict builds pass; a static HUD capture checks placement. No live playtest.
 
 
 ## Tile-light gradient facets
 
-The Splonks gview workspace and Gauche both submit four corner colors across two
+The Splonks gview workspace and Teeming both submit four corner colors across two
 triangles. With sharply varying canopy samples, that makes an artificial diagonal
-brightness crease inside each tile. Gauche now bilinearly interpolates those same
+brightness crease inside each tile. Teeming now bilinearly interpolates those same
 four corner values over a four-by-four subdivision. Shared edge colors, point
 source strengths, canopy stencil, grading and ambient darkness are preserved.
 This adds geometry within the existing tile draw call rather than additional

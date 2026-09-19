@@ -1,4 +1,6 @@
 #include "options.hpp"
+#include "data_migration.hpp"
+#include <cstdio>
 #include "../graphics.hpp"
 #include <charconv>
 #include <cmath>
@@ -68,17 +70,27 @@ std::filesystem::path user_data_root() {
 #ifdef __EMSCRIPTEN__
     return "/persistent";
 #endif
-    char* path = SDL_GetPrefPath("gauche", "Gauche");
-    if (path == nullptr) return std::filesystem::path{GAUCHE_SOURCE_DIR} / "data";
+    char* path = SDL_GetPrefPath("teeming", "Teeming");
+    if (path == nullptr) return std::filesystem::path{TEEMING_SOURCE_DIR} / "data";
     const std::filesystem::path result{path};
     SDL_free(path);
+    // Legacy storage identity is intentionally retained only for migration.
+    char* old_path=SDL_GetPrefPath("gauche", "Gauche");
+    if (old_path) {
+        const std::filesystem::path previous{old_path};SDL_free(old_path);
+        std::string error;
+        if (!migrate_user_data(previous,result,error)) {
+            std::fprintf(stderr,"Teeming data migration: %s; using previous data directory\n",error.c_str());
+            return previous;
+        }
+    }
     return result;
 }
 
 GubsyAppConfig app_config(int argc, char** argv) {
     GubsyAppConfig config;
     config.enable_mods = false;
-    config.project_root = GAUCHE_SOURCE_DIR;
+    config.project_root = TEEMING_SOURCE_DIR;
     config.data_root = (user_data_root() / "gubsy").string();
     config.engine_assets_root = (asset_root() / "gubsy-engine").string();
     config.window_title = "Teeming";

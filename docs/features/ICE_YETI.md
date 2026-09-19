@@ -59,7 +59,7 @@ participants need the same build.
 
 ## Validation and assets
 
-Strict Release `gauche` build passed. A temporary direct-function check covered
+Strict Release `teeming` build passed. A temporary direct-function check covered
 missed grabs, grip/shield resistance, light/heavy-hit interruption, four-cell
 flight, collision damage/stun, deep-water crossing/landing, ice landing,
 external displacement, ground fire/trap suppression and snapshot/hash replay.
@@ -73,6 +73,6 @@ nine yetis were placed across those seeds. This is not a difficulty assessment.
 The built-in imagegen tool produced `assets/graphics/yeti.png`; generated alpha
 is preserved. It uses the existing nearest-scaled sprite path. Original prompt:
 
-> Use case: stylized-concept. Asset type: a single game sprite for Gauche, minimalist tiny pixel art top-down roguelike. Generate one solitary squat yeti, white shaggy fur, broad long arms, small dark slate-blue face with two tiny pale eyes, large mitten hands and short dark feet, hunched gorilla-like standing pose, seen from slightly above/front so the top of shoulders is visible. Body centered, fills about 85% canvas width and height. Extremely simple chunky 16x16 logical pixel grid aesthetic scaled up crisply, only 4 flat colours (ivory white, muted ice grey, dark slate blue, near-black eyes), lots of negative space between arms and torso; no outlines, no texture, no gradients, no antialias, no shadows, no floor, no props, no text, no border. Actual fully transparent background with alpha, not a checkerboard. One sprite only, not a sheet.
+> Use case: stylized-concept. Asset type: a single game sprite for Teeming, minimalist tiny pixel art top-down roguelike. Generate one solitary squat yeti, white shaggy fur, broad long arms, small dark slate-blue face with two tiny pale eyes, large mitten hands and short dark feet, hunched gorilla-like standing pose, seen from slightly above/front so the top of shoulders is visible. Body centered, fills about 85% canvas width and height. Extremely simple chunky 16x16 logical pixel grid aesthetic scaled up crisply, only 4 flat colours (ivory white, muted ice grey, dark slate blue, near-black eyes), lots of negative space between arms and torso; no outlines, no texture, no gradients, no antialias, no shadows, no floor, no props, no text, no border. Actual fully transparent background with alpha, not a checkerboard. One sprite only, not a sheet.
 
 Sound source: `tools/sound/yeti.py`, using existing offline synthesis helpers.

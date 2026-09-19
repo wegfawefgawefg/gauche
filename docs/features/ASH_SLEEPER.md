@@ -61,7 +61,7 @@ Generated originals retained under
 Prompts requested muted charcoal/cool-gray opaque pixel clusters, no face or
 humanoid head, transparent alpha, low ash clumps / asymmetric corkscrew ribbons;
 edits explicitly removed glow, smoke and background haze. Both final sprites
-were inspected, as was `/tmp/gauche-ash-loft.png` from an SDL dummy static render.
+were inspected, as was `/tmp/teeming-ash-loft.png` from an SDL dummy static render.
 The render also loaded all five OGGs. No autonomous playthrough.
 
 Strict release build and temporary direct checks passed: quiet/loud/muffled and

@@ -1,8 +1,8 @@
-# Gauche room service
+# Teeming room service
 
 Builds the pinned Gubsy room directory, NAT rendezvous and UDP relay as one
-headless binary. No SDL, game assets, GPU or running Gauche simulation required.
-Gauche adapts the same protocols in `src/net/rooms` and `src/net/traversal.cpp`.
+headless binary. No SDL, game assets, GPU or running Teeming simulation required.
+Teeming adapts the same protocols in `src/net/rooms` and `src/net/traversal.cpp`.
 
 ## Build
 
@@ -15,7 +15,7 @@ cmake --build build-roomd --parallel 2
 ```
 
 CMake requires 3.24+. Source is fetched at the same Gubsy revision as the game.
-For local development, pass `-DGAUCHE_GUBSY_SOURCE_DIR=/absolute/path/to/gubsy`.
+For local development, pass `-DTEEMING_GUBSY_SOURCE_DIR=/absolute/path/to/gubsy`.
 
 ## Deployment shape
 
@@ -34,7 +34,7 @@ Roles and ports:
 | Relay fallback | UDP | 8790 |
 | Public room API | HTTPS reverse proxy | TCP 443 |
 
-Gauche uses libcurl with certificate verification for the HTTPS room API.
+Teeming uses libcurl with certificate verification for the HTTPS room API.
 The upstream Gubsy room HTTP client is not used here. HTTP carries room credentials;
 keep local development on loopback. UDP punching and relay already authenticate
 their protocol packets; the game does not need to open inbound router ports.
@@ -58,6 +58,8 @@ Retain limits on allocations, packet sizes, rate and idle expiry. Do not put
 API keys, SSH private keys or room authorization secrets in this repository.
 
 ## Active playtesting deployment
+
+The installed service, account, certificate and filesystem identifiers below are legacy deployment names. They remain unchanged by the repository rebrand; use these exact names when maintaining the existing VPS.
 
 - URL: **https://45.77.123.14** (Vultr Los Angeles, `gauche-roomd-lax`).
 - Ubuntu 24.04; plan `vc2-1c-2gb`, $10/month at creation on 2026-09-15.
@@ -88,5 +90,5 @@ bootstrap scripts merely to update the binary. Service state is in memory, so a
 restart removes room registrations and relay allocations.
 
 Validation: public HTTPS health/discovery, debug-route denial, private backend
-port denial, and a bounded native Gauche forced-relay join/snapshot/ready/start
+port denial, and a bounded native Teeming forced-relay join/snapshot/ready/start
 check succeeded. This does not constitute an intercontinental gameplay test.

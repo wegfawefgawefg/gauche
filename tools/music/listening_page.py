@@ -23,7 +23,7 @@ def main():
 <label><input type="checkbox" data-loop="{slug}"> Repeat to hear the loop</label></p></article>''')
     page = '''<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gauche — first music sketches</title><style>
+<title>Teeming — first music sketches</title><style>
 :root{color-scheme:dark;font:17px/1.55 system-ui,sans-serif;background:#101612;color:#e4e0cc}
 body{max-width:920px;margin:0 auto;padding:36px 24px 70px}header{margin-bottom:34px}
 h1{font:600 clamp(30px,5vw,48px)/1.1 Georgia,serif;margin:12px 0 20px}
@@ -33,13 +33,13 @@ p{max-width:74ch;color:#c6cbbb}audio{display:block;width:100%;margin:22px 0 16px
 button{font:inherit;font-size:12px;color:#d6c5a8;background:#222c24;border:1px solid #465442;padding:7px 10px;cursor:pointer}
 button:hover,button:focus-visible{border-color:#c5a776;background:#344335}.markers{display:flex;gap:7px;flex-wrap:wrap}
 a{color:#e4ba80}.links{display:flex;gap:24px;flex-wrap:wrap;font-size:13px}footer{font-size:13px;color:#a1ad9c}
-</style><header><p class="eyebrow">GAUCHE / MUSIC WORKBENCH / PASS 01</p>
+</style><header><p class="eyebrow">TEEMING / MUSIC WORKBENCH / PASS 01</p>
 <h1>Roots, lanterns, and the shift below.</h1>
 <p>Three original directions to listen through. These are shorter arrangement sketches,
 not the finished biome soundtrack. They are mixed quietly and retain their swells and rests.</p>
 <p>Each has section buttons for jumping around. Nothing plays automatically.</p></header>'''
     page += "\n".join(cards)
-    page += '''<footer>Original Gauche scores. Cello, woodwinds, horns and other sampled instruments
+    page += '''<footer>Original Teeming scores. Cello, woodwinds, horns and other sampled instruments
 from FluidR3 (MIT), layered with custom synthesis. Editable sources: tools/music/.<br>
 Useful feedback: which tune stays with you; which instruments feel right or wrong;
 which passages should breathe, grow, or disappear.</footer><script>

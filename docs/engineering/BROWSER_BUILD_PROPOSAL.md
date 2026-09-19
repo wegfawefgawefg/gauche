@@ -32,7 +32,7 @@ These are sibling repositories, not new dependencies or copied implementations:
   controller visibility after the first button gesture, periodic browser Gamepad
   sampling and SDL/Gubsy refresh without requiring a keyboard.
 
-## Gauche-specific work
+## Teeming-specific work
 
 - `src/main.cpp` currently owns a blocking native loop. Extract a frame boundary
   with the same fixed-step simulation and browser-owned presentation scheduling.
@@ -52,7 +52,7 @@ These are sibling repositories, not new dependencies or copied implementations:
   reconnects and shared reward/shop lifecycle. Browser tab suspension needs an
   explicit host/client recovery policy.
 - Verify the pinned Gubsy/GView/SDL image/audio dependencies compile for web.
-  The sibling project's Gubsy version is not proof that Gauche's pins already do.
+  The sibling project's Gubsy version is not proof that Teeming's pins already do.
 - Load assets through a manifest; persist controls/settings in browser storage.
   Reuse click/button-to-start audio and gamepad activation patterns. Keep dev
   inspection tools available in test builds.
@@ -63,7 +63,7 @@ Pages can deploy prebuilt client assets. A generated `pages.dev` project address
 is sufficient initially; choosing a commercial domain can wait.
 [Pages deployment guide](https://developers.cloudflare.com/pages/get-started/direct-upload/).
 
-Pages currently limits each individual asset to 25 MiB. Gauche's source `assets/`
+Pages currently limits each individual asset to 25 MiB. Teeming's source `assets/`
 directory is about 41 MiB; that is not a measured browser download or compiled
 Wasm size. Measure the release outputs, split bundles or use separate asset
 hosting where necessary. [Pages limits](https://developers.cloudflare.com/pages/platform/limits/).

@@ -178,7 +178,7 @@ def render(score, output, soundfont):
         path = output / (score.slug + ".ogg")
         subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(source),
                         "-c:a", "libvorbis", "-q:a", "6", "-metadata", "title=" + score.title,
-                        "-metadata", "artist=Gauche original music sketches", str(path)], check=True)
+                        "-metadata", "artist=Teeming original music sketches", str(path)], check=True)
     report = {"title": score.title, "description": score.description, "seconds": score.duration,
               "integrated_lufs_estimate": round(float(metrics["input_i"]) + gain_db, 2),
               "loudness_range_lu": float(metrics["input_lra"]),

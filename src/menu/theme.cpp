@@ -1,6 +1,6 @@
 #include "theme.hpp"
 
-namespace gauche_menu {
+namespace teeming_menu {
 
 namespace {
 
@@ -287,7 +287,7 @@ std::vector<gview::Theme> default_themes() {
       region_skin("group-inner", "ui-group-inner", 1.0f),
   };
   gview::Theme stone;
-  stone.id = "gauche-stone-unified";
+  stone.id = "teeming-stone-unified";
   stone.extends = "gubsy-default";
   stone.widgets = {
       stone_text_skin(),
@@ -309,4 +309,4 @@ std::vector<gview::Theme> default_themes() {
   return {std::move(base), std::move(game), std::move(stone)};
 }
 
-} // namespace gauche_menu
+} // namespace teeming_menu

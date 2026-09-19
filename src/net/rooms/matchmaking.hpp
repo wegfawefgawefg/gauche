@@ -3,7 +3,7 @@
 #include <gubsy/lobby/room_matchmaking.hpp>
 #include "../server_clock.hpp"
 
-class GaucheMatchmaking final : public IMatchmaking {
+class TeemingMatchmaking final : public IMatchmaking {
 public:
     ServerClock last_clock;
     bool fetch_capabilities(const std::string& server_url,

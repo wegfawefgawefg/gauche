@@ -4,7 +4,7 @@
 #include "front_page.hpp"
 #include <algorithm>
 
-namespace gauche_menu {
+namespace teeming_menu {
 namespace {
 void choose(ViewBuilder& ui, const FrontPage& page, const char* id, const char* label,
             std::vector<std::string> choices) {
@@ -55,4 +55,4 @@ void audio_page(ViewBuilder& ui, const FrontPage&) {
     ui.slider("card", "sfx", "Sound effects (%)", "setting:sfx", "menu", 0, 100, 1, 72);
     footer(ui, "master");
 }
-} // namespace gauche_menu
+} // namespace teeming_menu

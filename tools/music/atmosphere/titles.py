@@ -22,7 +22,7 @@ def roots_title():
 def machine_title():
     p = Piece("machine_moss", "A Machine Dreams of Moss", "TITLE / STRANGER", 98,
               "Air moves through an impossible pipe; soft wooden contact and bent metal slowly trade places. Almost no rhythm.",
-              "The less pastoral title. Does this feel distinctively Gauche, or too abstract?", 811,room=4.5,wet=.3)
+              "The less pastoral title. Does this feel distinctively Teeming, or too abstract?", 811,room=4.5,wet=.3)
     for at,dur,hz,gain,pan in [(2,24,61.74,.11,-.2),(37,23,62.1,.085,.2),(69,23,55,.11,0)]:
         p.sound(at,dur,"breath",hz,gain,pan,character="pipe")
     for at,dur,hz,gain,pan in [(16,18,184.2,.042,.4),(47,17,181.7,.03,-.35),

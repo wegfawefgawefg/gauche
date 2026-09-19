@@ -1,4 +1,4 @@
-# Gauche master task list
+# Teeming master task list
 
 - [x] **FOREST-REFERENCE:** Archive the 1,024-map population/feature/supply investigations, counts, definitions and raw samples. User approves current Forest balance; [reference](measurements/forest-2026-09-17/README.md), not a rebalance mandate.
 - [x] **TITLE-TEEMING:** User approved public title Teeming; retain native data/protocol compatibility. Initial storefront search found no exact video-game collision; domains/trademarks are not cleared.
@@ -30,7 +30,7 @@ Latest playtesting finds Forest empty/samey too; restore its layered scenes whil
 
 Latest playtest priorities (2026-09-16):
 
-Generation direction agreed after the Spelunky/Splonks review: recognizable places remain, but their interiors must compose smaller alternatives and contextual population. Gauche's larger top-down maps also need growth/carving beyond room boundaries. This work takes priority over more isolated presets; prior landmark checkmarks certify their initial implementations, not replay variety. Source: [verbatim user direction](user_messages/2026-09-16-generation-feedback.txt). Start with the inspection tool, then migrate ordinary content incrementally.
+Generation direction agreed after the Spelunky/Splonks review: recognizable places remain, but their interiors must compose smaller alternatives and contextual population. Teeming's larger top-down maps also need growth/carving beyond room boundaries. This work takes priority over more isolated presets; prior landmark checkmarks certify their initial implementations, not replay variety. Source: [verbatim user direction](user_messages/2026-09-16-generation-feedback.txt). Start with the inspection tool, then migrate ordinary content incrementally.
 
 - [ ] **FOREST-COMBAT-DENSITY:** Preserve the recent combat-heavy pass while recomposing generation. Make all four floors lively with things to fight, break and use; tune difficulty through enemy mix/telegraphs/terrain as well as numbers. Inspect enemy and breakable density per traversable sector, including newly carved open ground, so landmark reservations and growth do not silently hollow out ordinary encounters. Count ordinary hostiles separately from passive life and conditional threats; decorative clutter does not satisfy combat density. Keep 1-1 busy with readable simpler enemies, and build denser mixed packs and overlapping threats on later floors. Compare against the pinned baseline and user playtesting; Gauntlet/Qud is the direction.
   - Ordinary Forest encounters now compose independently weighted size, family, loose/clustered/two-pocket spacing, individual members, specialists and wildlife. Footprint-limited local groups replace the shared threat allowance; first-floor packs use bats/mosquitoes/zombies, later packs add hunters/mixed groups. Scavengers no longer spend sector/river fighter slots. Inspector exposes actual child choices/placements and group totals. Same 32-floor sample: ordinary rooms without direct fighter actors fell 106→12 of 247 (worm segments count as actors); 795 ordinary pack members were recorded. Builds, report/fine-capture neutrality, safe arrival, species windows, route/lock/codec, exhausted-capacity cases and static previews passed. Pinned-baseline comparison now measures 64 ordinary floors: mobile fighters average 32/49/64/74 by stage versus 10/11/17/18; ordinary rooms without fighters fall 184/425→18/454. The reusable `--audit-forest` command separates passive/conditional life and measures walking-distance coverage. [Method and limits](engineering/FOREST_GENERATION_COMPARISON.md). Live balance, large quiet pockets and reduced later-floor specialist/spawner exposure remain open.
@@ -146,7 +146,7 @@ Distinct ordinary floors and living machinery:
 - [ ] **COMBAT-2:** Give Industry a similar ordinary combat baseline (e.g. pipe-wielding worker and clearly telegraphed ranged guard), alongside quirky machines and crews. Audit current enemy availability first; tune mixed groups, approach space and early-biome damage without instant attacks on sight.
   - Ordinary Industry now composes one spaced Rivet Gunner/Pipe Guard group from its existing threat budget, preferring an existing gunner and requiring a dry firing approach plus sidesteps. Normal-play amber aim marks, stronger code-made brace/reload poses and real-launch air puffs improve readability. Build, direct timing/interruption/placement/cosmetic checks, five ordinary-scene captures and 128-floor audit passed. All 64 sampled Industry floors had a group (56 reused gunners, eight new); broader role variety and live balance remain open.
 - [ ] **COMBAT-3:** Audit encounter density, not just total bodies: separate ordinary hostiles, conditional threats and passive life; measure reachable floor area, combat-room occupancy, groups and quiet stretches. The first pass's 3–6 new fighters per floor is not a final target. Try small ordinary groups and occasional crowded scenes alongside breathing room; review the one-fighter-per-room restriction and tune through user playtests. Reference: NetHack 3.6.7 uses sparse [ordinary-room rolls](https://github.com/NetHack/NetHack/blob/NetHack-3.6.7_Released/src/mklev.c), dense special rooms and later wandering spawns; do not copy turn-based spawn rates into real-time play.
-- [ ] **COMBAT-4:** Make ordinary combat meaningfully dangerous alongside the sandbox toys. Audit native weapon damage/attack timing against enemy HP, attack/recovery windows, stagger, pursuit, group pressure, ammo and healing across progression. Establish useful weapon upgrades and dangerous enemies worth avoiding; preserve readable counterplay rather than instant attacks or universal HP inflation. Compare reference games for lessons, not target counts: Gauche has its own room sizes, floor structure and real-time pace. Use focused calculations and user playtests.
+- [ ] **COMBAT-4:** Make ordinary combat meaningfully dangerous alongside the sandbox toys. Audit native weapon damage/attack timing against enemy HP, attack/recovery windows, stagger, pursuit, group pressure, ammo and healing across progression. Establish useful weapon upgrades and dangerous enemies worth avoiding; preserve readable counterplay rather than instant attacks or universal HP inflation. Compare reference games for lessons, not target counts: Teeming has its own room sizes, floor structure and real-time pace. Use focused calculations and user playtests.
 - [x] First simple-combat pass: Frost Goblin (28 HP, 24-tick windup) and Pipe Guard (44 HP, 30-tick windup), with chase/single-cell swing/recovery, raised/swing code art, six offline voice/swing sounds, useful native drops, decoy/hearing response and strong-hit/stun interrupts. Reserve existing threat budget and place after installations. Build, static captures, direct combat and snapshot checks passed; 64 ordinary floors per biome each placed 288 fighters (3–6 per floor), retaining 419/435 other mobile bodies. Required routes/locks remained intact. More simple roles and mixed-group balance remain under COMBAT-1/2; no autonomous playthrough.
 - [x] Ordinary group placement: increase the basic allowance to 6/8/10/12 through each biome, retaining the specialist allowance. Place after specialist scenes/supplies; allow spaced pairs and later trios, cap existing room occupants, avoid refuges and the entrance's seven-tile sight radius. Same 128-floor sample: 575/576 basic fighters, 420/441 other mobile bodies; rooms with multiple bodies average 5.3/4.8 (previously 2.9/2.0), with about seven empty rooms per floor. One cramped floor placed 11 of 12. Build, seed reproducibility, route/lock/snapshot checks and static group captures passed. Broader hostile/conditional-life classification and user balance remain open under COMBAT-3.
 - [ ] **FALL-4:** Specify fall-direction policy for each tall scenery family: away from the blow, toward it, fixed structural facing/load, or one saved random choice. Lean/art and warning lane must communicate the committed result; repeated hits cannot reroll it. Streetlights, Ice pillars and cut Forest trees use away-from-the-breaking-blow; burning trees follow their saved planted lean. Floodlight towers follow their fixed structural lean regardless of impact source. Apply an explicit policy to each future family.
@@ -379,7 +379,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
 - [ ] Put visual variety at room scale with occasional tufts, roots, paths, and
   larger patches rather than random detail in every 16-pixel tile. Check tiled
   repetition, cave/outdoor distinction, and readability under both deep shade
-  and canopy light. Keep the source art native to Gauche's simple pixel style.
+  and canopy light. Keep the source art native to Teeming's simple pixel style.
 
 ## Reactive forest props
 
@@ -439,7 +439,7 @@ Layering follow-up adds **six proposed cross-room feature families per biome**, 
   rectangles with the layout.
 - [x] Track the most recently used pointing device locally. Any meaningful
   gamepad button, stick, trigger, or D-pad input hides both the OS cursor and
-  Gauche's drawn pointer, including in menus and inventory. Mouse movement or
+  Teeming's drawn pointer, including in menus and inventory. Mouse movement or
   click brings the pointer back. Prevent stick noise and synthetic mouse motion
   from making it flicker; this state must not enter lockstep input or hashes.
 - [ ] Exercise the compact default, expanded detail toggle, inventory/reward
@@ -669,7 +669,7 @@ Direction and local reference inventory: [music brief](music/MUSIC_DIRECTION.md)
 ## Ambient sound and environmental scenes
 
 - [x] Inspect Splonks' ambient audio and reuse suitable loading/mixing pieces;
-  give Gauche separate, simple ownership for persistent loops, area triggers,
+  give Teeming separate, simple ownership for persistent loops, area triggers,
   and occasional level-wide ambience rather than stuffing them into enemy AI.
 - [ ] Author **at least 20 distinct ambient sound sources/cues per biome**
   (80 across four), with thematic assets, placement rules, volume and falloff.
@@ -819,7 +819,7 @@ schedules. Build checked; shallow-water scenes and later biomes remain.
 - [ ] Detect SDL controller layout (Xbox, PlayStation, Nintendo), including the
   active mode reported by third-party pads. Show recognizable button glyphs and
   Xbox colors; keyboard letters sit on small offset keycaps. Handle device changes.
-- [x] Hide the OS mouse whenever Gauche draws its own pointer. Render the custom
+- [x] Hide the OS mouse whenever Teeming draws its own pointer. Render the custom
   pointer above menus/configuration panels as well as gameplay; preserve pad hiding.
 - [ ] Give all menus a usability/layout pass: consistent small bottom-left Back,
   primary actions apart from lists, Create Profile above/right of the profile list,
@@ -914,3 +914,7 @@ playtesting; use builds and focused static captures for implementation checks.
 - [x] **JUMP-CREATURES:** Clear zombies and bats with a free landing; no wall-jump buzzing. Reserve takeoff space for interrupted or newly blocked landings.
 - [x] **SHOVE-PINNING:** User saw kills with an empty tile behind the target. Only crush already-pinned targets; stop safely after crossing a gap toward a wall.
 - [x] **KICK-IDENTITY:** Damaging kick breaks pots rather than sliding them; knocks creatures back without wall crush. Shove moves objects and crushes pinned creatures.
+
+### Repository identity — 2026-09-19
+
+- [x] **TEEMING-REBRAND:** Rename project/targets, launchers, code identifiers, UI, active docs and music metadata. Move the working tree to `teeming` and rename the GitHub repository after validation. Preserve native profiles/loadouts through one-time copying, old build options, stable room protocol, historical records and deployed VPS identities.

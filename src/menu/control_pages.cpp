@@ -4,7 +4,7 @@
 #include "profiles.hpp"
 #include "control_reference.hpp"
 
-namespace gauche_menu {
+namespace teeming_menu {
 namespace {
 std::string button_label(int code) {
     ginput::DeviceButton decoded;
@@ -58,7 +58,7 @@ void controls_page(ViewBuilder& ui, const FrontPage& page) {
     }
     control_reference(ui, "profile-body", page,
         page.preview_profile < 0 ? active_profile_id(page) : page.preview_profile);
-    ui.label("card", "profile-help", "New profiles start with Gauche's default controls.", 28, 15);
+    ui.label("card", "profile-help", "New profiles start with Teeming's default controls.", 28, 15);
     footer(ui, first);
 }
 
@@ -212,4 +212,4 @@ void binding_choices_page(ViewBuilder& ui, const FrontPage& page) {
     footer(ui, choices.empty() ? "back" : "choice-0");
 }
 
-} // namespace gauche_menu
+} // namespace teeming_menu

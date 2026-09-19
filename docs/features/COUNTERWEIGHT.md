@@ -61,6 +61,6 @@ acquisition, weak/heavy damage, cold and displacement cancellation, decoys,
 full cosmetic buffers, mid-drop snapshot continuation, malformed-state rejection,
 safe wreck placement/cutting and protected footprint refusal. Sixty-four Industry
 floors retained reachable routes and required locks; five hoists appeared.
-Both sprites and `/tmp/gauche-hoist-shaft.png` were visually inspected; the
+Both sprites and `/tmp/teeming-hoist-shaft.png` were visually inspected; the
 SDL dummy render loaded all five OGGs. No autonomous playthrough. Live balance
 and readability still need user feedback.

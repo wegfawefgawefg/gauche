@@ -23,7 +23,7 @@ void choices(const char* label,std::span<const WeightedComponent> pool,bool open
 
 void draw_forest_encounter_pools(const GenerationReport& report) {
     if(!ImGui::CollapsingHeader("Ordinary encounter eligibility (all pools)"))return;
-    if(report.received && report.revision!=GAUCHE_GENERATOR_REVISION) {
+    if(report.received && report.revision!=TEEMING_GENERATOR_REVISION) {
         ImGui::TextWrapped("Host generator build differs from this client. Potential pools cannot be reconstructed reliably; use the host's recorded choices below.");return;
     }
     if(!forest_floor(report.floor)) {

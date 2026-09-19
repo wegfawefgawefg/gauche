@@ -45,7 +45,7 @@ def main():
                         "-q:a","6",str(OUTPUT/"comparison.ogg")],check=True)
     (OUTPUT/"encoded_analysis.json").write_text(json.dumps(reports,indent=2)+"\n")
     page='''<!doctype html><html lang="en"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Gauche · distinct palettes</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Teeming · distinct palettes</title>
 <style>:root{color-scheme:dark;font:16px/1.6 system-ui;background:#111714;color:#dedccb}
 body{max-width:980px;margin:auto;padding:30px 24px 70px}h1{font:46px/1.15 Georgia}h2{font:29px Georgia}
 article{background:#1b2520;padding:24px 28px;margin:28px 0;border-left:3px solid #937b57}
@@ -53,7 +53,7 @@ article{background:#1b2520;padding:24px 28px;margin:28px 0;border-left:3px solid
 a{color:#d4b583}.question{color:#baa990}.markers{display:flex;gap:7px;flex-wrap:wrap}
 button{background:#2b382f;color:#ded8c3;border:1px solid #5c6a57;padding:9px;cursor:pointer}
 button:hover,button:focus-visible{border-color:#c9b081}.approved{border-color:#8da985}</style>
-<p class="tag">GAUCHE / MUSIC PASS 03</p><h1>One pipe song. Different worlds.</h1>
+<p class="tag">TEEMING / MUSIC PASS 03</p><h1>One pipe song. Different worlds.</h1>
 <p>The last batch was one sound spread across too many pieces. Its shop cue is approved;
 the pipe palette now belongs to one Ice candidate. Four shorter studies use different dominant instruments and rhythms.</p>
 <article><h2>1:45 comparison reel</h2><p>Twenty seconds of each new direction, at its original mix level.</p>

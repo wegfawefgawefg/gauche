@@ -102,5 +102,5 @@ flying/burn behavior, snapshot roundtrip and malformed heat rejection. Protected
 placement failure leaves the state hash unchanged. Sixty-four generated Industry
 floors retained reachable routes and necessary locks, with 67 moths and nine lamp
 alcoves. SDL dummy loaded both sprites and six sounds; the inspected static
-capture is `/tmp/gauche-lamp-alcove.png`. No interactive playtest or permanent test
+capture is `/tmp/teeming-lamp-alcove.png`. No interactive playtest or permanent test
 suite was added. Balance and readability in live play remain user feedback work.

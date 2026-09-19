@@ -90,5 +90,5 @@ displacement/sleep cancellation and snapshot roundtrip/malformed fuel rejection.
 Protected-placement failure leaves the game hash unchanged. Across 64 generated
 Industry floors, routes remained reachable and exit locks necessary; 28 kilns
 and 13 complete courts appeared. SDL dummy loading covered the sprites and all
-five sounds; the inspected static capture is `/tmp/gauche-kiln-court.png`.
+five sounds; the inspected static capture is `/tmp/teeming-kiln-court.png`.
 No interactive playtest or permanent test suite was added.

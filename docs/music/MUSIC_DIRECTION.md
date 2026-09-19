@@ -116,7 +116,7 @@ The initial small Forest-led sketch pass was useful but too narrow. Following
 the user's listening feedback, compare a broader set of genuinely different
 material/space directions and short cues before choosing full arrangements.
 Use expressive envelopes, voicing, articulation, humanized performance where
-appropriate, and restrained space/effects. Preserve Gauche's quirky identity.
+appropriate, and restrained space/effects. Preserve Teeming's quirky identity.
 Keep reproducible composition/render sources alongside asset provenance and
 instructions so motifs, instrumentation and mixing remain editable.
 

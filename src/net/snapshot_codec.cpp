@@ -9,7 +9,7 @@ std::vector<std::uint8_t> encode_network_snapshot(const Game& game) {
     PacketWriter w;w.u32(0x31504e53);w.u32(static_cast<std::uint32_t>(state.size()));
     w.bytes.insert(w.bytes.end(),state.begin(),state.end());
     std::vector<std::uint8_t> diagnostics;
-    if(GAUCHE_DEV_MODE && game.generation_report)
+    if(TEEMING_DEV_MODE && game.generation_report)
         diagnostics=encode_generation_report(*game.generation_report,snapshot_wire_limit-state.size()-12);
     w.u32(static_cast<std::uint32_t>(diagnostics.size()));w.bytes.insert(w.bytes.end(),diagnostics.begin(),diagnostics.end());
     return w.bytes;

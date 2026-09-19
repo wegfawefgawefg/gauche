@@ -15,10 +15,10 @@ Requested 2026-09-15. Status lives in MASTER_TASKS.md.
 
 F1 → Gameplay → **Performance profiler** enables collection and unpauses offline simulation. The panel has an explicit pause checkbox. Close F1 to measure normal play without the panel's drawing overhead, then reopen it to inspect the last 300 frames. Timings include simulation subsystems, rendering layers, networking/rollback/hash/snapshots, audio, menus, presentation waits and limiter sleep, with averages, P95, maxima and call counts. Nested rows overlap; these are main-thread wall timings, not GPU timings. Process CPU also includes worker/audio threads.
 
-Use **Save last 300 frames** or **Record next 600 frames**; the panel shows the CSV path under the normal Gauche preference directory. For a shareable capture without opening ImGui:
+Use **Save last 300 frames** or **Record next 600 frames**; the panel shows the CSV path under the normal Teeming preference directory. For a shareable capture without opening ImGui:
 
 ```sh
-./scripts/run.sh --profile-csv /tmp/gauche-profile.csv --profile-frames 1800
+./scripts/run.sh --profile-csv /tmp/teeming-profile.csv --profile-frames 1800
 ```
 
 Capture stops after that many frames (bounded to 1–36,000); the game continues. Closing the game finishes a partial capture. `multiplayer.py --profile` writes `profile.csv` inside each visible client's session directory; headless bots are excluded. CSV records the build, platform/renderer backend, actual V-sync, effective cap, render dimensions and focus/minimize state.
@@ -37,7 +37,7 @@ Audio settings use 0–100% sliders: drag with the mouse or adjust by 1% with le
 
 Settings and Controller Options expose Auto/Xbox/PlayStation/Nintendo prompts. This machine's controller-icons.cfg is set to Xbox. Physical bindings stay as configured. All action legends and controller diagrams share the icon selection.
 
-Local files: playtest.cfg and controller-icons.cfg under SDL's Gauche preference directory. Invalid item kinds/options fall back safely; saved item fields are rebuilt through make_item. Main menu announces enabled playtest overrides. Disable them in Levels to return to ordinary starts.
+Local files: playtest.cfg and controller-icons.cfg under SDL's Teeming preference directory. Invalid item kinds/options fall back safely; saved item fields are rebuilt through make_item. Main menu announces enabled playtest overrides. Disable them in Levels to return to ordinary starts.
 
 Strict game and capture builds passed. Static Levels, Loadout and stage-banner captures inspected; no live playtest. Stage announcement lasts 3.5 seconds with a small entrance and fade, and identifies Haunted House when present.
 
@@ -92,7 +92,7 @@ The Rolls tab now covers the six large Forest landmarks, open sectors, cross-roo
 
 F1 → Generation inspector also reads the current game's immutable generation report during ordinary play, rather than a previous preview. Enable **Show recorded map annotations**, then select a feature or child roll to see its original footprint, guide and cells over the gameplay camera. F1 can hide the panel while the overlay stays visible. Clear selection removes focused marks (the all-components scope stays visible); changing reports/floors clears stale selections automatically. Live and preview selections are independent. **Copy floor diagnostics** copies floor, run seed, planner RNG and build revision. Reports remain excluded from gameplay hashes and plain state snapshots. Developer hosts attach recorded decisions and their build revision to network join/resync snapshots; clients can use the same live inspector and overlays. Attachments are capped at 256 KiB: oversized geometry is explicitly omitted while decision text/counts remain, or the report is marked unavailable if metadata cannot fit. Invalid diagnostic contents do not prevent a valid game snapshot from loading. Hosts built without developer mode omit the attachment. Further child-component coverage, prop/actor removal attribution, additional fine-loop coverage and other biome selectors remain pending.
 
-`GAUCHE_DEV_MODE` defaults ON; OFF hides developer entry/hotkeys and manual gameplay zoom controls.
+`TEEMING_DEV_MODE` defaults ON; OFF hides developer entry/hotkeys and manual gameplay zoom controls.
 
 Giant-tree, timber-grove and snake-tunnel entries now expand into child component rolls: interior pockets, supplies, props and rewards. Each shows its local choice weights, selected ticket, result and recorded cells. Focus a site to inspect it; the map marks placed cells or the anchor of an empty/failed slot. The observation cap is 512 child entries per generation and never changes generation behavior. Item membership/rarity stays in the master supply tables.
 
@@ -130,7 +130,7 @@ Timber grove records its outline, glade polygons, mineral/fuel trail guides, opt
 
 Snake habitats record overall identity, straight/turning extent, independent link modes, dry route guides, cross-links, bank depressions, colonies and optional island opportunities. Forest 1-2 seeds 16, 4 and 21 illustrate rift banks, braided crossings and sinkhole beds; seeds 31 and 82 have turning three-room habitats. Fine capture filtered to Snake tunnel shows resolved links, bank depressions and the island attempt. Detached prizes remain optional, and a tree beside the gap is a separate roll.
 
-`./build-release/gauche --audit-forest > /tmp/forest.csv` measures 16 fixed seeds per Forest stage without starting graphics or simulation. It checks required routes/locks and separates mobile fighters, specialists, reactive defenders, passive life and enemy sources; it also records walking-distance coverage, quiet areas, props and landmark presence. These are forced ordinary layouts, so seeds can differ from the viewer's Automatic path. See [baseline comparison and measurement limits](../engineering/FOREST_GENERATION_COMPARISON.md).
+`./build-release/teeming --audit-forest > /tmp/forest.csv` measures 16 fixed seeds per Forest stage without starting graphics or simulation. It checks required routes/locks and separates mobile fighters, specialists, reactive defenders, passive life and enemy sources; it also records walking-distance coverage, quiet areas, props and landmark presence. These are forced ordinary layouts, so seeds can differ from the viewer's Automatic path. See [baseline comparison and measurement limits](../engineering/FOREST_GENERATION_COMPARISON.md).
 
 River shape can now select a circulating river on Forest 1-2–1-4. Select its Circulating route child to see the actual closed centerline and feeding water cells. Independent Rideable supports / Support type rolls place lily pads and drift logs on loops and ordinary rivers. Walk onto one to ride and walk off to dismount; it carries one player and one loose item, follows the current, and pauses at blockers or stopped/frozen water. The **River depth** child now selects wadeable channels, scattered pools (1-2 onward), or deep stretches with fords (1-3 onward). Try **1-2 seed 1** for pools and **1-4 seed 6** for a long deep channel. Dark water is lethal without support; step onto a drifting support to ride across and onto shallow water/banks to dismount. Cold Flask temporarily freezes deep river, while bridges span it. Loose cargo sinks unless carried or inflated with an Air Bladder. Ordinary currents stop at a shallow-to-deep edge; deliberate movement and shoves can enter it. The River depth and fords fine checkpoint shows the result before later population. Personal flotation gear remains pending.
 

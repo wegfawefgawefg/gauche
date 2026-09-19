@@ -66,7 +66,7 @@ Original generated transparent sprites were copied unchanged:
 Source directory: `/home/vega/.codex/generated_images/01a09a6b-6ba6-7143-be03-94f4eb87aa9b/`.
 Both were visually inspected, have actual alpha, and render as small subdued
 fragments at gameplay scale. Static SDL software capture:
-`/tmp/gauche-industry-scraps.png`.
+`/tmp/teeming-industry-scraps.png`.
 
 Strict release build passed. Temporary direct checks covered condition changes,
 near/far work sounds, dead/reused entity handles, cue registration/source limits,

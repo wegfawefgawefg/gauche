@@ -132,7 +132,7 @@ bool init_front_page(FrontPage& page, GubsyRuntime& backend, tr::Renderer* rende
         const std::string path = (root / entry.path).string();
         tr::Texture* texture = tr::load_texture(renderer, path.c_str());
         if (texture == nullptr) {
-            std::fprintf(stderr, "Gauche menu texture failed: %s: %s\n",
+            std::fprintf(stderr, "Teeming menu texture failed: %s: %s\n",
                          path.c_str(), SDL_GetError());
             return false;
         }
@@ -214,7 +214,7 @@ std::string update_front_page(FrontPage& page, const MenuInputState& input,
         gview::CompileResult result = gview::compile_view(
             build_menu_page(page, width, height, death_policy));
         if (!result.ok) {
-            std::fprintf(stderr, "Gauche GView menu compile failed: %s\n",
+            std::fprintf(stderr, "Teeming GView menu compile failed: %s\n",
                          result.diagnostics.empty() ? "unknown" :
                          result.diagnostics.front().message.c_str());
             return {};

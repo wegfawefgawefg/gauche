@@ -1,6 +1,6 @@
 # Local multiplayer workshop
 
-Run from the Gauche repository:
+Run from the Teeming repository:
 
 ```sh
 ./scripts/multiplayer.sh
@@ -62,9 +62,9 @@ name. `--output DisplayPort-0`, `--bot-output DisplayPort-1`, `--workspace 3` an
 used. `--service URL` selects another compatible room server.
 
 Each process gets isolated XDG data/config directories and its own player identity
-under `~/.local/state/gauche/multiplayer/session-*/`. Console output goes into
+under `~/.local/state/teeming/multiplayer/session-*/`. Console output goes into
 `human.log` / `bot-N.log`; network logs and recovery captures live beneath each
-profile's `data/gauche/Gauche/netlogs`. Profiles/logs remain after exit for diagnosis.
+profile's `data/teeming/Teeming/netlogs`. Profiles/logs remain after exit for diagnosis.
 `layout.json` records requested and actual window positions. The launcher checks
 that placement settles instead of silently ignoring i3 errors. Debug windows keep
 a fixed 16:9 canvas with letterboxing, even when resized into a narrow shape.
@@ -85,7 +85,7 @@ level-solving AI; dead bots obey the lobby respawn rule.
 The headless path is also available directly:
 
 ```sh
-XDG_DATA_HOME=/tmp/gauche-bot-one ./build-release/gauche --headless \
+XDG_DATA_HOME=/tmp/teeming-bot-one ./build-release/teeming --headless \
   --join-room ABC123 --player-name 'Bot One' --bot-seed 10 --seconds 300
 ```
 

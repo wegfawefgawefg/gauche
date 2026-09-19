@@ -33,11 +33,11 @@ Creature/item, Prop and Loose debris switches compare each category independentl
 Defaults are enabled. These are session-local presentation choices, like the
 existing combat overlays; no network state or gameplay/snapshot version changed.
 
-After building `gauche_render_scene`, create matching static views with:
+After building `teeming_render_scene`, create matching static views with:
 
 ```sh
-SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./build-release/gauche_render_scene /tmp/gauche-shadows.png shadows
-SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./build-release/gauche_render_scene /tmp/gauche-shadows-off.png shadows-off
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./build-release/teeming_render_scene /tmp/teeming-shadows.png shadows
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./build-release/teeming_render_scene /tmp/teeming-shadows-off.png shadows-off
 ```
 
 The comparison has a chick, falling zombie, owl, stack, wasp, pickup, airborne bomb,

@@ -57,6 +57,6 @@ recovery, deployed damage/heat, flying and sled exceptions, owner damage,
 mid-arming snapshot continuation, invalid timer rejection, exhausted-condition
 breakage, invalid placement and full-pool refusal. 64 generated Industry floors
 retained reachability and required locks and contained 76 boards. SDL dummy
-loaded all four OGGs and produced `/tmp/gauche-nail-board.png`; inspected the
+loaded all four OGGs and produced `/tmp/teeming-nail-board.png`; inspected the
 static armed/held rendering. No autonomous playthrough or new permanent suite.
 Human play feedback still determines final weapon feel and trap balance.

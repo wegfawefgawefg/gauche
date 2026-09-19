@@ -41,8 +41,8 @@ outside Ice, except the title's fragment space.
 Use the same NumPy/SciPy/Numba/FFmpeg environment as pass 02:
 
 ```sh
-/tmp/gauche-music-venv/bin/python tools/music/contrasts/build.py
-/tmp/gauche-music-venv/bin/python tools/music/contrasts/release.py
+/tmp/teeming-music-venv/bin/python tools/music/contrasts/build.py
+/tmp/teeming-music-venv/bin/python tools/music/contrasts/release.py
 ```
 
 `--only beneath_the_thaw` rebuilds one track; `--masters /some/path` also saves

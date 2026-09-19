@@ -50,7 +50,7 @@ std::string worldgen_recipe(const GenerationReport& report) {
         " | planner RNG "+std::to_string(report.initial_rng)+
         " | inhabitants seed "+std::to_string(report.inhabitants_seed)+
         " (0=planner stream; override after boss geometry) | revision "+
-        (report.revision.empty() ? GAUCHE_GENERATOR_REVISION : report.revision);
+        (report.revision.empty() ? TEEMING_GENERATOR_REVISION : report.revision);
 }
 void regenerate_worldgen(WorldGenViewer& v) {
     v.original=std::make_unique<Game>();

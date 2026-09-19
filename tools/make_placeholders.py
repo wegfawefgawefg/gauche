@@ -1,4 +1,4 @@
-"""Small editable 16px placeholders for C++-only Gauche content."""
+"""Small editable 16px placeholders for C++-only Teeming content."""
 
 from pathlib import Path
 

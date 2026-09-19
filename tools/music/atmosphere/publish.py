@@ -86,7 +86,7 @@ def sampler(pieces):
         source = Path(tmp)/"reel.wav"
         wavfile.write(source,RATE,np.concatenate(blocks).astype(np.float32))
         subprocess.run(["ffmpeg","-v","error","-y","-i",str(source),"-c:a","libvorbis",
-                        "-q:a","6","-metadata","title=Gauche atmosphere pass 02 comparison reel",
+                        "-q:a","6","-metadata","title=Teeming atmosphere pass 02 comparison reel",
                         str(OUTPUT/"comparison.ogg")],check=True)
     (OUTPUT/"comparison.json").write_text(json.dumps(dict(seconds=cursor,markers=markers),indent=2)+"\n")
     return markers
@@ -114,7 +114,7 @@ def page(pieces,markers):
 placeholder="More like this? Less of a particular sound? A timestamp?"></textarea></label></article>''')
     content = '''<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gauche — atmosphere studies, pass 02</title><style>
+<title>Teeming — atmosphere studies, pass 02</title><style>
 :root{color-scheme:dark;font:16px/1.6 system-ui,sans-serif;background:#101513;color:#e3dfcc}
 body{max-width:1000px;margin:auto;padding:35px 24px 70px}h1{font:500 clamp(32px,5vw,52px)/1.1 Georgia,serif}
 h2{font:500 28px/1.2 Georgia,serif;margin:8px 0 16px}p{max-width:77ch;color:#bfc8bc}
@@ -129,7 +129,7 @@ textarea{box-sizing:border-box;display:block;width:100%;margin:7px 0;background:
 color:#e0dcca;font:14px/1.5 system-ui;padding:10px;resize:vertical}footer{font-size:13px}
 nav{position:sticky;top:0;background:#101513ef;padding:12px 0;z-index:1}nav button[aria-pressed=true]{border-color:#cfb48c}
 [hidden]{display:none!important}
-</style><header><p class="eyebrow">GAUCHE / MUSIC WORKBENCH / PASS 02</p>
+</style><header><p class="eyebrow">TEEMING / MUSIC WORKBENCH / PASS 02</p>
 <h1>Space. Material. Something underneath.</h1>
 <p>Nine longer studies and six short cues, written from scratch. More held resonance and empty space;
 no sampled strings or lead-and-accompaniment score. These are directions to choose between, not a finished soundtrack.</p>
@@ -165,12 +165,12 @@ if(card.hidden)card.querySelector('audio').pause();
 document.querySelectorAll('[data-filter]').forEach(q=>q.setAttribute('aria-pressed',String(q===b)));
 }));
 const notes=[...document.querySelectorAll('[data-note]')];
-notes.forEach(n=>{try{n.value=localStorage.getItem('gauche-music-02-'+n.dataset.note)||''}catch{}
-n.addEventListener('input',()=>{try{localStorage.setItem('gauche-music-02-'+n.dataset.note,n.value)}catch{}})});
+notes.forEach(n=>{try{n.value=(localStorage.getItem('teeming-music-02-'+n.dataset.note)??localStorage.getItem('gauche-music-02-'+n.dataset.note))||''}catch{}
+n.addEventListener('input',()=>{try{localStorage.setItem('teeming-music-02-'+n.dataset.note,n.value)}catch{}})});
 document.getElementById('export-notes').addEventListener('click',()=>{
 const text=notes.filter(n=>n.value.trim()).map(n=>n.dataset.note+'\\n'+n.value).join('\\n\\n');
-const url=URL.createObjectURL(new Blob(['Gauche music pass 02\\n\\n'+text],{type:'text/plain'}));
-const a=document.createElement('a');a.href=url;a.download='gauche-music-listening-notes.txt';a.click();
+const url=URL.createObjectURL(new Blob(['Teeming music pass 02\\n\\n'+text],{type:'text/plain'}));
+const a=document.createElement('a');a.href=url;a.download='teeming-music-listening-notes.txt';a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 });</script></html>'''
     (OUTPUT/"index.html").write_text(content)

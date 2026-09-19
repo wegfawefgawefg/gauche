@@ -1,4 +1,4 @@
-# Gauche working style
+# Teeming working style
 
 - Write direct C++20 in the C+ style of Adventures with Chickens and Splonks.
 - Keep one clear responsibility per file, usually below 500 lines. Split by
@@ -6,7 +6,7 @@
 - Prefer plain structs, enums, free functions, explicit switches, integer tile
   positions, and fixed-point gameplay fractions. Avoid ECS and event frameworks.
 - Keep the main loop visible. Gubsy owns the SDL host, input/settings/menu
-  shell, and lobby; Gauche owns its world, rules, rendering, and HUD.
+  shell, and lobby; Teeming owns its world, rules, rendering, and HUD.
 - Preserve observable Rust behavior before changing a rule. Source parity and
   new dungeon-run content are separate review milestones.
 - Label important code paragraphs by domain or phase. Comments explain a

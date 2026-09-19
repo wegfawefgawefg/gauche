@@ -30,7 +30,7 @@ void init_debug_panels(SDL_Window* window, tr::Renderer* renderer) {
 void shutdown_debug_panels() { shutdown_imgui_layer(); }
 
 bool debug_event(const SDL_Event& event) {
-    if (!GAUCHE_DEV_MODE) return false;
+    if (!TEEMING_DEV_MODE) return false;
     if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat) {
         if (event.key.key == SDLK_F1) { panels.visible = !panels.visible; return true; }
         if (event.key.key == SDLK_F2 && panels.visible) { panels.selector = !panels.selector; return true; }
@@ -53,7 +53,7 @@ void draw_debug_panels(const Game& game, int owner, bool offline) {
     imgui_new_frame();
     if (panels.visible && panels.selector) {
         ImGui::SetNextWindowPos({16, 16}, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin("Gauche Debug [F2]", &panels.selector, ImGuiWindowFlags_AlwaysAutoResize)) {
+        if (ImGui::Begin("Teeming Debug [F2]", &panels.selector, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::TextUnformatted("F1: hide/show all windows   F2: selector");
             if (ImGui::CollapsingHeader("Gameplay", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::Checkbox("Generation inspector", &worldgen_viewer().details);

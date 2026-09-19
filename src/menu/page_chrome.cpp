@@ -1,7 +1,7 @@
 #include "page_chrome.hpp"
 #include <algorithm>
 
-namespace gauche_menu {
+namespace teeming_menu {
 
 // PAGE CHROME: Shared title, content area and quiet bottom-left navigation.
 void frame(ViewBuilder& ui, std::string title, float width, float height) {
@@ -41,4 +41,4 @@ void footer(ViewBuilder& ui, std::string first) {
     ui.focus_group("menu", std::move(first), "card");
 }
 
-} // namespace gauche_menu
+} // namespace teeming_menu

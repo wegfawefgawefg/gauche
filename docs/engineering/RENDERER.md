@@ -50,10 +50,10 @@ live in `src/renderer/webgpu_runtime.js`.
 ## Checks
 
 ```sh
-cmake --build build-release --target gauche teeming_renderer_tests -j 8
+cmake --build build-release --target teeming teeming_renderer_tests -j 8
 ctest --test-dir build-release -R '^renderer$' --output-on-failure
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy TEEMING_VK_VALIDATION=1 \
-  build-release/gauche --smoke-run --frames 4 --capture /tmp/teeming-vulkan.bmp
+  build-release/teeming --smoke-run --frames 4 --capture /tmp/teeming-vulkan.bmp
 ./scripts/build-web.sh
 # Serve build-web/site locally on port 8787, then:
 xvfb-run -a npm run test:web:renderer

@@ -58,7 +58,7 @@ void capture_network_recovery(NetSession& session) {
     // CAPTURE: Keep the state before the oldest saved input, before a resync replaces it.
     const auto snapshot = encode_game(frames.empty() ? session.rollback.game : frames.front().before);
     PacketWriter capture;
-    capture.u32(0x4752504cU); // GRPL: Gauche recovery replay, little-endian packet encoding.
+    capture.u32(0x4752504cU); // GRPL: recovery replay, little-endian packet encoding.
     capture.u16(2);
     capture.u16(wire_version);
     capture.u64(gameplay_version);

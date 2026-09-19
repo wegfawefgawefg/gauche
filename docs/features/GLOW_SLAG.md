@@ -43,7 +43,7 @@ copied without changing their alpha to `assets/graphics/glow_slag.png` and
 Hot prompt:
 
 > Use case: stylized-concept. Asset: one tiny inventory/world sprite for
-> top-down pixel-art roguelike Gauche. A single fist-sized irregular lump of
+> top-down pixel-art roguelike Teeming. A single fist-sized irregular lump of
 > dark charcoal foundry slag with a broad burnt-orange inner crack and three
 > small dull amber incandescent facets. Squat chunky angular silhouette,
 > simple logical 16x16 pixel design enlarged nearest-neighbor, five flat muted

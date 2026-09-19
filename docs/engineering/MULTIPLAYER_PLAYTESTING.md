@@ -5,7 +5,7 @@ without forwarding a port on the hosting machine. This takes priority over the
 next content slice. This document records the implementation scope and audit;
 it does not claim that the missing integration is complete.
 
-## Current Gauche state
+## Current Teeming state
 
 - Direct IPv4 UDP hosting/joining; four players, one local player per machine.
 - Host-canonical inputs, client prediction, bounded rollback, confirmed hashes,
@@ -57,10 +57,10 @@ fire/pause rules, replay reader/diagnostic UI and friend-machine gameplay feedba
 Reachable LAN or publicly reachable friend host can use the current direct path.
 An overlay network such as Tailscale can supply reachability without router port
 forwarding. Both players install it and authorize access to the host device; then
-join the host's Tailscale IPv4 address. Gauche has not been live-tested over this
+join the host's Tailscale IPv4 address. Teeming has not been live-tested over this
 path yet. Host OS firewall/access policies must permit the game's UDP port.
 
-Both players should use the same Gauche revision. Example explicit-port launch:
+Both players should use the same Teeming revision. Example explicit-port launch:
 
 ```sh
 # Host
@@ -82,13 +82,13 @@ Use Gubsy Realnet and the existing Splonks integrations as the source:
 - `Splonks/splonks-cpp/src/network`: mature transport, lifecycle, lockstep
   diagnostics and capture behavior.
 - `Splonks/splonks-cpp-gview-menu/src/network/net_lobby_realnet.cpp` and that
-  workspace's menu integration: adapt its working connection flow to Gauche UI.
+  workspace's menu integration: adapt its working connection flow to Teeming UI.
 - `Splonks/splonks-cpp/src/network/net_lobby_input_lockstep.cpp`: bounded desync
   replay capture; `.sdrp` artifacts and a LAN verdict exist in its logs directory.
-  Recorded Splonks validation is useful reference evidence, not Gauche validation.
+  Recorded Splonks validation is useful reference evidence, not Teeming validation.
 
-Implement a Gauche transport adapter using direct UDP, authenticated punch and
-relay fallback without coupling the service to Gauche simulation. Use the same
+Implement a Teeming transport adapter using direct UDP, authenticated punch and
+relay fallback without coupling the service to Teeming simulation. Use the same
 socket for endpoint discovery and gameplay. Preserve distinct relay peer routes,
 packet-size limits, cancellation, retry and reconnect state.
 
@@ -99,7 +99,7 @@ the existing Splonks service can be reused, with game/version separation, before
 creating another server. Do not assume an old deployment is still running.
 Punching alone is insufficient for restrictive NAT; include relay fallback.
 
-Gauche GView flow: Host Room -> named party with code -> friends browse or enter
+Teeming GView flow: Host Room -> named party with code -> friends browse or enter
 code -> see members, connection status and agreed settings -> ready -> host starts.
 Keep party membership across death, rewards, floors and restarts. Show useful
 connection failures and version mismatch messages, retry/cancel and rejoin.

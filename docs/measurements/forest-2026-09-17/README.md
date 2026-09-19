@@ -72,6 +72,6 @@ Compare future revisions against these same seeds and definitions. Counts, speci
 
 ## Reproduction
 
-The standalone probes are preserved in [sources/](sources/). Compile each with the game’s Release C++ flags and `-Isrc`, link against the existing `gauche` objects/libraries while replacing `src/main.cpp.o`, and run from the repository root. Generation probe writes CSV to stdout. Item probe writes CSV to stdout plus `item-catalog.tsv` in its working directory. They do not launch SDL windows or run gameplay. Use revision `ec3b1ec` to reproduce this historical baseline; a newer revision measures newer behavior.
+The standalone probes are preserved in [sources/](sources/). Compile each with the game’s Release C++ flags and `-Isrc`, link against the existing `teeming` objects/libraries while replacing `src/main.cpp.o`, and run from the repository root. Generation probe writes CSV to stdout. Item probe writes CSV to stdout plus `item-catalog.tsv` in its working directory. They do not launch SDL windows or run gameplay. Use revision `ec3b1ec` to reproduce this historical baseline; a newer revision measures newer behavior.
 
 The built-in `--audit-forest` remains a smaller 16-seed/floor audit with walking-density metrics; it is not the 256-seed probe archived here.
